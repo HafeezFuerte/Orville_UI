@@ -1,0 +1,66 @@
+<div class="table-responsive table-vertical-scroll w-full">
+    <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+        <thead class="bg-info/10">
+            <tr class="border-b border-defaultborder">
+                <th scope="col" class="text-start" *ngFor="let col of columns">
+                    {{ col.label | translate }}
+                </th>
+                <th scope="col" class="text-start" *ngIf="hasActions">
+                    {{ 'web.common.lblAction' | translate }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Empty State -->
+            <tr *ngIf="data.length === 0 && !loading">
+                <td [attr.colspan]="columns.length + (hasActions ? 1 : 0)" class="text-center py-6 bg-gray-50/30">
+                    <ng-container *ngIf="emptyTemplate; else defaultEmpty">
+                        <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
+                    </ng-container>
+                    <ng-template #defaultEmpty>
+                        <span class="text-gray-500 italic text-sm">
+                            {{ emptyMessage | translate }}
+                        </span>
+                    </ng-template>
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <ng-container *ngIf="!loading">
+                <tr *ngFor="let row of data" class="border-b border-defaultborder task-list">
+                    <td *ngFor="let col of columns">
+                        <!-- Custom Content Projection based on Column Key -->
+                        <ng-container *ngIf="colTemplate && (col.key === colTemplateName || col.useTemplate); else checkLink">
+                            <ng-container *ngTemplateOutlet="colTemplate; context: { row: row, col: col }"></ng-container>
+                        </ng-container>
+
+                        <!-- Link Rendering -->
+                        <ng-template #checkLink>
+                            <ng-container *ngIf="col.isLink; else defaultData">
+                                <span class="text-black underline cursor-pointer font-medium" (click)="linkClick.emit({ row: row, col: col })">
+                                    {{ row[col.key] || '-' }}
+                                </span>
+                            </ng-container>
+                        </ng-template>
+
+                        <!-- Default Data Rendering -->
+                        <ng-template #defaultData>
+                            <span [ngClass]="{'font-semibold': col.key === 'name'}">
+                                {{ row[col.key] || '-' }}
+                            </span>
+                        </ng-template>
+                    </td>
+                    <!-- Action Column (Injected via ng-template) -->
+                    <td *ngIf="hasActions">
+                        <ng-container *ngTemplateOutlet="actionTemplate; context: { row: row }"></ng-container>
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<mat-paginator *ngIf="!loading && totalRecords > 0" [length]="totalRecords" [pageSize]="pageSize"
+    [pageIndex]="pageIndex" [pageSizeOptions]="[50]" showFirstLastButtons (page)="onPageChange($event)">
+</mat-paginator>

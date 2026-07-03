@@ -1,0 +1,41 @@
+<app-page-header [title]="'web.common.lblConfigurations' | translate"
+    [activeTitle]="'web.common.lblPayroll' | translate" [title1]="'web.common.lblConfigurations' | translate"
+    (click)="goBack()"></app-page-header>
+
+<!-- Tabs Section (Stepper) -->
+<div class="xl:col-span-12 col-span-12 mt-4">
+    <div class="box custom-box !mb-4 !rounded-md overflow-hidden">
+        <div class="box-body !p-5 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.05)]">
+            <nav class="flex flex-wrap md:flex-nowrap justify-between items-center w-full gap-2">
+                <div class="flex items-center justify-between flex-grow overflow-x-auto no-scrollbar">
+                    <ng-container *ngFor="let tab of tabs; let i = index; let last = last">
+                        <div [routerLink]="tab.link" #rla="routerLinkActive" routerLinkActive
+                            class="flex items-center cursor-pointer group relative py-1 transition-all duration-300">
+
+                            <!-- Circle Number -->
+                            <div [ngClass]="rla.isActive ? 'bg-primary text-white scale-110 shadow-lg border-primary' : 'bg-gray-100 text-gray-400 border-gray-200'"
+                                class="w-5 h-5 rounded-full flex items-center justify-center transition-all duration-500 text-[0.65rem] font-bold z-10 border shrink-0">
+                                {{ 'web.common.lblNum' + (i + 1) | translate }}
+                            </div>
+
+                            <!-- Tab Text -->
+                            <div class="ms-2 flex flex-col whitespace-nowrap">
+                                <span class="transition-colors duration-300 text-[0.7rem]"
+                                    [ngClass]="rla.isActive ? 'text-[#334155] font-bold' : 'text-gray-500 font-semibold'">
+                                    {{ tab.label | translate }}
+                                </span>
+                            </div>
+
+                            <!-- Connecting Line -->
+                            <div *ngIf="!last" class="mx-3 h-px min-w-[1rem] flex-grow bg-gray-100 hidden xl:block">
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="mt-2">
+    <router-outlet></router-outlet>
+</div>

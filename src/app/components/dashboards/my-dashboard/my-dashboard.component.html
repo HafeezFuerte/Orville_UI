@@ -1,0 +1,515 @@
+<app-page-header [title]="'web.employeePortal.myDashboard.lblPageTitle' | translate" [activeTitle]="'web.common.lblEmployeePortal' | translate" [title1]="'web.employeePortal.myDashboard.lblPageTitle' | translate"></app-page-header>
+
+
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-x-6">
+                    <div class="xxl:col-span-4 xl:col-span-12 col-span-12">
+                        <div class="box overflow-hidden">
+                            <div class="box-body !p-0">
+                                <div class="sm:flex items-start p-6      main-profile-cover">
+                                    <div>
+                                        <span class="avatar avatar-xxl avatar-rounded online me-4 bg-primary text-white text-3xl font-bold flex items-center justify-center border-2 border-white/20 shadow-sm">
+                                            <ng-container *ngIf="employeeDetails?.photo || employeeDetails?.profileImage; else initials">
+                                                <img [src]="employeeDetails?.photo || employeeDetails?.profileImage" alt="profile-img">
+                                            </ng-container>
+                                            <ng-template #initials>
+                                                {{ getEmpInitials() }}
+                                            </ng-template>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow main-profile-info">
+                                        <div class="flex items-center !justify-between">
+                                            <h6 class="font-semibold mb-1 text-white text-[1rem]">{{employeeDetails?.empName || 'Loading...'}}</h6>
+                                            <button type="button" class="ti-btn ti-btn-light !font-medium !gap-0 hover:bg-white hover:text-primary transition-all">
+                                                <i class="ri-edit-line me-1 align-middle inline-block"></i>{{ 'web.employeePortal.myDashboard.btnEditProfile' | translate }}
+                                            </button>
+                                        </div>
+                                        <p class="mb-1 !text-white opacity-[0.7]">{{employeeDetails?.designation || 'Designation'}} | {{employeeDetails?.site_Name}}</p>
+                                        <p class="text-[0.75rem] text-white mb-6 opacity-[0.5]">
+                                            <span class="me-4 inline-flex"><i class="ri-building-line me-1 align-middle"></i>{{residentCountryName}}</span>
+                                            <span class="inline-flex"><i class="ri-map-pin-line me-1 align-middle"></i>{{residentCityName}}</span>
+                                        </p>
+                                        <div class="flex mb-0">
+                                            <div class="me-6">
+                                                <p class="font-bold text-[1rem] text-white text-shadow mb-0">{{employeeDetails?.emp_code || employeeDetails?.empCode || 'N/A'}}</p>
+                                                <p class="mb-0 text-[.6875rem] opacity-[0.5] text-white tracking-wider">{{ 'web.common.lblEmpID' | translate }}</p>
+                                            </div>
+                                            <div class="me-6">
+                                                <p class="font-bold text-[1rem] text-white text-shadow mb-0">{{employeeDetails?.doj || employeeDetails?.DOJ || 'N/A' | date:'dd MMM, yyyy'}}</p>
+                                                <p class="mb-0 text-[.6875rem] opacity-[0.5] text-white tracking-wider">{{ 'web.employeePortal.myDashboard.lblJoinedDate' | translate }}</p>
+                                            </div>
+                                            <div class="me-6">
+                                                <p class="font-bold text-[1rem] text-white text-shadow mb-0">{{ 'web.common.lblActive' | translate }}</p>
+                                                <p class="mb-0 text-[.6875rem] opacity-[0.5] text-white tracking-wider">{{ 'web.common.lblStatus' | translate }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6 border-b border-dashed dark:border-defaultborder/10">
+                                    <p class="text-[.9375rem] mb-2 me-6 font-semibold">{{ 'web.employeePortal.myDashboard.lblContactInformation' | translate }} :</p>
+                                    <div class="text-[#8c9097] dark:text-white/50">
+                                        <p class="mb-2">
+                                            <span class="avatar avatar-sm avatar-rounded me-2 bg-light text-[#8c9097] dark:text-white/50">
+                                                <i class="ri-mail-line align-middle text-[.875rem] text-[#8c9097] dark:text-white/50"></i>
+                                            </span>
+                                            {{employeeDetails?.mailid || 'No Email'}}
+                                        </p>
+                                        <p class="mb-2">
+                                            <span class="avatar avatar-sm avatar-rounded me-2 bg-light text-[#8c9097] dark:text-white/50">
+                                                <i class="ri-phone-line align-middle text-[.875rem] text-[#8c9097] dark:text-white/50"></i>
+                                            </span>
+                                            {{employeeDetails?.mobile1 || 'No Phone'}}
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="avatar avatar-sm avatar-rounded me-2 bg-light text-[#8c9097] dark:text-white/50">
+                                                <i class="ri-map-pin-line align-middle text-[.875rem] text-[#8c9097] dark:text-white/50"></i>
+                                            </span>
+                                            {{employeeDetails?.resAddress || 'No Address'}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xxl:col-span-8 xl:col-span-12 col-span-12">
+                        <div class="grid grid-cols-12 gap-x-6">
+                            <div class="xl:col-span-12 col-span-12">
+                                <div class="box">
+                                    <div class="box-body !p-0">
+                                        <div class="!p-4 border-b dark:border-defaultborder/10 border-dashed md:flex items-center justify-between">
+                                            <nav class="-mb-0.5 sm:flex md:space-x-6 rtl:space-x-reverse pb-2">
+                                                <a class="w-full sm:w-auto flex active hs-tab-active:font-semibold hs-tab-active:text-white hs-tab-active:bg-primary rounded-md py-2 px-4 text-primary text-sm" href="javascript:void(0);" id="attendance-tab" data-hs-tab="#attendance-tab-pane" aria-controls="attendance-tab-pane" >
+                                                    <i class="ri-calendar-check-line me-1 align-middle inline-block"></i>{{ 'web.common.lblAttendance' | translate }}
+                                                </a>
+                                                <a class="w-full sm:w-auto flex hs-tab-active:font-semibold hs-tab-active:text-white hs-tab-active:bg-primary rounded-md py-2 px-4 text-primary text-sm" href="javascript:void(0);" id="leaves-tab" data-hs-tab="#leaves-tab-pane" aria-controls="leaves-tab-pane">
+                                                    <i class="ri-calendar-2-line me-1 align-middle inline-block"></i>{{ 'web.common.lblLeave' | translate }}
+                                                </a>
+                                                <a class="w-full sm:w-auto flex hs-tab-active:font-semibold hs-tab-active:text-white hs-tab-active:bg-primary rounded-md py-2 px-4 text-primary text-sm" href="javascript:void(0);" id="loans-tab" data-hs-tab="#loans-tab-pane" aria-controls="loans-tab-pane">
+                                                    <i class="ri-bank-line me-1 align-middle inline-block"></i>{{ 'web.common.lblLoans' | translate }}
+                                                </a>
+                                              </nav>
+                                            <div class="hidden"></div>
+                                        </div>
+                                        <div class="!p-4">
+                                            <div class="tab-content" id="myTabContent">
+
+                                                <!-- Attendance Tab -->
+                                                <div class="tab-pane fade !p-0 !border-0" id="attendance-tab-pane" role="tabpanel" aria-labelledby="attendance-tab">
+                                                    <!-- Quick Stats Row -->
+                                                    <div class="grid grid-cols-12 gap-x-6 gap-y-6 mb-6">
+                                                        <div class="xxl:col-span-3 xl:col-span-6 col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border dark:border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-center gap-4">
+                                                                        <div class="avatar avatar-lg bg-primary text-white rounded-md">
+                                                                            <i class="ri-calendar-check-line text-2xl"></i>
+                                                                        </div>
+                                                                        <div class="flex-grow">
+                                                                            <p class="text-[0.75rem] text-muted mb-1 font-semibold uppercase tracking-wider">{{ 'web.common.attendanceEntry.lblTotalDays' | translate }}</p>
+                                                                            <h4 class="text-xl font-bold mb-0">{{ attendanceSummary.total }}</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="xxl:col-span-3 xl:col-span-6 col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border dark:border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-center gap-4">
+                                                                        <div class="avatar avatar-lg bg-success text-white rounded-md">
+                                                                            <i class="ri-checkbox-circle-line text-2xl"></i>
+                                                                        </div>
+                                                                        <div class="flex-grow">
+                                                                            <p class="text-[0.75rem] text-muted mb-1 font-semibold uppercase tracking-wider">{{ 'web.common.attendanceEntry.lblPresent' | translate }}</p>
+                                                                            <h4 class="text-xl font-bold mb-0 text-success">{{ attendanceSummary.present }}</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="xxl:col-span-3 xl:col-span-6 col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border dark:border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-center gap-4">
+                                                                        <div class="avatar avatar-lg bg-danger text-white rounded-md">
+                                                                            <i class="ri-close-circle-line text-2xl"></i>
+                                                                        </div>
+                                                                        <div class="flex-grow">
+                                                                            <p class="text-[0.75rem] text-muted mb-1 font-semibold uppercase tracking-wider">{{ 'web.common.attendanceEntry.lblAbsent' | translate }}</p>
+                                                                            <h4 class="text-xl font-bold mb-0 text-danger">{{ attendanceSummary.absent }}</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="xxl:col-span-3 xl:col-span-6 col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border dark:border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-center gap-4">
+                                                                        <div class="avatar avatar-lg bg-warning text-white rounded-md">
+                                                                            <i class="ri-sun-line text-2xl"></i>
+                                                                        </div>
+                                                                        <div class="flex-grow">
+                                                                            <p class="text-[0.75rem] text-muted mb-1 font-semibold uppercase tracking-wider">{{ 'web.common.attendanceEntry.lblWeekends' | translate }}</p>
+                                                                            <h4 class="text-xl font-bold mb-0 text-warning">{{ attendanceSummary.weekends }}</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Attendance Templates -->
+                                                    <!-- <ng-template #customCellTemplate let-day="day" let-locale="locale">
+                                                        <div class="cal-cell-top">
+                                                            <span class="cal-day-badge" *ngIf="day.badgeTotal > 0" [style.background-color]="day.events[0].color?.primary">
+                                                                {{ day.events[0].meta.entry.leave_type > 0 ? 'L' : 
+                                                                   (day.events[0].meta.entry.attendance_status === 'Present' ? 'P' : 
+                                                                   (day.events[0].meta.entry.attendance_status === 'Absent' ? 'A' : 
+                                                                   (day.events[0].meta.entry.attendance_status === 'Weekend' ? 'W' : day.badgeTotal))) }}
+                                                            </span>
+                                                            <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <ng-template #customWeekHeaderTemplate let-days="days" let-locale="locale">
+                                                        <div class="cal-day-headers">
+                                                            <div class="cal-header" *ngFor="let day of days" [class.cal-past]="day.isPast" [class.cal-today]="day.isToday" [class.cal-future]="day.isFuture" [class.cal-weekend]="day.isWeekend">
+                                                                <div class="flex flex-col items-center py-2">
+                                                                    <span class="font-bold text-xs">{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</span>
+                                                                    <span class="text-[0.65rem] opacity-60">{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
+                                                                    <ng-container>
+                                                                        <span class="cal-day-badge !mt-1 !relative !transform-none !top-0 !right-0 !inline-flex" [style.background-color]="entry.status_color || '#705ec8'">
+                                                                            {{ entry.leave_type > 0 ? 'L' : 
+                                                                               (entry.attendance_status === 'Present' ? 'P' : 
+                                                                               (entry.attendance_status === 'Absent' ? 'A' : 
+                                                                               (entry.attendance_status === 'Weekend' ? 'W' : '?'))) }}
+                                                                        </span>
+                                                                    </ng-container>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <ng-template #customDayHeaderTemplate let-date="date" let-locale="locale">
+                                                        <div class="cal-day-headers border-0">
+                                                            <div class="cal-header p-2 mb-0 border-0 flex flex-col items-center">
+                                                                <span class="font-bold text-xs uppercase">{{ date | calendarDate:'dayViewTitle':locale }}</span>
+                                                                <ng-container >
+                                                                    <span class="cal-day-badge !mt-1 !relative !transform-none !top-0 !right-0 !inline-flex" [style.background-color]="entry.status_color || '#705ec8'">
+                                                                        {{ entry.leave_type > 0 ? 'L' : 
+                                                                           (entry.attendance_status === 'Present' ? 'P' : 
+                                                                           (entry.attendance_status === 'Absent' ? 'A' : 
+                                                                           (entry.attendance_status === 'Weekend' ? 'W' : '?'))) }}
+                                                                    </span>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                    </ng-template> -->
+
+                                                    <div class="grid grid-cols-12 gap-6">
+                                                        <!-- Calendar Section -->
+                                                        <div class="xl:col-span-12 col-span-12">
+                                                            <div class="box custom-box shadow-none border border-defaultborder/10 !mb-0">
+                                                                <div class="box-body !p-4">
+                                                            
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Leaves Tab -->
+                                                <div class="tab-pane fade hidden !p-0 !border-0" id="leaves-tab-pane" role="tabpanel" aria-labelledby="leaves-tab">
+                                                    <div class="grid grid-cols-12 gap-x-6">
+                                                        <div *ngFor="let leave of assignedLeaves" class="xxl:col-span-4 xl:col-span-6 col-span-12 mb-4">
+                                                            <div class="box custom-box !mb-0 shadow-none border border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-start justify-between mb-4">
+                                                                        <div>
+                                                                            <span class="block font-bold text-[0.7rem] text-muted uppercase tracking-widest mb-1">{{ leave.type }}</span>
+                                                                            <h4 class="text-2xl font-bold mb-0">{{ leave.remaining }} <span class="text-sm font-normal text-muted lowercase">{{ 'web.employeePortal.myDashboard.lblDaysLeft' | translate }}</span></h4>
+                                                                        </div>
+                                                                        <div [class]="'avatar avatar-md rounded-md ' + leave.color">
+                                                                            <i [class]="leave.icon + ' text-xl'"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mb-4">
+                                                                        <div class="flex items-center justify-between mb-2">
+                                                                            <span class="text-[0.65rem] font-bold text-muted uppercase">{{ 'web.employeePortal.myDashboard.lblUsageLimit' | translate }}</span>
+                                                                            <span class="text-[0.65rem] font-bold text-primary">{{ leave.percentage }}% {{ 'web.common.lblUsed' | translate }}</span>
+                                                                        </div>
+                                                                        <div class="progress progress-xs">
+                                                                            <div class="progress-bar bg-primary" role="progressbar" [style.width]="leave.percentage + '%'" [attr.aria-valuenow]="leave.percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="grid grid-cols-2 gap-2 text-center py-2 bg-light dark:bg-black/10 rounded-md">
+                                                                        <div class="border-e dark:border-defaultborder/10">
+                                                                            <p class="text-[0.65rem] text-muted mb-0">{{ 'web.employeePortal.myDashboard.lblTotalAssigned' | translate }}</p>
+                                                                            <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{ leave.total }} {{ 'web.employeePortal.myDashboard.lblDays' | translate }}</p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p class="text-[0.65rem] text-muted mb-0">{{ 'web.employeePortal.myDashboard.lblTotalUsed' | translate }}</p>
+                                                                            <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{ leave.used }} {{ 'web.employeePortal.myDashboard.lblDays' | translate }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div *ngIf="assignedLeaves.length === 0" class="col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border border-dashed border-primary/20 bg-primary/5 text-center flex flex-col items-center justify-center py-10">
+                                                                <i class="ri-information-line text-4xl text-primary/30 mb-2"></i>
+                                                                <p class="text-primary/70 font-semibold mb-0">{{ 'web.employeePortal.myDashboard.msgNoLeaveRecords' | translate }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Loans Tab -->
+                                                <div class="tab-pane fade hidden !p-0 !border-0" id="loans-tab-pane" role="tabpanel" aria-labelledby="loans-tab">
+                                                    <div class="grid grid-cols-12 gap-x-6">
+                                                        <div *ngFor="let loan of assignedLoans" class="xxl:col-span-4 xl:col-span-6 col-span-12 mb-4">
+                                                            <div class="box custom-box !mb-0 shadow-none border border-defaultborder/10">
+                                                                <div class="box-body !p-4">
+                                                                    <div class="flex items-start justify-between mb-4">
+                                                                        <div>
+                                                                            <span class="block font-bold text-[0.7rem] text-muted uppercase tracking-widest mb-1">{{ loan.type }}</span>
+                                                                            <h4 class="text-2xl font-bold mb-0">{{ loan.remaining | number:'1.2-2' }} <span class="text-sm font-normal text-muted uppercase">SAR</span></h4>
+                                                                        </div>
+                                                                        <div [class]="'avatar avatar-md rounded-md ' + loan.color">
+                                                                            <i [class]="loan.icon + ' text-xl'"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mb-4">
+                                                                        <div class="flex items-center justify-between mb-2">
+                                                                            <span class="text-[0.65rem] font-bold text-muted uppercase">{{ 'web.employeePortal.myDashboard.lblRepaymentStatus' | translate }}</span>
+                                                                            <span class="text-[0.65rem] font-bold text-success">{{ loan.percentage }}% {{ 'web.employeePortal.myDashboard.lblPaid' | translate }}</span>
+                                                                        </div>
+                                                                        <div class="progress progress-xs">
+                                                                            <div class="progress-bar bg-success" role="progressbar" [style.width]="loan.percentage + '%'" [attr.aria-valuenow]="loan.percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="grid grid-cols-2 gap-2 text-center py-2 bg-light dark:bg-black/10 rounded-md">
+                                                                        <div class="border-e dark:border-defaultborder/10">
+                                                                            <p class="text-[0.65rem] text-muted mb-0">{{ 'web.employeePortal.myDashboard.lblLoanAmount' | translate }}</p>
+                                                                            <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{ loan.total | number:'1.2-2' }}</p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p class="text-[0.65rem] text-muted mb-0">{{ 'web.employeePortal.myDashboard.lblAmountPaid' | translate }}</p>
+                                                                            <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{ loan.used | number:'1.2-2' }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div *ngIf="assignedLoans.length === 0" class="col-span-12">
+                                                            <div class="box custom-box !mb-0 shadow-none border border-dashed border-success/20 bg-success/5 text-center flex flex-col items-center justify-center py-10">
+                                                                <i class="ri-information-line text-4xl text-success/30 mb-2"></i>
+                                                                <p class="text-success/70 font-semibold mb-0">{{ 'web.employeePortal.myDashboard.msgNoLoanRecords' | translate }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Personal Information Section -->
+                            <div class="xl:col-span-4 col-span-12 mb-6">
+                                <div class="box custom-box shadow-none border border-defaultborder/10 !mb-0 h-full">
+                                    <div class="box-header !py-3">
+                                        <div class="box-title !text-sm font-bold tracking-wider text-primary">
+                                            {{ 'web.employeePortal.myDashboard.lblPersonalInformation' | translate }}
+                                        </div>
+                                    </div>
+                                    <div class="box-body !p-0">
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-primary text-white rounded-full">
+                                                    <i class="ri-user-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblFullName' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.empName || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-info text-white rounded-full">
+                                                    <i class="ri-mail-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblEmailAddress' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800 truncate" title="{{employeeDetails?.mailid || employeeDetails?.email}}">
+                                                        {{employeeDetails?.mailid || employeeDetails?.email || 'N/A'}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-success text-white rounded-full">
+                                                    <i class="ri-phone-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblContactNumber' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.mobile1 || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-warning text-white rounded-full">
+                                                    <i class="ri-briefcase-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.common.lblDesignation' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.designation || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 mb-0">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-danger text-white rounded-full">
+                                                    <i class="ri-heart-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblAge' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.age || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Work Information Section -->
+                            <div class="xl:col-span-4 col-span-12 mb-6">
+                                <div class="box custom-box shadow-none border border-defaultborder/10 !mb-0 h-full">
+                                    <div class="box-header !py-3">
+                                        <div class="box-title !text-sm font-bold tracking-wider text-secondary">
+                                            {{ 'web.employeePortal.myDashboard.lblWorkInformation' | translate }}
+                                        </div>
+                                    </div>
+                                    <div class="box-body !p-0">
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-secondary text-white rounded-full">
+                                                    <i class="ri-id-card-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.common.lblEmpID' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.emp_code || employeeDetails?.empCode || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-success text-white rounded-full">
+                                                    <i class="ri-calendar-event-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblJoiningDate' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800 text-shadow mb-0">{{employeeDetails?.doj || employeeDetails?.DOJ || 'N/A' | date:'dd MMM, yyyy'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-primary text-white rounded-full">
+                                                    <i class="ri-building-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.common.lblDepartment' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800 text-shadow mb-0">{{employeeDetails?.dept_Name || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-info text-white rounded-full">
+                                                    <i class="ri-map-pin-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.common.lblWorksite' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.site_Name || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 mb-0">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-warning text-white rounded-full">
+                                                    <i class="ri-user-settings-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblEmployeeType' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.employeeTypeDisplay || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Location Information Section -->
+                            <div class="xl:col-span-4 col-span-12 mb-6">
+                                <div class="box custom-box shadow-none border border-defaultborder/10 !mb-0 h-full">
+                                    <div class="box-header !py-3">
+                                        <div class="box-title !text-sm font-bold tracking-wider text-danger">
+                                            {{ 'web.employeePortal.myDashboard.lblLocationIdentification' | translate }}
+                                        </div>
+                                    </div>
+                                    <div class="box-body !p-0">
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-danger text-white rounded-full">
+                                                    <i class="ri-map-pin-user-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblResidenceAddress' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800 truncate" title="{{employeeDetails?.resAddress}}">{{employeeDetails?.resAddress || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-success text-white rounded-full">
+                                                    <i class="ri-community-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblCityCountry' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{residentCityName}}, {{residentCountryName}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-warning text-white rounded-full">
+                                                    <i class="ri-government-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblSponsorCompany' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{ (employeeDetails?.sponsorName || 'N/A') | translate }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 mb-0">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar avatar-sm bg-primary text-white rounded-full">
+                                                    <i class="ri-fingerprint-line"></i>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="text-[0.65rem] text-muted mb-0 font-semibold">{{ 'web.employeePortal.myDashboard.lblIqamaId' | translate }}</p>
+                                                    <p class="text-[0.8rem] font-bold mb-0 text-gray-800">{{employeeDetails?.panNumber || 'N/A'}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--End::row-1 -->

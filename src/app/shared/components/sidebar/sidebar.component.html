@@ -1,0 +1,82 @@
+<aside class="app-sidebar" id="sidebar" [ngClass]="{ 'sticky-pin': scrolled }">
+  <!-- Start::main-sidebar-header -->
+  <div class="main-sidebar-header">
+    <a class="header-logo">
+      <img src="./assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+      <img src="./assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+      <img src="./assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
+      <img src="./assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+      <img src="./assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
+      <img src="./assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
+    </a>
+  </div>
+
+  <div>
+    <ngx-simplebar [options]="options" class="main-sidebar" id="sidebar-scroll">
+      <nav class="main-menu-container nav nav-pills flex-column sub-open">
+        <div class="slide-left" id="slide-left">
+          <i class="fe fe-chevron-left"></i>
+        </div>
+
+        <ul class="main-menu">
+          <li *ngFor="let menuItem of menuItems" class="slide" [ngClass]="{
+              'has-sub': menuItem.type === 'sub',
+              open: menuItem.active,
+              active: menuItem.selected
+            }">
+            <!-- link -->
+            <a *ngIf="menuItem.type === 'link'" class="side-menu__item" [routerLink]="menuItem.path"
+              routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+              (click)="setNavActive(menuItem); menuOpen()">
+              <i *ngIf="menuItem.icon" class="side-menu__icon bx {{ menuItem.icon }}"></i>
+              <span class="side-menu__label">{{ menuItem.title }}</span>
+            </a>
+
+            <!-- submenu -->
+            <a *ngIf="menuItem.type === 'sub'" class="side-menu__item" href="javascript:void(0)"
+              (click)="toggleNavActive(menuItem)" [ngClass]="{ active: menuItem.selected }">
+              <i *ngIf="menuItem.icon" class="side-menu__icon bx {{ menuItem.icon }}"></i>
+              <span class="side-menu__label">{{ menuItem.title }}</span>
+              <i class="fe fe-chevron-right side-menu__angle"></i>
+            </a>
+
+            <!-- 2nd Level -->
+            <ul *ngIf="menuItem.children" class="slide-menu child1"
+              [ngStyle]="{ display: menuItem.active ? 'block' : 'none' }">
+              <li *ngFor="let child of menuItem.children" class="slide"
+                [ngClass]="{ open: child.active, 'has-sub': child.type === 'sub' }">
+                <!-- child link -->
+                <a *ngIf="child.type === 'link'" class="side-menu__item" [routerLink]="child.path"
+                  routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" (click)="setNavActive(child)">
+                  {{ child.title }}
+                </a>
+
+                <!-- child submenu -->
+                <a *ngIf="child.type === 'sub'" class="side-menu__item" href="javascript:void(0)"
+                  (click)="toggleNavActive(child)" [ngClass]="{ active: child.active }">
+                  {{ child.title }}
+                  <i class="fe fe-chevron-right side-menu__angle"></i>
+                </a>
+
+                <!-- 3rd Level -->
+                <ul *ngIf="child.children" class="slide-menu child2"
+                  [ngStyle]="{ display: child.active ? 'block' : 'none' }">
+                  <li *ngFor="let sub of child.children" class="slide" [ngClass]="{ active: sub.selected }">
+                    <a *ngIf="sub.type === 'link'" class="side-menu__item" [routerLink]="sub.path"
+                      routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" (click)="setNavActive(sub)">
+                      {{ sub.title }}
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="slide-right" id="slide-right">
+          <i class="fe fe-chevron-right"></i>
+        </div>
+      </nav>
+    </ngx-simplebar>
+  </div>
+</aside>

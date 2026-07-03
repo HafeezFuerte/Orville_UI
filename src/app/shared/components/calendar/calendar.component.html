@@ -1,0 +1,164 @@
+<div id="calendar-container">
+  <!-- Print-only Header -->
+  <div class="hidden print:block mb-6 p-4 border-b-2 border-primary/20 bg-white">
+    <div class="flex justify-between items-end">
+      <div>
+        <h1 class="text-2xl font-bold text-primary mb-1">{{ 'web.common.attendanceEntry.lblAttendanceEntry' | translate }}</h1>
+        <p class="text-sm text-muted font-semibold">{{ viewDate | date:'MMMM yyyy' }}</p>
+      </div>
+      <div class="text-right">
+        <h2 class="text-lg font-bold text-black">{{ currentEmpName }}</h2>
+        <p class="text-xs text-muted font-medium">Emp Code: {{ empCode }}</p>
+      </div>
+    </div>
+  </div>
+  <!-- Legend Row -->
+  <div class="flex flex-wrap items-center gap-4 mb-3 text-[0.7rem] font-medium border-b border-dashed pb-2">
+    <div class="flex items-center gap-1.5">
+      <span class="w-4 h-4 rounded-full bg-success flex items-center justify-center text-white text-[0.6rem] font-bold">P</span>
+      <span class="text-black text-[0.75rem]">{{ 'web.common.attendanceEntry.lblPresent' | translate }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <span class="w-4 h-4 rounded-full bg-danger flex items-center justify-center text-white text-[0.6rem] font-bold">A</span>
+      <span class="text-black text-[0.75rem]">{{ 'web.common.attendanceEntry.lblAbsent' | translate }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <span class="w-4 h-4 rounded-full bg-warning flex items-center justify-center text-white text-[0.6rem] font-bold">W</span>
+      <span class="text-black text-[0.75rem]">{{ 'web.common.attendanceEntry.lblWeekend' | translate }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <span class="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white text-[0.6rem] font-bold">H</span>
+      <span class="text-black text-[0.75rem]">{{ 'web.common.attendanceEntry.lblHoliday' | translate }}</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2 ms-auto">
+      <!-- Export Dropdown -->
+      <div class="hs-dropdown ti-dropdown relative [--placement:bottom-right]" data-hs-dropdown-trigger="click">
+        <button id="dropdown-export" type="button"
+          class="hs-dropdown-toggle ti-btn ti-btn-icon ti-btn-light w-[2rem] h-[2rem] !mb-0">
+          <i class="ri-more-2-line text-[1rem]"></i>
+        </button>
+        <ul class="hs-dropdown-menu ti-dropdown-menu calendar-dropdown-menu hidden !-mt-2 border dark:border-white/10 shadow-lg min-w-[8rem]" aria-labelledby="dropdown-export">
+          <li>
+            <a class="ti-dropdown-item flex items-center gap-2 !py-2" href="javascript:void(0);" (click)="exportToExcel()">
+              {{ 'web.common.lblExportExcel' | translate }}
+            </a>
+          </li>
+          <li>
+            <a class="ti-dropdown-item flex items-center gap-2 !py-2" href="javascript:void(0);" (click)="exportToPDF()">
+              {{ 'web.common.lblExportPDF' | translate }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- List View Button -->
+      <button type="button"
+        class="ti-btn ti-btn-icon ti-btn-primary-full w-[2rem] h-[2rem] !mb-0"
+        (click)="navigateToList()"
+        [title]="'web.common.attendanceEntry.lblRectificationList' | translate"
+        *ngIf="showListViewBtn && showRectificationList">
+        <i class="ri-list-unordered text-[1rem]"></i>
+      </button>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <div class="flex items-center gap-2">
+      <button type="button" class="ti-btn ti-btn-light !py-1 !px-2 !mb-0" (click)="toggleSidebar()"
+        [title]="(showAttendanceSidebar ? ('web.common.attendanceEntry.lblHideSummary' | translate) : ('web.common.attendanceEntry.lblShowSummary' | translate))"
+        *ngIf="showSidebarToggle">
+        <i class="ri-layout-right-2-line text-xs"></i>
+      </button>
+
+      <!-- Date Picker -->
+      <div class="input-group !w-40 !mb-0">
+        <div class="input-group-text text-[#8c9097] dark:text-white/50 !py-1 !px-2 flex items-center justify-center">
+          <i class="ri-calendar-line text-xs"></i>
+        </div>
+        <input type="text" class="form-control !py-1 !px-2 !text-xs" [placeholder]="'web.common.phSelectDate' | translate"
+          mwlFlatpickr [(ngModel)]="calendarSearchDate">
+      </div>
+
+      <!-- Search Button -->
+      <button type="button" class="ti-btn ti-btn-primary !py-1 !px-3 font-semibold !text-xs !mb-0 flex items-center gap-1"
+        (click)="onSearch()">
+        <i class="ri-search-line align-middle"></i>
+        {{ 'web.common.btnSearch' | translate }}
+      </button>
+    </div>
+
+    <!-- Month Title -->
+    <h5 class="text-lg font-bold mb-0">
+      {{ viewDate | calendarDate : view + "ViewTitle" : "en" }}
+    </h5>
+
+    <!-- View Mode Selectors -->
+    <div class="flex gap-1 text-xs">
+      <button type="button" class="ti-btn !py-1 !px-4" (click)="setView(CalendarView.Month)"
+        [ngClass]="view === CalendarView.Month ? 'ti-btn-primary' : 'ti-btn-outline-primary'">
+        {{ 'web.common.attendanceEntry.lblMonth' | translate }}
+      </button>
+      <button type="button" class="ti-btn !py-1 !px-4" (click)="setView(CalendarView.Week)"
+        [ngClass]="view === CalendarView.Week ? 'ti-btn-primary' : 'ti-btn-outline-primary'">
+        {{ 'web.common.attendanceEntry.lblWeek' | translate }}
+      </button>
+      <button type="button" class="ti-btn !py-1 !px-4" (click)="setView(CalendarView.Day)"
+        [ngClass]="view === CalendarView.Day ? 'ti-btn-primary' : 'ti-btn-outline-primary'">
+        {{ 'web.common.attendanceEntry.lblDay' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div [ngSwitch]="view">
+    <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+      [activeDayIsOpen]="activeDayIsOpen" [refresh]="refresh" [cellTemplate]="cellTemplateToUse"
+      [openDayEventsTemplate]="openDayEventsTemplate"
+      (dayClicked)="handleDayClick($any($event).day.date, $any($event).day.events)"
+      (eventClicked)="handleEventClick($any($event).event)">
+    </mwl-calendar-month-view>
+
+    <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+      [snapDraggedEvents]="false" [headerTemplate]="weekHeaderTemplateToUse"
+      (eventClicked)="handleEventClick($any($event).event)">
+    </mwl-calendar-week-view>
+
+    <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+      [snapDraggedEvents]="false" (eventClicked)="handleEventClick($any($event).event)">
+    </mwl-calendar-day-view>
+  </div>
+</div>
+
+<ng-template #openDayEventsTemplate let-events="events" let-eventClicked="eventClicked" let-isOpen="isOpen">
+  <div class="cal-open-day-events" *ngIf="isOpen">
+    <div *ngFor="let event of events" [ngClass]="event?.cssClass" class="cal-event-container">
+      <span class="cal-event-dot" [style.backgroundColor]="event.color?.primary"></span>
+      <mwl-calendar-event-title
+        [event]="event"
+        [customTemplate]="eventTitleTemplate"
+        view="month"
+        (click)="eventClicked.emit({event: event})">
+      </mwl-calendar-event-title>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #eventTitleTemplate let-event="event" let-view="view">
+  <span class="cal-event-title" [innerHTML]="event.title | calendarEventTitle:view:event"></span>
+</ng-template>
+
+<ng-template #defaultCellTemplate let-day="day" let-locale="locale">
+  <div class="cal-cell-top">
+    <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+  </div>
+</ng-template>
+
+<ng-template #defaultWeekHeaderTemplate let-days="days" let-locale="locale">
+  <div class="cal-day-headers">
+    <div class="cal-header" *ngFor="let day of days">
+      <b>{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</b><br>
+      <span>{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
+    </div>
+  </div>
+</ng-template>
