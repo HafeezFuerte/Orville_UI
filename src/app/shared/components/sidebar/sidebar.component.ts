@@ -9,11 +9,11 @@ import { CommonService } from '../../../services/common.service';
 interface PageMenu {
   menuID: number;
   menuName: string;
+  parent_id:number;
   url: string;
-  under: number;
-  help: string;
-  preOrder: number;
-  indexValue: number;
+  ModuleId: number;
+  IsActive: boolean;
+  preOrder: number 
 }
 
 interface MenuGroup {
@@ -25,7 +25,9 @@ interface MenuGroup {
 interface Module {
   moduleId: number;
   moduleName: string;
-  pages: PageMenu[];
+  url: string;
+  childCount:number;
+  menuGroup: MenuGroup[];
 }
 
 
@@ -115,8 +117,8 @@ export class SidebarComponent {
       //this.spinner.hide();
       if (res["statusCode"] == "200") {
         // ✅ CORRECT ARRAY EXTRACTION
-        const modules: Module[] = Array.isArray(res?.objResult.menu)
-          ? res.objResult.menu
+        const modules: Module[] = Array.isArray(res?.objResult)
+          ? res.objResult
           : [];
 
 
@@ -125,43 +127,76 @@ export class SidebarComponent {
           return;
         }
  
-       {
+        if (modules.length === 1 && modules[0].menuGroup?.length === 1) {
+          // 🟢 Flatten logic: If only ONE module and ONE group, show pages directly
+          const singleModule = modules[0];
+          const singleGroup = singleModule.menuGroup[0];
+          
+          this.menuItems = singleGroup.pages?.map((page: PageMenu) => {
+            const normalizedName = page.menuName.trim();
+            const path = this.urlNameMap[normalizedName] || this.urlMap[page.url] || '';
+
+            return {
+              title: page.menuName,
+              type: 'link',
+              path: path,
+              icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+              active: false,
+              selected: false,
+            };
+          }) || [];
+        } else {
           // 🔵 Standard multi-level logic
-          this.menuItems = modules.map((module: Module) => { 
+          this.menuItems = modules.map((module: Module) => {
+            if(module.menuGroup[0].pages.length==0)
+            {
+              return {
+                title: module.moduleName,
+                type: 'link',
+                path: module.url,
+                icon: 'bx bx-circle',
+                active: false,
+                selected: false,
+              };
+            }
+            else
             return {
               title: module.moduleName,
               type: 'sub',
               selected: false,
               active: false,
               icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
-              // children: module.pages?.map((page: PageMenu) => {
-              //   const normalizedName = page.menuName.trim();
-              //   let path = this.urlNameMap[normalizedName];
+              children: module.menuGroup?.map((group: MenuGroup) => {
+                return {
+                  title: group.mainMenuName,
+                  type: 'sub',
+                  selected: false,
+                  active: false,
+                  children: group.pages?.map((page: PageMenu) => {
+                    const normalizedName = page.menuName.trim();
+                    let path = this.urlNameMap[normalizedName]; 
+                    if (!path) {
+                      const lowerName = normalizedName.toLowerCase();
+                      const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
+                      if (matchingKey) {
+                        path = this.urlNameMap[matchingKey];
+                      }
+                    }
 
-              //   if (module.moduleName === 'Payroll' && page.url === 'EmployeeList.aspx') {
-              //     path = '/payroll/employees';
-              //   }
+                    if (!path) {
+                      path = this.urlMap[page.url];
+                    }
 
-              //   if (!path) {
-              //     const lowerName = normalizedName.toLowerCase();
-              //     const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
-              //     if (matchingKey) {
-              //       path = this.urlNameMap[matchingKey];
-              //     }
-              //   }
-
-              //   if (!path) {
-              //     path = this.urlMap[page.url];
-              //   }
-
-              //   return {
-              //     title: page.menuName,
-              //     type: 'link',
-              //     path: path || '',
-              //     active: false,
-              //     selected: false,
-              //   };
-              // }) || [],
+                    return {
+                      title: page.menuName,
+                      type: 'link',
+                      path: path || '',
+                      active: false,
+                      selected: false,
+                    };
+                  }) || [],
+                };
+              }) || [],
             };
           });
 
@@ -398,46 +433,12 @@ export class SidebarComponent {
   };
 
   private urlNameMap: { [key: string]: string } = {
-    'Payroll Periods': '/payroll-periods',
-    'Components Group': '/components-group',
-    'Components': '/components',
-    'Employees': '/employees',
-    'View Employees': '/employees/view',
-    'Employee Components': '/employee-components',
-    'Employee Earning/Deductions': '/employee-earning-deductions',
-    'Pay Schedule': '/pay-schedule',
-    'Pay-Schedule': '/pay-schedule',
-    'PaySchedule': '/pay-schedule',
-    'جدول الرواتب': '/pay-schedule',
-    'Approval Worflow': '/approval-workflow',
-    'Approval Workflow': '/approval-workflow', // Adding both just in case typo gets fixed
-    'Approvals': '/approvals',
-    'approvals': '/approvals',
-    'Payroll Approvals': '/approvals',
-    'Pay Runs': '/pay-runs',
-    'PayRuns': '/pay-runs',
-    'payruns': '/pay-runs',
-    'pay-runs': '/pay-runs',
-    'Salary Revisions': '/approval-workflow/salary-revisions',
-    'salary-revisions': '/approval-workflow/salary-revisions',
-    'SalaryRevisions': '/approval-workflow/salary-revisions',
-    'Templates Customization': '/templates-customization',
-    'Attendance & Leave Settings': '/attendance-leave-settings',
-    'Statutory Components': '/statutory-components',
-    'Statutory Component': '/statutory-components',
-    'Statutory': '/statutory-components',
-    'statutory components': '/statutory-components',
-    'My Dashboard': '/my-dashboard',
-    'Employee Portal': '/my-dashboard', // Mapping root portal module too
-    'My Loan Applications': '/my-loan-applications',
-    'My Loan Application': '/my-loan-applications',
-    'Loan Applications': '/my-loan-applications',
-    'Loan Application': '/my-loan-applications',
-    'My Leave Applications': '/my-leave-applications',
-    'My Leave Application': '/my-leave-applications',
-    'My Attendance': '/my-attendance',
-    'My attendance': '/my-attendance',
-    'Attendance': '/my-attendance',
+    'Properties': '/properties',
+    'Units': '/units',
+    'Rooms': '/rooms',
+    'Tenants': '/tenants',
+    'Vendors': '/vendors',
+    'Landlords': '/landlords', 
   };
 
 
