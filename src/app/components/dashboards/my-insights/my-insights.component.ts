@@ -25,11 +25,11 @@ const colors: any = {
 };
 
 @Component({
-  selector: 'app-my-dashboard',
+  selector: 'app-my-insights',
   standalone: true,
   imports: [CommonModule, SharedModule, CalendarModule, FormsModule, TranslateModule],
-  templateUrl: './my-dashboard.component.html',
-  styleUrls: ['./my-dashboard.component.scss']
+  templateUrl: './my-insights.component.html',
+  styleUrls: ['./my-insights.component.scss']
 })
 export class MyDashboardComponent implements OnInit {
   // Dashboard Data

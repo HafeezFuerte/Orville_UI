@@ -76,7 +76,7 @@ export class LoginComponent {
             });
           }   
           this.isLoading = false;
-          this.router.navigate(['dashboard/crm']); 
+          this.router.navigate(['dashboard/my-insights']); 
         }
         else {
           this.toastr.error(res["message"], 'Login', {

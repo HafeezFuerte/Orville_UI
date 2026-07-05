@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MyDashboardComponent } from './my-dashboard/my-dashboard.component';
+import { MyDashboardComponent } from './my-insights/my-insights.component';
 export const admin: Routes = [
  {path:'dashboard',children:[ 
 {
@@ -8,7 +8,7 @@ export const admin: Routes = [
   loadComponent: () =>
     import('./crm/crm.component').then((m) => m.CrmComponent),
 },
-{ path: 'my-dashboard', component: MyDashboardComponent },
+{ path: 'my-insights', component: MyDashboardComponent },
 
 ]}
 ];
