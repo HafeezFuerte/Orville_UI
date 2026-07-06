@@ -57,67 +57,110 @@
       </div>
       <div class="box-body">
         <div class="table-responsive">
-            <spk-reusable-tables
-    tableClass="table whitespace-nowrap table-bordered min-w-full"
-    [columns]="columns">
-    @for(row of rows; track row.id){
 
-    <tr>
+    <spk-reusable-tables
+        tableClass="table whitespace-nowrap table-bordered min-w-full"
+        [columns]="columns">
+        @for(property of properties; track property.id){
+        <tr>
+            <td>{{property.id}}</td>
+            <td>
+                <a class="text-primary font-semibold cursor-pointer">
+                    {{property.name}}
+                </a>
+            </td>
+            <td>{{property.type_name}}</td>
+            <td>
+                <span class="badge bg-success/10 text-success">
+                    {{property['internal Status']}}
+                </span>
+            </td>
+            <td>{{property.tags}}</td>
+            <td>{{property.total_leases}}</td>
+            <td>{{property.contracts}}</td>
+            <td>{{property.total_units}}</td>
+            <td>
+                {{property.total_units > 0
+                    ? ((property.occupied_units / property.total_units) * 100).toFixed(1)
+                    : 0
+                }}%
+            </td>
+            <td>
+                <button class="ti-btn ti-btn-primary ti-btn-icon ti-btn-sm me-1">
+                    <i class="ri-edit-line"></i>
+                </button>
+                <button class="ti-btn ti-btn-danger ti-btn-icon ti-btn-sm">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </td>
+        </tr>
+        }
+    </spk-reusable-tables>
+</div>
+<div class="flex flex-wrap items-center justify-between mt-5">
 
-        <td>{{row.id}}</td>
+    <!-- Left -->
+     <div class="flex items-center gap-2">
+    <span>Show</span>
 
-        <td>
-            <a class="text-primary font-semibold cursor-pointer">
-                {{row.name}}
-            </a>
-        </td>
+    <select
+    class="form-select w-20"
+    [(ngModel)]="pageSize"
+    (change)="onPageSizeChange()">
 
-        <td>{{row.type}}</td>
-
-        <td>
-
-            <span class="badge">
-
-                {{row.status}}
-
-            </span>
-
-        </td>
-
-        <td>{{row.tags}}</td>
-
-        <td>{{row.leases}}</td>
-
-        <td>{{row.contacts}}</td>
-
-        <td>{{row.totalUnits}}</td>
-
-        <td>{{row.occRate}}</td>
-
-        <td>
-
-            <button
-                class="ti-btn ti-btn-primary ti-btn-icon ti-btn-sm me-1">
-
-                <i class="ri-edit-line"></i>
-
-            </button>
-
-            <button
-                class="ti-btn ti-btn-danger ti-btn-icon ti-btn-sm">
-
-                <i class="ri-delete-bin-line"></i>
-
-            </button>
-
-        </td>
-
-    </tr>
-
+    @for (size of pageSizeOptions; track size) {
+        <option [value]="size">{{ size }}</option>
     }
 
-</spk-reusable-tables>
-        </div>
+</select>
+</div>
+    <div class="text-sm text-gray-600">
+        Showing
+        <strong>{{startRecord}}</strong>
+        to
+        <strong>{{endRecord}}</strong>
+        of
+        <strong>{{totalRecords}}</strong>
+        records
+    </div>
+
+    <!-- Right -->
+    <div class="flex items-center gap-2">
+
+        <button
+            class="ti-btn ti-btn-light"
+            (click)="previousPage()"
+            [disabled]="pageNo==1">
+
+            Previous
+
+        </button>
+
+        @for(page of pages; track page){
+
+        <button
+            class="ti-btn"
+            [ngClass]="page==pageNo ? 'ti-btn-primary' : 'ti-btn-light'"
+            (click)="goToPage(page)">
+
+            {{page}}
+
+        </button>
+
+        }
+
+        <button
+            class="ti-btn ti-btn-light"
+            (click)="nextPage()"
+            [disabled]="pageNo==totalPages">
+
+            Next
+
+        </button>
+
+    </div>
+
+</div>
       </div>
     </div>
   </div>

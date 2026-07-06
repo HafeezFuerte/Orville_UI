@@ -1,6 +1,7 @@
 
 import { Component, ContentChild, ElementRef, EventEmitter, input, Input, output, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 interface column {
   tableHeadColumn?: string;
   header:        string;
@@ -8,11 +9,13 @@ interface column {
 @Component({
   selector: 'spk-reusable-tables',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './spk-reusable-tables.component.html',
   styleUrl: './spk-reusable-tables.component.scss'
 })
 export class SpkReusableTables {
+
+
   columns = input<column[]>([])
   tableClass = input<string>('');
   tableHead = input<string>('');
@@ -48,7 +51,7 @@ export class SpkReusableTables {
   // Converted output signals
   toggleSelectAll = output<boolean>();
   openDetails = output<any>();
-
+  
   // Toggle select/deselect all checkboxes
   onToggleSelectAll(event: any) {
     this.toggleSelectAll.emit(event.target.checked);

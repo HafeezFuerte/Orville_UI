@@ -13,10 +13,15 @@ export class PropertiesService {
 
   getProperties(payload: any): Observable<any> {
 
-     const token = localStorage.getItem('token');
+     const accessToken = localStorage.getItem('token');
+    
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'AccessToken': accessToken || '',
+      'clientID': "74BB6922",
+      'LanguageID': 1,
+      'source': 'web',
+      'Content-Type': 'application/json-patch+json',
+      'Accept': '*/*'
     });
 
    return this.http.post(this.apiUrl, payload, { headers });

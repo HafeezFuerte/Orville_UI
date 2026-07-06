@@ -2,23 +2,32 @@
   @if(headercaption()){
   <caption [class]="captionheaderclass()">{{captionheaderContent()}}</caption>
   }
-  <thead class="{{tableHead()}}">
-    <tr [class]="trHeadClass()">
-      @if(showCheckbox()){
-      <th class="{{checkboxClass()}}">
-        <input class="form-check-input" type="checkbox" [checked]="allTasksChecked" (change)="onToggleSelectAll($event)"
-          aria-label="Select all" />
-          @if(CheckboxText()){
+  <thead class="{{ tableHead() }}">
+  <tr [class]="trHeadClass()">
 
-            {{CheckboxText()}}
-          }
+    @if(showCheckbox()){
+      <th class="{{checkboxClass()}}">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [checked]="allTasksChecked"
+          (change)="onToggleSelectAll($event)"
+          aria-label="Select all" />
+
+        @if(CheckboxText()){
+          {{ CheckboxText() }}
+        }
       </th>
-      }
-      @for(column of columns(); track $index){
-      <th [class]="column.tableHeadColumn">{{ column.header }}</th>
-      }
-    </tr>
-  </thead>
+    }
+
+    @for(column of columns(); track $index){
+      <th [class]="column.tableHeadColumn">
+        {{ column.header | translate }}
+      </th>
+    }
+
+  </tr>
+</thead>
 
   <tbody class="{{tableBody()}}">
     <ng-content />
