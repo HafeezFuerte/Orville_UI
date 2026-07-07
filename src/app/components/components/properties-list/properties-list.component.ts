@@ -5,11 +5,12 @@ import { PropertiesService } from '../../../shared/services/properties.service';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { SharedModule } from '../../../shared/shared.module';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-properties-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SpkReusableTables, SharedModule],
+  imports: [FormsModule, CommonModule, SpkReusableTables, SharedModule, RouterModule],
   templateUrl: './properties-list.component.html',
   styleUrl: './properties-list.component.scss'
 })
