@@ -1,0 +1,52 @@
+<input
+    #fileInput
+    type="file"
+    class="hidden-file-input"
+    [accept]="accept"
+    [multiple]="multiple"
+    (change)="onFileSelected($event)">
+<div class="border border-dashed border-defaultborder rounded-md p-8 text-center bg-white dark:!bg-bodybg">
+    <div class="mb-4">
+        <i class="ri-image-add-line text-[42px] text-[#8c9097]"></i>
+    </div>
+    <p class="text-[0.875rem] text-[#8c9097] mb-5">
+        {{dropText}}
+        <span
+            class="text-primary cursor-pointer font-medium"
+            (click)="openFileBrowser()">
+            {{browseText}}
+        </span>
+    </p>
+    <button
+        type="button"
+        class="ti-btn bg-warning text-white btn-wave"
+        (click)="openFileBrowser()">
+        <i class="ri-upload-line me-2"></i>
+        {{buttonText}}
+    </button>
+</div>
+<div
+    class="mt-4"
+    *ngIf="selectedFiles.length">
+    <div
+        class="flex items-center justify-between border border-defaultborder rounded-md p-3 mb-2"
+        *ngFor="let file of selectedFiles; let i=index">
+        <div class="flex items-center gap-3">
+            <i class="ri-image-line text-primary text-[20px]"></i>
+            <div>
+                <div class="font-medium">
+                    {{file.name}}
+                </div>
+                <small class="text-[#8c9097]">
+                    {{ (file.size / 1024) | number:'1.0-0' }} KB
+                </small>
+            </div>
+        </div>
+        <button
+            type="button"
+            class="ti-btn ti-btn-danger-light ti-btn-sm"
+            (click)="removeFile(i)">
+            <i class="ri-delete-bin-line"></i>
+        </button>
+    </div>
+</div>

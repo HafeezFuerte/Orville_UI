@@ -6,21 +6,98 @@ exports.locale = {
     data: {
         "web": {
 
-
             "dashboard": {
                 "lblwelcome": "Welcome Back",
                 "lblwelcomedts": "Track your sales activity, leads and deals here.",
                 "lblFilters": "Filters"
             },
-            "Property":{
+            "Property": {
                 "lblType": "Type",
                 "lblInternalStatus": "Internal Status",
                 "lblTags": "Tags",
                 "lblLeases": "Leases",
                 "lblContracts": "Contracts",
                 "lblOccupiedTotalUnits": "Occupied/ Total Units",
-                "lblOccupancyRate": "OccupancyRate",
-                "lblAction": "Action"
+                "lblOccupancyRate": "Occupancy Rate",
+                "lblAction": "Action",
+
+                "lblNewProperty": "New Property",
+                "lblPortfolio": "Portfolio",
+                "lblProperty": "Property",
+                "lblCancel": "Cancel",
+                "lblSaveProperty": "Save Property",
+
+                "lblPropertyBasics": "Property Basics",
+                "lblCoreIdentityReferenceInformation": "Core identity and reference information",
+
+                "lblPropertyName": "Property Name",
+                "lblEnterPropertyName": "Enter property name",
+                "lblPropertyNameHelpText": "This will appear in invoices, so make sure it's correct.",
+
+                "lblPrefix": "Prefix",
+                "lblReference": "Reference",
+                "lblEnter": "Enter",
+
+                "lblAddress": "Address",
+                "lblLocationDetailsForProperty": "Location details for the property",
+                "lblAddress1": "Address 1",
+                "lblEnterAddress": "Enter address",
+
+                "lblCountry": "Country",
+                "lblCity": "City",
+                "lblZipCode": "Zip Code",
+
+                "lblLatitude": "Latitude",
+                "lblLongitude": "Longitude",
+                "lblCommunity": "Community",
+                "lblLandNo": "Land No",
+
+                "lblFloors": "Floors",
+                "lblTotalUnits": "Total Units",
+                "lblParkingSpaces": "Parking Spaces",
+
+                "lblEnterTagsSeparatedByCommas": "Enter tags separated by commas",
+
+                "lblDescription": "Description",
+                "lblBriefOverviewOfProperty": "Brief overview of the property",
+                "lblPropertyDescriptionPlaceholder": "Please add description of the property...",
+
+                "lblPropertyFixedPayments": "Property Fixed Payments",
+                "lblRecurringChargesAssociatedWithProperty": "Recurring charges associated with this property",
+
+                "lblSelectAccount": "Select Account",
+                "lblSelectAccountPlaceholder": "Select account",
+                "lblSelectType": "Select type",
+                "lblAmount": "Amount",
+                "lblAddPayment": "Add Payment",
+
+                "lblCustomFields": "Custom Fields",
+                "lblAdditionalFieldsSpecificToProperty": "Additional fields specific to this property",
+                "lblMakaniNo": "Makani No",
+
+                "lblPropertyAmenities": "Property Amenities",
+                "lblFeaturesAndFacilitiesAvailableAtProperty": "Features and facilities available at this property",
+                "lblIncludeAmenities": "Include Amenities",
+                "lblIncludeAmenitiesDescription": "This will allow you to choose different property amenities",
+
+                "lblPropertyImage": "Property Image",
+                "lblUploadImage": "Upload Image",
+                "lblDropYourImageHereOr": "Drop your image here or",
+                "lblBrowse": "Browse",
+
+                "lblQuickSettings": "Quick Settings",
+                "lblPropertyType": "Property Type",
+                "lblSelectPropertyType": "Select Property Type",
+                "lblPurchaseValue": "Purchase Value",
+                "lblAED": "AED",
+                "lblPurchaseValuePlaceholder": "0.00",
+                "lblPurchaseValueHelpText": "This will be used in generating executive reports.",
+
+                "lblServiceRequest": "Service Request",
+                "lblServiceRequestDescription": "Allow tenants to submit maintenance requests",
+
+                "lblProTip": "Pro Tip",
+                "lblProTipDescription": "Make sure to fill in the latitude and longitude for accurate location mapping. Property type determines the lease templates available."
             },
             "common": {
                 "lblEmployeePortal": "Employee Portal",
@@ -32,10 +109,10 @@ exports.locale = {
                 "lblShow": "Show",
                 "lblHide": "Hide",
                 "lblPayrollDate": "Payroll Date",
-"lblApprovedOn": "Approved On",
-"lblComments": "Comments",
-"lblAddComment": "Add Comment",
-"lblAttendancetab": "Attendance Rectification",
+                "lblApprovedOn": "Approved On",
+                "lblComments": "Comments",
+                "lblAddComment": "Add Comment",
+                "lblAttendancetab": "Attendance Rectification",
                 "lblExportExcel": "Export to Excel",
                 "lblExportPDF": "Export to PDF",
                 "lblNoRecordsFound": "No records found",
