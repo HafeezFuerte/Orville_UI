@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [FileUploadComponent],
+  imports: [FileUploadComponent, TranslateModule],
   templateUrl: './add-property.component.html',
   styleUrl: './add-property.component.scss'
 })
