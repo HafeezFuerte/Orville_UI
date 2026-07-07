@@ -31,7 +31,7 @@ const colors: any = {
   templateUrl: './my-insights.component.html',
   styleUrls: ['./my-insights.component.scss']
 })
-export class MyDashboardComponent implements OnInit {
+export class MyInsightsComponent implements OnInit {
   // Dashboard Data
   employeeDetails: any;
   residentCountryName: string = 'Loading...';

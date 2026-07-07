@@ -1,16 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MyDashboardComponent } from './my-insights/my-insights.component';
+import { MyInsightsComponent } from './my-insights/my-insights.component';
+import { PropertiesListComponent } from '../components/properties-list/properties-list.component';
 export const admin: Routes = [
  {path:'dashboard',children:[ 
 {
   path: 'crm',
   loadComponent: () =>
     import('./crm/crm.component').then((m) => m.CrmComponent),
-},
-{ path: 'my-insights', component: MyDashboardComponent },
-
-]}
+}
+]},
+{ path: 'insights', component: MyInsightsComponent },
+{ path: 'properties', component: PropertiesListComponent },
 ];
 @NgModule({
   imports: [RouterModule.forChild(admin)],
