@@ -34,10 +34,10 @@ export class PropertiesListComponent implements OnInit {
   properties: any[] = [];
 
     pageNo = 1;
-    pageSize = 5;
+    pageSize = 2;
     totalPages = 0;
     totalRecords = 0;
-    pageSizeOptions = [5, 10, 25, 50, 100];
+    pageSizeOptions = [5,10,20,50,100];
   ngOnInit(): void {
     this.loadProperties();
   }
@@ -54,7 +54,7 @@ console.log(this.pageSize);
       page_no: this.pageNo,
       seqno: 0,
       search_keyword: '',
-      pagecount: this.pageSize,
+      pagecount: 10,
       filter_by: '',
       featureid: 'Property'
     };

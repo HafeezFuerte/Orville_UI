@@ -44,6 +44,7 @@ exports.locale = {
                 "lblEnterAddress": "Enter address",
 
                 "lblCountry": "Country",
+                "lblState": "State",
                 "lblCity": "City",
                 "lblZipCode": "Zip Code",
 

@@ -44,13 +44,13 @@
                 {{ 'web.Property.lblCancel' | translate }}
             </button>
             <button
-                type="button"
+                type="submit"
                 class="ti-btn ti-btn-primary btn-wave">
                 {{ 'web.Property.lblSaveProperty' | translate }}
             </button>
         </div>
     </div>
-
+<form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
 <div class="grid grid-cols-12 gap-6">
     <!-- Left Panel -->
     <div class="col-span-12 xl:col-span-8">
@@ -76,7 +76,7 @@
                             <span class="text-danger">*</span>
                         </label>
                         <input
-                            type="text"
+                            type="text" formControlName="propertyName"
                             class="form-control w-full !rounded-md"
                             placeholder="{{ 'web.Property.lblEnterPropertyName' | translate }}">
                         <small class="text-[#8c9097] text-[0.75rem]">
@@ -90,7 +90,7 @@
                             {{ 'web.Property.lblPrefix' | translate }}
                         </label>
                         <input
-                            type="text"
+                            type="text" formControlName="prefix"
                             class="form-control w-full !rounded-md"
                             placeholder="{{ 'web.Property.lblEnter' | translate }}">
                     </div>
@@ -101,7 +101,7 @@
                             {{ 'web.Property.lblReference' | translate }}
                         </label>
                         <input
-                            type="text"
+                            type="text" formControlName="reference"
                             class="form-control w-full !rounded-md"
                             placeholder="{{ 'web.Property.lblEnter' | translate }}">
                     </div>
@@ -126,7 +126,7 @@
                     {{ 'web.Property.lblAddress1' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="address1"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnterAddress' | translate }}">
             </div>
@@ -135,12 +135,27 @@
                 <label class="form-label">
                     {{ 'web.Property.lblCountry' | translate }}
                 </label>
-                <select class="form-control w-full !rounded-md">
-                    <option selected>United Arab Emirates</option>
-                    <option>India</option>
-                    <option>Saudi Arabia</option>
-                    <option>Qatar</option>
-                    <option>Oman</option>
+                <select class="form-control w-full !rounded-md" formControlName="country" (change)="onCountryChange($event)">
+                    <option value="" disabled>
+                        Select Country
+                    </option>
+                    <option *ngFor="let country of countries" [value]="country.id">
+                        {{ country.country_name }}
+                    </option>
+                </select>
+            </div>
+            <!-- State -->
+             <div class="col-span-12 md:col-span-4">
+                <label class="form-label">
+                    {{ 'web.Property.lblState' | translate }}
+                </label>
+                <select class="form-control w-full !rounded-md" formControlName="state" (change)="onStateChange($event)">
+                    <option value="" disabled>
+                        Select State
+                    </option>
+                    <option *ngFor="let state of states" [value]="state.id">
+                        {{ state.state_name }}
+                    </option>
                 </select>
             </div>
             <!-- City -->
@@ -148,12 +163,13 @@
                 <label class="form-label">
                     {{ 'web.Property.lblCity' | translate }}
                 </label>
-                <select class="form-control w-full !rounded-md">
-                    <option selected>Select</option>
-                    <option>Dubai</option>
-                    <option>Abu Dhabi</option>
-                    <option>Sharjah</option>
-                    <option>Ajman</option>
+                <select class="form-control w-full !rounded-md" formControlName="city">
+                    <option value="" disabled>
+                        Select City
+                    </option>
+                    <option *ngFor="let city of cities" [value]="city.id">
+                        {{ city.city_name }}
+                    </option>
                 </select>
             </div>
             <!-- Zip -->
@@ -162,7 +178,7 @@
                     {{ 'web.Property.lblZipCode' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="zipCode"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -172,7 +188,7 @@
                     {{ 'web.Property.lblLatitude' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="latitude"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -182,7 +198,7 @@
                     {{ 'web.Property.lblLongitude' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="longitude"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -192,7 +208,7 @@
                     {{ 'web.Property.lblCommunity' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="community"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -202,7 +218,7 @@
                     {{ 'web.Property.lblLandNo' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="landNo"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -212,7 +228,7 @@
                     {{ 'web.Property.lblFloors' | translate }}
                 </label>
                 <input
-                    type="number"
+                    type="number" formControlName="floors"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -222,7 +238,7 @@
                     {{ 'web.Property.lblTotalUnits' | translate }}
                 </label>
                 <input
-                    type="number"
+                    type="number" formControlName="totalUnits"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -232,7 +248,7 @@
                     {{ 'web.Property.lblParkingSpaces' | translate }}
                 </label>
                 <input
-                    type="number"
+                    type="number" formControlName="parkingSpaces"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnter' | translate }}">
             </div>
@@ -242,7 +258,7 @@
                     {{ 'web.Property.lblTags' | translate }}
                 </label>
                 <input
-                    type="text"
+                    type="text" formControlName="tags"
                     class="form-control w-full !rounded-md"
                     placeholder="{{ 'web.Property.lblEnterTagsSeparatedByCommas' | translate }}">
             </div>
@@ -263,7 +279,7 @@
 
     <div class="box-body">
         <textarea
-            rows="5"
+            rows="5" formControlName="description"
             class="form-control w-full !rounded-md"
             placeholder="{{ 'web.Property.lblPropertyDescriptionPlaceholder' | translate }}"></textarea>
     </div>
@@ -281,57 +297,97 @@
         </div>
     </div>
     <div class="box-body">
-        <div class="border border-dashed rounded-md p-5">
-            <div class="grid grid-cols-12 gap-4 items-end">
-                <!-- Account -->
-                <div class="col-span-12 md:col-span-4">
-                    <label class="form-label">
-                        {{ 'web.Property.lblSelectAccount' | translate }}
-                        <span class="text-danger">*</span>
-                    </label>
-                    <select class="form-control w-full !rounded-md">
-                        <option selected>{{ 'web.Property.lblSelectAccountPlaceholder' | translate }}</option>
-                    </select>
-                </div>
+        
+    </div><div class="border border-dashed rounded-md p-5">
 
-                <!-- Type -->
-                <div class="col-span-12 md:col-span-4">
-                    <label class="form-label">
-                        {{ 'web.Property.lblType' | translate }}
-                        <span class="text-danger">*</span>
-                    </label>
-                    <select class="form-control w-full !rounded-md">
-                        <option selected>{{ 'web.Property.lblSelectType' | translate }}</option>
-                    </select>
-                </div>
+    <div formArrayName="payments">
 
-                <!-- Amount -->
-                <div class="col-span-10 md:col-span-3">
-                    <label class="form-label">
-                        {{ 'web.Property.lblAmount' | translate }}
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control w-full !rounded-md"
-                        placeholder="{{ 'web.Property.lblEnter' | translate }}">
+        <div
+            *ngFor="let payment of payments.controls; let i = index"
+            [formGroupName]="i"
+            class="grid grid-cols-12 gap-4 items-end mb-4">
 
-                </div>
-                <!-- Delete -->
-                <div class="col-span-2 md:col-span-1">
-                    <button
-                        class="ti-btn ti-btn-danger-light btn-wave w-full">
-                        <i class="ri-delete-bin-line"></i>
-                    </button>
-                </div>
+            <!-- Account -->
+            <div class="col-span-12 md:col-span-4">
+                <label class="form-label">
+                    {{ 'web.Property.lblSelectAccount' | translate }}
+                    <span class="text-danger">*</span>
+                </label>
+
+                <select
+                    class="form-control w-full !rounded-md"
+                    formControlName="selectAccount">
+                    <option value="" disabled>
+                        Select Account
+                    </option>
+                    <option *ngFor="let account of accounts"
+                            [value]="account.id">
+                        {{ account.account_name }}
+                    </option>
+
+                </select>
             </div>
-            <div class="text-center mt-5">
-                <button class="ti-btn ti-btn-primary">
-                    <i class="ri-add-line me-1"></i>
-                    {{ 'web.Property.lblAddPayment' | translate }}
+
+            <!-- Type -->
+            <div class="col-span-12 md:col-span-4">
+                <label class="form-label">
+                    {{ 'web.Property.lblType' | translate }}
+                    <span class="text-danger">*</span>
+                </label>
+
+                <select
+                    class="form-control w-full !rounded-md"
+                    formControlName="selectType">
+                    <option value="" disabled>
+                        Select Type
+                    </option>
+                    <option value="Standard">Standard</option>
+                    <option value="Percentage">Percentage</option>
+
+                </select>
+            </div>
+
+            <!-- Amount -->
+            <div class="col-span-10 md:col-span-3">
+                <label class="form-label">
+                    {{ 'web.Property.lblAmount' | translate }}
+                </label>
+
+                <input
+                    type="text"
+                    formControlName="selectAmount"
+                    class="form-control w-full !rounded-md">
+            </div>
+
+            <!-- Delete -->
+            <div class="col-span-2 md:col-span-1">
+                <button
+                    type="button"
+                    class="ti-btn ti-btn-danger-light btn-wave w-full"
+                    (click)="removePayment(i)">
+
+                    <i class="ri-delete-bin-line"></i>
+
                 </button>
             </div>
+
         </div>
+
     </div>
+
+    <div class="text-center mt-5">
+        <button
+            type="button"
+            class="ti-btn ti-btn-primary"
+            (click)="addPayment()">
+
+            <i class="ri-add-line me-1"></i>
+            {{ 'web.Property.lblAddPayment' | translate }}
+
+        </button>
+    </div>
+
+</div>
 </div>
 
 <div class="box">
@@ -350,7 +406,7 @@
            {{ 'web.Property.lblMakaniNo' | translate }}
         </label>
         <input
-            type="text"
+            type="text" formControlName="makaniNo"
             class="form-control w-full !rounded-md"
             placeholder="{{ 'web.Property.lblPropertyDescriptionPlaceholder' | translate }}">
     </div>
@@ -380,12 +436,47 @@
             </div>
 
             <div class="form-check form-switch">
-                <input
+                <input formControlName="includeAmenities"
                     class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
                     type="checkbox">
 
             </div>
         </div>
+    <!-- Amenities -->
+<div *ngIf="propertyForm.get('includeAmenities')?.value" class="mt-4">
+    <!-- Select All -->
+    <div class="form-check flex items-center gap-2 mb-4">
+        <input
+            class="form-check-input"
+            type="checkbox"
+            id="selectAllAmenities"
+            [checked]="selectAllAmenities"
+            (change)="onSelectAllAmenities($event)">
+
+        <label class="form-check-label font-semibold"
+               for="selectAllAmenities">
+            Select All
+        </label>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-3 gap-x-8">
+
+        <div *ngFor="let amenity of amenities" class="form-check flex items-center gap-2">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                [id]="'amenity-' + amenity.id"
+                [value]="amenity.id"
+                (change)="onAmenityChange($event, amenity.id)">
+
+            <label
+                class="form-check-label cursor-pointer"
+                [for]="'amenity-' + amenity.id">
+                {{ amenity.name }}
+            </label>
+        </div>
+
+    </div>
+</div>
     </div>
 </div>
 
@@ -406,7 +497,7 @@
             [buttonText]="'web.Property.lblUploadImage' | translate"
             [dropText]="'web.Property.lblDropYourImageHereOr' | translate"
             [browseText]="'web.Property.lblBrowse' | translate"
-            (filesChanged)="onPropertyImagesSelected($event)">
+            >
         </app-file-upload>
 
     </div>
@@ -430,7 +521,7 @@
             </button>
 
             <button
-                type="button"
+                type="submit"
                 class="ti-btn ti-btn-primary btn-wave">
                 {{ 'web.Property.lblSaveProperty' | translate }}
             </button>
@@ -456,15 +547,13 @@
                             {{ 'web.Property.lblPropertyType' | translate }}
                             <span class="text-danger">*</span>
                         </label>
-                        <select class="form-control w-full !rounded-md">
-                            <option selected disabled>
-                                {{ 'web.Property.lblSelectPropertyType' | translate }}
+                        <select class="form-control w-full !rounded-md" formControlName="propertyType">
+                            <option value="" disabled>
+                                Select Property Type
                             </option>
-                            <option>Apartment</option>
-                            <option>Villa</option>
-                            <option>Townhouse</option>
-                            <option>Commercial</option>
-                            <option>Warehouse</option>
+                            <option *ngFor="let propertyType of propertyTypes" [value]="propertyType.id">
+                                {{ propertyType.name }}
+                            </option>
                         </select>
                     </div>
                     <!-- Purchase Value -->
@@ -476,7 +565,7 @@
                             <span class="input-group-text">
                                 {{ 'web.Property.lblAED' | translate }}
                             </span>
-                            <input
+                            <input formControlName="purchaseValue"
                                 type="number"
                                 class="form-control"
                                 placeholder="{{ 'web.Property.lblPurchaseValuePlaceholder' | translate }}">
@@ -504,7 +593,7 @@
                                 </small>
                             </div>
                             <div class="form-check form-switch">
-                                <input
+                                <input formControlName="serviceRequest"
                                     class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
                                     type="checkbox"
                                     checked>
@@ -547,4 +636,5 @@
 </div>
     </div>
 </div>
+</form>
 <!-- End::row -->
