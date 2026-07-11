@@ -11,8 +11,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
   styleUrls: ['./shared-table.component.scss']
 })
 export class SharedTableComponent {
-  /** Array of column definitions: { key: string, label: string, isLink?: boolean, useTemplate?: boolean } */
-  @Input() columns: { key: string, label: string, isLink?: boolean, useTemplate?: boolean }[] = [];
+  /** Array of column definitions: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string } */
+  @Input() columns: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string }[] = [];
 
   /** The data to display in the table */
   @Input() data: any[] = [];
@@ -49,7 +49,11 @@ export class SharedTableComponent {
 
   /** Reference for a custom column template */
   @Input() colTemplateName: string = '';
+  @Input() customColTemplate?: TemplateRef<any>;
   @ContentChild('colTemplate') colTemplate!: TemplateRef<any>;
+
+  /** Reference for a custom header template */
+  @ContentChild('headerTemplate') headerTemplate!: TemplateRef<any>;
 
   /** Reference for a custom empty state template */
   @ContentChild('emptyTemplate') emptyTemplate!: TemplateRef<any>;

@@ -1,8 +1,8 @@
 <!-- Start::row-1 -->
 <div class="block justify-between page-header md:flex">
   <div>
-    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">Properties</h3>
-    <p>Manage your real estate portfolio, buildings, and sites with modern metrics and visual tracking.</p>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">Units</h3>
+    <p>Manage your property inventory — create, organize, and track all units across your portfolio with precision.</p>
   </div>
   <div class="flex gap-1.5 items-center mt-2 md:mt-0">
     <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" data-tooltip="Export">
@@ -11,7 +11,10 @@
     <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" data-tooltip="Import">
       <i class="ri-upload-2-line text-sm"></i>
     </button>
-    <button type="button" class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover" data-tooltip="Add Property" routerLink="/add-property">
+    <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" data-tooltip="Send Broadcast">
+      <i class="ri-broadcast-line text-sm"></i>
+    </button>
+    <button type="button" class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover" data-tooltip="Add Unit">
       <i class="ri-add-line text-sm"></i>
     </button>
   </div>
@@ -19,11 +22,11 @@
 
 <!-- 📊 Metrics Row -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
-  <!-- Total Properties Card -->
+  <!-- Total Units Card -->
   <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Properties</span>
-      <i class="ri-building-2-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Units</span>
+      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
     </div>
     <div>
       <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.total}}</h5>
@@ -31,39 +34,39 @@
     </div>
   </div>
 
-  <!-- Total Units Card -->
+  <!-- Vacant Units Card -->
   <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Units / Rooms</span>
-      <i class="ri-home-4-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Vacant Units</span>
+      <i class="ri-checkbox-blank-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
     </div>
     <div>
-      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.units}}</h5>
-      <span class="text-[10px] text-danger font-medium mt-1.5 block">{{metrics.occupied}} occupied</span>
+      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.vacant}}</h5>
+      <span class="text-[10px] text-danger font-medium mt-1.5 block">Available for lease</span>
     </div>
   </div>
 
-  <!-- Active Leases Card -->
+  <!-- Occupied Units Card -->
   <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Active Leases</span>
-      <i class="ri-contacts-book-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Occupied Units</span>
+      <i class="ri-checkbox-circle-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
     </div>
     <div>
-      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.leases}}</h5>
-      <span class="text-[10px] text-success font-medium mt-1.5 block">Currently running</span>
+      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.occupied}}</h5>
+      <span class="text-[10px] text-success font-medium mt-1.5 block">Active tenant contracts</span>
     </div>
   </div>
 
-  <!-- Avg. Occupancy Card -->
+  <!-- Maintenance Card -->
   <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Avg. Occupancy</span>
-      <i class="ri-pie-chart-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Maintenance</span>
+      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
     </div>
     <div>
-      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.occupancy}}%</h5>
-      <span class="text-[10px] text-warning font-normal mt-1.5 block">Portfolio average</span>
+      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.maintenance}}</h5>
+      <span class="text-[10px] text-warning font-normal mt-1.5 block">Under repair / blocked</span>
     </div>
   </div>
 </div>
@@ -72,14 +75,16 @@
 <div class="box mb-4 rounded-md overflow-visible bg-white shadow-sm border border-gray-100">
   <div class="box-header !py-2.5 !px-4 border-b bg-gray-50/50 flex justify-between items-center w-full">
     <div class="flex items-center gap-4">
-      <h5 class="box-title text-xs font-bold text-gray-700 m-0">Property List</h5>
+      <h5 class="box-title text-xs font-bold text-gray-700 m-0">Search Criteria</h5>
       <!-- Category Tabs (Left) -->
       <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
         <button (click)="setCategoryFilter('All')" [class]="categoryFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">All</button>
-        <button (click)="setCategoryFilter('Units')" [class]="categoryFilter === 'Units' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Units</button>
-        <button (click)="setCategoryFilter('Rooms')" [class]="categoryFilter === 'Rooms' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Rooms</button>
+        <button (click)="setCategoryFilter('Residential')" [class]="categoryFilter === 'Residential' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Residential</button>
+        <button (click)="setCategoryFilter('Commercial')" [class]="categoryFilter === 'Commercial' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Commercial</button>
       </div>
     </div>
+    
+    <!-- View Switcher & Filter Icon Button -->
     <div class="flex items-center gap-2">
       <!-- Filter drawer trigger button -->
       <button type="button" (click)="toggleDrawer(true)"
@@ -100,11 +105,11 @@
   <div class="box-body !p-4">
     <div class="grid grid-cols-12 gap-3 items-end">
       <!-- Text Search -->
-      <div class="col-span-12 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Search Property</label>
+      <div class="col-span-12 md:col-span-3 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Search Unit</label>
         <div class="input-group">
           <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()" placeholder="Search property name, type...">
+            (keyup.enter)="onSearch()" placeholder="Search property, name, landlord...">
           <button type="button" (click)="onSearch()"
             class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
             <i class="ri-search-line"></i>
@@ -112,18 +117,32 @@
         </div>
       </div>
 
-      <!-- Type Filter -->
-      <div class="col-span-6 md:col-span-3 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Property Type</label>
-        <ng-select [(ngModel)]="selectedType" [items]="typesList" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Types" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      <!-- Category Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Category</label>
+        <ng-select [(ngModel)]="selectedCategory" [items]="categories" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Categories" class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
 
       <!-- Status Filter -->
-      <div class="col-span-6 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Internal Status</label>
-        <ng-select [(ngModel)]="selectedStatus" [items]="statusesList" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Statuses" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Status</label>
+        <ng-select [(ngModel)]="selectedStatus" [items]="statuses" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Beds Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Beds</label>
+        <ng-select [(ngModel)]="selectedBeds" [items]="bedsOptions" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Beds" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Rent/Sale Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Rent Status</label>
+        <ng-select [(ngModel)]="selectedRentStatus" [items]="rentStatuses" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
 
       <!-- Clear Filters Button -->
@@ -140,57 +159,60 @@
 
 <!-- 📋 1. LIST VIEW (TABLE) -->
 <div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
-  <app-shared-table [columns]="tableColumns" [data]="paginatedProperties" [loading]="false"
+  <app-shared-table [columns]="tableColumns" [data]="paginatedUnits" [loading]="false"
     [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container *ngIf="col.key === 'id'">
-        <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/properties', row.id]">{{row.id}}</span>
+        <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/units', row.id]">{{row.id}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'name'">
-        <div class="flex flex-col">
-          <span class="font-bold text-gray-800 cursor-pointer hover:text-primary" [routerLink]="['/properties', row.id]">{{row.name}}</span>
-          <span class="text-[10px] text-gray-400 font-semibold">Dubai Marina, Tower A, Dubai</span>
-        </div>
+        <span class="font-semibold text-gray-800">{{row.name}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'type_name'">
-        <span class="badge bg-primary/10 text-primary">{{row.type_name}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'internal Status'">
-        <span class="badge" [ngClass]="row['internal Status'] === 'Active' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">
-          {{row['internal Status'] || 'Active'}}
+      <ng-container *ngIf="col.key === 'category'">
+        <span class="badge" [ngClass]="row.category === 'Residential' ? 'bg-info/10 text-info' : 'bg-warning/10 text-warning'">
+          {{row.category}}
         </span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'tags'">
-        <span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary font-semibold">{{row.tags || 'Premium'}}</span>
+      <ng-container *ngIf="col.key === 'beds'">
+        <span>{{row.beds}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'total_leases'">
-        <span>{{row.total_leases || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'contracts'">
-        <span>{{row.contracts || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'total_units'">
-        <span class="font-bold text-gray-700">{{row.occupied_units || 0}} / {{row.total_units || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'occupancy_rate'">
-        <div class="flex items-center gap-2">
-          <div class="w-24 bg-gray-100 rounded-full h-1.5 dark:bg-gray-700">
-            <div class="bg-primary h-1.5 rounded-full" [style.width.%]="row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100) : 0"></div>
-          </div>
-          <span class="text-xs font-bold text-gray-700">
-            {{row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100).toFixed(1) : 0}}%
-          </span>
+      <ng-container *ngIf="col.key === 'property'">
+        <div class="flex flex-col">
+          <span class="font-bold text-gray-700">{{row.property}}</span>
+          <span class="text-[10px] text-gray-400 font-semibold">{{row.location}}</span>
         </div>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'landlord'">
+        <span class="badge bg-light text-gray-600 border border-gray-200">{{row.landlord}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'tags'">
+        <span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary font-semibold">{{row.tags}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'unitType'">
+        <span>{{row.unitType}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'floor'">
+        <span>{{row.floor}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'managementFee'">
+        <span class="font-bold text-gray-700">{{row.managementFee}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'status'">
+        <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [class]="getStatusClass(row.status)">
+          {{row.status}}
+        </span>
       </ng-container>
     </ng-template>
 
@@ -211,83 +233,70 @@
 
 <!-- 🎴 2. GRID / CARD VIEW -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="viewMode === 'grid'">
-  <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl animate-fade-in" *ngFor="let property of paginatedProperties">
+  <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl animate-fade-in" *ngFor="let unit of paginatedUnits; trackBy: trackByUnitId">
     <!-- Image Card Header -->
     <div class="relative h-48 overflow-hidden bg-gray-100">
-      <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+      <img [src]="unit.imageUrl" [alt]="unit.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
       
       <!-- Top Left Status Badge -->
       <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md shadow-sm"
-        [ngClass]="property['internal Status'] === 'Active' ? 'bg-success text-white' : 'bg-warning text-white'">
-        {{property['internal Status'] || 'Active'}}
+        [ngClass]="unit.status === 'Occupied' ? 'bg-success text-white' : unit.status === 'Vacant' ? 'bg-danger text-white' : 'bg-warning text-white'">
+        {{unit.status}}
       </span>
 
       <!-- Bottom Left Category Badge -->
       <span class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-bold text-white bg-black/65 backdrop-blur-sm rounded-md">
-        <i class="ri-building-line align-middle me-0.5"></i> {{property.type_name}}
+        <i class="ri-home-4-line align-middle me-0.5"></i> {{unit.category}}
       </span>
     </div>
 
     <!-- Card Body -->
     <div class="box-body !p-4 flex flex-col gap-4 bg-white">
       <div>
-        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{property.name}}</h5>
+        <!-- Rent/Sale status -->
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/50 mb-2 uppercase">
+          {{unit.rentStatus}}
+        </span>
+        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{unit.name}} - {{unit.property}}</h5>
         <div class="flex items-center text-gray-400 text-[11px] font-medium mt-1">
-          <i class="ri-map-pin-line text-xs me-0.5 text-gray-400"></i> Dubai Marina, Tower A, Dubai
-        </div>
-      </div>
-
-      <!-- Occupancy Info block -->
-      <div class="flex flex-col gap-1.5 py-1">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-gray-500 font-medium">Occupancy</span>
-          <span class="font-extrabold text-gray-800">{{property.occupied_units}} of {{property.total_units}} units occupied</span>
-        </div>
-        <div class="w-full bg-gray-100 rounded-full h-2 dark:bg-gray-700">
-          <div class="bg-primary h-2 rounded-full" [style.width.%]="property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100) : 0"></div>
+          <i class="ri-map-pin-line text-xs me-0.5 text-gray-400"></i> {{unit.location}}
         </div>
       </div>
 
       <!-- Features spec block -->
-      <div class="grid grid-cols-3 gap-1 py-2 border-y border-gray-50/80 text-center">
+      <div class="grid grid-cols-4 gap-1 py-2 border-y border-gray-50/80 text-center">
         <div class="flex flex-col gap-0.5">
-          <span class="text-gray-400 text-[9px] uppercase font-bold">Units</span>
-          <span class="text-gray-800 text-[11px] font-extrabold">{{property.total_units}} Units</span>
+          <span class="text-gray-400 text-[9px] uppercase font-bold">Beds</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-hotel-bed-line text-xs me-0.5 text-primary"></i> {{unit.beds !== 'N/A' ? unit.beds : '0'}}</span>
         </div>
         <div class="flex flex-col gap-0.5">
-          <span class="text-gray-400 text-[9px] uppercase font-bold">Occupied</span>
-          <span class="text-gray-800 text-[11px] font-extrabold text-success">{{property.occupied_units}} Units</span>
+          <span class="text-gray-400 text-[9px] uppercase font-bold">Baths</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-drop-line text-xs me-0.5 text-info"></i> {{unit.baths}}</span>
         </div>
         <div class="flex flex-col gap-0.5">
-          <span class="text-gray-400 text-[9px] uppercase font-bold">Vacant</span>
-          <span class="text-gray-800 text-[11px] font-extrabold text-danger">{{property.total_units - property.occupied_units}} Units</span>
+          <span class="text-gray-400 text-[9px] uppercase font-bold">Area</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-ruler-2-line text-xs me-0.5 text-success"></i> {{unit.area}}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-gray-400 text-[9px] uppercase font-bold">Floor</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-stack-line text-xs me-0.5 text-warning"></i> {{unit.floor}}</span>
         </div>
       </div>
 
-      <!-- Units Breakdown details -->
-      <div class="flex flex-col gap-1 text-[11px] text-gray-500">
-        <div class="flex justify-between items-center">
-          <span>Studio</span>
-          <span class="font-bold text-gray-700">10</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span>1 bedroom</span>
-          <span class="font-bold text-gray-700">10</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span>2 bedroom</span>
-          <span class="font-bold text-gray-700">10</span>
-        </div>
+      <!-- Info Row -->
+      <div class="flex items-center justify-between text-[11px] font-medium text-gray-400 mt-1">
+        <span>Added: <span class="font-bold text-gray-700">{{unit.addedDate}}</span></span>
+        <span>Fee: <span class="font-extrabold text-gray-800">{{unit.managementFee}}</span></span>
       </div>
     </div>
 
     <!-- Footer Actions -->
     <div class="px-4 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center gap-3">
       <button type="button" class="w-1/2 ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md border text-xs font-bold hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
-        Manage Units
+        Manage Unit
       </button>
-      <button type="button" [routerLink]="['/properties', property.id]" class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
-        View Property <i class="ri-arrow-right-line"></i>
+      <button type="button" class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
+        View Unit <i class="ri-arrow-right-line"></i>
       </button>
     </div>
   </div>
@@ -337,6 +346,13 @@
         (change)="onSearch()" placeholder="Select Tag" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
 
+    <!-- Filter by Area (sqft) -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedArea"
+        (keyup.enter)="onSearch()" placeholder="e.g. 1523 Sqft">
+    </div>
+
     <!-- Filter by ID -->
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
@@ -344,11 +360,32 @@
         (keyup.enter)="onSearch()" placeholder="e.g. 31658">
     </div>
 
+    <!-- Filter by Reference No -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedRefNo"
+        (keyup.enter)="onSearch()" placeholder="Enter Ref No">
+    </div>
+
+    <!-- Off Plan Status -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+      <ng-select [(ngModel)]="selectedOffPlanStatus" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Off Plan Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
     <!-- Filter by Landlord -->
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
       <ng-select [(ngModel)]="selectedLandlord" [items]="landlordsList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" placeholder="Select Landlord" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Internal Status -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+      <ng-select [(ngModel)]="selectedInternalStatus" [items]="internalStatuses" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Internal Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
   <div class="drawer-footer">

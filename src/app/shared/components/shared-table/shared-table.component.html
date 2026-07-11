@@ -2,8 +2,13 @@
     <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
         <thead class="bg-info/10">
             <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start" *ngFor="let col of columns">
-                    {{ col.label | translate }}
+                <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width">
+                    <ng-container *ngIf="headerTemplate; else defaultHeader">
+                        <ng-container *ngTemplateOutlet="headerTemplate; context: { col: col }"></ng-container>
+                    </ng-container>
+                    <ng-template #defaultHeader>
+                        {{ col.label | translate }}
+                    </ng-template>
                 </th>
                 <th scope="col" class="text-start" *ngIf="hasActions">
                     {{ 'web.common.lblAction' | translate }}
@@ -28,7 +33,7 @@
             <!-- Data Rows -->
             <ng-container *ngIf="!loading">
                 <tr *ngFor="let row of data" class="border-b border-defaultborder task-list">
-                    <td *ngFor="let col of columns">
+                    <td *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width" [class]="col.cellClass || ''">
                         <!-- Custom Content Projection based on Column Key -->
                         <ng-container *ngIf="colTemplate && (col.key === colTemplateName || col.useTemplate); else checkLink">
                             <ng-container *ngTemplateOutlet="colTemplate; context: { row: row, col: col }"></ng-container>
@@ -37,7 +42,7 @@
                         <!-- Link Rendering -->
                         <ng-template #checkLink>
                             <ng-container *ngIf="col.isLink; else defaultData">
-                                <span class="text-black underline cursor-pointer font-medium" (click)="linkClick.emit({ row: row, col: col })">
+                                <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick.emit({ row: row, col: col })">
                                     {{ row[col.key] || '-' }}
                                 </span>
                             </ng-container>
@@ -58,6 +63,12 @@
             </ng-container>
         </tbody>
     </table>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-12 bg-gray-50/10 border-b border-x border-defaultborder">
+        <div class="ti-spinner text-primary !w-8 !h-8 mb-2" role="status"></div>
+        <span class="text-xs text-gray-500 font-medium tracking-wide">{{ 'web.common.lblLoading' | translate }}</span>
+    </div>
 </div>
 
 <!-- Pagination -->
