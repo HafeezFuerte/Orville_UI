@@ -1,185 +1,340 @@
 <!-- Breadcrumbs & Page Header -->
-<div class="block justify-between page-header md:flex mb-6">
+<div class="block justify-between page-header md:flex mb-3">
   <div class="flex items-center gap-3">
     <!-- Back arrow button -->
-    <a [routerLink]="['/units']" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" data-tooltip="Back to Units">
+    <a [routerLink]="['/' + (mode === 'property' ? 'properties' : mode === 'room' ? 'rooms' : mode === 'parking' ? 'parkings' : 'units')]" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [title]="'Back to ' + (mode | titlecase)">
       <i class="ri-arrow-left-line text-sm"></i>
     </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{unit?.name || 'Apartment 209'}}</h3>
-      <p class="text-xs text-gray-400 m-0 mt-0.5">Home / Units / {{unit?.name || 'Apartment 209'}} / <span class="font-bold text-gray-500">Details</span></p>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{unit?.name || 'Details'}}</h3>
+      <p class="text-xs text-gray-600 m-0 mt-0.5">Home / {{mode === 'property' ? 'Properties' : mode === 'room' ? 'Rooms' : mode === 'parking' ? 'Parkings' : 'Units'}} / {{unit?.name || 'Details'}} / <span class="font-bold text-gray-600">Details</span></p>
     </div>
   </div>
 </div>
 
 <!-- 📦 Main Content Row -->
-<div class="grid grid-cols-12 gap-6">
+<div class="grid grid-cols-12 gap-3">
   <!-- Left Side: Property/Unit Summary & Info Card -->
-  <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+  <div class="col-span-12 lg:col-span-4 flex flex-col gap-3">
     <!-- Card 1: Short summary & Quick Actions -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-5">
-      <h4 class="text-base font-bold text-gray-800 m-0">{{unit?.name || 'Apartment 209'}}</h4>
-      <div class="flex items-center text-gray-400 text-xs mt-1.5 mb-3 font-medium">
-        <i class="ri-map-pin-line me-1 text-gray-400"></i> {{unit?.location || 'Dubai Marina, Tower A, Dubai'}}
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-3">
+      <h4 class="text-sm font-bold text-gray-800 m-0">{{unit?.name || 'Apartment 209'}}</h4>
+      <div class="flex items-center text-gray-600 text-xs font-medium">
+        <i class="ri-map-pin-line me-1 text-gray-600"></i> {{unit?.location || 'Dubai Marina, Tower A, Dubai'}}
       </div>
 
       <!-- Badges -->
-      <div class="flex items-center gap-1.5 mb-5">
+      <div class="flex flex-wrap items-center gap-1.5">
         <span class="badge bg-info/10 text-info px-2.5 py-0.5 rounded text-[10px] font-bold uppercase">{{unit?.category || 'Residential'}}</span>
         <span class="badge bg-success/10 text-success px-2.5 py-0.5 rounded text-[10px] font-bold uppercase">{{unit?.status || 'Occupied'}}</span>
       </div>
 
+      <!-- Quick status badges list from figma image 4 -->
+      <div class="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-100 pt-3">
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">Furnished</span>
+          <span class="badge bg-success text-white px-1.5 py-0.5 rounded text-[9px] font-bold">Yes</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">Smoking</span>
+          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">For Sale</span>
+          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">Under Dispute</span>
+          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded col-span-2">
+          <span class="text-gray-600">Property Address</span>
+          <span class="font-bold text-gray-800 text-[10px] truncate max-w-[130px]" title="Dubai Marina, Tower A, Dubai">Dubai Marina...</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">Created</span>
+          <span class="font-bold text-gray-800 text-[9px]">07-22-2025</span>
+        </div>
+        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
+          <span class="text-gray-600">Last Update</span>
+          <span class="font-bold text-gray-800 text-[9px]">23-06-2026</span>
+        </div>
+      </div>
+
       <!-- Actions -->
-      <div class="flex flex-col gap-2">
-        <button type="button" class="w-full ti-btn ti-btn-light !py-2 !m-0 border font-bold text-xs hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
+      <div class="flex flex-col gap-2 border-t border-gray-100 pt-3">
+        <button type="button" class="w-full ti-btn ti-btn-light !py-1.5 !m-0 border font-bold text-xs hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
           View Activity
         </button>
-        <button type="button" class="w-full ti-btn bg-primary text-white hover:bg-primary-hover !py-2 !m-0 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
-          Edit Unit <i class="ri-arrow-right-line"></i>
+        <button type="button" class="w-full ti-btn bg-primary text-white hover:bg-primary-hover !py-1.5 !m-0 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+          Edit {{mode | titlecase}} <i class="ri-arrow-right-line"></i>
         </button>
       </div>
     </div>
 
-    <!-- Card 2: Information Section -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-5 flex flex-col gap-4">
-      <h5 class="text-sm font-bold text-gray-800 m-0 border-b pb-2 mb-1">Information</h5>
-
-      <!-- Landlord Block -->
-      <div class="p-3 bg-gray-50/50 rounded-lg border border-gray-100">
-        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Landlord (1)</span>
-        <p class="font-bold text-primary hover:underline cursor-pointer text-sm m-0 mt-1">{{unit?.landlord || 'Orville Real Estate'}}</p>
+    <!-- Card 2: Financial Information (figma image 4 bottom) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Unit.lblFinancialInfo' | translate }}</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblMarketRent' | translate }}</span>
+          <span class="font-bold text-gray-800">AED 36500.0</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblDeposit' | translate }}</span>
+          <span class="font-bold text-gray-800">AED 3000.0</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentType' | translate }}</span>
+          <span class="font-bold text-gray-800">Per Year</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentPerSqft' | translate }}</span>
+          <span class="font-bold text-gray-800">AED 250.00</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblTotalServiceCharges' | translate }}</span>
+          <span class="font-bold text-gray-800">0.00</span>
+        </div>
       </div>
+    </div>
 
-      <!-- Unit details checklist block -->
-      <div>
-        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5 block">Unit Details</span>
-        <div class="flex flex-col gap-2.5 text-xs">
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">ID</span>
-            <span class="font-bold text-gray-800">{{unit?.id}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Unit No</span>
-            <span class="font-bold text-gray-800">{{unitNo}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Name</span>
-            <span class="font-bold text-gray-800">{{unit?.name}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Property Name</span>
-            <span class="font-bold text-gray-800">{{unit?.property}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Beds</span>
-            <span class="font-bold text-gray-800">{{unit?.beds}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Baths</span>
-            <span class="font-bold text-gray-800">{{unit?.baths || '2 Bath'}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Parking</span>
-            <span class="font-bold text-gray-800">421</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Status</span>
-            <span class="font-bold text-gray-800">{{unit?.status}}</span>
-          </div>
-          <div class="flex justify-between items-center py-1 border-b border-gray-50">
-            <span class="text-gray-500 font-medium">Size</span>
-            <span class="font-bold text-gray-800">{{unit?.area || '1523 Sqft'}}</span>
-          </div>
+    <!-- Card 3: Fee & Price Details (figma image 1 top left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Unit.lblFeeSaleDetails' | translate }}</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblServiceCharges' | translate }}</span>
+          <span class="font-bold text-gray-800">0.00</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Sale Price</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Threshold Value</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblManagementFee' | translate }}</span>
+          <span class="font-bold text-gray-800">AED 350.00</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Fee Type</span>
+          <span class="font-bold text-gray-800">Percentage</span>
+        </div>
+      </div>
+    </div>
 
-          <!-- View More Details toggle -->
-          <div (click)="toggleMoreDetails()" class="text-primary hover:underline cursor-pointer font-semibold text-center mt-1 flex items-center justify-center gap-1">
-            {{showMoreDetails ? 'Hide details' : 'View more details'}} <i [class]="showMoreDetails ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
-          </div>
+    <!-- Card 4: Service Request (figma image 1 middle left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Property.lblServiceRequest' | translate }}</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex justify-between items-center py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Service Disabled</span>
+          <span class="badge bg-danger text-white px-2 py-0.5 rounded text-[9px] font-bold">No</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Alert Message</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+      </div>
+    </div>
 
-          <!-- Expanded section details -->
-          <div *ngIf="showMoreDetails" class="flex flex-col gap-2.5 mt-2 pt-2 border-t border-dashed border-gray-200 animate-fade-in">
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-500 font-medium">Created By</span>
-              <span class="font-bold text-gray-800">Zaid Rahman</span>
-            </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-500 font-medium">Floor</span>
-              <span class="font-bold text-gray-800">{{unit?.floor || '1 Floor'}}</span>
-            </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-500 font-medium">Auto Assign</span>
-              <span class="badge bg-danger/10 text-danger px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
-            </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-500 font-medium">Furnished</span>
-              <span class="badge bg-success/10 text-success px-1.5 py-0.5 rounded text-[9px] font-bold">Yes</span>
-            </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-500 font-medium">Smoking</span>
-              <span class="badge bg-danger/10 text-danger px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
-            </div>
-          </div>
+    <!-- Card 5: Permit Information (figma image 1 bottom left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Permit Information</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Trakessi Number</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">RERA Number</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between items-center py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Permit Verified</span>
+          <span class="badge bg-danger text-white px-2 py-0.5 rounded text-[9px] font-bold">No</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: Marketing Information (figma image 2 top left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Marketing Information</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Unit Details</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Marketing Title</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Marketing Description</span>
+          <span class="font-bold text-gray-800">-</span>
+        </div>
+      </div>
+      <!-- Image Box -->
+      <div class="border border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center text-center mt-2 bg-gray-50/50">
+        <i class="ri-image-line text-2xl text-gray-600 mb-1.5"></i>
+        <span class="text-xs font-bold text-gray-700 block">No photos or images</span>
+        <span class="text-[10px] text-gray-600 block mt-0.5 leading-normal">Photos and featured images will appear here when uploaded</span>
+      </div>
+    </div>
+
+    <!-- Card 7: Amenities (figma image 2 bottom left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Amenities</h5>
+      <div class="flex flex-wrap gap-1.5 pt-1">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Kids Play Area</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> BBQ Deck</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Concierge</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Covered Parking</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> High-Speed Wi-Fi</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Swimming Pool</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Fully Equipped Gym</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> 24/7 Security</span>
+      </div>
+    </div>
+
+    <!-- Card 8: Custom Fields (figma image 3 left) -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Custom Fields</h5>
+      <div class="flex flex-col gap-2 text-xs">
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Unit Electricity No</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Unit Gas Number</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Under renovation</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Under dispute (legal case)</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Permit Number / Trakheesi Number</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Unit Municipality</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Parking No</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1 border-b border-gray-50">
+          <span class="text-gray-600 font-medium">Monthly Rent</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        </div>
+        <div class="flex flex-col py-1">
+          <span class="text-gray-600 font-medium">Flat No</span>
+          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Right Side: Navigation Tabs, Overview Lease Tables & Analytics Charts -->
-  <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+  <div class="col-span-12 lg:col-span-8 flex flex-col gap-3">
     <!-- horizontal tabs row -->
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2">
       <button *ngFor="let t of tabs" (click)="activeTab = t.key"
-        [class]="activeTab === t.key ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-500 font-medium hover:text-gray-800 border-transparent'"
+        [class]="activeTab === t.key ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
         class="px-4 py-2 text-xs rounded-md border-b-2 transition-all whitespace-nowrap">
-        {{t.label}}
+        {{t.label | translate}}
       </button>
     </div>
 
     <!-- Active Tab Box Container -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm p-6 flex flex-col gap-6">
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
       <!-- 📋 OVERVIEW TAB CONTENT -->
-      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-6 animate-fade-in">
-        <div>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Unit Overview</h4>
-          <p class="text-xs text-gray-400 m-0 mt-0.5">Lease and tenant agreement listings associated with this unit.</p>
-        </div>
-
-        <!-- Search Leases bar -->
-        <div class="flex justify-between items-center gap-3 w-full">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search lease name, tenant...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
+      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Overview</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Lease and tenant agreement listings associated with this unit.</p>
           </div>
-          <div class="flex gap-2">
-            <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.75rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+          <!-- Search Leases bar -->
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <div class="input-group w-full md:w-56">
+              <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search lease name...">
+              <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+                <i class="ri-search-line text-xs"></i>
+              </button>
+            </div>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
               <i class="ri-filter-3-line"></i> Filter
-            </button>
-            <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.75rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-layout-column-line"></i> Column
             </button>
           </div>
         </div>
 
         <!-- Leases Table -->
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-hidden">
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
             <thead class="bg-gray-50/50">
               <tr class="border-b border-gray-100">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease Name</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Tenant</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Case</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Rent (AED)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Start Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">End Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Renewed?</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Multi Unit?</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Remarks</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let lease of leases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{lease.id}}</td>
-                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lease.name}}</td>
-                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.tenant}}</td>
                 <td class="py-3 px-4 text-xs">
                   <span class="badge bg-danger/10 text-danger px-2 py-0.5 rounded text-[10px] font-bold">{{lease.legalCase}}</span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lease.unit}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.property}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lease.status === 'Active' ? 'badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold' : 'badge bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-[10px] font-bold'">
+                    {{lease.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lease.rent}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.startDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.endDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.renewed}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.multiUnit}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.created}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.remarks}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.createdBy}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lease.internalStatus === 'Approved' ? 'badge bg-success/10 text-success px-2 py-0.5 rounded text-[10px] font-bold' : 'badge bg-warning/10 text-warning px-2 py-0.5 rounded text-[10px] font-bold'">
+                    {{lease.internalStatus}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -187,7 +342,7 @@
         </div>
 
         <!-- Paginator summary info -->
-        <div class="flex items-center justify-between text-xs text-gray-500 border-t border-gray-100 pt-4">
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
           <div class="flex items-center gap-2">
             <span>Show</span>
             <select class="form-select w-16 !text-xs !py-1">
@@ -198,157 +353,891 @@
           <div>Showing 1 to 2 of 2 records</div>
         </div>
 
-        <!-- 📊 Charts Block -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-6 border-t border-gray-100">
-          <!-- Chart 1: Monthly Revenue & Expenses -->
-          <div class="p-4 rounded-xl border border-gray-100 bg-white flex flex-col gap-4">
+        <!-- 📊 Charts Block & Financial Summaries -->
+        <div class="grid grid-cols-12 gap-3 mt-2 pt-4 border-t border-gray-100">
+          <!-- Monthly Performance Chart (figma image 1 top right) -->
+          <div class="col-span-12 lg:col-span-8 p-4 rounded-xl border border-gray-100 bg-white flex flex-col gap-3">
             <div class="flex justify-between items-center border-b pb-2">
-              <span class="text-xs font-bold text-gray-700">Monthly Revenue & Expenses</span>
-              <i class="ri-bar-chart-fill text-gray-400"></i>
+              <span class="text-xs font-bold text-gray-700">Monthly Performance</span>
+              <i class="ri-bar-chart-fill text-gray-600"></i>
             </div>
-            <!-- Summaries -->
-            <div class="flex justify-between items-center text-xs">
-              <div>
-                <span class="text-gray-400 text-[10px] block uppercase font-bold">Total Revenue</span>
-                <span class="font-extrabold text-success text-sm">AED 5,000.00</span>
-              </div>
-              <div class="text-end">
-                <span class="text-gray-400 text-[10px] block uppercase font-bold">Total Expenses</span>
-                <span class="font-extrabold text-danger text-sm">AED 0.00</span>
-              </div>
-            </div>
-            <!-- Simple SVG-like bar chart visualisation -->
-            <div class="h-32 flex items-end justify-between gap-1.5 pt-4">
-              <!-- Jan -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/25 rounded-t w-2.5 h-1/4" data-tooltip="Rev: AED 1K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jan</span>
-              </div>
-              <!-- Feb -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/25 rounded-t w-2.5 h-2/5" data-tooltip="Rev: AED 2K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Feb</span>
-              </div>
-              <!-- Mar -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/65 rounded-t w-2.5 h-3/5" data-tooltip="Rev: AED 3K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Mar</span>
-              </div>
-              <!-- Apr -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/25 rounded-t w-2.5 h-1/5" data-tooltip="Rev: AED 1K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Apr</span>
-              </div>
-              <!-- May -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/25 rounded-t w-2.5 h-2/5" data-tooltip="Rev: AED 2K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">May</span>
-              </div>
-              <!-- Jun -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/85 rounded-t w-2.5 h-5/6" data-tooltip="Rev: AED 4.5K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jun</span>
-              </div>
-              <!-- Jul -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="w-full flex justify-center gap-0.5 h-20 items-end">
-                  <div class="bg-primary/95 rounded-t w-2.5 h-full" data-tooltip="Rev: AED 5K"></div>
-                  <div class="bg-danger/20 rounded-t w-2.5 h-0" data-tooltip="Exp: AED 0"></div>
-                </div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jul</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Chart 2: Landlord Rent Collection -->
-          <div class="p-4 rounded-xl border border-gray-100 bg-white flex flex-col gap-4">
-            <div class="flex justify-between items-center border-b pb-2">
-              <span class="text-xs font-bold text-gray-700">Landlord Rent Collection</span>
-              <i class="ri-line-chart-fill text-gray-400"></i>
-            </div>
-            <!-- Summaries -->
-            <div class="flex justify-between items-center text-xs">
-              <div>
-                <span class="text-gray-400 text-[10px] block uppercase font-bold">Total Rent Received</span>
-                <span class="font-extrabold text-primary text-sm">AED 2.5 K</span>
-              </div>
-              <div class="text-end">
-                <span class="text-gray-500 font-bold text-[10px]">{{unit?.landlord || 'Orville Real Estate'}}</span>
-              </div>
-            </div>
-            <!-- Simple SVG-like bar chart visualisation -->
+            <!-- Bar Chart Representation -->
             <div class="h-32 flex items-end justify-between gap-2.5 pt-4">
               <!-- Jan -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/25 rounded-t w-3.5 h-1/5" data-tooltip="AED 500"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jan</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-1/5" title="Jan: 4M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jan</span>
               </div>
               <!-- Feb -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/25 rounded-t w-3.5 h-1/4" data-tooltip="AED 750"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Feb</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/5" title="Feb: 8M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Feb</span>
               </div>
               <!-- Mar -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/55 rounded-t w-3.5 h-2/5" data-tooltip="AED 1.2K"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Mar</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-3/5" title="Mar: 12M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Mar</span>
               </div>
               <!-- Apr -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/25 rounded-t w-3.5 h-1/5" data-tooltip="AED 500"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Apr</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/6" title="Apr: 6.5M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Apr</span>
               </div>
               <!-- May -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/25 rounded-t w-3.5 h-1/4" data-tooltip="AED 750"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">May</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/5" title="May: 8M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">May</span>
               </div>
               <!-- Jun -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/85 rounded-t w-3.5 h-4/5" data-tooltip="AED 2.2K"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jun</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-5/6" title="Jun: 16.5M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jun</span>
               </div>
               <!-- Jul -->
-              <div class="flex-grow flex flex-col items-center gap-1.5">
-                <div class="bg-primary/95 rounded-t w-3.5 h-full" data-tooltip="AED 2.5K"></div>
-                <span class="text-[9px] text-gray-400 font-semibold uppercase">Jul</span>
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-full" title="Jul: 20M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jul</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Expense & Performance Cards (figma image 1 right) -->
+          <div class="col-span-12 lg:col-span-4 flex flex-col gap-3 justify-between">
+            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
+              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Expense</span>
+              <h5 class="text-sm font-black text-danger mt-1.5 mb-0 leading-none">AED 0.00</h5>
+            </div>
+            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
+              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Performance</span>
+              <h5 class="text-sm font-black text-primary mt-1.5 mb-0 leading-none">AED 2,000.00</h5>
+            </div>
+          </div>
+
+          <!-- Financial Summary Section (figma image 1 middle right) -->
+          <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-3 mt-1">
+            <!-- Big Cash Balance Card -->
+            <div class="md:col-span-7 p-4 bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl flex flex-col justify-between shadow-md">
+              <div>
+                <span class="text-[9px] uppercase font-bold tracking-widest text-indigo-200">Cash Balance</span>
+                <h3 class="text-xl font-black text-white m-0 mt-1">AED 2,000.00</h3>
+              </div>
+              <div class="grid grid-cols-2 gap-4 border-t border-indigo-800/60 pt-3 mt-4">
+                <div>
+                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Total Income</span>
+                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+                </div>
+                <div>
+                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Wallet Deposit</span>
+                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side Rent/deposit details card -->
+            <div class="md:col-span-5 p-4 rounded-xl border border-gray-100 bg-white flex flex-col justify-between shadow-sm text-xs">
+              <h6 class="font-bold text-gray-800 m-0 border-b pb-2 mb-2">Monthly Revenue & Expenses</h6>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-gray-600">Total Income</span>
+                <span class="font-bold text-success">AED 2,000.00</span>
+              </div>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-gray-600">Total Expenses</span>
+                <span class="font-bold text-danger">AED 0.00</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1 pt-1 font-bold">
+                <span class="text-gray-800">Net Profit</span>
+                <span class="text-primary">AED 2,000.00</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 📋 FINANCIALS TAB CONTENT (Placeholder) -->
+      <!-- 📋 FINANCIALS TAB CONTENT -->
       <div *ngIf="activeTab === 'financials'" class="flex flex-col gap-3 animate-fade-in">
-        <h5 class="text-sm font-bold text-gray-800 m-0">Financial Information</h5>
-        <div class="p-5 border border-dashed border-gray-200 rounded-lg text-center text-gray-400 text-xs">
-          Financial history and transactions dashboard associated with this unit.
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Financials</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track invoices and payments associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Invoice
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Financials Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">To</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit / Common Area</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Number</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque no</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Currency</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Note</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Work Order</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Gross Amount</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Payment Via</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Money Held By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">DD Ref No</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Bank Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Archived</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque(s)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Days</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Write Amount Off</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fin of financials" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.id}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="fin.status === 'Paid' ? 'badge bg-success/10 text-success' : fin.status === 'Unpaid' ? 'badge bg-danger/10 text-danger' : fin.status === 'Overdue' ? 'badge bg-warning/10 text-warning' : 'badge bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{fin.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.to}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.unitCommonArea}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{fin.invoiceNumber}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.chequeNo}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.invoiceDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.invoiceType}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.account}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.currency}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.propertyName}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.propertyId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.leaseId}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">{{fin.leaseStatus}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs max-w-xs truncate" [title]="fin.note">{{fin.note}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.workOrder}}</td>
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.amount}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.grossAmount}}</td>
+                <td class="py-3 px-4 font-semibold text-success text-xs">{{fin.paid}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.paymentVia}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.moneyHeldBy}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.ddRefNo}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.bankName}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.internalStatus}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.archived}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.dueDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.paidDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.cheques}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.days}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.writeAmountOff}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.createdBy}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 5 of 5 records</div>
         </div>
       </div>
 
-      <!-- 📋 INVENTORY TAB CONTENT (Placeholder) -->
+      <!-- 📋 INVENTORY TAB CONTENT -->
       <div *ngIf="activeTab === 'inventory'" class="flex flex-col gap-3 animate-fade-in">
-        <h5 class="text-sm font-bold text-gray-800 m-0">Inventory Logs</h5>
-        <div class="p-5 border border-dashed border-gray-200 rounded-lg text-center text-gray-400 text-xs">
-          Asset logs, furniture listings, and utility inventories.
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inventory Items</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track inventory items associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Inventory
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Location</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Qty</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Expiry</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Attachments</th>
+              </tr>
+            </thead>
+            <tbody>
+               <tr *ngFor="let item of inventoryItems" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                 <td class="py-3 px-4 font-bold text-primary text-xs">{{item.id}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <span class="font-semibold text-gray-800 block leading-tight">{{item.itemName}}</span>
+                   <span class="text-[9px] text-gray-600 block mt-0.5">{{item.itemSub}}</span>
+                 </td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.itemLocation}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <span class="badge bg-light text-gray-800 px-2.5 py-1 rounded text-[11px] font-bold border border-gray-200">
+                     {{item.qty}}
+                   </span>
+                 </td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.expiry}}</td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.createdAt}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.65rem] border bg-gray-50 text-gray-700 hover:bg-gray-100 flex items-center gap-1 shadow-sm font-semibold rounded">
+                     {{item.attachments}}
+                   </button>
+                 </td>
+               </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 6 of 6 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 WORK ORDERS TAB CONTENT -->
+      <div *ngIf="activeTab === 'workorders'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Work Orders</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track maintenance work orders associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Work Order
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Work Orders Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Title</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Closing Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Priority</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Vendor</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Tags</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Maintenance Category</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Responsible Person(s)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let wo of workOrders" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.title}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.status === 'Completed' ? 'badge bg-success/10 text-success' : wo.status === 'In Progress' ? 'badge bg-primary/10 text-primary' : wo.status === 'Scheduled' ? 'badge bg-warning/10 text-warning' : 'badge bg-danger/10 text-danger'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.closingStatus === 'Closed' ? 'badge bg-success/10 text-success' : 'badge bg-warning/10 text-warning'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.closingStatus}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{wo.internalStatus}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.dueDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.priority === 'High' ? 'badge bg-danger/10 text-danger' : wo.priority === 'Medium' ? 'badge bg-warning/10 text-warning' : 'badge bg-success/10 text-success'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.priority}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.property}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.vendor}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.user}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-medium mr-1" *ngFor="let tag of wo.tags.split(',')">{{tag.trim()}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.maintenanceCategory}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.responsiblePersons}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{wo.updatedAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{wo.createdAt}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 ATTACHMENTS TAB CONTENT -->
+      <div *ngIf="activeTab === 'attachments'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Attachments</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage documents and attachments associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Attachment
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">File Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Doc ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Document Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Issue Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Expiry Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Files</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let att of unitAttachments" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{att.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{att.fileType}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.docId}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="att.status === 'Active' ? 'badge bg-primary text-white' : 'badge bg-success/10 text-success'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{att.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.issueDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.expiryDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-1 rounded text-[10px] border border-gray-200">{{att.files}}</span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 2 of 2 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 LEGAL CASES TAB CONTENT -->
+      <div *ngIf="activeTab === 'legal'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Legal Cases</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Track and view litigation files for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Legal Case
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Details</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Firm</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Case Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lc of legalCases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{lc.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lc.name}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="lc.details">{{lc.details}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lc.legalFirm}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lc.caseDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lc.status === 'Open' ? 'badge bg-danger/10 text-danger' : lc.status === 'In Progress' ? 'badge bg-primary/10 text-primary' : lc.status === 'Hearing Scheduled' ? 'badge bg-warning text-white' : lc.status === 'Investigation' ? 'badge bg-info/10 text-info' : 'badge bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{lc.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 PARKINGS TAB CONTENT -->
+      <div *ngIf="activeTab === 'parkings'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Parkings</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and allocate parking bays linked to this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Parking
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Parking No.</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Fee</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cycle</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Remarks</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pk of parkings" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{pk.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{pk.parkingNo}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{pk.propertyName}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{pk.unitName}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="pk.type === 'Free' ? 'badge bg-light text-gray-600 border border-gray-200' : 'badge bg-primary text-white'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{pk.type}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{pk.fee}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{pk.cycle}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.remarks}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.created}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.updated}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 NOTES TAB CONTENT -->
+      <div *ngIf="activeTab === 'notes'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Notes</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">View and log general annotations for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Note
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Content</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Via</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Note Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Files</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let nt of notes" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{nt.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{nt.subject}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="nt.content">{{nt.content}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{nt.via}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{nt.noteDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{nt.createdBy}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-1 rounded text-[10px] border border-gray-200 font-bold">{{nt.files}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{nt.createdAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{nt.updatedAt}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 BROADCASTS TAB CONTENT -->
+      <div *ngIf="activeTab === 'broadcasts'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Property Broadcasts</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage communication broadcasts sent to unit tenants.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Preview</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Broadcast Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sendable</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">People Count</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let bc of broadcasts" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{bc.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{bc.subject}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="bc.preview">{{bc.preview}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="bc.status === 'Sent' ? 'badge bg-success/10 text-success' : bc.status === 'Scheduled' ? 'badge bg-primary/10 text-primary' : 'badge bg-light text-gray-800 border border-gray-200'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{bc.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{bc.type}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">{{bc.sendable}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{bc.peopleCount}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{bc.scheduled}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{bc.date}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{bc.createdAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{bc.updatedAt}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 4 of 4 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 INSPECTIONS TAB CONTENT -->
+      <div *ngIf="activeTab === 'inspections'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inspection</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track property inspections for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Inspection
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Inspection ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Company Id</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date/Time</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User Id</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Environment</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ins of inspections" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.inspectionId}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.companyId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.name}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-warning text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.status}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{ins.type}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.unit}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.scheduled}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.dateTime}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.userId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.environment}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
         </div>
       </div>
     </div>

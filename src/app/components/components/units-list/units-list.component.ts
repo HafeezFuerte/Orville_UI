@@ -6,6 +6,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { PropertiesService } from '../../../shared/services/properties.service';
 
 export interface Unit {
   id: number;
@@ -220,10 +221,73 @@ export class UnitsListComponent implements OnInit {
   filteredUnits: Unit[] = [];
   paginatedUnits: Unit[] = [];
 
-  constructor(public translate: TranslateService) {}
+  constructor(public translate: TranslateService, private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {
-    this.filterAndPaginate();
+    this.loadUnits();
+  }
+
+  loadUnits(): void {
+    const payload = {
+      userid: 1,
+      company_id: 1,
+      clientId: "74BB6922",
+      source: "web",
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: 200,
+      filter_by: "",
+      filter_list: "",
+      featureid: "Units"
+    };
+
+    this.propertiesService.getUnits(payload).subscribe({
+      next: (response: any) => {
+        if (response && response.statusCode === "200" && response.objResult) {
+          let apiUnits: any[] = [];
+          if (Array.isArray(response.objResult)) {
+            apiUnits = response.objResult;
+          } else if (response.objResult.units && Array.isArray(response.objResult.units)) {
+            apiUnits = response.objResult.units;
+          } else if (response.objResult.Units && Array.isArray(response.objResult.Units)) {
+            apiUnits = response.objResult.Units;
+          } else if (response.objResult.unit && Array.isArray(response.objResult.unit)) {
+            apiUnits = response.objResult.unit;
+          } else if (response.objResult.property && Array.isArray(response.objResult.property)) {
+            apiUnits = response.objResult.property;
+          }
+
+          if (apiUnits.length > 0) {
+            this.allUnits = apiUnits.map((u: any) => ({
+              id: u.code || u.unit_code || 31658,
+              name: u.unit_no || 'Apartment',
+              category: u.category || 'Residential',
+              beds: u.beds || '1 Bed',
+              baths: u.baths || '1 Bath',
+              area: u.area || '1200 Sqft',
+              floor: u.floor_no || '1 Floor',
+              property: u.property_code || 'Marina Height Towers',
+              location: 'Dubai Marina, Tower A, Dubai',
+              landlord: u.landlord_codes || 'Orville Real Estate',
+              tags: u.tags || 'Premium',
+              unitType: u.unit_type || 'Apartment',
+              managementFee: u.management_fee ? `AED ${u.management_fee}` : 'AED 600',
+              status: u.unit_status || 'Occupied',
+              addedDate: 'May 26, 2026',
+              imageUrl: u.unit_image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
+              rentStatus: u.rent_type || 'For Rent'
+            }));
+          }
+        }
+        this.filterAndPaginate();
+      },
+      error: err => {
+        console.error(err);
+        this.filterAndPaginate();
+      }
+    });
   }
 
   filterAndPaginate(): void {

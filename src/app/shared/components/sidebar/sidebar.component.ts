@@ -423,7 +423,7 @@ export class SidebarComponent {
       if (element.children) {
         element.children.forEach((ele: any) => {
           // Check Group path
-          if (ele.path) {
+          if (ele.path && ele.path !== '' && ele.path !== '/') {
             let specificity = 0;
             if (ele.path === currentUrl) specificity = 3;
             else if (this.router.isActive(ele.path, true)) specificity = 2;
@@ -439,7 +439,7 @@ export class SidebarComponent {
           // Check Page path
           if (ele.children) {
             ele.children.forEach((child1: any) => {
-              if (child1.path) {
+              if (child1.path && child1.path !== '' && child1.path !== '/') {
                 let specificity = 0;
                 if (child1.path === currentUrl) specificity = 3;
                 else if (this.router.isActive(child1.path, true)) specificity = 2;
