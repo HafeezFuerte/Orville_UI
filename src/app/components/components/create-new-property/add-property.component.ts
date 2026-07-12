@@ -4,9 +4,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PropertiesService } from '../../../shared/services/properties.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GetAllTypes } from '../../../shared/services/get-all-types.service';
 import { ToastrService } from 'ngx-toastr';
+import { Store } from '@ngrx/store';
+import { selectCommonData } from '../../common/store/common-payload/common.selectors';
 
 @Component({
   selector: 'app-add-property',
@@ -27,28 +29,49 @@ amenities: any = [];
 accounts: any = [];
 selectedAmenities: number[] = [];
 selectAllAmenities = false;
+propertyCode: string = '';
+commonData: any = [];
+property: any = [];
 constructor(public translate: TranslateService, 
   private formBuilder: FormBuilder,
   private propertiesService: PropertiesService,
-  private router: Router,
+  private route: ActivatedRoute,
+  private store: Store,
   private getAllTypes: GetAllTypes,
-  private toastr: ToastrService
+  private toastr:ToastrService,
+  private router: Router
+
 ){}
 
 ngOnInit(){
+  this.initializeForm();
   this.loadPropertyTypes();
   this.loadCountries();
   this.loadAmenities();
   this.loadAccounts();
-  //this.loadStates();
-  //this.loadCities();
-  this.propertyForm = this.formBuilder.group({
+   this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
+
+  if (this.propertyCode) {
+    // Edit mode
+    this.loadProperty();
+    console.log(1234)
+  } else {
+    // Add mode
+    this.initializeForm();
+  }
+  
+  
+ 
+}
+initializeForm(){
+ this.propertyForm = this.formBuilder.group({
 
   propertyName: ['', Validators.required],
   prefix: [''],
   reference: [''],
 
   address1: [''],
+  address2: [''],
   country: [''],
   state:[''],
   city: [''],
@@ -92,6 +115,89 @@ createPaymentRow(): FormGroup {
     selectAmount: ['']
   });
 }
+loadProperty(){
+  this.store.select(selectCommonData).subscribe(data => {
+      this.commonData = data;
+    });
+    console.log(this.commonData);
+  const payload = {
+    typeId:this.commonData.typeId,
+    filterId: this.commonData.filterId,
+    filterText: this.propertyCode,
+    filterText1: "0",
+    userId: this.commonData.userId,
+    clientId: this.commonData.clientId,
+    companyId: this.commonData.companyId
+  };
+   this.getAllTypes.
+   getPropertyByCode(payload).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res["statusCode"] == "200") {
+             this.property = res.objResult.property[0];
+             this.propertyForm.patchValue({
+                propertyName: this.property.name,
+                prefix: this.property.prefix,
+                reference: this.property.reference,
+                address1: this.property.address_1,
+                address2: this.property.address_2,
+                country: this.property.country_id,
+                state: this.property.state_id,
+                city: this.property.city_id,
+                zipCode: this.property.zip_code,
+                latitude: this.property.lat,
+                longitude: this.property.long,
+                community: this.property.community,
+                landNo: this.property.land_no,
+                floors: this.property.floors,
+                totalUnits: this.property.total_units,
+                parkingSpaces: this.property.parking_spaces,
+                tags: this.property.tags,
+                description: this.property.strdesc,
+                propertyType: this.property.property_type,
+                purchaseValue: this.property.purchase_value
+            });
+            this.getStates(this.property.country_id);
+             this.propertyForm.patchValue({
+        state: this.property.state_id
+      });
+
+      this.getCities(this.property.state_id);
+            const amenities = res.objResult.amenities || [];
+
+this.selectedAmenities = amenities.map((item: any) => item.id);
+
+// Enable the switch if there is at least one amenity
+this.propertyForm.patchValue({
+  includeAmenities: amenities.length > 0
+});
+            
+const fixedPayments = res.objResult.fixedpayments;
+
+const paymentsArray = this.propertyForm.get('payments') as FormArray;
+
+// Clear existing rows
+paymentsArray.clear();
+
+// Add one FormGroup per payment
+fixedPayments.forEach((payment: any) => {
+  paymentsArray.push(
+    this.formBuilder.group({
+      selectAccount: [payment.account_id],
+      selectType: [payment.payment_type],
+      selectAmount: [payment.amount]
+    })
+  );
+});
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+        },
+      });
+  }
+
 
 get payments(): FormArray {
   return this.propertyForm.get('payments') as FormArray;
@@ -113,7 +219,7 @@ loadPropertyTypes() {
       filterText: "",
       filterText1: "",
       userId: 0,
-      clientId: "74BB6922",
+      clientId: "test",
       companyId: 1
   };
 
@@ -134,7 +240,7 @@ loadAmenities(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "74BB6922",
+  clientId: "test",
   companyId: 1
   };
 
@@ -155,7 +261,7 @@ loadAccounts(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "74BB6922",
+  clientId: "test",
   companyId: 1
   };
 
@@ -176,7 +282,7 @@ loadCountries(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "74BB6922",
+  clientId: "test",
   companyId: 1
   };
 
@@ -202,13 +308,20 @@ getStates(countryId: any){
     "filterText": countryId,
     "filterText1": "",
     "userId": 0,
-    "clientId": "74BB6922",
+    "clientId": "test",
     "companyId": 1
   };
 
   this.getAllTypes.getStates(payload).subscribe({
     next: (response: any) => {
       this.states = response.objResult.table;
+      if (this.propertyCode) {
+      this.propertyForm.patchValue({
+        state: this.property.state_id
+      });
+
+      this.getCities(this.property.state_id);
+    }
       console.log("this states ...", this.states);
     },
     error: (err) => {
@@ -228,13 +341,19 @@ getCities(stateId: any){
     "filterText": stateId,
     "filterText1": "",
     "userId": 0,
-    "clientId": "74BB6922",
+    "clientId": "test",
     "companyId": 1
   };
 
   this.getAllTypes.getCities(payload).subscribe({
     next: (response: any) => {
       this.cities = response.objResult.table;
+    // Edit mode
+    if (this.propertyCode) {
+      this.propertyForm.patchValue({
+        city: this.property.city_id
+      });
+    }      
       console.log("this cities ...", this.cities);
     },
     error: (err) => {
@@ -340,7 +459,7 @@ const request = {
   code: '',
   source: 'web',
   company_id: 1,
-  tenantId: '74BB6922',
+  tenantId: '',
 
   name: form.propertyName,
   prefix: form.prefix,
@@ -352,14 +471,15 @@ const request = {
   country_id: Number(form.country),
   state_id: Number(form.state),
   city_id: form.city,
-
+total_units: Number(form.totalUnits),
   zipcode: form.zipCode,
   lat: form.latitude,
   lon: form.longitude,
 
   community: form.community,
   land_no: form.landNo,
-
+no_of_floors: Number(form.floors),
+parking_floors: Number(form.parkingSpaces),
   tags: form.tags,
   desc: form.description,
 

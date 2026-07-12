@@ -1,0 +1,165 @@
+<div class="block justify-between page-header md:flex">
+  <div>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
+      {{property?.name || 'Marina Heights Towers'}}
+    </h3>
+    <ol class="flex items-center gap-1 text-[11px] text-gray-500 font-medium">
+      <li><a routerLink="/properties" class="text-primary hover:underline">Properties</a></li>
+      <li><i class="ri-arrow-right-s-line text-xs text-gray-400"></i></li>
+      <li>{{property?.name || 'Marina Heights Towers'}}</li>
+      <li><i class="ri-arrow-right-s-line text-xs text-gray-400"></i></li>
+      <li class="text-gray-400 font-normal">Details</li>
+    </ol>
+  </div>
+  <div>
+    <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.75rem] !text-white !font-medium btn-wave bg-gray-500 hover:bg-gray-600 shadow-sm" routerLink="/properties">
+      <i class="ri-arrow-left-line align-middle"></i> Back to Properties
+    </button>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 gap-6 mt-4">
+  <!-- Left Side Info Panel -->
+  <div class="col-span-12 lg:col-span-4">
+    <div class="box bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+      <div class="p-6 flex flex-col gap-5">
+        <!-- Main details -->
+        <div>
+          <h4 class="text-base font-black text-gray-800 m-0 leading-tight">{{property?.name || 'Marina Heights Towers'}}</h4>
+          <span class="text-xs text-gray-400 font-medium mt-1 flex items-center gap-0.5">
+            <i class="ri-map-pin-line text-sm"></i> Dubai Marina, Tower A, Dubai
+          </span>
+        </div>
+
+        <!-- Badge category -->
+        <div>
+          <span class="badge bg-primary/10 text-primary font-bold px-3 py-1.5 rounded-lg text-[10px]">
+            <i class="ri-home-gear-line text-xs me-1"></i> {{property?.type_name || 'Residential'}}
+          </span>
+        </div>
+
+        <!-- Occupancy Bar -->
+        <div class="flex flex-col gap-2 py-1">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-500 font-medium">Occupancy</span>
+            <span class="font-extrabold text-gray-800">85%</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+          </div>
+          <span class="text-[10px] text-gray-400">412 of 421 units are occupied</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3 pt-2">
+          <button type="button" class="w-1/2 ti-btn ti-btn-light !py-2 border font-bold text-xs rounded-lg shadow-sm">
+            View Activity
+          </button>
+          <button type="button" class="w-1/2 ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">
+            Edit Property &rarr;
+          </button>
+        </div>
+
+        <!-- Property details list table -->
+        <div class="border-t border-gray-100 pt-4 mt-2">
+          <h5 class="text-xs font-bold text-gray-700 mb-3">Property Details</h5>
+          <div class="flex flex-col gap-3 text-xs text-gray-600">
+            <div class="flex justify-between py-1 border-b border-gray-50">
+              <span class="text-gray-400">ID</span>
+              <span class="font-bold text-gray-800">{{property?.id || 31658}}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-50">
+              <span class="text-gray-400">Name</span>
+              <span class="font-bold text-gray-800">{{property?.name || 'Marina Heights Towers'}}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-50">
+              <span class="text-gray-400">Category</span>
+              <span class="font-bold text-gray-800">Home</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-gray-400">Property Type</span>
+              <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side Dashboard & Tabs Content -->
+  <div class="col-span-12 lg:col-span-8">
+    <div class="box bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+      <!-- Tabs header bar -->
+      <div class="border-b border-gray-100 bg-gray-50/50 p-2 overflow-x-auto whitespace-nowrap flex gap-1">
+        <button *ngFor="let tab of tabs" (click)="changeTab(tab.key)" [class]="activeTab === tab.key ? 'bg-white shadow-sm text-primary font-bold border-b-2 border-primary' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-4 py-2 text-xs rounded-md transition-all">
+          {{tab.label}}
+        </button>
+      </div>
+
+      <!-- Tabs Body -->
+      <div class="p-6">
+        <!-- OVERVIEW TAB -->
+        <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-6 animate-fade-in">
+          <div>
+            <h5 class="text-sm font-black text-gray-800 m-0">Property Overview</h5>
+            <p class="text-xs text-gray-400 mt-1">Real-time occupancy rates and performance breakdowns.</p>
+          </div>
+
+          <!-- Circular gauges grid (Figma layout) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 border border-gray-50 rounded-xl bg-gray-50/20 p-4">
+            <!-- First Circle: Occupancy Rate (Rooms) -->
+            <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="relative w-36 h-36">
+                <!-- SVG circular meter -->
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-gray-100" stroke-width="2.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="text-primary" stroke-dasharray="80.4, 100" stroke-width="2.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-xl font-black text-gray-800">80.4%</span>
+                  <span class="text-[9px] font-bold text-gray-400 uppercase">Occupied</span>
+                </div>
+              </div>
+              <h6 class="font-extrabold text-gray-700 text-xs mt-4">Occupancy Rate (Rooms)</h6>
+              <p class="text-[10px] text-gray-400 mt-1">52 / 55 units occupied</p>
+            </div>
+
+            <!-- Second Circle: Occupancy Rate (Units) -->
+            <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="relative w-36 h-36">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-gray-100" stroke-width="2.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="text-indigo-500" stroke-dasharray="78.4, 100" stroke-width="2.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-xl font-black text-gray-800">78.4%</span>
+                  <span class="text-[9px] font-bold text-gray-400 uppercase">Occupied</span>
+                </div>
+              </div>
+              <h6 class="font-extrabold text-gray-700 text-xs mt-4">Occupancy Rate (Units)</h6>
+              <p class="text-[10px] text-gray-400 mt-1">49 / 54 units occupied</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- OTHER TABS (FALLBACK/PLACEHOLDER) -->
+        <div *ngIf="activeTab !== 'overview'" class="flex flex-col gap-3 text-center animate-fade-in">
+       
+
+    <app-shared-table
+        [columns]="tableColumns"
+        [data]="currentTableData"
+        [loading]="loading"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNo-1"
+        [totalRecords]="totalRecords"
+        [hasActions]="true">
+
+    </app-shared-table>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

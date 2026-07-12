@@ -8,6 +8,8 @@ import { CalendarView, CalendarEvent, CalendarModule } from 'angular-calendar';
 import { startOfDay, endOfDay, setHours, setMinutes, isSameMonth, isSameDay } from 'date-fns';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '../../common/store/login-auth-params/auth.selectors';
 
 const colors: any = {
   red: {
@@ -60,7 +62,7 @@ export class MyInsightsComponent implements OnInit {
   rectificationCheckOut: string = '';
   rectificationReason: string = '';
   rectificationMaxDate: Date = new Date();
-
+userData: any;
   // Masters for Mapping
   worksites: any[] = [];
   departments: any[] = [];
@@ -77,7 +79,8 @@ export class MyInsightsComponent implements OnInit {
 
   constructor(
     private dashboardPortalService: DashboardService,
-    private authService: AuthService
+    private authService: AuthService,
+    private store: Store
   ) { }
 
   ngOnInit() {
@@ -86,10 +89,18 @@ export class MyInsightsComponent implements OnInit {
 
 
   loadDashboard() {
-    const user = this.authService.currentUserValue;
-    const empCode = localStorage.getItem('empCode') || '';
-    const userId = user?.userId || localStorage.getItem('userId') || 120;
-    const companyId = user?.companyId || localStorage.getItem('companyId') || 1;
+    
+   this.store.select(selectCurrentUser).subscribe(user => {
+  if (!user) {
+    return;
+  }
+
+  this.userData = user;
+});
+    
+    const empCode = this.userData?.empCode ||  '';
+    const userId = this.userData?.userId || 120;
+    const companyId = this.userData?.companyId || 1;
 
     const payload = {
       typeId: 7,

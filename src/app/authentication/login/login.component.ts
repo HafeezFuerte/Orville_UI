@@ -5,6 +5,8 @@ import { AuthService } from '../../shared/services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { setAuthPropsData } from '../../components/common/store/login-auth-params/auth.actions';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +29,8 @@ export class LoginComponent {
     private router: Router,
     private formBuilder: FormBuilder,
     private renderer: Renderer2,
-    private toastr: ToastrService, private authService: AuthService
+    private toastr: ToastrService, private authService: AuthService,
+    private store: Store,
 
   ) { }
 
@@ -63,17 +66,20 @@ export class LoginComponent {
           // Save user info in AuthService / localStorage
           if (res.objResult.token) {
             // Save in AuthService BehaviorSubject
-            this.authservice.setCurrentUser({
+            
+            this.store.dispatch(
+            setAuthPropsData({
+              userId: res.objResult.userId,
+              companyId: res.objResult.company_id || 1,
+              clientId: res.objResult.clientID || 1,
+              currencyCode: res.objResult.currencyCode,
               userName: res.objResult.userName,
               roleName: res.objResult.roleName,
-              token: res.objResult.token,
-              companyId:
-                res.objResult.company_id ||
-                1,
-              userId: res.objResult.userId,
-              userCode:
-                res.objResult.user_Code 
-            });
+              userCode: res.objResult.user_Code,
+              token: res.objResult.token
+            })
+
+            );
           }   
           this.isLoading = false;
           this.router.navigate(['/insights']); 

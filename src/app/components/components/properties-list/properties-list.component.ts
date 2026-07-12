@@ -49,73 +49,7 @@ export class PropertiesListComponent implements OnInit {
     { key: 'occupancy_rate', label: 'Occupancy Rate', headerClass: 'text-start', useTemplate: true }
   ];
 
-  properties: any[] = [
-    {
-      id: 31658,
-      name: 'Marina Heights Towers',
-      type_name: 'Residential',
-      'internal Status': 'Active',
-      tags: 'Premium',
-      total_leases: 44,
-      contracts: 2,
-      occupied_units: 42,
-      total_units: 54,
-      location: 'Dubai Marina, Tower A, Dubai',
-      landlord: 'Orville Real Estate'
-    },
-    {
-      id: 31659,
-      name: 'Jumeirah Living',
-      type_name: 'Residential',
-      'internal Status': 'Active',
-      tags: 'Best Seller',
-      total_leases: 12,
-      contracts: 1,
-      occupied_units: 10,
-      total_units: 12,
-      location: 'Jumeirah, Dubai',
-      landlord: 'Emaar Properties'
-    },
-    {
-      id: 31660,
-      name: 'Burj Khalifa Residences',
-      type_name: 'Residential',
-      'internal Status': 'Active',
-      tags: 'Luxury',
-      total_leases: 50,
-      contracts: 5,
-      occupied_units: 48,
-      total_units: 50,
-      location: 'Downtown Dubai, Dubai',
-      landlord: 'Orville Real Estate'
-    },
-    {
-      id: 31661,
-      name: 'Index Tower',
-      type_name: 'Commercial',
-      'internal Status': 'Active',
-      tags: 'Corporate',
-      total_leases: 25,
-      contracts: 3,
-      occupied_units: 20,
-      total_units: 25,
-      location: 'DIFC, Dubai',
-      landlord: 'DIFC Investments'
-    },
-    {
-      id: 31662,
-      name: 'Dubai Marina Mall',
-      type_name: 'Commercial',
-      'internal Status': 'Active',
-      tags: 'Prime Location',
-      total_leases: 30,
-      contracts: 4,
-      occupied_units: 28,
-      total_units: 30,
-      location: 'Dubai Marina, Dubai',
-      landlord: 'Emaar Malls'
-    }
-  ];
+  properties: any[] = [];
   filteredProperties: any[] = [];
   paginatedProperties: any[] = [];
 
@@ -138,6 +72,7 @@ export class PropertiesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.applyLocalFilters();
+    this.loadProperties(); 
   }
 
   loadProperties(): void {
@@ -147,10 +82,10 @@ export class PropertiesListComponent implements OnInit {
       clientId: "74BB6922",
       source: 'web',
       languageid: 1,
-      page_no: this.pageNo,
+      page_no: 0,
       seqno: 0,
       search_keyword: this.searchQuery || '',
-      pagecount: 100, // Load all to handle advanced dashboard filters locally for interactive UX
+      pagecount: 20, // Load all to handle advanced dashboard filters locally for interactive UX
       filter_by: this.categoryFilter !== 'All' ? this.categoryFilter : '',
       featureid: 'Property'
     };
@@ -158,6 +93,7 @@ export class PropertiesListComponent implements OnInit {
     this.propertiesService.getProperties(payload).subscribe({
       next: (response: any) => {
         this.properties = response.objResult.property || [];
+        console.log(this.properties);
         this.applyLocalFilters();
       },
       error: err => {

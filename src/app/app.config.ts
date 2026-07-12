@@ -17,12 +17,17 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginatorIntl } from './shared/services/custom-paginator-intl.service';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { provideStore } from '@ngrx/store';
+import { commonReducer } from './components/common/store/common-payload/common.reducer';
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(App_Route, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })), RouterOutlet, provideHttpClient(), ColorPickerModule, ColorPickerService, provideAnimations(), AngularFireModule,
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
   { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl },
+  provideStore({
+    common: commonReducer
+  }),
   importProvidersFrom(
     FlatpickrModule.forRoot(),
     TranslateModule.forRoot(),

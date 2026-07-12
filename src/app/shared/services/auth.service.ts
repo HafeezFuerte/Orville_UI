@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { Store } from '@ngrx/store';
+import { clearAuthProps, setAuthPropsData } from '../../components/common/store/login-auth-params/auth.actions';
+import { selectCurrentUser } from '../../components/common/store/login-auth-params/auth.selectors';
+import { Observable, throwError } from 'rxjs';
 
 export interface User {
   userName: string;
@@ -12,6 +15,9 @@ export interface User {
   userId?: any;
   companyId?: any;
   userCode?: string;
+  clientID?: string;
+  currencyCode?: string;
+  
 }
 
 // ✅ UPDATED: Fix the interface to match actual API response
@@ -31,21 +37,11 @@ export interface EmployeeSearchResponse {
 export class AuthService {
   private apiUrl = 'https://orville.pulseadmin.in/api/UnAuthorized/login';
   baseUrl: string = environment.apiurl
-  // ✅ BehaviorSubject to store the current user
-  private currentUserSubject = new BehaviorSubject<User | null>(this.loadUserFromStorage());
-  public currentUser$ = this.currentUserSubject.asObservable();
+  public currentUser$ = this.store.select(selectCurrentUser);
+  commonData: any;
 
-  constructor(private http: HttpClient, private router: Router) { }
-
-  get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
-  }
-  get currentUserId(): number | null {
-    const user = this.currentUserSubject.value;
-    return user?.userId || null;
-  }
+  constructor(private http: HttpClient, private router: Router, private store: Store) { }
  
-
   loginWithApi(userName: string, password: string): Observable<any> {
     const body:any = {};
     body.userName= userName;
@@ -65,11 +61,24 @@ export class AuthService {
             roleName: res.objResult.roleName,
             token: res.objResult.access_token,
             companyId: res.objResult.company_id  || 1,
+            clientID: res.objResult.clientID || 1,
             userId: res.objResult.userId,
-            userCode:res.objResult.user_Code
+            userCode:res.objResult.user_Codem,
+            currencyCode: res.objResult.currencyCode
           }; 
-          this.saveUserToStorage(user);
-          this.currentUserSubject.next(user);
+          this.store.dispatch(
+                setAuthPropsData({
+                  userId: user.userId,
+                  companyId: user.companyId,
+                  clientId: user?.clientID?.toString() || '',
+                  currencyCode: user?.currencyCode ?? '',
+                  userName: user.userName,
+                  roleName: user.roleName,
+                  userCode: user.userCode ?? '',
+                  token: user.token
+                })
+    
+                );
         }
       }),
       catchError((err) => {
@@ -80,60 +89,28 @@ export class AuthService {
   }
   // ✅ LOGOUT
   signOut(): void {
-    this.clearStorage();
-    this.currentUserSubject.next(null); // 🔥 notify subscribers
-    this.router.navigate(['/login']);
+     this.store.dispatch(clearAuthProps());
+      this.router.navigate(['/login']);
   }
 
-  // ✅ HELPERS
-  private saveUserToStorage(user: User): void {
-    localStorage.setItem('token', user.token);
-    localStorage.setItem('userName', user.userName);
-    localStorage.setItem('roleName', user.roleName);
-    if (user.userId) localStorage.setItem('userId', user.userId.toString());
-    if (user.companyId) localStorage.setItem('companyId', user.companyId.toString());
-    if (user.userCode) localStorage.setItem('userCode', user.userCode);
-  }
+  private loadUserFromStorage(): void {
+    this.store.select(selectCurrentUser).subscribe(user => {
+      if (!user) {
+        return;
+      }
+    
+  this.commonData = user;
 
-  private loadUserFromStorage(): User | null {
-    const token = localStorage.getItem('token');
-    const userName = localStorage.getItem('userName');
-    const roleName = localStorage.getItem('roleName');
-    const userId = localStorage.getItem('userId');
-    const companyId = localStorage.getItem('companyId');
-    const userCode = localStorage.getItem('userCode');
+  const token = user.token;
+  const userName = user.userName;
+  const roleName = user.roleName;
+  const userId = user.userId;
+  const companyId = user.companyId;
+  const userCode = user.userCode;
+    
     return token && userName && roleName ? { userName, roleName, token, userId: userId ? +userId : 0, companyId: companyId ? +companyId : 1, userCode: userCode || '' } : null;
-  }
-
-  setCurrentUser(user: any) {
-    localStorage.setItem('token', user.token);
-    localStorage.setItem('userName', user.userName);
-    localStorage.setItem('roleName', user.roleName);
-
-    if (user.userId) {
-      localStorage.setItem('userId', user.userId.toString());
-    }
-
-    if (user.companyId) {
-      localStorage.setItem('companyId', user.companyId.toString());
-    }
-
-    if (user.userCode) {
-      localStorage.setItem('userCode', user.userCode);
-    }
-
-    this.currentUserSubject.next(user);
-  }
-
-  private clearStorage(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('roleName');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('companyId');
-    localStorage.removeItem('userCode');
-  }
-
+  });
+}
 
   searchGratuity(payload: any): Observable<any> {
     return this.http.post<any>('https://orville.pulseadmin.in/api/gratuity/search', payload);

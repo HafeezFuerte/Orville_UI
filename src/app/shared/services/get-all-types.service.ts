@@ -14,7 +14,9 @@ export class GetAllTypes {
       'AccessToken': this.accessToken || '',
       'clientID': "74BB6922",
       'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
+      'Accept': '*/*',
+      'LanguageID': 1,
+        'source': 'web'
     });
 
   getPropertyTypes(payload: any): Observable<any> {
@@ -39,6 +41,10 @@ export class GetAllTypes {
     return this.http.post(this.getAllAPI, payload, { headers });
   }
   getAccounts(payload: any): Observable<any>{
+    const headers = this.headers;
+    return this.http.post(this.getAllAPI, payload, { headers });
+  }
+  getPropertyByCode(payload: any): Observable<any>{
     const headers = this.headers;
     return this.http.post(this.getAllAPI, payload, { headers });
   }
