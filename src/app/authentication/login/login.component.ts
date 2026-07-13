@@ -7,6 +7,9 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { setAuthPropsData } from '../../components/common/store/login-auth-params/auth.actions';
+import { AuthPayload } from '../../components/common/store/login-auth-params/auth.models';
+import { CommonService } from '../../services/common.service';
+import { selectCurrentUser } from '../../components/common/store/login-auth-params/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -31,6 +34,7 @@ export class LoginComponent {
     private renderer: Renderer2,
     private toastr: ToastrService, private authService: AuthService,
     private store: Store,
+    private commonService: CommonService
 
   ) { }
 
@@ -64,22 +68,28 @@ export class LoginComponent {
         this.isLoading = false;
         if (res["statusCode"] == "200") {
           // Save user info in AuthService / localStorage
-          if (res.objResult.token) {
+       
+          if (res.objResult.access_token) {
+            console.log("loginpage res",res);
             // Save in AuthService BehaviorSubject
-            
-            this.store.dispatch(
-            setAuthPropsData({
-              userId: res.objResult.userId,
-              companyId: res.objResult.company_id || 1,
-              clientId: res.objResult.clientID || 1,
-              currencyCode: res.objResult.currencyCode,
-              userName: res.objResult.userName,
-              roleName: res.objResult.roleName,
-              userCode: res.objResult.user_Code,
-              token: res.objResult.token
-            })
+             const authUser: AuthPayload = {
+                userId: res.objResult.userId,
+                companyId: res.objResult.company_id || 1,
+                clientId: res.objResult.clientid || '',
+                currencyCode: res.objResult.currency_code || '',
+                userName: res.objResult.username,
+                roleName: res.objResult.roleName,
+                userCode: res.objResult.user_Code || '',
+                token: res.objResult.access_token
+              };
 
-            );
+              // Dispatch once
+              this.store.dispatch(setAuthPropsData(authUser));
+this.store.select(selectCurrentUser).subscribe(user => {
+  console.log('Selector User:', user);
+});
+              // If you're temporarily keeping currentUser in CommonService
+              this.commonService.setCurrentUser(authUser);  
           }   
           this.isLoading = false;
           this.router.navigate(['/insights']); 

@@ -219,7 +219,7 @@ loadPropertyTypes() {
       filterText: "",
       filterText1: "",
       userId: 0,
-      clientId: "test",
+      clientId: "74BB6922",
       companyId: 1
   };
 
@@ -240,7 +240,7 @@ loadAmenities(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "test",
+  clientId: "74BB6922",
   companyId: 1
   };
 
@@ -261,7 +261,7 @@ loadAccounts(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "test",
+  clientId: "74BB6922",
   companyId: 1
   };
 
@@ -282,7 +282,7 @@ loadCountries(){
   "filterText": "",
   "filterText1": "",
   userId: 0,
-  clientId: "test",
+  clientId: "74BB6922",
   companyId: 1
   };
 
@@ -308,7 +308,7 @@ getStates(countryId: any){
     "filterText": countryId,
     "filterText1": "",
     "userId": 0,
-    "clientId": "test",
+    "clientId": "74BB6922",
     "companyId": 1
   };
 
@@ -341,7 +341,7 @@ getCities(stateId: any){
     "filterText": stateId,
     "filterText1": "",
     "userId": 0,
-    "clientId": "test",
+    "clientId": "74BB6922",
     "companyId": 1
   };
 

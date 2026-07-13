@@ -2,10 +2,10 @@ import { createAction, props } from '@ngrx/store';
 import { AuthPayload } from './auth.models';
 
 export const setAuthPropsData = createAction(
-  '[Common] Set Common Data',
-  (payload: AuthPayload) => payload
+  '[Auth] Set Auth User',
+  props<AuthPayload>()
 );
 
 export const clearAuthProps = createAction(
-  '[Auth] Clear Auth'
+  '[Auth] Clear Auth User'
 );

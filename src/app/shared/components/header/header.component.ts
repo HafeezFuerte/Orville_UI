@@ -157,9 +157,6 @@ export class HeaderComponent {
     this.navServices.items.subscribe((menuItems) => {
       this.items = menuItems;
     });
-    this.authService.currentUser$.subscribe((user: User | null) => {
-      this.currentUser = user; // use currentUser instead of user
-    });
 
   }
 

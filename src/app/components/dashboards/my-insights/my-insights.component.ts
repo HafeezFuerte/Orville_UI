@@ -62,7 +62,7 @@ export class MyInsightsComponent implements OnInit {
   rectificationCheckOut: string = '';
   rectificationReason: string = '';
   rectificationMaxDate: Date = new Date();
-userData: any;
+  userData: any;
   // Masters for Mapping
   worksites: any[] = [];
   departments: any[] = [];
@@ -81,7 +81,9 @@ userData: any;
     private dashboardPortalService: DashboardService,
     private authService: AuthService,
     private store: Store
-  ) { }
+  ) { this.store.select(selectCurrentUser).subscribe(user => {
+    this.userData = user;
+  }); }
 
   ngOnInit() {
     this.loadDashboard();
@@ -89,26 +91,19 @@ userData: any;
 
 
   loadDashboard() {
-    
-   this.store.select(selectCurrentUser).subscribe(user => {
-  if (!user) {
-    return;
-  }
-
-  this.userData = user;
-});
-    
+  
     const empCode = this.userData?.empCode ||  '';
     const userId = this.userData?.userId || 120;
     const companyId = this.userData?.companyId || 1;
-
+    const clientId = this.userData?.clientID || 1;
     const payload = {
       typeId: 7,
       filterId: 0,
       filterText: empCode,
       filterText1: "",
       userId: Number(userId),
-      companyId: Number(companyId)
+      companyId: Number(companyId),
+      clientId: "74BB6922"
     };
 
     const mastersPayload = {
@@ -117,7 +112,8 @@ userData: any;
       filterText: "",
       filterText1: "",
       userId: Number(userId),
-      companyId: Number(companyId)
+      companyId: Number(companyId),
+      clientId: "74BB6922"
     };
 
     this.isLoading = true;

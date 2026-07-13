@@ -1,5 +1,5 @@
-import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { AuthState } from "./auth.state";
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { AuthState } from './auth.state';
 
 export const selectAuthState =
   createFeatureSelector<AuthState>('auth');
@@ -14,14 +14,14 @@ export const selectToken = createSelector(
   user => user?.token
 );
 
-export const selectCompanyId = createSelector(
-  selectCurrentUser,
-  user => user?.companyId
-);
-
 export const selectUserId = createSelector(
   selectCurrentUser,
   user => user?.userId
+);
+
+export const selectCompanyId = createSelector(
+  selectCurrentUser,
+  user => user?.companyId
 );
 
 export const selectUserName = createSelector(
@@ -37,4 +37,14 @@ export const selectRoleName = createSelector(
 export const selectUserCode = createSelector(
   selectCurrentUser,
   user => user?.userCode
+);
+
+export const selectClientId = createSelector(
+  selectCurrentUser,
+  user => user?.clientId
+);
+
+export const selectCurrencyCode = createSelector(
+  selectCurrentUser,
+  user => user?.currencyCode
 );

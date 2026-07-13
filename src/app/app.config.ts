@@ -19,6 +19,7 @@ import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { provideStore } from '@ngrx/store';
 import { commonReducer } from './components/common/store/common-payload/common.reducer';
+import { authReducer } from './components/common/store/login-auth-params/auth.reducer';
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(App_Route, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })), RouterOutlet, provideHttpClient(), ColorPickerModule, ColorPickerService, provideAnimations(), AngularFireModule,
     AngularFireDatabaseModule,
@@ -26,7 +27,8 @@ export const appConfig: ApplicationConfig = {
     AngularFireAuthModule,
   { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl },
   provideStore({
-    common: commonReducer
+    common: commonReducer,
+    auth: authReducer
   }),
   importProvidersFrom(
     FlatpickrModule.forRoot(),

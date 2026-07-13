@@ -36,8 +36,7 @@ export interface EmployeeSearchResponse {
 })
 export class AuthService {
   private apiUrl = 'https://orville.pulseadmin.in/api/UnAuthorized/login';
-  baseUrl: string = environment.apiurl
-  public currentUser$ = this.store.select(selectCurrentUser);
+  baseUrl: string = environment.apiurl;
   commonData: any;
 
   constructor(private http: HttpClient, private router: Router, private store: Store) { }
@@ -56,29 +55,18 @@ export class AuthService {
         if (res["statusCode"] == "200") {
          
           debugger;
+          
           const user: User = {
             userName: res.objResult.username,
             roleName: res.objResult.roleName,
             token: res.objResult.access_token,
             companyId: res.objResult.company_id  || 1,
-            clientID: res.objResult.clientID || 1,
+            clientID: res.objResult.clientid || 1,
             userId: res.objResult.userId,
-            userCode:res.objResult.user_Codem,
-            currencyCode: res.objResult.currencyCode
+            userCode:res.objResult.user_Code,
+            currencyCode: res.objResult.currency_code
           }; 
-          this.store.dispatch(
-                setAuthPropsData({
-                  userId: user.userId,
-                  companyId: user.companyId,
-                  clientId: user?.clientID?.toString() || '',
-                  currencyCode: user?.currencyCode ?? '',
-                  userName: user.userName,
-                  roleName: user.roleName,
-                  userCode: user.userCode ?? '',
-                  token: user.token
-                })
-    
-                );
+          return res;
         }
       }),
       catchError((err) => {

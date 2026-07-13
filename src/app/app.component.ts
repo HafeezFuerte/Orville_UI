@@ -17,6 +17,8 @@ import {
   // ...
 } from '@angular/animations';
 import { fromEvent } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from './components/common/store/login-auth-params/auth.selectors';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -29,8 +31,10 @@ export class AppComponent {
   title = 'ynex';
   public isSpinner = true;
   constructor(public translate: TranslateService, private cdr: ChangeDetectorRef, private translateloader: TranslateloaderService,
-    private router: Router
-  ) { }
+    private router: Router, private store: Store
+  ) {  this.store.subscribe(state => {
+    console.log('FULL STORE:', state);
+  }); }
   ngOnInit() {
     // 🟢 Reset scroll to top on every navigation end globaly
     this.router.events.pipe(

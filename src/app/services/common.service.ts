@@ -2,6 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SharedUrlLinks } from './sharedlinks';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '../components/common/store/login-auth-params/auth.selectors';
+import { AuthPayload } from '../components/common/store/login-auth-params/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -11,32 +14,40 @@ export class CommonService {
   pro_headers: any;
   userid: any;
   clientID: any;
-  private userDataSubject = new BehaviorSubject<any>(null);
-  userData$ = this.userDataSubject.asObservable();
+  userDataCommon: any;
+  private userDataSubject = this.store.select(selectCurrentUser);
+  //userData$ = this.userDataSubject.asObservable();
   private idSource = new BehaviorSubject<number>(0);
   currentId$ = this.idSource.asObservable();
   featureType: string = '0';
+private currentUser: AuthPayload | null = null;
 
-  constructor(private http: HttpClient,) { }
-  updateHeaders(): HttpHeaders {
-    this.bearer_token = localStorage.getItem('token');
-    this.userid = localStorage.getItem("userId");
-    this.clientID = "74BB6922" // it is different for everyclient based on link;
-    if (this.bearer_token && this.userid) {
-      const pro_token = "" + this.bearer_token;
-      this.pro_headers = new HttpHeaders()
-        .set('Accesstoken', pro_token)
-        .set('userId', this.userid)
-        .set('languageid', '1')
-        .set('portalId', '3')
-        .set('source', 'web') 
-        .set('clientID', this.clientID)
-    } else {
-      this.pro_headers = new HttpHeaders();
-    }
-
-    return this.pro_headers;
+  setCurrentUser(user: AuthPayload) {
+    console.log("user common service", user)
+    this.currentUser = user;
   }
+  constructor(private http: HttpClient,private store: Store) {
+  
+ }
+  updateHeaders(): HttpHeaders {
+    this.store.select(selectCurrentUser).subscribe(user => {
+    this.userDataCommon = user;
+    console.log("userDataCommon", this.userDataCommon);
+  });
+console.log("curreUser",this.currentUser );
+  if (!this.currentUser) {
+    return new HttpHeaders();
+  }
+console.log("curreUser",this.currentUser );
+  return new HttpHeaders({
+    Accesstoken: this.currentUser.token,
+    userId: String(this.currentUser.userId),
+    languageid: '1',
+    portalId: '3',
+    source: 'web',
+    clientID: '74BB6922'
+  });
+}
   getSideNav(data: any) {
     return this.http.post(SharedUrlLinks._sidenav, data, { headers: this.updateHeaders() });
   } 

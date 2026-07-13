@@ -1,19 +1,30 @@
 import { createReducer, on } from '@ngrx/store';
-import { AuthState } from './auth.state';
-import {setAuthPropsData, clearAuthProps}   from './auth.actions';
-
-export const initialState: AuthState = {
-  user: null
-};
-
+import { initialState } from './auth.state';
+import { clearAuthProps, setAuthPropsData } from './auth.actions';
 
 export const authReducer = createReducer(
+
   initialState,
 
-  on(setAuthPropsData, (state, payload) => ({
-    ...state,
-    payload
-  })),
+   on(setAuthPropsData, (state, payload) => {
 
-  on(clearAuthProps, () => initialState)
+  console.log('Previous State:', state);
+  console.log('Payload:', payload);
+
+  const newState = {
+    ...state,
+    user: payload
+  };
+
+  console.log('New State:', newState);
+
+  return newState;
+}),
+
+
+  on(clearAuthProps, () => {
+    console.log('CLEAR AUTH');
+    return initialState;
+  })
+
 );
