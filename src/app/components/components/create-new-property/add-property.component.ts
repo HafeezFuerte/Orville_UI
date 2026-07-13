@@ -224,7 +224,7 @@ loadPropertyTypes() {
   };
 
   this.getAllTypes.getPropertyTypes(payload).subscribe({
-    next: (response: any) => {
+    next: (response) => {
       this.propertyTypes = response.objResult.table;
       console.log("propertyTypes ", this.propertyTypes)
     },

@@ -103,7 +103,7 @@ export class MyInsightsComponent implements OnInit {
       filterText1: "",
       userId: Number(userId),
       companyId: Number(companyId),
-      clientId: "74BB6922"
+      clientId: clientId
     };
 
     const mastersPayload = {

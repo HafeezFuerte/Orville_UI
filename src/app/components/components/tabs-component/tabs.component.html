@@ -1,0 +1,999 @@
+ <!-- Right Side: Navigation Tabs, Overview Lease Tables & Analytics Charts -->
+  <div class="col-span-12 lg:col-span-8 flex flex-col gap-3">
+    <!-- horizontal tabs row -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2">
+      <button *ngFor="let t of tabs" (click)="activeTab = t.key"
+        [class]="activeTab === t.key ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
+        class="px-4 py-2 text-xs rounded-md border-b-2 transition-all whitespace-nowrap">
+        {{t.label | translate}}
+      </button>
+    </div>
+
+    <!-- Active Tab Box Container -->
+    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
+      <!-- 📋 OVERVIEW TAB CONTENT -->
+      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Overview</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Lease and tenant agreement listings associated with this unit.</p>
+          </div>
+          <!-- Search Leases bar -->
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <div class="input-group w-full md:w-56">
+              <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search lease name...">
+              <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+                <i class="ri-search-line text-xs"></i>
+              </button>
+            </div>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+          </div>
+        </div>
+
+        <!-- Leases Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Case</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Rent (AED)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Start Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">End Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Renewed?</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Multi Unit?</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Remarks</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lease of leases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{lease.id}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-danger/10 text-danger px-2 py-0.5 rounded text-[10px] font-bold">{{lease.legalCase}}</span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lease.unit}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.property}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lease.status === 'Active' ? 'badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold' : 'badge bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-[10px] font-bold'">
+                    {{lease.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lease.rent}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.startDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.endDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.renewed}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.multiUnit}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.created}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.remarks}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lease.createdBy}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lease.internalStatus === 'Approved' ? 'badge bg-success/10 text-success px-2 py-0.5 rounded text-[10px] font-bold' : 'badge bg-warning/10 text-warning px-2 py-0.5 rounded text-[10px] font-bold'">
+                    {{lease.internalStatus}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 2 of 2 records</div>
+        </div>
+
+        <!-- 📊 Charts Block & Financial Summaries -->
+        <div class="grid grid-cols-12 gap-3 mt-2 pt-4 border-t border-gray-100">
+          <!-- Monthly Performance Chart (figma image 1 top right) -->
+          <div class="col-span-12 lg:col-span-8 p-4 rounded-xl border border-gray-100 bg-white flex flex-col gap-3">
+            <div class="flex justify-between items-center border-b pb-2">
+              <span class="text-xs font-bold text-gray-700">Monthly Performance</span>
+              <i class="ri-bar-chart-fill text-gray-600"></i>
+            </div>
+            <!-- Bar Chart Representation -->
+            <div class="h-32 flex items-end justify-between gap-2.5 pt-4">
+              <!-- Jan -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-1/5" title="Jan: 4M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jan</span>
+              </div>
+              <!-- Feb -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/5" title="Feb: 8M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Feb</span>
+              </div>
+              <!-- Mar -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-3/5" title="Mar: 12M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Mar</span>
+              </div>
+              <!-- Apr -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/6" title="Apr: 6.5M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Apr</span>
+              </div>
+              <!-- May -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-2/5" title="May: 8M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">May</span>
+              </div>
+              <!-- Jun -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-5/6" title="Jun: 16.5M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jun</span>
+              </div>
+              <!-- Jul -->
+              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
+                <div class="bg-primary rounded-t w-3.5 h-full" title="Jul: 20M"></div>
+                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jul</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Expense & Performance Cards (figma image 1 right) -->
+          <div class="col-span-12 lg:col-span-4 flex flex-col gap-3 justify-between">
+            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
+              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Expense</span>
+              <h5 class="text-sm font-black text-danger mt-1.5 mb-0 leading-none">AED 0.00</h5>
+            </div>
+            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
+              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Performance</span>
+              <h5 class="text-sm font-black text-primary mt-1.5 mb-0 leading-none">AED 2,000.00</h5>
+            </div>
+          </div>
+
+          <!-- Financial Summary Section (figma image 1 middle right) -->
+          <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-3 mt-1">
+            <!-- Big Cash Balance Card -->
+            <div class="md:col-span-7 p-4 bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl flex flex-col justify-between shadow-md">
+              <div>
+                <span class="text-[9px] uppercase font-bold tracking-widest text-indigo-200">Cash Balance</span>
+                <h3 class="text-xl font-black text-white m-0 mt-1">AED 2,000.00</h3>
+              </div>
+              <div class="grid grid-cols-2 gap-4 border-t border-indigo-800/60 pt-3 mt-4">
+                <div>
+                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Total Income</span>
+                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+                </div>
+                <div>
+                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Wallet Deposit</span>
+                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side Rent/deposit details card -->
+            <div class="md:col-span-5 p-4 rounded-xl border border-gray-100 bg-white flex flex-col justify-between shadow-sm text-xs">
+              <h6 class="font-bold text-gray-800 m-0 border-b pb-2 mb-2">Monthly Revenue & Expenses</h6>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-gray-600">Total Income</span>
+                <span class="font-bold text-success">AED 2,000.00</span>
+              </div>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-gray-600">Total Expenses</span>
+                <span class="font-bold text-danger">AED 0.00</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1 pt-1 font-bold">
+                <span class="text-gray-800">Net Profit</span>
+                <span class="text-primary">AED 2,000.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📋 FINANCIALS TAB CONTENT -->
+      <div *ngIf="activeTab === 'financials'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Financials</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track invoices and payments associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Invoice
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Financials Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">To</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit / Common Area</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Number</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque no</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Currency</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Note</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Work Order</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Gross Amount</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Payment Via</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Money Held By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">DD Ref No</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Bank Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Archived</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque(s)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Days</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Write Amount Off</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fin of financials" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.id}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="fin.status === 'Paid' ? 'badge bg-success/10 text-success' : fin.status === 'Unpaid' ? 'badge bg-danger/10 text-danger' : fin.status === 'Overdue' ? 'badge bg-warning/10 text-warning' : 'badge bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{fin.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.to}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.unitCommonArea}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{fin.invoiceNumber}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.chequeNo}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.invoiceDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.invoiceType}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.account}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.currency}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.propertyName}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.propertyId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.leaseId}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">{{fin.leaseStatus}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs max-w-xs truncate" [title]="fin.note">{{fin.note}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.workOrder}}</td>
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.amount}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.grossAmount}}</td>
+                <td class="py-3 px-4 font-semibold text-success text-xs">{{fin.paid}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.paymentVia}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.moneyHeldBy}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.ddRefNo}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.bankName}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.internalStatus}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.archived}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.dueDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.paidDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.cheques}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.days}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{fin.writeAmountOff}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.createdBy}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 INVENTORY TAB CONTENT -->
+      <div *ngIf="activeTab === 'inventory'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inventory Items</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track inventory items associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Inventory
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Location</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Qty</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Expiry</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Attachments</th>
+              </tr>
+            </thead>
+            <tbody>
+               <tr *ngFor="let item of inventoryItems" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                 <td class="py-3 px-4 font-bold text-primary text-xs">{{item.id}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <span class="font-semibold text-gray-800 block leading-tight">{{item.itemName}}</span>
+                   <span class="text-[9px] text-gray-600 block mt-0.5">{{item.itemSub}}</span>
+                 </td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.itemLocation}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <span class="badge bg-light text-gray-800 px-2.5 py-1 rounded text-[11px] font-bold border border-gray-200">
+                     {{item.qty}}
+                   </span>
+                 </td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.expiry}}</td>
+                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{item.createdAt}}</td>
+                 <td class="py-3 px-4 text-xs">
+                   <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.65rem] border bg-gray-50 text-gray-700 hover:bg-gray-100 flex items-center gap-1 shadow-sm font-semibold rounded">
+                     {{item.attachments}}
+                   </button>
+                 </td>
+               </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 6 of 6 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 WORK ORDERS TAB CONTENT -->
+      <div *ngIf="activeTab === 'workorders'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Work Orders</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track maintenance work orders associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Work Order
+          </button>
+        </div>
+
+        <!-- Controls row -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <!-- Work Orders Table -->
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Title</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Closing Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Priority</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Vendor</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Tags</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Maintenance Category</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Responsible Person(s)</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let wo of workOrders" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.title}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.status === 'Completed' ? 'badge bg-success/10 text-success' : wo.status === 'In Progress' ? 'badge bg-primary/10 text-primary' : wo.status === 'Scheduled' ? 'badge bg-warning/10 text-warning' : 'badge bg-danger/10 text-danger'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.closingStatus === 'Closed' ? 'badge bg-success/10 text-success' : 'badge bg-warning/10 text-warning'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.closingStatus}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{wo.internalStatus}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.dueDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="wo.priority === 'High' ? 'badge bg-danger/10 text-danger' : wo.priority === 'Medium' ? 'badge bg-warning/10 text-warning' : 'badge bg-success/10 text-success'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{wo.priority}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.property}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.vendor}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.user}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-medium mr-1" *ngFor="let tag of wo.tags.split(',')">{{tag.trim()}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.maintenanceCategory}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.responsiblePersons}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{wo.updatedAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{wo.createdAt}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator summary info -->
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div class="flex items-center gap-2">
+            <span>Show</span>
+            <select class="form-select w-16 !text-xs !py-1">
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 ATTACHMENTS TAB CONTENT -->
+      <div *ngIf="activeTab === 'attachments'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Attachments</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage documents and attachments associated with this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Attachment
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">File Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Doc ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Document Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Issue Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Expiry Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Files</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let att of unitAttachments" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{att.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{att.fileType}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.docId}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="att.status === 'Active' ? 'badge bg-primary text-white' : 'badge bg-success/10 text-success'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{att.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.issueDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{att.expiryDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-1 rounded text-[10px] border border-gray-200">{{att.files}}</span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 2 of 2 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 LEGAL CASES TAB CONTENT -->
+      <div *ngIf="activeTab === 'legal'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Legal Cases</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Track and view litigation files for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Legal Case
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Details</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Firm</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Case Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lc of legalCases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{lc.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lc.name}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="lc.details">{{lc.details}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lc.legalFirm}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{lc.caseDate}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="lc.status === 'Open' ? 'badge bg-danger/10 text-danger' : lc.status === 'In Progress' ? 'badge bg-primary/10 text-primary' : lc.status === 'Hearing Scheduled' ? 'badge bg-warning text-white' : lc.status === 'Investigation' ? 'badge bg-info/10 text-info' : 'badge bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{lc.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 PARKINGS TAB CONTENT -->
+      <div *ngIf="activeTab === 'parkings'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Parkings</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and allocate parking bays linked to this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Parking
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Parking No.</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Fee</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cycle</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Remarks</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pk of parkings" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{pk.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{pk.parkingNo}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{pk.propertyName}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{pk.unitName}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="pk.type === 'Free' ? 'badge bg-light text-gray-600 border border-gray-200' : 'badge bg-primary text-white'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{pk.type}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{pk.fee}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{pk.cycle}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.remarks}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.created}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{pk.updated}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 NOTES TAB CONTENT -->
+      <div *ngIf="activeTab === 'notes'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Notes</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">View and log general annotations for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Note
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Content</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Via</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Note Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Files</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let nt of notes" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{nt.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{nt.subject}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="nt.content">{{nt.content}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{nt.via}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{nt.noteDate}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{nt.createdBy}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-1 rounded text-[10px] border border-gray-200 font-bold">{{nt.files}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{nt.createdAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{nt.updatedAt}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 BROADCASTS TAB CONTENT -->
+      <div *ngIf="activeTab === 'broadcasts'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Property Broadcasts</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage communication broadcasts sent to unit tenants.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-filter-3-line"></i> Filter
+            </button>
+            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+              <i class="ri-layout-column-line"></i> Column
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Preview</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Broadcast Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sendable</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">People Count</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let bc of broadcasts" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{bc.id}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{bc.subject}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="bc.preview">{{bc.preview}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span [class]="bc.status === 'Sent' ? 'badge bg-success/10 text-success' : bc.status === 'Scheduled' ? 'badge bg-primary/10 text-primary' : 'badge bg-light text-gray-800 border border-gray-200'" class="px-2 py-0.5 rounded text-[10px] font-bold">
+                    {{bc.status}}
+                  </span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{bc.type}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">{{bc.sendable}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{bc.peopleCount}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200 font-bold">{{bc.scheduled}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{bc.date}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{bc.createdAt}}</td>
+                <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{bc.updatedAt}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 4 of 4 records</div>
+        </div>
+      </div>
+
+      <!-- 📋 INSPECTIONS TAB CONTENT -->
+      <div *ngIf="activeTab === 'inspections'" class="flex flex-col gap-3 animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inspection</h4>
+            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track property inspections for this unit.</p>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+            <i class="ri-add-line"></i> Add Inspection
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
+          <div class="input-group w-full md:w-64">
+            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
+            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+              <i class="ri-search-line text-xs"></i>
+            </button>
+          </div>
+          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
+            <i class="ri-layout-column-line"></i> Column
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+            <thead class="bg-gray-50/50">
+              <tr class="border-b border-gray-100">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Inspection ID</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Company Id</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Type</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date/Time</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User Id</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Environment</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ins of inspections" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.inspectionId}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.companyId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.name}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-warning text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.status}}</span>
+                </td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{ins.type}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.unit}}</td>
+                <td class="py-3 px-4 text-xs">
+                  <span class="badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.scheduled}}</span>
+                </td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.dateTime}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.userId}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.environment}}</td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                      <i class="ri-edit-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
+          <div>Showing 1 to 5 of 5 records</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
