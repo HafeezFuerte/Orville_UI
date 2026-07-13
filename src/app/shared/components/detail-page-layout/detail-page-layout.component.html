@@ -1,0 +1,147 @@
+<div class="grid grid-cols-12 gap-6 mt-4">
+
+    <!-- Left Panel -->
+
+    <div class="col-span-12 lg:col-span-4">
+
+        <ng-container
+            *ngTemplateOutlet="leftPanel">
+        </ng-container>
+
+    </div>
+
+    <!-- Right Panel -->
+
+    <div class="col-span-12 lg:col-span-8">
+
+        <div class="box bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+
+            <!-- Tabs -->
+
+            <div class="border-b border-gray-100 bg-gray-50/50 p-2 overflow-x-auto whitespace-nowrap flex gap-1">
+
+                <button
+
+                    *ngFor="let tab of tabs"
+
+                    (click)="changeTab(tab)"
+
+                    class="px-4 py-2 text-xs rounded-md transition-all"
+
+                    [class]="activeTab==tab.key
+                    ?
+                    'bg-white shadow-sm text-primary font-bold border-b-2 border-primary'
+                    :
+                    'text-gray-500 font-medium hover:text-gray-800'">
+
+                    {{tab.label}}
+
+                </button>
+
+            </div>
+
+            <!-- Body -->
+
+          <div class="p-6">
+
+    <!-- Content Layout -->
+    <ng-container *ngIf="selectedTab?.layout === 'content'">
+
+        <ng-container
+            *ngTemplateOutlet="overview">
+        </ng-container>
+
+    </ng-container>
+
+    <!-- Table Layout -->
+    <ng-container *ngIf="selectedTab?.layout === 'table'">
+<!-- Toolbar -->
+<div
+  *ngIf="selectedTab?.layout === 'table' || selectedTab?.layout === 'content-table'"
+  class="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
+
+  <!-- Search -->
+  <div class="w-full md:w-96">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search">
+
+      <button
+        class="input-group-text bg-primary/10 text-primary">
+
+        <i class="ri-search-line"></i>
+
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Buttons -->
+  <div class="flex gap-2">
+
+    <button
+      class="ti-btn ti-btn-light">
+
+      <i class="ri-filter-3-line me-1"></i>
+
+      Filter
+
+    </button>
+
+    <button
+      class="ti-btn ti-btn-light">
+
+      <i class="ri-layout-column-line me-1"></i>
+
+      Columns
+
+    </button>
+
+  </div>
+
+</div>
+        <app-shared-table
+            [columns]="selectedTab?.columns || []"
+            [data]="selectedTab?.data || []"
+            [loading]="selectedTab?.loading || false"
+            [totalRecords]="selectedTab?.totalRecords || 0"
+            [pageSize]="selectedTab?.pageSize || 50"
+            [pageIndex]="selectedTab?.pageIndex || 0"
+            [hasActions]="selectedTab?.hasActions || false">
+
+        </app-shared-table>
+
+    </ng-container>
+
+    <!-- Content + Table -->
+    <ng-container *ngIf="selectedTab?.layout === 'content-table'">
+
+        <ng-container
+            *ngTemplateOutlet="overview">
+        </ng-container>
+
+        <div class="mt-6">
+
+            <app-shared-table
+                [columns]="selectedTab?.columns || []"
+                [data]="selectedTab?.data || []"
+                [loading]="selectedTab?.loading || false"
+                [totalRecords]="selectedTab?.totalRecords || 0"
+                [pageSize]="selectedTab?.pageSize || 50"
+                [pageIndex]="selectedTab?.pageIndex || 0"
+                [hasActions]="selectedTab?.hasActions || false">
+
+            </app-shared-table>
+
+        </div>
+
+    </ng-container>
+
+</div>
+
+        </div>
+
+    </div>
+
+</div>

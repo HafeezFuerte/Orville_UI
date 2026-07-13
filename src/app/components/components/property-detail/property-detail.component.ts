@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
-import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { Store } from '@ngrx/store';
 import { selectCommonData } from '../../common/store/common-payload/common.selectors';
 import { GetAllTypes } from '../../../shared/services/get-all-types.service';
+import { DetailPageLayoutComponent } from '../../../shared/components/detail-page-layout/detail-page-layout.component';
+import { DetailTab } from '../../../shared/models/detail-tab.model';
 
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, FormsModule, SharedTableComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, FormsModule, DetailPageLayoutComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -19,35 +20,13 @@ export class PropertyDetailComponent implements OnInit {
   viewMode: 'list' | 'grid' = 'list';
   propertyId!: number;
   property: any = null;
-  activeTab: string = 'overview';
+  activeTab = 'overview';
   showMoreDetails: boolean = false;
-  currentTableData: any[] = [];
   loading = false;
-  pageNo = 1;
-  pageSize = 50;
-  totalRecords = 0;
   paginatedProperties: any[] = [];
 codeParam = '';
 commonData: any = [];
- tableColumns = [
-  { key: 'id', label: 'ID', useTemplate: true },
-  { key: 'name', label: 'Name', useTemplate: true },
-  { key: 'category', label: 'Category', useTemplate: true },
-  { key: 'beds', label: 'Beds', useTemplate: true },
-  { key: 'property', label: 'Property', useTemplate: true },
-  { key: 'landlord', label: 'Landlord', useTemplate: true },
-  { key: 'tags', label: 'Tags', useTemplate: true },
-  { key: 'unit_type', label: 'Unit Type', useTemplate: true }
-];
-  tabs = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'units', label: 'Units' },
-    { key: 'rooms', label: 'Rooms' },
-    { key: 'tenants', label: 'Tenants History' },
-    { key: 'common', label: 'Common Area' },
-    { key: 'broadcasts', label: 'Broadcasts' },
-    { key: 'attachments', label: 'Attachments' }
-  ];
+  tabs: DetailTab[] = [];
 unitsData: any = [];
 roomsData = [];
 tenantsData = [];
@@ -57,17 +36,100 @@ attachmentsData = [];
 broadCastsData = [];
 assetsData = [];
 notesData = [];
+parkingData = [];
 documentsData = [];
-tenantsHistoryData = [];
   // Mock list for fallback loading
-  mockProperties = [
-    { id: 31658, name: 'Marina Heights Towers', type_name: 'Residential', occupied_units: 412, total_units: 421, landlord: 'Orville Real Estate' },
-    { id: 31659, name: 'Jumeirah Living', type_name: 'Residential', occupied_units: 10, total_units: 12, landlord: 'Emaar Properties' },
-    { id: 31660, name: 'Burj Khalifa Residences', type_name: 'Residential', occupied_units: 48, total_units: 50, landlord: 'Orville Real Estate' },
-    { id: 31661, name: 'Index Tower', śtype_name: 'Commercial', occupied_units: 20, total_units: 25, landlord: 'DIFC Investments' },
-    { id: 31662, name: 'Dubai Marina Mall', type_name: 'Commercial', occupied_units: 28, total_units: 30, landlord: 'Emaar Malls' }
-  ];
- 
+  unitColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'category_name', label: 'Category' },
+  { key: 'beds', label: 'Beds' },
+  { key: 'property Name', label: 'Property' },
+  { key: 'name', label: 'Landlord' },
+  { key: 'tags', label: 'Tags' },
+  { key: 'unit_type_name', label: 'Unit Type' }
+];
+
+roomColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'property Name', label: 'Name' },
+  { key: 'category_name', label: 'Category' },
+  { key: 'beds', label: 'Beds' },
+  { key: 'property Name', label: 'Property' },
+  { key: 'name', label: 'Landlord' },
+  { key: 'tags', label: 'Tags' },
+  { key: 'room_type_name', label: 'Unit Type' }
+];
+
+tenantColumns = [
+  { key: 'code', label: 'Tenant' },
+  { key: 'property', label: 'Name' },
+  { key: 'email_address', label: 'Email' },
+  { key: 'phone_number', label: 'Phone Number' },
+  { key: 'company_name', label: 'Company' },
+  { key: 'active_lease', label: 'Active Lease' }
+];
+commonAreaColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'area_name', label: 'Area Name' },
+  { key: 'property_code', label: 'Property ID' },
+  { key: 'floor_no', label: 'Floor No' },
+  { key: 'uploaded_date', label: 'Created at' },
+  { key: 'modified_date', label: 'Updated at' },
+  { key: 'code', label: 'Action' }
+];
+broadCastsColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'subject', label: 'Subject' },
+  { key: 'preview', label: 'Preview' },
+  { key: 'status', label: 'Status' },
+  { key: 'broadcast_type_nm', label: 'Broadcast Type' },
+  { key: 'send_to', label: 'Sendable' },
+  { key: 'is_scheduled', label: 'Scheduled' },
+  { key: 'scheduled_date', label: 'Date' }
+  
+];
+attachmentColumns = [
+  { key: 'entity_code', label: 'ID' },
+  { key: 'document_type', label: 'File Type' },
+  { key: 'doc_no', label: 'Doc ID' },
+  { key: 'document_status', label: 'Document Status' },
+  { key: 'issue_date', label: 'Issue Date' },
+  { key: 'expiry_date', label: 'Expiry Date' },
+  { key: 'file_path', label: 'Files' }
+];
+
+notesColumns = [
+  { key: 'entity_code', label: 'ID' },
+  { key: 'subject', label: 'Subject' },
+  { key: 'description', label: 'Content' },
+  { key: 'status', label: 'Via' },
+  { key: 'uploaded_date', label: 'Note date' },
+  { key: 'uploaded_by', label: 'Created' }
+  
+];
+
+parkingsColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'parking_no', label: 'Parking No' },
+  { key: 'property_code', label: 'Property' },
+  { key: 'unit_code', label: 'Unit' },
+  { key: 'parking_type_nm', label: 'Type' },
+  { key: 'uploaded_by', label: 'Fee' },
+  { key: 'recurring_cycle_nm', label: 'Cycle' },
+  { key: 'remarks', label: 'Remarks' }
+  
+];
+
+assetsColumns = [
+  { key: 'code', label: 'ID' },
+  { key: 'asset_name', label: 'Asset Name' },
+  { key: 'model', label: 'Model' },
+  { key: 'asset_category', label: 'Category' },
+  { key: 'property_code', label: 'Property' },
+  { key: 'unit_code', label: 'Unit' },
+  { key: 'price', label: 'Price' }
+];
 
   constructor(private route: ActivatedRoute, private store: Store,private propertiesService: GetAllTypes) {}
 
@@ -76,52 +138,16 @@ tenantsHistoryData = [];
     this.route.paramMap.subscribe(params => {
       this.codeParam = params.get('code') ?? '';
       
-    });
-    this.activeTab = '';    
+    });   
+    this.initializeTabs(); 
     this.loadPropertyByCode(this.codeParam);
-    this.changeTab('overview');
+
 
   }
 
   toggleMoreDetails(): void {
     this.showMoreDetails = !this.showMoreDetails;
   }
-  changeTab(tab: string) {
-
-  this.activeTab = tab;
-
-  switch(tab){
-
-    case 'units':
-      this.currentTableData = this.unitsData;
-      break;
-
-    case 'rooms':
-      this.currentTableData = this.roomsData;
-      break;
-
-    case 'tenants':
-      this.currentTableData = this.tenantsData;
-      break;
-
-    case 'common':
-      this.currentTableData = this.commonAreaData;
-      break;
-
-    case 'broadcasts':
-      this.currentTableData = this.broadcastsData;
-      break;
-
-    case 'attachments':
-      this.currentTableData = this.attachmentsData;
-      break;
-
-    default:
-      this.currentTableData = [];
-  }
-
-  this.totalRecords = this.currentTableData.length;
-}
 loadPropertyByCode(codeParam: any){
 this.store.select(selectCommonData).subscribe(data => {
     this.commonData = data;
@@ -149,9 +175,10 @@ const payload = {
            this.broadCastsData = res.objResult.broadcasts;
            this.assetsData = res.objResult.assets;
            this.notesData = res.objResult.notes;
-           this.documentsData = res.objResult.documents;
-           this.tenantsHistoryData = res.objResult.tenants_history;
-           
+           this.attachmentsData = res.objResult.documents;
+           this.tenantsData = res.objResult.table11;
+           this.parkingData = res.objResult.tenants_history;
+           this.initializeTabs();
            console.log("amenities..",this.property.amenities);
           this.loading = false;
         }
@@ -160,5 +187,112 @@ const payload = {
         this.loading = false;
       },
     });
+}
+
+initializeTabs() {
+
+  this.tabs = [
+
+    {
+      key: 'overview',
+      label: 'Overview',
+      layout: 'content'
+    },
+
+    {
+      key: 'units',
+      label: 'Units',
+      layout: 'table',
+      columns: this.unitColumns,
+      data: this.unitsData,
+      totalRecords: this.unitsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+
+    {
+      key: 'rooms',
+      label: 'Rooms',
+      layout: 'table',
+      columns: this.roomColumns,
+      data: this.roomsData,
+      totalRecords: this.roomsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+
+    {
+      key: 'tenants',
+      label: 'Tenants History',
+      layout: 'table',
+      columns: this.tenantColumns,
+      data: this.tenantsData,
+      totalRecords: this.tenantsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+{
+      key: 'commonarea',
+      label: 'Common Area',
+      layout: 'table',
+      columns: this.commonAreaColumns,
+      data: this.commonAreaData,
+      totalRecords: this.documentsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+    {
+      key: 'attachments',
+      label: 'Attachments',
+      layout: 'table',
+      columns: this.attachmentColumns,
+      data: this.attachmentsData,
+      totalRecords: this.attachmentsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+    {
+      key: 'broadcasts',
+      label: 'Broadcasts',
+      layout: 'table',
+      columns: this.broadCastsColumns,
+      data: this.broadCastsData,
+      totalRecords: this.broadCastsData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+    {
+      key: 'notes',
+      label: 'Notes',
+      layout: 'table',
+      columns: this.notesColumns,
+      data: this.notesData,
+      totalRecords: this.notesData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+    {
+      key: 'parkings',
+      label: 'Parkings',
+      layout: 'table',
+      columns: this.parkingsColumns,
+      data: this.parkingData,
+      totalRecords: this.parkingData?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    },
+    {
+      key: 'assets',
+      label: 'Assets',
+      layout: 'table',
+      columns: this.assetsColumns,
+      data: this.assetsData,
+      totalRecords: this.assetsColumns?.length || 0,
+      loading: this.loading,
+      hasActions: true
+    }
+
+  ];
+
 }
 }

@@ -38,7 +38,7 @@ export class PropertiesListComponent implements OnInit {
 
   // Table Columns Definition
   tableColumns = [
-    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true },
+    { key: 'code', label: 'ID', headerClass: 'text-start', useTemplate: true },
     { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true },
     { key: 'type_name', label: 'Type', headerClass: 'text-start', useTemplate: true },
     { key: 'internal Status', label: 'Internal Status', headerClass: 'text-start', useTemplate: true },
@@ -131,7 +131,7 @@ export class PropertiesListComponent implements OnInit {
 
     // Apply ID filter
     if (this.selectedId) {
-      result = result.filter(p => p.id === this.selectedId);
+      result = result.filter(p => p.code === this.selectedId);
     }
 
     this.totalRecords = result.length;
