@@ -32,12 +32,12 @@ private currentUser: AuthPayload | null = null;
     this.store.select(selectCurrentUser).subscribe(user => {
     this.userDataCommon = user;
   });
-  if (!this.currentUser) {
+  if (!this.userDataCommon) {
     return new HttpHeaders();
   }
   return new HttpHeaders({
-    Accesstoken: this.currentUser.token,
-    userId: String(this.currentUser.userId),
+    Accesstoken: this.userDataCommon.token,
+    userId: String(this.userDataCommon.userId),
     languageid: '1',
     portalId: '3',
     source: 'web',
