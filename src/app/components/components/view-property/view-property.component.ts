@@ -49,7 +49,6 @@ const payload = {
         if (res["statusCode"] == "200") {
            this.property = res.objResult.property[0];
            this.property.amenities = res.objResult.amenities;
-           console.log("amenities..",this.property.amenities);
           this.isLoading = false;
         }
       },

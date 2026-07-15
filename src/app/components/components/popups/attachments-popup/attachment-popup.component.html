@@ -1,0 +1,101 @@
+
+<form [formGroup]="form" class="space-y-5">
+    <div>
+        <label class="ti-form-label">
+            Document Type
+            <span class="text-danger">*</span>
+        </label>
+         <select class="form-control w-full !rounded-md" formControlName="documentType">
+                            <option value="" disabled>
+                                Select Property Type
+                            </option>
+                            <option *ngFor="let docType of documentTypes" [value]="docType.id">
+                                {{ docType.name }}
+                            </option>
+                        </select>
+        <p class="text-[11px] text-gray-400 mt-1">
+            Choose the category that best matches the uploaded document.
+        </p>
+    </div>
+    <div>
+        <label class="ti-form-label">
+            Document Number
+        </label>
+        <input
+            type="text"
+            class="ti-form-input"
+            formControlName="documentNumber"
+            placeholder="Enter">
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="ti-form-label">
+                Issue Date
+            </label>
+            <input
+                type="date"
+                class="ti-form-input"
+                formControlName="issueDate">
+        </div>
+        <div>
+            <label class="ti-form-label">
+                Expiry Date
+            </label>
+            <input
+                type="date"
+                class="ti-form-input"
+                formControlName="expiryDate">
+        </div>
+    </div>
+    <div>
+        <label class="ti-form-label">
+            Issuing Authority
+        </label>
+        <input
+            type="text"
+            class="ti-form-input"
+            formControlName="issuingAuthority"
+            placeholder="Enter">
+    </div>
+    <div class="border rounded-lg p-4 bg-gray-50">
+        <div class="flex justify-between items-center">
+            <div>
+                <h6 class="text-sm font-medium text-gray-700">
+                    Share with tenant
+                </h6>
+                <p class="text-xs text-gray-400 mt-1">
+                    Allow tenants to view this document.
+                </p>
+            </div>
+            <label class="switch">
+                <input
+                    type="checkbox"
+                    formControlName="shareWithTenant">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="box">
+
+    <div class="box-header">
+        <h6 class="box-title">
+           Upload File
+        </h6>
+    </div>
+
+    <div class="box-body">
+
+        <app-file-upload
+            [accept]="'image/*'"
+            [multiple]="false"
+            [browseText]="'Test'"
+            
+            (filesChanged)="onFilesSelected($event)"
+            >
+        </app-file-upload>
+
+    </div>
+
+</div>
+</form>

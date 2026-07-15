@@ -16,7 +16,6 @@ export class DashboardService {
 
     // ✅ CORRECT (POST with payload)
     getDashboard(data: any) {
-        console.log("test1")
         const headers = this.commonService.updateHeaders();
 
     console.log('Dashboard Payload:', data);

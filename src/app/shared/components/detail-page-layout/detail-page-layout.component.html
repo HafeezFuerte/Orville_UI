@@ -55,6 +55,21 @@
 
     <!-- Table Layout -->
     <ng-container *ngIf="selectedTab?.layout === 'table'">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-gray-800 m-0">Units</h4>
+          </div>
+        <button
+            type="button"
+            class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold"
+            (click)="openModal()">
+
+    <i class="ri-add-line"></i>
+
+    {{ selectedTab?.addButtonText }}
+
+</button>
+        </div>
 <!-- Toolbar -->
 <div
   *ngIf="selectedTab?.layout === 'table' || selectedTab?.layout === 'content-table'"
@@ -145,3 +160,22 @@
     </div>
 
 </div>
+<app-reusable-modal
+    *ngIf="showModal"
+    [title]="'Add ' + (selectedTab?.addButtonText || '')"
+    subtitle="Enter details"
+    (save)="onSave()"
+    (close)="closeModal()">
+
+    <app-common-area-popup
+        *ngIf="selectedTab?.popupType === 'common-area'"
+        [form]="selectedTab!.form!">
+    </app-common-area-popup>
+
+    <app-attachment-popup
+        *ngIf="selectedTab?.popupType === 'attachment'"
+        [form]="selectedTab!.form!"
+        (fileSelected)="attachmentFileSelected.emit($event)">
+    </app-attachment-popup>
+
+</app-reusable-modal>

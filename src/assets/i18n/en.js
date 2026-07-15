@@ -12,6 +12,7 @@ exports.locale = {
                 "lblFilters": "Filters"
             },
             "property": {
+                "lblInformation": "Information",
                 "lblProperties": "Properties",
                 "lblPropertyDesc": "Manage your real estate portfolio, buildings, and sites with modern metrics and visual tracking.",
                 "lblTotalProperties": "Total Properties",

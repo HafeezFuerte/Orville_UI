@@ -23,7 +23,6 @@ export class CommonService {
 private currentUser: AuthPayload | null = null;
 
   setCurrentUser(user: AuthPayload) {
-    console.log("user common service", user)
     this.currentUser = user;
   }
   constructor(private http: HttpClient,private store: Store) {
@@ -32,13 +31,10 @@ private currentUser: AuthPayload | null = null;
   updateHeaders(): HttpHeaders {
     this.store.select(selectCurrentUser).subscribe(user => {
     this.userDataCommon = user;
-    console.log("userDataCommon", this.userDataCommon);
   });
-console.log("curreUser",this.currentUser );
   if (!this.currentUser) {
     return new HttpHeaders();
   }
-console.log("curreUser",this.currentUser );
   return new HttpHeaders({
     Accesstoken: this.currentUser.token,
     userId: String(this.currentUser.userId),

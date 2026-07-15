@@ -120,15 +120,15 @@ loadProperty(){
       this.commonData = data;
     });
     console.log(this.commonData);
-  const payload = {
-    typeId:this.commonData.typeId,
-    filterId: this.commonData.filterId,
-    filterText: this.propertyCode,
-    filterText1: "0",
-    userId: this.commonData.userId,
-    clientId: this.commonData.clientId,
-    companyId: this.commonData.companyId
-  };
+    const payload = {
+      typeId:this.commonData.typeId,
+      filterId: this.commonData.filterId,
+      filterText: this.propertyCode,
+      filterText1: "0",
+      userId: this.commonData.userId,
+      clientId: this.commonData.clientId,
+      companyId: this.commonData.companyId
+    };
    this.getAllTypes.
    getPropertyByCode(payload).subscribe({
         next: (res) => {
@@ -471,15 +471,15 @@ const request = {
   country_id: Number(form.country),
   state_id: Number(form.state),
   city_id: form.city,
-total_units: Number(form.totalUnits),
+  total_units: Number(form.totalUnits),
   zipcode: form.zipCode,
   lat: form.latitude,
   lon: form.longitude,
 
   community: form.community,
   land_no: form.landNo,
-no_of_floors: Number(form.floors),
-parking_floors: Number(form.parkingSpaces),
+  no_of_floors: Number(form.floors),
+  parking_floors: Number(form.parkingSpaces),
   tags: form.tags,
   desc: form.description,
 

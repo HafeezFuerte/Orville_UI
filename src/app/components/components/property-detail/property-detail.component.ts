@@ -1,22 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { selectCommonData } from '../../common/store/common-payload/common.selectors';
 import { GetAllTypes } from '../../../shared/services/get-all-types.service';
 import { DetailPageLayoutComponent } from '../../../shared/components/detail-page-layout/detail-page-layout.component';
 import { DetailTab } from '../../../shared/models/detail-tab.model';
-
+import { TranslateModule } from '@ngx-translate/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { CommonAreaPopupComponent } from '../popups/common-area-popup/common-area-popup.component';
+import { AttachmentPopupComponent } from '../popups/attachments-popup/attachment-popup.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, FormsModule, DetailPageLayoutComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
 export class PropertyDetailComponent implements OnInit {
+  propertyAttachment: File[] = [];
   viewMode: 'list' | 'grid' = 'list';
   propertyId!: number;
   property: any = null;
@@ -24,6 +28,8 @@ export class PropertyDetailComponent implements OnInit {
   showMoreDetails: boolean = false;
   loading = false;
   paginatedProperties: any[] = [];
+  commonAreaForm!: FormGroup;
+  attachmentsForm!: FormGroup;
 codeParam = '';
 commonData: any = [];
   tabs: DetailTab[] = [];
@@ -38,32 +44,35 @@ assetsData = [];
 notesData = [];
 parkingData = [];
 documentsData = [];
-  // Mock list for fallback loading
+@ViewChild(DetailPageLayoutComponent)
+detailLayout!: DetailPageLayoutComponent;
+  // columns
   unitColumns = [
   { key: 'code', label: 'ID' },
-  { key: 'name', label: 'Name' },
+  { key: 'unit_code', label: 'Name' },
   { key: 'category_name', label: 'Category' },
-  { key: 'beds', label: 'Beds' },
+  { key: 'unit_beds_name', label: 'Beds' },
   { key: 'property Name', label: 'Property' },
-  { key: 'name', label: 'Landlord' },
+  { key: 'landlord', label: 'Landlord' },
   { key: 'tags', label: 'Tags' },
   { key: 'unit_type_name', label: 'Unit Type' }
 ];
 
 roomColumns = [
   { key: 'code', label: 'ID' },
-  { key: 'property Name', label: 'Name' },
+  { key: 'room_type_name', label: 'Name' },
   { key: 'category_name', label: 'Category' },
   { key: 'beds', label: 'Beds' },
   { key: 'property Name', label: 'Property' },
   { key: 'name', label: 'Landlord' },
   { key: 'tags', label: 'Tags' },
-  { key: 'room_type_name', label: 'Unit Type' }
+  { key: 'unit_type_name', label: 'Unit Type' },
+  { key: 'room_type_name', label: 'Room Type' }
 ];
 
 tenantColumns = [
-  { key: 'code', label: 'Tenant' },
-  { key: 'property', label: 'Name' },
+  { key: 'lease_code', label: 'ID' },
+  { key: 'tenant ', label: 'Name' },
   { key: 'email_address', label: 'Email' },
   { key: 'phone_number', label: 'Phone Number' },
   { key: 'company_name', label: 'Company' },
@@ -105,15 +114,15 @@ notesColumns = [
   { key: 'description', label: 'Content' },
   { key: 'status', label: 'Via' },
   { key: 'uploaded_date', label: 'Note date' },
-  { key: 'uploaded_by', label: 'Created' }
+  { key: 'uploaded_by', label: 'Created By' }
   
 ];
 
 parkingsColumns = [
   { key: 'code', label: 'ID' },
   { key: 'parking_no', label: 'Parking No' },
-  { key: 'property_code', label: 'Property' },
-  { key: 'unit_code', label: 'Unit' },
+  { key: 'property', label: 'Property' },
+  { key: 'unit_code1', label: 'Unit' },
   { key: 'parking_type_nm', label: 'Type' },
   { key: 'uploaded_by', label: 'Fee' },
   { key: 'recurring_cycle_nm', label: 'Cycle' },
@@ -131,7 +140,7 @@ assetsColumns = [
   { key: 'price', label: 'Price' }
 ];
 
-  constructor(private route: ActivatedRoute, private store: Store,private propertiesService: GetAllTypes) {}
+  constructor(private route: ActivatedRoute, private store: Store,private propertiesService: GetAllTypes, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     
@@ -139,7 +148,23 @@ assetsColumns = [
       this.codeParam = params.get('code') ?? '';
       
     });   
-    this.initializeTabs(); 
+    this.commonAreaForm = this.fb.group({
+      areaName: [''],
+      floor: ['']
+    });
+
+    this.attachmentsForm = this.fb.group({
+      documentType: [''],
+      documentNumber: [''],
+      issueDate: [''],
+      expiryDate: [''],
+      issuingAuthority: [''],
+      shareWithTenant: [''],
+      propertyAttachment: [null]
+
+
+    });
+    this.initializeTabs();   
     this.loadPropertyByCode(this.codeParam);
 
 
@@ -171,7 +196,7 @@ const payload = {
            this.property.amenities = res.objResult.amenities;
            this.unitsData = res.objResult.units_info;
            this.roomsData = res.objResult.rooms_info;
-           this.commonAreaData = res.objResult.rooms_info;
+           this.commonAreaData = res.objResult.common_area;
            this.broadCastsData = res.objResult.broadcasts;
            this.assetsData = res.objResult.assets;
            this.notesData = res.objResult.notes;
@@ -179,7 +204,6 @@ const payload = {
            this.tenantsData = res.objResult.table11;
            this.parkingData = res.objResult.tenants_history;
            this.initializeTabs();
-           console.log("amenities..",this.property.amenities);
           this.loading = false;
         }
       },
@@ -207,7 +231,8 @@ initializeTabs() {
       data: this.unitsData,
       totalRecords: this.unitsData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Unit'
     },
 
     {
@@ -218,7 +243,8 @@ initializeTabs() {
       data: this.roomsData,
       totalRecords: this.roomsData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Room'
     },
 
     {
@@ -229,7 +255,8 @@ initializeTabs() {
       data: this.tenantsData,
       totalRecords: this.tenantsData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Tenant'
     },
 {
       key: 'commonarea',
@@ -237,9 +264,12 @@ initializeTabs() {
       layout: 'table',
       columns: this.commonAreaColumns,
       data: this.commonAreaData,
-      totalRecords: this.documentsData?.length || 0,
+      totalRecords: this.commonAreaData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Common Area',
+      form: this.commonAreaForm,
+      popupType: 'common-area'
     },
     {
       key: 'attachments',
@@ -249,7 +279,10 @@ initializeTabs() {
       data: this.attachmentsData,
       totalRecords: this.attachmentsData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Attachments',
+      form: this.attachmentsForm,
+      popupType: 'attachment'      
     },
     {
       key: 'broadcasts',
@@ -259,7 +292,8 @@ initializeTabs() {
       data: this.broadCastsData,
       totalRecords: this.broadCastsData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: ''
     },
     {
       key: 'notes',
@@ -269,7 +303,9 @@ initializeTabs() {
       data: this.notesData,
       totalRecords: this.notesData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Notes',
+      popupType: 'notes'
     },
     {
       key: 'parkings',
@@ -279,7 +315,8 @@ initializeTabs() {
       data: this.parkingData,
       totalRecords: this.parkingData?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Parking'
     },
     {
       key: 'assets',
@@ -289,10 +326,94 @@ initializeTabs() {
       data: this.assetsData,
       totalRecords: this.assetsColumns?.length || 0,
       loading: this.loading,
-      hasActions: true
+      hasActions: true,
+      addButtonText: 'Asset'
     }
 
   ];
 
+}
+ 
+savePopup(tab: string) {
+
+  switch (tab) {
+
+    case 'commonarea':
+      this.saveCommonArea(this.commonAreaForm);
+      break;
+
+    case 'attachments':
+      this.saveAttachment(this.attachmentsForm);
+      break;
+  }
+
+}
+
+saveCommonArea(form:FormGroup){
+  const values = form.value;
+  console.log("CA Form Values", values);
+const payload = {
+   userId: this.commonData.userId,
+  clientId: this.commonData.clientId,
+  company_id: this.commonData.companyId,
+  source: "web",
+  languageid: 1,
+  id: 0,
+  property_code: this.codeParam,
+  area_name: values.areaName,
+  floor_no: Number(values.floor),
+  desc: "",
+  code:""
+}
+this.propertiesService.saveCommonArea(payload)
+    .subscribe(res => {
+
+      console.log("attachments",res);
+
+    });
+}
+saveAttachment(form:FormGroup){
+   const values = form.value;
+   console.log("values", values);
+ const request = {
+   userId: this.commonData.userId,
+  clientId: this.commonData.clientId,
+  company_id: this.commonData.companyId,
+  source: "web",
+  languageid: 1,
+  id: 0,
+  entity_id: this.codeParam,
+   entity:'property',
+   document_type:values.documentType, 
+    document_no:values.documentNumber,
+    issue_date:values.issueDate,
+    expiry_date:values.expiryDate,
+    issuing_authority:values.issuingAuthority,
+    share_with_tenants:values.shareWithTenant,
+    share_with_landlords:false
+  }
+  const formData = new FormData();
+
+// JSON goes as ONE field
+formData.append('reqObject', JSON.stringify(request));
+const file = this.attachmentsForm.get('propertyAttachment')?.value;
+
+if (file) {
+  formData.append('file_path', file);
+}
+  this.propertiesService.saveAttachment(formData)
+    .subscribe(res => {
+
+      console.log("attachments",res);
+this.commonAreaForm.reset();
+
+        // close popup
+        this.detailLayout.closeModal();
+
+      // close popup
+
+      // refresh table
+
+    });
 }
 }

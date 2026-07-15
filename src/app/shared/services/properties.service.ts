@@ -77,7 +77,6 @@ export class PropertiesService {
     'source': 'web',
     'Accept': '*/*'
   });
-console.log("add property --", payload);
    return this.http.post(addPropertyUrl, payload, { headers });
   }
 }

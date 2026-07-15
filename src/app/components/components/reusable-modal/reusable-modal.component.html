@@ -1,0 +1,65 @@
+<div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4">
+
+    <div class="w-full max-w-2xl">
+
+        <div class="rounded-xl bg-white shadow-2xl overflow-hidden animate__animated animate__fadeInDown">
+
+            <!-- Header -->
+            <div class="flex items-start justify-between px-6 py-5 border-b border-gray-200">
+
+                <div>
+                    <h5 class="text-lg font-semibold text-gray-800">
+                        {{ title }}
+                    </h5>
+
+                    <p *ngIf="subtitle" class="text-sm text-gray-500 mt-1">
+                        {{ subtitle }}
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 transition"
+                    (click)="close.emit()">
+
+                    <i class="ri-close-line text-xl"></i>
+
+                </button>
+
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 max-h-[70vh] overflow-y-auto">
+
+                <ng-content></ng-content>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+
+                <button
+                    type="button"
+                    class="ti-btn ti-btn-light min-w-[100px]"
+                    (click)="close.emit()">
+
+                    {{ cancelText }}
+
+                </button>
+
+                <button
+                    type="button"
+                    class="ti-btn ti-btn-primary-full min-w-[100px]"
+                    (click)="save.emit()">
+
+                    {{ saveText }}
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

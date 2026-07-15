@@ -9,11 +9,13 @@ import { selectCurrentUser } from '../../components/common/store/login-auth-para
 })
 export class GetAllTypes {
 loginUserData: any;
+ accessToken: any;
 getAllAPI = 'https://orville.pulseadmin.in/api/Masters/_getMasters';
 headers: any;
   constructor(private http: HttpClient, private store: Store) {
      this.store.select(selectCurrentUser).subscribe(user => {
             this.loginUserData = user;
+            this.accessToken = user?.token ?? '';
           });
    }
 getHeaders(): Observable<HttpHeaders> {
@@ -89,5 +91,46 @@ getAccounts(payload: any): Observable<any> {
   );
 
 }
-
+ getAttachmentsSttaus(payload: any): Observable<any>{
+   return this.getHeaders().pipe(
+    switchMap(headers =>
+      this.http.post(this.getAllAPI, payload, {
+        headers
+      })
+    )
+  );
+  }
+   getDocumentType(payload: any): Observable<any>{
+   return this.getHeaders().pipe(
+    switchMap(headers =>
+      this.http.post(this.getAllAPI, payload, {
+        headers
+      })
+    )
+  );
+  }
+saveAttachment(payload: any): Observable<any>{
+  const saveAttachmentsAPI = 'https://orville.pulseadmin.in/api/Masters/save_documents'
+  
+  const headers = new HttpHeaders({
+      'AccessToken': this.accessToken || '',
+      'clientID': '74BB6922',
+      'LanguageID': '1',
+      'source': 'web',
+      'Accept': '*/*'
+    });
+    return  this.http.post(saveAttachmentsAPI, payload, {
+        headers
+      })
+}
+saveCommonArea(payload:any): Observable<any>{
+  const commonAreaAPI = 'https://orville.pulseadmin.in/api/Masters/save_commonarea';
+  return this.getHeaders().pipe(
+    switchMap(headers =>
+      this.http.post(commonAreaAPI, payload, {
+        headers
+      })
+    )
+  );
+}
 }

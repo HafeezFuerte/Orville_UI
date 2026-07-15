@@ -70,7 +70,6 @@ export class LoginComponent {
           // Save user info in AuthService / localStorage
        
           if (res.objResult.access_token) {
-            console.log("loginpage res",res);
             // Save in AuthService BehaviorSubject
              const authUser: AuthPayload = {
                 userId: res.objResult.userId,
