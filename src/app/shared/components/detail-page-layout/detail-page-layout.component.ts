@@ -13,11 +13,12 @@ import { SharedTableComponent } from '../shared-table/shared-table.component';
 import { ReusableModalComponent } from '../../../components/components/reusable-modal/reusable-modal.component';
 import { CommonAreaPopupComponent } from '../../../components/components/popups/common-area-popup/common-area-popup.component';
 import { AttachmentPopupComponent } from '../../../components/components/popups/attachments-popup/attachment-popup.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-detail-page-layout',
   standalone: true,
-  imports: [CommonModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent],
+  imports: [CommonModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent, TranslateModule],
   templateUrl: './detail-page-layout.component.html'
 })
 export class DetailPageLayoutComponent {

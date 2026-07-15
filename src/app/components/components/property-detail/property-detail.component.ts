@@ -48,96 +48,96 @@ documentsData = [];
 detailLayout!: DetailPageLayoutComponent;
   // columns
   unitColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'unit_code', label: 'Name' },
-  { key: 'category_name', label: 'Category' },
-  { key: 'unit_beds_name', label: 'Beds' },
-  { key: 'property Name', label: 'Property' },
-  { key: 'landlord', label: 'Landlord' },
-  { key: 'tags', label: 'Tags' },
-  { key: 'unit_type_name', label: 'Unit Type' }
+  { key: 'code', label: 'web.common.lblID'},
+  { key: 'unit_code', label: 'web.common.lblName'},
+  { key: 'category_name', label: 'web.common.lblCategory' },
+  { key: 'unit_beds_name', label: 'web.Unit.lblBeds' },
+  { key: 'property Name', label: 'web.property.lblProperty' },
+  { key: 'landlord', label: 'web.Unit.lblLandlord' },
+  { key: 'tags', label: 'web.property.lblTags' },
+  { key: 'unit_type_name', label: 'web.Unit.lblUnitType' }
 ];
 
 roomColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'room_type_name', label: 'Name' },
-  { key: 'category_name', label: 'Category' },
-  { key: 'beds', label: 'Beds' },
-  { key: 'property Name', label: 'Property' },
-  { key: 'name', label: 'Landlord' },
-  { key: 'tags', label: 'Tags' },
-  { key: 'unit_type_name', label: 'Unit Type' },
-  { key: 'room_type_name', label: 'Room Type' }
+  { key: 'code', label: 'web.common.lblID' },
+  { key: 'room_type_name', label: 'web.common.lblName' },
+  { key: 'category_name', label: 'web.common.lblCategory' },
+  { key: 'beds', label: 'web.Unit.lblBeds' },
+  { key: 'property Name', label: 'web.property.lblProperty'},
+  { key: 'name', label: 'web.Unit.lblLandlord' },
+  { key: 'tags', label: 'web.property.lblTags'  },
+  { key: 'unit_type_name', label: 'web.Unit.lblUnitType' },
+  { key: 'room_type_name', label: 'web.Unit.lblRoomType' }
 ];
 
 tenantColumns = [
-  { key: 'lease_code', label: 'ID' },
-  { key: 'tenant ', label: 'Name' },
-  { key: 'email_address', label: 'Email' },
-  { key: 'phone_number', label: 'Phone Number' },
-  { key: 'company_name', label: 'Company' },
-  { key: 'active_lease', label: 'Active Lease' }
+  { key: 'lease_code', label: 'web.common.lblID'},
+  { key: 'tenant ', label: 'web.common.lblName' },
+  { key: 'email_address', label: 'web.common.lblEmail' },
+  { key: 'phone_number', label: 'web.common.lblPhoneNumber' },
+  { key: 'company_name', label: 'web.property.lblCompany' },
+  { key: 'active_lease', label: 'web.property.lblActiveLease' }
 ];
 commonAreaColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'area_name', label: 'Area Name' },
-  { key: 'property_code', label: 'Property ID' },
-  { key: 'floor_no', label: 'Floor No' },
-  { key: 'uploaded_date', label: 'Created at' },
-  { key: 'modified_date', label: 'Updated at' },
-  { key: 'code', label: 'Action' }
+  { key: 'code', label: 'web.common.lblID' },
+  { key: 'area_name', label: 'web.property.lblAreaName' },
+  { key: 'property_code', label: 'web.property.lblPropertyID' },
+  { key: 'floor_no', label: 'web.property.lblFloorNo' },
+  { key: 'uploaded_date', label: 'web.Unit.lblCreatedAt' },
+  { key: 'modified_date', label: 'web.Unit.lblUpdatedAt' },
+  { key: 'code', label: 'web.common.lblAction' }
 ];
 broadCastsColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'subject', label: 'Subject' },
-  { key: 'preview', label: 'Preview' },
-  { key: 'status', label: 'Status' },
-  { key: 'broadcast_type_nm', label: 'Broadcast Type' },
-  { key: 'send_to', label: 'Sendable' },
-  { key: 'is_scheduled', label: 'Scheduled' },
-  { key: 'scheduled_date', label: 'Date' }
+  { key: 'code', label: 'web.common.lblID' },
+  { key: 'subject', label: 'web.property.lblSubject' },
+  { key: 'preview', label: 'web.property.lblPreview' },
+  { key: 'status', label: 'web.common.lblStatus' },
+  { key: 'broadcast_type_nm', label: 'web.property.lblBroadcastType' },
+  { key: 'send_to', label: 'web.property.lblSendable' },
+  { key: 'is_scheduled', label: 'web.property.lblScheduled' },
+  { key: 'scheduled_date', label: 'web.common.lblDate' }
   
 ];
 attachmentColumns = [
-  { key: 'entity_code', label: 'ID' },
-  { key: 'document_type', label: 'File Type' },
-  { key: 'doc_no', label: 'Doc ID' },
-  { key: 'document_status', label: 'Document Status' },
-  { key: 'issue_date', label: 'Issue Date' },
-  { key: 'expiry_date', label: 'Expiry Date' },
-  { key: 'file_path', label: 'Files' }
+  { key: 'entity_code', label: 'web.common.lblID' },
+  { key: 'document_type', label: 'web.property.lblFileType' },
+  { key: 'doc_no', label: 'web.property.lblDocID' },
+  { key: 'document_status', label: 'web.property.lblDocumentStatus' },
+  { key: 'issue_date', label: 'web.property.lblIssueDate' },
+  { key: 'expiry_date', label: 'web.property.lblExpiryDate' },
+  { key: 'file_path', label: 'web.property.lblFiles' }
 ];
 
 notesColumns = [
-  { key: 'entity_code', label: 'ID' },
-  { key: 'subject', label: 'Subject' },
-  { key: 'description', label: 'Content' },
-  { key: 'status', label: 'Via' },
-  { key: 'uploaded_date', label: 'Note date' },
-  { key: 'uploaded_by', label: 'Created By' }
+  { key: 'entity_code', label: 'web.common.lblID' },
+  { key: 'subject', label: 'web.property.lblSubject' },
+  { key: 'description', label: 'web.property.lblContent' },
+  { key: 'status', label: 'web.property.lblVia' },
+  { key: 'uploaded_date', label: 'web.property.lblNoteDate' },
+  { key: 'uploaded_by', label: 'web.property.lblCreatedBy' }
   
 ];
 
 parkingsColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'parking_no', label: 'Parking No' },
-  { key: 'property', label: 'Property' },
-  { key: 'unit_code1', label: 'Unit' },
-  { key: 'parking_type_nm', label: 'Type' },
-  { key: 'uploaded_by', label: 'Fee' },
-  { key: 'recurring_cycle_nm', label: 'Cycle' },
-  { key: 'remarks', label: 'Remarks' }
+  { key: 'code', label: 'web.common.lblID' },
+  { key: 'parking_no', label: 'web.property.lblParkingNo' },
+  { key: 'property', label: 'web.property.lblProperty' },
+  { key: 'unit_code1', label: 'web.property.lblUnit' },
+  { key: 'parking_type_nm', label: 'web.common.lblType' },
+  { key: 'uploaded_by', label: 'web.property.lblFee' },
+  { key: 'recurring_cycle_nm', label: 'web.property.lblCycle' },
+  { key: 'remarks', label: 'web.common.lblRemarks' }
   
 ];
 
 assetsColumns = [
-  { key: 'code', label: 'ID' },
-  { key: 'asset_name', label: 'Asset Name' },
-  { key: 'model', label: 'Model' },
-  { key: 'asset_category', label: 'Category' },
-  { key: 'property_code', label: 'Property' },
-  { key: 'unit_code', label: 'Unit' },
-  { key: 'price', label: 'Price' }
+  { key: 'code', label: 'web.common.lblID' },
+  { key: 'asset_name', label: 'web.property.lblAssetName' },
+  { key: 'model', label: 'web.property.lblModel' },
+  { key: 'asset_category', label: 'web.property.lblCategory' },
+  { key: 'property_code', label: 'web.property.lblProperty' },
+  { key: 'unit_code', label: 'web.property.lblUnit' },
+  { key: 'price', label: 'web.property.lblPrice' }
 ];
 
   constructor(private route: ActivatedRoute, private store: Store,private propertiesService: GetAllTypes, private fb: FormBuilder) {}
@@ -403,17 +403,9 @@ if (file) {
 }
   this.propertiesService.saveAttachment(formData)
     .subscribe(res => {
-
       console.log("attachments",res);
-this.commonAreaForm.reset();
-
-        // close popup
+      this.commonAreaForm.reset();
         this.detailLayout.closeModal();
-
-      // close popup
-
-      // refresh table
-
     });
 }
 }

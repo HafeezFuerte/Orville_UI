@@ -6,6 +6,8 @@ import { NavigationEnd, Router } from '@angular/router';
 import { checkHoriMenu, switcherArrowFn } from './sidebar';
 import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../services/common.service';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '../../../components/common/store/login-auth-params/auth.selectors';
 interface PageMenu {
   menuID: number;
   menuName: string;
@@ -44,6 +46,7 @@ export class SidebarComponent {
   screenWidth: number;
   eventTriggered: boolean = false;
   public localdata = localStorage;
+  loggedInEmpId: any;
   // options = { autoHide: false, scrollbarMinSize: 100 };
   @HostListener('window:scroll', [])
   onWindowScroll() {
@@ -95,17 +98,21 @@ export class SidebarComponent {
     private sanitizer: DomSanitizer,
     public router: Router,
     public renderer: Renderer2,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private store: Store
+
   ) {
     this.screenWidth = window.innerWidth;
   }
 
  
   ngOnInit(): void { 
-    const loggedInEmpId = Number(localStorage.getItem('userId')) || 120; // Fallback to 120 temporarily if not present depending on env
-
+   
+    this.store.select(selectCurrentUser).subscribe(data => {
+        this.loggedInEmpId = data?.userId;
+      });
     const body = {  
-  "userid": loggedInEmpId,
+  "userid": this.loggedInEmpId,
   "company_id": 1,
   "clientId": "74BB6922",
   "source": "web", 

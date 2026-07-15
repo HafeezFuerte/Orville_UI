@@ -3,17 +3,33 @@
     <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
       {{property?.name || 'Marina Heights Towers'}}
     </h3>
-    <ol class="flex items-center gap-1 text-[11px] text-gray-500 font-medium">
-      <li><a routerLink="/properties" class="text-primary hover:underline">Properties</a></li>
-      <li><i class="ri-arrow-right-s-line text-xs text-gray-400"></i></li>
-      <li>{{property?.name || 'Marina Heights Towers'}}</li>
-      <li><i class="ri-arrow-right-s-line text-xs text-gray-400"></i></li>
-      <li class="text-gray-400 font-normal">Details</li>
-    </ol>
+    <ol class="flex items-center whitespace-nowrap">
+                    <li class="text-[0.813rem] text-[#8c9097]">
+                        {{ 'web.common.lblHome' | translate }}
+                    </li>
+                    <li class="px-2 text-[#8c9097]">
+                        /
+                    </li>
+                    <li class="text-[0.813rem] text-[#8c9097]">
+                        {{ 'web.property.lblProperties' | translate }}
+                    </li>
+                    <li class="px-2 text-[#8c9097]">
+                        /
+                    </li>
+                    <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
+                        {{property?.name}}
+                    </li>
+                    <li class="px-2 text-[#8c9097]">
+                        /
+                    </li>
+                    <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
+                        {{ 'web.property.lblDetails' | translate }}
+                    </li>
+                </ol>
   </div>
   <div>
-    <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.75rem] !text-white !font-medium btn-wave bg-gray-500 hover:bg-gray-600 shadow-sm" routerLink="/properties">
-      <i class="ri-arrow-left-line align-middle"></i> Back to Properties
+    <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.75rem] !text-white !font-medium btn-wave bg-gray-500 hover:bg-gray-600 shadow-sm" [routerLink]="['/add-property', property?.code]">
+      {{ 'web.property.lblEditProperty' | translate }}
     </button>
   </div>
 </div>
@@ -51,223 +67,207 @@
         <!-- Occupancy Bar -->
         <div class="flex flex-col gap-2 py-1">
           <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-500 font-medium">Occupancy</span>
+            <span class="text-gray-500 font-medium">{{ 'web.property.lblOccupancy' | translate }}</span>
             <span class="font-extrabold text-gray-800">85%</span>
           </div>
           <div class="w-full bg-gray-100 rounded-full h-2">
             <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
           </div>
-          <span class="text-[10px] text-gray-400">412 of 421 units are occupied</span>
+          <span class="text-[10px] text-gray-400">{{property?.occupied_units}} of {{property?.total_units}} {{ 'web.property.lblOccupancyUnitsText' | translate }}</span>
         </div>
 
         <!-- Actions -->
-        <div class="flex gap-3 pt-2">
+        <div class="flex gap-2 pt-2">
           <button type="button" class="w-1/2 ti-btn ti-btn-light !py-2 border font-bold text-xs rounded-lg shadow-sm">
-            View Activity
+            {{ 'web.property.lblViewActivity' | translate }}
           </button>
           <button type="button" class="w-1/2 ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">
-            Edit Property &rarr;
+            {{ 'web.property.lblEditProperty' | translate }}
+                        <i class="ri-arrow-right-line ms-1"></i>
           </button>
         </div>
-        <h5 class="text-xs font-bold text-gray-700 mb-3">Information</h5>
+        <h5 class="text-xs font-bold text-gray-700 mb-3">{{ 'web.property.lblInformation' | translate }}</h5>
         <!-- Property details list table -->
         <div class="border-t border-gray-100 pt-4 mt-2">
-          <h5 class="text-xs font-bold text-gray-700 mb-3">Property Details</h5>
-          <div class="flex flex-col gap-3 text-xs text-gray-600">
+          <h5 class="text-xs font-bold text-gray-700 mb-3">{{ 'web.property.lblPropertyDetails' | translate }}</h5>
+          <div class="flex flex-col gap-2 text-xs text-gray-600">
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">ID</span>
+              <span class="text-gray-600 font-medium">{{ 'web.common.lblID' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.code || 31658}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Name</span>
+              <span class="text-gray-600 font-medium">{{ 'web.common.lblName' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.name || 'Marina Heights Towers'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Category</span>
-              <span class="font-bold text-gray-800">{{property?.category}}</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblCategory' | translate }}:</span>
+              <span class="font-bold text-gray-800">{{property?.category_name}}</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-400">Property Type</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyType' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Tags</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblTags' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.tags || 31658}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Total Units</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblTotalUnits' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.total_units || 'Marina Heights Towers'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Floors</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblFloors' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.no_of_floors}}</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-400">Occupancy</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblOccupancy' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.occupied_units || 'Residential'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Size</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblSize' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.size_sqft}}</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-400">Property Value</span>
-              <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyValue' | translate }}:</span>
+              <span class="font-bold text-gray-800">{{property?.purchase_value}}</span>
             </div>
           </div>
         </div>
         <!-- Property details list table -->
-        <div class="border-t border-gray-100 pt-4 mt-2">
-          <h5 class="text-xs font-bold mb-3">Property Prefix</h5>
-          <div class="flex flex-col gap-3 text-xs text-gray-600">
+        <div class="border-t border-gray-100 pt-4 mt-2 text-center">
+           <a href="javascript:void(0);"
+                    class="text-primary font-medium inline-flex items-center">
+                    {{ 'web.property.lblViewMoreDetails' | translate }}
+                    <i class="ri-arrow-down-s-line ms-1"></i>
+                </a>
+          <div class="flex flex-col gap-2 text-xs text-gray-600">
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Property Prefix</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyPrefix' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.prefix || 31658}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Address1</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblAddress1' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.address_1 || 31658}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Address2</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblAddress2' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.address_2 || 'Marina Heights Towers'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">City</span>
-              <span class="font-bold text-gray-800">{{property?.city || 'Marina Heights Towers'}}</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblCity' | translate }}:</span>
+              <span class="font-bold text-gray-800">{{property?.city_name || 'Marina Heights Towers'}}</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-400">State</span>
-              <span class="font-bold text-gray-800">{{property?.state || 'Residential'}}</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblState' | translate }}:</span>
+              <span class="font-bold text-gray-800">{{property?.state_name || 'Residential'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Country</span>
-              <span class="font-bold text-gray-800">{{property?.id || 31658}}</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblCountry' | translate }}:</span>
+              <span class="font-bold text-gray-800">{{property?.country_name || 31658}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Community</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblCommunity' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.name || 'Marina Heights Towers'}}</span>
             </div>
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Land No</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblLandNo' | translate }}:</span>
               <span class="font-bold text-gray-800">Home</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-400">Created</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblCreated' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
             </div>    
             <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-400">Last Update</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblLastUpdate' | translate }}:</span>
               <span class="font-bold text-gray-800">Home</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-gray-700">Description</span>
+              <span class="text-gray-600 font-medium">{{ 'web.property.lblDescription' | translate }}:</span>
               <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
             </div>         
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Card 2: Financial Information -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Unit.lblFinancialInfo' | translate }}</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblMarketRent' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 36500.0</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblDeposit' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 3000.0</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentType' | translate }}</span>
-          <span class="font-bold text-gray-800">Per Year</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentPerSqft' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 250.00</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblTotalServiceCharges' | translate }}</span>
-          <span class="font-bold text-gray-800">0.00</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 3: Locations & Coordinates Details -->
+    <!-- Card 2: Locations & Coordinates Details -->
     <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
       <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Locations & Coordinates</h5>
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">City</span>
-          <span class="font-bold text-gray-800">0.00</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblCity' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.city_name || 'Marina Heights Towers'}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">State</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblState' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.state_name || 'Residential'}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Country</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblCountry' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.country_name}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Community</span>
-          <span class="font-bold text-gray-800">AED 350.00</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblCommunity' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.community}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Zipcode</span>
-          <span class="font-bold text-gray-800">Percentage</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblZipCode' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.zip_code}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Latitiude</span>
-          <span class="font-bold text-gray-800">AED 350.00</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblLatitude' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.lat}}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Longitude</span>
-          <span class="font-bold text-gray-800">Percentage</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblLongitude' | translate }}:</span>
+          <span class="font-bold text-gray-800">{{property?.lon}}</span>
         </div>
       </div>
     </div>
 
-    <!-- Card 4: Custom Fields -->
+    <!-- Card 3: Custom Fields -->
     <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Custom Fields</h5>
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblCustomFields' | translate }}</h5>
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Makani No</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblMakaniNo' | translate }}</span>
           <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
         </div>
       </div>
     </div>
-    <!-- Card 5: Service Request  -->
+    <!-- Card 4: Service Request  -->
     <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Property.lblServiceRequest' | translate }}</h5>
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblServiceRequest' | translate }}</h5>
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between items-center py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Service Disabled</span>
-          <span class="badge bg-danger text-white px-2 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblServiceRequestsEnabled' | translate }}</span>
+          <div class="shrink-0">
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="serviceRequest"
+                        checked>
+                </div>
+            </div>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Alert Message</span>
+          <span class="text-gray-600 font-medium">{{ 'web.property.lblServiceRequestDescription' | translate }}</span>
           <span class="font-bold text-gray-800">-</span>
         </div>
       </div>
     </div>
-    <!-- Card 6: Amenities-->
+    <!-- Card 5: Amenities-->
     <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Amenities</h5>
+      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblAmenities' | translate }}</h5>
       <div class="flex flex-wrap gap-1.5 pt-1">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Kids Play Area</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> BBQ Deck</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Concierge</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Covered Parking</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> High-Speed Wi-Fi</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Swimming Pool</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Fully Equipped Gym</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> 24/7 Security</span>
-      </div>
+        <span *ngFor="let amenity of property?.amenities">
+        <span *ngIf="amenity.amenity"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                <i  class="ri-checkbox-circle-fill"></i>
+                {{ amenity.amenity }}
+            </span>
+            </span>
+        </div>
     </div>
 
   </div>
