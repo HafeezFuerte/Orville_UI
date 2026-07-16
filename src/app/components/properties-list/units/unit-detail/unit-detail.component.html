@@ -33,31 +33,45 @@
       <div class="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-100 pt-3">
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">Furnished</span>
-          <span class="badge bg-success text-white px-1.5 py-0.5 rounded text-[9px] font-bold">Yes</span>
+          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.furnished ? 'bg-success' : 'bg-danger'">
+            {{ unit?.furnished ? 'Yes' : 'No' }}
+          </span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">Smoking</span>
-          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.smoking ? 'bg-success' : 'bg-danger'">
+            {{ unit?.smoking ? 'Yes' : 'No' }}
+          </span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">For Sale</span>
-          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.saleStatus ? 'bg-success' : 'bg-danger'">
+            {{ unit?.saleStatus ? 'Yes' : 'No' }}
+          </span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">Under Dispute</span>
-          <span class="badge bg-danger text-white px-1.5 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.underDispute ? 'bg-danger' : 'bg-success'">
+            {{ unit?.underDispute ? 'Yes' : 'No' }}
+          </span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded col-span-2">
           <span class="text-gray-600">Property Address</span>
-          <span class="font-bold text-gray-800 text-[10px] truncate max-w-[130px]" title="Dubai Marina, Tower A, Dubai">Dubai Marina...</span>
+          <span class="font-bold text-gray-800 text-[10px] truncate max-w-[130px]" [title]="unit?.propertyAddress">
+            {{ unit?.propertyAddress }}
+          </span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">Created</span>
-          <span class="font-bold text-gray-800 text-[9px]">07-22-2025</span>
+          <span class="font-bold text-gray-800 text-[9px]">{{ unit?.createdDate }}</span>
         </div>
         <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
           <span class="text-gray-600">Last Update</span>
-          <span class="font-bold text-gray-800 text-[9px]">23-06-2026</span>
+          <span class="font-bold text-gray-800 text-[9px]">{{ unit?.lastUpdate }}</span>
         </div>
       </div>
 
@@ -78,23 +92,23 @@
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblMarketRent' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 36500.0</span>
+          <span class="font-bold text-gray-800">{{ unit?.marketRent }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblDeposit' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 3000.0</span>
+          <span class="font-bold text-gray-800">{{ unit?.deposit }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentType' | translate }}</span>
-          <span class="font-bold text-gray-800">Per Year</span>
+          <span class="font-bold text-gray-800">{{ unit?.rentType }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentPerSqft' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 250.00</span>
+          <span class="font-bold text-gray-800">{{ unit?.rentPerSqft }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblTotalServiceCharges' | translate }}</span>
-          <span class="font-bold text-gray-800">0.00</span>
+          <span class="font-bold text-gray-800">{{ unit?.totalServiceCharges }}</span>
         </div>
       </div>
     </div>
@@ -105,23 +119,23 @@
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblServiceCharges' | translate }}</span>
-          <span class="font-bold text-gray-800">0.00</span>
+          <span class="font-bold text-gray-800">{{ unit?.serviceCharges }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Sale Price</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="font-bold text-gray-800">{{ unit?.salePrice }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Threshold Value</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="font-bold text-gray-800">{{ unit?.thresholdValue }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">{{ 'web.Unit.lblManagementFee' | translate }}</span>
-          <span class="font-bold text-gray-800">AED 350.00</span>
+          <span class="font-bold text-gray-800">{{ unit?.managementFee }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Fee Type</span>
-          <span class="font-bold text-gray-800">Percentage</span>
+          <span class="font-bold text-gray-800">{{ unit?.managementFeeType }}</span>
         </div>
       </div>
     </div>
@@ -132,7 +146,10 @@
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between items-center py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Service Disabled</span>
-          <span class="badge bg-danger text-white px-2 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="badge text-white px-2 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.serviceDisabled ? 'bg-danger' : 'bg-success'">
+            {{ unit?.serviceDisabled ? 'Yes' : 'No' }}
+          </span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Alert Message</span>
@@ -147,15 +164,18 @@
       <div class="flex flex-col gap-2 text-xs">
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Trakessi Number</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="font-bold text-gray-800">{{ unit?.trakessiNumber }}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">RERA Number</span>
-          <span class="font-bold text-gray-800">-</span>
+          <span class="font-bold text-gray-800">{{ unit?.reraNumber }}</span>
         </div>
         <div class="flex justify-between items-center py-1 border-b border-gray-50">
           <span class="text-gray-600 font-medium">Permit Verified</span>
-          <span class="badge bg-danger text-white px-2 py-0.5 rounded text-[9px] font-bold">No</span>
+          <span class="badge text-white px-2 py-0.5 rounded text-[9px] font-bold"
+                [ngClass]="unit?.isVerified ? 'bg-success' : 'bg-danger'">
+            {{ unit?.isVerified ? 'Yes' : 'No' }}
+          </span>
         </div>
       </div>
     </div>
@@ -301,6 +321,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="leases.length === 0">
+                <td colspan="15" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let lease of leases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{lease.id}}</td>
                 <td class="py-3 px-4 text-xs">
@@ -416,7 +441,7 @@
           <!-- Financial Summary Section (figma image 1 middle right) -->
           <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-3 mt-1">
             <!-- Big Cash Balance Card -->
-            <div class="md:col-span-7 p-4 bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl flex flex-col justify-between shadow-md">
+            <div class="md:col-span-7 p-4 text-white rounded-xl flex flex-col justify-between shadow-md" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);">
               <div>
                 <span class="text-[9px] uppercase font-bold tracking-widest text-indigo-200">Cash Balance</span>
                 <h3 class="text-xl font-black text-white m-0 mt-1">AED 2,000.00</h3>
@@ -523,6 +548,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="financials.length === 0">
+                <td colspan="9" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let fin of financials" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.id}}</td>
                 <td class="py-3 px-4 text-xs">
@@ -634,6 +664,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="inventoryItems.length === 0">
+                <td colspan="10" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
                <tr *ngFor="let item of inventoryItems" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                  <td class="py-3 px-4 font-bold text-primary text-xs">{{item.id}}</td>
                  <td class="py-3 px-4 text-xs">
@@ -724,6 +759,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="workOrders.length === 0">
+                <td colspan="10" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let wo of workOrders" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.title}}</td>
@@ -813,6 +853,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="unitAttachments.length === 0">
+                <td colspan="8" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let att of unitAttachments" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{att.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{att.fileType}}</td>
@@ -885,6 +930,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="legalCases.length === 0">
+                <td colspan="7" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let lc of legalCases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{lc.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lc.name}}</td>
@@ -963,6 +1013,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="parkings.length === 0">
+                <td colspan="9" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let pk of parkings" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{pk.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{pk.parkingNo}}</td>
@@ -1041,6 +1096,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="notes.length === 0">
+                <td colspan="4" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let nt of notes" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{nt.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{nt.subject}}</td>
@@ -1120,6 +1180,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="broadcasts.length === 0">
+                <td colspan="6" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let bc of broadcasts" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{bc.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{bc.subject}}</td>
@@ -1204,6 +1269,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="inspections.length === 0">
+                <td colspan="9" class="text-center py-6 bg-gray-50/30">
+                  <span class="text-gray-500 italic text-sm">No records found</span>
+                </td>
+              </tr>
               <tr *ngFor="let ins of inspections" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.inspectionId}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.companyId}}</td>

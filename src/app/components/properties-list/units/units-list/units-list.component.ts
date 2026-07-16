@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { SharedModule } from '../../../shared/shared.module';
+import { SharedModule } from '../../../../shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
-import { PropertiesService } from '../../../shared/services/properties.service';
+import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { PropertiesService } from '../../../../shared/services/properties.service';
 
 export interface Unit {
   id: number;
@@ -48,6 +48,7 @@ export class UnitsListComponent implements OnInit {
 
   // Drawer Visibility State
   isDrawerOpen: boolean = false;
+  showColumnDropdown: boolean = false;
 
   // Drawer Custom Filters
   selectedTag: string | null = null;
@@ -87,18 +88,38 @@ export class UnitsListComponent implements OnInit {
 
   // Columns definition for the shared table component
   tableColumns = [
-    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true },
-    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true },
-    { key: 'category', label: 'Category', headerClass: 'text-start', useTemplate: true },
-    { key: 'beds', label: 'Beds', headerClass: 'text-start', useTemplate: true },
-    { key: 'property', label: 'Property', headerClass: 'text-start', useTemplate: true },
-    { key: 'landlord', label: 'Landlord', headerClass: 'text-start', useTemplate: true },
-    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true },
-    { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true },
-    { key: 'floor', label: 'Floor Number', headerClass: 'text-start', useTemplate: true },
-    { key: 'managementFee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true },
-    { key: 'status', label: 'Status', headerClass: 'text-start', useTemplate: true }
+    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'category', label: 'Category', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'beds', label: 'Beds', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'property', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'landlord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'floor', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'managementFee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'status', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
+
+  get visibleColumns() {
+    return this.tableColumns.filter(col => col.visible !== false);
+  }
+
+  toggleColumn(colKey: string) {
+    const col = this.tableColumns.find(c => c.key === colKey);
+    if (col) {
+      col.visible = !col.visible;
+    }
+  }
+
+  toggleAllColumns(event: any) {
+    const checked = event.target.checked;
+    this.tableColumns.forEach(c => c.visible = checked);
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
 
   // Mock Units Data
   allUnits: Unit[] = [
@@ -224,7 +245,46 @@ export class UnitsListComponent implements OnInit {
   constructor(public translate: TranslateService, private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {
+    this.loadMetrics();
     this.loadUnits();
+  }
+
+  loadMetrics() {
+    const payload = {
+      typeId: 5,
+      filterId: 4,
+      filterText: "",
+      filterText1: "",
+      userId: 1,
+      clientId: "74BB6922",
+      companyId: 0
+    };
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          let data = null;
+          if (res.objResult.table && Array.isArray(res.objResult.table) && res.objResult.table.length > 0) {
+            data = res.objResult.table[0];
+          } else if (res.objResult.Table && Array.isArray(res.objResult.Table) && res.objResult.Table.length > 0) {
+            data = res.objResult.Table[0];
+          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
+            data = res.objResult[0];
+          } else {
+            data = res.objResult;
+          }
+          
+          if (data) {
+            this.metrics = {
+              total: data.units ?? data.totalUnits ?? data.total_units ?? data.TotalUnits ?? this.metrics.total,
+              vacant: data.vacant ?? data.available ?? data.vacantUnits ?? data.vacant_units ?? this.metrics.vacant,
+              occupied: data.occupied ?? data.occupiedUnits ?? data.occupied_units ?? this.metrics.occupied,
+              maintenance: data.maintainence ?? data.maintenance ?? data.maintenanceUnits ?? this.metrics.maintenance
+            };
+          }
+        }
+      },
+      error: (err: any) => console.error("Error loading metrics:", err)
+    });
   }
 
   loadUnits(): void {

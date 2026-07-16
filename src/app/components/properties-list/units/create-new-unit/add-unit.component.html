@@ -1,0 +1,794 @@
+<div class="block justify-between page-header md:flex mb-2">
+  <!-- Left Section (Back button and breadcrumbs) -->
+  <div class="flex items-center gap-3">
+    <button type="button" routerLink="/units" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        {{ isEditMode ? 'Edit Unit' : 'New Units' }}
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer">Portfolio</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="hover:text-primary cursor-pointer">Units</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? 'Edit Unit' : 'New Units' }}</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<form [formGroup]="unitForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-12 gap-y-2 gap-x-3 pb-20">
+    <!-- Left Column: Main form segments -->
+    <div class="col-span-12 xl:col-span-8 flex flex-col gap-y-2 gap-x-3">
+
+      <!-- 1. Unit Landlord -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
+          <div>
+            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Unit landlord</h6>
+            <p class="text-[0.75rem] text-gray-500 mb-0">Assign the unit landlord. You can add multiple landlords.</p>
+          </div>
+          <button type="button" (click)="createNewLandlord()" class="text-primary hover:text-primary-focus font-semibold text-xs flex items-center gap-1">
+            <i class="ri-add-line text-sm"></i> Create New Landlord
+          </button>
+        </div>
+        <div class="box-body p-4">
+          <div class="relative">
+            <div class="flex gap-2">
+              <div class="relative flex-grow">
+                <span class="absolute inset-y-0 start-0 flex items-center ps-3 text-gray-400">
+                  <i class="ri-search-line"></i>
+                </span>
+                <input type="text" [(ngModel)]="landlordSearchQuery" [ngModelOptions]="{standalone: true}" (input)="searchLandlords()"
+                  class="form-control w-full !rounded-md text-xs py-2" style="padding-left: 2.25rem !important;" placeholder="e.g Mohammed Al Maktoum">
+              </div>
+              <button type="button" class="bg-primary text-white p-2 rounded-md hover:bg-primary-focus flex items-center justify-center w-9 h-9">
+                <i class="ri-add-line text-lg"></i>
+              </button>
+            </div>
+
+            <!-- Landlord Search Dropdown results -->
+            <div *ngIf="showLandlordDropdown && filteredLandlords.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+              <div *ngFor="let landlord of filteredLandlords" (click)="selectLandlord(landlord)"
+                class="px-4 py-2 text-xs hover:bg-gray-50 cursor-pointer text-gray-700">
+                {{ landlord.name }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected Landlords tags list -->
+          <div *ngIf="selectedLandlords.length > 0" class="flex flex-wrap gap-2 mt-3">
+            <div *ngFor="let selected of selectedLandlords" class="flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-full">
+              <span>{{ selected.name }}</span>
+              <button type="button" (click)="removeLandlord(selected.id)" class="text-gray-400 hover:text-danger flex items-center justify-center">
+                <i class="ri-close-line text-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Unit Details -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Unit Details</h6>
+          <p class="text-[0.75rem] text-gray-500 mb-0">Primary unit classification and physical attributes.</p>
+        </div>
+        <div class="box-body p-4">
+          <div class="grid grid-cols-12 gap-4">
+
+
+            <!-- Category -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Category <span class="text-danger">*</span></label>
+              <ng-select
+                formControlName="category"
+                [items]="categories"
+                bindLabel="name"
+                bindValue="id"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Category"
+                class="w-full !rounded-md text-xs">
+              </ng-select>
+            </div>
+
+            <!-- Property -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Property <span class="text-danger">*</span></label>
+              <ng-select
+                formControlName="propertyCode"
+                [items]="propertiesList"
+                bindLabel="displayName"
+                bindValue="code"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Property"
+                class="w-full !rounded-md text-xs">
+              </ng-select>
+            </div>
+
+            <!-- Unit Type -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit Type <span class="text-danger">*</span></label>
+              <ng-select
+                formControlName="unitType"
+                [items]="unitTypes"
+                bindLabel="name"
+                bindValue="id"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Unit Type"
+                class="w-full !rounded-md text-xs">
+              </ng-select>
+            </div>
+
+            <!-- Unit Code -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit Code <span class="text-danger">*</span></label>
+              <input type="text" formControlName="unitCode" class="form-control w-full !rounded-md text-xs py-2" placeholder="e.g propRS">
+            </div>
+
+            <!-- Unit Number -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit Number <span class="text-danger">*</span></label>
+              <input type="text" formControlName="unitNumber" class="form-control w-full !rounded-md text-xs py-2" placeholder="e.g 101">
+            </div>
+
+            <!-- Beds -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Beds</label>
+              <ng-select
+                formControlName="beds"
+                [items]="bedsOptions"
+                bindLabel="name"
+                bindValue="id"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Beds"
+                class="w-full !rounded-md text-xs">
+              </ng-select>
+            </div>
+
+            <!-- Parking Spaces -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Parking Spaces</label>
+              <input type="number" formControlName="parkingSpaces" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Floor Number -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Floor Number</label>
+              <input type="text" formControlName="floorNumber" class="form-control w-full !rounded-md text-xs py-2" placeholder="e.g 12">
+            </div>
+
+            <!-- Reserved Amount -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Reserved Amount</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="reservedAmount" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Property Reserve Value -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Property Reserve Value</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="propertyReserveValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Baths -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Baths</label>
+              <input type="number" formControlName="baths" class="form-control w-full !rounded-md text-xs py-2" placeholder="0">
+            </div>
+
+            <!-- Electricity No. -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Electricity No.</label>
+              <input type="text" formControlName="electricityNo" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Gas No. -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Gas No.</label>
+              <input type="text" formControlName="gasNo" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Room No. -->
+            <div class="col-span-12 md:col-span-3">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Room No.</label>
+              <input type="text" formControlName="roomNo" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Tags -->
+            <div class="col-span-12">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Tags</label>
+              <input type="text" formControlName="tags" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Checkboxes grid -->
+            <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="landlordIsResident" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs text-gray-700">Landlord is Resident</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="furnished" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs text-gray-700">Furnished</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="smokingAllowed" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs text-gray-700">Smoking Allowed</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="guestAllowed" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs text-gray-700">Guest</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="accommodation" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs text-gray-700">Accommodation</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="isUnderRenovation" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <div>
+                  <span class="text-xs text-gray-700 block leading-tight">Landlord is Resident</span>
+                  <small class="text-[10px] text-gray-400">This unit is under renovation</small>
+                </div>
+              </label>
+
+              <label class="flex items-start gap-2 cursor-pointer col-span-1 md:col-span-2">
+                <input type="checkbox" formControlName="hidePrice" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
+                <div>
+                  <span class="text-xs text-gray-700 block leading-tight">Hide Price</span>
+                  <small class="text-[10px] text-gray-400">This will hide unit price on listing page</small>
+                </div>
+              </label>
+
+              <label class="flex items-start gap-2 cursor-pointer col-span-1 md:col-span-2">
+                <input type="checkbox" formControlName="securityDepositInWallet" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
+                <div>
+                  <span class="text-xs text-gray-700 block leading-tight">Security Deposit</span>
+                  <small class="text-[10px] text-gray-400">If activated, this feature will include security deposit in wallet.</small>
+                </div>
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Rent & Service Charges -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Rent & Service Charges</h6>
+          <p class="text-[0.75rem] text-gray-500 mb-0">Define rental terms, market values, and service charge structure.</p>
+        </div>
+        <div class="box-body p-4">
+          <div class="grid grid-cols-12 gap-4">
+
+            <!-- Rent Type -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Rent Type</label>
+              <ng-select
+                formControlName="rentType"
+                [items]="rentTypes"
+                bindLabel="name"
+                bindValue="id"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Rent Type"
+                class="w-full !rounded-md text-xs">
+              </ng-select>
+            </div>
+
+            <!-- Deposit -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Deposit</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="deposit" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Market Value -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Market Value</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="marketValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Threshold Value -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Threshold Value</label>
+              <input type="number" formControlName="thresholdValue" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Agency Fee -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Agency Fee</label>
+              <input type="number" formControlName="agencyFee" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Market Rent -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Market Rent</label>
+              <input type="number" formControlName="marketRent" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Rent Per Area -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Rent Per Area</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="rentPerArea" class="form-control w-full rounded-none text-xs py-2" placeholder="0.00">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-s-0 rounded-e-md text-[10px] text-gray-400">/Sqft</span>
+              </div>
+            </div>
+
+            <!-- Service Charges Per Area -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Service Charges Per Area</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="serviceChargesPerArea" class="form-control w-full rounded-none text-xs py-2" placeholder="0.00">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-s-0 rounded-e-md text-[10px] text-gray-400">/Sqft</span>
+              </div>
+            </div>
+
+            <!-- Total Service Charges -->
+            <div class="col-span-12">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Total Service Charges</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="totalServiceCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Cost -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Cost</h6>
+        </div>
+        <div class="box-body p-4">
+          <div class="grid grid-cols-12 gap-4">
+
+            <!-- Lease Cost -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Lease Cost</label>
+              <input type="text" formControlName="leaseCost" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- DEWA -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">DEWA</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="dewa" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Lift AMC -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Lift AMC</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="liftAmc" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Firefighting -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Firefighting</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="firefighting" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Garbage Charges -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Garbage Charges</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="garbageCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- DCD -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">DCD</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="dcd" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Pest Control -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Pest Control</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="pestControl" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Watchman / Cleaner Charges -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Watchman / Cleaner Charges</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="cleanerCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Swimming Pool -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Swimming Pool</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="swimmingPoolCost" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Gym -->
+            <div class="col-span-12 md:col-span-4">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Gym</label>
+              <div class="relative flex">
+                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+                <input type="number" formControlName="gymCost" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Sale Status -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-body p-4 flex justify-between items-center">
+          <div>
+            <h6 class="font-semibold text-gray-800 text-sm mb-0.5">Sale Status</h6>
+            <p class="text-[0.75rem] text-gray-500 mb-0">Mark this unit as available for sale if applicable.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-600 font-semibold">This unit is for sale</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="isForSale" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Permit & Compliance -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Permit & Compliance</h6>
+          <p class="text-[0.75rem] text-gray-500 mb-0">Official registration and verification details.</p>
+        </div>
+        <div class="box-body p-4">
+          <div class="grid grid-cols-12 gap-4">
+
+            <!-- Trakessi Number -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Trakessi Number</label>
+              <input type="text" formControlName="trakessiNumber" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Rera Number -->
+            <div class="col-span-12 md:col-span-6">
+              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Rera Number</label>
+              <input type="text" formControlName="reraNumber" class="form-control w-full !rounded-md text-xs py-2" placeholder="Enter">
+            </div>
+
+            <!-- Is Verified -->
+            <div class="col-span-12 mt-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="isVerified" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+                <span class="text-xs font-semibold text-gray-700">Is it verified?</span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Unit Amenities -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
+          <div>
+            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Unit Amenities</h6>
+            <p class="text-[0.75rem] text-gray-500 mb-0">Features and facilities available in this unit.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-600 font-semibold">Include Amenities</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="includeAmenities" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+        
+        <div *ngIf="unitForm.get('includeAmenities')?.value" class="box-body p-4" formGroupName="amenities">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            <div *ngFor="let am of amenitiesList" class="flex items-center gap-2">
+              <input type="checkbox" [formControlName]="am.id" [id]="am.id" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+              <label [for]="am.id" class="text-xs text-gray-600 cursor-pointer">{{ am.name }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 8. Description -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Description</h6>
+          <p class="text-[0.75rem] text-gray-500 mb-0">Add additional details about this unit.</p>
+        </div>
+        <div class="box-body p-4">
+          <textarea formControlName="description" rows="4" class="form-control w-full !rounded-md text-xs py-2"
+            placeholder="Describe the unit — features, condition, special notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- 9. Unit Image -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Unit Image</h6>
+        </div>
+        <div class="box-body p-4">
+          <app-file-upload
+            [accept]="'image/*'"
+            [multiple]="false"
+            [buttonText]="'Upload Image'"
+            [dropText]="'Drop your image here or Browse'"
+            [browseText]="'Browse'"
+            (filesChanged)="onUnitImageSelected($event)">
+          </app-file-upload>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Sidebar settings -->
+    <div class="col-span-12 xl:col-span-4 flex flex-col gap-y-2 gap-x-3">
+
+      <!-- Status & Publishing -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm">Status & Publishing</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-4">
+          <!-- Status select -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Status <span class="text-danger">*</span></label>
+            <ng-select
+              formControlName="status"
+              [items]="statusOptions"
+              bindLabel="name"
+              bindValue="id"
+              [searchable]="true"
+              [clearable]="false"
+              placeholder="Select Status"
+              class="w-full !rounded-md text-xs">
+            </ng-select>
+          </div>
+
+          <hr class="border-gray-100">
+
+          <!-- Publish switch -->
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-gray-700 block mb-0.5">Publish Unit</span>
+              <small class="text-[10px] text-gray-400 leading-normal block">Uncheck this to un publish unit from property listings</small>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
+              <input type="checkbox" formControlName="publishUnit" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Management Details -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm">Management Details</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-4">
+          <!-- Fee Type -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Fee Type</label>
+            <ng-select
+              formControlName="feeType"
+              [items]="feeTypes"
+              bindLabel="name"
+              bindValue="id"
+              [searchable]="true"
+              [clearable]="false"
+              placeholder="Select Fee Type"
+              class="w-full !rounded-md text-xs">
+            </ng-select>
+          </div>
+
+          <!-- Purchase Value -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Purchase Value</label>
+            <div class="relative flex">
+              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">%</span>
+              <input type="number" formControlName="purchaseValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Finance Details -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-body p-4 flex flex-col gap-4">
+          <!-- Est Street Value -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Estimated Street Value</label>
+            <div class="relative flex">
+              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+              <input type="number" formControlName="estimatedStreetValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            </div>
+          </div>
+
+          <!-- Est Revenue / Year -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Estimated Revenue / Year</label>
+            <div class="relative flex">
+              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+              <input type="number" formControlName="estimatedRevenueYear" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            </div>
+          </div>
+
+          <!-- Est OPEX / Year -->
+          <div>
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Estimated OPEX / Year</label>
+            <div class="relative flex">
+              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">AED</span>
+              <input type="number" formControlName="estimatedOpexYear" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Premium Plan Upload -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+          <h6 class="box-title font-semibold text-gray-800 text-sm flex items-center gap-1.5">
+            Premium Plan 
+            <i class="ri-question-line text-gray-400 text-sm cursor-pointer" title="Upload your premise plan layout image"></i>
+          </h6>
+        </div>
+        <div class="box-body p-4">
+          <app-file-upload
+            [accept]="'image/*'"
+            [multiple]="false"
+            [buttonText]="'Upload Premise Plan'"
+            [dropText]="'Drop your image here or Browse'"
+            [browseText]="'Browse'"
+            (filesChanged)="onUnitBroucherSelected($event)">
+          </app-file-upload>
+        </div>
+      </div>
+      <!-- Automation -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm">Automation</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-4">
+          <!-- Publish Unit -->
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-gray-700 block mb-0.5">Publish Unit</span>
+              <small class="text-[10px] text-gray-400 leading-normal block">This will automatically assign the unit to selected users of this company</small>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
+              <input type="checkbox" formControlName="automationPublishUnit" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+
+          <hr class="border-gray-100">
+
+          <!-- Flag -->
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-gray-700 block mb-0.5">Flag</span>
+              <small class="text-[10px] text-gray-400 leading-normal block">This option will only display in the occupancy and vacancy reports</small>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
+              <input type="checkbox" formControlName="automationFlag" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+
+          <hr class="border-gray-100">
+
+          <!-- Disable Maintenance -->
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-gray-700 block mb-0.5">Disable Maintenance</span>
+              <small class="text-[10px] text-gray-400 leading-normal block">This will not allow your tenants to submit maintenance request through the mobile app</small>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
+              <input type="checkbox" formControlName="automationDisableMaintenance" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quickbooks Class Mapping -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+          <h6 class="box-title font-semibold text-gray-800 text-sm">Quickbooks Class Mapping</h6>
+          <button type="button" class="text-primary hover:text-primary-focus font-semibold text-xs flex items-center gap-1">
+            <i class="ri-refresh-line"></i> Refresh
+          </button>
+        </div>
+        <div class="box-body p-4">
+          <ng-select
+            formControlName="quickbooksClass"
+            [items]="[
+              {id: 1, name: 'Class A'},
+              {id: 2, name: 'Class B'}
+            ]"
+            bindLabel="name"
+            bindValue="id"
+            [searchable]="true"
+            [clearable]="true"
+            placeholder="Select Quickbooks Class/Subclass"
+            class="w-full !rounded-md text-xs">
+          </ng-select>
+        </div>
+      </div>
+
+      <!-- Automation ProTip -->
+      <div class="box bg-gray-50 rounded-xl shadow-sm border border-gray-100/50 !mb-2">
+        <div class="box-body p-4 flex gap-3">
+          <div class="text-primary mt-0.5">
+            <i class="ri-lightbulb-line text-xl"></i>
+          </div>
+          <div>
+            <h6 class="text-xs font-semibold text-gray-800 mb-1">Pro Tip</h6>
+            <p class="text-[0.7rem] text-gray-500 leading-relaxed mb-0">
+              Provide complete physical dimensions and reserve value targets. These values are automatically mapped during listings creation and lease contracts generation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fixed Floating Form Actions Bottom Bar -->
+  <div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl"
+    [style.right]="showScrollToTop ? '70px' : '20px'">
+    <button type="button" routerLink="/units" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
+      Cancel
+    </button>
+    <button type="submit" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95">
+      {{ isEditMode ? 'Update Unit' : 'Save Unit' }}
+    </button>
+  </div>
+</form>

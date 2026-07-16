@@ -14,7 +14,7 @@
     <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" [attr.data-tooltip]="'web.common.lblSendBroadcast' | translate">
       <i class="ri-broadcast-line text-sm"></i>
     </button>
-    <button type="button" class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover" [attr.data-tooltip]="'web.common.lblAdd' | translate">
+    <button type="button" routerLink="/add-unit" class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover" [attr.data-tooltip]="'web.common.lblAdd' | translate">
       <i class="ri-add-line text-sm"></i>
     </button>
   </div>
@@ -93,6 +93,29 @@
         <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
       </button>
 
+      <!-- Column Button with dropdown overlay -->
+      <div class="relative">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Columns'">
+          <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
+        </button>
+        
+        <!-- Column toggling checklist dropdown overlay -->
+        <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            Select All
+          </label>
+          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+            <label *ngFor="let col of tableColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              {{ col.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- View switcher single toggle button -->
       <button type="button" (click)="toggleViewMode()"
         class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
@@ -159,7 +182,7 @@
 
 <!-- 📋 1. LIST VIEW (TABLE) -->
 <div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
-  <app-shared-table [columns]="tableColumns" [data]="paginatedUnits" [loading]="false"
+  <app-shared-table [columns]="visibleColumns" [data]="paginatedUnits" [loading]="false"
     [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
@@ -219,10 +242,10 @@
     <!-- Actions Template -->
     <ng-template #actionTemplate let-row="row">
       <div class="flex gap-1">
-        <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+        <button [routerLink]="['/edit-unit', row.id]" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" [attr.data-tooltip]="'Edit'">
           <i class="ri-edit-line text-xs"></i>
         </button>
-        <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+        <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" [attr.data-tooltip]="'Delete'">
           <i class="ri-delete-bin-line text-xs"></i>
         </button>
       </div>
@@ -238,15 +261,20 @@
     <div class="relative h-48 overflow-hidden bg-gray-100">
       <img [src]="unit.imageUrl" [alt]="unit.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
       
-      <!-- Top Left Status Badge -->
-      <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md shadow-sm"
-        [ngClass]="unit.status === 'Occupied' ? 'bg-success text-white' : unit.status === 'Vacant' ? 'bg-danger text-white' : 'bg-warning text-white'">
+      <!-- Top Left Status Badge (Glass Finish) -->
+      <span class="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-extrabold uppercase rounded-md shadow-sm backdrop-blur-md transition-all duration-300"
+        [ngClass]="unit.status === 'Occupied' ? 'bg-success/20 text-success border border-success/30' : unit.status === 'Vacant' ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-warning/20 text-warning border border-warning/30'">
         {{unit.status}}
       </span>
 
-      <!-- Bottom Left Category Badge -->
-      <span class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-bold text-white bg-black/65 backdrop-blur-sm rounded-md">
-        <i class="ri-home-4-line align-middle me-0.5"></i> {{unit.category}}
+      <!-- Top Right Classy Circle Icon (Glass Finish) -->
+      <button type="button" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-900/35 border border-white/10 backdrop-blur-md text-white flex items-center justify-center shadow-sm hover:bg-slate-900/50 transition-colors">
+        <i class="ri-bookmark-line text-xs"></i>
+      </button>
+
+      <!-- Bottom Left Category Badge (Glass Finish) -->
+      <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[9px] font-extrabold text-white bg-slate-900/35 border border-white/10 backdrop-blur-md rounded-md shadow-sm">
+        <i class="ri-home-4-line align-middle me-0.5 text-xs"></i> {{unit.category}}
       </span>
     </div>
 

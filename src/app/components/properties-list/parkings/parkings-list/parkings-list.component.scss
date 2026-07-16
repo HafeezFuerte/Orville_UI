@@ -1,0 +1,51 @@
+// SCSS overrides for the parkings component
+.box {
+  transition: all 0.2s ease-in-out;
+}
+
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: #1f2937;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1060;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+// Fade in animation for the classy modal popup
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

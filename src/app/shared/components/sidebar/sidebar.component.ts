@@ -156,18 +156,64 @@ export class SidebarComponent {
         } else {
           // 🔵 Standard multi-level logic
           this.menuItems = modules.map((module: Module) => {
-            if(module.pages.length==0)
-            {
+            if (module.pages?.length === 0 || module.menuGroup?.[0]?.pages?.length === 0) {
+              const normalizedName = module.moduleName.trim();
+              let path = this.urlNameMap[normalizedName];
+              if (!path) {
+                const lowerName = normalizedName.toLowerCase();
+                const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
+                if (matchingKey) {
+                  path = this.urlNameMap[matchingKey];
+                }
+              }
+              if (!path) {
+                path = this.urlMap[module.url] || module.url;
+              }
+
               return {
                 title: module.moduleName,
                 type: 'link',
-                path: module.url,
+                path: path || '',
                 icon: 'bx bx-circle',
                 active: false,
                 selected: false,
               };
             }
-            else
+            
+            // If only one group exists, flatten pages directly as Level 2 children of the module
+            if (module.menuGroup.length === 1) {
+              const group = module.menuGroup[0];
+              return {
+                title: module.moduleName,
+                type: 'sub',
+                selected: false,
+                active: false,
+                icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
+                children: group.pages?.map((page: PageMenu) => {
+                  const normalizedName = page.menuName.trim();
+                  let path = this.urlNameMap[normalizedName];
+                  if (!path) {
+                    const lowerName = normalizedName.toLowerCase();
+                    const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
+                    if (matchingKey) {
+                      path = this.urlNameMap[matchingKey];
+                    }
+                  }
+                  if (!path) {
+                    path = this.urlMap[page.url];
+                  }
+                  return {
+                    title: page.menuName,
+                    type: 'link',
+                    path: path || '',
+                    active: false,
+                    selected: false,
+                  };
+                }) || []
+              };
+            }
+
+            // Otherwise, keep the standard multi-level sub-groups
             return {
               title: module.moduleName,
               type: 'sub',
@@ -250,9 +296,11 @@ export class SidebarComponent {
   };
 
   private urlNameMap: { [key: string]: string } = {
+    'My Day': '/dashboard/crm',
     'Properties': '/properties',
     'Units': '/units',
     'Rooms': '/rooms',
+    'Parkings': '/parkings',
     'Tenants': '/tenants',
     'Vendors': '/vendors',
     'Landlords': '/landlords', 

@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { PropertiesService } from '../../../shared/services/properties.service';
+import { PropertiesService } from '../../../../shared/services/properties.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetAllTypes } from '../../../shared/services/get-all-types.service';
+import { GetAllTypes } from '../../../../shared/services/get-all-types.service';
 import { ToastrService } from 'ngx-toastr';
 import { Store } from '@ngrx/store';
-import { selectCommonData } from '../../common/store/common-payload/common.selectors';
+import { selectCommonData } from '../../../common/store/common-payload/common.selectors';
 
 @Component({
   selector: 'app-add-property',
@@ -116,7 +116,7 @@ createPaymentRow(): FormGroup {
   });
 }
 loadProperty(){
-  this.store.select(selectCommonData).subscribe(data => {
+  this.store.select(selectCommonData).subscribe((data: any) => {
       this.commonData = data;
     });
     console.log(this.commonData);

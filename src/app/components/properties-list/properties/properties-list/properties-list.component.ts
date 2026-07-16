@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { SharedModule } from '../../../shared/shared.module';
-import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
-import { PropertiesService } from '../../../shared/services/properties.service';
+import { SharedModule } from '../../../../shared/shared.module';
+import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { PropertiesService } from '../../../../shared/services/properties.service';
 
 @Component({
   selector: 'app-properties-list',
@@ -71,8 +71,38 @@ export class PropertiesListComponent implements OnInit {
   constructor(public translate: TranslateService, private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {
+    this.loadMetrics();
     this.applyLocalFilters();
     this.loadProperties(); 
+  }
+
+  loadMetrics() {
+    const payload = {
+      typeId: 4,
+      filterId: 4,
+      filterText: "",
+      filterText1: "",
+      userId: 1,
+      clientId: "74BB6922",
+      companyId: 0
+    };
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const data = Array.isArray(res.objResult) ? res.objResult[0] : res.objResult;
+          if (data) {
+            this.metrics = {
+              total: data.TotalProperties || data.totalProperties || data.total_properties || this.metrics.total,
+              units: data.TotalUnits || data.totalUnits || data.total_units || this.metrics.units,
+              occupied: data.OccupiedUnits || data.occupiedUnits || data.occupied_units || this.metrics.occupied,
+              leases: data.ActiveLeases || data.activeLeases || data.active_leases || this.metrics.leases,
+              occupancy: data.OccupancyRate || data.occupancyRate || data.occupancy_rate || this.metrics.occupancy
+            };
+          }
+        }
+      },
+      error: (err: any) => console.error("Error loading metrics:", err)
+    });
   }
 
   loadProperties(): void {

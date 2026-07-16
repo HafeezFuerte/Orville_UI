@@ -1,0 +1,458 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex">
+  <div>
+    <h3
+      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
+      Rooms</h3>
+    <p>Manage your property inventory — create, organize, and track all rooms across your portfolio with precision.</p>
+  </div>
+  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+      [attr.data-tooltip]="'Export'">
+      <i class="ri-download-2-line text-sm"></i>
+    </button>
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+      [attr.data-tooltip]="'Import'">
+      <i class="ri-upload-2-line text-sm"></i>
+    </button>
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+      [attr.data-tooltip]="'Broadcast'">
+      <i class="ri-broadcast-line text-sm"></i>
+    </button>
+    <button type="button" routerLink="/add-room"
+      class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover"
+      [attr.data-tooltip]="'Add'">
+      <i class="ri-add-line text-sm"></i>
+    </button>
+  </div>
+</div>
+
+<!-- 📊 Metrics Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
+  <!-- Total Rooms Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Rooms</span>
+      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.total}}</h5>
+      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">Portfolio Rooms</span>
+    </div>
+  </div>
+
+  <!-- Vacant Rooms Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Vacant Rooms</span>
+      <i class="ri-checkbox-blank-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.vacant}}</h5>
+      <span class="text-[10px] text-danger font-medium mt-1.5 block">Available for lease</span>
+    </div>
+  </div>
+
+  <!-- Occupied Rooms Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Occupied Rooms</span>
+      <i class="ri-checkbox-circle-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.occupied}}</h5>
+      <span class="text-[10px] text-success font-medium mt-1.5 block">Active tenant contracts</span>
+    </div>
+  </div>
+
+  <!-- Maintenance Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Maintenance Rooms</span>
+      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.maintenance}}</h5>
+      <span class="text-[10px] text-warning font-normal mt-1.5 block">Under repair / blocked</span>
+    </div>
+  </div>
+</div>
+
+<!-- 🔍 Search & Filters Bar -->
+<div class="box mb-2 rounded-md overflow-visible bg-white shadow-sm border border-gray-100">
+  <div class="box-header !py-2.5 !px-4 border-b bg-gray-50/50 flex justify-between items-center w-full">
+    <div class="flex items-center gap-4">
+      <h5 class="box-title text-xs font-bold text-gray-700 m-0">Room List</h5>
+      <!-- Category Tabs (Left) -->
+      <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
+        <button (click)="setCategoryFilter('All')"
+          [class]="categoryFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">All</button>
+        <button (click)="setCategoryFilter('Residential')"
+          [class]="categoryFilter === 'Residential' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">Residential</button>
+        <button (click)="setCategoryFilter('Commercial')"
+          [class]="categoryFilter === 'Commercial' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">Commercial</button>
+      </div>
+    </div>
+
+    <!-- View Switcher & Filter Icon Button -->
+    <div class="flex items-center gap-2">
+      <!-- Filter drawer trigger button -->
+      <button type="button" (click)="toggleDrawer(true)"
+        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'Filters'">
+        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+      </button>
+
+      <!-- Column Button with dropdown overlay -->
+      <div class="relative">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Columns'">
+          <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
+        </button>
+
+        <!-- Column toggling checklist dropdown overlay -->
+        <div *ngIf="showColumnDropdown"
+          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
+          <label
+            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            Select All
+          </label>
+          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+            <label *ngFor="let col of tableColumns"
+              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
+                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              {{ col.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- View switcher single toggle button -->
+      <button type="button" (click)="toggleViewMode()"
+        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="viewMode === 'list' ? 'Switch to Grid' : 'Switch to List'">
+        <i
+          [class]="viewMode === 'list' ? 'ri-grid-fill text-[0.9rem] align-middle' : 'ri-list-check-2 text-[0.9rem] align-middle'"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="box-body !p-4">
+    <div class="grid grid-cols-12 gap-3 items-end">
+      <!-- Text Search -->
+      <div class="col-span-12 md:col-span-3 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Search Room</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()" placeholder="Filter items by Property Name">
+          <button type="button" (click)="onSearch()"
+            class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+            <i class="ri-search-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Category</label>
+        <ng-select [(ngModel)]="selectedCategory" [items]="categories" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Categories" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Status</label>
+        <ng-select [(ngModel)]="selectedStatus" [items]="statuses" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Beds Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Beds</label>
+        <ng-select [(ngModel)]="selectedBeds" [items]="bedsOptions" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Beds" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Rent/Sale Filter -->
+      <div class="col-span-6 md:col-span-2 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Rent Status</label>
+        <ng-select [(ngModel)]="selectedRentStatus" [items]="rentStatuses" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="col-span-12 md:col-span-1 text-end">
+        <button type="button" (click)="clearFilters()"
+          class="w-full ti-btn ti-btn-light !py-1 !px-3 !m-0 rounded-md shadow-sm border text-[11px] font-semibold"
+          title="Reset Filters">
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📋 1. LIST VIEW (TABLE) -->
+<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in"
+  *ngIf="viewMode === 'list'">
+  <app-shared-table [columns]="visibleColumns" [data]="paginatedRooms" [loading]="false" [totalRecords]="totalRecords"
+    [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+
+    <!-- Custom Column Templates -->
+    <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-container *ngIf="col.key === 'id'">
+        <span class="font-bold text-primary cursor-pointer hover:underline"
+          [routerLink]="['/rooms', row.id]">{{row.id}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'name'">
+        <span class="font-semibold text-gray-800">{{row.name}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'category'">
+        <span class="badge"
+          [ngClass]="row.category === 'Residential' ? 'bg-info/10 text-info' : 'bg-warning/10 text-warning'">
+          {{row.category}}
+        </span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'beds'">
+        <span>{{row.beds}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'property'">
+        <div class="flex flex-col">
+          <span class="font-bold text-gray-700">{{row.property}}</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.location}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'landlord'">
+        <span class="badge bg-light text-gray-600 border border-gray-200">{{row.landlord}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'tags'">
+        <span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary font-semibold">{{row.tags}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'unitType'">
+        <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30">{{row.roomType}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'floor'">
+        <span>{{row.floor}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'managementFee'">
+        <span class="font-bold text-gray-700">{{row.managementFee}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'status'">
+        <span class="badge rounded px-2 py-1 text-[10px] font-bold " [class]="getStatusClass(row.status)">
+          {{row.status}}
+        </span>
+      </ng-container>
+    </ng-template>
+
+    <!-- Actions Template -->
+    <ng-template #actionTemplate let-row="row">
+      <div class="flex gap-1">
+        <button [routerLink]="['/edit-room', row.id]"
+          class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
+          [attr.data-tooltip]="'Edit'">
+          <i class="ri-edit-line text-xs"></i>
+        </button>
+        <button
+          class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
+          [attr.data-tooltip]="'Delete'">
+          <i class="ri-delete-bin-line text-xs"></i>
+        </button>
+      </div>
+    </ng-template>
+
+  </app-shared-table>
+</div>
+
+<!-- 🎴 2. GRID / CARD VIEW -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="viewMode === 'grid'">
+  <div
+    class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl animate-fade-in"
+    *ngFor="let room of paginatedRooms; trackBy: trackByRoomId">
+    <!-- Image Card Header -->
+    <div class="relative h-48 overflow-hidden bg-gray-100">
+      <img [src]="room.imageUrl" [alt]="room.name"
+        class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+
+      <!-- Top Left Status Badge (Glass Finish) -->
+      <span
+        class="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-extrabold  rounded-md shadow-sm backdrop-blur-md transition-all duration-300"
+        [ngClass]="room.status === 'Occupied' ? 'bg-success/20 text-success border border-success/30' : room.status === 'Vacant' ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-warning/20 text-warning border border-warning/30'">
+        {{room.status}}
+      </span>
+
+      <!-- Top Right Classy Circle Icon (Glass Finish) -->
+      <button type="button"
+        class="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-900/35 border border-white/10 backdrop-blur-md text-white flex items-center justify-center shadow-sm hover:bg-slate-900/50 transition-colors">
+        <i class="ri-bookmark-line text-xs"></i>
+      </button>
+
+      <!-- Bottom Left Category Badge (Glass Finish) -->
+      <span
+        class="absolute bottom-3 left-3 px-2.5 py-1 text-[9px] font-extrabold text-white bg-slate-900/35 border border-white/10 backdrop-blur-md rounded-md shadow-sm">
+        <i class="ri-home-4-line align-middle me-0.5 text-xs"></i> {{room.category}}
+      </span>
+    </div>
+
+    <!-- Card Body -->
+    <div class="box-body !p-4 flex flex-col gap-4 bg-white">
+      <div>
+        <span
+          class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/50 mb-2 ">
+          {{room.rentStatus}}
+        </span>
+        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{room.name}} - {{room.property}}</h5>
+        <div class="flex items-center text-gray-600 text-[11px] font-medium mt-1">
+          <i class="ri-map-pin-line text-xs me-0.5 text-gray-600"></i> {{room.location}}
+        </div>
+      </div>
+
+      <!-- Features spec block -->
+      <div class="grid grid-cols-4 gap-1 py-2 border-y border-gray-50/80 text-center">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-gray-600 text-[9px]  font-bold">Beds</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i
+              class="ri-hotel-bed-line text-xs me-0.5 text-primary"></i> {{room.beds !== 'N/A' ? room.beds :
+            '0'}}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-gray-600 text-[9px]  font-bold">Baths</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-drop-line text-xs me-0.5 text-info"></i>
+            {{room.baths}}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-gray-600 text-[9px]  font-bold">Area</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i
+              class="ri-ruler-2-line text-xs me-0.5 text-success"></i> {{room.area}}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-gray-600 text-[9px]  font-bold">Floor</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i
+              class="ri-stack-line text-xs me-0.5 text-warning"></i> {{room.floor}}</span>
+        </div>
+      </div>
+
+      <!-- Info Row -->
+      <div class="flex items-center justify-between text-[11px] font-medium text-gray-600 mt-1">
+        <span>Room Type: <span class="font-bold text-gray-700">{{room.roomType}}</span></span>
+        <span>Fee: <span class="font-extrabold text-gray-800">{{room.managementFee}}</span></span>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="px-4 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center gap-3">
+      <button type="button"
+        class="w-1/2 ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md border text-xs font-bold hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
+        Manage Room
+      </button>
+      <button type="button"
+        class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
+        View Room <i class="ri-arrow-right-line"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 📄 GRID PAGINATION FOOTER -->
+<div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm"
+  *ngIf="viewMode === 'grid'">
+  <div class="flex items-center gap-2">
+    <span class="text-xs text-gray-500 font-medium">Show</span>
+    <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+
+  <div class="text-xs text-gray-500 font-medium">
+    Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong>
+    records
+  </div>
+
+  <div class="flex items-center gap-2">
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 1">
+      Previous
+    </button>
+    <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
+      [ngClass]="page === pageNo ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
+      {{page}}
+    </button>
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()"
+      [disabled]="pageNo === totalPages">
+      Next
+    </button>
+  </div>
+</div>
+
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
+<div class="filter-drawer" [class.open]="isDrawerOpen">
+  <div class="drawer-header">
+    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
+    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
+      <i class="ri-close-line text-lg"></i>
+    </button>
+  </div>
+  <div class="drawer-body text-[11px]">
+    <!-- Filter by Tags -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+      <ng-select [(ngModel)]="selectedTag" [items]="tagsList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Tag" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Filter by Area (sqft) -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedArea"
+        (keyup.enter)="onSearch()" placeholder="e.g. 1523 Sqft">
+    </div>
+
+    <!-- Filter by ID -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+      <input type="number" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedId"
+        (keyup.enter)="onSearch()" placeholder="e.g. 31658">
+    </div>
+
+    <!-- Filter by Landlord -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+      <ng-select [(ngModel)]="selectedLandlord" [items]="landlordsList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Landlord" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" (click)="onSearch(); toggleDrawer(false)"
+      class="flex-1 ti-btn bg-primary text-white hover:bg-primary-hover font-semibold text-xs !py-2 !px-4 rounded-md">
+      Apply Filters
+    </button>
+    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
+      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">
+      Clear All
+    </button>
+  </div>
+</div>
+<!--End::row-1 -->

@@ -1,0 +1,295 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex">
+  <div>
+    <h3
+      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
+      Parkings</h3>
+    <p>Manage your property inventory — create, organize, and track all units across your portfolio with precision.</p>
+  </div>
+  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
+      [attr.data-tooltip]="'Export'">
+      <i class="ri-download-2-line text-sm"></i>
+    </button>
+    <button type="button" (click)="toggleAddModal(true)"
+      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
+      [attr.data-tooltip]="'Add Parking'">
+      <i class="ri-add-line text-sm"></i>
+    </button>
+  </div>
+</div>
+
+<!-- 📊 Metrics Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
+  <!-- Total Parking Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Parking</span>
+      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.total}}</h5>
+      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">Portfolio Bays</span>
+    </div>
+  </div>
+
+  <!-- Available Parking Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Available Parking</span>
+      <i class="ri-checkbox-blank-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.available}}</h5>
+      <span class="text-[10px] text-danger font-medium mt-1.5 block">Available for lease</span>
+    </div>
+  </div>
+
+  <!-- Occupied Parking Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Occupied Parking</span>
+      <i class="ri-checkbox-circle-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.occupied}}</h5>
+      <span class="text-[10px] text-success font-medium mt-1.5 block">Active tenant contracts</span>
+    </div>
+  </div>
+
+  <!-- Reserved Parking Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Reserved Parkings</span>
+      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.reserved}}</h5>
+      <span class="text-[10px] text-warning font-normal mt-1.5 block">Blocked / Guest allocation</span>
+    </div>
+  </div>
+</div>
+
+<!-- 🔍 Search & Filters Bar -->
+<div class="box mb-2 rounded-md overflow-visible bg-white shadow-sm border border-gray-100">
+  <div class="box-header !py-2.5 !px-4 border-b bg-gray-50/50 flex justify-between items-center w-full">
+    <h5 class="box-title text-xs font-bold text-gray-700 m-0">Parking List</h5>
+
+    <!-- Filter & Column Buttons -->
+    <div class="flex items-center gap-2">
+      <!-- Filter Button -->
+      <button type="button" (click)="toggleDrawer(true)"
+        class="ti-btn border bg-white text-xs font-semibold py-1.5 px-3 rounded-md flex items-center gap-1.5 shadow-sm hover:bg-gray-50 transition-all duration-200">
+        <i class="ri-filter-3-line"></i> Filter
+      </button>
+
+      <!-- Column Button with dropdown overlay -->
+      <div class="relative">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+          class="ti-btn border bg-white text-xs font-semibold py-1.5 px-3 rounded-md flex items-center gap-1.5 shadow-sm hover:bg-gray-50 transition-all duration-200">
+          <i class="ri-menu-add-line"></i> Column
+        </button>
+
+        <!-- Column toggling checklist dropdown overlay -->
+        <div *ngIf="showColumnDropdown"
+          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+          <label
+            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            Select All
+          </label>
+          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+            <label *ngFor="let col of tableColumns"
+              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
+                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              {{ col.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box-body !p-4">
+    <div class="grid grid-cols-12 gap-3 items-end">
+      <!-- Text Search (Sized Down) -->
+      <div class="col-span-12 md:col-span-3 text-[11px]">
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()" placeholder="Search by Property, Parking No or Unit">
+          <button type="button" (click)="onSearch()"
+            class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+            <i class="ri-search-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Clear Filters Button (Sized Down) -->
+      <div class="col-span-12 md:col-span-1 text-end">
+        <button type="button" (click)="clearFilters()"
+          class="w-full ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md shadow-sm border text-[11px] font-semibold"
+          title="Reset Filters">
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📋 LIST VIEW (TABLE) -->
+<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in"
+  *ngIf="viewMode === 'list'">
+  <app-shared-table [columns]="visibleColumns" [data]="paginatedParkings" [loading]="false"
+    [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1"
+    (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+
+    <!-- Custom Column Templates -->
+    <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-container *ngIf="col.key === 'id'">
+        <span class="font-bold text-primary cursor-pointer hover:underline"
+          [routerLink]="['/parkings', row.id]">{{row.id}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'parkingNo'">
+        <span class="font-semibold text-gray-800">{{row.parkingNo}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'property'">
+        <div class="flex flex-col">
+          <span class="font-bold text-gray-700">{{row.property}}</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.location}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'unit'">
+        <span class="font-semibold text-primary cursor-pointer hover:underline">{{row.unit}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'type'">
+        <span class="badge" [ngClass]="row.type === 'Free' ? 'bg-info/10 text-info' : 'bg-primary/10 text-primary'">
+          {{row.type}}
+        </span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'fee'">
+        <span class="font-bold text-gray-700">{{row.fee}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'cycle'">
+        <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30">{{row.cycle}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'remarks'">
+        <span class="text-gray-600">{{row.remarks}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'createdDate'">
+        <span>{{row.createdDate}}</span>
+      </ng-container>
+
+      <ng-container *ngIf="col.key === 'updatedDate'">
+        <span>{{row.updatedDate}}</span>
+      </ng-container>
+    </ng-template>
+
+    <!-- Actions Template -->
+    <ng-template #actionTemplate let-row="row">
+      <div class="flex gap-1">
+        <button
+          class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
+          [attr.data-tooltip]="'Edit'">
+          <i class="ri-edit-line text-xs"></i>
+        </button>
+        <button
+          class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
+          [attr.data-tooltip]="'Delete'">
+          <i class="ri-delete-bin-line text-xs"></i>
+        </button>
+      </div>
+    </ng-template>
+
+  </app-shared-table>
+</div>
+
+<!-- Classy Popup Modal (Masaar UI Custom Style) -->
+<div *ngIf="showAddModal"
+  class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300">
+  <div
+    class="bg-white rounded-[0.5rem] w-full max-w-lg shadow-xl overflow-hidden transform transition-all border border-defaultborder flex flex-col mx-4 animate-fade-in">
+    <!-- Header -->
+    <div class="px-5 py-4 border-b border-defaultborder flex justify-between items-center bg-gray-50/50">
+      <h6 class="text-sm font-semibold text-gray-800 m-0">Add Parking</h6>
+      <button type="button" (click)="toggleAddModal(false)"
+        class="text-gray-400 hover:text-gray-600 transition-all p-1 rounded-md">
+        <i class="ri-close-line text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 flex flex-col gap-3.5 text-[11px]">
+      <!-- Property -->
+      <div>
+        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Property <span
+            class="text-danger">*</span></label>
+        <ng-select [items]="propertiesList" bindLabel="name" bindValue="code" placeholder="Search property"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"></ng-select>
+      </div>
+
+      <!-- Unit -->
+      <div>
+        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Unit <span
+            class="text-danger">*</span></label>
+        <ng-select [items]="unitsList" bindLabel="name" bindValue="id" placeholder="Search unit"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code"></ng-select>
+      </div>
+
+      <!-- Row: Parking No & Parking Type -->
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Parking No. <span
+              class="text-danger">*</span></label>
+          <input type="text"
+            class="form-control form-control-sm !text-[11px] py-1.5 px-3 border-slate-200 rounded-md focus:border-primary focus:ring-1 focus:ring-primary/20"
+            placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
+        </div>
+        <div>
+          <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Parking Type <span
+              class="text-danger">*</span></label>
+          <ng-select [items]="parkingTypes" bindLabel="name" bindValue="id" placeholder="Select"
+            class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.parking_type"></ng-select>
+        </div>
+      </div>
+
+      <!-- Recurring Cycle -->
+      <div>
+        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Recurring
+          Cycle</label>
+        <ng-select [items]="recurringCycles" bindLabel="name" bindValue="id" placeholder="Select payment schedule"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.recurring_cycle"></ng-select>
+      </div>
+
+      <!-- Remarks -->
+      <div>
+        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Remarks</label>
+        <textarea
+          class="form-control form-control-sm !text-[11px] border-slate-200 rounded-md focus:border-primary focus:ring-1 focus:ring-primary/20"
+          rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-5 py-4 border-t border-defaultborder flex justify-end gap-2 bg-gray-50/50">
+      <button type="button" (click)="toggleAddModal(false)"
+        class="ti-btn ti-btn-light !py-1.5 !px-4 !text-xs font-semibold !m-0">Close</button>
+      <button type="button" (click)="saveParking()"
+        class="ti-btn ti-btn-primary !py-1.5 !px-4 !text-xs font-semibold !m-0">Save</button>
+    </div>
+  </div>
+</div>

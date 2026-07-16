@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
-import { PropertiesService } from '../../../shared/services/properties.service';
+import { PropertiesService } from '../../../../shared/services/properties.service';
 import { TranslateModule } from '@ngx-translate/core';
 
 export interface Unit {
@@ -24,6 +24,26 @@ export interface Unit {
   addedDate: string;
   imageUrl: string;
   rentStatus: 'For Rent' | 'For Sale';
+  furnished?: boolean;
+  smoking?: boolean;
+  saleStatus?: boolean;
+  underDispute?: boolean;
+  propertyAddress?: string;
+  createdDate?: string;
+  lastUpdate?: string;
+  isVerified?: boolean;
+  marketRent?: string;
+  deposit?: string;
+  rentType?: string;
+  rentPerSqft?: string;
+  totalServiceCharges?: string;
+  serviceCharges?: string;
+  salePrice?: string;
+  thresholdValue?: string;
+  managementFeeType?: string;
+  serviceDisabled?: boolean;
+  trakessiNumber?: string;
+  reraNumber?: string;
 }
 
 @Component({
@@ -95,7 +115,22 @@ export class UnitDetailComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) {
-          const detail = Array.isArray(response.objResult) ? response.objResult[0] : response.objResult;
+          let detail = null;
+          if (response.objResult.unit && Array.isArray(response.objResult.unit) && response.objResult.unit.length > 0) {
+            detail = response.objResult.unit[0];
+          } else if (response.objResult.room && Array.isArray(response.objResult.room) && response.objResult.room.length > 0) {
+            detail = response.objResult.room[0];
+          } else if (response.objResult.parking && Array.isArray(response.objResult.parking) && response.objResult.parking.length > 0) {
+            detail = response.objResult.parking[0];
+          } else if (response.objResult.property && Array.isArray(response.objResult.property) && response.objResult.property.length > 0) {
+            detail = response.objResult.property[0];
+          } else if (response.objResult.table && Array.isArray(response.objResult.table) && response.objResult.table.length > 0) {
+            detail = response.objResult.table[0];
+          } else if (Array.isArray(response.objResult)) {
+            detail = response.objResult[0];
+          } else {
+            detail = response.objResult;
+          }
           if (detail) {
             this.unit = {
               id: detail.code || detail.id || this.unitId,
@@ -109,12 +144,32 @@ export class UnitDetailComponent implements OnInit {
               location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
               landlord: detail.landlord_codes || detail.landlord || this.unit?.landlord || 'Orville Real Estate',
               tags: detail.tags || this.unit?.tags || 'Premium',
-              unitType: detail.unit_type || this.unit?.unitType || 'Apartment',
+              unitType: detail.unit_type_name || detail.unit_type || this.unit?.unitType || 'Apartment',
               managementFee: detail.management_fee ? `AED ${detail.management_fee}` : this.unit?.managementFee || 'AED 600',
-              status: detail.unit_status || detail.status || this.unit?.status || 'Occupied',
+              status: detail.unit_status_name || detail.unit_status || detail.status || this.unit?.status || 'Occupied',
               addedDate: detail.created || this.unit?.addedDate || 'May 26, 2026',
               imageUrl: detail.unit_image || this.unit?.imageUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
-              rentStatus: detail.rent_type || this.unit?.rentStatus || 'For Rent'
+              rentStatus: detail.rent_type || this.unit?.rentStatus || 'For Rent',
+              furnished: detail.is_furnished || false,
+              smoking: detail.is_smoking_allowed || false,
+              saleStatus: detail.sale_status || false,
+              underDispute: (response.objResult.legal_cases && response.objResult.legal_cases.length > 0),
+              propertyAddress: detail['property Name'] || detail.property_name || 'Dubai Marina, Tower A, Dubai',
+              createdDate: detail.created_date ? new Date(detail.created_date).toLocaleDateString() : '07-22-2025',
+              lastUpdate: detail.modified_date ? new Date(detail.modified_date).toLocaleDateString() : (detail.created_date ? new Date(detail.created_date).toLocaleDateString() : '23-06-2026'),
+              isVerified: detail.is_it_verified || false,
+              marketRent: detail.market_rent ? `AED ${detail.market_rent}` : 'AED 36500.0',
+              deposit: detail.rent_deposit ? `AED ${detail.rent_deposit}` : 'AED 3000.0',
+              rentType: detail.rent_type_name || (detail.rent_type === 50 ? 'Per Year' : 'Per Year'),
+              rentPerSqft: detail.rent_per_area ? `AED ${detail.rent_per_area}` : 'AED 250.00',
+              totalServiceCharges: detail.total_service_charges ? `AED ${detail.total_service_charges}` : '0.00',
+              serviceCharges: detail.service_charge_per_area ? `AED ${detail.service_charge_per_area}` : '0.00',
+              salePrice: detail.market_value ? `AED ${detail.market_value}` : '-',
+              thresholdValue: detail.threshold_value ? `AED ${detail.threshold_value}` : '-',
+              managementFeeType: detail.management_fee_type || 'Percentage',
+              serviceDisabled: detail.disable_maintainence || false,
+              trakessiNumber: detail.trakessi_number || '-',
+              reraNumber: detail.rera_number || '-'
             };
             this.item = this.unit;
           }
@@ -377,9 +432,15 @@ export class UnitDetailComponent implements OnInit {
     } else if (this.mode === 'room') {
       this.tabs = [
         { key: 'overview', label: 'web.Unit.lblOverview' },
-        { key: 'amenities', label: 'web.Unit.lblAmenities' },
-        { key: 'tenants', label: 'web.Unit.lblTenants' },
-        { key: 'maintenance', label: 'web.Unit.lblMaintenance' }
+        { key: 'financials', label: 'web.Unit.lblFinancials' },
+        { key: 'inventory', label: 'web.Unit.lblInventory' },
+        { key: 'workorders', label: 'web.Unit.lblWorkOrders' },
+        { key: 'attachments', label: 'web.Unit.lblAttachments' },
+        { key: 'legal', label: 'web.Unit.lblLegal' },
+        { key: 'parkings', label: 'web.Unit.lblParkings' },
+        { key: 'notes', label: 'web.Unit.lblNotes' },
+        { key: 'broadcasts', label: 'web.Unit.lblBroadcasts' },
+        { key: 'inspections', label: 'web.Unit.lblInspections' }
       ];
       this.item = {
         id: this.unitId,

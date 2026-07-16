@@ -1,658 +1,193 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from '../../../shared/shared.module';
 import { NgChartsModule } from 'ng2-charts';
 import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-crm',
   standalone: true,
-  imports: [RouterModule,NgApexchartsModule,SharedModule,NgChartsModule],
+  imports: [CommonModule, RouterModule, NgApexchartsModule, SharedModule, NgChartsModule],
   templateUrl: './crm.component.html',
   styleUrl: './crm.component.scss'
 })
+export class CrmComponent implements OnInit {
+  public todayDate = 'Tuesday, June 9, 2026';
+  public userName = 'Zaid Rahman';
 
-export class CrmComponent {
-  optionsCircle1: any;
-  optionsCircle: any;
-  chartOptions1:any
-  chartOptions2:any
-  chartOptions3:any
-  chartOptions4:any
-  chartOptions5:any
-  chartOptions7:any
-  
-  constructor(public translate: TranslateService) {
-    this.optionsCircle1 = {
-      series: [32, 27, 25, 16],
-      colors: ["rgb(132, 90, 223)", "rgb(35, 183, 229)",  "rgb(245, 184, 73)", "rgb(38, 191, 148)",],
-      chart: {
-        events: {
-          mounted: (chart:any) => {
-            chart.windowResizeHandler();
-          }
-        },
-        height: 300,
-        type: 'donut',
-        dropShadow: {
-          enabled: false,
-          top: 5,
-          left: 0,
-          blur: 3,
-          color: '#525050',
-          opacity: 0.1,
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      plotOptions: {
+  // Toggle states
+  public overdueLeasesView: 'list' | 'graph' = 'list';
+  public bouncedPaymentsView: 'list' | 'graph' = 'list';
+  public ticketsView: 'list' | 'graph' = 'list';
+  public overdueExpensesView: 'list' | 'graph' = 'list';
 
-        pie: {
-            expandOnClick: false,
-            donut: {
-                size: '80%',
-                labels: {
-                    show: false,
-                    name: {
-                        show: true,
-                        fontSize: '20px',
-                        color: '#495057',
-                        offsetY: -4
-                    },
-                    value: {
-                        show: true,
-                        fontSize: '18px',
-                        offsetY: 8,
-                        formatter: function (val: string) {
-                            return val + "%";
-                        }
-                    },
+  // Metrics
+  public metrics = {
+    overdueLeases: { count: 10, total: 50 },
+    expiringDocs: { count: 25, percentage: '90%' },
+    overdueInvoices: { amount: 'AED 15,999', count: 4 },
+    openTickets: { count: 3, status: 'Active' }
+  };
 
-                }
-            }
-        }
+  // Overdue Invoices / Leases Data
+  public overdueInvoices = [
+    {
+      title: 'Security Deposit Liability',
+      overdueDays: 34,
+      tenant: 'Olivia Green',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '11-06-2026'
     },
-        
-      legend: {
-        show: false,
-      },
-      stroke: {
-        show: true,
-        curve: 'smooth',
-        lineCap: 'round',
-        colors: '#fff',
-        width: 0,
-        dashArray: 0,
-      },
-  
-    };
-    this.optionsCircle={
-      chart: {
-        height: 127,
-        width: 100,
-        type: 'radialBar',
-      },
-
-      series: [48],
-      // colors: ['#fff'],
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            margin: 0,
-            size: '55%',
-            background: '#fff',
-          },
-          dataLabels: {
-            name: {
-              offsetY: -10,
-              color: '#4b9bfa',
-              fontSize: '.625rem',
-              show: false,
-            },
-            value: {
-              offsetY: 5,
-              color: '#4b9bfa',
-              fontSize: '.875rem',
-              show: true,
-              fontWeight: 600,
-            },
-          },
-        },
-      },
-      stroke: {
-        lineCap: 'round',
-      },
-      labels: ['Status'],
-      colors:['#fff']
+    {
+      title: 'Rental Income',
+      overdueDays: 30,
+      tenant: 'Yahya Hashmi',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '11-06-2026'
+    },
+    {
+      title: 'Rental Income',
+      overdueDays: 36,
+      tenant: 'Zainab Hassan',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '11-06-2026'
+    },
+    {
+      title: 'Security Deposit Liability',
+      overdueDays: 40,
+      tenant: 'Zara Malik',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '11-06-2026'
     }
-    this.chartOptions1 = {
-    
-      series: [{
-        name: 'Value',
-        data: [20, 14, 19, 10, 23, 20, 22, 9, 12]
-    }],
-    colors: ["rgb(132, 90, 223)"],
-    chart: {
-        type: 'line',
-        height: 30,
-        width: 100,
-        sparkline: {
-            enabled: true
-        },
-      
-    },
-    stroke: {
-        show: true,
-        curve: 'smooth',
-        lineCap: 'butt',
-        width: 1.5,
-        dashArray: 0,
-    },
-    fill: {
-        type: 'gradient',
-        gradient: {
-            opacityFrom: 0.9,
-            opacityTo: 0.9,
-            stops: [0, 98],
-        }
-    },
-    yaxis: {
-        min: 0,
-        show: false,
-        axisBorder: {
-            show: false
-        },
-    },
-    xaxis: {
-        // show: false,
-        axisBorder: {
-            show: false
-        },
-    },
-    tooltip: {
-        enabled: false,
-    }, 
-  }
-  this.chartOptions2 = {
-    chart: {
-      type: 'line',
-      height: 40,
-      width: 100,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    stroke: {
-      show: true,
-      curve: 'smooth',
-      lineCap: 'butt',
-      width: 1.5,
-      dashArray: 0,
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        opacityFrom: 0.9,
-        opacityTo: 0.9,
-        stops: [0, 98],
-      },
-    },
-    series: [
-      {
-        name: 'Value',
-        data: [20, 14, 20, 22, 9, 12, 19, 10, 25],
-      },
-    ],
-    yaxis: {
-      min: 0,
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    xaxis: {
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    tooltip: {
-      enabled: false,
-    },
-    colors: ['rgb(35, 183, 229)'],
-  };
-  this.chartOptions3 = {
-    chart: {
-      type: 'line',
-      height: 40,
-      width: 100,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    stroke: {
-      show: true,
-      curve: 'smooth',
-      lineCap: 'butt',
-      width: 1.5,
-      dashArray: 0,
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        opacityFrom: 0.9,
-        opacityTo: 0.9,
-        stops: [0, 98],
-      },
-    },
-    series: [
-      {
-        name: 'Value',
-        data: [20, 20, 22, 9, 14, 19, 10, 25, 12],
-      },
-    ],
-    yaxis: {
-      min: 0,
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    xaxis: {
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    tooltip: {
-      enabled: false,
-    },
-    colors: ['rgb(38, 191, 148)'],
-  };
-  this.chartOptions4 = {
-    chart: {
-      type: 'line',
-      height: 40,
-      width: 100,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    stroke: {
-      show: true,
-      curve: 'smooth',
-      lineCap: 'butt',
-      width: 1.5,
-      dashArray: 0,
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        opacityFrom: 0.9,
-        opacityTo: 0.9,
-        stops: [0, 98],
-      },
-    },
-    series: [
-      {
-        name: 'Value',
-        data: [20, 20, 22, 9, 12, 14, 19, 10, 25],
-      },
-    ],
-    yaxis: {
-      min: 0,
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    xaxis: {
-      show: false,
-      axisBorder: {
-        show: false,
-      },
-    },
-    tooltip: {
-      enabled: false,
-    },
-    colors: ['rgb(245, 184, 73)'],
-  };
-  this.chartOptions5 = {
-    series: [
-      {
-          type: 'line',
-          name: 'Profit',
-          data: [
-              {
-                  x: 'Jan',
-                  y: 100
-              },
-              {
-                  x: 'Feb',
-                  y: 210
-              },
-              {
-                  x: 'Mar',
-                  y: 180
-              },
-              {
-                  x: 'Apr',
-                  y: 454
-              },
-              {
-                  x: 'May',
-                  y: 230
-              },
-              {
-                  x: 'Jun',
-                  y: 320
-              },
-              {
-                  x: 'Jul',
-                  y: 656
-              },
-              {
-                  x: 'Aug',
-                  y: 830
-              },
-              {
-                  x: 'Sep',
-                  y: 350
-              },
-              {
-                  x: 'Oct',
-                  y: 350
-              },
-              {
-                  x: 'Nov',
-                  y: 210
-              },
-              {
-                  x: 'Dec',
-                  y: 410
-              }
-          ]
-      },
-      {
-          type: 'line',
-          name: 'Revenue',
-          data: [
-              {
-                  x: 'Jan',
-                  y: 180
-              },
-              {
-                  x: 'Feb',
-                  y: 620
-              },
-              {
-                  x: 'Mar',
-                  y: 476
-              },
-              {
-                  x: 'Apr',
-                  y: 220
-              },
-              {
-                  x: 'May',
-                  y: 520
-              },
-              {
-                  x: 'Jun',
-                  y: 780
-              },
-              {
-                  x: 'Jul',
-                  y: 435
-              },
-              {
-                  x: 'Aug',
-                  y: 515
-              },
-              {
-                  x: 'Sep',
-                  y: 738
-              },
-              {
-                  x: 'Oct',
-                  y: 454
-              },
-              {
-                  x: 'Nov',
-                  y: 525
-              },
-              {
-                  x: 'Dec',
-                  y: 230
-              }
-          ]
-      },
-      {
-          type: 'area',
-          name: 'Sales',
-          data: [
-              {
-                  x: 'Jan',
-                  y: 200
-              },
-              {
-                  x: 'Feb',
-                  y: 530
-              },
-              {
-                  x: 'Mar',
-                  y: 110
-              },
-              {
-                  x: 'Apr',
-                  y: 130
-              },
-              {
-                  x: 'May',
-                  y: 480
-              },
-              {
-                  x: 'Jun',
-                  y: 520
-              },
-              {
-                  x: 'Jul',
-                  y: 780
-              },
-              {
-                  x: 'Aug',
-                  y: 435
-              },
-              {
-                  x: 'Sep',
-                  y: 475
-              },
-              {
-                  x: 'Oct',
-                  y: 738
-              },
-              {
-                  x: 'Nov',
-                  y: 454
-              },
-              {
-                  x: 'Dec',
-                  y: 480
-              }
-          ]
-      }
-  ],
-    chart: {
-      height: 350,
-      animations: {
-          speed: 500
-      },
-      dropShadow: {
-          enabled: true,
-          top: 8,
-          left: 0,
-          blur: 3,
-          color: '#000',
-          opacity: 0.1
-      },
-  
-  },
-  colors: ["rgb(132, 90, 223)", "rgba(35, 183, 229, 0.85)", "rgba(119, 119, 142, 0.05)"],
-  dataLabels: {
-      enabled: false
-  },
-  grid: {
-      borderColor: '#f1f1f1',
-      strokeDashArray: 3
-  },
-  stroke: {
-      curve: 'smooth',
-      width: [2, 2, 0],
-      dashArray: [0, 5, 0],
-  },
-  xaxis: {
-      axisTicks: {
-          show: false,
-      },
-  },
-  yaxis: {
-      labels: {
-          formatter: function (value: string) {
-              return "$" + value;
-          }
-      },
-  },
-  tooltip: {
-      y: [{
-          formatter: function (e: number ) {
-              return void 0 !== e ? "$" + e.toFixed(0) : e;
-          }
-      }, {
-          formatter: function (e: number ) {
-              return void 0 !== e ? "$" + e.toFixed(0) : e;
-          }
-      }, {
-          formatter: function (e: number ) {
-              return void 0 !== e ? e.toFixed(0) : e;
-          }
-      }]
-  },
-  legend: {
-      show: true,
-      customLegendItems: ['Profit', 'Revenue', 'Sales'],
-      inverseOrder: true
-  },
-  title: {
-      text: 'Revenue Analytics with sales & profit (USD)',
-      align: 'left',
-      style: {
-          fontSize: '.8125rem',
-          fontWeight: 'semibold',
-          color: '#8c9097'
-      },
-  },
-  markers: {
-      hover: {
-          sizeOffset: 5
-      }
-  },
+  ];
 
-  };
-  this.chartOptions7 = {
-    series: [
-      {
-        name: 'Profit Earned',
-        data: [44, 42, 57, 86, 58, 55, 70],
-      },
-      {
-        name: 'Total Sales',
-        data: [34, 22, 37, 56, 21, 35, 60],
-      },
-    ],
+  // Bounced Payments Data
+  public bouncedPayments = [
+    {
+      tenant: 'Bilal Ahmad',
+      chequeNo: '#123456',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '06-05-2026'
+    },
+    {
+      tenant: 'Aslam khan',
+      chequeNo: '#123456',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '06-05-2026'
+    },
+    {
+      tenant: 'Jawad Ahmad',
+      chequeNo: '#123456',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '06-05-2026'
+    },
+    {
+      tenant: 'Subhan Tariq',
+      chequeNo: '#123456',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '06-05-2026'
+    },
+    {
+      tenant: 'Ashraf said',
+      chequeNo: '#123456',
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      amount: 'AED 3,000.00',
+      dueDate: '06-05-2026'
+    }
+  ];
+
+  // Expired Landlord Contracts
+  public expiredLandlordContracts = [
+    {
+      contractNo: 'LC-2026-00045',
+      expiredDays: 28,
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      type: 'Move Out Request',
+      assignedTo: 'Facility Group'
+    },
+    {
+      contractNo: 'LC-2026-00054',
+      expiredDays: 28,
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      type: 'Move Out Request',
+      assignedTo: 'Accounting Group'
+    },
+    {
+      contractNo: 'LC-2026-00046',
+      expiredDays: 28,
+      property: 'Rashid Resedential - Apartment 304-PR-2',
+      type: 'Maintenance and Repairs',
+      assignedTo: 'Facility Group'
+    }
+  ];
+
+  // Tenant Expired Documents
+  public expiredDocumentsCount = 58;
+  public tenantExpiredDocs = [
+    { name: 'Aisha Khan', docType: 'Emirates ID', role: 'Tenant' },
+    { name: 'Omar Farooq', docType: 'Visa', role: 'Tenant' },
+    { name: 'Salma Ahmed', docType: 'Passport', role: 'Tenant' },
+    { name: 'Sana Qureshi', docType: 'Visa', role: 'Tenant' }
+  ];
+
+  // Tickets
+  public tickets = [
+    { title: 'Vacant notice', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Move Out Request', assignedTo: 'Facility Group', timeAgo: '15 minutes ago' },
+    { title: 'Move out', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Move Out Request', assignedTo: 'Accounting Group', timeAgo: '30 minutes ago' },
+    { title: 'Air conditioning not cooling', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Maintenance and Repairs', assignedTo: 'Facility Group', timeAgo: '1.30 hours ago' }
+  ];
+
+  // Work Orders
+  public workOrders = [
+    { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' },
+    { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' },
+    { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' },
+    { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' }
+  ];
+
+  // Donut chart configuration for Tenant Expired Documents
+  public expiredDocsChartOptions: any = {
+    series: [25, 20, 13],
+    labels: ['Emirates ID', 'Passport', 'Visa'],
+    colors: ['#06b6d4', '#6366f1', '#3b82f6'],
     chart: {
-      type: 'bar',
-      height: 180,
-      toolbar: {
-        show: false,
-      },
+      type: 'donut',
+      height: 220
     },
-    grid: {
-      borderColor: '#f1f1f1',
-      strokeDashArray: 3,
-    },
-    colors: ['rgb(132, 90, 223)', '#e4e7ed'],
     plotOptions: {
-      bar: {
-        colors: {
-          ranges: [
-            {
-              from: -100,
-              to: -46,
-              color: '#ebeff5',
-            },
-            {
-              from: -45,
-              to: 0,
-              color: '#ebeff5',
-            },
-          ],
-        },
-        columnWidth: '60%',
-        borderRadius: 5,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      show: true,
-      width: 2,
+      pie: {
+        donut: {
+          size: '75%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Expired',
+              formatter: () => '58'
+            }
+          }
+        }
+      }
     },
     legend: {
-      show: false,
-      position: 'top',
+      show: false
     },
-    yaxis: {
-      title: {
-        style: {
-          color: '#adb5be',
-          fontSize: '13px',
-          fontFamily: 'poppins, sans-serif',
-          fontWeight: 600,
-          cssClass: 'apexcharts-yaxis-label',
-        },
-      },
-      labels: {
-        formatter: function (y: number) {
-          return y.toFixed(0) + '';
-        },
-      },
-    },
-    xaxis: {
-      type: 'week',
-      categories: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-      axisBorder: {
-        show: true,
-        color: 'rgba(119, 119, 142, 0.05)',
-        offsetX: 0,
-        offsetY: 0,
-      },
-      axisTicks: {
-        show: true,
-        borderType: 'solid',
-        color: 'rgba(119, 119, 142, 0.05)',
-        width: 6,
-        offsetX: 0,
-        offsetY: 0,
-      },
-      labels: {
-        rotate: -90,
-      },
-    },
+    dataLabels: {
+      enabled: false
+    }
   };
+
+  constructor(public translate: TranslateService) {}
+
+  ngOnInit(): void {}
 }
-ngOnInit() {
-//console.log( this.translate.instant("web.auth.Error"))
-}
-} 
