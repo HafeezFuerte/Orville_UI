@@ -153,8 +153,7 @@
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container *ngIf="col.key === 'id'">
-        <span class="font-bold text-primary cursor-pointer hover:underline"
-          [routerLink]="['/parkings', row.id]">{{row.id}}</span>
+        <span class="font-bold text-gray-800">{{row.id}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'parkingNo'">
@@ -222,18 +221,18 @@
 <div *ngIf="showAddModal"
   class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300">
   <div
-    class="bg-white rounded-[0.5rem] w-full max-w-lg shadow-xl overflow-hidden transform transition-all border border-defaultborder flex flex-col mx-4 animate-fade-in">
+    class="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform transition-all border border-gray-100 flex flex-col mx-4 max-h-[85vh] animate-fade-in">
     <!-- Header -->
-    <div class="px-5 py-4 border-b border-defaultborder flex justify-between items-center bg-gray-50/50">
-      <h6 class="text-sm font-semibold text-gray-800 m-0">Add Parking</h6>
+    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+      <h6 class="text-sm font-bold text-gray-800 m-0">Add Parking</h6>
       <button type="button" (click)="toggleAddModal(false)"
-        class="text-gray-400 hover:text-gray-600 transition-all p-1 rounded-md">
-        <i class="ri-close-line text-lg"></i>
+        class="text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 transition-all p-1.5 rounded-full flex items-center justify-center">
+        <i class="ri-close-line text-lg leading-none"></i>
       </button>
     </div>
 
-    <!-- Body -->
-    <div class="p-6 flex flex-col gap-3.5 text-[11px]">
+    <!-- Body (Scrollable) -->
+    <div class="p-6 flex flex-col gap-4 text-[11px] overflow-y-auto custom-scrollbar">
       <!-- Property -->
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Property <span

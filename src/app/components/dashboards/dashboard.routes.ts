@@ -27,7 +27,7 @@ export const admin: Routes = [
 { path: 'parkings', component: ParkingsListComponent },
 { path: 'units/:id', component: UnitDetailComponent },
 { path: 'rooms/:id', component: UnitDetailComponent },
-{ path: 'parkings/:id', component: UnitDetailComponent },
+
 {
   path: 'add-property',
   component: AddPropertyComponent

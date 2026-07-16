@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './crm.component.scss'
 })
 export class CrmComponent implements OnInit {
-  public todayDate = 'Tuesday, June 9, 2026';
+  public todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   public userName = 'Zaid Rahman';
 
   // Toggle states
@@ -22,6 +22,15 @@ export class CrmComponent implements OnInit {
   public bouncedPaymentsView: 'list' | 'graph' = 'list';
   public ticketsView: 'list' | 'graph' = 'list';
   public overdueExpensesView: 'list' | 'graph' = 'list';
+  public upcomingInvoicesView: 'list' | 'graph' = 'list';
+  public endingLeasesView: 'list' | 'graph' = 'list';
+  public upcomingInspectionView: 'list' | 'graph' = 'list';
+  public visitorStatsView: 'list' | 'graph' = 'list';
+  public remindersView: 'list' | 'graph' = 'list';
+  public departmentTicketsView: 'list' | 'graph' = 'list';
+  public upcomingLandlordContractsView: 'list' | 'graph' = 'list';
+  public topPerformingListingsView: 'list' | 'graph' = 'list';
+  public upcomingBirthdaysView: 'list' | 'graph' = 'list';
 
   // Metrics
   public metrics = {
@@ -153,6 +162,72 @@ export class CrmComponent implements OnInit {
     { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' },
     { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' },
     { title: 'Electricity fluctuations - Electrical', property: 'Rashid Resedential - Apartment 304-PR-2' }
+  ];
+
+  // Overdue Leases (List)
+  public overdueLeasesList = [
+    { title: 'WMP Drainage M. services', property: 'Rashid Resedential - Apartment 304-PR-2', amount: 'AED 3,000.00', dueDate: '06-05-2026', overdueDays: 34 },
+    { title: 'WMP Drainage M. services', property: 'Rashid Resedential - Apartment 304-PR-2', amount: 'AED 3,000.00', dueDate: '06-05-2026', overdueDays: 34 },
+    { title: 'WMP Drainage M. services', property: 'Rashid Resedential - Apartment 304-PR-2', amount: 'AED 3,000.00', dueDate: '06-05-2026', overdueDays: 24 },
+    { title: 'WMP Drainage M. services', property: 'Rashid Resedential - Apartment 304-PR-2', amount: 'AED 3,000.00', dueDate: '06-05-2026', overdueDays: 34 }
+  ];
+
+  // Upcoming Invoices
+  public upcomingInvoices = [
+    { title: 'Security Deposit Liability', property: 'Rashid Resedential - Apartment 304-PR-2', tenant: 'Olivia Green', amount: 'AED 3,000.00', dueDate: '11-06-2026' },
+    { title: 'Rental Income', property: 'Rashid Resedential - Apartment 304-PR-2', tenant: 'Yahya Hashmi', amount: 'AED 3,000.00', dueDate: '11-06-2026' },
+    { title: 'Rental Income', property: 'Rashid Resedential - Apartment 304-PR-2', tenant: 'Zainab Hassan', amount: 'AED 3,000.00', dueDate: '11-06-2026' }
+  ];
+
+  // Ending Leases in 30 Days
+  public endingLeases30Days = [
+    { title: 'WMP Drainage M. services', property: 'Olivia Green', daysLeft: 2, amount: 'AED 3,000.00', dueDate: '06-05-2026' },
+    { title: 'WMP Drainage M. services', property: 'Yahya Hashmi', daysLeft: 13, amount: 'AED 3,000.00', dueDate: '06-05-2026' },
+    { title: 'WMP Drainage M. services', property: 'Zainab Hassan', daysLeft: 26, amount: 'AED 3,000.00', dueDate: '06-05-2026' },
+    { title: 'WMP Drainage M. services', property: 'Zara Malik', daysLeft: 22, amount: 'AED 3,000.00', dueDate: '06-05-2026' }
+  ];
+
+  // Upcoming Inspection
+  public upcomingInspection = [
+    { contract: 'LC-2026-03045', property: 'Rashid Resedential - Apartment 304-PR-2', inspector: 'Hassan Malik', status: 'Completed', date: '15-05-2026' },
+    { contract: 'LC-2026-03054', property: 'Rashid Resedential - Apartment 304-PR-2', inspector: 'Sufiyan Khan', status: 'Completed', date: '15-05-2026' },
+    { contract: 'LC-2026-03046', property: 'Rashid Resedential - Apartment 304-PR-2', inspector: 'Amina Hashmi', status: 'Pending', date: '15-05-2026' }
+  ];
+
+  // Visitor Stats
+  public visitorStats = [
+    { name: 'Bilal Ahmad', type: 'Personal', details: 'Host: Olivia Green - Rashid Resedential - Apartment 304-PR-2', date: '06-05-2026', visitors: 2 },
+    { name: 'Aslam khan', type: 'Guest', details: 'Host: Yahya Hashmi - Rashid Resedential - Apartment 304-PR-2', date: '06-05-2026', visitors: 4 },
+    { name: 'Jawad Ahmad', type: 'Service', details: 'Host: Yahya Hashmi - Rashid Resedential - Apartment 304-PR-2', date: '06-05-2026', visitors: 1 },
+    { name: 'Subhan Tariq', type: 'Delivery', details: 'Host: Olivia Green - Rashid Resedential - Apartment 304-PR-2', date: '06-05-2026', visitors: 2 }
+  ];
+
+  // Reminders
+  public reminders = [
+    { title: 'Rent reminders', property: 'Olivia Green', status: 'Pending', date: '06-05-2026' },
+    { title: 'Rent overdue followup', property: 'Yahya Hashmi', status: 'Complete', date: '06-05-2026' },
+    { title: 'Security deposit collection', property: 'Zainab Hassan', status: 'Pending', date: '06-05-2026' }
+  ];
+
+  // Upcoming Landlord Contracts
+  public upcomingLandlordContracts = [
+    { contractNo: 'LC-2026-03045', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Move Out Request', assignedTo: 'Facility Group', daysLeft: 1, date: '12-05-2026' },
+    { contractNo: 'LC-2026-03054', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Move Out Request', assignedTo: 'Accounting Group', daysLeft: 2, date: '15-05-2026' },
+    { contractNo: 'LC-2026-03046', property: 'Rashid Resedential - Apartment 304-PR-2', type: 'Maintenance and Repairs', assignedTo: 'Facility Group', daysLeft: 2, date: '15-05-2026' }
+  ];
+
+  // Top Performing Listings
+  public topPerformingListings = [
+    { property: 'Rashid Resedential - Apartment 304-PR-2', details: 'Beds: 2 | Bath: 2 | 1250 Sqft', amount: 'AED 92,500.00', date: '06-05-2026' },
+    { property: 'Rashid Resedential - Apartment 304-PR-3', details: 'Beds: 2 | Bath: 2 | 1250 Sqft', amount: 'AED 92,500.00', date: '06-05-2026' },
+    { property: 'Rashid Resedential - Apartment 304-PR-2', details: 'Beds: 2 | Bath: 2 | 1250 Sqft', amount: 'AED 92,500.00', date: '06-05-2026' }
+  ];
+
+  // Upcoming Birthdays
+  public upcomingBirthdays = [
+    { name: 'Bilal Ahmad', type: 'TENANT', date: '12-05-2026', status: 'Today' },
+    { name: 'Aslam khan', type: 'TENANT', date: '15-05-2026', status: 'Today' },
+    { name: 'Jawad Ahmad', type: 'TENANT', date: '15-05-2026', status: 'Upcoming' }
   ];
 
   // Donut chart configuration for Tenant Expired Documents
