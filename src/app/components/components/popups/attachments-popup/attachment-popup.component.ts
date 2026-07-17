@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
-import { GetAllTypes } from '../../../../shared/services/get-all-types.service';
+import { PortfolioTypes } from '../../../../shared/services/portfolio.service';
 
 @Component({
   selector: 'app-attachment-popup',
@@ -24,10 +24,10 @@ export class AttachmentPopupComponent {
   documentTypes: any = [];
 
 attachmentFiles: File[] = [];
-constructor(private getAllTypes: GetAllTypes){}
+constructor(private portfolioTypes: PortfolioTypes){}
 ngOnInit(){
-  this.loadStatuses();
-  this.loadDocumentTypes();
+  this.loadMasterDataByType(9,0, 'documentTypes', '','');
+  this.loadMasterDataByType(10, 0,'attachmentStatuses','','');
 }
 onFilesSelected(files: File[]) {
 
@@ -47,45 +47,25 @@ onFilesSelected(files: File[]) {
 
 }
 
-
-loadStatuses() {
-  const payload = {
-      typeId:2,
-      filterId: 10,
-      filterText: "",
-      filterText1: "",
-      userId: 0,
-      clientId: "74BB6922",
-      companyId: 1
-  };
-
-  this.getAllTypes.getAttachmentsSttaus(payload).subscribe({
-    next: (response) => {
-      this.attachmentStatuses = response.objResult.table;
+private loadMasterDataByType(
+   typeId: number,
+  filterId: number,
+  target: 'documentTypes' | 'attachmentStatuses',
+  filtertext: '',
+  filterText1:'', 
+) {
+  this.portfolioTypes.getMasterByType({
+    typeId: typeId,
+    filterId,
+     filterText: filtertext,
+    filterText1: filterText1 
+  }).subscribe({
+    next: res => {
+      if(res['statusCode'] == 200)
+        this[target] = res.objResult.table;
+     
     },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-loadDocumentTypes() {
-  const payload = {
-      typeId:2,
-      filterId: 9,
-      filterText: "",
-      filterText1: "",
-      userId: 0,
-      clientId: "74BB6922",
-      companyId: 1
-  };
-
-  this.getAllTypes.getDocumentType(payload).subscribe({
-    next: (response) => {
-      this.documentTypes= response.objResult.table;
-    },
-    error: (err) => {
-      console.error(err);
-    }
+    error: console.error
   });
 }
 }

@@ -4,14 +4,15 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { selectCommonData } from '../../common/store/common-payload/common.selectors';
-import { GetAllTypes } from '../../../shared/services/get-all-types.service';
+import { PortfolioTypes } from '../../../shared/services/portfolio.service';
 import { DetailPageLayoutComponent } from '../../../shared/components/detail-page-layout/detail-page-layout.component';
 import { DetailTab } from '../../../shared/models/detail-tab.model';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CommonAreaPopupComponent } from '../popups/common-area-popup/common-area-popup.component';
 import { AttachmentPopupComponent } from '../popups/attachments-popup/attachment-popup.component';
+import { CommonService } from '../../../services/common.service';
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
@@ -30,22 +31,22 @@ export class PropertyDetailComponent implements OnInit {
   paginatedProperties: any[] = [];
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
-codeParam = '';
-commonData: any = [];
+  propertyCode = '';
+  commonData: any = [];
   tabs: DetailTab[] = [];
-unitsData: any = [];
-roomsData = [];
-tenantsData = [];
-commonAreaData = [];
-broadcastsData = [];
-attachmentsData = [];
-broadCastsData = [];
-assetsData = [];
-notesData = [];
-parkingData = [];
-documentsData = [];
-@ViewChild(DetailPageLayoutComponent)
-detailLayout!: DetailPageLayoutComponent;
+  unitsData: any = [];
+  roomsData = [];
+  tenantsData = [];
+  commonAreaData = [];
+  broadcastsData = [];
+  attachmentsData = [];
+  broadCastsData = [];
+  assetsData = [];
+  notesData = [];
+  parkingData = [];
+  documentsData = [];
+  @ViewChild(DetailPageLayoutComponent)
+  detailLayout!: DetailPageLayoutComponent;
   // columns
   unitColumns = [
   { key: 'code', label: 'web.common.lblID'},
@@ -140,79 +141,96 @@ assetsColumns = [
   { key: 'price', label: 'web.property.lblPrice' }
 ];
 
-  constructor(private route: ActivatedRoute, private store: Store,private propertiesService: GetAllTypes, private fb: FormBuilder) {}
+currentUser: AuthPayload | null = null;
+constructor(
+  private route: ActivatedRoute,
+  private store: Store,
+  private portfolioTypes: PortfolioTypes,
+  private fb: FormBuilder,
+  private commonService: CommonService) {
 
-  ngOnInit(): void {
-    
-    this.route.paramMap.subscribe(params => {
-      this.codeParam = params.get('code') ?? '';
-      
-    });   
-    this.commonAreaForm = this.fb.group({
-      areaName: [''],
-      floor: ['']
-    });
-
-    this.attachmentsForm = this.fb.group({
-      documentType: [''],
-      documentNumber: [''],
-      issueDate: [''],
-      expiryDate: [''],
-      issuingAuthority: [''],
-      shareWithTenant: [''],
-      propertyAttachment: [null]
-
-
-    });
-    this.initializeTabs();   
-    this.loadPropertyByCode(this.codeParam);
-
-
-  }
-
-  toggleMoreDetails(): void {
-    this.showMoreDetails = !this.showMoreDetails;
-  }
-loadPropertyByCode(codeParam: any){
-this.store.select(selectCommonData).subscribe(data => {
-    this.commonData = data;
-  });
-  console.log(this.commonData);
-const payload = {
-  typeId:this.commonData.typeId,
-  filterId: this.commonData.filterId,
-  filterText: this.codeParam,
-  filterText1: "0",
-  userId: this.commonData.userId,
-  clientId: this.commonData.clientId,
-  companyId: this.commonData.companyId
-};
- this.propertiesService.
- getPropertyByCode(payload).subscribe({
-      next: (res) => {
-        this.loading = false;
-        if (res["statusCode"] == "200") {
-           this.property = res.objResult.property[0];
-           this.property.amenities = res.objResult.amenities;
-           this.unitsData = res.objResult.units_info;
-           this.roomsData = res.objResult.rooms_info;
-           this.commonAreaData = res.objResult.common_area;
-           this.broadCastsData = res.objResult.broadcasts;
-           this.assetsData = res.objResult.assets;
-           this.notesData = res.objResult.notes;
-           this.attachmentsData = res.objResult.documents;
-           this.tenantsData = res.objResult.table11;
-           this.parkingData = res.objResult.tenants_history;
-           this.initializeTabs();
-          this.loading = false;
-        }
-      },
-      error: (err) => {
-        this.loading = false;
-      },
-    });
 }
 
+  ngOnInit(): void {
+     this.currentUser = this.commonService.getCurrentUser();
+    this.route.paramMap.subscribe(params => {
+      this.propertyCode = params.get('code') ?? '';
+    });   
+    this.createForms();
+    this.initializeTabs();   
+    this.loadMasterDataByType(13,0, '', this.propertyCode,'');
+  }
+private createForms(): void {
+  this.commonAreaForm = this.fb.group({
+    areaName: [''],
+    floor: ['']
+  });
+  this.attachmentsForm = this.fb.group({
+    documentType: [''],
+    documentNumber: [''],
+    issueDate: [''],
+    expiryDate: [''],
+    issuingAuthority: [''],
+    shareWithTenant: [''],
+    propertyAttachment: [null]
+  });
+}
+toggleMoreDetails(): void {
+  this.showMoreDetails = !this.showMoreDetails;
+}
+private get commonPayload() {
+  return {
+    userId: this.currentUser?.userId,
+    clientId: this.currentUser?.clientId,
+    company_id: this.currentUser?.companyId,
+    source: 'web',
+    languageid: 1
+  };
+}
+private loadMasterDataByType(
+  typeId: number,
+  filterId: number,
+  target: '',
+  filtertext:string ='',
+  filterText1:string ='', 
+) {
+  this.portfolioTypes.getMasterByType({
+    typeId: typeId,
+    filterId,
+     filterText: filtertext,
+    filterText1: filterText1 
+  }).subscribe({
+    next: res => {
+     this.loading = false; 
+          if (res['statusCode']  != "200") {
+              this.loading = false;
+              return;
+            }
+          this.bindPropertyData(res.objResult);
+           this.initializeTabs();
+          this.loading = false;
+     
+    },
+    error: console.error
+  });
+}
+private bindPropertyData(data: any): void {
+
+  this.property = {
+    ...data.property[0],
+    amenities: data.amenities
+  };
+
+  this.unitsData = data.units_info;
+  this.roomsData = data.rooms_info;
+  this.commonAreaData = data.common_area;
+  this.broadCastsData = data.broadcasts;
+  this.assetsData = data.assets;
+  this.notesData = data.notes;
+  this.attachmentsData = data.documents;
+  this.tenantsData = data.table11;
+  this.parkingData = data.tenants_history;
+}
 initializeTabs() {
 
   this.tabs = [
@@ -351,41 +369,32 @@ savePopup(tab: string) {
 
 saveCommonArea(form:FormGroup){
   const values = form.value;
-  console.log("CA Form Values", values);
-const payload = {
-   userId: this.commonData.userId,
-  clientId: this.commonData.clientId,
-  company_id: this.commonData.companyId,
-  source: "web",
-  languageid: 1,
-  id: 0,
-  property_code: this.codeParam,
-  area_name: values.areaName,
-  floor_no: Number(values.floor),
-  desc: "",
-  code:""
-}
-this.propertiesService.saveCommonArea(payload)
-    .subscribe(res => {
-
-      console.log("attachments",res);
-
-    });
+  const payload = {
+   ...this.commonPayload,
+   id:0,
+   property_code:this.propertyCode,
+   area_name:values.areaName,
+   floor_no:Number(values.floor),
+   desc:'',
+   code:''
+};
+this.portfolioTypes.saveCommonArea(payload).subscribe({
+    next: () => {
+        this.commonAreaForm.reset();
+        this.detailLayout.closeModal();
+    },
+    error: console.error
+});
 }
 saveAttachment(form:FormGroup){
    const values = form.value;
-   console.log("values", values);
  const request = {
-   userId: this.commonData.userId,
-  clientId: this.commonData.clientId,
-  company_id: this.commonData.companyId,
-  source: "web",
-  languageid: 1,
+  ...this.commonPayload,
   id: 0,
-  entity_id: this.codeParam,
-   entity:'property',
-   document_type:values.documentType, 
-    document_no:values.documentNumber,
+  entity_id: this.propertyCode,
+  entity:'property',
+  document_type:values.documentType, 
+  document_no:values.documentNumber,
     issue_date:values.issueDate,
     expiry_date:values.expiryDate,
     issuing_authority:values.issuingAuthority,
@@ -401,7 +410,7 @@ const file = this.attachmentsForm.get('propertyAttachment')?.value;
 if (file) {
   formData.append('file_path', file);
 }
-  this.propertiesService.saveAttachment(formData)
+  this.portfolioTypes.saveAttachment(formData)
     .subscribe(res => {
       console.log("attachments",res);
       this.commonAreaForm.reset();

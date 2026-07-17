@@ -5,7 +5,7 @@ import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, F
 import { CommonModule } from '@angular/common';
 import { PropertiesService } from '../../../../shared/services/properties.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetAllTypes } from '../../../../shared/services/get-all-types.service';
+import { PortfolioTypes } from '../../../../shared/services/portfolio.service';
 import { ToastrService } from 'ngx-toastr';
 import { Store } from '@ngrx/store';
 import { selectCommonData } from '../../../common/store/common-payload/common.selectors';
@@ -37,31 +37,26 @@ constructor(public translate: TranslateService,
   private propertiesService: PropertiesService,
   private route: ActivatedRoute,
   private store: Store,
-  private getAllTypes: GetAllTypes,
+  private portfolioTypes: PortfolioTypes,
   private toastr:ToastrService,
   private router: Router
 
 ){}
 
 ngOnInit(){
-  this.initializeForm();
-  this.loadPropertyTypes();
-  this.loadCountries();
-  this.loadAmenities();
-  this.loadAccounts();
-   this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
 
+  this.initializeForm();
+  this.loadMasterDataByType(2,1, 'propertyTypes', '','');
+  this.loadMasterDataByType(2,1000, 'countries', '','');
+  this.loadMasterDataByType(2,1003, 'accounts', '','');
+  this.loadMasterDataByType(2,2, 'amenities', '','');
+
+   this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
   if (this.propertyCode) {
-    // Edit mode
     this.loadProperty();
-    console.log(1234)
   } else {
-    // Add mode
     this.initializeForm();
   }
-  
-  
- 
 }
 initializeForm(){
  this.propertyForm = this.formBuilder.group({
@@ -116,23 +111,12 @@ createPaymentRow(): FormGroup {
   });
 }
 loadProperty(){
-  this.store.select(selectCommonData).subscribe((data: any) => {
-      this.commonData = data;
-    });
-    console.log(this.commonData);
-    const payload = {
-      typeId:this.commonData.typeId,
-      filterId: this.commonData.filterId,
-      filterText: this.propertyCode,
-      filterText1: "0",
-      userId: this.commonData.userId,
-      clientId: this.commonData.clientId,
-      companyId: this.commonData.companyId
-    };
-   this.getAllTypes.
-   getPropertyByCode(payload).subscribe({
-        next: (res) => {
-          this.isLoading = false;
+  this.portfolioTypes.getMasterByType({
+    typeId:13,
+    filterId: 0,
+    filterText: this.propertyCode
+  }).subscribe({next:(res) => {
+      this.isLoading = false;
           if (res["statusCode"] == "200") {
              this.property = res.objResult.property[0];
              this.propertyForm.patchValue({
@@ -157,47 +141,46 @@ loadProperty(){
                 propertyType: this.property.property_type,
                 purchaseValue: this.property.purchase_value
             });
-            this.getStates(this.property.country_id);
+            this.loadMasterDataByType(2,1001,'states',this.property.country_id.toString(),'');
              this.propertyForm.patchValue({
-        state: this.property.state_id
-      });
-
-      this.getCities(this.property.state_id);
+              state: this.property.state_id
+            });
+            //this.loadCities(this.property.state_id);
+            this.loadMasterDataByType(2,1002,'states',this.property.state_id.toString(),'');
             const amenities = res.objResult.amenities || [];
 
-this.selectedAmenities = amenities.map((item: any) => item.id);
+            this.selectedAmenities = amenities.map((item: any) => item.id);
 
-// Enable the switch if there is at least one amenity
-this.propertyForm.patchValue({
-  includeAmenities: amenities.length > 0
-});
-            
-const fixedPayments = res.objResult.fixedpayments;
+            // Enable the switch if there is at least one amenity
+            this.propertyForm.patchValue({
+              includeAmenities: amenities.length > 0
+            });
+                          
+              const fixedPayments = res.objResult.fixedpayments;
 
-const paymentsArray = this.propertyForm.get('payments') as FormArray;
+              const paymentsArray = this.propertyForm.get('payments') as FormArray;
 
-// Clear existing rows
-paymentsArray.clear();
+              // Clear existing rows
+              paymentsArray.clear();
 
-// Add one FormGroup per payment
-fixedPayments.forEach((payment: any) => {
-  paymentsArray.push(
-    this.formBuilder.group({
-      selectAccount: [payment.account_id],
-      selectType: [payment.payment_type],
-      selectAmount: [payment.amount]
-    })
-  );
-});
+              // Add one FormGroup per payment
+              fixedPayments.forEach((payment: any) => {
+                paymentsArray.push(
+                  this.formBuilder.group({
+                    selectAccount: [payment.account_id],
+                    selectType: [payment.payment_type],
+                    selectAmount: [payment.amount]
+                  })
+                );
+              });
             this.isLoading = false;
           }
         },
         error: (err) => {
           this.isLoading = false;
         },
-      });
+  });
   }
-
 
 get payments(): FormArray {
   return this.propertyForm.get('payments') as FormArray;
@@ -212,155 +195,7 @@ removePayment(index: number): void {
     this.payments.removeAt(index);
   }
 }
-loadPropertyTypes() {
-  const payload = {
-      typeId:2,
-      filterId: 1,
-      filterText: "",
-      filterText1: "",
-      userId: 0,
-      clientId: "74BB6922",
-      companyId: 1
-  };
 
-  this.getAllTypes.getPropertyTypes(payload).subscribe({
-    next: (response) => {
-      this.propertyTypes = response.objResult.table;
-      console.log("propertyTypes ", this.propertyTypes)
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-loadAmenities(){
-   const payload = {
-  typeId:2,
-  filterId: 2,
-  "filterText": "",
-  "filterText1": "",
-  userId: 0,
-  clientId: "74BB6922",
-  companyId: 1
-  };
-
-  this.getAllTypes.getCountries(payload).subscribe({
-    next: (response: any) => {
-      this.amenities = response.objResult.table;
-      console.log("amenities... ", this.amenities);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-loadAccounts(){
-  const payload = {
-  typeId:2,
-  filterId: 1003,
-  "filterText": "",
-  "filterText1": "",
-  userId: 0,
-  clientId: "74BB6922",
-  companyId: 1
-  };
-
-  this.getAllTypes.getAccounts(payload).subscribe({
-    next: (response: any) => {
-      this.accounts = response.objResult.table;
-      console.log("accounts... ", this.accounts);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-loadCountries(){
-  const payload = {
-  typeId:2,
-  filterId: 1000,
-  "filterText": "",
-  "filterText1": "",
-  userId: 0,
-  clientId: "74BB6922",
-  companyId: 1
-  };
-
-  this.getAllTypes.getCountries(payload).subscribe({
-    next: (response: any) => {
-      this.countries = response.objResult.table;
-      console.log("countries ", this.countries);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-onCountryChange(event: Event): void {
-  const countryId = (event.target as HTMLSelectElement).value;
-
-  this.getStates(countryId);
-}
-getStates(countryId: any){
-   const payload = {
-    "typeId":2,
-    "filterId": 1001,
-    "filterText": countryId,
-    "filterText1": "",
-    "userId": 0,
-    "clientId": "74BB6922",
-    "companyId": 1
-  };
-
-  this.getAllTypes.getStates(payload).subscribe({
-    next: (response: any) => {
-      this.states = response.objResult.table;
-      if (this.propertyCode) {
-      this.propertyForm.patchValue({
-        state: this.property.state_id
-      });
-
-      this.getCities(this.property.state_id);
-    }
-      console.log("this states ...", this.states);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
-onStateChange(event: Event): void{
- const stateId = (event.target as HTMLSelectElement).value;
-
-  this.getCities(stateId); 
-}
-getCities(stateId: any){
-   const payload = {
-    "typeId":2,
-    "filterId": 1002,
-    "filterText": stateId,
-    "filterText1": "",
-    "userId": 0,
-    "clientId": "74BB6922",
-    "companyId": 1
-  };
-
-  this.getAllTypes.getCities(payload).subscribe({
-    next: (response: any) => {
-      this.cities = response.objResult.table;
-    // Edit mode
-    if (this.propertyCode) {
-      this.propertyForm.patchValue({
-        city: this.property.city_id
-      });
-    }      
-      console.log("this cities ...", this.cities);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
 onAmenityChange(event: Event, id: number): void {
   const checked = (event.target as HTMLInputElement).checked;
 
@@ -371,8 +206,6 @@ onAmenityChange(event: Event, id: number): void {
   } else {
     this.selectedAmenities = this.selectedAmenities.filter(x => x !== id);
   }
-
-  // Update Select All checkbox state
   this.selectAllAmenities =
     this.selectedAmenities.length === this.amenities.length;
 
@@ -404,13 +237,9 @@ showValidationError(message: string): void {
 validateForm(): boolean {
 
   const errors: string[] = [];
-
-  // Property Name
   if (this.propertyForm.get('propertyName')?.invalid) {
     errors.push('Property Name is required.');
   }
-
-  // Property Type
   if (this.propertyForm.get('propertyType')?.invalid) {
     errors.push('Property Type is required.');
   }
@@ -448,64 +277,62 @@ validateForm(): boolean {
   return true;
 }
 onSubmit() {   
-    //console.log(this.propertyForm.value)
     if (!this.validateForm()) {
     return;
     }
     const form = this.propertyForm.value;
     
-const request = {
-  userid: 1,
-  code: '',
-  source: 'web',
-  company_id: 1,
-  tenantId: '',
+    const request = {
+      userid: 1,
+      code: '',
+      source: 'web',
+      company_id: 1,
+      tenantId: '',
 
-  name: form.propertyName,
-  prefix: form.prefix,
-  reference: form.reference,
+      name: form.propertyName,
+      prefix: form.prefix,
+      reference: form.reference,
 
-  address1: form.address1,
-  address2: form.address2,
+      address1: form.address1,
+      address2: form.address2,
 
-  country_id: Number(form.country),
-  state_id: Number(form.state),
-  city_id: form.city,
-  total_units: Number(form.totalUnits),
-  zipcode: form.zipCode,
-  lat: form.latitude,
-  lon: form.longitude,
+      country_id: Number(form.country),
+      state_id: Number(form.state),
+      city_id: form.city,
+      total_units: Number(form.totalUnits),
+      zipcode: form.zipCode,
+      lat: form.latitude,
+      lon: form.longitude,
 
-  community: form.community,
-  land_no: form.landNo,
-  no_of_floors: Number(form.floors),
-  parking_floors: Number(form.parkingSpaces),
-  tags: form.tags,
-  desc: form.description,
+      community: form.community,
+      land_no: form.landNo,
+      no_of_floors: Number(form.floors),
+      parking_floors: Number(form.parkingSpaces),
+      tags: form.tags,
+      desc: form.description,
 
-  property_type:Number(form.propertyType) ,
-  purchage_value: Number(form.purchaseValue),
+      property_type:Number(form.propertyType) ,
+      purchage_value: Number(form.purchaseValue),
 
-  amenities: this.selectedAmenities.join(','),
+      amenities: this.selectedAmenities.join(','),
 
-  id: 0,
+      id: 0,
 
-  fixedPayments: form.payments.map((payment: any) => ({
-    account_id: Number(payment.selectAccount),
-    payment_type: payment.selectType,
-    amount: Number(payment.selectAmount)
-  }))
-};
+      fixedPayments: form.payments.map((payment: any) => ({
+        account_id: Number(payment.selectAccount),
+        payment_type: payment.selectType,
+        amount: Number(payment.selectAmount)
+      }))
+    };
 
-const formData = new FormData();
+    const formData = new FormData();
 
-// JSON goes as ONE field
-formData.append('reqObject', JSON.stringify(request));
-if (this.propertyImages.length > 0) {
-  formData.append('property_image', this.propertyImages[0]);
-}
+    // JSON goes as ONE field
+    formData.append('reqObject', JSON.stringify(request));
+    if (this.propertyImages.length > 0) {
+      formData.append('property_image', this.propertyImages[0]);
+    }
 
-  console.log(formData);
    this.propertiesService.addProperty(formData).subscribe({
       next: (res) => {
         this.isLoading = false;
@@ -514,6 +341,7 @@ if (this.propertyImages.length > 0) {
           this.isLoading = false;
           this.router.navigate(['/properties']); 
         }
+
       },
       error: (err) => {
         this.isLoading = false;
@@ -523,14 +351,39 @@ if (this.propertyImages.length > 0) {
 
     // API call here
 }
+onCountryChange(event: Event): void {
+  const countryId = (event.target as HTMLSelectElement).value;
+  this.loadMasterDataByType(2,1001,'states',countryId.toString(),'');
+}
+onStateChange(event: Event): void{
+ const stateId = (event.target as HTMLSelectElement).value;
+  this.loadMasterDataByType(2,1002,"cities",stateId.toString(),'');
+}
 
-/*
-onPropertyImagesSelected(files: File[]): void {
 
-  this.propertyImages = files;
-  
-  console.log('Selected Images:', this.propertyImages);
+private loadMasterDataByType(
+  typeId: number,
+  filterId: number,
+  target: 'propertyTypes' | 'accounts' | 'amenities' | 'countries'| 'states' | 'cities',
+  filtertext:string ='',
+  filterText1:string ='', 
+) {
+  this.portfolioTypes.getMasterByType({
+    typeId: typeId,
+    filterId,
+    filterText: filtertext,
+    filterText1: filterText1 
+  }).subscribe({
+    next: res => {
 
-}*/
-
+      if(res['statusCode'] == 200)
+        this[target] = res.objResult.table;
+      console.log(res.objResult.table);
+     
+    },
+    error: (err) => {
+  console.log('Full Error:', err);
+}
+  });
+}
 }

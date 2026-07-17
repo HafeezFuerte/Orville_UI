@@ -14,34 +14,36 @@ export class CommonService {
   pro_headers: any;
   userid: any;
   clientID: any;
-  userDataCommon: any;
   private userDataSubject = this.store.select(selectCurrentUser);
   //userData$ = this.userDataSubject.asObservable();
   private idSource = new BehaviorSubject<number>(0);
   currentId$ = this.idSource.asObservable();
   featureType: string = '0';
-private currentUser: AuthPayload | null = null;
+  private currentUser: AuthPayload | null = null;
 
   setCurrentUser(user: AuthPayload) {
     this.currentUser = user;
   }
   constructor(private http: HttpClient,private store: Store) {
-  
+  this.store.select(selectCurrentUser).subscribe(user => {
+      this.currentUser = user;
+    });
  }
+ getCurrentUser(): AuthPayload | null {
+    return this.currentUser;
+  }
   updateHeaders(): HttpHeaders {
-    this.store.select(selectCurrentUser).subscribe(user => {
-    this.userDataCommon = user;
-  });
-  if (!this.userDataCommon) {
+  
+  if (!this.currentUser) {
     return new HttpHeaders();
   }
   return new HttpHeaders({
-    Accesstoken: this.userDataCommon.token,
-    userId: String(this.userDataCommon.userId),
+    Accesstoken: this.currentUser.token,
+    userId: String(this.currentUser.userId),
     languageid: '1',
     portalId: '3',
     source: 'web',
-    clientID: '74BB6922'
+    clientID: this.currentUser.clientId
   });
 }
   getSideNav(data: any) {

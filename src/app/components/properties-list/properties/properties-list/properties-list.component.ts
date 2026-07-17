@@ -7,6 +7,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedModule } from '../../../../shared/shared.module';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PropertiesService } from '../../../../shared/services/properties.service';
+import { PortfolioTypes } from '../../../../shared/services/portfolio.service';
 
 @Component({
   selector: 'app-properties-list',
@@ -60,23 +61,22 @@ export class PropertiesListComponent implements OnInit {
   pageSizeOptions = [5, 10, 25, 50, 100];
 
   // Metrics
-  metrics = {
-    total: 17,
-    units: 2955,
-    occupied: 2319,
-    leases: 2319,
-    occupancy: 78.4
-  };
+  metrics:any = {}
 
-  constructor(public translate: TranslateService, private propertiesService: PropertiesService) {}
+  constructor(
+    public translate: TranslateService,
+    private propertiesService: PropertiesService,
+    private portfolioTypes: PortfolioTypes
+  ) {}
 
   ngOnInit(): void {
-    this.loadMetrics();
+    
+    this.loadMetrics(4,0, '', '','');
     this.applyLocalFilters();
     this.loadProperties(); 
   }
 
-  loadMetrics() {
+  /*loadMetrics() {
     const payload = {
       typeId: 4,
       filterId: 4,
@@ -103,7 +103,32 @@ export class PropertiesListComponent implements OnInit {
       },
       error: (err: any) => console.error("Error loading metrics:", err)
     });
-  }
+  }*/
+
+  
+private loadMetrics(
+  typeId: number,
+  filterId: number,
+  target: '',
+  filtertext:string ='',
+  filterText1:string ='', 
+) {
+  this.portfolioTypes.getMasterByType({
+    typeId: typeId,
+    filterId,
+     filterText: filtertext,
+    filterText1: filterText1 
+  }).subscribe({
+    next: res => {
+          if (res['statusCode']  != "200") {
+              return;
+            }
+            this.metrics = res.objResult.table[0];
+     
+    },
+    error: console.error
+  });
+}
 
   loadProperties(): void {
     const payload = {
