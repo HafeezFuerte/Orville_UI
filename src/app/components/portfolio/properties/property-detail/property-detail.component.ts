@@ -2,17 +2,18 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { PortfolioService } from '../../services/portfolio.service';
 import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-layout.component';
 import { DetailTab } from '../../../../shared/models/detail-tab.model';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CommonAreaPopupComponent } from '../../popups/common-area-popup/common-area-popup.component';
 import { AttachmentPopupComponent } from '../../popups/attachments-popup/attachment-popup.component';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
@@ -22,6 +23,7 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
 })
 export class PropertyDetailComponent implements OnInit {
   propertyAttachment: File[] = [];
+  propertyNotesFile: File[] = [];
   viewMode: 'list' | 'grid' = 'list';
   propertyId!: number;
   property: any = null;
@@ -31,6 +33,7 @@ export class PropertyDetailComponent implements OnInit {
   paginatedProperties: any[] = [];
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
+  notesForm!: FormGroup;
   propertyCode = '';
   commonData: any = [];
   tabs: DetailTab[] = [];
@@ -112,7 +115,7 @@ attachmentColumns = [
 notesColumns = [
   { key: 'entity_code', label: 'web.common.lblID' },
   { key: 'subject', label: 'web.property.lblSubject' },
-  { key: 'description', label: 'web.property.lblContent' },
+  { key: 'description', label: 'web.property.lblContent', isHtml: true },
   { key: 'status', label: 'web.property.lblVia' },
   { key: 'uploaded_date', label: 'web.property.lblNoteDate' },
   { key: 'uploaded_by', label: 'web.property.lblCreatedBy' }
@@ -147,7 +150,9 @@ constructor(
   private store: Store,
   private portfolioService: PortfolioService,
   private fb: FormBuilder,
-  private commonService: CommonService) {
+  private commonService: CommonService,
+  private toastr:ToastrService,
+  private translate: TranslateService) {
 
 }
 
@@ -162,17 +167,24 @@ constructor(
   }
 private createForms(): void {
   this.commonAreaForm = this.fb.group({
-    areaName: [''],
-    floor: ['']
+    areaName: ['', Validators.required],
+    floor: ['', Validators.required]
   });
   this.attachmentsForm = this.fb.group({
-    documentType: [''],
-    documentNumber: [''],
-    issueDate: [''],
-    expiryDate: [''],
-    issuingAuthority: [''],
-    shareWithTenant: [''],
-    propertyAttachment: [null]
+    documentType: ['', Validators.required],
+    documentNumber: ['', Validators.required],
+    issueDate: ['', Validators.required],
+    expiryDate: ['', Validators.required],
+    issuingAuthority: ['', Validators.required],
+    shareWithTenant: ['', Validators.required],
+    shareWithLandlord: ['', Validators.required],
+    propertyAttachment: [null, Validators.required]
+  });
+  this.notesForm = this.fb.group({
+    subject: ['', Validators.required],
+    commChannelType: ['', Validators.required],
+    content: ['', Validators.required],
+    propertyNotesFile:[null, Validators.required]
   });
 }
 toggleMoreDetails(): void {
@@ -323,6 +335,7 @@ initializeTabs() {
       loading: this.loading,
       hasActions: true,
       addButtonText: 'Notes',
+      form: this.notesForm,
       popupType: 'notes'
     },
     {
@@ -363,11 +376,22 @@ savePopup(tab: string) {
     case 'attachments':
       this.saveAttachment(this.attachmentsForm);
       break;
+
+    case 'notes':
+      this.saveNotes(this.notesForm);
+      break;
   }
 
 }
 
 saveCommonArea(form:FormGroup){
+  const commonAreaLabels = {
+    areaName: this.translate.instant('web.portfolio.popups.commonArea.lblAreaName'),
+    floor: this.translate.instant('web.portfolio.popups.commonArea.lblFloorNo')
+  };
+  if (!this.validateForm(this.commonAreaForm, commonAreaLabels)) {
+    return;
+  }
   const values = form.value;
   const payload = {
    ...this.commonPayload,
@@ -387,8 +411,15 @@ this.portfolioService.saveCommonArea(payload).subscribe({
 });
 }
 saveAttachment(form:FormGroup){
-   const values = form.value;
- const request = {
+  const attachmentLabels = {
+    documentType: this.translate.instant('web.portfolio.popups.attachments.lblDocumentType'),
+    propertyAttachment: this.translate.instant('web.portfolio.popups.attachments.lblUploadFile')
+  };  
+  if (!this.validateForm(this.attachmentsForm, attachmentLabels)) {
+    return;
+  }
+  const values = form.value;
+  const request = {
   ...this.commonPayload,
   id: 0,
   entity_id: this.propertyCode,
@@ -417,4 +448,66 @@ if (file) {
         this.detailLayout.closeModal();
     });
 }
+saveNotes(form: FormGroup){
+  const labels = {
+  subject: this.translate.instant('web.portfolio.popups.notes.lblSubject'),
+  commChannelType: this.translate.instant('web.portfolio.popups.notes.lblCommChannel'),
+  content: this.translate.instant('web.portfolio.popups.notes.lblContent'),
+  propertyNotesFile: this.translate.instant('web.portfolio.popups.notes.lblUploadFile')
+  };
+  if (!this.validateForm(this.notesForm, labels)) {
+    return;
+  }
+  const values = form.value;
+  const payload = {
+   ...this.commonPayload,
+   id:0,
+    entity_id: this.propertyCode,
+    entity:'property',
+   subject:values.subject,
+   channel_type:Number(values.commChannelType),
+   desc:values.content,
+   code:''
+  }
+  const formData = new FormData();
+
+  formData.append('reqObject', JSON.stringify(payload));
+  
+  const file = this.notesForm.get('propertyNotesFile')?.value;
+
+  if (file) {
+    formData.append('file_path', file);
+}
+   this.portfolioService.saveNotes(formData)
+    .subscribe(res => {
+      console.log("notes",res);
+      this.notesForm.reset();
+        this.detailLayout.closeModal();
+    });
+}
+
+validateForm(form: FormGroup, fieldLabels: { [key: string]: string }): boolean {
+  const errors: string[] = [];
+  Object.keys(fieldLabels).forEach(controlName => {
+    const control = form.get(controlName);
+    if (control?.invalid) {
+      errors.push(`${fieldLabels[controlName]} is required.`);
+    }
+  });
+  if (errors.length > 0) {
+    form.markAllAsTouched();
+    this.toastr.error(
+      errors.join('<br>'),
+      'Validation',
+      {
+        enableHtml: true,
+        timeOut: 5000,
+        positionClass: 'toast-top-right'
+      }
+    );
+    return false;
+  }
+  return true;
+}
+
 }

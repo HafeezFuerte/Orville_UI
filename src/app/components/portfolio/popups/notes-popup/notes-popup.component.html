@@ -2,28 +2,67 @@
 <form [formGroup]="form" class="space-y-5">
     <div>
         <label class="ti-form-label">
-            Subject <span class="text-danger">*</span>
+            {{ 'web.portfolio.popups.notes.lblSubject' | translate }} <span class="text-danger">*</span>
         </label>
         <input
             type="text"
             class="ti-form-input"
-            formControlName="areaName"
-            placeholder="Enter area name, e.g. Lobby, Gym, Rooftop">
+            formControlName="subject"
+            placeholder="{{ 'web.portfolio.popups.notes.lblEnter' | translate }}">
         <p class="text-[11px] text-gray-400 mt-1">
-            Use a clear title for faster search later.
+            {{ 'web.portfolio.popups.notes.lblSubjectHint' | translate }}
         </p>
     </div>
     <div>
         <label class="ti-form-label">
-            Communication Channel
+            {{ 'web.portfolio.popups.notes.lblCommChannel' | translate }}
         </label>
-        <select class="form-control w-full !rounded-md" formControlName="documentType">
+        <select class="form-control w-full !rounded-md" formControlName="commChannelType">
                             <option value="" disabled>
-                                Select Property Type
+                                {{ 'web.portfolio.popups.notes.lblSelectCommChannel' | translate }}
                             </option>
-                           <option *ngFor="let docType of communicationChannels" [value]="docType.id">
-                                {{ docType.name }}
+                           <option *ngFor="let commChannel of communicationChannels" [value]="commChannel.id">
+                                {{ commChannel.name }}
                             </option>
                         </select>
+        <p class="text-[11px] text-gray-400 mt-1">
+            {{ 'web.portfolio.popups.notes.lblCommChannelHint' | translate }}
+        </p>
     </div>
+    <div>
+        <label>{{ 'web.portfolio.popups.notes.lblContent' | translate }}Content</label>
+        <ngx-editor-menu
+      [editor]="editor"
+      [toolbar]="toolbar">
+    </ngx-editor-menu>
+
+    <ngx-editor
+      [editor]="editor"
+      formControlName="content"
+      placeholder="{{ 'web.portfolio.popups.notes.lblUploadFile' | translate }}">
+    </ngx-editor>
+    </div>
+    
+    <div class="box">
+
+    <div class="box-header">
+        <h6 class="box-title">
+            {{ 'web.portfolio.popups.notes.lblUploadFile' | translate }}           
+        </h6>
+    </div>
+
+    <div class="box-body">
+
+        <app-file-upload
+            [accept]="'image/*'"
+            [multiple]="false"
+            [browseText]="'Test'"
+            
+            (filesChanged)="onFilesSelected($event)"
+            >
+        </app-file-upload>
+
+    </div>
+
+</div>
 </form>

@@ -35,12 +35,26 @@ private getHeaders(): HttpHeaders {
     source: 'web'
   });
 }
+private getFormDataHeaders(): HttpHeaders {
+
+  return new HttpHeaders({
+    AccessToken: this.loginUserData?.token ?? '',
+    clientID: this.loginUserData?.clientId ?? '',
+    Accept: '*/*',
+    LanguageID: '1',
+    source: 'web'
+  });
+
+}
 private postAPI(url: string, payload: any): Observable<any> {
   console.log('URL:', url);
   console.log('Payload:', payload);
+   const headers = payload instanceof FormData
+    ? this.getFormDataHeaders()
+    : this.getHeaders();
 
   return this.http.post(url, payload, {
-    headers: this.getHeaders()
+    headers
   });
 }
 saveAttachment(payload: any): Observable<any> {
@@ -52,6 +66,12 @@ saveAttachment(payload: any): Observable<any> {
 saveCommonArea(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + '/api/Masters/save_commonarea',
+    payload
+  );
+}
+saveNotes(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_notes',
     payload
   );
 }

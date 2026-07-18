@@ -215,6 +215,7 @@ exports.locale = {
                 "lblSearch": "Search..."
             },
             "common": {
+                "lblIsRequired": "is required",
                 "lblEmployeePortal": "Employee Portal",
                 "lblRefresh": "Refresh",
                 "msgMinChars5": "Min 5 characters",
@@ -1842,10 +1843,39 @@ exports.locale = {
                             "lblEnter": "Enter",
                             "lblSubjectHint": "Use a clear title for faster search later.",
                             "lblCommChannel": "Communication Channel",
+                            "lblSelectCommChannel": "Choose a Communication Channel",
                             "lblCommChannelHint": "Example: Phone, Email, WhatsApp, In person.",
                             "lblContent": "Content",
-                            "lblContentPlaceHolder":"Write the note content here"
+                            "lblContentPlaceHolder":"Write the note content here",
+                            "lblUploadFile": "Upload File",
+                            "lblBrowseFile": "Browse File"
 
+                    },
+                    "attachments": {
+                        "lblAddDocument": "Add Document",
+                        "lblAddDocumentDesc": "Select a document type, upload a file, and choose who can view it.",
+                        "lblDocumentType": "Document Type",
+                        "lblDocumentTypePlaceHolder": "Select Document Type",
+                        "lblDocumentTypeHint": "Choose the category that best matches the uploaded document.",
+                        "lblDocumentNumber": "Document Number",
+                        "lblIssueDate": "Issue Date",
+                        "lblExpiryDate": "Expiry Date",
+                        "lblIssuingAuthority": "Issuing Authority",
+                        "lblShareWithTenant": "Share with Tenant",
+                        "lblShareWithTenantHint": "Visible in the tenant mobile app.",
+                        "lblShareWithLandlord": "Share with Landlord",
+                        "lblShareWithLandlordHint": "Visible in the landlord mobile app.",
+                        "lblUploadFile": "Upload File",
+                        "lblBrowseFile": "Browse File"
+                    },
+                    "commonArea": {
+                        "lblNewCommonArea": "New Common Area",
+                        "lblNewCommonAreaDesc": "Create a shared space and assign it to a floor.",
+                        "lblAreaName": "Area Name",
+                        "lblAreaNamePlaceHolder": "Enter area name, e.g. Lobby, Gym, Rooftop",
+                        "lblAreaNameHint": "Use a clear name so tenants and staff can identify it easily.",
+                        "lblFloorNo": "Floor No",
+                        "lblFloorNoPlaceHolder": "Enter floor number, e.g. Ground, 1, 2"
                     }
                 }
             }

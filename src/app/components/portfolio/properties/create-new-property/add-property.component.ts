@@ -62,36 +62,36 @@ initializeForm(){
  this.propertyForm = this.formBuilder.group({
 
   propertyName: ['', Validators.required],
-  prefix: [''],
-  reference: [''],
+  prefix: ['', Validators.required],
+  reference: ['', Validators.required],
 
-  address1: [''],
+  address1: ['', Validators.required],
   address2: [''],
-  country: [''],
-  state:[''],
-  city: [''],
+  country: ['', Validators.required],
+  state:['', Validators.required],
+  city: ['', Validators.required],
 
-  zipCode: [''],
-  latitude: [''],
-  longitude: [''],
-  community: [''],
-  landNo: [''],
+  zipCode: ['', Validators.required],
+  latitude: ['', Validators.required],
+  longitude: ['', Validators.required],
+  community: ['', Validators.required],
+  landNo: ['', Validators.required],
 
-  floors: [0],
-  totalUnits: [0],
-  parkingSpaces: [0],
+  floors: [0, Validators.required],
+  totalUnits: [0, Validators.required],
+  parkingSpaces: [0, Validators.required],
 
-  tags: [''],
+  tags: ['', Validators.required],
   description: [''],
 
   // Property Fixed Payments
   selectAccount: ['', Validators.required],
   selectType: ['', Validators.required],
-  selectAmount: [''],
+  selectAmount: ['', Validators.required],
 
   // Right panel
   propertyType: ['', Validators.required],
-  purchaseValue: [0],
+  purchaseValue: [0, Validators.required],
 
   serviceRequest: [true],
   includeAmenities: [false],
@@ -114,7 +114,8 @@ loadProperty(){
   this.portfolioService.getMasterByType({
     typeId:13,
     filterId: 0,
-    filterText: this.propertyCode
+    filterText: this.propertyCode,
+    filterText1: ''
   }).subscribe({next:(res) => {
       this.isLoading = false;
           if (res["statusCode"] == "200") {
@@ -141,12 +142,10 @@ loadProperty(){
                 propertyType: this.property.property_type,
                 purchaseValue: this.property.purchase_value
             });
-            this.loadMasterDataByType(2,1001,'states',this.property.country_id.toString(),'');
-             this.propertyForm.patchValue({
-              state: this.property.state_id
-            });
-            //this.loadCities(this.property.state_id);
-            this.loadMasterDataByType(2,1002,'states',this.property.state_id.toString(),'');
+            console.log("country", this.property.country_id);
+            this.loadMasterDataByType( 2, 1001, 'states', this.property.country_id.toString(), '', () => { this.propertyForm.patchValue({ state: this.property.state_id }); } );
+            this.loadMasterDataByType( 2, 1002, 'cities', this.property.state_id.toString(), '', () => { this.propertyForm.patchValue({ city: this.property.city_id }); } );
+          
             const amenities = res.objResult.amenities || [];
 
             this.selectedAmenities = amenities.map((item: any) => item.id);
@@ -234,7 +233,7 @@ showValidationError(message: string): void {
     positionClass: 'toast-top-right'
   });
 }
-validateForm(): boolean {
+/*validateForm(): boolean {
 
   const errors: string[] = [];
   if (this.propertyForm.get('propertyName')?.invalid) {
@@ -275,16 +274,103 @@ validateForm(): boolean {
   }
 
   return true;
-}
-onSubmit() {   
-    if (!this.validateForm()) {
-    return;
+}*/
+validateForm(
+  form: FormGroup,
+  fieldLabels: { [key: string]: string },
+  errors: string[]
+): void {
+
+  Object.keys(fieldLabels).forEach(controlName => {
+
+    const control = form.get(controlName);
+
+    if (control?.invalid) {
+      errors.push(
+        `${fieldLabels[controlName]} ${this.translate.instant('web.common.lblIsRequired')}`
+      );
     }
+
+  });
+
+  form.markAllAsTouched();
+}
+validatePayments(errors: string[]): void {
+  const payments = this.propertyForm.get('payments') as FormArray;
+  payments.controls.forEach((payment, index) => {
+    const group = payment as FormGroup;
+    if (group.get('selectAccount')?.invalid) {
+      errors.push(
+        `Payment ${index + 1}: ${this.translate.instant('web.property.lblSelectAccount')} ${this.translate.instant('web.common.lblIsRequired')}`
+      );
+    }
+    if (group.get('selectType')?.invalid) {
+      errors.push(
+        `Payment ${index + 1}: ${this.translate.instant('web.property.lblType')} ${this.translate.instant('web.common.lblIsRequired')}`
+      );
+    }
+  });
+}
+onSubmit() { 
+  const propertyFormLabels = {
+  propertyName: this.translate.instant('web.property.lblPropertyName'),
+  propertyType: this.translate.instant('web.property.lblPropertyType'),
+
+  prefix: this.translate.instant('web.property.lblPrefix'),
+  reference: this.translate.instant('web.property.lblReference'),
+
+  address1: this.translate.instant('web.property.lblAddress1'),
+  address2: this.translate.instant('web.property.lblAddress2'),
+  country: this.translate.instant('web.property.lblCountry'),
+  state: this.translate.instant('web.property.lblState'),
+  city: this.translate.instant('web.property.lblCity'),
+  zipCode: this.translate.instant('web.property.lblZipCode'),
+  latitude: this.translate.instant('web.property.lblLatitude'),
+  longitude: this.translate.instant('web.property.lblLongitude'),
+  community: this.translate.instant('web.property.lblCommunity'),
+  landNo: this.translate.instant('web.property.lblLandNo'),
+  floors: this.translate.instant('web.property.lblFloors'),
+  totalUnits: this.translate.instant('web.property.lblTotalUnits'),
+  parkingSpaces: this.translate.instant('web.property.lblParkingSpaces'),
+  tags: this.translate.instant('web.property.lblTags'),
+
+  description: this.translate.instant('web.property.lblDescription'),
+
+  makaniNo: this.translate.instant('web.property.lblMakaniNo'),
+
+  purchaseValue: this.translate.instant('web.property.lblPurchaseValue'),
+
+  serviceRequest: this.translate.instant('web.property.lblServiceRequest'),
+
+  includeAmenities: this.translate.instant('web.property.lblIncludeAmenities'),
+
+  propertyImage: this.translate.instant('web.property.lblPropertyImage')
+};
+ const errors: string[] = [];
+
+this.validateForm(this.propertyForm, propertyFormLabels, errors);
+
+this.validatePayments(errors);
+
+if (errors.length > 0) {
+
+  this.toastr.error(
+    errors.join('<br>'),
+    'Validation',
+    {
+      enableHtml: true,
+      timeOut: 5000,
+      positionClass: 'toast-top-right'
+    }
+  );
+
+  return;
+}
     const form = this.propertyForm.value;
     
     const request = {
       userid: 1,
-      code: '',
+      code: this.propertyCode? this.propertyCode : '',
       source: 'web',
       company_id: 1,
       tenantId: '',
@@ -367,6 +453,7 @@ private loadMasterDataByType(
   target: 'propertyTypes' | 'accounts' | 'amenities' | 'countries'| 'states' | 'cities',
   filtertext:string ='',
   filterText1:string ='', 
+  callback?:()=>void
 ) {
   this.portfolioService.getMasterByType({
     typeId: typeId,
@@ -378,7 +465,8 @@ private loadMasterDataByType(
 
       if(res['statusCode'] == 200)
         this[target] = res.objResult.table;
-      console.log(res.objResult.table);
+      console.log("state", res.objResult.table);
+       callback?.();
      
     },
     error: (err) => {

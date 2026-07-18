@@ -50,9 +50,18 @@
 
                         <!-- Default Data Rendering -->
                         <ng-template #defaultData>
-                            <span [ngClass]="{'font-semibold': col.key === 'name'}">
-                                {{ row[col.key] || '-' }}
+                            <span
+                                *ngIf="col.isHtml; else normalText"
+                                [ngClass]="{'font-semibold': col.key === 'name'}">
+
+                                {{ stripHtml(row[col.key]) }}
+
                             </span>
+                            <ng-template #normalText>
+                                <span [ngClass]="{'font-semibold': col.key === 'name'}">
+                                    {{ row[col.key] || '-' }}
+                                </span>
+                            </ng-template>
                         </ng-template>
                     </td>
                     <!-- Action Column (Injected via ng-template) -->

@@ -12,7 +12,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 })
 export class SharedTableComponent {
   /** Array of column definitions: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string } */
-  @Input() columns: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string }[] = [];
+  @Input() columns: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, isHtml?: boolean, headerClass?: string, cellClass?: string }[] = [];
 
   /** The data to display in the table */
   @Input() data: any[] = [];
@@ -61,4 +61,14 @@ export class SharedTableComponent {
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
   }
+
+  stripHtml(html: string): string {
+  if (!html) {
+    return '-';
+  }
+
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '-';
+}
 }

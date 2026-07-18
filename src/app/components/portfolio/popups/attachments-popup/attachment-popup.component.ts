@@ -3,14 +3,15 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { PortfolioService } from '../../services/portfolio.service';
-
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-attachment-popup',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FileUploadComponent
+    FileUploadComponent,
+    TranslateModule
   ],
   templateUrl: './attachment-popup.component.html',
   styleUrls: ['./attachment-popup.component.scss']
@@ -30,21 +31,15 @@ export class AttachmentPopupComponent {
     this.loadMasterDataByType(2,10,'attachmentStatuses','','');
   }
   onFilesSelected(files: File[]) {
-
     if (files.length > 0) {
-
       this.form.patchValue({
         propertyAttachment: files[0]
       });
-
     } else {
-
       this.form.patchValue({
         propertyAttachment: null
       });
-
     }
-
   }
 
 private loadMasterDataByType(
