@@ -1832,6 +1832,22 @@ exports.locale = {
                         }
                     }
                 }
+            },
+            "portfolio":{
+                "popups":{
+                    "notes":{
+                            "lblNewNote": "New Note",
+                            "lblNewNoteDesc": "Create a property note, choose the channel, and attach supporting files.",
+                            "lblSubject": "Subject",
+                            "lblEnter": "Enter",
+                            "lblSubjectHint": "Use a clear title for faster search later.",
+                            "lblCommChannel": "Communication Channel",
+                            "lblCommChannelHint": "Example: Phone, Email, WhatsApp, In person.",
+                            "lblContent": "Content",
+                            "lblContentPlaceHolder":"Write the note content here"
+
+                    }
+                }
             }
         }
     }
