@@ -20,8 +20,8 @@ export class PropertiesService {
   getProperties(payload: any): Observable<any> {
    
   const getPropertiesUrl = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-     const accessToken = this.loginUserData.token;
-     const clientID = this.loginUserData.clientId;
+    const accessToken = this.loginUserData.token;
+    const clientID = this.loginUserData.clientId;
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': clientID,

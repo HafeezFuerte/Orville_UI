@@ -443,9 +443,8 @@ if (file) {
 }
   this.portfolioService.saveAttachment(formData)
     .subscribe(res => {
-      console.log("attachments",res);
       this.commonAreaForm.reset();
-        this.detailLayout.closeModal();
+      this.detailLayout.closeModal();
     });
 }
 saveNotes(form: FormGroup){
@@ -480,9 +479,8 @@ saveNotes(form: FormGroup){
 }
    this.portfolioService.saveNotes(formData)
     .subscribe(res => {
-      console.log("notes",res);
       this.notesForm.reset();
-        this.detailLayout.closeModal();
+      this.detailLayout.closeModal();
     });
 }
 

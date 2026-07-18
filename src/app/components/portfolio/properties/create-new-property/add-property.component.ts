@@ -142,7 +142,6 @@ loadProperty(){
                 propertyType: this.property.property_type,
                 purchaseValue: this.property.purchase_value
             });
-            console.log("country", this.property.country_id);
             this.loadMasterDataByType( 2, 1001, 'states', this.property.country_id.toString(), '', () => { this.propertyForm.patchValue({ state: this.property.state_id }); } );
             this.loadMasterDataByType( 2, 1002, 'cities', this.property.state_id.toString(), '', () => { this.propertyForm.patchValue({ city: this.property.city_id }); } );
           
@@ -207,8 +206,6 @@ onAmenityChange(event: Event, id: number): void {
   }
   this.selectAllAmenities =
     this.selectedAmenities.length === this.amenities.length;
-
-  console.log(this.selectedAmenities.join(','));
 }
 onSelectAllAmenities(event: Event): void {
   const checked = (event.target as HTMLInputElement).checked;
@@ -220,8 +217,6 @@ onSelectAllAmenities(event: Event): void {
   } else {
     this.selectedAmenities = [];
   }
-
-  console.log(this.selectedAmenities.join(','));
 }
 
 isAmenitySelected(id: number): boolean {
@@ -465,8 +460,7 @@ private loadMasterDataByType(
 
       if(res['statusCode'] == 200)
         this[target] = res.objResult.table;
-      console.log("state", res.objResult.table);
-       callback?.();
+        callback?.();
      
     },
     error: (err) => {

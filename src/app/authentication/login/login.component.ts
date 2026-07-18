@@ -84,9 +84,6 @@ export class LoginComponent {
 
               // Dispatch once
               this.store.dispatch(setAuthPropsData(authUser));
-this.store.select(selectCurrentUser).subscribe(user => {
-  console.log('Selector User:', user);
-});
               // If you're temporarily keeping currentUser in CommonService
               this.commonService.setCurrentUser(authUser);  
           }   

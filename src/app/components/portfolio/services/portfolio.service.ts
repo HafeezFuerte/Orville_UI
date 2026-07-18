@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable, switchMap, take } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { selectCurrentUser } from '../../common/store/login-auth-params/auth.selectors';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { CommonService } from '../../../services/common.service';
 export interface LookupPayload {
   filterId: number;
   typeId?: number;
@@ -18,44 +17,22 @@ export interface LookupPayload {
 })
 
 export class PortfolioService {
-loginUserData: any;
+currentUser: any;
 getMasterAPI = environment.apiurl+'api/Masters/_getMasters';
-constructor(private http: HttpClient, private store: Store) {
-  this.store.select(selectCurrentUser).subscribe(user => {
-    this.loginUserData = user;
-  });
-}
-private getHeaders(): HttpHeaders {
-  return new HttpHeaders({
-    AccessToken: this.loginUserData?.token ?? '',
-    clientID: this.loginUserData?.clientId ?? '',
-    'Content-Type': 'application/json-patch+json',
-    Accept: '*/*',
-    LanguageID: '1',
-    source: 'web'
-  });
-}
+
+constructor(private http: HttpClient, private commonService: CommonService) {}
+
 private getFormDataHeaders(): HttpHeaders {
-
-  return new HttpHeaders({
-    AccessToken: this.loginUserData?.token ?? '',
-    clientID: this.loginUserData?.clientId ?? '',
-    Accept: '*/*',
-    LanguageID: '1',
-    source: 'web'
-  });
-
+  let headers = this.commonService.updateHeaders();
+  headers = headers.delete('Content-Type');
+  headers = headers.set('Accept', '*/*');
+  return headers;
 }
 private postAPI(url: string, payload: any): Observable<any> {
-  console.log('URL:', url);
-  console.log('Payload:', payload);
-   const headers = payload instanceof FormData
+  const headers = payload instanceof FormData
     ? this.getFormDataHeaders()
-    : this.getHeaders();
-
-  return this.http.post(url, payload, {
-    headers
-  });
+    : this.commonService.updateHeaders();
+  return this.http.post(url, payload, { headers });
 }
 saveAttachment(payload: any): Observable<any> {
   return this.postAPI(
@@ -77,15 +54,15 @@ saveNotes(payload: any): Observable<any> {
 }
 //get master api calls
 private createPayload(options:any) {
-  console.log(options.filterText, options.target);
+  this.currentUser = this.commonService.getCurrentUser();
   return {
     typeId: options.typeId,
     filterId: options.filterId,
     filterText: options.filterText ,
     filterText1: options.filterText1 ,
-    userId:options.userId ?? this.loginUserData?.userId,
-    clientId:options.clientId ?? this.loginUserData?.clientId ,
-    companyId:options.companyId ?? this.loginUserData?.companyId
+    userId:options.userId ?? this.currentUser?.userId,
+    clientId:options.clientId ?? this.currentUser?.clientId ,
+    companyId:options.companyId ?? this.currentUser?.companyId
   };
 }
 getMasterByType(options: any): Observable<any> {

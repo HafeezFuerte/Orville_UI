@@ -31,10 +31,8 @@ export class AppComponent {
   title = 'ynex';
   public isSpinner = true;
   constructor(public translate: TranslateService, private cdr: ChangeDetectorRef, private translateloader: TranslateloaderService,
-    private router: Router, private store: Store
-  ) {  this.store.subscribe(state => {
-    console.log('FULL STORE:', state);
-  }); }
+    private router: Router
+  ) {}
   ngOnInit() {
     // 🟢 Reset scroll to top on every navigation end globaly
     this.router.events.pipe(

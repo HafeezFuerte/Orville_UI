@@ -148,7 +148,6 @@ private loadMetrics(
     this.propertiesService.getProperties(payload).subscribe({
       next: (response: any) => {
         this.properties = response.objResult.property || [];
-        console.log(this.properties);
         this.applyLocalFilters();
       },
       error: err => {
