@@ -138,6 +138,8 @@ exports.locale = {
                 "lblVia": "Via",
                 "lblNoteDate": "Note Date",
                 "lblCreatedBy": "Created By",
+                "lblCreatedAt": "Created At",
+                "lblModifiedDate": "Modified Date",
                 "lblParkingNo": "Parking No",
                 "lblUnit": "Unit",
                 "lblCycle": "Cycle",

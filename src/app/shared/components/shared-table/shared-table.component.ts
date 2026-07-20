@@ -37,10 +37,9 @@ export class SharedTableComponent {
 
   /** Event emitted when pagination changes */
   @Output() pageChange = new EventEmitter<PageEvent>();
+ 
 
-  /** Event emitted when a link column is clicked */
-  @Output() linkClick = new EventEmitter<{ row: any, col: any }>();
-
+  @Output() notify_edit_action = new EventEmitter<string>();
   /** 
    * A reference to the ng-template passed from the parent component 
    * Example: <ng-template #actionTemplate let-row="row"> ... </ng-template>
@@ -61,7 +60,13 @@ export class SharedTableComponent {
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
   }
-
+  edit_action(row:any,action:any){ 
+    row.action_name=action;
+    this.notify_edit_action.emit(row);
+  }
+  linkClick(row:any,col:any){ 
+window.open(row[col.key],"_blank");
+  }
   stripHtml(html: string): string {
   if (!html) {
     return '-';

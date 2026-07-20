@@ -85,11 +85,10 @@ tenantColumns = [
 commonAreaColumns = [
   { key: 'code', label: 'web.common.lblID' },
   { key: 'area_name', label: 'web.property.lblAreaName' },
-  { key: 'property_code', label: 'web.property.lblPropertyID' },
+  { key: 'property', label: 'web.property.lblProperty' },
   { key: 'floor_no', label: 'web.property.lblFloorNo' },
   { key: 'uploaded_date', label: 'web.Unit.lblCreatedAt' },
-  { key: 'modified_date', label: 'web.Unit.lblUpdatedAt' },
-  { key: 'code', label: 'web.common.lblAction' }
+  { key: 'modified_date', label: 'web.Unit.lblUpdatedAt' } 
 ];
 broadCastsColumns = [
   { key: 'code', label: 'web.common.lblID' },
@@ -118,8 +117,10 @@ notesColumns = [
   { key: 'description', label: 'web.property.lblContent', isHtml: true },
   { key: 'status', label: 'web.property.lblVia' },
   { key: 'uploaded_date', label: 'web.property.lblNoteDate' },
-  { key: 'uploaded_by', label: 'web.property.lblCreatedBy' }
-  
+  { key: 'created_by', label: 'web.property.lblCreatedBy' },
+  { key: 'file_path', label: 'web.property.lblFiles',isLink:true }, 
+  { key: 'uploaded_date', label: 'web.property.lblCreatedAt' },
+  { key: 'modified_date', label: 'web.property.lblModifiedDate' },
 ];
 
 parkingsColumns = [
@@ -155,7 +156,6 @@ constructor(
   private translate: TranslateService) {
 
 }
-
   ngOnInit(): void {
      this.currentUser = this.commonService.getCurrentUser();
     this.route.paramMap.subscribe(params => {
@@ -168,7 +168,9 @@ constructor(
 private createForms(): void {
   this.commonAreaForm = this.fb.group({
     areaName: ['', Validators.required],
-    floor: ['', Validators.required]
+    floor: ['', Validators.required],
+    code:[''],
+    desc:['']
   });
   this.attachmentsForm = this.fb.group({
     documentType: ['', Validators.required],
@@ -240,8 +242,8 @@ private bindPropertyData(data: any): void {
   this.assetsData = data.assets;
   this.notesData = data.notes;
   this.attachmentsData = data.documents;
-  this.tenantsData = data.table11;
-  this.parkingData = data.tenants_history;
+  this.tenantsData = data.tenants_history;
+  this.parkingData = data.parkings;
 }
 initializeTabs() {
 
@@ -384,6 +386,17 @@ savePopup(tab: string) {
 
 }
 
+handleEditNotification(selectedObject: any) {
+   
+  if(selectedObject){ 
+    
+    this.commonAreaForm.patchValue({
+      areaName: selectedObject?.area_name,
+      floor: selectedObject?.floor_no,
+      code: selectedObject?.code,
+      desc: selectedObject?.strdesc});
+  }
+}
 saveCommonArea(form:FormGroup){
   const commonAreaLabels = {
     areaName: this.translate.instant('web.portfolio.popups.commonArea.lblAreaName'),
@@ -398,14 +411,19 @@ saveCommonArea(form:FormGroup){
    id:0,
    property_code:this.propertyCode,
    area_name:values.areaName,
-   floor_no:Number(values.floor),
-   desc:'',
-   code:''
+   floor_no:values.floor,
+   desc:values.desc || '',
+   code:values.code
 };
 this.portfolioService.saveCommonArea(payload).subscribe({
-    next: () => {
+    next: (res) => { 
+      if (res["statusCode"] == "200") { 
         this.commonAreaForm.reset();
         this.detailLayout.closeModal();
+        this.commonAreaData = res.objResult.table;
+        let tab = this.tabs.find(t => t.key === this.activeTab);
+        tab!.data=this.commonAreaData;
+      }
     },
     error: console.error
 });

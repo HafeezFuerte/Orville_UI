@@ -27,7 +27,7 @@
                             {{ emptyMessage | translate }}
                         </span>
                     </ng-template>
-                </td>
+                </td>  
             </tr>
 
             <!-- Data Rows -->
@@ -42,8 +42,8 @@
                         <!-- Link Rendering -->
                         <ng-template #checkLink>
                             <ng-container *ngIf="col.isLink; else defaultData">
-                                <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick.emit({ row: row, col: col })">
-                                    {{ row[col.key] || '-' }}
+                                <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick(row,col )">
+                                    {{ row[col.key]!=null ? 'View File': 'N/A' }}
                                 </span>
                             </ng-container>
                         </ng-template>
@@ -58,15 +58,27 @@
 
                             </span>
                             <ng-template #normalText>
-                                <span [ngClass]="{'font-semibold': col.key === 'name'}">
+                                <span *ngIf="!col.key.includes('date')" [ngClass]="{'font-semibold': col.key === 'name'}">
                                     {{ row[col.key] || '-' }}
+                                </span>
+                                <span *ngIf="col.key.includes('date')">
+                                    {{ row[col.key]!=null ? row[col.key].split('T')[0] : '-' }}
                                 </span>
                             </ng-template>
                         </ng-template>
                     </td>
                     <!-- Action Column (Injected via ng-template) -->
                     <td *ngIf="hasActions">
-                        <ng-container *ngTemplateOutlet="actionTemplate; context: { row: row }"></ng-container>
+                        <div class="flex gap-1">
+                            <button (click)="edit_action(row,'edit')" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+                              <i class="ri-edit-line text-xs"></i>
+                            </button>
+                            <button  (click)="edit_action(row,'delete')" class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+                              <i class="ri-delete-bin-line text-xs"></i>
+                            </button>
+                          </div>
+
+                        <!-- <ng-container *ngTemplateOutlet="actionTemplate; context: { row: row }"></ng-container> -->
                     </td>
                 </tr>
             </ng-container>

@@ -42,7 +42,7 @@ saveAttachment(payload: any): Observable<any> {
 }
 saveCommonArea(payload: any): Observable<any> {
   return this.postAPI(
-    environment.apiurl + '/api/Masters/save_commonarea',
+    environment.apiurl + 'api/Masters/save_commonarea',
     payload
   );
 }

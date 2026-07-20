@@ -5,19 +5,19 @@
     </h3>
     <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] text-[#8c9097]">
-                        {{ 'web.common.lblHome' | translate }}
+                        <a [routerLink]="['/insights']"> {{ 'web.common.lblHome' | translate }}</a> 
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
                     </li>
                     <li class="text-[0.813rem] text-[#8c9097]">
-                        {{ 'web.property.lblProperties' | translate }}
+                      <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>  
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
                     </li>
                     <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
-                        {{property?.name}}
+                       <a [routerLink]="['/properties', property?.code]"> {{property?.name}}</a>
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
@@ -39,7 +39,8 @@
     <app-detail-page-layout
         class="col-span-12"
         [tabs]="tabs"
-        [(activeTab)]="activeTab"
+        (notify_edit_action)="handleEditNotification($event)"
+        [(activeTab)]="activeTab" 
         (saveClick)="savePopup($event)">
 
         <!-- LEFT PANEL -->

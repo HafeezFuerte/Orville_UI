@@ -53,15 +53,17 @@
   <!-- Search -->
   <div class="w-full md:w-96">
     <div class="input-group">
-      <input
+      <input [(ngModel)]="searchQuery"
+      (keyup.enter)="search_with_keyword()"
         type="text"
         class="form-control"
         placeholder="Search">
       <button
-        class="input-group-text bg-primary/10 text-primary">
+        class="input-group-text bg-primary/10 text-primary" (click)="search_with_keyword()" >
         <i class="ri-search-line"></i>
       </button>
     </div>
+    
   </div>
 
   <!-- Right Buttons -->
@@ -85,7 +87,9 @@
             [totalRecords]="selectedTab?.totalRecords || 0"
             [pageSize]="selectedTab?.pageSize || 50"
             [pageIndex]="selectedTab?.pageIndex || 0"
-            [hasActions]="selectedTab?.hasActions || false">
+            [hasActions]="selectedTab?.hasActions || false"
+            (notify_edit_action)="handleChildNotification($event)"
+            >
 
         </app-shared-table>
     </ng-container>
@@ -132,3 +136,6 @@
         [form]="selectedTab!.form!">
     </app-notes-popup>
 </app-reusable-modal>
+<app-confirm-popup
+*ngIf="showConfirmModal" >
+</app-confirm-popup>
