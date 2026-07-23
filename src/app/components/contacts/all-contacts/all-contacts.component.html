@@ -1,0 +1,106 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex mb-6">
+  <div>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">{{ 'web.contacts.lblAllContacts' | translate }}</h3>
+    <p class="text-gray-500 text-sm mt-1">{{ 'web.contacts.lblViewEveryContact' | translate }}</p>
+  </div>
+  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
+    <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" title="Export">
+      <i class="ri-download-2-line text-sm"></i>
+    </button>
+  </div>
+</div>
+
+<!-- 📋 LIST VIEW (TABLE) -->
+<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 animate-fade-in">
+  
+  <div class="box-header !py-3 !px-4 border-b bg-white flex justify-between items-center w-full">
+    <div class="flex items-center gap-4 w-full max-w-md">
+      <!-- Text Search -->
+      <div class="input-group w-full relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="ri-search-line text-gray-400"></i>
+        </div>
+        <input type="text" class="form-control form-control-sm !text-[12px] pl-9 bg-gray-50 border-gray-200 rounded-md" [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <!-- Filter Button -->
+      <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
+        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        {{ 'web.contacts.lblFilter' | translate }}
+      </button>
+
+      <!-- Column Button with dropdown overlay -->
+      <div class="relative">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+          class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
+          <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+          {{ 'web.contacts.lblColumn' | translate }}
+        </button>
+        
+        <!-- Column toggling checklist dropdown overlay -->
+        <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            {{ 'web.contacts.lblSelectAll' | translate }}
+          </label>
+          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+            <label *ngFor="let col of tableColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              {{ col.label | translate }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <app-shared-table [columns]="visibleColumns" [data]="paginatedContacts" [loading]="false"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+
+      <!-- Custom Column Templates -->
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container *ngIf="col.key === 'id'">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+              {{ row.name.substring(0, 2) }}
+            </div>
+            <span class="font-bold text-primary cursor-pointer hover:underline">{{row.id}}</span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'name'">
+          <span class="font-medium text-gray-800">{{row.name}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'email'">
+          <span class="text-gray-600">{{row.email}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'phoneNumber'">
+          <span class="text-gray-600">{{row.phoneNumber}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'status'">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [class]="getStatusClass(row.status)">
+            {{row.status}}
+          </span>
+        </ng-container>
+      </ng-template>
+
+      <!-- Actions Template -->
+      <ng-template #actionTemplate let-row="row">
+        <div class="flex justify-center w-full">
+          <button class="w-8 h-8 rounded-md text-gray-400 hover:text-gray-700 flex items-center justify-center transition-all duration-200">
+            <i class="ri-more-fill text-lg"></i>
+          </button>
+        </div>
+      </ng-template>
+
+    </app-shared-table>
+  </div>
+</div>

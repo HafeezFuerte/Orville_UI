@@ -59,6 +59,7 @@ export class PropertiesListComponent implements OnInit {
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
+  userChangedPageSize = false;
 
   // Metrics
   metrics:any = {}
@@ -140,14 +141,26 @@ private loadMetrics(
       page_no: 0,
       seqno: 0,
       search_keyword: this.searchQuery || '',
-      pagecount: 20, // Load all to handle advanced dashboard filters locally for interactive UX
+      pagecount: 100, // Load all to handle advanced dashboard filters locally for interactive UX
       filter_by: this.categoryFilter !== 'All' ? this.categoryFilter : '',
       featureid: 'Property'
     };
 
     this.propertiesService.getProperties(payload).subscribe({
       next: (response: any) => {
-        this.properties = response.objResult.property || [];
+        let apiProps: any[] = [];
+        if (Array.isArray(response)) {
+          apiProps = response;
+        } else if (response && response.objResult) {
+          if (Array.isArray(response.objResult)) apiProps = response.objResult;
+          else if (response.objResult.property) apiProps = response.objResult.property;
+          else if (response.objResult.properties) apiProps = response.objResult.properties;
+          else if (response.objResult.Property) apiProps = response.objResult.Property;
+          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
+        }
+
+        this.properties = apiProps || [];
+        console.log(this.properties);
         this.applyLocalFilters();
       },
       error: err => {
@@ -189,6 +202,15 @@ private loadMetrics(
     }
 
     this.totalRecords = result.length;
+    
+    if (!this.userChangedPageSize) {
+      if (this.totalRecords <= 5) this.pageSize = 5;
+      else if (this.totalRecords <= 10) this.pageSize = 10;
+      else if (this.totalRecords <= 25) this.pageSize = 25;
+      else if (this.totalRecords <= 50) this.pageSize = 50;
+      else this.pageSize = 100;
+    }
+    
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
     // Paginate
@@ -236,6 +258,7 @@ private loadMetrics(
   onSharedTablePageChange(event: any): void {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
+    this.userChangedPageSize = true;
     this.applyLocalFilters();
   }
 
@@ -255,6 +278,7 @@ private loadMetrics(
 
   onPageSizeChange(): void {
     this.pageNo = 1;
+    this.userChangedPageSize = true;
     this.applyLocalFilters();
   }
 

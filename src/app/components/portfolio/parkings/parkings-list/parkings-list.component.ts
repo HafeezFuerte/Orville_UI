@@ -63,10 +63,11 @@ export class ParkingsListComponent implements OnInit {
 
   // Pagination
   pageNo = 1;
-  pageSize = 6;
+  pageSize = 5;
   totalPages = 0;
   totalRecords = 0;
-  pageSizeOptions = [6, 12, 24, 48];
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  userChangedPageSize = false;
 
   // Metrics
   metrics = {
@@ -110,6 +111,10 @@ export class ParkingsListComponent implements OnInit {
     return this.tableColumns.every(c => c.visible !== false);
   }
 
+  isEditMode: boolean = false;
+  currentEditId: number = 0;
+  currentEditCode: string = '';
+
   toggleDrawer(open: boolean): void {
     this.isDrawerOpen = open;
   }
@@ -121,10 +126,8 @@ export class ParkingsListComponent implements OnInit {
   paginatedParkings: Parking[] = [];
 
   propertiesList: any[] = [];
-  unitsList: any[] = [
-    { id: 1, name: 'Apartment 209' },
-    { id: 2, name: 'Apartment 304' }
-  ];
+  allUnits: any[] = [];
+  unitsList: any[] = [];
 
   constructor(
     private translate: TranslateService,
@@ -136,6 +139,60 @@ export class ParkingsListComponent implements OnInit {
     this.loadMetrics();
     this.loadParkings();
     this.loadProperties();
+    this.loadUnits();
+  }
+
+  onPropertyChange(event: any) {
+    this.parkingForm.unit_code = null;
+    const propertyCode = event?._safeCode || event?.code || event?.id;
+    
+    if (propertyCode) {
+      this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
+    } else {
+      this.unitsList = [...this.allUnits];
+    }
+  }
+
+  loadUnits() {
+    const payload = {
+      userid: 1,
+      company_id: 1,
+      clientId: "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 100,
+      filter_by: '',
+      featureid: 'Units'
+    };
+    this.propertiesService.getUnits(payload).subscribe({
+      next: (response: any) => {
+        let apiUnits: any[] = [];
+        if (Array.isArray(response)) {
+          apiUnits = response;
+        } else if (response && response.objResult) {
+          if (Array.isArray(response.objResult)) apiUnits = response.objResult;
+          else if (response.objResult.unit) apiUnits = response.objResult.unit;
+          else if (response.objResult.units) apiUnits = response.objResult.units;
+          else if (response.objResult.Unit) apiUnits = response.objResult.Unit;
+          else if (response.objResult.Units) apiUnits = response.objResult.Units;
+        }
+
+        if (Array.isArray(apiUnits) && apiUnits.length > 0) {
+          this.allUnits = apiUnits.map((u: any) => ({
+            ...u,
+            _safeCode: u.unit_code || u.code || String(u.id || ''),
+            displayName: `${u.unit_code || u.code || u.id || ''} - ${u.unit_no || u.name || ''}`
+          }));
+          this.unitsList = [...this.allUnits];
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading units:', err);
+      }
+    });
   }
 
   loadMetrics() {
@@ -208,17 +265,23 @@ export class ParkingsListComponent implements OnInit {
 
           if (apiParkings.length > 0) {
             this.allParkings = apiParkings.map((p: any) => ({
-              id: p.code || p.parking_no || 31658,
-              parkingNo: p.parking_no || 'N/A',
-              property: p.property_name || 'N/A',
-              location: 'Dubai',
-              unit: p.unit_code || 'N/A',
-              type: p.parking_type === 1 || p.parking_type === 'Free' ? 'Free' : 'Chargeable',
-              fee: p.fee || 'AED 0.00',
-              cycle: p.recurring_cycle === 1 ? 'Fixed' : p.recurring_cycle === 2 ? 'Daily' : p.recurring_cycle === 3 ? 'Weekly' : 'Monthly',
-              remarks: p.remarks || 'No remarks',
-              createdDate: p.createdDate || '07-01-2026',
-              updatedDate: p.updatedDate || '07-01-2026'
+              id: p.code ?? p.parking_no ?? '-',
+              parkingNo: p.parking_no ?? '-',
+              property: p.property ?? p.property_name ?? '-',
+              location: p.location ?? '-',
+              unit: p.unit_code ?? '-',
+              type: String(p.parking_type) === '1' ? 'Free' : String(p.parking_type) === '2' ? 'Chargeable' : p.parking_type === 'Free' ? 'Free' : p.parking_type === 'Chargeable' ? 'Chargeable' : (p.parking_type_nm ?? p.parking_type ?? '-'),
+              fee: (p.fee != null) ? (p.fee == 0 ? 'AED 0.00' : `AED ${p.fee}`) : '-',
+              cycle: String(p.recurring_cycle) === '1' ? 'Fixed' : String(p.recurring_cycle) === '2' ? 'Daily' : String(p.recurring_cycle) === '3' ? 'Weekly' : String(p.recurring_cycle) === '4' ? 'Monthly' : p.recurring_cycle === 'Fixed' ? 'Fixed' : p.recurring_cycle === 'Daily' ? 'Daily' : p.recurring_cycle === 'Weekly' ? 'Weekly' : p.recurring_cycle === 'Monthly' ? 'Monthly' : (p.recurring_cycle_nm ?? p.recurring_cycle ?? '-'),
+              remarks: p.remarks ?? '-',
+              createdDate: p.createdDate ?? p.created_date ?? '-',
+              updatedDate: p.updatedDate ?? p.updated_date ?? '-',
+              raw_property_code: p.property_code,
+              raw_unit_code: p.unit_code,
+              raw_parking_type: p.parking_type,
+              raw_recurring_cycle: p.recurring_cycle,
+              raw_id: p.id,
+              raw_code: p.code
             }));
           }
         } else {
@@ -240,7 +303,7 @@ export class ParkingsListComponent implements OnInit {
       clientId: "74BB6922",
       source: 'web',
       languageid: 1,
-      page_no: 1,
+      page_no: 0,
       seqno: 0,
       search_keyword: '',
       pagecount: 100,
@@ -249,8 +312,23 @@ export class ParkingsListComponent implements OnInit {
     };
     this.propertiesService.getProperties(payload).subscribe({
       next: (response: any) => {
-        if (response && response.objResult && response.objResult.property) {
-          this.propertiesList = response.objResult.property;
+        let apiProps: any[] = [];
+        if (Array.isArray(response)) {
+          apiProps = response;
+        } else if (response && response.objResult) {
+          if (Array.isArray(response.objResult)) apiProps = response.objResult;
+          else if (response.objResult.property) apiProps = response.objResult.property;
+          else if (response.objResult.properties) apiProps = response.objResult.properties;
+          else if (response.objResult.Property) apiProps = response.objResult.Property;
+          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
+        }
+
+        if (Array.isArray(apiProps) && apiProps.length > 0) {
+          this.propertiesList = apiProps.map((p: any) => ({
+            ...p,
+            _safeCode: p.code || String(p.id),
+            displayName: `${p.code || p.id} - ${p.name}`
+          }));
         }
       },
       error: (err: any) => {
@@ -269,6 +347,15 @@ export class ParkingsListComponent implements OnInit {
 
     this.filteredParkings = temp;
     this.totalRecords = temp.length;
+    
+    if (!this.userChangedPageSize) {
+      if (this.totalRecords <= 5) this.pageSize = 5;
+      else if (this.totalRecords <= 10) this.pageSize = 10;
+      else if (this.totalRecords <= 25) this.pageSize = 25;
+      else if (this.totalRecords <= 50) this.pageSize = 50;
+      else this.pageSize = 100;
+    }
+
     this.pageNo = 1;
     this.updatePagination();
   }
@@ -296,6 +383,42 @@ export class ParkingsListComponent implements OnInit {
 
   toggleAddModal(open: boolean): void {
     this.showAddModal = open;
+    if (!open) {
+      this.isEditMode = false;
+      this.currentEditId = 0;
+      this.currentEditCode = '';
+      this.parkingForm = {
+        property_code: null,
+        unit_code: null,
+        parking_no: '',
+        parking_type: null,
+        recurring_cycle: null,
+        remarks: ''
+      };
+    }
+  }
+
+  editParking(row: any): void {
+    this.isEditMode = true;
+    this.currentEditId = row.raw_id || 0;
+    this.currentEditCode = row.raw_code || '';
+    
+    // We must ensure unitsList is populated for the given property
+    const propertyCode = row.raw_property_code;
+    if (propertyCode) {
+      this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
+    }
+    
+    this.parkingForm = {
+      property_code: row.raw_property_code,
+      unit_code: row.raw_unit_code,
+      parking_no: row.parkingNo !== '-' ? row.parkingNo : '',
+      parking_type: row.raw_parking_type,
+      recurring_cycle: row.raw_recurring_cycle,
+      remarks: row.remarks !== '-' ? row.remarks : ''
+    };
+    
+    this.showAddModal = true;
   }
 
   saveParking(): void {
@@ -310,30 +433,24 @@ export class ParkingsListComponent implements OnInit {
       clientId: "74BB6922",
       source: "web",
       languageid: 1,
-      id: 0,
-      property_code: this.parkingForm.property_code,
-      unit_code: this.parkingForm.unit_code,
-      code: "",
-      parking_no: this.parkingForm.parking_no,
-      parking_type: this.parkingForm.parking_type,
+      id: this.isEditMode ? this.currentEditId : 0,
+      property_code: this.parkingForm.property_code || '',
+      unit_code: this.parkingForm.unit_code || '',
+      code: this.isEditMode ? this.currentEditCode : "",
+      parking_no: this.parkingForm.parking_no || '',
+      parking_type: this.parkingForm.parking_type || '',
       status: 1,
+      room_code: "",
+      rooom_code: "",
       recurring_cycle: this.parkingForm.recurring_cycle || 0,
       remarks: this.parkingForm.remarks || ""
     };
 
     this.propertiesService.addParking(payload).subscribe({
       next: (res: any) => {
-        this.toastr.success('Parking created successfully.', 'Success');
-        this.showAddModal = false;
-        // reset form
-        this.parkingForm = {
-          property_code: null,
-          unit_code: null,
-          parking_no: '',
-          parking_type: null,
-          recurring_cycle: null,
-          remarks: ''
-        };
+        this.toastr.success(`Parking ${this.isEditMode ? 'updated' : 'created'} successfully.`, 'Success');
+        this.toggleAddModal(false);
+        this.loadParkings();
       },
       error: (err: any) => {
         console.error('Failed to save parking:', err);
@@ -345,11 +462,13 @@ export class ParkingsListComponent implements OnInit {
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
+    this.userChangedPageSize = true;
     this.updatePagination();
   }
 
   onPageSizeChange(): void {
     this.pageNo = 1;
+    this.userChangedPageSize = true;
     this.updatePagination();
   }
 

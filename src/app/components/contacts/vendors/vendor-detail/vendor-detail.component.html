@@ -1,0 +1,509 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-2">
+    <a routerLink="/contacts/vendors" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
+      <i class="ri-arrow-left-line text-lg"></i>
+    </a>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">Vendor Details</h3>
+    <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
+      <span>contacts</span> <span>/</span> <span>Vendor</span> <span>/</span> <span class="text-gray-600">Details</span>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    
+    <div class="flex items-center gap-2 ml-4">
+      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
+      
+      <!-- Dropdown button and menu wrapper -->
+      <div class="relative">
+        <button (click)="showActionDropdown = !showActionDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+          <i class="ri-more-2-fill text-sm"></i>
+        </button>
+        <!-- Dropdown menu -->
+        <div *ngIf="showActionDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+          <button *ngFor="let option of actionOptions" (click)="
+            showActionDropdown = false;
+            option.label === 'Add Attachment' ? showSubscriptionsModal = true : null"
+            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
+            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+        Edit Vendor
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
+  
+  <!-- LEFT COLUMN (Sticky Sidebar) -->
+  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
+    <div class="sticky-sidebar flex flex-col gap-y-2">
+      
+      <!-- Vendor Name Header -->
+      <div class="!mb-1">
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ vendor.name }}</h4>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ vendor.email }}</p>
+        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
+          <button class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">View Activity</button>
+          <button (click)="showSubscriptionsModal = true" class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email Sub (3/30)</button>
+        </div>
+      </div>
+
+      <!-- Company Information -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Company Information</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium">Name:</span>
+            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.name }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium">TRN:</span>
+            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.trn }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium">Trade License:</span>
+            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.tradeLicense }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Information -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Login Information</h5>
+          <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20">Not Verified</span>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium">Email:</span>
+            <span class="text-gray-800 font-semibold col-span-2 break-all">{{ vendor.email }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium">Username:</span>
+            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.username }}</span>
+          </div>
+          <button class="w-full py-1.5 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">Verify Email</button>
+        </div>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Personal Details</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium">ID:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ vendor.id }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium">Full Name:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.fullName }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium">Email:</span>
+            <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ vendor.personal.email }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium">Phone:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.phone }}</span>
+          </div>
+          
+          <div class="text-center my-1">
+            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails" class="text-primary font-bold text-[10px] flex items-center justify-center gap-1">
+              {{ showPersonalDetails ? 'View less details' : 'View more details' }}
+              <i [class]="showPersonalDetails ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </a>
+          </div>
+          
+          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2 animate-fade-in">
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Address 1:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.address1 }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Address 2:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.address2 }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Country:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.country }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">State:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.state }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">City:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.city }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Postcode:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.postcode }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Created:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.created }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Last Updated:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.lastUpdated }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium">Can Create WO:</span>
+              <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assigned Categories -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Assigned Categories</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2.5 text-xs">
+          <div *ngFor="let cat of categories" class="flex justify-between items-center py-1 border-b border-gray-50 last:border-0">
+            <span class="text-gray-600 font-medium">{{ cat.name }}</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" [id]="cat.name" [(ngModel)]="cat.active" class="hidden">
+              <label [for]="cat.name" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="cat.active">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="cat.active"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Tabs & Content) -->
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
+    
+    <!-- Tab Navigation inside White Box -->
+    <div class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
+      <button *ngFor="let tab of tabs" 
+        (click)="setTab(tab)"
+        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
+        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
+        {{tab}}
+      </button>
+    </div>
+
+    <!-- TAB: Overview -->
+    <div *ngIf="activeTab === 'Overview'" class="flex flex-col gap-y-2 animate-fade-in">
+      
+      <!-- Maintenance Summary -->
+      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm">
+        <h5 class="text-xs font-bold text-gray-800 mb-1">Maintenance Summary</h5>
+        <p class="text-[10px] text-gray-500 mb-3">Important maintenance values are grouped first, so the user can understand of vendor activity quickly.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- Left Large blue card -->
+          <div class="rounded-xl overflow-hidden shadow-sm p-4 flex flex-col justify-between" style="background: linear-gradient(135deg, #1f224f 0%, #171836 100%);">
+            <div>
+              <span class="text-[9px] text-gray-400 font-bold uppercase block">Total Maintenance Requests</span>
+              <span class="text-2xl font-black text-white block mt-1">203</span>
+            </div>
+            <div class="mt-4 border-t border-white/10 pt-2 flex justify-between text-[9px] text-gray-400">
+              <div>
+                <span>Maintenance Delegation</span>
+                <span class="font-bold text-white block">5</span>
+              </div>
+              <div class="text-right">
+                <span>Current Resolution Rate</span>
+                <span class="font-bold text-white block">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right grid cards -->
+          <div class="col-span-2 grid grid-cols-2 gap-2">
+            <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+              <span class="text-[9px] text-gray-500 font-bold uppercase">Total Maintenance Categories</span>
+              <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+            </div>
+            <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+              <span class="text-[9px] text-gray-500 font-bold uppercase">Total Maintenance Reserved</span>
+              <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+            </div>
+            <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+              <span class="text-[9px] text-gray-500 font-bold uppercase">Total Maintenance Rejected</span>
+              <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+            </div>
+            <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+              <span class="text-[9px] text-gray-500 font-bold uppercase">Total Quotations Submitted</span>
+              <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quotation Activity -->
+      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm">
+        <h5 class="text-xs font-bold text-gray-800 mb-3">Quotation Activity</h5>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-gray-50 rounded-lg p-3 text-center shadow-sm">
+            <span class="text-[9px] text-gray-500 font-bold uppercase block">Quotation Rejected by Manager</span>
+            <span class="text-lg font-bold text-gray-800 block mt-1">0</span>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 text-center shadow-sm">
+            <span class="text-[9px] text-gray-500 font-bold uppercase block">Pending Quotation Review</span>
+            <span class="text-lg font-bold text-gray-800 block mt-1">0</span>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 text-center shadow-sm">
+            <span class="text-[9px] text-gray-500 font-bold uppercase block">Resolved Maintenance Share</span>
+            <span class="text-lg font-bold text-gray-800 block mt-1">0</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: Unit -->
+    <div *ngIf="activeTab === 'Unit'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Units</h5>
+      </div>
+      <app-shared-table [columns]="unitColumns" [data]="unitData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'published'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-success/10 text-success">{{ row.published }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'forSale'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-gray-100 text-gray-600">{{ row.forSale }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'action'">
+            <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+              <i class="ri-more-fill"></i>
+            </button>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Work Orders -->
+    <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Work Orders</h5>
+        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Work Order</button>
+      </div>
+
+      <app-shared-table [columns]="workOrderColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.status === 'Open' ? 'bg-primary/10 text-primary' : row.status === 'Completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'priority'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.priority === 'High' ? 'bg-danger/10 text-danger' : 'bg-gray-100 text-gray-600'">{{ row.priority }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Financials -->
+    <div *ngIf="activeTab === 'Financials'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex items-center gap-2 border-b border-gray-100 pb-2 mb-3">
+        <button *ngFor="let sub of financialSubTabs" (click)="setFinancialSubTab(sub)"
+          class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all border-0"
+          [ngClass]="activeFinancialSubTab === sub ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
+          {{ sub }}
+        </button>
+      </div>
+
+      <!-- Financials Sub Tab Content: Bills -->
+      <div *ngIf="activeFinancialSubTab === 'Bills'" class="animate-fade-in">
+        <app-shared-table [columns]="billColumns" [data]="billData" [loading]="false" [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+                [ngClass]="row.status === 'Paid' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">{{ row.status }}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'action'">
+              <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                <i class="ri-more-fill"></i>
+              </button>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+
+      <!-- Financials Sub Tab Content: Purchase Orders -->
+      <div *ngIf="activeFinancialSubTab === 'Purchase Orders'" class="animate-fade-in">
+        <app-shared-table [columns]="poColumns" [data]="poData" [loading]="false" [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+                [ngClass]="row.status === 'Approved' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.status }}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'action'">
+              <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                <i class="ri-more-fill"></i>
+              </button>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Attachments -->
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Attachments</h5>
+        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Attachment</button>
+      </div>
+      <app-shared-table [columns]="attachmentColumns" [data]="attachmentData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="text-primary font-bold cursor-pointer">{{ row.id }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-[#1f224f] text-white">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'files'">
+            <a href="javascript:void(0)" class="text-primary font-bold flex items-center gap-1"><i class="ri-file-text-line"></i> {{ row.files }}</a>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Quotations -->
+    <div *ngIf="activeTab === 'Quotations'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Quotations</h5>
+      </div>
+      <app-shared-table [columns]="quotationColumns" [data]="quotationData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.status === 'Approved' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'landlordStatus'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.landlordStatus === 'Approved' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.landlordStatus }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'tenantStatus'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.tenantStatus === 'Accepted' || row.tenantStatus === 'Approved' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.tenantStatus }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'action'">
+            <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+              <i class="ri-more-fill"></i>
+            </button>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Notes -->
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Notes</h5>
+        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Note</button>
+      </div>
+      <app-shared-table [columns]="noteColumns" [data]="noteData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'via'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-gray-100 text-gray-600">{{ row.via }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Users -->
+    <div *ngIf="activeTab === 'Users'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Users</h5>
+        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add User</button>
+      </div>
+      <app-shared-table [columns]="userColumns" [data]="userData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">ZR</span>
+              <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary uppercase">{{ row.status }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Technicians -->
+    <div *ngIf="activeTab === 'Technicians'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Vendor Technicians</h5>
+        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Technician</button>
+      </div>
+      <app-shared-table [columns]="technicianColumns" [data]="technicianData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">JM</span>
+              <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary uppercase">{{ row.status }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Email Subscriptions Modal Overlay -->
+<div *ngIf="showSubscriptionsModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[420px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Email Subscriptions</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Choose automated email notifications for this Vendor.</p>
+      </div>
+      <button (click)="showSubscriptionsModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    
+    <div class="p-5 flex flex-col gap-4 overflow-y-auto max-h-[400px]">
+      <div class="flex flex-col gap-2.5">
+        <div *ngFor="let sub of subscriptions" class="flex justify-between items-center py-1">
+          <label class="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-gray-700 min-w-0 flex-grow">
+            <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            <span class="truncate">{{ sub.name }}</span>
+          </label>
+          <button class="px-2.5 py-1 text-[9px] rounded font-bold border flex items-center gap-1 transition-all"
+            [ngClass]="sub.subscribed ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'">
+            <i class="ri-check-line" *ngIf="sub.subscribed"></i> Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showSubscriptionsModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Close</button>
+    </div>
+  </div>
+</div>

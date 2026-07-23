@@ -11,7 +11,7 @@ import { PropertiesService } from '../../services/properties.service';
 export interface Unit {
   id: number;
   name: string;
-  category: 'Residential' | 'Commercial';
+  category: string;
   beds: string;
   baths: string;
   area: string;
@@ -22,10 +22,10 @@ export interface Unit {
   tags: string;
   unitType: string;
   managementFee: string;
-  status: 'Occupied' | 'Vacant' | 'Maintenance';
+  status: string;
   addedDate: string;
   imageUrl: string;
-  rentStatus: 'For Rent' | 'For Sale';
+  rentStatus: string;
 }
 
 @Component({
@@ -73,10 +73,11 @@ export class UnitsListComponent implements OnInit {
 
   // Pagination
   pageNo = 1;
-  pageSize = 6;
+  pageSize = 5;
   totalPages = 0;
   totalRecords = 0;
-  pageSizeOptions = [6, 12, 24, 48];
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  userChangedPageSize = false;
 
   // Metrics
   metrics = {
@@ -320,25 +321,37 @@ export class UnitsListComponent implements OnInit {
           }
 
           if (apiUnits.length > 0) {
-            this.allUnits = apiUnits.map((u: any) => ({
-              id: u.code || u.unit_code || 31658,
-              name: u.unit_no || 'Apartment',
-              category: u.category || 'Residential',
-              beds: u.beds || '1 Bed',
-              baths: u.baths || '1 Bath',
-              area: u.area || '1200 Sqft',
-              floor: u.floor_no || '1 Floor',
-              property: u.property_code || 'Marina Height Towers',
-              location: 'Dubai Marina, Tower A, Dubai',
-              landlord: u.landlord_codes || 'Orville Real Estate',
-              tags: u.tags || 'Premium',
-              unitType: u.unit_type || 'Apartment',
-              managementFee: u.management_fee ? `AED ${u.management_fee}` : 'AED 600',
-              status: u.unit_status || 'Occupied',
-              addedDate: 'May 26, 2026',
-              imageUrl: u.unit_image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
-              rentStatus: u.rent_type || 'For Rent'
-            }));
+            this.allUnits = apiUnits.map((u: any) => {
+              const categoryMap: any = { 1: 'Residential', 2: 'Commercial', 3: 'Industrial' };
+              const unitTypeMap: any = { 1: 'Apartment', 2: 'Villa', 3: 'Office', 4: 'Warehouse', 5: 'Retail Store' };
+              
+              let bedsDisplay = '-';
+              if (u.beds === 0 || String(u.beds).toLowerCase() === 'studio') {
+                bedsDisplay = 'Studio';
+              } else if (u.beds != null) {
+                bedsDisplay = `${u.beds} Bed${u.beds > 1 ? 's' : ''}`;
+              }
+
+              return {
+                id: u.code ?? u.unit_code ?? '-',
+                name: u.unit_no ?? '-',
+                category: categoryMap[u.category] ?? u.category_name ?? u.category ?? '-',
+                beds: bedsDisplay,
+                baths: (u.baths != null) ? `${u.baths} Bath${u.baths > 1 ? 's' : ''}` : '-',
+                area: u.area ?? '-',
+                floor: (u.floor_no != null) ? `${u.floor_no} Floor` : '-',
+                property: u.property_code ?? u.property_name ?? '-',
+                location: u.location ?? '-',
+                landlord: u.landlord_codes ?? u.landlord_name ?? '-',
+                tags: u.tags ?? '-',
+                unitType: unitTypeMap[u.unit_type] ?? u.unit_type_name ?? u.unit_type ?? '-',
+                managementFee: (u.management_fee != null) ? `AED ${u.management_fee}` : '-',
+                status: u.unit_status === 1 ? 'Available' : u.unit_status === 2 ? 'Rented' : u.unit_status === 3 ? 'Under Maintenance' : u.unit_status === 4 ? 'Reserved' : (u.unit_status ?? '-'),
+                addedDate: u.created_date ?? u.addedDate ?? '-',
+                imageUrl: u.unit_image ?? '',
+                rentStatus: u.rent_type === 1 ? 'Monthly' : u.rent_type === 2 ? 'Quarterly' : u.rent_type === 3 ? 'Bi-Annually' : u.rent_type === 4 ? 'Yearly' : (u.rent_type ?? '-')
+              };
+            });
           }
         }
         this.filterAndPaginate();
@@ -400,6 +413,15 @@ export class UnitsListComponent implements OnInit {
     }
 
     this.totalRecords = result.length;
+    
+    if (!this.userChangedPageSize) {
+      if (this.totalRecords <= 5) this.pageSize = 5;
+      else if (this.totalRecords <= 10) this.pageSize = 10;
+      else if (this.totalRecords <= 25) this.pageSize = 25;
+      else if (this.totalRecords <= 50) this.pageSize = 50;
+      else this.pageSize = 100;
+    }
+
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
     // 7. Paginate
@@ -454,6 +476,7 @@ export class UnitsListComponent implements OnInit {
 
   onPageSizeChange(): void {
     this.pageNo = 1;
+    this.userChangedPageSize = true;
     this.filterAndPaginate();
   }
 
@@ -478,9 +501,10 @@ export class UnitsListComponent implements OnInit {
     }
   }
 
-  onSharedTablePageChange(event: any): void {
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
+    this.userChangedPageSize = true;
     this.filterAndPaginate();
   }
 

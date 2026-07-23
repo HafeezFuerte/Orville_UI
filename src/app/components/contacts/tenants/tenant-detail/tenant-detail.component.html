@@ -1,0 +1,858 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-2">
+    <a routerLink="/contacts/tenants" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
+      <i class="ri-arrow-left-line text-lg"></i>
+    </a>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">Tenant Details</h3>
+    <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
+      <span>contacts</span> <span>/</span> <span>Tenant</span> <span>/</span> <span class="text-gray-600">Details</span>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    
+    <div class="flex items-center gap-2 ml-4">
+      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
+      
+      <!-- Dropdown button and menu wrapper -->
+      <div class="relative">
+        <button (click)="showActionDropdown = !showActionDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+          <i class="ri-more-2-fill text-sm"></i>
+        </button>
+        <!-- Dropdown menu -->
+        <div *ngIf="showActionDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+          <button *ngFor="let option of actionOptions" (click)="
+            showActionDropdown = false;
+            option.label === 'Add Lease' ? showAddLeaseModal = true :
+            option.label === 'Add Attachment' ? showAddAttachmentModal = true :
+            option.label === 'Add User' ? showAddUserModal = true :
+            option.label === 'Add Emergency Contact' ? showAddEmergencyContactModal = true :
+            option.label === 'Add Broadcast' ? showAddBroadcastModal = true :
+            option.label === 'Send Email' ? showSendEmailModal = true : null"
+            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
+            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+        Edit Tenant
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20">
+  
+  <!-- LEFT COLUMN (Sticky Sidebar) -->
+  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-x-3 gap-y-2">
+    <div class="sticky-sidebar flex flex-col gap-x-3 gap-y-2">
+      
+      <!-- Tenant Name Header -->
+      <div>
+        <h4 class="text-lg font-black text-gray-800 m-0">Ahmad Yasein</h4>
+        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
+          <button class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">View Activity</button>
+          <button (click)="showSubscriptionsModal = true" class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email Sub (8/37)</button>
+        </div>
+      </div>
+
+      <!-- Information -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Information</h5>
+        </div>
+        <div class="p-5 flex flex-col gap-x-3 gap-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-700">Login Information</span>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">Not Verified</span>
+          </div>
+          
+          <div class="flex flex-col gap-2 text-xs">
+            <div class="grid grid-cols-3 gap-2">
+              <span class="text-gray-500 font-medium col-span-1">Email:</span>
+              <span class="text-gray-800 font-semibold col-span-2">ahmad&#64;fastech.com</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <span class="text-gray-500 font-medium col-span-1">Username:</span>
+              <span class="text-gray-800 font-semibold col-span-2">Ahmad.Yasein</span>
+            </div>
+          </div>
+          <button class="w-full py-2 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">Verify Email</button>
+        </div>
+      </div>
+
+      <!-- Lease Information -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Lease Information</h5>
+        </div>
+        <div class="p-5 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">ID:</span>
+            <span class="text-gray-800 font-bold col-span-2">31658</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Name:</span>
+            <span class="text-gray-800 font-bold col-span-2">Ahmad Yasein</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Email:</span>
+            <span class="text-primary font-bold col-span-2 cursor-pointer">ahmad123&#64;gmail.com</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Phone:</span>
+            <span class="text-gray-800 font-bold col-span-2">050 347 2898</span>
+          </div>
+          
+          <div class="text-center my-1"><a href="javascript:void(0)" class="text-primary font-bold text-[10px]">View more details <i class="ri-arrow-down-s-line"></i></a></div>
+          
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Gender:</span>
+            <span class="text-gray-800 font-bold col-span-2">Male</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Marital Status:</span>
+            <span class="text-gray-800 font-bold col-span-2">-</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Nationality:</span>
+            <span class="text-gray-800 font-bold col-span-2">India</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Additional Phone 1:</span>
+            <span class="text-gray-800 font-bold col-span-2">0048 382 39</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Address 1:</span>
+            <span class="text-gray-800 font-bold col-span-2">Dubai Marina, Tower A, Dubai</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">City:</span>
+            <span class="text-gray-800 font-bold col-span-2">Dubai</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Opening Balance:</span>
+            <span class="text-gray-800 font-black col-span-2">AED 0.00</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-1">
+            <span class="text-gray-500 font-medium col-span-1">Property Listing:</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success w-fit col-span-2">Enabled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Note</h5>
+          <i class="ri-edit-line text-gray-400 cursor-pointer hover:text-primary"></i>
+        </div>
+        <div class="p-5">
+          <p class="text-[11px] text-gray-600 italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+      </div>
+
+      <!-- Statement Of Account -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Statement Of Account</h5>
+        </div>
+        <div class="p-5 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-bold text-gray-800 block">Auto Schedule?</span>
+            <span class="text-[10px] text-gray-500">Scheduled for 1st of the month</span>
+          </div>
+          <div class="custom-toggle-switch">
+            <input type="checkbox" id="autoScheduleSide" [(ngModel)]="autoSchedule" class="hidden">
+            <label for="autoScheduleSide" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="autoSchedule">
+              <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="autoSchedule"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Emergency Contact</h5>
+          <button (click)="showAddEmergencyContactModal = true" class="w-6 h-6 rounded bg-[#1f2b45] text-white flex items-center justify-center text-xs hover:bg-[#131b2e] border-0">+</button>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Email:</span>
+            <span class="text-gray-800 font-bold col-span-2">zaid&#64;example.com</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Name:</span>
+            <span class="text-gray-800 font-bold col-span-2">Zaid Rehman</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Relation:</span>
+            <span class="text-gray-800 font-bold col-span-2">Brother</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Phone:</span>
+            <span class="text-gray-800 font-bold col-span-2">050 488 28 32</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Fields -->
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Custom Fields</h5>
+        </div>
+        <div class="p-6 text-center">
+          <span class="text-[10px] text-gray-500">No custom fields configured yet.</span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Tabs & Content) -->
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-x-3 gap-y-2">
+    
+    <!-- Tab Navigation inside White Box -->
+    <div class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
+      <button *ngFor="let tab of tabs" 
+        (click)="setTab(tab)"
+        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
+        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
+        {{tab}}
+      </button>
+    </div>
+
+    <!-- TAB: Statement -->
+    <div *ngIf="activeTab === 'Statement'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-5">
+      <h4 class="text-sm font-black text-gray-800 m-0">Tenant Overview</h4>
+      
+      <!-- Statement Summary Card -->
+      <div class="rounded-xl overflow-hidden shadow-sm mb-4" style="background: linear-gradient(135deg, #2b2b52 0%, #1f2b45 100%);">
+        <div class="p-6">
+          <span class="text-[11px] text-gray-300 font-semibold uppercase tracking-wider block mb-1">Statement Summary</span>
+          <div class="mt-4">
+            <span class="text-xs text-gray-400 block mb-0.5">Current Balance</span>
+            <div class="text-3xl font-black text-white flex items-baseline gap-1">AED 0.00</div>
+            <span class="text-[10px] text-gray-400 mt-1 block">Total due balance of Tenants Account</span>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-x-3 gap-y-2 mt-8 border-t border-white/10 pt-5">
+            <div>
+              <span class="text-[10px] text-gray-400 block mb-1">Total Invoiced</span>
+              <span class="text-sm font-bold text-white block">AED 3,000.00</span>
+              <span class="text-[9px] text-gray-500 leading-tight block mt-1">Total charges levied on this statement</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-gray-400 block mb-1">Total Paid</span>
+              <span class="text-sm font-bold text-white block">AED 3,000.00</span>
+              <span class="text-[9px] text-gray-500 leading-tight block mt-1">Payments received for this statement</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-gray-400 block mb-1">Available Credits</span>
+              <span class="text-sm font-bold text-white block">AED 0.00</span>
+              <span class="text-[9px] text-gray-500 leading-tight block mt-1">Credit balances held for future adjustments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statement Activity Table -->
+      <div class="flex flex-col gap-3">
+        <h5 class="text-sm font-bold text-gray-800 m-0">Statement Activity</h5>
+        <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+          <div class="flex justify-between items-center mb-4">
+            <div class="input-group w-64">
+              <span class="input-group-text bg-gray-50 border-gray-200 !px-3"><i class="ri-search-line text-gray-400"></i></span>
+              <input type="text" class="form-control form-control-sm text-xs bg-gray-50 border-gray-200 border-s-0 focus:bg-white" placeholder="Search">
+            </div>
+            <button class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white font-semibold text-gray-700 shadow-sm flex items-center gap-1.5">
+              <i class="ri-layout-column-line"></i> Columns
+            </button>
+          </div>
+          
+          <app-shared-table [columns]="statementColumns" [data]="statementData" [loading]="false">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container *ngIf="col.key === 'invoiceId'">
+                <span class="font-bold text-primary cursor-pointer hover:underline">{{row.invoiceId}}</span>
+              </ng-container>
+              <ng-container *ngIf="col.key === 'action'">
+                <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                  <i class="ri-more-fill"></i>
+                </button>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Leases -->
+    <div *ngIf="activeTab === 'Leases'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-5">
+      <div class="flex justify-between items-center">
+        <h4 class="text-sm font-black text-gray-800 m-0">Tenant Leases</h4>
+        <button (click)="showAddLeaseModal = true" class="px-4 py-1.5 rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm text-xs flex items-center gap-1.5">
+          <i class="ri-add-line"></i> Add Lease
+        </button>
+      </div>
+      
+      <div class="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <div class="flex justify-between items-center mb-4">
+          <div class="input-group w-64">
+            <span class="input-group-text bg-gray-50 border-gray-200 !px-3"><i class="ri-search-line text-gray-400"></i></span>
+            <input type="text" class="form-control form-control-sm text-xs bg-gray-50 border-gray-200 border-s-0 focus:bg-white" placeholder="Search">
+          </div>
+        </div>
+        
+        <app-shared-table [columns]="leaseColumns" [data]="leaseData" [loading]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'id'">
+              <span class="font-bold text-primary cursor-pointer hover:underline">{{row.id}}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded bg-primary/10 text-primary font-bold px-2 py-0.5 text-[10px] uppercase">Active</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'action'">
+              <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                <i class="ri-more-fill"></i>
+              </button>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Attachments -->
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-5">
+      <div class="flex justify-between items-center">
+        <h4 class="text-sm font-black text-gray-800 m-0">Tenant Attachments</h4>
+        <button (click)="showAddAttachmentModal = true" class="px-4 py-2 rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm text-xs flex items-center gap-1.5">
+          <i class="ri-add-line"></i> Add Attachment
+        </button>
+      </div>
+      
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <div class="flex justify-between items-center mb-4">
+          <div class="input-group w-64">
+            <span class="input-group-text bg-gray-50 border-gray-200 !px-3"><i class="ri-search-line text-gray-400"></i></span>
+            <input type="text" class="form-control form-control-sm text-xs bg-gray-50 border-gray-200 border-s-0 focus:bg-white" placeholder="Search">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white font-semibold text-gray-700 shadow-sm flex items-center gap-1.5">
+            <i class="ri-layout-column-line"></i> Columns
+          </button>
+        </div>
+        
+        <app-shared-table [columns]="attachmentColumns" [data]="attachmentData" [loading]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'id'">
+              <span class="font-bold text-primary cursor-pointer hover:underline">{{row.id}}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold" 
+                [ngClass]="row.status === 'Active' ? 'bg-[#1f224f] text-white' : 'bg-success/10 text-success'">{{ row.status }}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'files'">
+              <a href="javascript:void(0)" class="text-primary font-bold flex items-center gap-1"><i class="ri-file-text-line"></i> {{ row.files }}</a>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'action'">
+              <button class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                <i class="ri-more-fill"></i>
+              </button>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Notes -->
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-5">
+      <div class="flex justify-between items-center">
+        <h4 class="text-sm font-black text-gray-800 m-0">Tenant Notes</h4>
+        <button (click)="showAddNoteModal = true" class="px-4 py-2 rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm text-xs flex items-center gap-1.5">
+          <i class="ri-add-line"></i> Add Note
+        </button>
+      </div>
+      
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <app-shared-table [columns]="noteColumns" [data]="noteData" [loading]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'via'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-gray-100 text-gray-600">{{ row.via }}</span>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Users -->
+    <div *ngIf="activeTab === 'Users'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in">
+      <div class="flex justify-between items-center">
+        <h4 class="text-sm font-black text-gray-800 m-0">Tenant Users</h4>
+        <button (click)="showAddUserModal = true" class="px-4 py-2 rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm text-xs flex items-center gap-1.5">
+          <i class="ri-add-line"></i> Add User
+        </button>
+      </div>
+      
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <app-shared-table [columns]="userColumns" [data]="userData" [loading]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'id'">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">AY</span>
+                <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary uppercase">{{ row.status }}</span>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Emergency Contact -->
+    <div *ngIf="activeTab === 'Emergency Contact'" class="flex flex-col gap-x-3 gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-5">
+      <div class="flex justify-between items-center">
+        <h4 class="text-sm font-black text-gray-800 m-0">Emergency Contact</h4>
+        <button (click)="showAddEmergencyContactModal = true" class="px-4 py-2 rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm text-xs flex items-center gap-1.5">
+          <i class="ri-add-line"></i> Add Contact
+        </button>
+      </div>
+      
+      <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <app-shared-table [columns]="emergencyContactColumns" [data]="emergencyContactData" [loading]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'id'">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">AY</span>
+                <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'email'">
+              <span>zaidrahman&#64;gmail.com</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'includeInEmail'">
+              <span class="badge bg-primary text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase">{{ row.includeInEmail }}</span>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Email Subscriptions Modal Overlay -->
+<div *ngIf="showSubscriptionsModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[420px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Email Subscriptions</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Choose which automated email notifications should be sent to this Tenant.</p>
+      </div>
+      <button (click)="showSubscriptionsModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    
+    <div class="p-5 flex flex-col gap-4 overflow-y-auto max-h-[400px]">
+      <div class="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-success/20">
+        <div class="flex-grow min-w-0 pr-3">
+          <span class="text-xs font-bold text-gray-800 block">Global Email Settings Allowed?</span>
+          <span class="text-[9px] text-gray-500 mt-0.5 block leading-tight">Email functionality is enabled. Emails will be sent only for active subscriptions. <a href="javascript:void(0)" class="text-primary font-bold">View Settings</a></span>
+        </div>
+        <span class="px-2.5 py-1 rounded bg-success text-white text-[9px] font-bold uppercase">Yes</span>
+      </div>
+      
+      <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 border-b pb-1.5">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+          <span>Select All</span>
+        </label>
+        <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-600">All</span>
+      </div>
+      
+      <div class="flex flex-col gap-2.5">
+        <div *ngFor="let sub of subscriptions" class="flex justify-between items-center py-1">
+          <label class="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-gray-700 min-w-0 flex-grow">
+            <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            <span class="truncate">{{ sub.name }}</span>
+          </label>
+          <button class="px-2.5 py-1 text-[9px] rounded font-bold border flex items-center gap-1 transition-all"
+            [ngClass]="sub.subscribed ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'">
+            <i class="ri-check-line" *ngIf="sub.subscribed"></i> Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showSubscriptionsModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Clear</button>
+      <button (click)="showSubscriptionsModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Add Lease Popup -->
+<div *ngIf="showAddLeaseModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Lease</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a new lease agreement under this Tenant profile.</p>
+      </div>
+      <button (click)="showAddLeaseModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Lease Name / Code</label>
+        <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="e.g. Lease-31658-Marina Towers">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Property</label>
+          <select class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Marina Heights Towers</option>
+            <option>Green Heights</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Unit</label>
+          <select class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Apartment 203-PR-4</option>
+            <option>Apartment 101-PR-2</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Rent Amount (AED)</label>
+          <input type="number" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="2500">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Legal Case Status</label>
+          <select class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Start Date</label>
+          <input type="date" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">End Date</label>
+          <input type="date" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddLeaseModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddLeaseModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add Lease</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Add Attachment Popup -->
+<div * NgIf="showAddAttachmentModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Attachment</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Upload tenant compliance documents for validation.</p>
+      </div>
+      <button (click)="showAddAttachmentModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">File Type</label>
+          <select class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Passport Copy</option>
+            <option>Visa Copy</option>
+            <option>Emirates ID</option>
+            <option>Tenancy Contract</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Doc ID</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="e.g. DOC-5884">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Issue Date</label>
+          <input type="date" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Expiry Date</label>
+          <input type="date" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Choose Document File</label>
+        <input type="file" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-1.5 px-3 focus:bg-white transition-all">
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddAttachmentModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddAttachmentModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Upload File</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Add User Popup (Exactly matches Figma Layout) -->
+<div *ngIf="showAddUserModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[460px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add New User</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Create a user profile with login details, contact information, and default user preference.</p>
+      </div>
+      <button (click)="showAddUserModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Email *</label>
+          <input type="email" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter Email">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Username</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 block mb-1">Password *</label>
+        <input type="password" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+        <div class="flex items-center justify-between mt-1 text-[9px] text-gray-400">
+          <span>Use at least 8 characters with a mix of letters and numbers</span>
+          <span class="font-bold text-success flex items-center gap-1"><span class="w-2 h-1 rounded-full bg-success"></span> Good</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">First Name *</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter Email">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Last Name *</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter Email">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 block mb-1">Phone *</label>
+        <div class="flex gap-2">
+          <div class="flex items-center gap-1 border border-gray-200 bg-gray-50 rounded-md px-2.5 py-1.5 cursor-pointer">
+            <span class="text-xs">🇦🇪</span>
+            <i class="ri-arrow-down-s-line text-gray-400 text-xs"></i>
+          </div>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-1">
+        <input type="checkbox" id="makeDefaultCheck" class="form-checkbox text-primary rounded h-3.5 w-3.5">
+        <label for="makeDefaultCheck" class="text-xs text-gray-700 font-semibold cursor-pointer">Make Default</label>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddUserModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Close</button>
+      <button (click)="showAddUserModal = false" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] font-bold">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: Add Emergency Contact Popup (Exactly matches Figma Layout) -->
+<div *ngIf="showAddEmergencyContactModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[460px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">New Emergency Contact</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Add a reliable contact for urgent communication and service or receipt notifications.</p>
+      </div>
+      <button (click)="showAddEmergencyContactModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div class="flex items-start gap-2.5 p-3 rounded-lg bg-gray-50 border border-gray-200/50">
+        <input type="checkbox" id="sendInvoiceCheck" class="form-checkbox text-primary rounded h-3.5 w-3.5 mt-0.5">
+        <label for="sendInvoiceCheck" class="text-[11px] text-gray-600 cursor-pointer">
+          <span class="font-bold text-gray-800 block mb-0.5">Send invoice/receipt email to this emergency contact.</span>
+          Enable this option when the contact should receive billing communication.
+        </label>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 block mb-1">Email *</label>
+        <input type="email" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter Email">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Name</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Relation</label>
+          <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Phone</label>
+          <div class="flex gap-2">
+            <div class="flex items-center gap-1 border border-gray-200 bg-gray-50 rounded-md px-2 py-1.5 cursor-pointer">
+              <span class="text-xs">🇦🇪</span>
+              <i class="ri-arrow-down-s-line text-gray-400 text-xs"></i>
+            </div>
+            <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 block mb-1">Work Phone</label>
+          <div class="flex gap-2">
+            <div class="flex items-center gap-1 border border-gray-200 bg-gray-50 rounded-md px-2 py-1.5 cursor-pointer">
+              <span class="text-xs">🇦🇪</span>
+              <i class="ri-arrow-down-s-line text-gray-400 text-xs"></i>
+            </div>
+            <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all" placeholder="Enter">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddEmergencyContactModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Close</button>
+      <button (click)="showAddEmergencyContactModal = false" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] font-bold">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: Add Note Popup -->
+<div *ngIf="showAddNoteModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Note</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Append a manual note block to this tenant account profile.</p>
+      </div>
+      <button (click)="showAddNoteModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Subject</label>
+        <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter note subject">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Via</label>
+          <select class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Portal</option>
+            <option>Email</option>
+            <option>SMS</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Note Date</label>
+          <input type="date" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Content Details</label>
+        <textarea rows="4" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter main note content details..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddNoteModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddNoteModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6: Add Broadcast Popup -->
+<div *ngIf="showAddBroadcastModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Send Broadcast</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Send a notification broadcast directly to this Tenant's channels.</p>
+      </div>
+      <button (click)="showAddBroadcastModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Subject</label>
+        <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter broadcast subject">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Broadcast Channels</label>
+        <div class="flex gap-4 text-xs mt-1">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" class="form-checkbox text-primary rounded"> Portal Push
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" class="form-checkbox text-primary rounded"> SMS Message
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" class="form-checkbox text-primary rounded"> Email
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Broadcast Message Body</label>
+        <textarea rows="4" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter broadcast content details..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddBroadcastModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddBroadcastModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Broadcast</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 7: Send Email Popup -->
+<div *ngIf="showSendEmailModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Send Email</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Send a direct message email to this Tenant.</p>
+      </div>
+      <button (click)="showSendEmailModal = false" class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">To Email Address</label>
+        <input type="email" readonly class="form-control text-xs w-full bg-gray-100 border-gray-200 rounded-md py-2 px-3 text-gray-600" value="ahmad&#64;fastech.com">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Subject</label>
+        <input type="text" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter email subject">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Email Body Content</label>
+        <textarea rows="5" class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all" placeholder="Enter email body text here..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showSendEmailModal = false" class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showSendEmailModal = false" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Send Email</button>
+    </div>
+  </div>
+</div>

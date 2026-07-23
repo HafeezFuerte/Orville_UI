@@ -74,10 +74,11 @@ export class RoomsListComponent implements OnInit {
 
   // Pagination
   pageNo = 1;
-  pageSize = 6;
+  pageSize = 5;
   totalPages = 0;
   totalRecords = 0;
-  pageSizeOptions = [6, 12, 24, 48];
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  userChangedPageSize = false;
 
   // Metrics
   metrics = {
@@ -270,26 +271,38 @@ export class RoomsListComponent implements OnInit {
           }
 
           if (apiRooms.length > 0) {
-            this.allRooms = apiRooms.map((r: any) => ({
-              id: r.code || r.room_code || 31658,
-              name: r.room_no || r.name || 'Room',
-              category: r.category || 'Residential',
-              beds: r.beds || '1 Bed',
-              baths: r.baths || '1 Bath',
-              area: r.area || '1200 Sqft',
-              floor: r.floor_no || '1 Floor',
-              property: r.property_code || 'Marina Height Towers',
-              location: 'Dubai Marina, Tower A, Dubai',
-              landlord: r.landlord_codes || 'Orville Real Estate',
-              tags: r.tags || 'Premium',
-              unitType: r.unit_type || 'Apartment',
-              roomType: r.room_type || '1 Bedroom',
-              managementFee: r.management_fee ? `AED ${r.management_fee}` : 'AED 600',
-              status: r.room_status || r.status || 'Occupied',
-              addedDate: 'May 26, 2026',
-              imageUrl: r.room_image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
-              rentStatus: r.rent_type || 'For Rent'
-            }));
+            this.allRooms = apiRooms.map((r: any) => {
+              const categoryMap: any = { 1: 'Residential', 2: 'Commercial', 3: 'Industrial' };
+              const unitTypeMap: any = { 1: 'Apartment', 2: 'Villa', 3: 'Office', 4: 'Warehouse', 5: 'Retail Store' };
+              
+              let bedsDisplay = '-';
+              if (r.beds === 0 || String(r.beds).toLowerCase() === 'studio') {
+                bedsDisplay = 'Studio';
+              } else if (r.beds != null) {
+                bedsDisplay = `${r.beds} Bed${r.beds > 1 ? 's' : ''}`;
+              }
+
+              return {
+                id: r.code ?? r.room_code ?? '-',
+                name: r.room_no ?? r.name ?? '-',
+                category: categoryMap[r.category] ?? r.category_name ?? r.category ?? '-',
+                beds: bedsDisplay,
+                baths: (r.baths != null) ? `${r.baths} Bath${r.baths > 1 ? 's' : ''}` : '-',
+                area: r.area ?? '-',
+                floor: (r.floor_no != null) ? `${r.floor_no} Floor` : '-',
+                property: r.property_code ?? '-',
+                location: r.location ?? '-',
+                landlord: r.landlord_codes ?? '-',
+                tags: r.tags ?? '-',
+                unitType: unitTypeMap[r.unit_type] ?? r.unit_type_name ?? r.unit_type ?? '-',
+                roomType: r.room_type ?? '-',
+                managementFee: (r.management_fee != null) ? `AED ${r.management_fee}` : '-',
+                status: r.room_status === 1 ? 'Available' : r.room_status === 2 ? 'Rented' : r.room_status === 3 ? 'Under Maintenance' : r.room_status === 4 ? 'Reserved' : (r.room_status ?? r.status ?? '-'),
+                addedDate: r.created_date ?? r.addedDate ?? '-',
+                imageUrl: r.room_image ?? '',
+                rentStatus: r.rent_type === 1 ? 'Monthly' : r.rent_type === 2 ? 'Quarterly' : r.rent_type === 3 ? 'Bi-Annually' : r.rent_type === 4 ? 'Yearly' : (r.rent_type ?? '-')
+              };
+            });
           }
         }
         this.applyFilters();
@@ -346,6 +359,15 @@ export class RoomsListComponent implements OnInit {
 
     this.filteredRooms = temp;
     this.totalRecords = temp.length;
+    
+    if (!this.userChangedPageSize) {
+      if (this.totalRecords <= 5) this.pageSize = 5;
+      else if (this.totalRecords <= 10) this.pageSize = 10;
+      else if (this.totalRecords <= 25) this.pageSize = 25;
+      else if (this.totalRecords <= 50) this.pageSize = 50;
+      else this.pageSize = 100;
+    }
+
     this.pageNo = 1;
     this.updatePagination();
   }
@@ -395,11 +417,13 @@ export class RoomsListComponent implements OnInit {
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
+    this.userChangedPageSize = true;
     this.updatePagination();
   }
 
   onPageSizeChange(): void {
     this.pageNo = 1;
+    this.userChangedPageSize = true;
     this.updatePagination();
   }
 

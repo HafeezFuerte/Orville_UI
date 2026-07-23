@@ -1,0 +1,168 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-2">
+    <a routerLink="/contacts/support-technicians" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
+      <i class="ri-arrow-left-line text-lg"></i>
+    </a>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">Support Technician Details</h3>
+    <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
+      <span>contacts</span> <span>/</span> <span>Support Technician</span> <span>/</span> <span class="text-gray-600">Details</span>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    
+    <div class="flex items-center gap-2 ml-4">
+      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
+      
+      <!-- Dropdown button and menu wrapper -->
+      <div class="relative">
+        <button (click)="showActionDropdown = !showActionDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+          <i class="ri-more-2-fill text-sm"></i>
+        </button>
+        <!-- Dropdown menu -->
+        <div *ngIf="showActionDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+          <button *ngFor="let option of actionOptions" (click)="showActionDropdown = false"
+            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
+            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
+  
+  <!-- LEFT COLUMN (Sticky Sidebar) -->
+  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
+    <div class="sticky-sidebar flex flex-col gap-y-2">
+      
+      <!-- Technician Name Header -->
+      <div class="!mb-1">
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ technician.name }}</h4>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technician.email }}</p>
+        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
+          <button class="px-4 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Edit Profile</button>
+        </div>
+      </div>
+
+      <!-- Information -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Information</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-3 text-xs">
+          <!-- Basic Info -->
+          <div>
+            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Basic Information</span>
+            <div class="flex flex-col gap-2">
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Name:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.name }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Email:</span>
+                <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ technician.email }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Phone:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.phone }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Username:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.username }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Status:</span>
+                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-success/10 text-success border border-success/20 w-fit">{{ technician.status }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Work Order Info -->
+          <div class="border-t border-gray-100 pt-3">
+            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Work Order Information</span>
+            <div class="flex flex-col gap-2">
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Assigned Job:</span>
+                <span class="text-gray-800 font-semibold col-span-2 break-all">{{ technician.assignedJob }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Responsible for WO:</span>
+                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Info -->
+          <div class="border-t border-gray-100 pt-3">
+            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">System Information</span>
+            <div class="flex flex-col gap-2">
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">ID:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.id }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Created At:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.system.createdAt }}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-gray-500 font-medium">Last Login At:</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technician.system.lastLoginAt }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Fields -->
+          <div class="border-t border-gray-100 pt-3">
+            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Custom Fields</span>
+            <span class="text-[10px] text-gray-500 block leading-tight">No custom fields configured yet. Custom fields will appear here when configured.</span>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Tabs & Content) -->
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
+    
+    <!-- Tab Navigation inside White Box -->
+    <div class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
+      <button *ngFor="let tab of tabs" 
+        (click)="setTab(tab)"
+        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
+        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
+        {{tab}}
+      </button>
+    </div>
+
+    <!-- TAB: Work Orders -->
+    <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">Assigned Work Orders</h5>
+      </div>
+
+      <app-shared-table [columns]="workOrderColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.status === 'Open' ? 'bg-primary/10 text-primary' : row.status === 'Completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'priority'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.priority === 'High' ? 'bg-danger/10 text-danger' : 'bg-gray-100 text-gray-600'">{{ row.priority }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+  </div>
+</div>

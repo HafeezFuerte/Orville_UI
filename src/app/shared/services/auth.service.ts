@@ -35,7 +35,7 @@ export interface EmployeeSearchResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://orville.pulseadmin.in/api/UnAuthorized/login';
+  private apiUrl = `${environment.apiurl}api/UnAuthorized/login`;
   baseUrl: string = environment.apiurl;
   commonData: any;
 
@@ -101,7 +101,7 @@ export class AuthService {
 }
 
   searchGratuity(payload: any): Observable<any> {
-    return this.http.post<any>('https://orville.pulseadmin.in/api/gratuity/search', payload);
+    return this.http.post<any>(`${environment.apiurl}api/gratuity/search`, payload);
   }
 
   getYears(): Observable<any> {

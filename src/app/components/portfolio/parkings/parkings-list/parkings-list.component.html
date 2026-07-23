@@ -201,7 +201,7 @@
     <!-- Actions Template -->
     <ng-template #actionTemplate let-row="row">
       <div class="flex gap-1">
-        <button
+        <button (click)="editParking(row)"
           class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
           [attr.data-tooltip]="'Edit'">
           <i class="ri-edit-line text-xs"></i>
@@ -224,7 +224,7 @@
     class="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform transition-all border border-gray-100 flex flex-col mx-4 max-h-[85vh] animate-fade-in">
     <!-- Header -->
     <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <h6 class="text-sm font-bold text-gray-800 m-0">Add Parking</h6>
+      <h6 class="text-sm font-bold text-gray-800 m-0">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
       <button type="button" (click)="toggleAddModal(false)"
         class="text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 transition-all p-1.5 rounded-full flex items-center justify-center">
         <i class="ri-close-line text-lg leading-none"></i>
@@ -237,16 +237,17 @@
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Property <span
             class="text-danger">*</span></label>
-        <ng-select [items]="propertiesList" bindLabel="name" bindValue="code" placeholder="Search property"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"></ng-select>
+        <ng-select [items]="propertiesList" bindLabel="displayName" bindValue="_safeCode" placeholder="Search property"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
+          [searchable]="true" (change)="onPropertyChange($event)"></ng-select>
       </div>
 
       <!-- Unit -->
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Unit <span
             class="text-danger">*</span></label>
-        <ng-select [items]="unitsList" bindLabel="name" bindValue="id" placeholder="Search unit"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code"></ng-select>
+        <ng-select [items]="unitsList" bindLabel="displayName" bindValue="_safeCode" placeholder="Search unit"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true"></ng-select>
       </div>
 
       <!-- Row: Parking No & Parking Type -->
@@ -259,19 +260,20 @@
             placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
         </div>
         <div>
-          <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Parking Type <span
+          <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Parking Type <span
               class="text-danger">*</span></label>
-          <ng-select [items]="parkingTypes" bindLabel="name" bindValue="id" placeholder="Select"
-            class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.parking_type"></ng-select>
+          <ng-select [items]="[{id: 1, name: 'Free'}, {id: 2, name: 'Chargeable'}]" bindLabel="name" bindValue="id"
+            placeholder="Select type" class="ng-select-sm w-full" appendTo="body"
+            [(ngModel)]="parkingForm.parking_type" [searchable]="true"></ng-select>
         </div>
       </div>
 
       <!-- Recurring Cycle -->
       <div>
-        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Recurring
-          Cycle</label>
-        <ng-select [items]="recurringCycles" bindLabel="name" bindValue="id" placeholder="Select payment schedule"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.recurring_cycle"></ng-select>
+        <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Recurring Cycle</label>
+        <ng-select [items]="[{id: 1, name: 'Fixed'}, {id: 2, name: 'Daily'}, {id: 3, name: 'Weekly'}, {id: 4, name: 'Monthly'}]"
+          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ng-select-sm w-full" appendTo="body"
+          [(ngModel)]="parkingForm.recurring_cycle" [searchable]="true"></ng-select>
       </div>
 
       <!-- Remarks -->
@@ -284,11 +286,15 @@
     </div>
 
     <!-- Footer -->
-    <div class="px-5 py-4 border-t border-defaultborder flex justify-end gap-2 bg-gray-50/50">
+    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-2">
       <button type="button" (click)="toggleAddModal(false)"
-        class="ti-btn ti-btn-light !py-1.5 !px-4 !text-xs font-semibold !m-0">Close</button>
+        class="ti-btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold py-1.5 px-4 rounded-md transition-all shadow-sm">
+        Close
+      </button>
       <button type="button" (click)="saveParking()"
-        class="ti-btn ti-btn-primary !py-1.5 !px-4 !text-xs font-semibold !m-0">Save</button>
+        class="ti-btn bg-primary text-white hover:bg-primary-hover text-xs font-semibold py-1.5 px-4 rounded-md transition-all shadow-sm flex items-center gap-1.5">
+        {{ isEditMode ? 'Update' : 'Save' }}
+      </button>
     </div>
   </div>
 </div>

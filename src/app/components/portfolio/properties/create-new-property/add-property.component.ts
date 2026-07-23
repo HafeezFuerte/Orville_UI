@@ -364,11 +364,12 @@ if (errors.length > 0) {
     const form = this.propertyForm.value;
     
     const request = {
-      userid: 1,
-      code: this.propertyCode? this.propertyCode : '',
+      userid: Number(localStorage.getItem('userId')) || 1,
+      code: this.propertyCode || '',
       source: 'web',
-      company_id: 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
       tenantId: '',
+      clientId: '74BB6922',
 
       name: form.propertyName,
       prefix: form.prefix,
@@ -377,27 +378,27 @@ if (errors.length > 0) {
       address1: form.address1,
       address2: form.address2,
 
-      country_id: Number(form.country),
-      state_id: Number(form.state),
-      city_id: form.city,
-      total_units: Number(form.totalUnits),
+      country_id: Number(form.country) || 0,
+      state_id: Number(form.state) || 0,
+      city_id: Number(form.city) || 0,
+      total_units: Number(form.totalUnits) || 0,
       zipcode: form.zipCode,
       lat: form.latitude,
       lon: form.longitude,
 
       community: form.community,
       land_no: form.landNo,
-      no_of_floors: Number(form.floors),
-      parking_floors: Number(form.parkingSpaces),
+      no_of_floors: Number(form.floors) || 0,
+      parking_floors: Number(form.parkingSpaces) || 0,
       tags: form.tags,
       desc: form.description,
 
-      property_type:Number(form.propertyType) ,
-      purchage_value: Number(form.purchaseValue),
+      property_type: Number(form.propertyType) || 0,
+      purchage_value: Number(form.purchaseValue) || 0,
 
       amenities: this.selectedAmenities.join(','),
 
-      id: 0,
+      id: this.property?.id || 0,
 
       fixedPayments: form.payments.map((payment: any) => ({
         account_id: Number(payment.selectAccount),

@@ -301,9 +301,11 @@ export class SidebarComponent {
     'Units': '/units',
     'Rooms': '/rooms',
     'Parkings': '/parkings',
-    'Tenants': '/tenants',
-    'Vendors': '/vendors',
-    'Landlords': '/landlords', 
+    'All Contacts': '/contacts/all-contacts',
+    'Tenants': '/contacts/tenants',
+    'Vendors': '/contacts/vendors',
+    'Landlords': '/contacts/landlords', 
+    'Support Technicians': '/contacts/support-technicians',
   };
 
 
@@ -372,23 +374,20 @@ export class SidebarComponent {
     }
     if (localStorage.getItem('ynex-sidemenu-styles') == 'doublemenu') {
       if (item.active) return;
-    } else {
     }
 
-
     if (!item.active) {
+      // If we are opening a menu, collapse all other menus at the same level
       this.menuItems?.forEach((a: any) => {
-        if (this.menuItems.includes(item)) {
+        if (this.menuItems.includes(item) && a !== item) {
           a.active = false;
         }
         a?.children?.forEach((b: any) => {
-          if (a.children.includes(item)) {
-            b.active = false;
-          } else {
+          if (a.children.includes(item) && b !== item) {
             b.active = false;
           }
           b?.children?.forEach((c: any) => {
-            if (b.children.includes(item)) {
+            if (b.children.includes(item) && c !== item) {
               c.active = false;
             }
           });

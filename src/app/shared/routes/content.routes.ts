@@ -10,6 +10,11 @@ export const content: Routes = [
       ...dashboardRoutingModule.routes,
     ],
   },
+  {
+    path: 'contacts',
+    loadChildren: () =>
+      import('../../components/contacts/contacts.routes').then((m) => m.contactsRoutingModule),
+  },
 ];
 
 @NgModule({

@@ -491,78 +491,94 @@ export class AddRoomComponent implements OnInit {
       clientId: "74BB6922",
       source: "web",
       languageid: 1,
-      property_code: formValue.propertyCode,
+      property_code: formValue.propertyCode || '',
       unit_code: formValue.unitCode || '',
       room_broucher: this.roomBroucherFile ? this.roomBroucherFile.name : "",
       room_image: this.roomImageFile ? this.roomImageFile.name : "",
-      category: formValue.category,
-      room_type: formValue.roomType,
-      room_status: formValue.status,
+      category: formValue.category || '',
+      room_type: Number(formValue.roomType) || 0,
+      room_status: Number(formValue.status) || 0,
       code: "",
-      room_code: formValue.roomCode,
+      room_code: formValue.roomCode || '',
       beds: parseInt(formValue.beds) || 0,
       no_of_parkings: Number(formValue.parkingSpaces) || 0,
       floor_no: parseInt(formValue.floorNumber) || 0,
       reserved_amt: Number(formValue.reservedAmount) || 0,
-      property_reserve_value: formValue.propertyReserveValue || 0,
-      baths: formValue.baths || 0,
+      property_reserve_value: Number(formValue.propertyReserveValue) || 0,
+      baths: Number(formValue.baths) || 0,
       electricity_no: formValue.electricityNo || '',
       gas_no: formValue.gasNo || '',
       room_no: formValue.roomNumber || '',
       tags: formValue.tags || '',
-      is_landlord_resident: formValue.landlordIsResident,
-      is_furnished: formValue.furnished,
-      is_smoking_allowed: formValue.smokingAllowed,
-      is_guest: formValue.guestAllowed,
-      is_accomodation: formValue.accommodation,
-      hide_price: formValue.hidePrice,
-      security_deposit: formValue.securityDepositInWallet,
-      rent_type: formValue.rentType || '',
-      deposit_amt: formValue.deposit || 0,
-      market_value: formValue.marketValue || 0,
-      threshold_value: formValue.thresholdValue || 0,
-      agency_fee: formValue.agencyFee || 0,
-      market_rent: formValue.marketRent || 0,
+      is_landlord_resident: formValue.landlordIsResident || false,
+      is_furnished: formValue.furnished || false,
+      is_smoking_allowed: formValue.smokingAllowed || false,
+      is_guest: formValue.guestAllowed || false,
+      is_accomodation: formValue.accommodation || false,
+      hide_price: formValue.hidePrice || false,
+      security_deposit: formValue.securityDepositInWallet || false,
+      rent_type: Number(formValue.rentType) || 0,
+      deposit_amt: Number(formValue.deposit) || 0,
+      market_value: Number(formValue.marketValue) || 0,
+      threshold_value: Number(formValue.thresholdValue) || 0,
+      agency_fee: Number(formValue.agencyFee) || 0,
+      market_rent: Number(formValue.marketRent) || 0,
       area: 0,
-      rent_per_area: formValue.rentPerArea || 0,
-      service_charge_per_area: formValue.serviceChargesPerArea || 0,
-      total_service_charge: formValue.totalServiceCharges || 0,
-      lease_cost: formValue.leaseCost || 0,
-      dewa: formValue.dewa || 0,
-      lift_amc: formValue.liftAmc || 0,
-      firefighting: formValue.firefighting || 0,
-      garbage_charge: formValue.garbageCharges || 0,
-      dcd_charge: formValue.dcd || 0,
-      pest_charge: formValue.pestControl || 0,
-      watchman_charge: formValue.cleanerCharges || 0,
-      swimming_pool_charge: formValue.swimmingPoolCost || 0,
-      gym_charge: formValue.gymCost || 0,
-      sale_status: formValue.isForSale ? "Yes" : "No",
+      rent_per_area: Number(formValue.rentPerArea) || 0,
+      service_charge_per_area: Number(formValue.serviceChargesPerArea) || 0,
+      total_service_charge: Number(formValue.totalServiceCharges) || 0,
+      lease_cost: Number(formValue.leaseCost) || 0,
+      dewa: Number(formValue.dewa) || 0,
+      lift_amc: Number(formValue.liftAmc) || 0,
+      firefighting: Number(formValue.firefighting) || 0,
+      garbage_charge: Number(formValue.garbageCharges) || 0,
+      dcd_charge: Number(formValue.dcd) || 0,
+      pest_charge: Number(formValue.pestControl) || 0,
+      watchman_charge: Number(formValue.cleanerCharges) || 0,
+      swimming_pool_charge: Number(formValue.swimmingPoolCost) || 0,
+      gym_charge: Number(formValue.gymCost) || 0,
+      sale_status: formValue.isForSale || false,
       trakessi_no: formValue.trakessiNumber || '',
       rera_number: formValue.reraNumber || '',
-      is_it_verified: formValue.isVerified,
+      is_it_verified: formValue.isVerified || false,
       desc: formValue.description || '',
-      is_published: formValue.publishRoom,
-      flag: formValue.automationFlag || '',
+      is_published: formValue.publishRoom || false,
+      flag: formValue.automationFlag || false,
       disable_maintenance: formValue.automationDisableMaintenance || false,
-      estimate_stree_value: formValue.estimatedStreetValue || 0,
-      estimate_revenue_per_year: formValue.estimatedRevenueYear || 0,
-      estimate_opex_per_year: formValue.estimatedOpexYear || 0,
-      management_fee_type: formValue.feeType || '',
-      management_fee: formValue.purchaseValue || 0,
+      estimate_stree_value: Number(formValue.estimatedStreetValue) || 0,
+      estimate_revenue_per_year: Number(formValue.estimatedRevenueYear) || 0,
+      estimate_opex_per_year: Number(formValue.estimatedOpexYear) || 0,
+      management_fee_type: Number(formValue.feeType) || 0,
+      management_fee: Number(formValue.purchaseValue) || 0,
       landlord_codes: this.selectedLandlords.map(l => l.id).join(','),
-      quickbooks_account_id: formValue.quickbooksClass || ''
+      quickbooks_account_id: Number(formValue.quickbooksClass) || 0
     };
 
-    this.propertiesService.addRoom(payload).subscribe({
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(payload));
+    
+    if (this.roomImageFile) {
+      formData.append('room_image', this.roomImageFile);
+    }
+    
+    if (this.roomBroucherFile) {
+      formData.append('room_broucher', this.roomBroucherFile);
+    }
+
+    this.propertiesService.addRoom(formData).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        this.toastr.success('Room created successfully.', 'Success');
-        this.router.navigate(['/rooms']);
+        if (res && res.statusCode === "200") {
+          this.toastr.success('Room created successfully.', 'Success');
+          this.router.navigate(['/rooms']);
+        } else {
+          this.toastr.error(res?.message || 'Failed to save room', 'Error');
+        }
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.toastr.error('Failed to save room.', 'Error');
+        const errMsg = err.error?.message || err.message || 'Internal Server Error';
+        this.toastr.error(errMsg, 'Error');
         console.error('Save room error:', err);
       }
     });

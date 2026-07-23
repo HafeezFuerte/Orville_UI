@@ -319,6 +319,7 @@ export class AddUnitComponent implements OnInit {
         if (Array.isArray(apiProps) && apiProps.length > 0) {
           this.propertiesList = apiProps.map((p: any) => ({
             ...p,
+            _safeCode: p.code || String(p.id),
             displayName: `${p.code || p.id} - ${p.name}`
           }));
         }
@@ -333,6 +334,7 @@ export class AddUnitComponent implements OnInit {
     this.unitForm = this.formBuilder.group({
       // Unit Details
       category: ['', Validators.required],
+      propertyCode: ['', Validators.required],
       unitType: ['', Validators.required],
       unitCode: ['', Validators.required],
       unitNumber: ['', Validators.required],
@@ -492,16 +494,18 @@ export class AddUnitComponent implements OnInit {
       clientId: '74BB6922',
       source: 'web',
       languageid: 1,
-      property_code: '',
+      property_code: form.propertyCode || '',
       unit_broucher: '',
       unit_image: '',
-      category: Number(form.category) || 0,
+      category: form.category || '',
       unit_type: Number(form.unitType) || 0,
       amenities: selectedAmenitiesArray.join(','),
       unit_status: Number(form.status) || 0,
-      code: '',
-      unit_no: form.unitNumber,
-      unit_code: form.unitCode,
+      code: this.isEditMode ? this.unitId : '',
+      id: this.isEditMode ? Number(this.unitId) : 0,
+      name: form.unitNumber || '',
+      unit_no: form.unitNumber || '',
+      unit_code: form.unitCode || '',
       beds: parseInt(form.beds) || 0,
       no_of_parkings: Number(form.parkingSpaces) || 0,
       floor_no: parseInt(form.floorNumber) || 0,

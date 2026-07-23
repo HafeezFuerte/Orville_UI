@@ -106,6 +106,22 @@ export class NavService implements OnDestroy {
       ],
     },
 
+    { headTitle: 'CONTACTS' },
+    {
+      title: 'Contacts',
+      icon: 'user',
+      type: 'sub',
+      active: false,
+      selected: false,
+      children: [
+        { path: '/contacts/all-contacts', title: 'All Contacts', type: 'link' },
+        { path: '/contacts/landlords', title: 'Landlords', type: 'link' },
+        { path: '/contacts/tenants', title: 'Tenants', type: 'link' },
+        { path: '/contacts/vendors', title: 'Vendors', type: 'link' },
+        { path: '/contacts/support-technicians', title: 'Support Technicians', type: 'link' },
+      ],
+    },
+
     { headTitle: 'PAGES' },
     {
       title: 'Pages',

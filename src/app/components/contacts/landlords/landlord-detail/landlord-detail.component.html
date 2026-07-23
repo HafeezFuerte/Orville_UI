@@ -1,0 +1,1453 @@
+<!-- Start::row-1 -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-2">
+    <a routerLink="/contacts/landlords" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
+      <i class="ri-arrow-left-line text-lg"></i>
+    </a>
+    <h3
+      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">
+      {{ 'web.contacts.lblLandlordDetails' | translate }}</h3>
+    <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
+      <span>contacts</span> <span>/</span> <span>Landlord</span> <span>/</span> <span
+        class="text-gray-600">Details</span>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm"
+      [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-40 bg-white border-0 shadow-sm"
+      [clearable]="false"></ng-select>
+
+    <div class="flex items-center gap-2 ml-4">
+      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
+
+      <!-- Dropdown button and menu wrapper -->
+      <div class="relative">
+        <button (click)="showActionDropdown = !showActionDropdown"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+          <i class="ri-more-2-fill text-sm"></i>
+        </button>
+        <!-- Dropdown menu -->
+        <div *ngIf="showActionDropdown"
+          class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+          <button *ngFor="let option of actionOptions" (click)="
+            showActionDropdown = false;
+            option.label === 'Inflow' ? showInflowModal = true :
+            option.label === 'Outflow' ? showOutflowModal = true :
+            option.label === 'Landlord Contribution' ? showContributionModal = true :
+            option.label === 'Landlord Distribution' ? showDistributionModal = true :
+            option.label === 'Add Notes' ? showAddNoteModal = true :
+            option.label === 'Add Attachment' ? showAddAttachmentModal = true :
+            option.label === 'Add User' ? showAddUserModal = true :
+            option.label === 'Add Emergency Contact' ? showAddEmergencyContactModal = true : null"
+            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
+            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button
+        class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+        {{ 'web.contacts.lblEditLandlord' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
+
+  <!-- LEFT COLUMN (Sticky Sidebar) -->
+  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
+    <div class="sticky-sidebar flex flex-col gap-y-2">
+
+      <!-- Landlord Name Header -->
+      <div class="!mb-1">
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ landlord.name }}</h4>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ landlord.email }}</p>
+        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
+          <button
+            class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">{{
+            'web.contacts.lblViewActivity' | translate }}</button>
+          <button (click)="showSubscriptionsModal = true"
+            class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email
+            Sub (3/30)</button>
+        </div>
+      </div>
+
+      <!-- Login Information -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLoginInformation' | translate }}</h5>
+          <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20">Not
+            Verified</span>
+        </div>
+        <div class="p-4 flex flex-col gap-2">
+          <div class="flex flex-col gap-2 text-xs">
+            <div class="grid grid-cols-3 gap-2">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
+              <span class="text-gray-800 font-semibold col-span-2 break-all">{{ landlord.email }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblUsername' | translate }}:</span>
+              <span class="text-gray-800 font-semibold col-span-2">{{ landlord.username }}</span>
+            </div>
+          </div>
+          <button
+            class="w-full py-1.5 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">{{
+            'web.contacts.lblVerifyEmail' | translate }}</button>
+        </div>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblPersonalDetails' | translate }}</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblID' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.id }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblName' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.name }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
+            <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ landlord.personal.email
+              }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblPhoneNumber' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.phone }}</span>
+          </div>
+
+          <div class="text-center my-1">
+            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails"
+              class="text-primary font-bold text-[10px] flex items-center justify-center gap-1">
+              {{ showPersonalDetails ? 'View less details' : 'View more details' }}
+              <i [class]="showPersonalDetails ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </a>
+          </div>
+
+          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2 animate-fade-in">
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblDateOfBirth' | translate }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.dob }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">Marital Status:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.maritalStatus }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblNationality' | translate }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.nationality }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAddressLine1' | translate
+                }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.address1 }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAddressLine2' | translate
+                }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.address2 }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblCountry' | translate }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.country }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblStateProvince' | translate
+                }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.state }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblCity' | translate }}:</span>
+              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.city }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-0.5">
+              <span class="text-gray-500 font-medium col-span-1">Profile Verified:</span>
+              <span
+                class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wallet Configuration -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblWalletConfiguration' | translate }}</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2.5 text-xs">
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-2">{{ 'web.contacts.lblOpeningBalance' | translate
+              }}:</span>
+            <span class="text-gray-800 font-bold col-span-1 text-end">AED {{ landlord.wallet.openingBalance }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-2">{{ 'web.contacts.lblOpeningBalanceDate' | translate
+              }}:</span>
+            <span class="text-gray-800 font-bold col-span-1 text-end">{{ landlord.wallet.openingBalanceDate }}</span>
+          </div>
+
+          <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1">
+            <span class="text-gray-600 font-medium">Negative Balance Allowed</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed"
+                class="hidden">
+              <label for="negBalance"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.wallet.negativeBalanceAllowed">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.wallet.negativeBalanceAllowed"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1">
+            <span class="text-gray-600 font-medium">Hold Wallet Money</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney"
+                class="hidden">
+              <label for="holdWalletMoneyToggle"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.wallet.holdWalletMoney">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.wallet.holdWalletMoney"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center py-1 border-t border-gray-50">
+            <span class="text-gray-600 font-medium">{{ 'web.contacts.lblIncludeSecurityDeposit' | translate }}</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="includeDeposit" [(ngModel)]="landlord.wallet.includeSecurityDeposit"
+                class="hidden">
+              <label for="includeDeposit"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.wallet.includeSecurityDeposit">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.wallet.includeSecurityDeposit"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center py-1 border-t border-gray-50">
+            <span class="text-gray-600 font-medium">Include Security Deposit (Non-Leasee)</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="includeDepositNonLeasee"
+                [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee" class="hidden">
+              <label for="includeDepositNonLeasee"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.wallet.includeSecurityDepositNonLeasee">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.wallet.includeSecurityDepositNonLeasee"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center py-1 border-t border-gray-50">
+            <span class="text-gray-600 font-medium">Include Contribution in Wallet Deposit</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="includeContributionWallet"
+                [(ngModel)]="landlord.wallet.includeContributionWalletDeposit" class="hidden">
+              <label for="includeContributionWallet"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.wallet.includeContributionWalletDeposit">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.wallet.includeContributionWalletDeposit"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-0.5 border-t border-gray-50 pt-2">
+            <span class="text-gray-500 font-medium col-span-2">Money Held By:</span>
+            <span class="text-gray-800 font-bold col-span-1 text-end">{{ landlord.wallet.moneyHeldBy }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banking Details -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblBankingDetails' | translate }}</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblBankName' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.name }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblBankAddress' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.address }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblIban' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2 break-all">{{ landlord.bank.iban }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblSwift' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.swift }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAccountNumber' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.accountNo }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 py-0.5">
+            <span class="text-gray-500 font-medium col-span-1">Sort Code:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.sortCode }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signature -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblSignature' | translate }}</h5>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="flex justify-between items-center py-1">
+            <span class="text-gray-600 font-medium">{{ 'web.contacts.lblAutoSign' | translate }}</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="autoSignToggle" [(ngModel)]="landlord.signature.autoSign" class="hidden">
+              <label for="autoSignToggle"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.signature.autoSign">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.signature.autoSign"></span>
+              </label>
+            </div>
+          </div>
+          <div class="flex justify-between items-center py-1 border-t border-gray-50 pt-2">
+            <span class="text-gray-600 font-medium">Signature Attached</span>
+            <div class="custom-toggle-switch">
+              <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached"
+                class="hidden">
+              <label for="sigAttachedToggle"
+                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
+                [class.bg-primary]="landlord.signature.signatureAttached">
+                <span
+                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
+                  [class.translate-x-3.5]="landlord.signature.signatureAttached"></span>
+              </label>
+            </div>
+          </div>
+
+          <div
+            class="border border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center gap-2 mt-2 bg-gray-50/50 text-center">
+            <i class="ri-image-line text-2xl text-gray-400"></i>
+            <span class="text-[10px] text-gray-500 font-medium">No signature uploaded</span>
+            <span class="text-[8px] text-gray-400">Signature image will appear here when uploaded</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Emergency Contact</h5>
+          <button (click)="showAddEmergencyContactModal = true"
+            class="w-6 h-6 rounded bg-[#1f2b45] text-white flex items-center justify-center text-xs hover:bg-[#131b2e] border-0">+</button>
+        </div>
+        <div class="p-4 flex flex-col gap-2 text-xs">
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">zaidrahman&#64;gmail.com</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblName' | translate }}:</span>
+            <span class="text-gray-800 font-bold col-span-2">Zaid Rahman</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Relation:</span>
+            <span class="text-gray-800 font-bold col-span-2">Brother</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Phone:</span>
+            <span class="text-gray-800 font-bold col-span-2">05690 253 25</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Work Phone:</span>
+            <span class="text-gray-800 font-bold col-span-2">05682 605 52</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Fields -->
+      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Custom Fields</h5>
+        </div>
+        <div class="p-5 flex flex-col items-center justify-center gap-2 bg-gray-50/30 text-center">
+          <i class="ri-settings-4-line text-2xl text-gray-400 animate-spin-slow"></i>
+          <span class="text-[10px] text-gray-500 font-medium">No custom fields configured yet</span>
+          <span class="text-[8px] text-gray-400">Custom fields will appear here when configured</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Tabs & Content) -->
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
+
+    <!-- Tab Navigation inside White Box -->
+    <div
+      class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
+      <button *ngFor="let tab of tabs" (click)="setTab(tab)"
+        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
+        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
+        {{tab}}
+      </button>
+    </div>
+
+    <!-- TAB: Wallet -->
+    <div *ngIf="activeTab === 'Wallet'" class="flex flex-col gap-y-2 animate-fade-in">
+
+      <!-- Warning Alert -->
+      <div
+        class="flex items-center justify-between p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning-800 text-[11px] font-semibold">
+        <div class="flex items-center gap-2">
+          <i class="ri-error-warning-line text-sm"></i>
+          <span>Important: All amount are grouped first, so the user can understand the portfolio position
+            quickly.</span>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-warning text-white text-[9px] font-bold uppercase">Portfolio status
+          Active</span>
+      </div>
+
+      <!-- Financial Summary Main Cards (Blue gradient) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- Cash Balance -->
+        <div class="rounded-xl overflow-hidden shadow-sm p-4 relative"
+          style="background: linear-gradient(135deg, #1f224f 0%, #171836 100%);">
+          <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Cash Balance</span>
+          <div class="text-lg font-black text-white mt-1">AED 46,507,891.47</div>
+          <div class="mt-4 border-t border-white/10 pt-2 flex flex-col gap-1.5 text-[9px] text-gray-400">
+            <div class="flex justify-between">
+              <span>Portfolio Total Income:</span>
+              <span class="font-bold text-white">AED 46,533,471.47</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Wallet Deposit:</span>
+              <span class="font-bold text-white">AED 46,507,891.47</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expense and Fees Grid -->
+        <div class="col-span-2 grid grid-cols-2 gap-2">
+          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblPortfolioExpense' | translate
+              }}</span>
+            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+          </div>
+          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblManagementFee' | translate
+              }}</span>
+            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+          </div>
+          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblLandlordContribution' |
+              translate }}</span>
+            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+          </div>
+          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
+            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblLandlordDistribution' |
+              translate }}</span>
+            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Amounts -->
+      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm !mb-2">
+        <h6 class="text-[10px] text-gray-500 font-bold uppercase mb-2">{{ 'web.contacts.lblOtherAmounts' | translate }}
+        </h6>
+        <div class="flex justify-between items-center bg-gray-50 rounded-lg p-2.5">
+          <span class="text-xs text-gray-600 font-medium">{{ 'web.contacts.lblPortfolioPerformance' | translate
+            }}</span>
+          <span class="text-sm font-black text-gray-800">AED 46,533,471.47</span>
+        </div>
+      </div>
+
+      <!-- Transaction Ledger Table -->
+      <div class="box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+        <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblTransactionLedger' | translate }}</h5>
+          <div class="flex gap-2">
+            <div class="input-group input-group-sm w-48 relative">
+              <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <i class="ri-search-line text-gray-400 text-xs"></i>
+              </span>
+              <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50" placeholder="Search...">
+            </div>
+            <button
+              class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
+              <i class="ri-layout-column-line"></i> {{ 'web.contacts.lblColumn' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <app-shared-table [columns]="transactionColumns" [data]="transactionData" [loading]="false"
+          [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'paymentVia'">
+              <span *ngIf="row.paymentVia === 'Cash'"
+                class="badge bg-primary/10 text-primary font-bold px-2 py-0.5 rounded text-[10px] uppercase">Cash</span>
+              <span *ngIf="row.paymentVia !== 'Cash'">{{ row.paymentVia }}</span>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+
+    </div>
+
+    <!-- TAB: Units -->
+    <div *ngIf="activeTab === 'Units'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordUnits' | translate }}</h5>
+        <div class="flex gap-2">
+          <div class="input-group input-group-sm w-48 relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+              <i class="ri-search-line text-gray-400 text-xs"></i>
+            </span>
+            <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
+              placeholder="Search units...">
+          </div>
+          <button
+            class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
+            <i class="ri-filter-3-line"></i> Filter
+          </button>
+          <button
+            class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
+            <i class="ri-layout-column-line"></i> {{ 'web.contacts.lblColumn' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <app-shared-table [columns]="unitColumns" [data]="unitData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.status === 'Occupied' ? 'bg-primary/10 text-primary' : 'bg-danger/10 text-danger'">{{
+              row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'published'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.published === 'Yes' ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-600'">{{
+              row.published }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'forSale'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.forSale === 'Yes' ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-600'">{{
+              row.forSale }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'action'">
+            <div class="flex items-center gap-1.5 justify-center">
+              <button
+                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
+                title="View Tenant">
+                <i class="ri-eye-line text-xs"></i>
+              </button>
+              <button
+                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
+                title="Edit Tenant">
+                <i class="ri-pencil-line text-xs"></i>
+              </button>
+              <button
+                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
+                title="View Leases">
+                <i class="ri-article-line text-xs"></i>
+              </button>
+              <button
+                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
+                title="Edit Leases">
+                <i class="ri-edit-2-line text-xs"></i>
+              </button>
+            </div>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Due Payment -->
+    <div *ngIf="activeTab === 'Due Payment'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordDuePayments' | translate }}</h5>
+        <div class="flex gap-2">
+          <div class="input-group input-group-sm w-48 relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+              <i class="ri-search-line text-gray-400 text-xs"></i>
+            </span>
+            <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
+              placeholder="Search payments...">
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <app-shared-table [columns]="duePaymentColumns" [data]="duePaymentData" [loading]="false" [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container *ngIf="col.key === 'id'">
+              <span class="text-gray-800 font-bold">{{ row.id }}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'status'">
+              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+                [ngClass]="row.status === 'Paid' ? 'bg-primary/10 text-primary' : row.status === 'Draft' ? 'bg-gray-100 text-gray-600' : row.status === 'Overdue' ? 'bg-danger text-white' : 'bg-danger/10 text-danger'">{{
+                row.status }}</span>
+            </ng-container>
+            <ng-container *ngIf="col.key === 'action'">
+              <button
+                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+                <i class="ri-more-fill"></i>
+              </button>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- TAB: Agreement -->
+    <div *ngIf="activeTab === 'Agreement'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordAgreement' | translate }}</h5>
+        <div class="flex gap-2">
+          <div class="input-group input-group-sm w-48 relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+              <i class="ri-search-line text-gray-400 text-xs"></i>
+            </span>
+            <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
+              placeholder="Search agreements...">
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+        <div *ngFor="let agree of agreements"
+          class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors shadow-sm">
+          <div class="w-10 h-10 rounded bg-danger/10 text-danger flex items-center justify-center font-bold text-sm">
+            PDF
+          </div>
+          <div class="flex-grow min-w-0">
+            <p class="text-xs font-bold text-gray-800 truncate m-0">{{ agree.name }}</p>
+            <p class="text-[10px] text-gray-500 m-0 mt-0.5">{{ agree.size }} &bull; {{ agree.date }}</p>
+          </div>
+          <button
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-800 shadow-sm">
+            <i class="ri-download-line"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Chat -->
+    <div *ngIf="activeTab === 'Chat'" class="flex flex-col gap-y-2 animate-fade-in">
+      <div
+        class="grid grid-cols-12 gap-3 box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4 min-h-[450px]">
+
+        <!-- Left Side: Messages list (4 cols) -->
+        <div class="col-span-12 md:col-span-4 border-r border-gray-100 pr-3 flex flex-col gap-3">
+          <h5 class="text-xs font-bold text-gray-800 m-0">Messages</h5>
+
+          <!-- Search box -->
+          <div class="input-group input-group-sm w-full relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+              <i class="ri-search-line text-gray-400 text-xs"></i>
+            </span>
+            <input type="text" class="form-control form-control-sm pl-7.5 text-[11px] bg-gray-50 rounded-md"
+              placeholder="Search contacts...">
+          </div>
+
+          <!-- Contacts list -->
+          <div class="flex flex-col gap-1 overflow-y-auto max-h-[350px]">
+            <div *ngFor="let contact of chatContacts"
+              class="flex items-center gap-2.5 p-2 rounded-lg bg-gray-50 border border-gray-200/50 cursor-pointer hover:bg-gray-100 transition-colors">
+              <div
+                class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs uppercase relative">
+                {{ contact.name.substring(0, 2) }}
+                <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-success border border-white"></span>
+              </div>
+              <div class="flex-grow min-w-0">
+                <p class="text-xs font-bold text-gray-800 m-0 truncate">{{ contact.name }}</p>
+                <p class="text-[10px] text-gray-500 m-0 truncate">{{ contact.role }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Active Chat (8 cols) -->
+        <div class="col-span-12 md:col-span-8 flex flex-col justify-between pl-0 md:pl-3">
+          <!-- Chat Header -->
+          <div class="border-b border-gray-100 pb-2.5 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-xs text-gray-800">{{ selectedContact.name }}</span>
+              <span
+                class="text-[9px] px-1.5 py-0.5 rounded-full bg-success/10 text-success font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-success"></span> active
+              </span>
+            </div>
+          </div>
+
+          <!-- Messages container -->
+          <div class="flex flex-col gap-3 my-3 overflow-y-auto max-h-[300px] flex-grow pr-1">
+            <div *ngFor="let msg of chatMessages"
+              class="flex flex-col max-w-[80%] rounded-lg p-3 shadow-sm text-xs relative"
+              [ngClass]="msg.isSelf ? 'self-end bg-[#1f224f] text-white rounded-tr-none' : 'self-start bg-gray-50 border border-gray-200 text-gray-800 rounded-tl-none'">
+              <p class="text-[9px] font-bold opacity-75 m-0 mb-1"
+                [ngClass]="msg.isSelf ? 'text-gray-300' : 'text-primary'">{{ msg.sender }}</p>
+              <p class="m-0 leading-normal">{{ msg.text }}</p>
+              <span class="text-[8px] opacity-60 text-end block mt-1.5">{{ msg.time }}</span>
+            </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="flex gap-2 items-center border-t border-gray-100 pt-3">
+            <input type="text" [(ngModel)]="newMessageText" (keyup.enter)="sendChatMessage()"
+              class="form-control form-control-sm text-xs flex-grow bg-gray-50 border-gray-200 rounded-md py-2"
+              placeholder="Write a message...">
+            <button (click)="sendChatMessage()"
+              class="w-8 h-8 rounded-md bg-primary text-white border-0 hover:bg-primary-hover flex items-center justify-center shadow-sm">
+              <i class="ri-send-plane-fill text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: Attachments -->
+    <div *ngIf="activeTab === 'Attachments'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordAttachments' | translate }}</h5>
+        <button (click)="showAddAttachmentModal = true"
+          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
+          <i class="ri-add-line"></i> Add Attachment
+        </button>
+      </div>
+
+      <app-shared-table [columns]="attachmentColumns" [data]="attachmentData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+              [ngClass]="row.status === 'Active' ? 'bg-[#1f224f] text-white' : 'bg-success/10 text-success'">{{
+              row.status }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'files'">
+            <a href="javascript:void(0)" class="text-primary font-bold flex items-center gap-1"><i
+                class="ri-file-text-line"></i> {{ row.files }}</a>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'action'">
+            <button
+              class="w-5 h-5 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
+              <i class="ri-more-fill"></i>
+            </button>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Notes -->
+    <div *ngIf="activeTab === 'Notes'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordNotes' | translate }}</h5>
+        <button (click)="showAddNoteModal = true"
+          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
+          <i class="ri-add-line"></i> Add Note
+        </button>
+      </div>
+
+      <app-shared-table [columns]="noteColumns" [data]="noteData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'via'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-gray-100 text-gray-600">{{ row.via }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: User -->
+    <div *ngIf="activeTab === 'User'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordUsers' | translate }}</h5>
+        <button (click)="showAddUserModal = true"
+          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
+          <i class="ri-add-line"></i> Add User
+        </button>
+      </div>
+
+      <app-shared-table [columns]="userColumns" [data]="userData" [loading]="false" [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <div class="flex items-center gap-2">
+              <span
+                class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">AY</span>
+              <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary uppercase">{{
+              row.status }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <!-- TAB: Emergency Contact -->
+    <div *ngIf="activeTab === 'Emergency Contact'"
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}
+        </h5>
+        <button (click)="showAddEmergencyContactModal = true"
+          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
+          <i class="ri-add-line"></i> Add Emergency Contact
+        </button>
+      </div>
+
+      <app-shared-table [columns]="emergencyContactColumns" [data]="emergencyContactData" [loading]="false"
+        [hasActions]="false">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <div class="flex items-center gap-2">
+              <span
+                class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">AY</span>
+              <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'email'">
+            <span>zaidrahman&#64;gmail.com</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'includeInEmail'">
+            <span class="badge bg-primary text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase">{{
+              row.includeInEmail }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Email Subscriptions Modal Overlay -->
+<div *ngIf="showSubscriptionsModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[420px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Email Subscriptions</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Choose which automated email notifications should be sent.</p>
+      </div>
+      <button (click)="showSubscriptionsModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+
+    <div class="p-5 flex flex-col gap-4 overflow-y-auto max-h-[400px]">
+      <div class="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-success/20">
+        <div class="flex-grow min-w-0 pr-3">
+          <span class="text-xs font-bold text-gray-800 block">Global Email Settings Allowed?</span>
+          <span class="text-[9px] text-gray-500 mt-0.5 block leading-tight">Email functionality is enabled. Emails will
+            be sent only for active subscriptions. <a href="javascript:void(0)" class="text-primary font-bold">View
+              Settings</a></span>
+        </div>
+        <span class="px-2.5 py-1 rounded bg-success text-white text-[9px] font-bold uppercase">Yes</span>
+      </div>
+
+      <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 border-b pb-1.5">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+          <span>Select All</span>
+        </label>
+        <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-600">All</span>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <div *ngFor="let sub of subscriptions" class="flex justify-between items-center py-1">
+          <label class="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-gray-700 min-w-0 flex-grow">
+            <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed"
+              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            <span class="truncate">{{ sub.name }}</span>
+          </label>
+          <button class="px-2.5 py-1 text-[9px] rounded font-bold border flex items-center gap-1 transition-all"
+            [ngClass]="sub.subscribed ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'">
+            <i class="ri-check-line" *ngIf="sub.subscribed"></i> Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showSubscriptionsModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Clear</button>
+      <button (click)="showSubscriptionsModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Inflow Popup -->
+<div *ngIf="showInflowModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Inflow Record</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual inflow transaction to the landlord wallet.</p>
+      </div>
+      <button (click)="showInflowModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Amount (AED)</label>
+        <input type="number"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all"
+          placeholder="Enter amount">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Payment Method</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Bank Transfer</option>
+            <option>Cash</option>
+            <option>Cheque</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Account Category</label>
+        <select
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <option>Rent Account</option>
+          <option>Maintenance Fund</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Description</label>
+        <textarea rows="3"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter transaction reference details..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showInflowModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showInflowModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Outflow Popup -->
+<div *ngIf="showOutflowModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Outflow Record</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual outflow transaction from the landlord wallet.
+        </p>
+      </div>
+      <button (click)="showOutflowModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Amount (AED)</label>
+        <input type="number"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter amount">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Payment Method</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Bank Transfer</option>
+            <option>Cash</option>
+            <option>Cheque</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Expense Account</label>
+        <select
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <option>Management Fee</option>
+          <option>Tax / VAT</option>
+          <option>Maintenance Expenses</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Description</label>
+        <textarea rows="3"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter transaction reference details..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showOutflowModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showOutflowModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Landlord Contribution Popup -->
+<div *ngIf="showContributionModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Landlord Contribution</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual contribution to build reserves.</p>
+      </div>
+      <button (click)="showContributionModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Contribution Amount
+          (AED)</label>
+        <input type="number"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter amount">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Paid By</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Landlord</option>
+            <option>Third Party Representative</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Property</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Marina Heights</option>
+            <option>Green Heights</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Unit</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>103-PR-10</option>
+            <option>306-PR-2</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Purpose
+          Description</label>
+        <textarea rows="3"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter details about contribution purpose (e.g. major repairs)..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showContributionModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showContributionModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: Landlord Distribution Popup -->
+<div *ngIf="showDistributionModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Landlord Distribution</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Distribute wallet cash balance back to the landlord bank
+          account.</p>
+      </div>
+      <button (click)="showDistributionModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Distribution Amount
+          (AED)</label>
+        <input type="number"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter amount to distribute">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Reference
+            Number</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="REF-8927">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Target Landlord Bank
+          Account</label>
+        <input type="text" readonly
+          class="form-control text-xs w-full bg-gray-100 border-gray-200 rounded-md py-2 px-3 text-gray-600"
+          [value]="landlord.bank.name + ' - ' + landlord.bank.iban">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Remarks</label>
+        <textarea rows="3"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter distribution remarks..."></textarea>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showDistributionModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showDistributionModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Process
+        Distribution</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: Add Notes Popup -->
+<div *ngIf="showAddNoteModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Note</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Append a manual note block to this landlord account profile.</p>
+      </div>
+      <button (click)="showAddNoteModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Subject</label>
+        <input type="text"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter note subject">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Via</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Portal</option>
+            <option>Email</option>
+            <option>SMS</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Note Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Content Details</label>
+        <textarea rows="4"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="Enter main note content details..."></textarea>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Reference File
+          (Optional)</label>
+        <input type="file"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-1.5 px-3 focus:bg-white transition-all">
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddNoteModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddNoteModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
+        Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6: Add Attachment Popup -->
+<div *ngIf="showAddAttachmentModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Attachment</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Upload compliance documents for verification audits.</p>
+      </div>
+      <button (click)="showAddAttachmentModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">File Type</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Passport Copy</option>
+            <option>Trade License</option>
+            <option>Property Title Deed</option>
+            <option>Landlord ID</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Doc ID</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="e.g. DOC-1234">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Issue Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Expiry Date</label>
+          <input type="date"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 py-1">
+        <span class="text-[10px] font-bold text-gray-600">Permissions</span>
+        <div class="flex gap-4 text-xs mt-1">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" class="form-checkbox text-primary rounded"> Share Landlord
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" class="form-checkbox text-primary rounded"> Share Tenants
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Choose Document
+          File</label>
+        <input type="file"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-1.5 px-3 focus:bg-white transition-all">
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddAttachmentModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddAttachmentModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Upload
+        File</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 7: Add User Popup -->
+<div *ngIf="showAddUserModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add User Contact</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a secondary contact/owner to this landlord account.</p>
+      </div>
+      <button (click)="showAddUserModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5 overflow-y-auto max-h-[400px]">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">First Name</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="Enter first name">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Last Name</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="Enter last name">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">User Name</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="Enter username">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Role Type</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Owner</option>
+            <option>Landlord Representative</option>
+            <option>Agent</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Email Address</label>
+        <input type="email"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="e.g. contact@domain.com">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Phone Number</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="e.g. 0528613568">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Status</label>
+          <select
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddUserModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddUserModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
+        User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 8: Add Emergency Contact Popup -->
+<div *ngIf="showAddEmergencyContactModal"
+  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+      <div>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Add Emergency Contact</h4>
+        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a backup emergency contact for emergency
+          communications.</p>
+      </div>
+      <button (click)="showAddEmergencyContactModal = false"
+        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <div class="p-5 flex flex-col gap-3.5 overflow-y-auto max-h-[400px]">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Full Name</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="Zaid Rehman">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Relationship</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="Brother">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Personal Phone</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="0528613568">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Work Phone</label>
+          <input type="text"
+            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+            placeholder="05698 253 25">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Email Address</label>
+        <input type="email"
+          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
+          placeholder="zaidrahman&#64;gmail.com">
+      </div>
+      <div class="flex justify-between items-center py-2 border-t border-gray-100 mt-1">
+        <div class="flex-grow min-w-0 pr-3">
+          <span class="text-xs font-bold text-gray-800 block">Include in Automated Emails</span>
+          <span class="text-[9px] text-gray-500 block leading-tight">Allow emergency contact to receive copy of tenant
+            lease alerts.</span>
+        </div>
+        <div class="custom-toggle-switch">
+          <input type="checkbox" id="includeInEmailToggle" class="hidden">
+          <label for="includeInEmailToggle"
+            class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300">
+            <span
+              class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
+      <button (click)="showAddEmergencyContactModal = false"
+        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
+      <button (click)="showAddEmergencyContactModal = false"
+        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
+        Contact</button>
+    </div>
+  </div>
+</div>

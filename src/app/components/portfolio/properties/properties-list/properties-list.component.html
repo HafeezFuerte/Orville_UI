@@ -39,7 +39,7 @@
     </div>
     <div>
       <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.units}}</h5>
-      <span class="text-[10px] text-danger font-medium mt-1.5 block">{{metrics.occupied}} occupied</span>
+      <span class="text-[10px] text-danger font-medium mt-1.5 block">{{metrics.occupied}} {{ 'web.property.lblOccupied' | translate }}</span>
     </div>
   </div>
 
@@ -51,7 +51,7 @@
     </div>
     <div>
       <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.active_leases}}</h5>
-      <span class="text-[10px] text-success font-medium mt-1.5 block">Currently running</span>
+      <span class="text-[10px] text-success font-medium mt-1.5 block">{{ 'web.property.lblCurrentlyRunning' | translate }}</span>
     </div>
   </div>
 
@@ -63,7 +63,7 @@
     </div>
     <div>
       <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics['avg.Occupancy']}}</h5>
-      <span class="text-[10px] text-warning font-normal mt-1.5 block">Portfolio average</span>
+      <span class="text-[10px] text-warning font-normal mt-1.5 block">{{ 'web.property.lblPortfolioAvg' | translate }}</span>
     </div>
   </div>
 </div>
@@ -77,7 +77,7 @@
       <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
         <button (click)="setCategoryFilter('All')" [class]="categoryFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.common.lblAll' | translate }}</button>
         <button (click)="setCategoryFilter('Units')" [class]="categoryFilter === 'Units' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.Unit.lblUnits' | translate }}</button>
-        <button (click)="setCategoryFilter('Rooms')" [class]="categoryFilter === 'Rooms' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Rooms</button>
+        <button (click)="setCategoryFilter('Rooms')" [class]="categoryFilter === 'Rooms' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.property.lblRooms' | translate }}</button>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -196,88 +196,113 @@
 </div>
 
 <!-- 🎴 2. GRID / CARD VIEW -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="viewMode === 'grid'">
-  <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl animate-fade-in" *ngFor="let property of paginatedProperties">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" *ngIf="viewMode === 'grid'">
+  <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl bg-white animate-fade-in flex flex-col" *ngFor="let property of paginatedProperties">
     <!-- Image Card Header -->
-    <div class="relative h-48 overflow-hidden bg-gray-100">
+    <div class="relative h-40 overflow-hidden bg-gray-100">
       <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
       
-      <!-- Top Left Status Badge -->
-      <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md shadow-sm"
-        [ngClass]="property['internal Status'] === 'Active' ? 'bg-success text-white' : 'bg-warning text-white'">
-        {{property['internal Status'] || 'Active'}}
-      </span>
-
       <!-- Bottom Left Category Badge -->
-      <span class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-bold text-white bg-black/65 backdrop-blur-sm rounded-md">
-        <i class="ri-building-line align-middle me-0.5"></i> {{property.type_name}}
+      <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md rounded-md flex items-center gap-1">
+        <i class="ri-building-line"></i> {{property.type_name || 'Residential'}}
       </span>
     </div>
 
     <!-- Card Body -->
-    <div class="box-body !p-4 flex flex-col gap-4 bg-white">
-      <div>
-        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{property.name}}</h5>
-        <div class="flex items-center text-gray-600 text-[11px] font-medium mt-1">
-          <i class="ri-map-pin-line text-xs me-0.5 text-gray-600"></i> Dubai Marina, Tower A, Dubai
+    <div class="p-4 flex flex-col flex-1 gap-4">
+      
+      <!-- Title & Status -->
+      <div class="flex justify-between items-start gap-2">
+        <div class="flex flex-col">
+          <h5 class="text-sm font-bold text-gray-800 m-0 leading-tight">{{property.name}}</h5>
+          <div class="flex items-center text-gray-500 text-[10px] font-medium mt-1">
+            <i class="ri-map-pin-line me-1 text-gray-400"></i> Dubai Marina, Tower A, Dubai
+          </div>
         </div>
+        <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full border flex items-center gap-1 shrink-0"
+          [ngClass]="property['internal Status'] === 'Active' ? 'border-success text-success bg-success/5' : 'border-warning text-warning bg-warning/5'">
+          <span class="w-1.5 h-1.5 rounded-full" [ngClass]="property['internal Status'] === 'Active' ? 'bg-success' : 'bg-warning'"></span>
+          {{property['internal Status'] || 'Active'}}
+        </span>
       </div>
 
       <!-- Occupancy Info block -->
-      <div class="flex flex-col gap-1.5 py-1">
+      <div class="flex flex-col gap-1.5">
         <div class="flex justify-between items-center text-xs">
-          <span class="text-gray-500 font-medium">Occupancy</span>
-          <span class="font-extrabold text-gray-800">{{property.occupied_units}} of {{property.total_units}} units occupied</span>
+          <span class="text-gray-600 font-bold text-[11px]">Occupancy</span>
+          <span class="font-bold text-gray-800 text-[11px]">{{ property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100).toFixed(0) : 0 }}%</span>
         </div>
-        <div class="w-full bg-gray-100 rounded-full h-2 dark:bg-gray-700">
-          <div class="bg-primary h-2 rounded-full" [style.width.%]="property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100) : 0"></div>
+        <div class="w-full bg-gray-100 rounded-full h-1.5">
+          <div class="bg-primary h-1.5 rounded-full" [style.width.%]="property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100) : 0"></div>
         </div>
+        <span class="text-[9px] text-gray-400 font-medium">{{property.occupied_units}} {{ 'web.property.lblOf' | translate }} {{property.total_units}} {{ 'web.property.lblUnitsOccupied' | translate }}</span>
       </div>
 
       <!-- Features spec block -->
-      <div class="grid grid-cols-3 gap-1 py-2 border-y border-gray-50/80 text-center">
-        <div class="flex flex-col gap-0.5">
-          <span class="text-gray-600 text-[9px] uppercase font-bold">Units</span>
-          <span class="text-gray-800 text-[11px] font-extrabold">{{property.total_units}} Units</span>
+      <div class="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 text-center">
+        <div class="flex flex-col gap-1">
+          <span class="text-gray-800 text-xs font-bold">{{property.total_units}}</span>
+          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Units</span>
         </div>
-        <div class="flex flex-col gap-0.5">
-          <span class="text-gray-600 text-[9px] uppercase font-bold">Occupied</span>
-          <span class="text-gray-800 text-[11px] font-extrabold text-success">{{property.occupied_units}} Units</span>
+        <div class="flex flex-col gap-1 border-x border-gray-100">
+          <span class="text-gray-800 text-xs font-bold">{{property.occupied_units}}</span>
+          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Occupied</span>
         </div>
-        <div class="flex flex-col gap-0.5">
-          <span class="text-gray-600 text-[9px] uppercase font-bold">Vacant</span>
-          <span class="text-gray-800 text-[11px] font-extrabold text-danger">{{property.total_units - property.occupied_units}} Units</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-gray-800 text-xs font-bold">{{property.total_units - property.occupied_units}}</span>
+          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Vacant</span>
         </div>
       </div>
 
       <!-- Units Breakdown details -->
-      <div class="flex flex-col gap-1 text-[11px] text-gray-500">
-        <div class="flex justify-between items-center">
-          <span>Studio</span>
-          <span class="font-bold text-gray-700">10</span>
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-[11px] font-bold text-gray-800">Units types</span>
+          <a href="javascript:void(0)" class="text-[10px] font-semibold text-primary hover:underline">Manage units</a>
         </div>
-        <div class="flex justify-between items-center">
-          <span>1 bedroom</span>
-          <span class="font-bold text-gray-700">10</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span>2 bedroom</span>
-          <span class="font-bold text-gray-700">10</span>
+        
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px]">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-home-4-line text-gray-400"></i> Studio</span>
+            <span class="font-bold text-gray-800">10</span>
+          </div>
+          <div class="flex justify-between items-center border-l border-gray-100 pl-4">
+            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-hotel-bed-line text-gray-400"></i> 1 bedroom</span>
+            <span class="font-bold text-gray-800">10</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-hotel-bed-fill text-gray-400"></i> 2 bedroom</span>
+            <span class="font-bold text-gray-800">13</span>
+          </div>
+          <div class="flex justify-between items-center border-l border-gray-100 pl-4">
+            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-building-4-line text-gray-400"></i> 3 bedroom</span>
+            <span class="font-bold text-gray-800">10</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-home-smile-line text-gray-400"></i> Villa</span>
+            <span class="font-bold text-gray-800">03</span>
+          </div>
         </div>
       </div>
+      
+      <div class="mt-2">
+        <span class="text-[9px] text-gray-400">Added May 20, 2024</span>
+      </div>
+
     </div>
 
     <!-- Footer Actions -->
-    <div class="px-4 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center gap-3">
-      <button type="button" class="w-1/2 ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md border text-xs font-bold hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
+    <div class="p-4 pt-0 mt-auto flex items-center gap-3">
+      <button type="button" class="flex-1 py-2 px-3 rounded-md border border-gray-200 bg-white text-gray-700 text-[11px] font-bold hover:bg-gray-50 transition-colors text-center shadow-sm">
         Manage Units
       </button>
-      <button type="button" [routerLink]="['/properties', property.id]" class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
+      <button type="button" [routerLink]="['/properties', property.id]" class="flex-1 py-2 px-3 rounded-md bg-[#1f2b45] text-white text-[11px] font-bold hover:bg-[#131b2e] transition-colors flex items-center justify-center gap-1 shadow-sm border-0">
         View Property <i class="ri-arrow-right-line"></i>
       </button>
     </div>
   </div>
 </div>
+
 
 <!-- 📄 GRID PAGINATION FOOTER -->
 <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm" *ngIf="viewMode === 'grid'">
