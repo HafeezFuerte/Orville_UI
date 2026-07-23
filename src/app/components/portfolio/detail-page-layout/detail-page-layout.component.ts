@@ -28,6 +28,7 @@ export class DetailPageLayoutComponent {
   @Input() tabs: DetailTab[] = [];
   @Input() activeTab = '';
   @Output() notify_edit_action = new EventEmitter<string>();
+  @Output() search_on_child_grid = new EventEmitter<string>();
   @Output() saveClick = new EventEmitter<string>();
   @Output() activeTabChange = new EventEmitter<string>();
   @Output() addClick = new EventEmitter<void>();
@@ -60,7 +61,7 @@ export class DetailPageLayoutComponent {
     }
   }
   search_with_keyword(){
-
+    this.search_on_child_grid.emit(this.searchQuery); 
   }
   closeModal() {
     this.showModal = false;

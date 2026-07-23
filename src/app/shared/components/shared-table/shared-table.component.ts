@@ -65,7 +65,7 @@ export class SharedTableComponent {
     this.notify_edit_action.emit(row);
   }
   linkClick(row:any,col:any){ 
-window.open(row[col.key],"_blank");
+    window.open(row[col.key],"_blank");
   }
   stripHtml(html: string): string {
   if (!html) {

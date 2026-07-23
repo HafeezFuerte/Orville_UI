@@ -112,7 +112,7 @@ attachmentColumns = [
 ];
 
 notesColumns = [
-  { key: 'entity_code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID' },
   { key: 'subject', label: 'web.property.lblSubject' },
   { key: 'description', label: 'web.property.lblContent', isHtml: true },
   { key: 'status', label: 'web.property.lblVia' },
@@ -186,7 +186,9 @@ private createForms(): void {
     subject: ['', Validators.required],
     commChannelType: ['', Validators.required],
     content: ['', Validators.required],
-    propertyNotesFile:[null, Validators.required]
+    propertyNotesFile:[''],
+    code:[''],
+    desc:['']
   });
 }
 toggleMoreDetails(): void {
@@ -385,16 +387,51 @@ savePopup(tab: string) {
   }
 
 }
-
+handleSearch(searchstring:any){ 
+   const tab = this.tabs.find(t => t.key === this.activeTab);
+    if (searchstring) {  
+      const q = searchstring.toLowerCase();
+      let result=tab!.data;
+      if(this.activeTab=="commonarea"){
+        result = result?.filter(p => 
+          p.area_name.toLowerCase().includes(q) || 
+          p.property.toLowerCase().includes(q)
+        );
+      }
+      else if(this.activeTab=="notes"){
+        result = result?.filter(p => 
+          p.subject.toLowerCase().includes(q) || 
+          p.description.toLowerCase().includes(q)
+        );
+      }
+      tab!.data=result;
+    }
+    else
+      tab!.data=this.activeTab=="commonarea" ?
+      this.commonAreaData :
+      this.activeTab=="notes" ?
+      this.notesData :
+      this.activeTab=="attachments" ? 
+      this.attachmentsData : [];
+}
 handleEditNotification(selectedObject: any) {
    
-  if(selectedObject){ 
+  if(selectedObject && selectedObject.tab_name=="commonarea"){ 
     
     this.commonAreaForm.patchValue({
       areaName: selectedObject?.area_name,
       floor: selectedObject?.floor_no,
       code: selectedObject?.code,
       desc: selectedObject?.strdesc});
+  }
+  else if(selectedObject && selectedObject.tab_name=="notes"){ 
+    
+    this.notesForm.patchValue({
+      subject: selectedObject?.subject,
+      commChannelType:selectedObject?.channel_type,
+      content: selectedObject?.description,  
+      code: selectedObject?.code,
+      desc: selectedObject?.description});
   }
 }
 saveCommonArea(form:FormGroup){
@@ -475,6 +512,7 @@ saveNotes(form: FormGroup){
   if (!this.validateForm(this.notesForm, labels)) {
     return;
   }
+  
   const values = form.value;
   const payload = {
    ...this.commonPayload,
@@ -484,14 +522,16 @@ saveNotes(form: FormGroup){
    subject:values.subject,
    channel_type:Number(values.commChannelType),
    desc:values.content,
-   code:''
+   code:values.code
   }
   const formData = new FormData();
 
   formData.append('reqObject', JSON.stringify(payload));
   
   const file = this.notesForm.get('propertyNotesFile')?.value;
-
+ if((file==null || file==undefined) && values.code==''){
+    this.toastr.error("Invalid file selection","Error");
+ }
   if (file) {
     formData.append('file_path', file);
 }
@@ -499,6 +539,9 @@ saveNotes(form: FormGroup){
     .subscribe(res => {
       this.notesForm.reset();
       this.detailLayout.closeModal();
+      this.notesData = res.objResult.table;
+      let tab = this.tabs.find(t => t.key === this.activeTab);
+      tab!.data=this.notesData;
     });
 }
 
