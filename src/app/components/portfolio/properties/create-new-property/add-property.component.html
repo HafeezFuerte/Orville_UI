@@ -12,23 +12,32 @@
             </button>
             <!-- Title -->
             <div>
-                <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+                <h3 *ngIf="!is_edit" class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
                     {{ 'web.property.lblNewProperty' | translate }}
+                </h3> 
+                  <h3 *ngIf="is_edit" class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+                    {{ 'web.property.lblEditProperty' | translate }}
                 </h3>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] text-[#8c9097]">
-                        {{ 'web.property.lblPortfolio' | translate }}
+                        <a [routerLink]="['/insights']"> {{ 'web.common.lblHome' | translate }}</a> 
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
                     </li>
                     <li class="text-[0.813rem] text-[#8c9097]">
-                        {{ 'web.property.lblProperty' | translate }}
+                      <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>  
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
                     </li>
                     <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
+                    {{property?.name}} 
+                    </li>
+                    <li class="px-2 text-[#8c9097]" *ngIf="!is_edit">
+                        /
+                    </li> 
+                    <li *ngIf="!is_edit" class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
                         {{ 'web.property.lblNewProperty' | translate }}
                     </li>
                 </ol>
@@ -39,7 +48,7 @@
         <div class="flex items-center gap-3 mt-4 md:mt-0">
             <button
                 type="button"
-                routerLink="/properties"
+                [routerLink]="['/properties']"
                 class="ti-btn ti-btn-light btn-wave">
                 {{ 'web.property.lblCancel' | translate }}
             </button>

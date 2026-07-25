@@ -58,15 +58,9 @@
 
                             </span>
                             <ng-template #editLink>
-                                
                                 <span  *ngIf="col.is_editCol; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
-                                >
-                                <a *ngIf="col.is_editCol && col.redirect_url ==null"  (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
-                                <a *ngIf="col.is_editCol && col.redirect_url !=null" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{row[col.key]}}</a>
-                                </span>
-                                <!-- <span  *ngIf="col.is_editCol && col.redirect_url==null; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
-                                (click)="edit_action(row,'edit')">
-                                {{row[col.key]}}</span> -->
+                                [routerLink]="[col.redirect_url, getredirection_column(row,col)]">
+                                {{row[col.key]}}</span>
                             </ng-template>
                             <ng-template #statusCol>
                                 <span *ngIf="col.is_status; else currencyCol" class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [class]="getStatusClass(row[col.key])">
@@ -80,7 +74,13 @@
                             </ng-template>
 
                             <ng-template #normalText>
-                                <span *ngIf="!col.key.includes('date')" [ngClass]="{'font-semibold': col.key === 'name'}">
+                                <ng-container *ngIf="col.key === 'property_Name'">
+                                    {{ row.property_Name || '-' }}
+                                    <br/>
+                                    {{ row.address_1 || '-' }}
+                                  </ng-container>
+
+                                <span *ngIf="!col.key.includes('date') && col.key!='property_Name'" [ngClass]="{'font-semibold': col.key === 'name'}">
                                     {{ row[col.key] || '-' }}
                                 </span>
                                 <span *ngIf="col.key.includes('date')">

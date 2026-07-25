@@ -26,11 +26,16 @@
             <!-- Body -->
           <div class="p-6">
     <!-- Content Layout -->
-    <ng-container *ngIf="selectedTab?.layout === 'content'">
+    <ng-container *ngIf="selectedTab?.layout === 'content' && selectedTab?.key!='units' && selectedTab?.key!='rooms'">
         <ng-container
             *ngTemplateOutlet="overview">
         </ng-container>
     </ng-container>
+    <ng-container *ngIf="selectedTab?.layout === 'content' && (selectedTab?.key=='units' || selectedTab?.key=='rooms' )">
+      <ng-container
+          *ngTemplateOutlet="units">
+      </ng-container>
+  </ng-container>
 
     <!-- Table Layout -->
     <ng-container *ngIf="selectedTab?.layout === 'table'">

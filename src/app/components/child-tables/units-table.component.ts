@@ -3,18 +3,19 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { AuthPayload } from '../../../components/common/store/login-auth-params/auth.models';
-import { CommonService } from '../../../services/common.service';
+import { AuthPayload } from '../common/store/login-auth-params/auth.models';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonService } from '../../services/common.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 @Component({
-  selector: 'app-shared-table',
+  selector: 'app-shared-units-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, TranslateModule, MatPaginatorModule],
-  templateUrl: './shared-table.component.html',
-  styleUrls: ['./shared-table.component.scss']
+  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule],
+  templateUrl: './units-table.component.html',
+  styleUrls: ['./units-table.component.scss']
 })
-export class SharedTableComponent {
+export class UnitsTableComponent {
   /** Array of column definitions: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string } */
   @Input() columns: { key: string, 
     label: string,
@@ -81,7 +82,8 @@ export class SharedTableComponent {
   }
 
   ngOnInit(): void {
-    this.currentUser = this.commonService.getCurrentUser(); 
+    this.currentUser = this.commonService.getCurrentUser();
+    console.log(this.currentUser)
   }
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);

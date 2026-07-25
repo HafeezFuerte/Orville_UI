@@ -4,7 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PropertiesService } from '../../services/properties.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router,RouterLink } from '@angular/router';
 import { PortfolioService } from '../../services/portfolio.service';
 import { ToastrService } from 'ngx-toastr';
 import { Store } from '@ngrx/store';
@@ -13,7 +13,7 @@ import { selectCommonData } from '../../../common/store/common-payload/common.se
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [FileUploadComponent, TranslateModule, ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [FileUploadComponent,RouterLink, TranslateModule, ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './add-property.component.html',
   styleUrl: './add-property.component.scss'
 })
@@ -30,6 +30,7 @@ accounts: any = [];
 selectedAmenities: number[] = [];
 selectAllAmenities = false;
 propertyCode: string = '';
+is_edit:boolean=false;
 commonData: any = [];
 property: any = [];
 constructor(public translate: TranslateService, 
@@ -53,10 +54,13 @@ ngOnInit(){
 
    this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
   if (this.propertyCode) {
+    this.is_edit=true;
     this.loadProperty();
   } else {
+    this.is_edit=false;
     this.initializeForm();
-  }
+  } 
+  console.log("r"+this.propertyCode);
 }
 initializeForm(){
  this.propertyForm = this.formBuilder.group({

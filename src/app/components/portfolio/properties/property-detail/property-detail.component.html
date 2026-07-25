@@ -28,7 +28,7 @@
                 </ol>
   </div>
   <div>
-    <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.75rem] !text-white !font-medium btn-wave bg-gray-500 hover:bg-gray-600 shadow-sm" [routerLink]="['/add-property', property?.code]">
+    <button type="button" class="ti-btn !py-1 !px-2.5 !text-[0.75rem] !text-white !font-medium btn-wave bg-gray-500 hover:bg-gray-600 shadow-sm" [routerLink]="['/edit-property', property?.code]">
       {{ 'web.property.lblEditProperty' | translate }}
     </button>
   </div>
@@ -83,7 +83,7 @@
           <button type="button" class="w-1/2 ti-btn ti-btn-light !py-2 border font-bold text-xs rounded-lg shadow-sm">
             {{ 'web.property.lblViewActivity' | translate }}
           </button>
-          <button type="button" class="w-1/2 ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">
+          <button [routerLink]="['/edit-property', property?.code]" type="button" class="w-1/2 ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">
             {{ 'web.property.lblEditProperty' | translate }}
                         <i class="ri-arrow-right-line ms-1"></i>
           </button>
@@ -275,8 +275,20 @@
   </div>
         </ng-template>
 
-        <!-- OVERVIEW TAB -->
-
+        <!-- UNITS TAB -->
+        <ng-template #units>
+        <app-shared-units-table
+        [columns]="selectedTab?.columns || []"
+        [data]="selectedTab?.data || []"
+        [loading]="selectedTab?.loading || false"
+        [totalRecords]="selectedTab?.totalRecords || 0"
+        [pageSize]="selectedTab?.pageSize || 50"
+        [pageIndex]="selectedTab?.pageIndex || 0"
+        [hasActions]="selectedTab?.hasActions || false"
+        (notify_edit_action)="handleEditNotification($event)"
+        ></app-shared-units-table>
+         </ng-template>
+            <!-- OVERVIEW TAB -->
         <ng-template #overview>
 
             <!-- Paste EVERYTHING from your current OVERVIEW tab here -->

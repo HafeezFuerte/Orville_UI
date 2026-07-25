@@ -37,6 +37,8 @@ export class DetailPageLayoutComponent {
   leftPanel!: TemplateRef<any>;
   @ContentChild('overview')
   overview!: TemplateRef<any>;
+  @ContentChild('units')
+  units!: TemplateRef<any>;
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;

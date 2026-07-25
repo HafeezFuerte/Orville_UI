@@ -163,6 +163,7 @@ exports.locale = {
                 "lblDeposited": "Deposited",
                 "lblPublished": "Published",
                 "lblForSale": "For Sale",
+                "lblSaleStatus": "Sale Status",
                 "lblHeldBy": "Held By",
                 "lblGrossCent": "Gross Cent",
                 "lblPaid": "Paid",
@@ -188,7 +189,8 @@ exports.locale = {
                 "lblDays": "Days",
                 "lblWriteAmountOff": "Write Amount Off",
                 "lblCreatedBy": "Created By",
-                "lblTo": "To"
+                "lblTo": "To",
+                "lblContactType":"Contact Type"
             },
             "dashboard": {
                 "lblwelcome": "Welcome Back",

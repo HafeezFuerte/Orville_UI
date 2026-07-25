@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild,Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -14,10 +14,11 @@ import { AttachmentPopupComponent } from '../../popups/attachments-popup/attachm
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { ToastrService } from 'ngx-toastr';
+import { UnitsTableComponent } from '../../../child-tables/units-table.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule,UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -36,7 +37,7 @@ export class PropertyDetailComponent implements OnInit {
   notesForm!: FormGroup;
   propertyCode = '';
   commonData: any = [];
-  tabs: DetailTab[] = [];
+  tabs: DetailTab[] = []; 
   unitsData: any = [];
   roomsData = [];
   tenantsData = [];
@@ -52,30 +53,46 @@ export class PropertyDetailComponent implements OnInit {
   detailLayout!: DetailPageLayoutComponent;
   // columns
   unitColumns = [
-  { key: 'code', label: 'web.common.lblID'},
+  { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/units",edit_col:"code"},
   { key: 'unit_code', label: 'web.common.lblName'},
   { key: 'category_name', label: 'web.common.lblCategory' },
   { key: 'unit_beds_name', label: 'web.Unit.lblBeds' },
-  { key: 'property Name', label: 'web.property.lblProperty' },
-  { key: 'landlord', label: 'web.Unit.lblLandlord' },
+  { key: 'property_Name', label: 'web.property.lblProperty' },
+  { key: 'landlord', label: 'web.Unit.lblLandlord',is_editCol:true,redirect_url:"/contacts/landlords",edit_col:"landlord_code" },
   { key: 'tags', label: 'web.property.lblTags' },
-  { key: 'unit_type_name', label: 'web.Unit.lblUnitType' }
+  { key: 'floor_no', label: 'web.contacts.lblFloorNumber' },
+  { key: 'management_fee', label: 'web.Unit.lblManagementFee',is_include_currency:true },
+  { key: 'unit_status_name', label: 'web.Unit.lblStatus',is_status:true }, 
+  { key: 'internal_status', label: 'web.contacts.lblInternalStatus' },
+  { key: 'size_sqft', label: 'web.contacts.lblSize' },
+  { key: 'market_rent', label: 'web.contacts.lblMarketRent',is_include_currency:true },
+  { key: 'rent_deposit', label: 'web.contacts.lblDeposited',is_include_currency:true },
+  { key: 'is_published', label: 'web.contacts.lblPublished' },
+  { key: 'sale_status', label: 'web.contacts.lblSaleStatus' } 
 ];
 
 roomColumns = [
-  { key: 'code', label: 'web.common.lblID' },
-  { key: 'room_type_name', label: 'web.common.lblName' },
+  { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/rooms",edit_col:"code"},
+  { key: 'property_Name', label: 'web.property.lblProperty' },
+  { key: 'unit_no', label: 'web.contacts.lblUnit',is_editCol:true,redirect_url:"/units",edit_col:"unit_code"}  ,
+  { key: 'room_type_name', label: 'web.Unit.lblRoomType' },
   { key: 'category_name', label: 'web.common.lblCategory' },
-  { key: 'beds', label: 'web.Unit.lblBeds' },
-  { key: 'property Name', label: 'web.property.lblProperty'},
-  { key: 'name', label: 'web.Unit.lblLandlord' },
-  { key: 'tags', label: 'web.property.lblTags'  },
-  { key: 'unit_type_name', label: 'web.Unit.lblUnitType' },
-  { key: 'room_type_name', label: 'web.Unit.lblRoomType' }
+  { key: 'room_type_name', label: 'web.Unit.lblBeds' }, 
+  { key: 'landlord', label: 'web.Unit.lblLandlord',is_editCol:true,redirect_url:"/contacts/landlords",edit_col:"landlord_code" },
+  { key: 'tags', label: 'web.property.lblTags' },
+  { key: 'floor_no', label: 'web.contacts.lblFloorNumber' },
+  { key: 'management_fee', label: 'web.Unit.lblManagementFee',is_include_currency:true },
+  { key: 'room_status_name', label: 'web.Unit.lblStatus',is_status:true }, 
+  { key: 'internal_status', label: 'web.contacts.lblInternalStatus' },
+  { key: 'size_sqft', label: 'web.contacts.lblSize' },
+  { key: 'market_rent', label: 'web.contacts.lblMarketRent',is_include_currency:true },
+  { key: 'rent_deposit', label: 'web.contacts.lblDeposited',is_include_currency:true },
+  { key: 'is_published', label: 'web.contacts.lblPublished' },
+  { key: 'sale_status', label: 'web.contacts.lblSaleStatus' }
 ];
 
 tenantColumns = [
-  { key: 'lease_code', label: 'web.common.lblID'},
+  { key: 'lease_code', label: 'web.common.lblID',is_editCol:true},
   { key: 'tenant ', label: 'web.common.lblName' },
   { key: 'email_address', label: 'web.common.lblEmail' },
   { key: 'phone_number', label: 'web.common.lblPhoneNumber' },
@@ -83,7 +100,7 @@ tenantColumns = [
   { key: 'active_lease', label: 'web.property.lblActiveLease' }
 ];
 commonAreaColumns = [
-  { key: 'code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID' ,is_editCol:true},
   { key: 'area_name', label: 'web.property.lblAreaName' },
   { key: 'property', label: 'web.property.lblProperty' },
   { key: 'floor_no', label: 'web.property.lblFloorNo' },
@@ -91,7 +108,7 @@ commonAreaColumns = [
   { key: 'modified_date', label: 'web.Unit.lblUpdatedAt' } 
 ];
 broadCastsColumns = [
-  { key: 'code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'subject', label: 'web.property.lblSubject' },
   { key: 'preview', label: 'web.property.lblPreview' },
   { key: 'status', label: 'web.common.lblStatus' },
@@ -102,17 +119,17 @@ broadCastsColumns = [
   
 ];
 attachmentColumns = [
-  { key: 'entity_code', label: 'web.common.lblID' },
-  { key: 'document_type', label: 'web.property.lblFileType' },
+  { key: 'code', label: 'web.common.lblID' ,is_editCol:true},
+  { key: 'document_type_name', label: 'web.property.lblFileType' },
   { key: 'doc_no', label: 'web.property.lblDocID' },
-  { key: 'document_status', label: 'web.property.lblDocumentStatus' },
+  { key: 'document_status_name', label: 'web.property.lblDocumentStatus' },
   { key: 'issue_date', label: 'web.property.lblIssueDate' },
   { key: 'expiry_date', label: 'web.property.lblExpiryDate' },
-  { key: 'file_path', label: 'web.property.lblFiles' }
+  { key: 'file_path', label: 'web.property.lblFiles',isLink:true }
 ];
 
 notesColumns = [
-  { key: 'code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'subject', label: 'web.property.lblSubject' },
   { key: 'description', label: 'web.property.lblContent', isHtml: true },
   { key: 'status', label: 'web.property.lblVia' },
@@ -124,7 +141,7 @@ notesColumns = [
 ];
 
 parkingsColumns = [
-  { key: 'code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'parking_no', label: 'web.property.lblParkingNo' },
   { key: 'property', label: 'web.property.lblProperty' },
   { key: 'unit_code1', label: 'web.property.lblUnit' },
@@ -136,7 +153,7 @@ parkingsColumns = [
 ];
 
 assetsColumns = [
-  { key: 'code', label: 'web.common.lblID' },
+  { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'asset_name', label: 'web.property.lblAssetName' },
   { key: 'model', label: 'web.property.lblModel' },
   { key: 'asset_category', label: 'web.property.lblCategory' },
@@ -180,7 +197,8 @@ private createForms(): void {
     issuingAuthority: ['', Validators.required],
     shareWithTenant: ['', Validators.required],
     shareWithLandlord: ['', Validators.required],
-    propertyAttachment: [null, Validators.required]
+    propertyAttachment: [''],
+    code:['']
   });
   this.notesForm = this.fb.group({
     subject: ['', Validators.required],
@@ -190,6 +208,13 @@ private createForms(): void {
     code:[''],
     desc:['']
   });
+}
+getStatusClass(status: string) {
+  switch(status) {
+    case 'Active': return 'bg-success/10 text-success';
+    case 'Blocked': return 'bg-danger/10 text-danger';
+    default: return 'bg-gray-100 text-gray-600';
+  }
 }
 toggleMoreDetails(): void {
   this.showMoreDetails = !this.showMoreDetails;
@@ -235,8 +260,7 @@ private bindPropertyData(data: any): void {
   this.property = {
     ...data.property[0],
     amenities: data.amenities
-  };
-
+  }; 
   this.unitsData = data.units_info;
   this.roomsData = data.rooms_info;
   this.commonAreaData = data.common_area;
@@ -260,7 +284,7 @@ initializeTabs() {
     {
       key: 'units',
       label: 'Units',
-      layout: 'table',
+      layout: 'content',
       columns: this.unitColumns,
       data: this.unitsData,
       totalRecords: this.unitsData?.length || 0,
@@ -272,7 +296,7 @@ initializeTabs() {
     {
       key: 'rooms',
       label: 'Rooms',
-      layout: 'table',
+      layout: 'content',
       columns: this.roomColumns,
       data: this.roomsData,
       totalRecords: this.roomsData?.length || 0,
@@ -387,6 +411,10 @@ savePopup(tab: string) {
   }
 
 }
+get selectedTab(): DetailTab | undefined {
+  const tab = this.tabs.find(t => t.key === this.activeTab);
+  return tab;
+}
 handleSearch(searchstring:any){ 
    const tab = this.tabs.find(t => t.key === this.activeTab);
     if (searchstring) {  
@@ -433,6 +461,26 @@ handleEditNotification(selectedObject: any) {
       code: selectedObject?.code,
       desc: selectedObject?.description});
   }
+  else if(selectedObject && selectedObject.tab_name=="attachments"){  
+    this.attachmentsForm.patchValue({
+      documentType: selectedObject?.document_type,
+      documentNumber:selectedObject?.doc_no,
+      issueDate: this.formatDate(selectedObject?.issue_date),  
+      expiryDate: this.formatDate(selectedObject?.expiry_date),  
+      issuingAuthority: selectedObject?.issuing_authority,  
+      shareWithTenant: selectedObject?.share_with_tenants,  
+      shareWithLandlord: selectedObject?.share_with_landlords,  
+      code: selectedObject?.code}); 
+  }
+}
+private formatDate(date:any) {
+  const d = new Date(date);
+  let month = '' + (d.getMonth() + 1);
+  let day = '' + d.getDate();
+  const year = d.getFullYear();
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  return [year, month, day].join('-');
 }
 saveCommonArea(form:FormGroup){
   const commonAreaLabels = {
@@ -460,6 +508,8 @@ this.portfolioService.saveCommonArea(payload).subscribe({
         this.commonAreaData = res.objResult.table;
         let tab = this.tabs.find(t => t.key === this.activeTab);
         tab!.data=this.commonAreaData;
+      } else{
+        this.toastr.error(res['message'],"Error");
       }
     },
     error: console.error
@@ -476,7 +526,7 @@ saveAttachment(form:FormGroup){
   const values = form.value;
   const request = {
   ...this.commonPayload,
-  id: 0,
+  code: values.code,
   entity_id: this.propertyCode,
   entity:'property',
   document_type:values.documentType, 
@@ -485,21 +535,31 @@ saveAttachment(form:FormGroup){
     expiry_date:values.expiryDate,
     issuing_authority:values.issuingAuthority,
     share_with_tenants:values.shareWithTenant,
-    share_with_landlords:false
+    share_with_landlords:values.shareWithLandlord
   }
   const formData = new FormData();
 
 // JSON goes as ONE field
-formData.append('reqObject', JSON.stringify(request));
+formData.append('reqObject', JSON.stringify(request)); 
 const file = this.attachmentsForm.get('propertyAttachment')?.value;
-
+if((file==null || file==undefined) && values.code==''){
+  this.toastr.error("Invalid file selection","Error");
+}
 if (file) {
   formData.append('file_path', file);
 }
   this.portfolioService.saveAttachment(formData)
-    .subscribe(res => {
-      this.commonAreaForm.reset();
-      this.detailLayout.closeModal();
+    .subscribe(res => { 
+      if (res["statusCode"] == "200") { 
+        this.attachmentsForm.reset();
+        this.detailLayout.closeModal();
+        this.attachmentsData = res.objResult.table;
+        let tab = this.tabs.find(t => t.key === this.activeTab);
+        tab!.data=this.attachmentsData;
+      }
+      else{
+        this.toastr.error(res['message'],"Error");
+      }
     });
 }
 saveNotes(form: FormGroup){
@@ -537,11 +597,17 @@ saveNotes(form: FormGroup){
 }
    this.portfolioService.saveNotes(formData)
     .subscribe(res => {
+      if (res["statusCode"] == "200") {  
       this.notesForm.reset();
       this.detailLayout.closeModal();
       this.notesData = res.objResult.table;
       let tab = this.tabs.find(t => t.key === this.activeTab);
       tab!.data=this.notesData;
+      }
+      else{
+        this.toastr.error(res['message'],"Error");
+      }
+      
     });
 }
 

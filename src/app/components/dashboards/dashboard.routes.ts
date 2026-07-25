@@ -33,7 +33,7 @@ export const admin: Routes = [
   component: AddPropertyComponent
 },
 {
-  path: 'add-property/:code',
+  path: 'edit-property/:code',
   component: AddPropertyComponent
 },
 {
