@@ -159,8 +159,7 @@ private loadMetrics(
           else if (response.objResult.Properties) apiProps = response.objResult.Properties;
         }
 
-        this.properties = apiProps || [];
-        console.log(this.properties);
+        this.properties = apiProps || []; 
         this.applyLocalFilters();
       },
       error: err => {

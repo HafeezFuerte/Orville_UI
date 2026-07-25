@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
-
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PortfolioService } from '../../portfolio/services/portfolio.service';
+import { Store } from '@ngrx/store';
+import { ToastrService } from 'ngx-toastr';
 export interface Contact {
   id: number;
   name: string;
   email: string;
   phoneNumber: string;
+  contact_type: string;
   status: string;
+  code: string;
 }
 
 @Component({
@@ -23,18 +28,26 @@ export interface Contact {
 })
 export class AllContactsComponent implements OnInit {
   searchQuery: string = '';
-  showColumnDropdown: boolean = false;
-
+  showColumnDropdown: boolean = false; 
   // Pagination
   pageNo = 1;
   pageSize = 10;
   totalRecords = 150;
-
+  constructor(public translate: TranslateService, 
+    private formBuilder: FormBuilder, 
+    private route: ActivatedRoute,
+    private store: Store,
+    private portfolioService: PortfolioService,
+    private toastr:ToastrService,
+    private router: Router
+  
+  ){}
   tableColumns = [
     { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'name', label: 'web.contacts.lblName', visible: true, useTemplate: true },
     { key: 'email', label: 'web.contacts.lblEmail', visible: true, useTemplate: true },
     { key: 'phoneNumber', label: 'web.contacts.lblPhoneNumber', visible: true, useTemplate: true },
+    { key: 'contact_type', label: 'web.contacts.lblContactType', visible: true, useTemplate: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true }
   ];
 
@@ -48,7 +61,42 @@ export class AllContactsComponent implements OnInit {
       col.visible = !col.visible;
     }
   }
+  getInitials = function (name:any) {
+    if (!name) return '';
 
+    const parts = name.trim().split(/\s+/);
+
+    return parts[0].charAt(0) +
+           (parts.length > 1 ? parts[1].charAt(0) : '');
+};
+  private loadMasterDataByType(
+    typeId: number,
+    filterId: number,
+    target: 'contacts' ,
+    filtertext:string ='',
+    filterText1:string ='', 
+    callback?:()=>void
+  ) {
+    this.portfolioService.getMasterByType({
+      typeId: typeId,
+      filterId,
+      filterText: filtertext,
+      filterText1: filterText1 
+    }).subscribe({
+      next: res => {
+  
+        if(res['statusCode'] == 200)
+          this[target] = res.objResult.table;
+           this.paginatedContacts=this.contacts;
+           this.updatePagination();
+          callback?.();
+       
+      },
+      error: (err) => {
+    console.log('Full Error:', err);
+  }
+    });
+  }
   toggleAllColumns(event: any) {
     const checked = event.target.checked;
     this.tableColumns.forEach(c => c.visible = checked);
@@ -58,23 +106,13 @@ export class AllContactsComponent implements OnInit {
     return this.tableColumns.every(c => c.visible !== false);
   }
 
-  contacts: Contact[] = [
-    { id: 31658, name: 'Ahmed Yassin', email: 'ahmed.yassin@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31659, name: 'Dina Said', email: 'dina.said23@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31660, name: 'Fatma Ashraf', email: 'fatmaashraf@mail.com', phoneNumber: '+971 50 62 3358', status: 'Blocked' },
-    { id: 31661, name: 'Yousef Imam', email: 'yousefimam@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31662, name: 'Nagla Mustafa', email: 'naglamustafa@mail.com', phoneNumber: '+971 50 62 3358', status: 'Blocked' },
-    { id: 31663, name: 'Rania Amr', email: 'raniaamr@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31664, name: 'Aya Sayed', email: 'ayasayed87@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31665, name: 'Samer Youssef', email: 'samer_youssef@mail.com', phoneNumber: '+971 50 62 3358', status: 'Blocked' },
-    { id: 31666, name: 'Mo Naser', email: 'mo_naser@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-    { id: 31667, name: 'Mona Ramy', email: 'monaramy21@mail.com', phoneNumber: '+971 50 62 3358', status: 'Active' },
-  ];
+  contacts:any= [];
 
-  paginatedContacts: Contact[] = [];
+  paginatedContacts: any = [];
 
   ngOnInit(): void {
-    this.updatePagination();
+    this.loadMasterDataByType(32,0, 'contacts', '','');
+    
   }
 
   onSearch() {
@@ -91,7 +129,7 @@ export class AllContactsComponent implements OnInit {
   updatePagination() {
     let filtered = this.contacts;
     if (this.searchQuery) {
-      filtered = filtered.filter(c => 
+      filtered = filtered.filter((c:any) => 
         c.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
         c.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         c.id.toString().includes(this.searchQuery)

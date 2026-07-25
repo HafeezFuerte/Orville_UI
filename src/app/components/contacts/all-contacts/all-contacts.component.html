@@ -65,11 +65,20 @@
       <!-- Custom Column Templates -->
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container *ngIf="col.key === 'id'">
+         
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
-              {{ row.name.substring(0, 2) }}
-            </div>
-            <span class="font-bold text-primary cursor-pointer hover:underline">{{row.id}}</span>
+            <ng-container *ngIf="row.image_path!=null && row.image_path!=''">
+              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+               <p><img src="{{row.image_path}}" class="w-100 rounded-full" /></p>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="(row.image_path==null || row.image_path=='')">
+              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+                {{ getInitials(row.name)  }}
+              </div>
+            </ng-container>
+           
+            <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts', (row.contact_type || '').toLowerCase(), row.code]">{{row.code}}</span>
           </div>
         </ng-container>
 
@@ -79,6 +88,9 @@
 
         <ng-container *ngIf="col.key === 'email'">
           <span class="text-gray-600">{{row.email}}</span>
+        </ng-container>
+        <ng-container *ngIf="col.key === 'contact_type'">
+          <span class="text-gray-600">{{row.contact_type}}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'phoneNumber'">
