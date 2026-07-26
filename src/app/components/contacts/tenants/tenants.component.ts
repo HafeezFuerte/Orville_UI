@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
+import { PropertiesService } from '../../portfolio/services/properties.service';
+import { Router } from '@angular/router';
 
 export interface Tenant {
   id: number;
+  code: string;
   name: string;
   email: string;
   phoneNumber: string;
@@ -16,6 +19,7 @@ export interface Tenant {
   leases: number;
   gender: string;
   status: string;
+  image_path: string;
 }
 
 @Component({
@@ -26,13 +30,17 @@ export interface Tenant {
   styleUrl: './tenants.component.scss'
 })
 export class TenantsComponent implements OnInit {
+  private propertiesService = inject(PropertiesService);
+  private router = inject(Router);
+
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
+  isLoading: boolean = false;
 
   // Pagination
   pageNo = 1;
-  pageSize = 10;
+  pageSize = 20;
   totalRecords = 0;
 
   tableColumns = [
@@ -67,66 +75,102 @@ export class TenantsComponent implements OnInit {
     return this.tableColumns.every(c => c.visible !== false);
   }
 
-  tenants: Tenant[] = [
-    { id: 31658, name: 'Ahmed Yassin', email: 'ahmed.yassin@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 2, gender: 'Male', status: 'Active' },
-    { id: 31659, name: 'Dina Said', email: 'dina.said23@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 1, gender: 'Female', status: 'Active' },
-    { id: 31660, name: 'Fatma Ashraf', email: 'fatmaashraf@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 4, gender: 'Female', status: 'Active' },
-    { id: 31661, name: 'Yousef Imam', email: 'yousefimam@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 0, gender: 'Male', status: 'Blocked' },
-    { id: 31662, name: 'Nagla Mustafa', email: 'naglamustafa@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 1, gender: 'Female', status: 'Active' },
-    { id: 31663, name: 'Rania Amr', email: 'raniaamr@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 3, gender: 'Female', status: 'Blocked' },
-    { id: 31664, name: 'Aya Sayed', email: 'ayasayed87@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 0, gender: 'Female', status: 'Blocked' },
-    { id: 31665, name: 'Samer Youssef', email: 'samer_youssef@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 2, gender: 'Male', status: 'Active' },
-    { id: 31666, name: 'Mo Naser', email: 'mo_naser@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 2, gender: 'Male', status: 'Active' },
-    { id: 31667, name: 'Maha Rama', email: 'moharama214@mail.com', phoneNumber: '+971 50 62 3358', company: 'Orville real estate', activeLease: 'Lease - 134273 - Marina Heights Towers', leases: 2, gender: 'Female', status: 'Active' }
-  ];
-
+  tenants: Tenant[] = [];
   paginatedTenants: Tenant[] = [];
 
   ngOnInit(): void {
-    this.updatePagination();
+    this.loadTenants();
+  }
+
+  loadTenants() {
+    this.isLoading = true;
+    const payload = {
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: localStorage.getItem('clientId') || '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageNo - 1,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? this.statusFilter : '',
+      filter_list: '',
+      featureid: 'Tenants'
+    };
+
+    this.propertiesService.getTenants(payload).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        let rawList: any[] = [];
+        if (Array.isArray(response)) {
+          rawList = response;
+        } else if (response && response.objResult) {
+          if (Array.isArray(response.objResult)) rawList = response.objResult;
+          else if (response.objResult.tenants) rawList = response.objResult.tenants;
+          else if (response.objResult.tenant) rawList = response.objResult.tenant;
+        }
+
+        this.tenants = (rawList || []).map((t: any) => ({
+          id: t.id || 0,
+          code: t.code || '',
+          name: t.tenant || '',
+          email: t.email_address || '-',
+          phoneNumber: t.phone_number || '-',
+          company: t.company_name || '-',
+          activeLease: t.active_lease || '-',
+          leases: t.total_leases || 0,
+          gender: t.gender || 'Male',
+          status: t.is_active ? 'Active' : 'Blocked',
+          image_path: t.image_path || ''
+        })).sort((a, b) => a.id - b.id);
+
+        this.totalRecords = response?.totalCount || this.tenants.length;
+        this.paginatedTenants = this.tenants;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching tenants:', err);
+      }
+    });
   }
 
   onSearch() {
     this.pageNo = 1;
-    this.updatePagination();
+    this.loadTenants();
   }
   
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 1;
-    this.updatePagination();
+    this.loadTenants();
   }
 
   onSharedTablePageChange(event: any) {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.updatePagination();
+    this.loadTenants();
   }
 
-  updatePagination() {
-    let filtered = this.tenants;
-    
-    if (this.statusFilter !== 'All') {
-      filtered = filtered.filter(l => l.status === this.statusFilter);
-    }
-    
-    if (this.searchQuery) {
-      filtered = filtered.filter(l => 
-        l.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-        l.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        l.id.toString().includes(this.searchQuery)
-      );
-    }
-    
-    this.totalRecords = filtered.length;
-    this.paginatedTenants = filtered;
-  }
-  
   getStatusClass(status: string) {
     switch(status) {
       case 'Active': return 'bg-success/10 text-success';
       case 'Blocked': return 'bg-danger/10 text-danger';
       default: return 'bg-gray-100 text-gray-600';
     }
+  }
+
+  handleEditAction(row: any) {
+    if (row.action_name === 'edit') {
+      this.router.navigate(['/contacts/tenants/edit-tenant', row.code]);
+    } else if (row.action_name === 'delete') {
+      console.log('Delete tenant clicked', row.id);
+    }
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
   }
 }

@@ -4,14 +4,10 @@
     <a routerLink="/contacts/tenants" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
       <i class="ri-arrow-left-line text-lg"></i>
     </a>
-    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ 'web.contacts.lblNewTenant' | translate }}</h3>
+    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}</h3>
     <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
-      <span>{{ 'web.contacts.lblContact' | translate }}</span> <span>/</span> <span>Tenant</span> <span>/</span> <span class="text-gray-600">{{ 'web.contacts.lblNewTenant' | translate }}</span>
+      <span>{{ 'web.contacts.lblContact' | translate }}</span> <span>/</span> <span>Tenant</span> <span>/</span> <span class="text-gray-600">{{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}</span>
     </div>
-  </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white" [clearable]="false"></ng-select>
-    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-40 bg-white" [clearable]="false"></ng-select>
   </div>
 </div>
 
@@ -27,11 +23,13 @@
       </div>
       <div class="p-5">
         <div class="flex items-center gap-x-3 gap-y-2 mb-6">
-          <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20">
-            PH
+          <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20 overflow-hidden">
+            <img *ngIf="profilePreviewUrl" [src]="profilePreviewUrl" alt="Profile Preview" class="w-full h-full object-cover">
+            <span *ngIf="!profilePreviewUrl">PH</span>
           </div>
           <div class="flex flex-col gap-1.5">
-            <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
+            <input type="file" (change)="onProfileImageSelected($event)" accept="image/*" class="hidden" #profileUpload>
+            <button type="button" (click)="profileUpload.click()" class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
               <i class="ri-upload-2-line"></i> Upload Photo
             </button>
             <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
@@ -41,11 +39,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
           <div>
             <label class="form-label text-[11px] font-semibold text-gray-700">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
-            <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [placeholder]="'web.contacts.lblEnter' | translate">
+            <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.email_address" [placeholder]="'web.contacts.lblEnter' | translate">
           </div>
           <div>
             <label class="form-label text-[11px] font-semibold text-gray-700">{{ 'web.contacts.lblUsername' | translate }}</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [placeholder]="'web.contacts.lblEnter' | translate">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.username" [placeholder]="'web.contacts.lblEnter' | translate">
           </div>
         </div>
       </div>
@@ -59,45 +57,45 @@
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Honorific</label>
-          <ng-select [items]="honorifics" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+          <ng-select [items]="honorifics" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.honorific"></ng-select>
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">First Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.first_name" placeholder="Enter">
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Last Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.last_name" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Middle Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.middle_name" placeholder="Enter">
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Phone Number</label>
           <div class="flex input-group">
             <span class="input-group-text bg-gray-50 border-gray-200 !px-2"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"></span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" placeholder="Enter">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.mobile_no" placeholder="Enter">
           </div>
         </div>
 
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">{{ 'web.contacts.lblGender' | translate }}</label>
-          <ng-select [items]="genders" [placeholder]="'web.contacts.lblSelect' | translate" class="ng-select-sm w-full"></ng-select>
+          <ng-select [items]="genders" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelect' | translate" class="ng-select-sm w-full" [(ngModel)]="tenantData.gender"></ng-select>
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Date of Birth</label>
           <div class="input-group relative">
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.dob" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
             <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><i class="ri-calendar-2-line text-gray-500"></i></button>
           </div>
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Status</label>
-          <ng-select [items]="statuses" placeholder="Select Status" class="ng-select-sm w-full"></ng-select>
+          <ng-select [items]="statuses" appendTo="body" [searchable]="true" placeholder="Select Status" class="ng-select-sm w-full" [(ngModel)]="tenantData.status"></ng-select>
         </div>
       </div>
     </div>
@@ -110,23 +108,23 @@
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Address Line 1</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.address1" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Address Line 2</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.address2" placeholder="Enter">
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Nationality</label>
-          <ng-select [items]="nationalities" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+          <ng-select [items]="countries" appendTo="body" bindLabel="name" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="selectedNationality"></ng-select>
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Country <span class="text-danger">*</span></label>
-          <ng-select [items]="countries" placeholder="Select Country" class="ng-select-sm w-full">
+          <ng-select [items]="countries" appendTo="body" bindLabel="name" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="selectedCountry">
             <ng-template ng-label-tmp let-item="item">
               <div class="flex items-center gap-2">
-                <img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"> {{item}}
+                <img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"> {{item.name}}
               </div>
             </ng-template>
           </ng-select>
@@ -135,15 +133,15 @@
         <div class="grid grid-cols-3 gap-3 md:col-span-2">
           <div>
             <label class="form-label text-[11px] font-semibold text-gray-700">City</label>
-            <ng-select [items]="cities" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+            <ng-select [items]="cities" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.city" bindValue="id" bindLabel="name"></ng-select>
           </div>
           <div>
             <label class="form-label text-[11px] font-semibold text-gray-700">State/ Province</label>
-            <ng-select [items]="states" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+            <ng-select [items]="states" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.stateid" bindValue="id" bindLabel="name"></ng-select>
           </div>
           <div>
             <label class="form-label text-[11px] font-semibold text-gray-700">Postcode</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.zipcode" placeholder="Enter">
           </div>
         </div>
       </div>
@@ -159,24 +157,24 @@
           <label class="form-label text-[11px] font-semibold text-gray-700">Additional Phone1</label>
           <div class="flex input-group">
             <span class="input-group-text bg-gray-50 border-gray-200 !px-2"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"></span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" placeholder="Enter">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.addionalphone1" placeholder="Enter">
           </div>
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Additional Phone2</label>
           <div class="flex input-group">
             <span class="input-group-text bg-gray-50 border-gray-200 !px-2"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"></span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" placeholder="Enter">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.addionalphone2" placeholder="Enter">
           </div>
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Landline Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.landline_no" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Fax Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.fax_no" placeholder="Enter">
         </div>
       </div>
     </div>
@@ -189,18 +187,18 @@
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Name on Lease</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.name_on_lease" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Email on Lease</label>
-          <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+          <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.email_on_lease" placeholder="Enter">
         </div>
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Phone on Lease</label>
           <div class="flex input-group">
             <span class="input-group-text bg-gray-50 border-gray-200 !px-2"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="w-4 h-3"></span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" placeholder="Enter">
+            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.phone_on_lease" placeholder="Enter">
           </div>
         </div>
       </div>
@@ -232,7 +230,7 @@
         
         <div class="flex items-center gap-3 text-[12px] text-gray-600 font-medium">
           On the 
-          <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false" class="w-16 ng-select-sm text-center font-bold" placeholder="1"></ng-select> 
+          <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false" class="w-16 ng-select-sm text-center font-bold" [(ngModel)]="tenantData.schedule_day" placeholder="1"></ng-select> 
           of every month
         </div>
       </div>
@@ -259,15 +257,15 @@
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Company Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Select Company Name">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.company_name" placeholder="Select Company Name">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Tax Registration Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter Tax Registration Number">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.tax_registration_no" placeholder="Enter Tax Registration Number">
         </div>
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Trade License</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter Trade License">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.trade_license" placeholder="Enter Trade License">
         </div>
       </div>
     </div>
@@ -288,11 +286,13 @@
         
         <div>
           <label class="form-label text-[11px] font-semibold text-gray-700">Upload your signature</label>
-          <div class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer">
-            <div class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
+          <input type="file" (change)="onSignatureSelected($event)" accept="image/*" class="hidden" #sigUpload>
+          <div (click)="sigUpload.click()" class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer overflow-hidden">
+            <img *ngIf="signaturePreviewUrl" [src]="signaturePreviewUrl" alt="Signature Preview" class="max-h-20 object-contain">
+            <div *ngIf="!signaturePreviewUrl" class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
               <i class="ri-upload-2-line text-lg"></i>
             </div>
-            <span class="text-[10px] font-medium text-gray-500 text-center">Click to upload or drag and drop</span>
+            <span *ngIf="!signaturePreviewUrl" class="text-[10px] font-medium text-gray-500 text-center">Click to upload or drag and drop</span>
           </div>
           <p class="text-[9px] text-gray-500 mt-2 text-center leading-relaxed">Attached Signature will be automatically populated in signature pad while approving lease.</p>
         </div>
@@ -320,64 +320,13 @@
   <!-- FULL WIDTH BOTTOM SECTIONS -->
   <div class="xl:col-span-12 flex flex-col gap-x-3 gap-y-2">
     
-    <!-- Documents & Attachments -->
-    <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-      <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-        <div>
-          <h5 class="text-sm font-bold text-gray-800 m-0">Documents & Attachments</h5>
-          <p class="text-[10px] text-gray-500 mt-0.5 m-0">Upload and manage IDs, passports, visas, trade licenses, tenancy contracts, and other related documents.</p>
-        </div>
-        <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5">
-          <i class="ri-add-line"></i> Add Document
-        </button>
-      </div>
-      <div class="p-6 flex flex-col gap-3">
-        <!-- Empty State (Hidden in favor of document list as per mockup) -->
-        <!-- <div class="w-full flex flex-col items-center justify-center py-10">
-          <div class="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center text-2xl mb-3"><i class="ri-file-text-line"></i></div>
-          <h6 class="text-sm font-bold text-gray-800 m-0">No documents uploaded yet</h6>
-          <p class="text-[11px] text-gray-500 mt-1 max-w-xs text-center">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
-          <button type="button" class="mt-4 px-4 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] font-semibold">Add Document</button>
-        </div> -->
-
-        <!-- Document List -->
-        <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-primary/30 transition-colors">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100"><i class="ri-file-pdf-line"></i></div>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-gray-800">Passport_copy.pdf</span>
-              <div class="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
-                <span>Passport</span> <span class="w-1 h-1 rounded-full bg-gray-300"></span> <span>2.4 MB</span> <span class="w-1 h-1 rounded-full bg-gray-300"></span> <span>Uploaded today</span>
-                <span class="px-2 py-0.5 rounded-full bg-success/10 text-success font-semibold ml-2">Tenant</span>
-              </div>
-            </div>
-          </div>
-          <button class="text-xs font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-md hover:bg-gray-50 shadow-sm">View</button>
-        </div>
-
-        <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-primary/30 transition-colors">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100"><i class="ri-image-line"></i></div>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-gray-800">Trade_License.jpg</span>
-              <div class="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
-                <span>Trade License</span> <span class="w-1 h-1 rounded-full bg-gray-300"></span> <span>1.1 MB</span> <span class="w-1 h-1 rounded-full bg-gray-300"></span> <span>Uploaded yesterday</span>
-                <span class="px-2 py-0.5 rounded-full bg-success/10 text-success font-semibold ml-2">Tenant</span>
-              </div>
-            </div>
-          </div>
-          <button class="text-xs font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-md hover:bg-gray-50 shadow-sm">View</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Notes -->
     <div class="box !mb-2 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
       <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
         <h5 class="text-sm font-bold text-gray-800 m-0">Notes</h5>
       </div>
       <div class="p-5">
-        <textarea class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]" placeholder="Enter Notes"></textarea>
+        <textarea class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]" [(ngModel)]="tenantData.notes" placeholder="Enter Notes"></textarea>
       </div>
     </div>
 
@@ -400,6 +349,6 @@
     Cancel
   </button>
   <button type="button" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95" (click)="saveTenant()">
-    Save Tenant
+    {{ isEditMode ? 'Save Changes' : 'Save Tenant' }}
   </button>
 </div>

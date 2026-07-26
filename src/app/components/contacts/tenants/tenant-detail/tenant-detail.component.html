@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      <button [routerLink]="['/contacts/tenants/edit-tenant', tenantId]" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
         Edit Tenant
       </button>
     </div>
@@ -53,7 +53,7 @@
       
       <!-- Tenant Name Header -->
       <div>
-        <h4 class="text-lg font-black text-gray-800 m-0">Ahmad Yasein</h4>
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ tenantData?.tenant || tenantData?.name || 'Ahmad Yasein' }}</h4>
         <div class="flex gap-2 mt-2 text-[10px] font-semibold">
           <button class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">View Activity</button>
           <button (click)="showSubscriptionsModal = true" class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email Sub (8/37)</button>
@@ -68,20 +68,23 @@
         <div class="p-5 flex flex-col gap-x-3 gap-y-2">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-gray-700">Login Information</span>
-            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">Not Verified</span>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border" 
+                  [ngClass]="tenantData?.verified_status === 'Verified' ? 'bg-success/10 text-success border-success/20' : 'bg-danger/10 text-danger border-danger/20'">
+              {{ tenantData?.verified_status || 'Not Verified' }}
+            </span>
           </div>
           
           <div class="flex flex-col gap-2 text-xs">
             <div class="grid grid-cols-3 gap-2">
               <span class="text-gray-500 font-medium col-span-1">Email:</span>
-              <span class="text-gray-800 font-semibold col-span-2">ahmad&#64;fastech.com</span>
+              <span class="text-gray-800 font-semibold col-span-2">{{ tenantData?.email_address || '-' }}</span>
             </div>
             <div class="grid grid-cols-3 gap-2">
               <span class="text-gray-500 font-medium col-span-1">Username:</span>
-              <span class="text-gray-800 font-semibold col-span-2">Ahmad.Yasein</span>
+              <span class="text-gray-800 font-semibold col-span-2">{{ tenantData?.login_username || '-' }}</span>
             </div>
           </div>
-          <button class="w-full py-2 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">Verify Email</button>
+          <button *ngIf="tenantData?.verified_status !== 'Verified'" class="w-full py-2 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">Verify Email</button>
         </div>
       </div>
 
@@ -93,54 +96,30 @@
         <div class="p-5 flex flex-col gap-2 text-xs">
           <div class="grid grid-cols-3 gap-2 py-1">
             <span class="text-gray-500 font-medium col-span-1">ID:</span>
-            <span class="text-gray-800 font-bold col-span-2">31658</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ tenantData?.lease_code || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 py-1">
             <span class="text-gray-500 font-medium col-span-1">Name:</span>
-            <span class="text-gray-800 font-bold col-span-2">Ahmad Yasein</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ tenantData?.tenant || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 py-1">
             <span class="text-gray-500 font-medium col-span-1">Email:</span>
-            <span class="text-primary font-bold col-span-2 cursor-pointer">ahmad123&#64;gmail.com</span>
+            <span class="text-primary font-bold col-span-2 cursor-pointer">{{ tenantData?.email_address || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 py-1">
             <span class="text-gray-500 font-medium col-span-1">Phone:</span>
-            <span class="text-gray-800 font-bold col-span-2">050 347 2898</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ tenantData?.phone_number || '-' }}</span>
           </div>
           
           <div class="text-center my-1"><a href="javascript:void(0)" class="text-primary font-bold text-[10px]">View more details <i class="ri-arrow-down-s-line"></i></a></div>
           
           <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Gender:</span>
-            <span class="text-gray-800 font-bold col-span-2">Male</span>
+            <span class="text-gray-500 font-medium col-span-1">Company:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ tenantData?.company_name || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Marital Status:</span>
-            <span class="text-gray-800 font-bold col-span-2">-</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Nationality:</span>
-            <span class="text-gray-800 font-bold col-span-2">India</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Additional Phone 1:</span>
-            <span class="text-gray-800 font-bold col-span-2">0048 382 39</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Address 1:</span>
-            <span class="text-gray-800 font-bold col-span-2">Dubai Marina, Tower A, Dubai</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">City:</span>
-            <span class="text-gray-800 font-bold col-span-2">Dubai</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Opening Balance:</span>
-            <span class="text-gray-800 font-black col-span-2">AED 0.00</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 py-1">
-            <span class="text-gray-500 font-medium col-span-1">Property Listing:</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success w-fit col-span-2">Enabled</span>
+            <span class="text-gray-500 font-medium col-span-1">Active Lease:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ tenantData?.active_lease || '-' }}</span>
           </div>
         </div>
       </div>
@@ -181,24 +160,27 @@
           <h5 class="text-sm font-bold text-gray-800 m-0">Emergency Contact</h5>
           <button (click)="showAddEmergencyContactModal = true" class="w-6 h-6 rounded bg-[#1f2b45] text-white flex items-center justify-center text-xs hover:bg-[#131b2e] border-0">+</button>
         </div>
-        <div class="p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">Email:</span>
-            <span class="text-gray-800 font-bold col-span-2">zaid&#64;example.com</span>
-          </div>
+        <div class="p-4 flex flex-col gap-2 text-xs" *ngIf="emergencyContactData && emergencyContactData.length > 0; else noEmergencyContact">
           <div class="grid grid-cols-3 gap-2">
             <span class="text-gray-500 font-medium col-span-1">Name:</span>
-            <span class="text-gray-800 font-bold col-span-2">Zaid Rehman</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ emergencyContactData[0]?.column1 || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">Relation:</span>
-            <span class="text-gray-800 font-bold col-span-2">Brother</span>
+            <span class="text-gray-500 font-medium col-span-1">Email:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ emergencyContactData[0]?.email_address || '-' }}</span>
           </div>
           <div class="grid grid-cols-3 gap-2">
             <span class="text-gray-500 font-medium col-span-1">Phone:</span>
-            <span class="text-gray-800 font-bold col-span-2">050 488 28 32</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ emergencyContactData[0]?.phone || '-' }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <span class="text-gray-500 font-medium col-span-1">Role:</span>
+            <span class="text-gray-800 font-bold col-span-2">{{ emergencyContactData[0]?.role_name || '-' }}</span>
           </div>
         </div>
+        <ng-template #noEmergencyContact>
+          <div class="p-4 text-center text-xs text-gray-400 italic">No emergency contacts found.</div>
+        </ng-template>
       </div>
 
       <!-- Custom Fields -->
