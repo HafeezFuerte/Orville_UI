@@ -17,7 +17,8 @@ export interface DetailTab {
 
   hasActions?: boolean;
   addButtonText?: string;
-
+  entity?: string;
+  entity_id?: string;
   // NEW
   popupType?: 'common-area' | 'attachment' | 'notes';
 

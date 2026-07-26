@@ -26,16 +26,27 @@
             <!-- Body -->
           <div class="p-6">
     <!-- Content Layout -->
-    <ng-container *ngIf="selectedTab?.layout === 'content' && selectedTab?.key!='units' && selectedTab?.key!='rooms'">
+    <ng-container *ngIf="selectedTab?.layout === 'content' 
+    && checkCommonTab()">
         <ng-container
             *ngTemplateOutlet="overview">
         </ng-container>
     </ng-container>
-    <ng-container *ngIf="selectedTab?.layout === 'content' && (selectedTab?.key=='units' || selectedTab?.key=='rooms' )">
+    <ng-container *ngIf="selectedTab?.layout === 'content' && (selectedTab?.key=='units'|| selectedTab?.key=='rooms' )">
       <ng-container
           *ngTemplateOutlet="units">
       </ng-container>
   </ng-container>
+  <ng-container *ngIf="selectedTab?.layout === 'content' && ( selectedTab?.key=='notes')">
+    <ng-container
+        *ngTemplateOutlet="notes">
+    </ng-container>
+</ng-container>
+<ng-container *ngIf="selectedTab?.layout === 'content' && ( selectedTab?.key=='attachments')">
+  <ng-container
+      *ngTemplateOutlet="attachments">
+  </ng-container>
+</ng-container>
 
     <!-- Table Layout -->
     <ng-container *ngIf="selectedTab?.layout === 'table'">

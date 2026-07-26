@@ -49,4 +49,13 @@ export class CommonService {
   getSideNav(data: any) {
     return this.http.post(SharedUrlLinks._sidenav, data, { headers: this.updateHeaders() });
   } 
+    commonPayload() {
+    return {
+      userId: this.currentUser?.userId,
+      clientId: this.currentUser?.clientId,
+      company_id: this.currentUser?.companyId,
+      source: 'web',
+      languageid: 1
+    };
+  }
 }

@@ -14,11 +14,13 @@ import { AttachmentPopupComponent } from '../../popups/attachments-popup/attachm
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { ToastrService } from 'ngx-toastr';
-import { UnitsTableComponent } from '../../../child-tables/units-table.component';
+import { UnitsTableComponent } from '../../../child-tables/units/units-table.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule,UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule,NotesComponent,AttachmentsComponent,UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -118,28 +120,8 @@ broadCastsColumns = [
   { key: 'scheduled_date', label: 'web.common.lblDate' }
   
 ];
-attachmentColumns = [
-  { key: 'code', label: 'web.common.lblID' ,is_editCol:true},
-  { key: 'document_type_name', label: 'web.property.lblFileType' },
-  { key: 'doc_no', label: 'web.property.lblDocID' },
-  { key: 'document_status_name', label: 'web.property.lblDocumentStatus' },
-  { key: 'issue_date', label: 'web.property.lblIssueDate' },
-  { key: 'expiry_date', label: 'web.property.lblExpiryDate' },
-  { key: 'file_path', label: 'web.property.lblFiles',isLink:true }
-];
 
-notesColumns = [
-  { key: 'code', label: 'web.common.lblID',is_editCol:true },
-  { key: 'subject', label: 'web.property.lblSubject' },
-  { key: 'description', label: 'web.property.lblContent', isHtml: true },
-  { key: 'status', label: 'web.property.lblVia' },
-  { key: 'uploaded_date', label: 'web.property.lblNoteDate' },
-  { key: 'created_by', label: 'web.property.lblCreatedBy' },
-  { key: 'file_path', label: 'web.property.lblFiles',isLink:true }, 
-  { key: 'uploaded_date', label: 'web.property.lblCreatedAt' },
-  { key: 'modified_date', label: 'web.property.lblModifiedDate' },
-];
-
+ 
 parkingsColumns = [
   { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'parking_no', label: 'web.property.lblParkingNo' },
@@ -188,26 +170,8 @@ private createForms(): void {
     floor: ['', Validators.required],
     code:[''],
     desc:['']
-  });
-  this.attachmentsForm = this.fb.group({
-    documentType: ['', Validators.required],
-    documentNumber: ['', Validators.required],
-    issueDate: ['', Validators.required],
-    expiryDate: ['', Validators.required],
-    issuingAuthority: ['', Validators.required],
-    shareWithTenant: ['', Validators.required],
-    shareWithLandlord: ['', Validators.required],
-    propertyAttachment: [''],
-    code:['']
-  });
-  this.notesForm = this.fb.group({
-    subject: ['', Validators.required],
-    commChannelType: ['', Validators.required],
-    content: ['', Validators.required],
-    propertyNotesFile:[''],
-    code:[''],
-    desc:['']
-  });
+  }); 
+  
 }
 getStatusClass(status: string) {
   switch(status) {
@@ -332,8 +296,9 @@ initializeTabs() {
     {
       key: 'attachments',
       label: 'Attachments',
-      layout: 'table',
-      columns: this.attachmentColumns,
+      layout: 'content', 
+      entity:"property",
+      entity_id:this.propertyCode,
       data: this.attachmentsData,
       totalRecords: this.attachmentsData?.length || 0,
       loading: this.loading,
@@ -356,8 +321,9 @@ initializeTabs() {
     {
       key: 'notes',
       label: 'Notes',
-      layout: 'table',
-      columns: this.notesColumns,
+      layout: 'content', 
+      entity:"property",
+      entity_id:this.propertyCode,
       data: this.notesData,
       totalRecords: this.notesData?.length || 0,
       loading: this.loading,
@@ -402,11 +368,11 @@ savePopup(tab: string) {
       break;
 
     case 'attachments':
-      this.saveAttachment(this.attachmentsForm);
+      
       break;
 
     case 'notes':
-      this.saveNotes(this.notesForm);
+       
       break;
   }
 
@@ -515,102 +481,8 @@ this.portfolioService.saveCommonArea(payload).subscribe({
     error: console.error
 });
 }
-saveAttachment(form:FormGroup){
-  const attachmentLabels = {
-    documentType: this.translate.instant('web.portfolio.popups.attachments.lblDocumentType'),
-    propertyAttachment: this.translate.instant('web.portfolio.popups.attachments.lblUploadFile')
-  };  
-  if (!this.validateForm(this.attachmentsForm, attachmentLabels)) {
-    return;
-  }
-  const values = form.value;
-  const request = {
-  ...this.commonPayload,
-  code: values.code,
-  entity_id: this.propertyCode,
-  entity:'property',
-  document_type:values.documentType, 
-  document_no:values.documentNumber,
-    issue_date:values.issueDate,
-    expiry_date:values.expiryDate,
-    issuing_authority:values.issuingAuthority,
-    share_with_tenants:values.shareWithTenant,
-    share_with_landlords:values.shareWithLandlord
-  }
-  const formData = new FormData();
-
-// JSON goes as ONE field
-formData.append('reqObject', JSON.stringify(request)); 
-const file = this.attachmentsForm.get('propertyAttachment')?.value;
-if((file==null || file==undefined) && values.code==''){
-  this.toastr.error("Invalid file selection","Error");
-}
-if (file) {
-  formData.append('file_path', file);
-}
-  this.portfolioService.saveAttachment(formData)
-    .subscribe(res => { 
-      if (res["statusCode"] == "200") { 
-        this.attachmentsForm.reset();
-        this.detailLayout.closeModal();
-        this.attachmentsData = res.objResult.table;
-        let tab = this.tabs.find(t => t.key === this.activeTab);
-        tab!.data=this.attachmentsData;
-      }
-      else{
-        this.toastr.error(res['message'],"Error");
-      }
-    });
-}
-saveNotes(form: FormGroup){
-  const labels = {
-  subject: this.translate.instant('web.portfolio.popups.notes.lblSubject'),
-  commChannelType: this.translate.instant('web.portfolio.popups.notes.lblCommChannel'),
-  content: this.translate.instant('web.portfolio.popups.notes.lblContent'),
-  propertyNotesFile: this.translate.instant('web.portfolio.popups.notes.lblUploadFile')
-  };
-  if (!this.validateForm(this.notesForm, labels)) {
-    return;
-  }
-  
-  const values = form.value;
-  const payload = {
-   ...this.commonPayload,
-   id:0,
-    entity_id: this.propertyCode,
-    entity:'property',
-   subject:values.subject,
-   channel_type:Number(values.commChannelType),
-   desc:values.content,
-   code:values.code
-  }
-  const formData = new FormData();
-
-  formData.append('reqObject', JSON.stringify(payload));
-  
-  const file = this.notesForm.get('propertyNotesFile')?.value;
- if((file==null || file==undefined) && values.code==''){
-    this.toastr.error("Invalid file selection","Error");
- }
-  if (file) {
-    formData.append('file_path', file);
-}
-   this.portfolioService.saveNotes(formData)
-    .subscribe(res => {
-      if (res["statusCode"] == "200") {  
-      this.notesForm.reset();
-      this.detailLayout.closeModal();
-      this.notesData = res.objResult.table;
-      let tab = this.tabs.find(t => t.key === this.activeTab);
-      tab!.data=this.notesData;
-      }
-      else{
-        this.toastr.error(res['message'],"Error");
-      }
-      
-    });
-}
-
+ 
+ 
 validateForm(form: FormGroup, fieldLabels: { [key: string]: string }): boolean {
   const errors: string[] = [];
   Object.keys(fieldLabels).forEach(controlName => {

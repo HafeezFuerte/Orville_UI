@@ -38,7 +38,11 @@ export class DetailPageLayoutComponent {
   @ContentChild('overview')
   overview!: TemplateRef<any>;
   @ContentChild('units')
-  units!: TemplateRef<any>;
+  units!: TemplateRef<any>; 
+  @ContentChild('notes')
+  notes!: TemplateRef<any>; 
+  @ContentChild('attachments')
+  attachments!: TemplateRef<any>;
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;
@@ -73,7 +77,12 @@ export class DetailPageLayoutComponent {
       this.activeTab = this.tabs[0].key;
     }
   }
-
+  checkCommonTab(){
+    return this.selectedTab?.key!='units' && 
+    this.selectedTab?.key!='notes' && 
+    this.selectedTab?.key!='attachments' && 
+    this.selectedTab?.key!='rooms'
+  }
   changeTab(tab: DetailTab) {
     this.activeTab = tab.key;
     this.activeTabChange.emit(tab.key);
