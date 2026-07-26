@@ -20,6 +20,11 @@ export const contactsRoutingModule: Routes = [
           import('./landlords/add-landlord/add-landlord.component').then((m) => m.AddLandlordComponent),
       },
       {
+        path: 'landlords/edit-landlord/:id',
+        loadComponent: () =>
+          import('./landlords/add-landlord/add-landlord.component').then((m) => m.AddLandlordComponent),
+      },
+      {
         path: 'landlords/:id',
         // Newly added landlord details page route
         loadComponent: () =>
@@ -32,6 +37,11 @@ export const contactsRoutingModule: Routes = [
       },
       {
         path: 'tenants/add-tenant',
+        loadComponent: () =>
+          import('./tenants/add-tenant/add-tenant.component').then((m) => m.AddTenantComponent),
+      },
+      {
+        path: 'tenants/edit-tenant/:id',
         loadComponent: () =>
           import('./tenants/add-tenant/add-tenant.component').then((m) => m.AddTenantComponent),
       },
@@ -51,6 +61,11 @@ export const contactsRoutingModule: Routes = [
           import('./vendors/add-vendor/add-vendor.component').then((m) => m.AddVendorComponent),
       },
       {
+        path: 'vendors/edit-vendor/:id',
+        loadComponent: () =>
+          import('./vendors/add-vendor/add-vendor.component').then((m) => m.AddVendorComponent),
+      },
+      {
         path: 'vendors/:id',
         // Newly added vendor details page route
         loadComponent: () =>
@@ -63,6 +78,11 @@ export const contactsRoutingModule: Routes = [
       },
       {
         path: 'support-technicians/add-support-technician',
+        loadComponent: () =>
+          import('./support-technicians/add-support-technician/add-support-technician.component').then((m) => m.AddSupportTechnicianComponent),
+      },
+      {
+        path: 'support-technicians/edit-support-technician/:id',
         loadComponent: () =>
           import('./support-technicians/add-support-technician/add-support-technician.component').then((m) => m.AddSupportTechnicianComponent),
       },

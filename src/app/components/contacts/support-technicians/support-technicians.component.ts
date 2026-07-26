@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
+import { PropertiesService } from '../../portfolio/services/properties.service';
+import { Router } from '@angular/router';
 
 export interface Technician {
   id: number;
+  code: string;
   name: string;
   email: string;
   phoneNumber: string;
@@ -15,6 +18,7 @@ export interface Technician {
   assignedUnits: number;
   status: string;
   workOrder: string;
+  image_path: string;
 }
 
 @Component({
@@ -25,13 +29,17 @@ export interface Technician {
   styleUrl: './support-technicians.component.scss'
 })
 export class SupportTechniciansComponent implements OnInit {
+  private propertiesService = inject(PropertiesService);
+  private router = inject(Router);
+
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
+  isLoading: boolean = false;
 
   // Pagination
   pageNo = 1;
-  pageSize = 10;
+  pageSize = 20;
   totalRecords = 0;
 
   tableColumns = [
@@ -65,55 +73,81 @@ export class SupportTechniciansComponent implements OnInit {
     return this.tableColumns.every(c => c.visible !== false);
   }
 
-  technicians: Technician[] = [
-    { id: 31658, name: 'Furqan Iyad Soltani', email: 'boston@live.com', phoneNumber: '+971 50 62 3358', username: 'furqan', assignedUnits: 65, status: 'Active', workOrder: 'Yes' },
-    { id: 31659, name: 'Mujahid Yaseer al-Ghattas', email: 'slang@planet.net', phoneNumber: '+971 50 62 3358', username: 'mujahid', assignedUnits: 120, status: 'Active', workOrder: 'Yes' },
-    { id: 31660, name: 'Muzammil al-Hussain', email: 'bonmots@att.net', phoneNumber: '+971 50 62 3358', username: 'muzammil', assignedUnits: 201, status: 'Active', workOrder: 'Yes' },
-    { id: 31661, name: 'Abdul Hameed al-Bishara', email: 'bonmots@optonline.net', phoneNumber: '+971 50 62 3358', username: 'abdul', assignedUnits: 53, status: 'Blocked', workOrder: 'No' },
-    { id: 31662, name: 'Dawood Ashkir Fakhri', email: 'jgillig@hotmail.com', phoneNumber: '+971 50 62 3358', username: 'dawood', assignedUnits: 10, status: 'Active', workOrder: 'Yes' }
-  ];
-
+  technicians: Technician[] = [];
   paginatedTechnicians: Technician[] = [];
 
   ngOnInit(): void {
-    this.updatePagination();
+    this.loadTechnicians();
+  }
+
+  loadTechnicians() {
+    this.isLoading = true;
+    const payload = {
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: localStorage.getItem('clientId') || '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageNo - 1,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? this.statusFilter : '',
+      filter_list: '',
+      featureid: 'SUPPORT_TECHNICIANS'
+    };
+
+    this.propertiesService.getTenants(payload).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        let rawList: any[] = [];
+        if (Array.isArray(response)) {
+          rawList = response;
+        } else if (response && response.objResult) {
+          if (Array.isArray(response.objResult)) rawList = response.objResult;
+          else if (response.objResult.support_technicians) rawList = response.objResult.support_technicians;
+          else if (response.objResult.technicians) rawList = response.objResult.technicians;
+          else if (response.objResult.technician) rawList = response.objResult.technician;
+        }
+
+        this.technicians = (rawList || []).map((t: any) => ({
+          id: t.id || 0,
+          code: t.code || '',
+          name: t.name || t.technician || (t.first_name ? (t.first_name + ' ' + (t.last_name || '')) : '') || '-',
+          email: t.email_address || t.email || '-',
+          phoneNumber: t.phone_number || t.phoneNumber || t.mobile_no || '-',
+          username: t.username || '-',
+          assignedUnits: t.assigned_units || t.assignedUnits || t.total_units || 0,
+          status: t.is_active ? 'Active' : 'Blocked',
+          workOrder: t.is_work_order ? 'Yes' : 'No',
+          image_path: t.image_path || ''
+        })).sort((a, b) => a.id - b.id);
+
+        this.totalRecords = response?.totalCount || this.technicians.length;
+        this.paginatedTechnicians = this.technicians;
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        console.error('Error fetching support technicians:', err);
+      }
+    });
   }
 
   onSearch() {
     this.pageNo = 1;
-    this.updatePagination();
+    this.loadTechnicians();
   }
   
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 1;
-    this.updatePagination();
+    this.loadTechnicians();
   }
 
   onSharedTablePageChange(event: any) {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.updatePagination();
-  }
-
-  updatePagination() {
-    let filtered = this.technicians;
-    
-    if (this.statusFilter !== 'All') {
-      filtered = filtered.filter(l => l.status === this.statusFilter);
-    }
-    
-    if (this.searchQuery) {
-      filtered = filtered.filter(l => 
-        l.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-        l.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        l.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        l.id.toString().includes(this.searchQuery)
-      );
-    }
-    
-    this.totalRecords = filtered.length;
-    this.paginatedTechnicians = filtered;
+    this.loadTechnicians();
   }
   
   getStatusClass(status: string) {
@@ -122,5 +156,19 @@ export class SupportTechniciansComponent implements OnInit {
       case 'Blocked': return 'bg-danger/10 text-danger';
       default: return 'bg-gray-100 text-gray-600';
     }
+  }
+
+  handleEditAction(row: any) {
+    if (row.action_name === 'edit') {
+      this.router.navigate(['/contacts/support-technicians/edit-support-technician', row.code]);
+    } else if (row.action_name === 'delete') {
+      console.log('Delete support technician clicked', row.id);
+    }
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
   }
 }

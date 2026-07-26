@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { PropertiesService } from '../../../portfolio/services/properties.service';
 
 @Component({
   selector: 'app-tenant-detail',
@@ -13,7 +14,53 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })
-export class TenantDetailComponent {
+export class TenantDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private propertiesService = inject(PropertiesService);
+  
+  tenantId: any = null;
+  tenantData: any = null;
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.tenantId = params['id'];
+      if (this.tenantId) {
+        this.getTenantDetails();
+      }
+    });
+  }
+
+  getTenantDetails() {
+    const payload = {
+      typeId: 27,
+      filterId: 0,
+      filterText: this.tenantId,
+      filterText1: "",
+      userId: Number(localStorage.getItem('userId')) || 1,
+      clientId: localStorage.getItem('clientId') || "74BB6922",
+      companyId: Number(localStorage.getItem('companyId')) || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          if (res.objResult.tenant_dtls && res.objResult.tenant_dtls.length > 0) {
+            this.tenantData = res.objResult.tenant_dtls[0];
+          }
+          if (res.objResult.leases) this.leaseData = res.objResult.leases;
+          if (res.objResult.note) this.noteData = res.objResult.note;
+          if (res.objResult.documents) this.attachmentData = res.objResult.documents;
+          if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
+          
+          console.log('Tenant Details Loaded:', this.tenantData);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching tenant details:', err);
+      }
+    });
+  }
+
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
 
@@ -77,37 +124,19 @@ export class TenantDetailComponent {
 
   ];
 
-  statementData = [
-    { invoiceId: 'INV-26-00063069', transactionId: '-', property: 'Sunrise Apartments', tags: '-', unit: '306-PR-2', bankName: 'ABC Bank', category: 'Income', paidDate: '12-07-2026', summary: 'Monthly rent payment', propertyId: '982736', leaseId: '2234', mode: 'Bank Transfer', dueDate: '15-07-2026', debit: 'AED 3,000.00', credit: 'AED 0.00', balance: 'AED 3,000.00', chequeNo: '4365239', type: 'Rent' },
-    { invoiceId: 'INV-26-00063069', transactionId: '3482833', property: 'Green Heights', tags: '-', unit: '305-PR-2', bankName: 'ENBD Bank', category: 'Income', paidDate: '12-07-2026', summary: 'Service charge payment', propertyId: '982737', leaseId: '2235', mode: 'Cash', dueDate: '15-07-2026', debit: 'AED 3,000.00', credit: 'AED 3,000.00', balance: 'AED 0.00', chequeNo: '4325339', type: 'Rent' }
-  ];
+  statementData: any[] = [];
 
   // --- TAB 2: LEASES ---
   leaseColumns = [
-    { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
-    { key: 'leaseName', label: 'web.contacts.lblLeaseName', visible: true },
+    { key: 'lease_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
+    { key: 'active_lease', label: 'web.contacts.lblLeaseName', visible: true },
     { key: 'tenant', label: 'web.contacts.lblTenant', visible: true },
-    { key: 'legalCase', label: 'web.contacts.lblLegalCase', visible: true },
-    { key: 'unit', label: 'web.contacts.lblUnit', visible: true },
-    { key: 'property', label: 'web.contacts.lblProperty', visible: true },
-    { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'rent', label: 'web.contacts.lblrent(AED)', visible: true },
-    { key: 'startDate', label: 'web.contacts.lblIssueDate', visible: true },
-   
-    { key: 'endDate', label: 'web.contacts.lblExpiryDate', visible: true },
-    { key: 'renewed', label: 'web.contacts.lblRenewed?', visible: true },
-    { key: 'multiUnit', label: 'web.contacts.lblMultiUnit?', visible: true },
-    { key: 'created', label: 'web.contacts.lblCreatedAt', visible: true },
-     { key: 'remarks', label: 'web.contacts.lblRemarks', visible: true },
-    { key: 'createdBy', label: 'web.contacts.lblCreatedBy', visible: true },
-    { key: 'InternalStatus', label: 'web.contacts.lblInternalStatus', visible: true },
-    { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
+    { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
+    { key: 'phone_number', label: 'web.contacts.lblPhoneNumber', visible: true },
+    { key: 'company_name', label: 'web.contacts.lblCompany', visible: true }
   ];
 
-  leaseData = [
-    { id: '31658', leaseName: 'Lease - 31658 - Marina Heights Towers', tenant: 'James T. Hirsi', legalCase: 'No', unit: 'Apartment 203-PR-4', property: 'Marina Heights Towers', status: 'Active', rent: 'AED 2,500.00', startDate: '01-01-2026', internalStatus: 'All', createdBy: 'Admin', remarks: '-', endDate: '31-12-2026', renewed: 'No', multiUnit: 'No', created: '12-07-2024' },
-    { id: '31658', leaseName: 'Lease - 31658 - Marina Heights Towers', tenant: 'Mya Thanit', legalCase: 'No', unit: 'Apartment 203-PR-4', property: 'Marina Heights Towers', status: 'Active', rent: 'AED 2,500.00', startDate: '01-01-2026', internalStatus: 'All', createdBy: 'Admin', remarks: '-', endDate: '31-12-2026', renewed: 'No', multiUnit: 'No', created: '12-07-2024' }
-  ];
+  leaseData: any[] = [];
 
   // --- TAB 3: ATTACHMENTS ---
   attachmentColumns = [
@@ -127,10 +156,7 @@ export class TenantDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  attachmentData = [
-    { id: 'ATT-1001', fileType: 'Passport Copy', docId: 'DOC-1001', status: 'Active', issueDate: '12-07-2024', expiryDate: '12-07-2026', files: 'passport.pdf', uploadedBy: 'Admin', createdAt: '12-07-2024', updatedAt: '12-07-2024' },
-    { id: 'ATT-1001', fileType: 'Trade License', docId: 'DOC-1002', status: 'Verified', issueDate: '12-07-2024', expiryDate: '12-07-2026', files: 'license.pdf', uploadedBy: 'Admin', createdAt: '12-07-2024', updatedAt: '12-07-2024' }
-  ];
+  attachmentData: any[] = [];
 
   // --- TAB 4: NOTES ---
   noteColumns = [
@@ -146,10 +172,7 @@ export class TenantDetailComponent {
     { key: 'Action', label: 'web.contacts.lblAction', visible: true }
   ];
 
-  noteData = [
-    { id: '31658', subject: 'Move-in condition', content: 'Tenant reported minor paint marks near the living room window. Schedule touch-up.....', via: 'Portal', noteDate: '12-01-2026', created_by: 'Admin User', files: 'movein_condition.pdf', created_at: '12-01-2026', updated_at: '12-01-2026' },
-    { id: '31658', subject: 'Rent reminder', content: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first wo...', via: 'Email', noteDate: '12-01-2026', created_by: 'Property Manager', files: 'rent_reminder.pdf', created_at: '12-01-2026', updated_at: '12-01-2026' }
-  ];
+  noteData: any[] = [];
 
   // --- TAB 5: USERS ---
   userColumns = [
@@ -168,28 +191,21 @@ export class TenantDetailComponent {
     { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true }
   ];
 
-  userData = [
-    { id: '31658', name: 'Ahmad Yasmin', userName: 'Ahmadyasmin', email: 'ahmadyasmin@mail.com', phone: '0528613568', role: 'Tenant', type: 'Tenant ID: 65584', status: 'Active' },
-    { id: '31658', name: 'Ahmad Yasmin', userName: 'Ahmadyasmin', email: 'ahmadyasmin@mail.com', phone: '0528613568', role: 'Tenant', type: 'Tenant ID: 65584', status: 'Active' }
-  ];
+  userData: any[] = [];
 
   // --- TAB 6: EMERGENCY CONTACT ---
   emergencyContactColumns = [
-    { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
-    { key: 'name', label: 'web.contacts.lblName', visible: true },
-    { key: 'relation', label: 'web.contacts.lblRelation', visible: true },
+    { key: 'user_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
+    { key: 'column1', label: 'web.contacts.lblName', visible: true },
+    { key: 'username', label: 'web.contacts.lblUserName', visible: true },
     { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true },
-    { key: 'workPhone', label: 'web.contacts.lblWorkPhone', visible: true },
-    { key: 'email', label: 'web.contacts.lblEmail', visible: true, useTemplate: true },
-    { key: 'includeInEmail', label: 'web.contacts.lblIncludeInEmail', visible: true, useTemplate: true },
-    { key: 'Contactable Name', label: 'web.contacts.lblContactableName', visible: true, useTemplate: true },
-    { key: 'Created_at', label: 'web.contacts.lblCreated', visible: true, useTemplate: true },
-    { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true }
+    { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
+    { key: 'role_name', label: 'web.contacts.lblRole', visible: true },
+    { key: 'time_zone', label: 'web.contacts.lblTimezone', visible: true },
+    { key: 'is_active', label: 'web.contacts.lblStatus', visible: true, useTemplate: true }
   ];
 
-  emergencyContactData = [
-    { id: '31658', name: 'Zaid Rehman', relation: 'Brother', phone: '0528613568', workPhone: '05698 253 25', email: 'zaidrahman@gmail.com', includeInEmail: 'Yes' }
-  ];
+  emergencyContactData: any[] = [];
 
   setTab(tab: string) {
     this.activeTab = tab;

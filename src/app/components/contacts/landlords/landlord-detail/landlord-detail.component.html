@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <button
+      <button [routerLink]="['/contacts/landlords/edit-landlord', landlordId]"
         class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
         {{ 'web.contacts.lblEditLandlord' | translate }}
       </button>
@@ -63,8 +63,8 @@
 
       <!-- Landlord Name Header -->
       <div class="!mb-1">
-        <h4 class="text-lg font-black text-gray-800 m-0">{{ landlord.name }}</h4>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ landlord.email }}</p>
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ landlordData?.landlord || landlordData?.name || landlord?.name || 'Loading...' }}</h4>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ landlordData?.email_address || landlordData?.email || landlord?.email || '' }}</p>
         <div class="flex gap-2 mt-2 text-[10px] font-semibold">
           <button
             class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">{{

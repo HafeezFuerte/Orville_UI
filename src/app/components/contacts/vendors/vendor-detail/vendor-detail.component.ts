@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { PropertiesService } from '../../../portfolio/services/properties.service';
 @Component({
   selector: 'app-vendor-detail',
   standalone: true,
@@ -13,7 +13,59 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './vendor-detail.component.html',
   styleUrl: './vendor-detail.component.scss'
 })
-export class VendorDetailComponent {
+export class VendorDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private propertiesService = inject(PropertiesService);
+  
+  vendorId: any = null;
+  vendorData: any = null;
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.vendorId = params['id'];
+      if (this.vendorId) {
+        this.getVendorDetails();
+      }
+    });
+  }
+
+  getVendorDetails() {
+    const payload = {
+      typeId: 29,
+      filterId: 0,
+      filterText: this.vendorId,
+      filterText1: "",
+      userId: Number(localStorage.getItem('userId')) || 1,
+      clientId: localStorage.getItem('clientId') || "74BB6922",
+      companyId: Number(localStorage.getItem('companyId')) || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          if (res.objResult.vendor_dtls && res.objResult.vendor_dtls.length > 0) {
+            this.vendorData = res.objResult.vendor_dtls[0];
+          } else if (res.objResult.vendors && res.objResult.vendors.length > 0) {
+            this.vendorData = res.objResult.vendors[0];
+          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
+            this.vendorData = res.objResult[0];
+          }
+          if (res.objResult.units) this.unitData = res.objResult.units;
+          if (res.objResult.work_orders) this.workOrderData = res.objResult.work_orders;
+          if (res.objResult.bills) this.billData = res.objResult.bills;
+          if (res.objResult.purchase_orders) this.poData = res.objResult.purchase_orders;
+          if (res.objResult.documents) this.attachmentData = res.objResult.documents;
+          if (res.objResult.quotations) this.quotationData = res.objResult.quotations;
+          if (res.objResult.note) this.noteData = res.objResult.note;
+          
+          console.log('Vendor Details Loaded:', this.vendorData);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching vendor details:', err);
+      }
+    });
+  }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
 
@@ -104,10 +156,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  unitData = [
-    { id: 'U-306', Name: 'Unit 306', Category: 'Residential', Property: 'Sunrise Apartments', Landlord: 'Orville Real Estate', Tags: 'Premium', unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Occupied', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'Yes', forSale: 'No' },
-    { id: 'U-305', Name: 'Unit 305', Category: 'Residential', Property: 'Green Heights', Landlord: 'Orville Real Estate', Tags: 'Standard', unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Vacant', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'No', forSale: 'Yes' }
-  ];
+  unitData: any[] = [];
 
   // --- TAB 3: WORK ORDERS (Image 2 + Image 3 columns & add Created At at last) ---
   workOrderColumns = [
@@ -128,11 +177,7 @@ export class VendorDetailComponent {
     { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true }
   ];
 
-  workOrderData = [
-    { id: 'WO-1001', title: 'Repair Water Leak', status: 'Open', closingStatus: 'Pending', internalStatus: 'Assigned', dueDate: '15-07-2026', priority: 'High', property: 'Sunrise Ap...', vendor: 'ABC Plumbing', user: 'John Smith', tags: 'Plumbing, Emergency', maintenanceCategory: 'Plumbing', responsiblePerson: 'Michael Brown', updatedAt: '10-07-2026 09:15 AM', createdAt: '10-07-2026' },
-    { id: 'WO-1002', title: 'Replace Corridor Lights', status: 'In Progress', closingStatus: 'Pending', internalStatus: 'Working', dueDate: '18-07-2026', priority: 'Medium', property: 'Green Heig...', vendor: 'Bright Electric Ltd.', user: 'Sarah Lee', tags: 'Electrical', maintenanceCategory: 'Electrical', responsiblePerson: 'David Wilson', updatedAt: '11-07-2026 02:30 PM', createdAt: '11-07-2026' },
-    { id: 'WO-1003', title: 'HVAC Annual Service', status: 'Completed', closingStatus: 'Closed', internalStatus: 'Verified', dueDate: '08-07-2026', priority: 'Low', property: 'Oak Reside...', vendor: 'CoolAir Services', user: 'Emma Davis', tags: 'Preventive', maintenanceCategory: 'HVAC', responsiblePerson: 'Chris Johnson', updatedAt: '09-07-2026 11:45 AM', createdAt: '09-07-2026' }
-  ];
+  workOrderData: any[] = [];
 
   // --- TAB 4: FINANCIALS (Bills Sub-tab: Status & ID bottom-to-top) ---
   billColumns = [
@@ -171,10 +216,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  billData = [
-    { id: '1817909', status: 'Unpaid', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 0.00', paymentVia: '-', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', archived: 'No', dueDate: '28-11-2024', paidDate: '-', cheque: '-', days: '14', writeAmountOff: '0.00', createdBy: 'Admin' },
-    { id: '1817910', status: 'Paid', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 3,150.00', paymentVia: 'Cash', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', archived: 'No', dueDate: '28-11-2024', paidDate: '28-11-2024', cheque: '-', days: '0', writeAmountOff: '0.00', createdBy: 'Admin' }
-  ];
+  billData: any[] = [];
 
   // --- TAB 4: FINANCIALS (Purchase Order Sub-tab: PO bottom-to-top) ---
   poColumns = [
@@ -195,10 +237,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  poData = [
-    { id: '31658', poNumber: 'PO-2026-0001', title: 'Kitchen plumbing repair', tags: 'Plumbing', status: 'Pending', category: 'Maintenance', property: 'Marina Heights Towers', unit: 'Apartment 203-PR-4', workOrder: 'WO-1001', invoice: 'INV-1001', addedBy: 'Admin', totalAmount: 'AED 2,250.00', poDate: '01-07-2026', dueDate: '10-07-2026' },
-    { id: '31659', poNumber: 'PO-2026-0002', title: 'Annual electrical inspection', tags: 'Electrical', status: 'Approved', category: 'Compliance', property: 'Marina Heights Towers', unit: 'Apartment 203-PR-4', workOrder: 'WO-1002', invoice: '-', addedBy: 'Admin', totalAmount: 'AED 3,500.00', poDate: '05-07-2026', dueDate: '15-07-2026' }
-  ];
+  poData: any[] = [];
 
   // --- TAB 5: ATTACHMENTS ---
   attachmentColumns = [
@@ -215,9 +254,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  attachmentData = [
-    { id: 'ATT-1001', fileType: 'Trade License', docId: 'DOC-1001', status: 'Active', issueDate: '12-07-2024', expiryDate: '12-07-2026', files: 'trade_license.pdf', uploadedBy: 'Admin', createdAt: '12-07-2024', updatedAt: '12-07-2024' }
-  ];
+  attachmentData: any[] = [];
 
   // --- TAB 6: QUOTATIONS ---
   quotationColumns = [
@@ -237,10 +274,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  quotationData = [
-    { id: 'ATT-1001', status: 'Review', vendorName: 'FixPro Services', quotationTitle: 'Kitchen plumbing repair', quotationNumber: 'QTN-2025-0031', estdPrice: 'AED 3,250.00', deliveryDate: '14-06-2026', quotationCategoryName: 'Maintenance', landlordStatus: 'Pending', tenantStatus: 'Approved', userName: 'Ahmed Malik', createdAt: '10-01-2026, 09:14', updatedAt: '12-01-2026, 13:06' },
-    { id: 'ATT-1001', status: 'Approved', vendorName: 'BrightVolt LLC', quotationTitle: 'Annual electrical inspection', quotationNumber: 'QTN-2025-0032', estdPrice: 'AED 3,250.00', deliveryDate: '14-06-2026', quotationCategoryName: 'Compliance', landlordStatus: 'Approved', tenantStatus: 'Accepted', userName: 'Ahmed Malik', createdAt: '10-01-2026, 09:14', updatedAt: '12-01-2026, 13:06' }
-  ];
+  quotationData: any[] = [];
 
   // --- TAB 7: NOTES ---
   noteColumns = [
@@ -256,9 +290,7 @@ export class VendorDetailComponent {
     { key: 'Action', label: 'web.contacts.lblAction', visible: true }
   ];
 
-  noteData = [
-    { id: 'N-31658', subject: 'Standard maintenance terms', content: 'Agreed on 10% discount on HVAC maintenance works over AED 5,000.', via: 'Portal', noteDate: '12-07-2026', created_by: 'Admin', files: '-', created_at: '12-07-2026', updated_at: '12-07-2026' }
-  ];
+  noteData: any[] = [];
 
   // --- TAB 8: USERS ---
   userColumns = [
@@ -272,9 +304,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  userData = [
-    { id: '31658', name: 'Zaid Rehman', userName: 'zaid_rehman', email: 'zaid@vendor.com', phone: '0528613568', role: 'Vendor Admin', status: 'Active' }
-  ];
+  userData: any[] = [];
 
   // --- TAB 9: TECHNICIANS ---
   technicianColumns = [
@@ -287,9 +317,7 @@ export class VendorDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  technicianData = [
-    { id: 'TECH-101', name: 'John Miller', email: 'john.miller@vendor.com', phone: '05698 253 25', category: 'Electrical', status: 'Active' }
-  ];
+  technicianData: any[] = [];
 
   setTab(tab: string) {
     this.activeTab = tab;

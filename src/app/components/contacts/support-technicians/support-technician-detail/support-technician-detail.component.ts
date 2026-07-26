@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { PropertiesService } from '../../../portfolio/services/properties.service';
 @Component({
   selector: 'app-support-technician-detail',
   standalone: true,
@@ -13,7 +13,53 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './support-technician-detail.component.html',
   styleUrl: './support-technician-detail.component.scss'
 })
-export class SupportTechnicianDetailComponent {
+export class SupportTechnicianDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private propertiesService = inject(PropertiesService);
+  
+  technicianId: any = null;
+  technicianData: any = null;
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.technicianId = params['id'];
+      if (this.technicianId) {
+        this.getTechnicianDetails();
+      }
+    });
+  }
+
+  getTechnicianDetails() {
+    const payload = {
+      typeId: 33,
+      filterId: 0,
+      filterText: this.technicianId,
+      filterText1: "",
+      userId: Number(localStorage.getItem('userId')) || 1,
+      clientId: localStorage.getItem('clientId') || "74BB6922",
+      companyId: Number(localStorage.getItem('companyId')) || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          if (res.objResult.technician_dtls && res.objResult.technician_dtls.length > 0) {
+            this.technicianData = res.objResult.technician_dtls[0];
+          } else if (res.objResult.technicians && res.objResult.technicians.length > 0) {
+            this.technicianData = res.objResult.technicians[0];
+          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
+            this.technicianData = res.objResult[0];
+          }
+          if (res.objResult.work_orders) this.workOrderData = res.objResult.work_orders;
+          
+          console.log('Technician Details Loaded:', this.technicianData);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching technician details:', err);
+      }
+    });
+  }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
 
@@ -56,13 +102,7 @@ export class SupportTechnicianDetailComponent {
     { key: 'property', label: 'web.contacts.lblProperty', visible: true }
   ];
 
-  workOrderData = [
-    { id: 'WO-1001', title: 'Repair Water Leak', status: 'Open', closingStatus: 'Pending', internalStatus: 'Assigned', dueDate: '15-07-2026', priority: 'High', property: 'Sunrise Ap...' },
-    { id: 'WO-1002', title: 'Replace Corridor Lights', status: 'In Progress', closingStatus: 'Pending', internalStatus: 'Working', dueDate: '18-07-2026', priority: 'Medium', property: 'Green Heig...' },
-    { id: 'WO-1003', title: 'HVAC Annual Service', status: 'Completed', closingStatus: 'Closed', internalStatus: 'Verified', dueDate: '08-07-2026', priority: 'Low', property: 'Oak Reside...' },
-    { id: 'WO-1004', title: 'Paint Lobby Walls', status: 'Open', closingStatus: 'Pending', internalStatus: 'Awaiting Approval', dueDate: '22-07-2026', priority: 'Medium', property: 'City Centre' },
-    { id: 'WO-1005', title: 'Elevator Inspection', status: 'Scheduled', closingStatus: 'Pending', internalStatus: 'Scheduled', dueDate: '20-07-2026', priority: 'High', property: 'River View' }
-  ];
+  workOrderData: any[] = [];
 
   setTab(tab: string) {
     this.activeTab = tab;

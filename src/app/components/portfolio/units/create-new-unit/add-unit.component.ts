@@ -7,6 +7,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
 import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../services/properties.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { PortfolioService } from '../../services/portfolio.service';
 
 @Component({
   selector: 'app-add-unit',
@@ -41,42 +42,11 @@ export class AddUnitComponent implements OnInit {
   unitBroucherFile: File | null = null;
   
   // Master lists
-  categories = [
-    { id: 1, name: 'Residential' },
-    { id: 2, name: 'Commercial' },
-    { id: 3, name: 'Industrial' }
-  ];
-
-  unitTypes = [
-    { id: 1, name: 'Apartment' },
-    { id: 2, name: 'Villa' },
-    { id: 3, name: 'Office' },
-    { id: 4, name: 'Warehouse' },
-    { id: 5, name: 'Retail Store' }
-  ];
-
-  bedsOptions = [
-    { id: 'studio', name: 'Studio' },
-    { id: '1', name: '1 Bed' },
-    { id: '2', name: '2 Beds' },
-    { id: '3', name: '3 Beds' },
-    { id: '4', name: '4 Beds' },
-    { id: '5+', name: '5+ Beds' }
-  ];
-
-  rentTypes = [
-    { id: 1, name: 'Monthly' },
-    { id: 2, name: 'Quarterly' },
-    { id: 3, name: 'Bi-Annually' },
-    { id: 4, name: 'Yearly' }
-  ];
-
-  statusOptions = [
-    { id: 1, name: 'Available' },
-    { id: 2, name: 'Rented' },
-    { id: 3, name: 'Under Maintenance' },
-    { id: 4, name: 'Reserved' }
-  ];
+  categories: any[] = [];
+  unitTypes: any[] = [];
+  bedsOptions: any[] = [];
+  rentTypes: any[] = [];
+  statusOptions: any[] = [];
 
   feeTypes = [
     { id: 1, name: 'Percentage' },
@@ -134,13 +104,19 @@ export class AddUnitComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private propertiesService: PropertiesService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private portfolioService: PortfolioService
   ) {}
 
   ngOnInit() {
     this.filteredLandlords = [...this.landlordsList];
     this.initForm();
     this.loadProperties();
+    this.loadLookup(4, 'categories', 'lookup_name');
+    this.loadLookup(3, 'unitTypes', 'lookup_name');
+    this.loadLookup(5, 'bedsOptions', 'lookup_name');
+    this.loadLookup(6, 'rentTypes', 'lookup_name');
+    this.loadLookup(7, 'statusOptions', 'lookup_name');
 
     this.route.params.subscribe(params => {
       const id = params['id'];
@@ -586,6 +562,27 @@ export class AddUnitComponent implements OnInit {
         console.error('Error saving unit:', err);
         const errMsg = err.error?.message || err.message || 'Internal Server Error';
         this.toastr.error(errMsg, 'Error');
+      }
+    });
+  }
+
+  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: filterId,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          (this as any)[targetProperty] = res.objResult.table.map((item: any) => ({
+            id: item.id,
+            name: item[nameField] || item.lookup_name || item.name || ''
+          }));
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
   }

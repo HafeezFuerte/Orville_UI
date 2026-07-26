@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { PropertiesService } from '../../../portfolio/services/properties.service';
 @Component({
   selector: 'app-landlord-detail',
   standalone: true,
@@ -13,7 +13,57 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './landlord-detail.component.html',
   styleUrl: './landlord-detail.component.scss'
 })
-export class LandlordDetailComponent {
+export class LandlordDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private propertiesService = inject(PropertiesService);
+  
+  landlordId: any = null;
+  landlordData: any = null;
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.landlordId = params['id'];
+      if (this.landlordId) {
+        this.getLandlordDetails();
+      }
+    });
+  }
+
+  getLandlordDetails() {
+    const payload = {
+      typeId: 28,
+      filterId: 0,
+      filterText: this.landlordId,
+      filterText1: "",
+      userId: Number(localStorage.getItem('userId')) || 1,
+      clientId: localStorage.getItem('clientId') || "74BB6922",
+      companyId: Number(localStorage.getItem('companyId')) || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          if (res.objResult.landlord_dtls && res.objResult.landlord_dtls.length > 0) {
+            this.landlordData = res.objResult.landlord_dtls[0];
+          } else if (res.objResult.landlords && res.objResult.landlords.length > 0) {
+            this.landlordData = res.objResult.landlords[0];
+          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
+            this.landlordData = res.objResult[0];
+          }
+          if (res.objResult.leases) this.transactionData = res.objResult.leases; // Map if needed
+          if (res.objResult.note) this.noteData = res.objResult.note;
+          if (res.objResult.documents) this.attachmentData = res.objResult.documents;
+          if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
+          if (res.objResult.units) this.unitData = res.objResult.units;
+          
+          console.log('Landlord Details Loaded:', this.landlordData);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching landlord details:', err);
+      }
+    });
+  }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
 
@@ -129,11 +179,7 @@ export class LandlordDetailComponent {
     { key: 'paymentVia', label: 'web.contacts.lblPaymentVia', visible: true, useTemplate: true }
   ];
 
-  transactionData = [
-    { InvoiceID: 'INV-001', Account: 'Rental Income', Property: 'Property 1', Unit: 'Unit 1', heldBy: 'Company', paidDate: '05-06-2026', tax: 'AED 0.00', grossCent: 'AED 2,000.00', paid: 'AED 1,502.03', runningBalance: 'AED 46,517,891.47', paymentVia: '-' },
-    { InvoiceID: 'INV-002', Account: 'Rental Income', Property: 'Property 1', Unit: 'Unit 2', heldBy: 'Company', paidDate: '05-06-2026', tax: 'AED 0.00', grossCent: 'AED 2,000.00', paid: 'AED 2,000.00', runningBalance: 'AED 46,517,891.47', paymentVia: 'Cash' },
-    { InvoiceID: 'INV-003', Account: 'Rental Income', Property: 'Property 1', Unit: 'Unit 3', heldBy: 'Company', paidDate: '05-06-2026', tax: 'AED 0.00', grossCent: 'AED 2,000.00', paid: 'AED 2,000.00', runningBalance: 'AED 46,517,891.47', paymentVia: 'Cash' },
-    { InvoiceID: 'INV-004', Account: 'Rental Income', Property: 'Property 1', Unit: 'Unit 4', heldBy: 'Company', paidDate: '05-06-2026', tax: 'AED 0.00', grossCent: 'AED 2,000.00', paid: 'AED 2,000.00', runningBalance: 'AED 46,517,891.47', paymentVia: 'Cash' },];
+  transactionData: any[] = [];
 
   // --- TAB 2: UNITS ---
   unitColumns = [
@@ -156,13 +202,7 @@ export class LandlordDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  unitData = [
-    { unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Occupied', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'Yes', forSale: 'No' },
-    { unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Occupied', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'Yes', forSale: 'No' },
-    { unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Occupied', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'Yes', forSale: 'No' },
-    { unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Vacant', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'No', forSale: 'Yes' },
-    { unitType: 'Apartment', floorNumber: '1 Floor', managementFee: 'AED 600', status: 'Occupied', internalStatus: 'All', size: '1200 Sqft', marketRent: 'AED 26500.00', deposited: 'AED 4000.00', published: 'Yes', forSale: 'No' }
-  ];
+  unitData: any[] = [];
 
   // --- TAB 3: DUE PAYMENT ---
   duePaymentColumns = [
@@ -200,33 +240,16 @@ export class LandlordDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  duePaymentData = [
-    { id: '1817909', status: 'Unpaid', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 0.00', paymentVia: '-', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', architect: '-', dueDate: '28-11-2024', paidDate: '-', cheque: '-', days: '14', writeAmountOff: '0.00', createdBy: 'Admin' },
-    { id: '1817909', status: 'Paid', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 3,150.00', paymentVia: 'Cash', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', architect: '-', dueDate: '28-11-2024', paidDate: '28-11-2024', cheque: '-', days: '0', writeAmountOff: '0.00', createdBy: 'Admin' },
-    { id: '1817909', status: 'Draft', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 0.00', paymentVia: '-', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', architect: '-', dueDate: '28-11-2024', paidDate: '-', cheque: '-', days: '14', writeAmountOff: '0.00', createdBy: 'Admin' },
-    { id: '1817909', status: 'Unpaid', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 0.00', paymentVia: '-', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', architect: '-', dueDate: '28-11-2024', paidDate: '-', cheque: '-', days: '14', writeAmountOff: '0.00', createdBy: 'Admin' },
-    { id: '1817909', status: 'Overdue', to: 'Atif Shahzad', unitCommonArea: '103-PR-10', invoiceNumber: 'INV-26-00067223', chequeNo: '67223', invoiceDate: '12-07-2024', invoiceType: 'Rent', account: 'Rent Account', currency: 'AED', propertyName: 'Marina heights', propertyId: '982736', leaseId: '2234', leaseStatus: 'Active', note: 'Standard note', workOrder: 'WO-8273', amount: 'AED 3,000.00', tax: 'AED 150.00', grossAmount: 'AED 3,150.00', paid: 'AED 0.00', paymentVia: '-', moneyHeldBy: 'Company', ddRefNo: '-', bankName: 'ENBD Bank', internalStatus: 'All', architect: '-', dueDate: '28-11-2024', paidDate: '-', cheque: '-', days: '14', writeAmountOff: '0.00', createdBy: 'Admin' }
-  ];
+  duePaymentData: any[] = [];
 
   // --- TAB 4: AGREEMENTS ---
-  agreements = [
-    { name: 'landlord-agreement.pdf', size: '2.4 MB', date: '12-07-2024' },
-    { name: 'landlord-agreement.pdf', size: '2.4 MB', date: '12-07-2024' },
-    { name: 'landlord-agreement.pdf', size: '2.4 MB', date: '12-07-2024' },
-    { name: 'landlord-agreement.pdf', size: '2.4 MB', date: '12-07-2024' }
-  ];
+  agreements: any[] = [];
 
   // --- TAB 5: CHAT ---
-  chatContacts = [
-    { name: 'Muhammad Anas', role: 'Landlord Admin', lastMsg: 'Lorem ipsum dolor sit...', active: true }
-  ];
+  chatContacts: any[] = [];
   selectedContact = this.chatContacts[0];
 
-  chatMessages = [
-    { sender: 'Muhammad Anas', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie.', time: '10:00 AM', isSelf: false },
-    { sender: 'You', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie.', time: '10:05 AM', isSelf: true },
-    { sender: 'Muhammad Anas', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie.', time: '10:10 AM', isSelf: false }
-  ];
+  chatMessages: any[] = [];
   newMessageText = '';
 
   sendChatMessage() {
@@ -258,10 +281,7 @@ export class LandlordDetailComponent {
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
 
-  attachmentData = [
-    { id: 'ATT-1001', fileType: 'Property Title Deed', docId: 'DOC-1001', status: 'Active', issueDate: '12-07-2024', expiryDate: '12-07-2026', files: 'titledeed.pdf', uploadedBy: 'Admin', createdAt: '12-07-2024', updatedAt: '12-07-2024' },
-    { id: 'ATT-1001', fileType: 'Landlord ID', docId: 'DOC-1001', status: 'Verified', issueDate: '12-07-2024', expiryDate: '12-07-2026', files: 'landlord_id.pdf', uploadedBy: 'Admin', createdAt: '12-07-2024', updatedAt: '12-07-2024' }
-  ];
+  attachmentData: any[] = [];
 
   // --- TAB 7: NOTES ---
   noteColumns = [
@@ -278,10 +298,7 @@ export class LandlordDetailComponent {
 
   ];
 
-  noteData = [
-    { id: '31658', subject: 'Move-in condition', content: 'Tenant reported minor paint marks near the living room window. Schedule touch-up.....', via: 'Portal', noteDate: '12-01-2026', created_by: 'Admin User', files: 'movein_condition.pdf', created_at: '12-01-2026', updated_at: '12-01-2026' },
-    { id: '31658', subject: 'Rent reminder', content: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first wo...', via: 'Email', noteDate: '12-01-2026', created_by: 'Property Manager', files: 'rent_reminder.pdf', created_at: '12-01-2026', updated_at: '12-01-2026' }
-  ];
+  noteData: any[] = [];
 
   // --- TAB 8: USER ---
   userColumns = [
@@ -301,10 +318,7 @@ export class LandlordDetailComponent {
 
   ];
 
-  userData = [
-    { id: '31658', name: 'Ahmad Yasmin', userName: 'Ahmadyasmin', email: 'ahmadyasmin@mail.com', phone: '0528613568', role: 'Landlord', type: 'Landlord ID: 65584', status: 'Active' },
-    { id: '31658', name: 'Ahmad Yasmin', userName: 'Ahmadyasmin', email: 'ahmadyasmin@mail.com', phone: '0528613568', role: 'Landlord', type: 'Landlord ID: 65584', status: 'Active' }
-  ];
+  userData: any[] = [];
 
   // --- TAB 9: EMERGENCY CONTACT ---
   emergencyContactColumns = [
@@ -321,9 +335,7 @@ export class LandlordDetailComponent {
 
   ];
 
-  emergencyContactData = [
-    { id: '31658', name: 'Zaid Rehman', relation: 'Brother', phone: '0528613568', workPhone: '05698 253 25', email: 'zaidrahman@gmail.com', includeInEmail: 'Yes' }
-  ];
+  emergencyContactData: any[] = [];
 
   setTab(tab: string) {
     this.activeTab = tab;

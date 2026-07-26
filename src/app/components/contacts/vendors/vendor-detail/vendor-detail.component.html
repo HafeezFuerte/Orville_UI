@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      <button [routerLink]="['/contacts/vendors/edit-vendor', vendorId]" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
         Edit Vendor
       </button>
     </div>
@@ -48,8 +48,8 @@
       
       <!-- Vendor Name Header -->
       <div class="!mb-1">
-        <h4 class="text-lg font-black text-gray-800 m-0">{{ vendor.name }}</h4>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ vendor.email }}</p>
+        <h4 class="text-lg font-black text-gray-800 m-0">{{ vendorData?.company_name || vendorData?.vendor_name || vendor?.name || 'Loading...' }}</h4>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ vendorData?.email_address || vendorData?.email || vendor?.email || '' }}</p>
         <div class="flex gap-2 mt-2 text-[10px] font-semibold">
           <button class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">View Activity</button>
           <button (click)="showSubscriptionsModal = true" class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email Sub (3/30)</button>

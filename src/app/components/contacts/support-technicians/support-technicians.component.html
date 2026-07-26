@@ -72,17 +72,25 @@
   </div>
 
   <div class="p-4">
-    <app-shared-table [columns]="visibleColumns" [data]="paginatedTechnicians" [loading]="false"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+    <app-shared-table [columns]="visibleColumns" [data]="paginatedTechnicians" [loading]="isLoading"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" 
+      (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
 
       <!-- Custom Column Templates -->
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container *ngIf="col.key === 'id'">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-xs border border-gray-200 uppercase">
-              {{ row.name.substring(0, 2) }}
-            </div>
-            <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts/support-technicians', row.id]">{{row.id}}</span>
+            <ng-container *ngIf="row.image_path && !row.image_path.includes('default_user')">
+              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+                <img src="{{row.image_path}}" class="w-full h-full rounded-full" />
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!row.image_path || row.image_path.includes('default_user')">
+              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+                {{ getInitials(row.name) }}
+              </div>
+            </ng-container>
+            <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts/support-technicians', row.code]">{{row.code}}</span>
           </div>
         </ng-container>
 

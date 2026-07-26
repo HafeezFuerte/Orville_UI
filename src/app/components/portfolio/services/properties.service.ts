@@ -25,13 +25,80 @@ export class PropertiesService {
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': clientID,
-      'LanguageID': 1,
+      'LanguageID': '1',
       'source': 'web',
       'Content-Type': 'application/json-patch+json',
       'Accept': '*/*'
     });
 
    return this.http.post(getPropertiesUrl, payload, { headers });
+  }
+
+  getTenants(payload: any): Observable<any> {
+    const url = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
+    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
+    const clientID = this.loginUserData?.clientId || '74BB6922';
+    const headers = new HttpHeaders({
+      'AccessToken': accessToken,
+      'clientID': clientID,
+      'LanguageID': '1',
+      'source': 'web',
+      'Content-Type': 'application/json-patch+json',
+      'Accept': '*/*'
+    });
+    return this.http.post(url, payload, { headers });
+  }
+
+  saveTenant(formData: FormData): Observable<any> {
+    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_tenants';
+    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
+    const headers = new HttpHeaders({
+      'AccessToken': accessToken || '',
+      'clientID': '74BB6922',
+      'LanguageID': '1',
+      'source': 'web',
+      'Accept': '*/*'
+    });
+    return this.http.post(url, formData, { headers });
+  }
+
+  saveLandlord(formData: FormData): Observable<any> {
+    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_landlords';
+    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
+    const headers = new HttpHeaders({
+      'AccessToken': accessToken || '',
+      'clientID': '74BB6922',
+      'LanguageID': '1',
+      'source': 'web',
+      'Accept': '*/*'
+    });
+    return this.http.post(url, formData, { headers });
+  }
+
+  saveVendor(formData: FormData): Observable<any> {
+    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_vendors';
+    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
+    const headers = new HttpHeaders({
+      'AccessToken': accessToken || '',
+      'clientID': '74BB6922',
+      'LanguageID': '1',
+      'source': 'web',
+      'Accept': '*/*'
+    });
+    return this.http.post(url, formData, { headers });
+  }
+
+  saveTechnician(formData: FormData): Observable<any> {
+    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_technicians';
+    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
+    const headers = new HttpHeaders({
+      'AccessToken': accessToken || '',
+      'clientID': '74BB6922',
+      'LanguageID': '1',
+      'source': 'web',
+      'Accept': '*/*'
+    });
+    return this.http.post(url, formData, { headers });
   }
 
   getUnits(payload: any): Observable<any> {
@@ -41,7 +108,7 @@ export class PropertiesService {
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': '74BB6922',
-      'LanguageID': 1,
+      'LanguageID': '1',
       'source': 'web',
       'Content-Type': 'application/json-patch+json',
       'Accept': '*/*'
@@ -57,7 +124,7 @@ export class PropertiesService {
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': '74BB6922',
-      'LanguageID': 1,
+      'LanguageID': '1',
       'source': 'web',
       'Content-Type': 'application/json-patch+json',
       'Accept': '*/*'
@@ -102,7 +169,7 @@ export class PropertiesService {
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': '74BB6922',
-      'LanguageID': 1,
+      'LanguageID': '1',
       'source': 'web',
       'Content-Type': 'application/json-patch+json',
       'Accept': '*/*'
@@ -148,7 +215,7 @@ export class PropertiesService {
     const headers = new HttpHeaders({
       'AccessToken': accessToken || '',
       'clientID': '74BB6922',
-      'LanguageID': 1,
+      'LanguageID': '1',
       'source': 'web',
       'Content-Type': 'application/json-patch+json',
       'Accept': '*/*'
