@@ -2072,6 +2072,19 @@ exports.locale = {
                         "lblAreaNameHint": "Use a clear name so tenants and staff can identify it easily.",
                         "lblFloorNo": "Floor No",
                         "lblFloorNoPlaceHolder": "Enter floor number, e.g. Ground, 1, 2"
+                    },
+                    "parking": {
+                        "lblNewParking": "New Parking",
+                        "lblEditParking": "Edit Parking",
+                        "lblSelect":"Select",
+                        "lblProperty": "Property",
+                        "lblUnit": "Unit",
+                        "lblRoom": "Room",
+                        "lblParkingno": "Parking no",
+                        "lblRecurringCycle": "Recurring Cycle",
+                        "lblRemarks": "Remarks",
+                        "lblCreatedBy": "Created By",
+                        "lblParkingType": "Parking Type"  
                     }
                 }
             }

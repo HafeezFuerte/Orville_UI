@@ -9,7 +9,7 @@ import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
-import { NotesPopupComponent } from '../../portfolio/popups/notes-popup/notes-popup.component';
+import { NotesPopupComponent } from '../modal-popups/notes-popup/notes-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
@@ -170,6 +170,10 @@ export class NotesComponent {
   openModal() {
     this.showModal = true;
     this.selectedTab.form.reset();
+    this.selectedTab.form.patchValue({ 
+      content:'', 
+      desc:''
+    });
   }
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();

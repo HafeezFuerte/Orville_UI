@@ -9,18 +9,20 @@ import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-
 import { DetailTab } from '../../../../shared/models/detail-tab.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CommonAreaPopupComponent } from '../../popups/common-area-popup/common-area-popup.component';
-import { AttachmentPopupComponent } from '../../popups/attachments-popup/attachment-popup.component';
+import { CommonAreaPopupComponent } from '../../../child-tables/modal-popups/common-area-popup/common-area-popup.component';
+import { AttachmentPopupComponent } from '../../../child-tables/modal-popups/attachments-popup/attachment-popup.component';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { ToastrService } from 'ngx-toastr';
 import { UnitsTableComponent } from '../../../child-tables/units/units-table.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { CommonAreaComponent } from '../../../child-tables/commonarea/commonarea.component';
+import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule,NotesComponent,AttachmentsComponent,UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule,ParkingsComponent,CommonAreaComponent,NotesComponent,AttachmentsComponent,UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent,AttachmentPopupComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -54,45 +56,7 @@ export class PropertyDetailComponent implements OnInit {
   @ViewChild(DetailPageLayoutComponent)
   detailLayout!: DetailPageLayoutComponent;
   // columns
-  unitColumns = [
-  { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/units",edit_col:"code"},
-  { key: 'unit_code', label: 'web.common.lblName'},
-  { key: 'category_name', label: 'web.common.lblCategory' },
-  { key: 'unit_beds_name', label: 'web.Unit.lblBeds' },
-  { key: 'property_Name', label: 'web.property.lblProperty' },
-  { key: 'landlord', label: 'web.Unit.lblLandlord',is_editCol:true,redirect_url:"/contacts/landlords",edit_col:"landlord_code" },
-  { key: 'tags', label: 'web.property.lblTags' },
-  { key: 'floor_no', label: 'web.contacts.lblFloorNumber' },
-  { key: 'management_fee', label: 'web.Unit.lblManagementFee',is_include_currency:true },
-  { key: 'unit_status_name', label: 'web.Unit.lblStatus',is_status:true }, 
-  { key: 'internal_status', label: 'web.contacts.lblInternalStatus' },
-  { key: 'size_sqft', label: 'web.contacts.lblSize' },
-  { key: 'market_rent', label: 'web.contacts.lblMarketRent',is_include_currency:true },
-  { key: 'rent_deposit', label: 'web.contacts.lblDeposited',is_include_currency:true },
-  { key: 'is_published', label: 'web.contacts.lblPublished' },
-  { key: 'sale_status', label: 'web.contacts.lblSaleStatus' } 
-];
-
-roomColumns = [
-  { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/rooms",edit_col:"code"},
-  { key: 'property_Name', label: 'web.property.lblProperty' },
-  { key: 'unit_no', label: 'web.contacts.lblUnit',is_editCol:true,redirect_url:"/units",edit_col:"unit_code"}  ,
-  { key: 'room_type_name', label: 'web.Unit.lblRoomType' },
-  { key: 'category_name', label: 'web.common.lblCategory' },
-  { key: 'room_type_name', label: 'web.Unit.lblBeds' }, 
-  { key: 'landlord', label: 'web.Unit.lblLandlord',is_editCol:true,redirect_url:"/contacts/landlords",edit_col:"landlord_code" },
-  { key: 'tags', label: 'web.property.lblTags' },
-  { key: 'floor_no', label: 'web.contacts.lblFloorNumber' },
-  { key: 'management_fee', label: 'web.Unit.lblManagementFee',is_include_currency:true },
-  { key: 'room_status_name', label: 'web.Unit.lblStatus',is_status:true }, 
-  { key: 'internal_status', label: 'web.contacts.lblInternalStatus' },
-  { key: 'size_sqft', label: 'web.contacts.lblSize' },
-  { key: 'market_rent', label: 'web.contacts.lblMarketRent',is_include_currency:true },
-  { key: 'rent_deposit', label: 'web.contacts.lblDeposited',is_include_currency:true },
-  { key: 'is_published', label: 'web.contacts.lblPublished' },
-  { key: 'sale_status', label: 'web.contacts.lblSaleStatus' }
-];
-
+  
 tenantColumns = [
   { key: 'lease_code', label: 'web.common.lblID',is_editCol:true},
   { key: 'tenant ', label: 'web.common.lblName' },
@@ -100,15 +64,7 @@ tenantColumns = [
   { key: 'phone_number', label: 'web.common.lblPhoneNumber' },
   { key: 'company_name', label: 'web.property.lblCompany' },
   { key: 'active_lease', label: 'web.property.lblActiveLease' }
-];
-commonAreaColumns = [
-  { key: 'code', label: 'web.common.lblID' ,is_editCol:true},
-  { key: 'area_name', label: 'web.property.lblAreaName' },
-  { key: 'property', label: 'web.property.lblProperty' },
-  { key: 'floor_no', label: 'web.property.lblFloorNo' },
-  { key: 'uploaded_date', label: 'web.Unit.lblCreatedAt' },
-  { key: 'modified_date', label: 'web.Unit.lblUpdatedAt' } 
-];
+]; 
 broadCastsColumns = [
   { key: 'code', label: 'web.common.lblID',is_editCol:true },
   { key: 'subject', label: 'web.property.lblSubject' },
@@ -122,17 +78,6 @@ broadCastsColumns = [
 ];
 
  
-parkingsColumns = [
-  { key: 'code', label: 'web.common.lblID',is_editCol:true },
-  { key: 'parking_no', label: 'web.property.lblParkingNo' },
-  { key: 'property', label: 'web.property.lblProperty' },
-  { key: 'unit_code1', label: 'web.property.lblUnit' },
-  { key: 'parking_type_nm', label: 'web.common.lblType' },
-  { key: 'uploaded_by', label: 'web.property.lblFee' },
-  { key: 'recurring_cycle_nm', label: 'web.property.lblCycle' },
-  { key: 'remarks', label: 'web.common.lblRemarks' }
-  
-];
 
 assetsColumns = [
   { key: 'code', label: 'web.common.lblID',is_editCol:true },
@@ -165,12 +110,7 @@ constructor(
     this.loadMasterDataByType(13,0, '', this.propertyCode,'');
   }
 private createForms(): void {
-  this.commonAreaForm = this.fb.group({
-    areaName: ['', Validators.required],
-    floor: ['', Validators.required],
-    code:[''],
-    desc:['']
-  }); 
+  
   
 }
 getStatusClass(status: string) {
@@ -248,8 +188,7 @@ initializeTabs() {
     {
       key: 'units',
       label: 'Units',
-      layout: 'content',
-      columns: this.unitColumns,
+      layout: 'content', 
       data: this.unitsData,
       totalRecords: this.unitsData?.length || 0,
       loading: this.loading,
@@ -260,8 +199,7 @@ initializeTabs() {
     {
       key: 'rooms',
       label: 'Rooms',
-      layout: 'content',
-      columns: this.roomColumns,
+      layout: 'content', 
       data: this.roomsData,
       totalRecords: this.roomsData?.length || 0,
       loading: this.loading,
@@ -278,13 +216,15 @@ initializeTabs() {
       totalRecords: this.tenantsData?.length || 0,
       loading: this.loading,
       hasActions: true,
-      addButtonText: 'Tenant'
+      addButtonText: 'Tenant',
+      redirect_addurl:'/contacts/tenants/add-tenant'
     },
 {
       key: 'commonarea',
       label: 'Common Area',
-      layout: 'table',
-      columns: this.commonAreaColumns,
+      layout: 'content', 
+      entity:"property",
+      entity_id:this.propertyCode,
       data: this.commonAreaData,
       totalRecords: this.commonAreaData?.length || 0,
       loading: this.loading,
@@ -316,7 +256,7 @@ initializeTabs() {
       totalRecords: this.broadCastsData?.length || 0,
       loading: this.loading,
       hasActions: true,
-      addButtonText: ''
+      addButtonText: 'Broadcasts'
     },
     {
       key: 'notes',
@@ -335,9 +275,9 @@ initializeTabs() {
     {
       key: 'parkings',
       label: 'Parkings',
-      layout: 'table',
-      columns: this.parkingsColumns,
+      layout: 'content', 
       data: this.parkingData,
+      entity_id:this.propertyCode,
       totalRecords: this.parkingData?.length || 0,
       loading: this.loading,
       hasActions: true,
@@ -359,22 +299,7 @@ initializeTabs() {
 
 }
  
-savePopup(tab: string) {
-
-  switch (tab) {
-
-    case 'commonarea':
-      this.saveCommonArea(this.commonAreaForm);
-      break;
-
-    case 'attachments':
-      
-      break;
-
-    case 'notes':
-       
-      break;
-  }
+savePopup(tab: string) { 
 
 }
 get selectedTab(): DetailTab | undefined {
@@ -383,105 +308,12 @@ get selectedTab(): DetailTab | undefined {
 }
 handleSearch(searchstring:any){ 
    const tab = this.tabs.find(t => t.key === this.activeTab);
-    if (searchstring) {  
-      const q = searchstring.toLowerCase();
-      let result=tab!.data;
-      if(this.activeTab=="commonarea"){
-        result = result?.filter(p => 
-          p.area_name.toLowerCase().includes(q) || 
-          p.property.toLowerCase().includes(q)
-        );
-      }
-      else if(this.activeTab=="notes"){
-        result = result?.filter(p => 
-          p.subject.toLowerCase().includes(q) || 
-          p.description.toLowerCase().includes(q)
-        );
-      }
-      tab!.data=result;
-    }
-    else
-      tab!.data=this.activeTab=="commonarea" ?
-      this.commonAreaData :
-      this.activeTab=="notes" ?
-      this.notesData :
-      this.activeTab=="attachments" ? 
-      this.attachmentsData : [];
+    
 }
 handleEditNotification(selectedObject: any) {
-   
-  if(selectedObject && selectedObject.tab_name=="commonarea"){ 
     
-    this.commonAreaForm.patchValue({
-      areaName: selectedObject?.area_name,
-      floor: selectedObject?.floor_no,
-      code: selectedObject?.code,
-      desc: selectedObject?.strdesc});
-  }
-  else if(selectedObject && selectedObject.tab_name=="notes"){ 
-    
-    this.notesForm.patchValue({
-      subject: selectedObject?.subject,
-      commChannelType:selectedObject?.channel_type,
-      content: selectedObject?.description,  
-      code: selectedObject?.code,
-      desc: selectedObject?.description});
-  }
-  else if(selectedObject && selectedObject.tab_name=="attachments"){  
-    this.attachmentsForm.patchValue({
-      documentType: selectedObject?.document_type,
-      documentNumber:selectedObject?.doc_no,
-      issueDate: this.formatDate(selectedObject?.issue_date),  
-      expiryDate: this.formatDate(selectedObject?.expiry_date),  
-      issuingAuthority: selectedObject?.issuing_authority,  
-      shareWithTenant: selectedObject?.share_with_tenants,  
-      shareWithLandlord: selectedObject?.share_with_landlords,  
-      code: selectedObject?.code}); 
-  }
 }
-private formatDate(date:any) {
-  const d = new Date(date);
-  let month = '' + (d.getMonth() + 1);
-  let day = '' + d.getDate();
-  const year = d.getFullYear();
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-  return [year, month, day].join('-');
-}
-saveCommonArea(form:FormGroup){
-  const commonAreaLabels = {
-    areaName: this.translate.instant('web.portfolio.popups.commonArea.lblAreaName'),
-    floor: this.translate.instant('web.portfolio.popups.commonArea.lblFloorNo')
-  };
-  if (!this.validateForm(this.commonAreaForm, commonAreaLabels)) {
-    return;
-  }
-  const values = form.value;
-  const payload = {
-   ...this.commonPayload,
-   id:0,
-   property_code:this.propertyCode,
-   area_name:values.areaName,
-   floor_no:values.floor,
-   desc:values.desc || '',
-   code:values.code
-};
-this.portfolioService.saveCommonArea(payload).subscribe({
-    next: (res) => { 
-      if (res["statusCode"] == "200") { 
-        this.commonAreaForm.reset();
-        this.detailLayout.closeModal();
-        this.commonAreaData = res.objResult.table;
-        let tab = this.tabs.find(t => t.key === this.activeTab);
-        tab!.data=this.commonAreaData;
-      } else{
-        this.toastr.error(res['message'],"Error");
-      }
-    },
-    error: console.error
-});
-}
- 
+  
  
 validateForm(form: FormGroup, fieldLabels: { [key: string]: string }): boolean {
   const errors: string[] = [];

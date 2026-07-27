@@ -46,6 +46,12 @@ saveCommonArea(payload: any): Observable<any> {
     payload
   );
 }
+saveParking(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_update_parkings',
+    payload
+  );
+}
 saveNotes(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/save_notes',

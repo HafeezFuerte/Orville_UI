@@ -9,18 +9,18 @@ import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service'; 
-import { AttachmentPopupComponent } from '../modal-popups/attachments-popup/attachment-popup.component';
+import { CommonAreaPopupComponent } from '../modal-popups/common-area-popup/common-area-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
-  selector: 'app-attachments-table',
+  selector: 'app-commonarea-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, AttachmentPopupComponent, TranslateModule, MatPaginatorModule],
-  templateUrl: './attachments.component.html',
-  styleUrls: ['./attachments.component.scss']
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, CommonAreaPopupComponent, TranslateModule, MatPaginatorModule],
+  templateUrl: './commonarea.component.html',
+  styleUrls: ['./commonarea.component.scss']
 })
-export class AttachmentsComponent {
-  attachmentsForm: any = [];
+export class CommonAreaComponent {
+  commonAreaForm: any = [];
   data: any = [];
   /** Loading state indicator */
   loading: boolean = false;
@@ -31,19 +31,18 @@ export class AttachmentsComponent {
   totalRecords: number = 0;
   columns = [ 
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'document_type_name', label: 'web.property.lblFileType',  useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'doc_no', label: 'web.property.lblDocID', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
-    { key: 'document_status_name', label: 'web.property.lblDocumentStatus', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
-    { key: 'issue_date', label: 'web.property.lblIssueDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'expiry_date', label: 'web.property.lblExpiryDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.property.lblFiles',isLink:true,useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false,   redirect_url: '' },
-     
+    { key: 'area_name', label: 'web.property.lblAreaName', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    {  key: 'property', label: 'web.property.lblProperty', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
+    { key: 'floor_no', label: 'web.property.lblFloorNo', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
+    { key: 'uploaded_date', label: 'web.Unit.lblCreatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    {key: 'modified_date', label: 'web.Unit.lblUpdatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+   
   ];
   searchQuery: string = '';
-  pageSize: number = 50;
+  pageSize: number = 5;
   @Input() selectedTab: any = [];
   /** Current page index */
-  pageIndex: number = 0;
+  pageIndex: number = 1;
 
   /** Flag to show/hide the action column */
   hasActions: boolean = false;
@@ -106,62 +105,47 @@ export class AttachmentsComponent {
     }
     return true;
   }
-  saveAttachment(){
-    const attachmentLabels = {
-      documentType: this.translate.instant('web.portfolio.popups.attachments.lblDocumentType'),
-      propertyAttachment: this.translate.instant('web.portfolio.popups.attachments.lblUploadFile')
-    };  
-    if (!this.validateForm(this.selectedTab.form, attachmentLabels)) {
+  saveCommonArea() {
+    const commonAreaLabels = {
+      areaName: this.translate.instant('web.portfolio.popups.commonArea.lblAreaName'),
+      floor: this.translate.instant('web.portfolio.popups.commonArea.lblFloorNo')
+    };
+    if (!this.validateForm(this.selectedTab.form, commonAreaLabels)) {
       return;
     }
     const values = this.selectedTab.form.value;
-    const request = {
-    ...this.commonService.commonPayload,
-    code: values.code,
-    entity_id: this.selectedTab?.entity_id,
-    entity: this.selectedTab?.entity,
-    document_type:values.documentType, 
-    document_no:values.documentNumber,
-      issue_date:values.issueDate,
-      expiry_date:values.expiryDate,
-      issuing_authority:values.issuingAuthority,
-      share_with_tenants:values.shareWithTenant,
-      share_with_landlords:values.shareWithLandlord
-    }
-    const formData = new FormData();
-  
-  // JSON goes as ONE field
-  formData.append('reqObject', JSON.stringify(request)); 
-  const file = this.selectedTab.form.get('propertyAttachment')?.value;
-  if((file==null || file==undefined) && values.code==''){
-    this.toastr.error("Invalid file selection","Error");
-  }
-  if (file) {
-    formData.append('file_path', file);
-  }
-    this.common_TabsService.saveAttachment(formData)
-      .subscribe(res => { 
+    const payload = {
+     ...this.commonService.commonPayload,
+     id:0,
+     property_code:this.selectedTab.entity_id,
+     area_name:values.areaName,
+     floor_no:values.floor,
+     desc:values.desc || '',
+     code:values.code || ''
+  };
+  this.common_TabsService.saveCommonArea(payload).subscribe({
+      next: (res) => { 
         if (res["statusCode"] == "200") { 
           this.selectedTab.form.reset();
           this.closeModal();
           this.data = res.objResult.table; 
-        }
-        else{
+        } else{
           this.toastr.error(res['message'],"Error");
         }
-      });
+      },
+      error: console.error
+  });
   }
 
- 
   search_with_keyword() {
     let result =this.selectedTab?.data;
     if(this.searchQuery){
       result = this.selectedTab?.data.filter((p: any) =>
-      p.doc_no.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      p.document_type_name.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+      p.area_name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      p.floor_no.toLowerCase().includes(this.searchQuery.toLowerCase())
+    ); 
     }
-    this.data=result; 
+    this.data=result;
   }
   openModal() {
     this.showModal = true;
@@ -169,59 +153,41 @@ export class AttachmentsComponent {
   }
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
-    this.attachmentsForm = this.selectedTab?.form;
+    this.commonAreaForm = this.selectedTab?.form;
     this.selectedNote = {};
     this.data = this.selectedTab?.data;
+    this.totalRecords=this.data.length;
     this.selectedTab.form = this.fb.group({
-      documentType: ['', Validators.required],
-      documentNumber: ['', Validators.required],
-      issueDate: ['', Validators.required],
-      expiryDate: ['', Validators.required],
-      issuingAuthority: ['', Validators.required],
-      shareWithTenant: ['', Validators.required],
-      shareWithLandlord: ['', Validators.required],
-      propertyAttachment: [''],
-      code:['']
+      areaName: ['', Validators.required],
+      floor: ['', Validators.required],
+      code:[''],
+      desc:['']
     });
   }
 
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
   }
-  edit_action(row: any, action: any) { 
+  edit_action(row: any, action: any) {
     row.action_name = action;
     this.selectedNote = row;
     if (action == "edit") {
       this.showModal = true;
       this.selectedTab.form.patchValue({
-        documentType: row?.document_type,
-        documentNumber:row?.doc_no,
-        issueDate: this.formatDate(row?.issue_date),  
-        expiryDate: this.formatDate(row?.expiry_date),  
-        issuingAuthority: row?.issuing_authority,  
-        shareWithTenant: row?.share_with_tenants,  
-        shareWithLandlord: row?.share_with_landlords,  
-        code: row?.code}); 
- 
+        areaName: row?.area_name,
+        floor: row?.floor_no,
+        code: row?.code,
+        desc: row?.strdesc}); 
     }
     else if (action == "delete") {
       this.deleteModal = true;
     }
   }
-  private formatDate(date:any) {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-    return [year, month, day].join('-');
-  }
   closeModal() {
     this.showModal = this.deleteModal = false;
     this.selectedNote = {};
   }
-  deleteAttachment() {
+  deleteNote() {
     this.loadMasterDataByType(this.selectedNote.id, this.selectedTab.entity, this.selectedTab.entity_id);
   }
   loadMasterDataByType(
@@ -245,6 +211,7 @@ export class AttachmentsComponent {
         this.closeModal();
         this.data = res.objResult.table;
         this.selectedNote = {};
+        this.totalRecords=this.data.length;
       },
       error: console.error
     });

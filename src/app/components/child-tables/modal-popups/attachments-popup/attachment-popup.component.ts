@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
-import { PortfolioService } from '../../services/portfolio.service';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-attachment-popup',

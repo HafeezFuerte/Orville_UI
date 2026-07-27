@@ -47,6 +47,16 @@
       *ngTemplateOutlet="attachments">
   </ng-container>
 </ng-container>
+<ng-container *ngIf="selectedTab?.layout === 'content' && ( selectedTab?.key=='commonarea')">
+  <ng-container
+      *ngTemplateOutlet="commonarea">
+  </ng-container>
+</ng-container>
+<ng-container *ngIf="selectedTab?.layout === 'content' && ( selectedTab?.key=='parkings')">
+  <ng-container
+      *ngTemplateOutlet="parkings">
+  </ng-container>
+</ng-container>
 
     <!-- Table Layout -->
     <ng-container *ngIf="selectedTab?.layout === 'table'">
@@ -54,13 +64,15 @@
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">{{ selectedTab?.label }}</h4>
           </div>
-        <button
-            type="button" *ngIf="selectedTab?.label !== 'Broadcasts'"
-            class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold"
-            (click)="openModal()">
-    <i class="ri-add-line"></i>
-    Add {{ selectedTab?.addButtonText }}
-</button>
+        <button type="button"  
+          class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
+          <a *ngIf="selectedTab?.redirect_addurl ==null" (click)="openModal()">
+            <i class="ri-add-line"></i>
+            Add {{ selectedTab?.addButtonText }}</a>
+          <a *ngIf="selectedTab?.redirect_addurl !=null" [routerLink]="[selectedTab?.redirect_addurl]">
+            <i class="ri-add-line"></i>
+            Add {{ selectedTab?.addButtonText }}</a>
+        </button>
         </div>
 <!-- Toolbar -->
 <div

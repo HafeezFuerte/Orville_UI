@@ -12,16 +12,17 @@ import { FormsModule } from '@angular/forms';
 import { DetailTab } from '../../../shared/models/detail-tab.model';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { ReusableModalComponent } from '../reusable-modal/reusable-modal.component';
-import { CommonAreaPopupComponent } from '../popups/common-area-popup/common-area-popup.component';
-import { AttachmentPopupComponent } from '../popups/attachments-popup/attachment-popup.component';
+import { CommonAreaPopupComponent } from '../../child-tables/modal-popups/common-area-popup/common-area-popup.component';
+import { AttachmentPopupComponent } from '../../child-tables/modal-popups/attachments-popup/attachment-popup.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { NotesPopupComponent } from '../popups/notes-popup/notes-popup.component';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { NotesPopupComponent } from '../../child-tables/modal-popups/notes-popup/notes-popup.component';
 import { ConfirmPopupComponent } from '../popups/confirm-dialog/confirm-dialog';
 import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-detail-page-layout',
   standalone: true,
-  imports: [FormsModule,CommonModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent,ConfirmPopupComponent, TranslateModule, NotesPopupComponent],
+  imports: [FormsModule,CommonModule,RouterModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent,ConfirmPopupComponent, TranslateModule, NotesPopupComponent],
   templateUrl: './detail-page-layout.component.html'
 })
 export class DetailPageLayoutComponent {
@@ -42,7 +43,11 @@ export class DetailPageLayoutComponent {
   @ContentChild('notes')
   notes!: TemplateRef<any>; 
   @ContentChild('attachments')
-  attachments!: TemplateRef<any>;
+  attachments!: TemplateRef<any>; 
+  @ContentChild('commonarea')
+  commonarea!: TemplateRef<any>;
+  @ContentChild('parkings')
+  parkings!: TemplateRef<any>;
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;
@@ -81,6 +86,8 @@ export class DetailPageLayoutComponent {
     return this.selectedTab?.key!='units' && 
     this.selectedTab?.key!='notes' && 
     this.selectedTab?.key!='attachments' && 
+    this.selectedTab?.key!='commonarea'&& 
+    this.selectedTab?.key!='parkings' && 
     this.selectedTab?.key!='rooms'
   }
   changeTab(tab: DetailTab) {

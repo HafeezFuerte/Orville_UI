@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { PortfolioService } from '../../services/portfolio.service';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
 import { TranslateModule } from '@ngx-translate/core';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';

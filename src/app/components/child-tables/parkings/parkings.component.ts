@@ -8,42 +8,43 @@ import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { Common_TabsService } from '../../portfolio/services/common_tabs.service'; 
-import { AttachmentPopupComponent } from '../modal-popups/attachments-popup/attachment-popup.component';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { ParkingPopupComponent } from '../modal-popups/parking-popup/parking-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
-  selector: 'app-attachments-table',
+  selector: 'app-parkings-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, AttachmentPopupComponent, TranslateModule, MatPaginatorModule],
-  templateUrl: './attachments.component.html',
-  styleUrls: ['./attachments.component.scss']
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, ParkingPopupComponent, TranslateModule, MatPaginatorModule],
+  templateUrl: './parkings.component.html',
+  styleUrls: ['./parkings.component.scss']
 })
-export class AttachmentsComponent {
-  attachmentsForm: any = [];
+export class ParkingsComponent {
+  parkingsForm: any = [];
   data: any = [];
   /** Loading state indicator */
   loading: boolean = false;
-
+  @Output() loadOnChange = new EventEmitter<string>();
   /** Custom message when no records are found */
   emptyMessage: string = 'web.common.lblNoRecordsFound';
 
   totalRecords: number = 0;
-  columns = [ 
+  columns = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'document_type_name', label: 'web.property.lblFileType',  useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'doc_no', label: 'web.property.lblDocID', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
-    { key: 'document_status_name', label: 'web.property.lblDocumentStatus', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
-    { key: 'issue_date', label: 'web.property.lblIssueDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'expiry_date', label: 'web.property.lblExpiryDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.property.lblFiles',isLink:true,useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false,   redirect_url: '' },
-     
+    { key: 'parking_no', label: 'web.property.lblParkingNo', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'property', label: 'web.property.lblProperty' , useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
+    { key: 'unit_code1', label: 'web.property.lblUnit', is_editCol: true,redirect_url:"/units",edit_col:"unit_code",useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, isHtml: false },
+    { key: 'parking_type_nm', label: 'web.portfolio.popups.parking.lblParkingType', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'createdby', label: 'web.portfolio.popups.parking.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'recurring_cycle_nm', label: 'web.portfolio.popups.parking.lblRecurringCycle', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    
   ];
+    
   searchQuery: string = '';
-  pageSize: number = 50;
+  pageSize: number = 5;
   @Input() selectedTab: any = [];
   /** Current page index */
-  pageIndex: number = 0;
+  pageIndex: number = 1;
 
   /** Flag to show/hide the action column */
   hasActions: boolean = false;
@@ -65,7 +66,7 @@ export class AttachmentsComponent {
   @Input() colTemplateName: string = '';
   @Input() customColTemplate?: TemplateRef<any>;
   @ContentChild('colTemplate') colTemplate!: TemplateRef<any>;
-
+   
   /** Reference for a custom header template */
   @ContentChild('headerTemplate') headerTemplate!: TemplateRef<any>;
 
@@ -106,123 +107,117 @@ export class AttachmentsComponent {
     }
     return true;
   }
-  saveAttachment(){
-    const attachmentLabels = {
-      documentType: this.translate.instant('web.portfolio.popups.attachments.lblDocumentType'),
-      propertyAttachment: this.translate.instant('web.portfolio.popups.attachments.lblUploadFile')
-    };  
-    if (!this.validateForm(this.selectedTab.form, attachmentLabels)) {
+  saveParking() { 
+
+    const commonLabels = {
+      property_code: this.translate.instant('web.portfolio.popups.parking.lblProperty'),
+      unit_code: this.translate.instant('web.portfolio.popups.parking.lblUnit'),
+      parking_no: this.translate.instant('web.portfolio.popups.parking.lblParkingno'),
+      parking_type: this.translate.instant('web.portfolio.popups.parking.lblParkingType'),
+      recurring_cycle: this.translate.instant('web.portfolio.popups.parking.lblRecurringCycle')
+    };
+    if (!this.validateForm(this.selectedTab.form, commonLabels)) {
       return;
     }
     const values = this.selectedTab.form.value;
-    const request = {
-    ...this.commonService.commonPayload,
-    code: values.code,
-    entity_id: this.selectedTab?.entity_id,
-    entity: this.selectedTab?.entity,
-    document_type:values.documentType, 
-    document_no:values.documentNumber,
-      issue_date:values.issueDate,
-      expiry_date:values.expiryDate,
-      issuing_authority:values.issuingAuthority,
-      share_with_tenants:values.shareWithTenant,
-      share_with_landlords:values.shareWithLandlord
-    }
-    const formData = new FormData();
-  
-  // JSON goes as ONE field
-  formData.append('reqObject', JSON.stringify(request)); 
-  const file = this.selectedTab.form.get('propertyAttachment')?.value;
-  if((file==null || file==undefined) && values.code==''){
-    this.toastr.error("Invalid file selection","Error");
-  }
-  if (file) {
-    formData.append('file_path', file);
-  }
-    this.common_TabsService.saveAttachment(formData)
-      .subscribe(res => { 
+    const payload = {
+     ...this.commonService.commonPayload,
+     id:0, 
+     property_code:this.selectedTab?.entity_id,
+     unit_code:values.unit_code,
+     rooom_code:values.room_code,
+     is_from_unit:this.selectedTab.key=="units"? true :false,
+     parking_no:values.parking_no,
+     parking_type:values.parking_type || '',
+     recurring_cycle:values.recurring_cycle || 0,
+     remarks:values.remarks || 0,
+     code:values.code || ''
+  };
+  this.common_TabsService.saveParking(payload).subscribe({
+      next: (res) => { 
         if (res["statusCode"] == "200") { 
           this.selectedTab.form.reset();
           this.closeModal();
           this.data = res.objResult.table; 
-        }
-        else{
+        } else{
           this.toastr.error(res['message'],"Error");
         }
-      });
+      },
+      error: console.error
+  });
+    
   }
 
- 
   search_with_keyword() {
     let result =this.selectedTab?.data;
     if(this.searchQuery){
       result = this.selectedTab?.data.filter((p: any) =>
-      p.doc_no.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      p.document_type_name.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+      p.parking_no.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      p.parking_type_nm.toLowerCase().includes(this.searchQuery.toLowerCase())
+    ); 
     }
-    this.data=result; 
+    this.data=result;
   }
   openModal() {
     this.showModal = true;
     this.selectedTab.form.reset();
+    this.selectedTab.form.patchValue({ 
+      content:'', 
+      desc:''
+    });
   }
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
-    this.attachmentsForm = this.selectedTab?.form;
+    this.parkingsForm = this.selectedTab?.form;
     this.selectedNote = {};
     this.data = this.selectedTab?.data;
+    this.totalRecords=this.data.length;
     this.selectedTab.form = this.fb.group({
-      documentType: ['', Validators.required],
-      documentNumber: ['', Validators.required],
-      issueDate: ['', Validators.required],
-      expiryDate: ['', Validators.required],
-      issuingAuthority: ['', Validators.required],
-      shareWithTenant: ['', Validators.required],
-      shareWithLandlord: ['', Validators.required],
-      propertyAttachment: [''],
+      property_code: ['', Validators.required],
+      unit_code: ['', Validators.required],
+      room_code: [''],
+      parking_no: ['', Validators.required],
+      parking_type: ['', Validators.required],
+      recurring_cycle: ['', Validators.required],
+      remarks: [''], 
       code:['']
     });
+    this.selectedTab.form.patchValue({
+      property_code: this.selectedTab?.entity_id,
+    }); 
   }
 
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
   }
-  edit_action(row: any, action: any) { 
+ 
+  edit_action(row: any, action: any) {
     row.action_name = action;
     this.selectedNote = row;
     if (action == "edit") {
-      this.showModal = true;
+      this.showModal = true;  
+      this.loadOnChange.emit(row);
       this.selectedTab.form.patchValue({
-        documentType: row?.document_type,
-        documentNumber:row?.doc_no,
-        issueDate: this.formatDate(row?.issue_date),  
-        expiryDate: this.formatDate(row?.expiry_date),  
-        issuingAuthority: row?.issuing_authority,  
-        shareWithTenant: row?.share_with_tenants,  
-        shareWithLandlord: row?.share_with_landlords,  
-        code: row?.code}); 
- 
+        property_code: row?.property_code,
+        unit_code: row?.unit_code,
+        room_code: row?.room_code,
+        parking_no: row?.parking_no ??'',
+        recurring_cycle: row?.recurring_cycle,
+        parking_type: row?.parking_type ??'',
+        remarks:row?.remarks ??'',
+        code:row?.code ??''
+      });
     }
     else if (action == "delete") {
       this.deleteModal = true;
     }
   }
-  private formatDate(date:any) {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-    return [year, month, day].join('-');
-  }
   closeModal() {
     this.showModal = this.deleteModal = false;
     this.selectedNote = {};
   }
-  deleteAttachment() {
-    this.loadMasterDataByType(this.selectedNote.id, this.selectedTab.entity, this.selectedTab.entity_id);
+  deleteParking() {
+    this.loadMasterDataByType(this.selectedNote.id, '', this.selectedTab.entity_id);
   }
   loadMasterDataByType(
     filterId: number,
@@ -230,7 +225,7 @@ export class AttachmentsComponent {
     filterText1: string = '',
   ) {
     this.common_TabsService.getMasterByType({
-      typeId: 34,
+      typeId: 37,
       filterId,
       filterText: filtertext,
       filterText1: filterText1
@@ -245,6 +240,7 @@ export class AttachmentsComponent {
         this.closeModal();
         this.data = res.objResult.table;
         this.selectedNote = {};
+        this.totalRecords=this.data.length;
       },
       error: console.error
     });

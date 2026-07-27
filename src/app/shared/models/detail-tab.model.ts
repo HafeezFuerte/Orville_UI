@@ -17,6 +17,7 @@ export interface DetailTab {
 
   hasActions?: boolean;
   addButtonText?: string;
+  redirect_addurl?:string,
   entity?: string;
   entity_id?: string;
   // NEW
