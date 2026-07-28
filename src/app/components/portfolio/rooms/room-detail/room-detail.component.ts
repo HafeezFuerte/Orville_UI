@@ -11,7 +11,7 @@ import { DetailTab } from '../../../../shared/models/detail-tab.model';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
-export interface Unit {
+export interface Room {
   id: number;
   name: string;
   code: string;
@@ -20,11 +20,12 @@ export interface Unit {
   baths: string;
   area: string;
   floor: string;
-  property: string; 
+  property: string;
+  unit: string;
   location: string;
   landlord: string;
   tags: string;
-  unitType: string;
+  roomType: string;
   managementFee: string;
   status: 'Occupied' | 'Vacant' | 'Maintenance';
   addedDate: string;
@@ -53,15 +54,15 @@ export interface Unit {
 }
 
 @Component({
-  selector: 'app-unit-detail',
+  selector: 'app-room-detail',
   standalone: true,
   imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule],
-  templateUrl: './unit-detail.component.html',
-  styleUrl: './unit-detail.component.scss'
+  templateUrl: './room-detail.component.html',
+  styleUrl: './room-detail.component.scss'
 })
-export class UnitDetailComponent implements OnInit {
-  unitId!: string;
-  unit: Unit | null = null;
+export class RoomDetailComponent implements OnInit {
+  roomId!: string;
+  unit: Room | null = null;
   activeTab: string = 'overview';
   showMoreDetails: boolean = false;
   commonAreaForm!: FormGroup;
@@ -96,7 +97,7 @@ export class UnitDetailComponent implements OnInit {
   notes: any[] = [];
   broadcasts: any[] = [];
   inspections: any[] = [];
-  allUnits: Unit[] = [];
+  allUnits: Room[] = [];
   loading:boolean=false;
   tabs: any[] = [];
   mode: 'property' | 'unit' | 'room' | 'parking' = 'unit';
@@ -121,7 +122,7 @@ export class UnitDetailComponent implements OnInit {
       this.route.paramMap.subscribe(params => {
         const idParam = params.get('id');
         if (idParam) {
-          this.unitId = idParam
+          this.roomId = idParam
           this.fetchDetails(idParam); 
         }
       });
@@ -133,7 +134,7 @@ export class UnitDetailComponent implements OnInit {
   }
   fetchDetails(rawId: string): void {
     const payload = {
-      typeId: 14,
+      typeId: 15,
       filterId: 0,
       filterText: rawId,
       filterText1: "",
@@ -146,24 +147,25 @@ export class UnitDetailComponent implements OnInit {
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) {
           let detail = null;
-          detail = response.objResult.unit[0];
+          detail = response.objResult.room[0];
           if (detail) {
             this.unit = {
-              id: detail.code || detail.id || this.unitId,
-              name: detail.unit_no || detail.name || this.unit?.name || 'Apartment 209',
+              id: detail.code || detail.id || this.roomId,
+              name: detail.room_no || detail.name || this.unit?.name || 'Apartment 209',
               code:detail.code,
               category: detail.category_name ||  'Residential',
               beds: detail.beds || this.unit?.beds || '1 Bed',
               baths: detail.baths || this.unit?.baths || '1 Bath',
               area: detail.area || this.unit?.area || '1200 Sqft',
               floor: detail.floor_no || detail.floor || this.unit?.floor || '1 Floor',
-              property: detail.property_Name || 'Marina Height Towers', 
+              property: detail.property_Name || 'Marina Height Towers',
+              unit: detail.unitcode + ' - ' + detail.unit_no || 'Marina Height Towers',
               location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
               landlord: detail.landlord_codes || detail.landlord || this.unit?.landlord || 'Orville Real Estate',
               tags: detail.tags || this.unit?.tags || 'Premium',
-              unitType: detail.unit_type_name || detail.unit_type || this.unit?.unitType || 'Apartment',
+              roomType: detail.room_type_name || detail.room_type || this.unit?.roomType || 'Apartment',
               managementFee: detail.management_fee ? this.currentUser?.currencyCode+` ${detail.management_fee}` : this.unit?.managementFee || 'AED 600',
-              status: detail.unit_status_name || detail.unit_status || detail.status || this.unit?.status || 'Occupied',
+              status: detail.room_status_name || detail.room_status || detail.status || this.unit?.status || 'Occupied',
               addedDate: detail.created || this.unit?.addedDate || 'May 26, 2026',
               imageUrl: detail.unit_image || this.unit?.imageUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
               rentStatus: detail.rent_type || this.unit?.rentStatus || 'For Rent',
@@ -441,7 +443,7 @@ export class UnitDetailComponent implements OnInit {
         label: 'web.common.lblLegal',
         layout: 'content', 
         entity:"Units",
-        entity_id:this.unitId,
+        entity_id:this.roomId,
         data: this.legalCases,
         totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
@@ -455,7 +457,7 @@ export class UnitDetailComponent implements OnInit {
         label: 'web.common.lblAttachments',
         layout: 'content', 
         entity:"Units",
-        entity_id:this.unitId,
+        entity_id:this.roomId,
         data: this.unitAttachments,
         totalRecords: this.unitAttachments?.length || 0,
         loading: this.loading,
@@ -480,7 +482,7 @@ export class UnitDetailComponent implements OnInit {
         label: 'web.common.lblNotes',
         layout: 'content', 
         entity:"Units",
-        entity_id:this.unitId,
+        entity_id:this.roomId,
         data: this.notes,
         totalRecords: this.notes?.length || 0,
         loading: this.loading,
@@ -496,7 +498,7 @@ export class UnitDetailComponent implements OnInit {
         data: this.parkings,
         entity:"Units",
         entity_id:this.unit?.property,
-        filter_code:this.unitId,
+        filter_code:this.roomId,
         totalRecords: this.parkings?.length || 0,
         loading: this.loading,
         hasActions: true,

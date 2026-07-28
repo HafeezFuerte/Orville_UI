@@ -8,7 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../services/properties.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../services/portfolio.service';
-
+import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../../services/common.service';
 @Component({
   selector: 'app-add-room',
   standalone: true,
@@ -59,7 +60,7 @@ export class AddRoomComponent implements OnInit {
     { id: 'wardrobes', name: 'Built-in wardrobes' },
     { id: 'ensuite_baths', name: 'En-suite bathrooms' }
   ];
-
+  currentUser: AuthPayload | null = null;
   propertiesList: any[] = [];
   allUnits: any[] = [];
   unitsList: any[] = [];
@@ -84,14 +85,15 @@ export class AddRoomComponent implements OnInit {
     private toastr: ToastrService,
     private propertiesService: PropertiesService,
     private route: ActivatedRoute,
+    private commonService : CommonService,
     private portfolioService: PortfolioService
   ) {}
 
   ngOnInit() {
+    this.currentUser = this.commonService.getCurrentUser();
     this.filteredLandlords = [...this.landlordsList];
     this.initForm();
-    this.loadProperties();
-    this.loadUnits();
+    this.loadProperties(); 
     this.loadLookup(4, 'categories', 'lookup_name');
     this.loadLookup(3, 'roomTypes', 'lookup_name');
     this.loadLookup(5, 'bedsOptions', 'lookup_name');
@@ -115,26 +117,15 @@ export class AddRoomComponent implements OnInit {
       filterId: 0,
       filterText: id,
       filterText1: "",
-      userId: 1,
-      clientId: "74BB6922",
-      companyId: 1
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
     };
-
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (response: any) => {
         this.isLoading = false;
         if (response && response.statusCode === "200" && response.objResult) {
-          let detail = null;
-          if (response.objResult.room && Array.isArray(response.objResult.room) && response.objResult.room.length > 0) {
-            detail = response.objResult.room[0];
-          } else if (response.objResult.table && Array.isArray(response.objResult.table) && response.objResult.table.length > 0) {
-            detail = response.objResult.table[0];
-          } else if (Array.isArray(response.objResult)) {
-            detail = response.objResult[0];
-          } else {
-            detail = response.objResult;
-          }
-
+          let  detail = response.objResult.room[0];  
           if (detail) {
             this.patchFormWithRoomData(detail);
           }
@@ -236,105 +227,41 @@ export class AddRoomComponent implements OnInit {
       this.selectedLandlords = this.landlordsList.filter(l => landlordIds.includes(l.id));
     }
   }
-
-  loadUnits() {
-    const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'Units'
-    };
-    this.propertiesService.getUnits(payload).subscribe({
-      next: (response: any) => {
-        let apiUnits: any[] = [];
-        if (Array.isArray(response)) {
-          apiUnits = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiUnits = response.objResult;
-          else if (response.objResult.unit) apiUnits = response.objResult.unit;
-          else if (response.objResult.units) apiUnits = response.objResult.units;
-          else if (response.objResult.Unit) apiUnits = response.objResult.Unit;
-          else if (response.objResult.Units) apiUnits = response.objResult.Units;
-        }
-
-        if (Array.isArray(apiUnits) && apiUnits.length > 0) {
-          this.allUnits = apiUnits.map((u: any) => ({
-            ...u,
-            displayName: `${u.unit_code || u.code || u.id || ''} - ${u.unit_no || u.name || ''}`
-          }));
-          this.unitsList = [...this.allUnits];
+  loadUnits(filterId: number,   propertyCode: string) {
+    this.portfolioService.getMasterByType({
+      typeId: 3,
+      filterId: 0,
+      filterText: propertyCode,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.unitsList = res.objResult.table;
         }
       },
-      error: (err: any) => {
-        console.error('Error loading units:', err);
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
   }
-
   onPropertyChange(event: any) {
     this.roomForm.get('unitCode')?.setValue(null);
     const propertyCode = event?.code || event?.id;
-    
-    if (propertyCode) {
-      this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
-    } else {
-      this.unitsList = [...this.allUnits];
-    }
+    this.loadUnits(3,  propertyCode);
+
+    // if (propertyCode) {
+    //   this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
+    // } else {
+    //   this.unitsList = [...this.allUnits];
+    // }
   }
-
-  loadProperties() {
-    const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'Property'
-    };
-    this.propertiesService.getProperties(payload).subscribe({
-      next: (response: any) => {
-        let apiProps: any[] = [];
-        if (Array.isArray(response)) {
-          apiProps = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiProps = response.objResult;
-          else if (response.objResult.property) apiProps = response.objResult.property;
-          else if (response.objResult.properties) apiProps = response.objResult.properties;
-          else if (response.objResult.Property) apiProps = response.objResult.Property;
-          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
-        }
-
-        if (Array.isArray(apiProps) && apiProps.length > 0) {
-          this.propertiesList = apiProps.map((p: any) => ({
-            ...p,
-            displayName: `${p.code || p.id} - ${p.name}`
-          }));
-        }
-      },
-      error: (err: any) => {
-        console.error('Error loading properties:', err);
-      }
-    });
-  }
-
+ 
   initForm() {
     this.roomForm = this.formBuilder.group({
       propertyCode: ['', Validators.required],
       unitCode: [''],
-      category: [1, Validators.required],
-      roomType: [1, Validators.required],
+      category: ['', Validators.required],
+      roomType: ['', Validators.required],
       roomCode: ['', Validators.required],
       roomNumber: ['', Validators.required],
       beds: [''],
@@ -466,9 +393,9 @@ export class AddRoomComponent implements OnInit {
     const formValue = this.roomForm.value;
 
     const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
       property_code: formValue.propertyCode || '',
@@ -563,6 +490,24 @@ export class AddRoomComponent implements OnInit {
     });
   }
 
+  loadProperties() {
+    this.portfolioService.getMasterByType({
+      typeId: 11,
+      filterId: 0,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.propertiesList= res.objResult.table;
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup :`, err);
+      }
+    });
+  }
+
   loadLookup(filterId: number, targetProperty: string, nameField: string) {
     this.portfolioService.getMasterByType({
       typeId: 2,
@@ -572,10 +517,7 @@ export class AddRoomComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          (this as any)[targetProperty] = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item[nameField] || item.lookup_name || item.name || ''
-          }));
+          (this as any)[targetProperty] = res.objResult.table;
         }
       },
       error: (err) => {

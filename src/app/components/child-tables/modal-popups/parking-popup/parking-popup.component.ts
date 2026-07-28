@@ -23,6 +23,7 @@ export class ParkingPopupComponent {
   @Input({ required: true })
   form!: FormGroup; 
   @Input() entity_id: string = '';
+  @Input() filter_code: string = '';
   unit_code:string='';
   recurringCycle: any = [];
   propertyList: any = [];
@@ -48,6 +49,14 @@ export class ParkingPopupComponent {
       control?.disable();
       this.getUnits(); 
     } 
+    if(this.filter_code){
+      const control = this.form.get('unit_code');
+      this.form.patchValue({
+        unit_code: this.filter_code,
+      }); 
+      control?.disable();
+      this.getRooms(); 
+    }
     //  this.form = this.fb.group({
     //   property_code: ['', Validators.required],
     //   unit_code: ['', Validators.required],
@@ -66,11 +75,11 @@ export class ParkingPopupComponent {
   }
   getUnits(){
     this.unitsList=[];
-    this.loadMasterDataByType(3,0,'unitsList',this.entity_id,'')
+    this.loadMasterDataByType(3,0,'unitsList',this.form.get('property_code')?.value,'')
   }
   getRooms(){
     this.roomsList=[];
-    this.loadMasterDataByType(38,0,'roomsList',this.entity_id,this.form.value?.unit_code)
+    this.loadMasterDataByType(38,0,'roomsList',this.form.get('property_code')?.value,this.form.get('unit_code')?.value)
   }
   private loadMasterDataByType(
   typeId: number,

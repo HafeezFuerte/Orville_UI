@@ -7,7 +7,9 @@ import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PropertiesService } from '../../services/properties.service';
-
+import { Common_TabsService } from '../../services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
+import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 export interface Unit {
   id: number;
   name: string;
@@ -39,13 +41,13 @@ export class UnitsListComponent implements OnInit {
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   searchQuery: string = '';
-
+ 
   // Advanced Filters (Search Criteria Panel)
   selectedCategory: string | null = null;
   selectedStatus: string | null = null;
   selectedBeds: string | null = null;
   selectedRentStatus: string | null = null;
-
+  selectedPropertyCode: string | null = null;
   // Drawer Visibility State
   isDrawerOpen: boolean = false;
   showColumnDropdown: boolean = false;
@@ -60,10 +62,14 @@ export class UnitsListComponent implements OnInit {
   selectedInternalStatus: string | null = null;
 
   // Dropdown lists
-  categories: string[] = ['Residential', 'Commercial'];
-  statuses: string[] = ['Occupied', 'Vacant', 'Maintenance'];
-  bedsOptions: string[] = ['Studio', '1 Bed', '2 Bed', '3 Bed', '4 Bed', 'N/A'];
-  rentStatuses: string[] = ['For Rent', 'For Sale'];
+  categories: any[] = []; 
+  statuses: any[] = []; 
+  bedsOptions: any[] = [];
+  propertiesList: any[] = [];
+  rentStatuses: any[] = [
+    { id: 1, name: 'For Rent' },
+    { id: 2, name: 'For Sale' } 
+  ];
 
   // Lists for drawer dropdowns
   tagsList: string[] = ['Premium', 'Best Seller', 'Compact', 'Luxury', 'Corporate', 'Prime Location'];
@@ -93,13 +99,13 @@ export class UnitsListComponent implements OnInit {
     { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'category', label: 'Category', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'beds', label: 'Beds', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'property', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'landlord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'property_Name', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'land_lord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'floor', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'managementFee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'status', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unit_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   get visibleColumns() {
@@ -123,156 +129,63 @@ export class UnitsListComponent implements OnInit {
   }
 
   // Mock Units Data
-  allUnits: Unit[] = [
-    {
-      id: 31658,
-      name: 'Apartment 209',
-      category: 'Residential',
-      beds: '1 Bed',
-      baths: '2 Bath',
-      area: '1523 Sqft',
-      floor: '1 Floor',
-      property: 'Marina Height Towers',
-      location: 'Dubai Marina, Tower A, Dubai',
-      landlord: 'Orville Real Estate',
-      tags: 'Premium',
-      unitType: 'Apartment',
-      managementFee: 'AED 600',
-      status: 'Occupied',
-      addedDate: 'May 26, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Rent'
-    },
-    {
-      id: 31659,
-      name: 'Apartment 304',
-      category: 'Residential',
-      beds: '2 Bed',
-      baths: '2 Bath',
-      area: '1850 Sqft',
-      floor: '3 Floor',
-      property: 'Marina Height Towers',
-      location: 'Dubai Marina, Tower A, Dubai',
-      landlord: 'Orville Real Estate',
-      tags: 'Best Seller',
-      unitType: 'Apartment',
-      managementFee: 'AED 750',
-      status: 'Vacant',
-      addedDate: 'May 28, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Rent'
-    },
-    {
-      id: 31660,
-      name: 'Studio 105',
-      category: 'Residential',
-      beds: 'Studio',
-      baths: '1 Bath',
-      area: '850 Sqft',
-      floor: '1 Floor',
-      property: 'Jumeirah Living',
-      location: 'JBR, Gate 2, Dubai',
-      landlord: 'Emaar Properties',
-      tags: 'Compact',
-      unitType: 'Studio',
-      managementFee: 'AED 400',
-      status: 'Occupied',
-      addedDate: 'June 01, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Rent'
-    },
-    {
-      id: 31661,
-      name: 'Penthouse 501',
-      category: 'Residential',
-      beds: '4 Bed',
-      baths: '5 Bath',
-      area: '4200 Sqft',
-      floor: '50 Floor',
-      property: 'Burj Khalifa Residences',
-      location: 'Downtown Dubai, Dubai',
-      landlord: 'Orville Real Estate',
-      tags: 'Luxury',
-      unitType: 'Penthouse',
-      managementFee: 'AED 2500',
-      status: 'Maintenance',
-      addedDate: 'April 15, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Sale'
-    },
-    {
-      id: 31662,
-      name: 'Office Suite 12B',
-      category: 'Commercial',
-      beds: 'N/A',
-      baths: '2 Bath',
-      area: '3100 Sqft',
-      floor: '12 Floor',
-      property: 'Index Tower',
-      location: 'DIFC, Office Block C, Dubai',
-      landlord: 'DIFC Investments',
-      tags: 'Corporate',
-      unitType: 'Office',
-      managementFee: 'AED 1500',
-      status: 'Occupied',
-      addedDate: 'Jan 10, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Rent'
-    },
-    {
-      id: 31663,
-      name: 'Retail Lot G-04',
-      category: 'Commercial',
-      beds: 'N/A',
-      baths: '1 Bath',
-      area: '1200 Sqft',
-      floor: 'Ground',
-      property: 'Dubai Marina Mall',
-      location: 'Dubai Marina, Ground Floor, Dubai',
-      landlord: 'Emaar Malls',
-      tags: 'Prime Location',
-      unitType: 'Retail',
-      managementFee: 'AED 1100',
-      status: 'Vacant',
-      addedDate: 'March 20, 2026',
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0db9a?w=600&auto=format&fit=crop&q=60',
-      rentStatus: 'For Rent'
-    }
-  ];
+  allUnits: any = [];
 
-  filteredUnits: Unit[] = [];
-  paginatedUnits: Unit[] = [];
-
-  constructor(public translate: TranslateService, private propertiesService: PropertiesService) {}
+  filteredUnits: any = [];
+  paginatedUnits: any = [];
+  currentUser: AuthPayload | null = null;
+  constructor(public translate: TranslateService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {
+    this.currentUser = this.commonService.getCurrentUser();
     this.loadMetrics();
+    this.loadMasterDataByType(2,4,"categories",'','');
+    this.loadMasterDataByType(2,7,"statuses",'','');
+    this.loadMasterDataByType(2,5,"bedsOptions",'','');
+     this.loadMasterDataByType(11,0,"propertiesList",'',''); 
     this.loadUnits();
   }
 
+    loadMasterDataByType(
+    typeId: number,
+    filterId: number,
+    target: 'categories' | 'statuses' | 'bedsOptions' | 'propertiesList',
+    filtertext:string ='',
+    filterText1:string ='', 
+    callback?:()=>void
+  ) {
+    this.commonservice.getMasterByType({
+      typeId: typeId,
+      filterId,
+      filterText: filtertext,
+      filterText1: filterText1 
+    }).subscribe({
+      next: res => {
+  
+        if(res['statusCode'] == 200)
+          this[target] = res.objResult.table;
+          callback?.();
+       
+      },
+      error: (err) => {
+    console.log('Full Error:', err);
+  }
+    });
+  }
   loadMetrics() {
     const payload = {
       typeId: 5,
       filterId: 4,
       filterText: "",
       filterText1: "",
-      userId: 1,
-      clientId: "74BB6922",
-      companyId: 0
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
     };
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          let data = null;
-          if (res.objResult.table && Array.isArray(res.objResult.table) && res.objResult.table.length > 0) {
-            data = res.objResult.table[0];
-          } else if (res.objResult.Table && Array.isArray(res.objResult.Table) && res.objResult.Table.length > 0) {
-            data = res.objResult.Table[0];
-          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
-            data = res.objResult[0];
-          } else {
-            data = res.objResult;
-          }
+          let  data = res.objResult.table[0]; 
           
           if (data) {
             this.metrics = {
@@ -290,9 +203,9 @@ export class UnitsListComponent implements OnInit {
 
   loadUnits(): void {
     const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
       page_no: 0,
@@ -306,53 +219,8 @@ export class UnitsListComponent implements OnInit {
 
     this.propertiesService.getUnits(payload).subscribe({
       next: (response: any) => {
-        if (response && response.statusCode === "200" && response.objResult) {
-          let apiUnits: any[] = [];
-          if (Array.isArray(response.objResult)) {
-            apiUnits = response.objResult;
-          } else if (response.objResult.units && Array.isArray(response.objResult.units)) {
-            apiUnits = response.objResult.units;
-          } else if (response.objResult.Units && Array.isArray(response.objResult.Units)) {
-            apiUnits = response.objResult.Units;
-          } else if (response.objResult.unit && Array.isArray(response.objResult.unit)) {
-            apiUnits = response.objResult.unit;
-          } else if (response.objResult.property && Array.isArray(response.objResult.property)) {
-            apiUnits = response.objResult.property;
-          }
-
-          if (apiUnits.length > 0) {
-            this.allUnits = apiUnits.map((u: any) => {
-              const categoryMap: any = { 1: 'Residential', 2: 'Commercial', 3: 'Industrial' };
-              const unitTypeMap: any = { 1: 'Apartment', 2: 'Villa', 3: 'Office', 4: 'Warehouse', 5: 'Retail Store' };
-              
-              let bedsDisplay = '-';
-              if (u.beds === 0 || String(u.beds).toLowerCase() === 'studio') {
-                bedsDisplay = 'Studio';
-              } else if (u.beds != null) {
-                bedsDisplay = `${u.beds} Bed${u.beds > 1 ? 's' : ''}`;
-              }
-
-              return {
-                id: u.code ?? u.unit_code ?? '-',
-                name: u.unit_no ?? '-',
-                category: categoryMap[u.category] ?? u.category_name ?? u.category ?? '-',
-                beds: bedsDisplay,
-                baths: (u.baths != null) ? `${u.baths} Bath${u.baths > 1 ? 's' : ''}` : '-',
-                area: u.area ?? '-',
-                floor: (u.floor_no != null) ? `${u.floor_no} Floor` : '-',
-                property: u.property_code ?? u.property_name ?? '-',
-                location: u.location ?? '-',
-                landlord: u.landlord_codes ?? u.landlord_name ?? '-',
-                tags: u.tags ?? '-',
-                unitType: unitTypeMap[u.unit_type] ?? u.unit_type_name ?? u.unit_type ?? '-',
-                managementFee: (u.management_fee != null) ? `AED ${u.management_fee}` : '-',
-                status: u.unit_status === 1 ? 'Available' : u.unit_status === 2 ? 'Rented' : u.unit_status === 3 ? 'Under Maintenance' : u.unit_status === 4 ? 'Reserved' : (u.unit_status ?? '-'),
-                addedDate: u.created_date ?? u.addedDate ?? '-',
-                imageUrl: u.unit_image ?? '',
-                rentStatus: u.rent_type === 1 ? 'Monthly' : u.rent_type === 2 ? 'Quarterly' : u.rent_type === 3 ? 'Bi-Annually' : u.rent_type === 4 ? 'Yearly' : (u.rent_type ?? '-')
-              };
-            });
-          }
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allUnits=response.objResult.units  
         }
         this.filterAndPaginate();
       },
@@ -368,47 +236,47 @@ export class UnitsListComponent implements OnInit {
 
     // 1. Filter by category tabs OR selected category dropdown
     if (this.categoryFilter !== 'All') {
-      result = result.filter(u => u.category === this.categoryFilter);
+      result = result.filter((u:any) => u.category === this.categoryFilter);
     } else if (this.selectedCategory) {
-      result = result.filter(u => u.category === this.selectedCategory);
+      result = result.filter((u:any) => u.category === this.selectedCategory);
     }
 
     // 2. Filter by status dropdown
     if (this.selectedStatus) {
-      result = result.filter(u => u.status === this.selectedStatus);
+      result = result.filter((u:any) => u.unit_status === this.selectedStatus);
     }
 
     // 3. Filter by beds dropdown
     if (this.selectedBeds) {
-      result = result.filter(u => u.beds === this.selectedBeds);
+      result = result.filter((u:any) => u.beds_id === this.selectedBeds);
     }
 
-    // 4. Filter by rent status dropdown
-    if (this.selectedRentStatus) {
-      result = result.filter(u => u.rentStatus === this.selectedRentStatus);
+    // 4. Filter by property_code   dropdown
+    if (this.selectedPropertyCode) {
+      result = result.filter((u:any) => u.property_code === this.selectedPropertyCode);
     }
 
     // 5. Drawer custom filters
     if (this.selectedTag) {
-      result = result.filter(u => u.tags === this.selectedTag);
+      result = result.filter((u:any) => u.tags === this.selectedTag);
     }
     if (this.selectedLandlord) {
-      result = result.filter(u => u.landlord === this.selectedLandlord);
+      result = result.filter((u:any) => u.landlord === this.selectedLandlord);
     }
     if (this.selectedId) {
-      result = result.filter(u => u.id === this.selectedId);
+      result = result.filter((u:any) => u.id === this.selectedId);
     }
     if (this.selectedArea) {
-      result = result.filter(u => u.area.toLowerCase().includes(this.selectedArea!.toLowerCase()));
+      result = result.filter((u:any) => u.area.toLowerCase().includes(this.selectedArea!.toLowerCase()));
     }
 
     // 6. Filter by search query
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      result = result.filter(u => 
-        u.property.toLowerCase().includes(query) || 
-        u.name.toLowerCase().includes(query) ||
-        u.landlord.toLowerCase().includes(query)
+      result = result.filter((u:any) => 
+        u.property_Name.toLowerCase().includes(query) || 
+        u.unit_code.toLowerCase().includes(query) ||
+        u.unit_no.toLowerCase().includes(query)
       );
     }
 
@@ -525,7 +393,8 @@ export class UnitsListComponent implements OnInit {
   getStatusClass(status: string): string {
     switch (status) {
       case 'Occupied': return 'bg-primary/10 text-primary border border-primary/20';
-      case 'Vacant': return 'bg-danger/10 text-danger border border-danger/20';
+      case 'Vacant': return 'bg-success/10 text-success border border-success/20';
+      case 'Sold': return 'bg-danger/10 text-danger border border-danger/20';
       case 'Maintenance': return 'bg-warning/10 text-warning border border-warning/20';
       default: return 'bg-gray-100 text-gray-800';
     }

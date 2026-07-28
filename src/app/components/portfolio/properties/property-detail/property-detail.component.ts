@@ -26,9 +26,7 @@ import { ParkingsComponent } from '../../../child-tables/parkings/parkings.compo
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
-export class PropertyDetailComponent implements OnInit {
-  propertyAttachment: File[] = [];
-  propertyNotesFile: File[] = [];
+export class PropertyDetailComponent implements OnInit { 
   viewMode: 'list' | 'grid' = 'list';
   propertyId!: number;
   property: any = null;
@@ -123,15 +121,7 @@ getStatusClass(status: string) {
 toggleMoreDetails(): void {
   this.showMoreDetails = !this.showMoreDetails;
 }
-private get commonPayload() {
-  return {
-    userId: this.currentUser?.userId,
-    clientId: this.currentUser?.clientId,
-    company_id: this.currentUser?.companyId,
-    source: 'web',
-    languageid: 1
-  };
-}
+ 
 private loadMasterDataByType(
   typeId: number,
   filterId: number,
@@ -181,13 +171,13 @@ initializeTabs() {
 
     {
       key: 'overview',
-      label: 'Overview',
+      label: 'web.common.lblOverview',
       layout: 'content'
     },
 
     {
       key: 'units',
-      label: 'Units',
+      label: 'web.common.lblUnits',
       layout: 'content', 
       data: this.unitsData,
       totalRecords: this.unitsData?.length || 0,
@@ -198,7 +188,7 @@ initializeTabs() {
 
     {
       key: 'rooms',
-      label: 'Rooms',
+      label: 'web.common.lblRooms',
       layout: 'content', 
       data: this.roomsData,
       totalRecords: this.roomsData?.length || 0,
@@ -209,7 +199,7 @@ initializeTabs() {
 
     {
       key: 'tenants',
-      label: 'Tenants History',
+      label: 'web.common.lblTenantsHistory',
       layout: 'table',
       columns: this.tenantColumns,
       data: this.tenantsData,
@@ -221,7 +211,7 @@ initializeTabs() {
     },
 {
       key: 'commonarea',
-      label: 'Common Area',
+      label: 'web.common.lblCommonArea',
       layout: 'content', 
       entity:"property",
       entity_id:this.propertyCode,
@@ -235,7 +225,7 @@ initializeTabs() {
     },
     {
       key: 'attachments',
-      label: 'Attachments',
+      label: 'web.common.lblAttachments',
       layout: 'content', 
       entity:"property",
       entity_id:this.propertyCode,
@@ -249,7 +239,7 @@ initializeTabs() {
     },
     {
       key: 'broadcasts',
-      label: 'Broadcasts',
+      label: 'web.common.lblBroadcasts',
       layout: 'table',
       columns: this.broadCastsColumns,
       data: this.broadCastsData,
@@ -260,7 +250,7 @@ initializeTabs() {
     },
     {
       key: 'notes',
-      label: 'Notes',
+      label: 'web.common.lblNotes',
       layout: 'content', 
       entity:"property",
       entity_id:this.propertyCode,
@@ -274,7 +264,7 @@ initializeTabs() {
     },
     {
       key: 'parkings',
-      label: 'Parkings',
+      label: 'web.common.lblParkings',
       layout: 'content', 
       data: this.parkingData,
       entity_id:this.propertyCode,
@@ -285,7 +275,7 @@ initializeTabs() {
     },
     {
       key: 'assets',
-      label: 'Assets',
+      label: 'web.common.lblAssets',
       layout: 'table',
       columns: this.assetsColumns,
       data: this.assetsData,
@@ -313,30 +303,5 @@ handleSearch(searchstring:any){
 handleEditNotification(selectedObject: any) {
     
 }
-  
- 
-validateForm(form: FormGroup, fieldLabels: { [key: string]: string }): boolean {
-  const errors: string[] = [];
-  Object.keys(fieldLabels).forEach(controlName => {
-    const control = form.get(controlName);
-    if (control?.invalid) {
-      errors.push(`${fieldLabels[controlName]} is required.`);
-    }
-  });
-  if (errors.length > 0) {
-    form.markAllAsTouched();
-    this.toastr.error(
-      errors.join('<br>'),
-      'Validation',
-      {
-        enableHtml: true,
-        timeOut: 5000,
-        positionClass: 'toast-top-right'
-      }
-    );
-    return false;
-  }
-  return true;
-}
-
+   
 }

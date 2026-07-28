@@ -8,7 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../services/properties.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../services/portfolio.service';
-
+import { CommonService } from '../../../../services/common.service';
+import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 @Component({
   selector: 'app-add-unit',
   standalone: true,
@@ -36,7 +37,7 @@ export class AddUnitComponent implements OnInit {
     const number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     this.showScrollToTop = number > 600;
   }
-  
+  currentUser: AuthPayload | null = null;
   // File attachments state
   unitImageFile: File | null = null;
   unitBroucherFile: File | null = null;
@@ -104,11 +105,13 @@ export class AddUnitComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private propertiesService: PropertiesService,
+    private commonService : CommonService,
     private route: ActivatedRoute,
     private portfolioService: PortfolioService
   ) {}
 
   ngOnInit() {
+    this.currentUser = this.commonService.getCurrentUser();
     this.filteredLandlords = [...this.landlordsList];
     this.initForm();
     this.loadProperties();
@@ -117,7 +120,7 @@ export class AddUnitComponent implements OnInit {
     this.loadLookup(5, 'bedsOptions', 'lookup_name');
     this.loadLookup(6, 'rentTypes', 'lookup_name');
     this.loadLookup(7, 'statusOptions', 'lookup_name');
-
+    this.loadProperties();
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
@@ -135,9 +138,9 @@ export class AddUnitComponent implements OnInit {
       filterId: 0,
       filterText: id,
       filterText1: "",
-      userId: 1,
-      clientId: "74BB6922",
-      companyId: 1
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
     };
 
     this.propertiesService.getMasterDetails(payload).subscribe({
@@ -266,42 +269,19 @@ export class AddUnitComponent implements OnInit {
   }
 
   loadProperties() {
-    const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'Property'
-    };
-    this.propertiesService.getProperties(payload).subscribe({
-      next: (response: any) => {
-        let apiProps: any[] = [];
-        if (Array.isArray(response)) {
-          apiProps = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiProps = response.objResult;
-          else if (response.objResult.property) apiProps = response.objResult.property;
-          else if (response.objResult.properties) apiProps = response.objResult.properties;
-          else if (response.objResult.Property) apiProps = response.objResult.Property;
-          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
-        }
-
-        if (Array.isArray(apiProps) && apiProps.length > 0) {
-          this.propertiesList = apiProps.map((p: any) => ({
-            ...p,
-            _safeCode: p.code || String(p.id),
-            displayName: `${p.code || p.id} - ${p.name}`
-          }));
+    this.portfolioService.getMasterByType({
+      typeId: 11,
+      filterId: 0,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.propertiesList= res.objResult.table;
         }
       },
-      error: (err: any) => {
-        console.error('Error loading properties:', err);
+      error: (err) => {
+        console.error(`Error fetching lookup :`, err);
       }
     });
   }
@@ -575,10 +555,7 @@ export class AddUnitComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          (this as any)[targetProperty] = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item[nameField] || item.lookup_name || item.name || ''
-          }));
+          (this as any)[targetProperty] = res.objResult.table;
         }
       },
       error: (err) => {
@@ -586,4 +563,5 @@ export class AddUnitComponent implements OnInit {
       }
     });
   }
+  
 }

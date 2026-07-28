@@ -30,7 +30,7 @@
     </div>
     <div>
       <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.total}}</h5>
-      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">{{ 'web.Property.lblPortfolio' | translate }}</span>
+      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">{{ 'web.property.lblTotalUnits' | translate }}</span>
     </div>
   </div>
 
@@ -77,11 +77,11 @@
     <div class="flex items-center gap-4">
       <h5 class="box-title text-xs font-bold text-gray-700 m-0">{{ 'web.common.lblSearchCriteria' | translate }}</h5>
       <!-- Category Tabs (Left) -->
-      <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
+      <!-- <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
         <button (click)="setCategoryFilter('All')" [class]="categoryFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.common.lblAll' | translate }}</button>
         <button (click)="setCategoryFilter('Residential')" [class]="categoryFilter === 'Residential' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Residential</button>
         <button (click)="setCategoryFilter('Commercial')" [class]="categoryFilter === 'Commercial' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">Commercial</button>
-      </div>
+      </div> -->
     </div>
     
     <!-- View Switcher & Filter Icon Button -->
@@ -143,29 +143,38 @@
       <!-- Category Filter -->
       <div class="col-span-6 md:col-span-2 text-[11px]">
         <label class="form-label font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblCategory' | translate }}</label>
-        <ng-select [(ngModel)]="selectedCategory" [items]="categories" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Categories" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        <ng-select class="ng-select-sm w-full" [(ngModel)]="selectedCategory" 
+         (change)="onSearch()"  placeholder="All Categories" [items]="categories" 
+         bindLabel="name" 
+         bindValue="id" > 
+      </ng-select> 
       </div>
 
       <!-- Status Filter -->
       <div class="col-span-6 md:col-span-2 text-[11px]">
         <label class="form-label font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblStatus' | translate }}</label>
         <ng-select [(ngModel)]="selectedStatus" [items]="statuses" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+          (change)="onSearch()" 
+          bindLabel="name" 
+          bindValue="id"  placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
 
       <!-- Beds Filter -->
       <div class="col-span-6 md:col-span-2 text-[11px]">
         <label class="form-label font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblBeds' | translate }}</label>
         <ng-select [(ngModel)]="selectedBeds" [items]="bedsOptions" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Beds" class="ng-select-sm w-full" appendTo="body"></ng-select>
+          (change)="onSearch()" 
+          bindLabel="name" 
+          bindValue="id" placeholder="All Beds" class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
 
       <!-- Rent/Sale Filter -->
       <div class="col-span-6 md:col-span-2 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Rent Status</label>
-        <ng-select [(ngModel)]="selectedRentStatus" [items]="rentStatuses" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" placeholder="All Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Property</label>
+        <ng-select [(ngModel)]="selectedPropertyCode" [items]="propertiesList" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" 
+          bindLabel="name" 
+          bindValue="code" placeholder="All Properties" class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
 
       <!-- Clear Filters Button -->
@@ -182,22 +191,25 @@
 
 <!-- 📋 1. LIST VIEW (TABLE) -->
 <div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
-  <app-shared-table [columns]="visibleColumns" [data]="paginatedUnits" [loading]="false"
+  <app-shared-table (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="paginatedUnits" [loading]="false"
     [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container *ngIf="col.key === 'id'">
-        <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/units', row.id]">{{row.id}}</span>
+        <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/units', row.code]">{{row.code}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'name'">
-        <span class="font-semibold text-gray-800">{{row.name}}</span>
+        <div class="flex flex-col">
+          <span class="font-bold text-gray-700">{{row.unit_code}}</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.unit_no}}</span>
+        </div> 
       </ng-container>
 
       <ng-container *ngIf="col.key === 'category'">
-        <span class="badge" [ngClass]="row.category === 'Residential' ? 'bg-info/10 text-info' : 'bg-warning/10 text-warning'">
-          {{row.category}}
+        <span class="badge" [ngClass]="row.category_name === 'Residential' ? 'bg-info/10 text-info' : 'bg-warning/10 text-warning'">
+          {{row.category_name}}
         </span>
       </ng-container>
 
@@ -205,15 +217,15 @@
         <span>{{row.beds}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'property'">
+      <ng-container *ngIf="col.key === 'property_Name'">
         <div class="flex flex-col">
-          <span class="font-bold text-gray-700">{{row.property}}</span>
-          <span class="text-[10px] text-gray-600 font-semibold">{{row.location}}</span>
+          <span class="font-bold text-gray-700">{{row.property_Name}}</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
         </div>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'landlord'">
-        <span class="badge bg-light text-gray-600 border border-gray-200">{{row.landlord}}</span>
+      <ng-container *ngIf="col.key === 'land_lord'">
+        <span class="badge bg-light text-gray-600 border border-gray-200">{{row.land_lord}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'tags'">
@@ -221,20 +233,20 @@
       </ng-container>
 
       <ng-container *ngIf="col.key === 'unitType'">
-        <span>{{row.unitType}}</span>
+        <span>{{row.unit_type_name}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'floor'">
-        <span>{{row.floor}}</span>
+      <ng-container *ngIf="col.key === 'floor_no'">
+        <span>{{row.floor_no}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'managementFee'">
-        <span class="font-bold text-gray-700">{{row.managementFee}}</span>
+      <ng-container *ngIf="col.key === 'management_fee'">
+        <span class="font-bold text-gray-700">{{currentUser?.currencyCode + ' '+ row.management_fee}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'status'">
-        <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [class]="getStatusClass(row.status)">
-          {{row.status}}
+      <ng-container *ngIf="col.key === 'unit_status_name'">
+        <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [class]="getStatusClass(row.unit_status_name)">
+          {{row.unit_status_name}}
         </span>
       </ng-container>
     </ng-template>
@@ -242,7 +254,7 @@
     <!-- Actions Template -->
     <ng-template #actionTemplate let-row="row">
       <div class="flex gap-1">
-        <button [routerLink]="['/edit-unit', row.id]" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" [attr.data-tooltip]="'Edit'">
+        <button [routerLink]="['/edit-unit', row.code]" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" [attr.data-tooltip]="'Edit'">
           <i class="ri-edit-line text-xs"></i>
         </button>
         <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" [attr.data-tooltip]="'Delete'">
@@ -259,12 +271,12 @@
   <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl animate-fade-in" *ngFor="let unit of paginatedUnits; trackBy: trackByUnitId">
     <!-- Image Card Header -->
     <div class="relative h-48 overflow-hidden bg-gray-100">
-      <img [src]="unit.imageUrl" [alt]="unit.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+      <img [src]="unit.unit_image" [alt]="unit.unit_code" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
       
       <!-- Top Left Status Badge (Glass Finish) -->
       <span class="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-extrabold uppercase rounded-md shadow-sm backdrop-blur-md transition-all duration-300"
-        [ngClass]="unit.status === 'Occupied' ? 'bg-success/20 text-success border border-success/30' : unit.status === 'Vacant' ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-warning/20 text-warning border border-warning/30'">
-        {{unit.status}}
+      [class]="getStatusClass(unit.unit_status_name)" >
+        {{unit.unit_status_name}}
       </span>
 
       <!-- Top Right Classy Circle Icon (Glass Finish) -->
@@ -274,7 +286,7 @@
 
       <!-- Bottom Left Category Badge (Glass Finish) -->
       <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[9px] font-extrabold text-white bg-slate-900/35 border border-white/10 backdrop-blur-md rounded-md shadow-sm">
-        <i class="ri-home-4-line align-middle me-0.5 text-xs"></i> {{unit.category}}
+        <i class="ri-home-4-line align-middle me-0.5 text-xs"></i> {{unit.category_name}}
       </span>
     </div>
 
@@ -285,9 +297,9 @@
         <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/50 mb-2 uppercase">
           {{unit.rentStatus}}
         </span>
-        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{unit.name}} - {{unit.property}}</h5>
+        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{unit.unit_code}} - {{unit.property_Name}}</h5>
         <div class="flex items-center text-gray-600 text-[11px] font-medium mt-1">
-          <i class="ri-map-pin-line text-xs me-0.5 text-gray-600"></i> {{unit.location}}
+          <i class="ri-map-pin-line text-xs me-0.5 text-gray-600"></i> {{unit.address_1}}
         </div>
       </div>
 
@@ -307,23 +319,23 @@
         </div>
         <div class="flex flex-col gap-0.5">
           <span class="text-gray-600 text-[9px] uppercase font-bold">Floor</span>
-          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-stack-line text-xs me-0.5 text-warning"></i> {{unit.floor}}</span>
+          <span class="text-gray-800 text-[11px] font-extrabold"><i class="ri-stack-line text-xs me-0.5 text-warning"></i> {{unit.floor_no}}</span>
         </div>
       </div>
 
       <!-- Info Row -->
       <div class="flex items-center justify-between text-[11px] font-medium text-gray-600 mt-1">
-        <span>Added: <span class="font-bold text-gray-700">{{unit.addedDate}}</span></span>
-        <span>Fee: <span class="font-extrabold text-gray-800">{{unit.managementFee}}</span></span>
+        <span>Added: <span class="font-bold text-gray-700">{{unit.created_date.split('T')[0]}}</span></span>
+        <span>Fee: <span class="font-extrabold text-gray-800">{{unit.management_fee}}</span></span>
       </div>
     </div>
 
     <!-- Footer Actions -->
     <div class="px-4 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center gap-3">
-      <button type="button" class="w-1/2 ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md border text-xs font-bold hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
+      <button [routerLink]="['/edit-unit', unit.code]" type="button" class="w-1/2 ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md border text-xs font-bold hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
         Manage Unit
       </button>
-      <button type="button" class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
+      <button [routerLink]="['/units', unit.code]" type="button" class="w-1/2 ti-btn !py-1.5 !px-3 !m-0 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center justify-center gap-1 shadow-sm">
         View Unit <i class="ri-arrow-right-line"></i>
       </button>
     </div>

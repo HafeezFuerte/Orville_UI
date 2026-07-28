@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 export interface DetailTab {
 
   key: string;
-  label: string;
+  label?: string;
 
   layout: 'content' | 'table' | 'content-table';
 
@@ -20,6 +20,7 @@ export interface DetailTab {
   redirect_addurl?:string,
   entity?: string;
   entity_id?: string;
+  filter_code?: string;
   // NEW
   popupType?: 'common-area' | 'attachment' | 'notes';
 

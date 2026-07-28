@@ -10,7 +10,7 @@ import { RoomsListComponent } from '../portfolio/rooms/rooms-list/rooms-list.com
 import { AddRoomComponent } from '../portfolio/rooms/create-new-room/add-room.component';
 import { ParkingsListComponent } from '../portfolio/parkings/parkings-list/parkings-list.component';
 import { PropertyDetailComponent } from '../portfolio/properties/property-detail/property-detail.component';
-
+import { RoomDetailComponent } from '../portfolio/rooms/room-detail/room-detail.component';
 export const admin: Routes = [
  {path:'dashboard',children:[ 
 {
@@ -26,7 +26,7 @@ export const admin: Routes = [
 { path: 'rooms', component: RoomsListComponent },
 { path: 'parkings', component: ParkingsListComponent },
 { path: 'units/:id', component: UnitDetailComponent },
-{ path: 'rooms/:id', component: UnitDetailComponent },
+{ path: 'rooms/:id', component: RoomDetailComponent },
 
 {
   path: 'add-property',
