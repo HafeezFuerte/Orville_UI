@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-create-asset',
@@ -12,9 +13,10 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
   templateUrl: './create-asset.component.html',
   styleUrl: './create-asset.component.scss'
 })
-export class CreateAssetComponent {
+export class CreateAssetComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   branches = ['Branch A', 'Branch B'];
   buildings = ['Building 1', 'Building 2'];
@@ -98,7 +100,53 @@ export class CreateAssetComponent {
   }
 
   saveAsset() {
-    this.goBack();
+    const currentUser = this.commonService.getCurrentUser();
+    const formData = new FormData();
+
+    formData.append('userid', (currentUser?.userId || 1).toString());
+    formData.append('company_id', (currentUser?.companyId || 1).toString());
+    formData.append('clientId', currentUser?.clientId || "74BB6922");
+    formData.append('source', 'web');
+    formData.append('languageid', '1');
+    formData.append('code', '');
+    formData.append('vendor_id', this.selectedAssignVendor || '');
+    formData.append('worker_id', this.selectedAssignWorker || '');
+    formData.append('barcode', this.barcodeValue || '');
+    formData.append('property_code', this.selectedProperty || '');
+    formData.append('unit_code', this.selectedPropertyUnit || '');
+    formData.append('asset_name', this.assetName || '');
+    formData.append('model', this.assetModel || '');
+    formData.append('area', this.commonAreaLeft || '');
+    formData.append('asset_category', this.selectedAssetCategory || '');
+    formData.append('asset_subcategory', this.selectedAssetSubcategory || '');
+    formData.append('common_area', this.selectedCommonAreaRight || '');
+    formData.append('manufacturer', this.brandManufacturer || '');
+    formData.append('capacity', this.capacity || '');
+    formData.append('units', this.selectedUnit || '');
+    formData.append('location', this.location || '');
+    formData.append('description', this.description || '');
+    formData.append('price', this.price || '');
+    formData.append('purchase_date', new Date().toISOString());
+    formData.append('expiry_date', this.expiryDate ? new Date(this.expiryDate).toISOString() : '');
+    formData.append('total_warranty', this.totalWarranty || '');
+
+    // Append files
+    if (this.attachments && this.attachments.length > 0) {
+      this.attachments.forEach((file: any) => {
+        if (file instanceof File) {
+          formData.append('file_paths', file);
+        }
+      });
+    }
+
+    this.portfolioService.saveAsset(formData).subscribe({
+      next: (res: any) => {
+        this.goBack();
+      },
+      error: (err: any) => {
+        console.error("Error saving asset:", err);
+      }
+    });
   }
 
   onFileSelected(event: any) {

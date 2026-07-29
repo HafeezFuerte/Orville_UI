@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-work-order-detail',
@@ -14,6 +16,8 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 export class WorkOrderDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private propertiesService = inject(PropertiesService);
+  private commonService = inject(CommonService);
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
@@ -231,7 +235,59 @@ export class WorkOrderDetailComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.workOrderId = params['id'];
-      this.workOrderDetails.id = this.workOrderId || '327856';
+      if (this.workOrderId) {
+        this.getWorkOrderDetails();
+      }
+    });
+  }
+
+  getWorkOrderDetails() {
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 21,
+      filterId: 0,
+      filterText: this.workOrderId,
+      filterText1: "",
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const details = res.objResult.work_orders || res.objResult.table || res.objResult;
+          if (Array.isArray(details) && details.length > 0) {
+            const data = details[0];
+            this.workOrderDetails = {
+              id: data.id || data.code || this.workOrderId,
+              title: data.title || data.workOrder || '-',
+              priority: data.priority || '-',
+              category: data.category || '-',
+              subcategory: data.subcategory || '-',
+              signatures: data.signatures || '-',
+              resolvedDate: data.resolvedDate || '-',
+              createdDate: data.createdAt || data.createdDate || '-',
+              lastUpdated: data.lastUpdate || data.lastUpdated || '-',
+              closingStatus: data.status || '-',
+              tenantRejectReason: data.tenantRejectReason || '-',
+              tenantRejected: data.tenantRejected || 'No',
+              waitingSLA: data.waitingSLA || 'Hold to SLA'
+            };
+            this.personnel = {
+              activeTenant: data.tenant || '-',
+              raisedBy: data.createdBy || '-',
+              responsiblePerson: data.responsiblePerson || '-',
+              technician: data.technician || '-',
+              vendor: data.vendor || '-',
+              landlord: data.landlord || '-'
+            };
+          }
+        }
+      },
+      error: (err) => {
+        console.error("Error loading work order details:", err);
+      }
     });
   }
 

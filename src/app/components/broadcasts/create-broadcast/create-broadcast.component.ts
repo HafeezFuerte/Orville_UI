@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-create-broadcast',
@@ -15,6 +16,7 @@ import { PortfolioService } from '../../portfolio/services/portfolio.service';
 export class CreateBroadcastComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   // 1. Choose Recipients
   audiences = ['Select', 'Tenant', 'Property', 'Landlord'];
@@ -103,11 +105,50 @@ export class CreateBroadcastComponent implements OnInit {
   }
 
   saveDraft() {
-    // TODO: API call for draft
+    this.postBroadcast(false);
   }
 
   sendBroadcast() {
-    // TODO: API call to send
+    this.postBroadcast(true);
+  }
+
+  private postBroadcast(isPublish: boolean) {
+    const currentUser = this.commonService.getCurrentUser();
+    
+    // Determine target recipient grouping
+    let sendToVal = 'All';
+    if (this.activeTenants) sendToVal = 'Active';
+    if (this.inactiveTenants) sendToVal = 'Inactive';
+    if (this.specificRecipients) sendToVal = 'Specific';
+
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      source: "web",
+      languageid: 1,
+      code: "",
+      send_to: sendToVal,
+      email_address_list: this.specificRecipients || "",
+      send_to_type: this.selectedAudience || "",
+      broadcast_template: this.selectedTemplate ? this.templates.indexOf(this.selectedTemplate) : 0,
+      subject: this.subjectInput,
+      details: this.messageBody,
+      broadcast_type: Number(this.selectedBroadcastType) || 0,
+      is_scheduled: this.isScheduled,
+      schedule_date: this.scheduleDate ? new Date(this.scheduleDate).toISOString() : new Date().toISOString(),
+      schedule_time: this.scheduleTime || "",
+      enabled_recurring: false
+    };
+
+    this.portfolioService.saveBroadcast(payload).subscribe({
+      next: (res: any) => {
+        this.goBack();
+      },
+      error: (err: any) => {
+        console.error("Error saving broadcast:", err);
+      }
+    });
   }
 
   goBack() {

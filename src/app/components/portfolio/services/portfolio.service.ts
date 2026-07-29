@@ -52,6 +52,30 @@ saveNotes(payload: any): Observable<any> {
     payload
   );
 }
+saveWorkOrder(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_workorder',
+    payload
+  );
+}
+saveBroadcast(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_update_broadcasts',
+    payload
+  );
+}
+saveAsset(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_update_assets',
+    payload
+  );
+}
+getMastersByPaging(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/get_masters_by_paging',
+    payload
+  );
+}
 //get master api calls
 private createPayload(options:any) {
   this.currentUser = this.commonService.getCurrentUser();

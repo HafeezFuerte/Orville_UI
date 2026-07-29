@@ -28,15 +28,27 @@
   
   <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
     <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assets list</h6>
+    <div class="relative">
+      <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        placeholder="Search..."
+        class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
+      />
+    </div>
   </div>
 
   <!-- Table -->
   <app-shared-table 
     [columns]="tableColumns" 
-    [data]="filteredData" 
+    [data]="assetData" 
     [hasActions]="true" 
-    [totalRecords]="filteredData.length" 
-    [pageSize]="pageSize">
+    [totalRecords]="totalRecords" 
+    [pageSize]="pageSize"
+    [pageIndex]="pageNo - 1"
+    (pageChange)="onSharedTablePageChange($event)">
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container [ngSwitch]="col.key">
         

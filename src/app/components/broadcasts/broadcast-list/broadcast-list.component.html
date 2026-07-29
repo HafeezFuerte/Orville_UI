@@ -33,6 +33,7 @@
       <input
         type="text"
         [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
         placeholder="Search..."
         class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
       />
@@ -64,13 +65,16 @@
       </button>
     </div>
   </div>
-
+ 
   <!-- Table -->
   <div class="p-6">
     <app-shared-table 
       [columns]="visibleColumns" 
-      [data]="filteredData" 
-      [pageSize]="pageSize">
+      [data]="broadcastData" 
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo - 1"
+      (pageChange)="onSharedTablePageChange($event)">
       
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">

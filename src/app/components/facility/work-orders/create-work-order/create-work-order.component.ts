@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-create-work-order',
@@ -15,6 +16,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 export class CreateWorkOrderComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
@@ -92,8 +94,47 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   saveWorkOrder() {
-    // Handle save
-    this.goBack();
+    const currentUser = this.commonService.getCurrentUser();
+    
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      source: "web",
+      languageid: 1,
+      property_code: this.selectedProperty || "",
+      unit_code: this.selectedUnit || "",
+      room_code: "",
+      is_from_unit: !!this.selectedUnit,
+      asset_code: "",
+      common_area: this.selectedCommonArea || "",
+      maintenance_category: Number(this.selectedCategory) || 0,
+      maintenance_subcategory: Number(this.selectedSubcategory) || 0,
+      estimation_duration_type: this.selectedDurationType || "",
+      estimation_duration: Number(this.duration) || 0,
+      code: "",
+      title: this.title,
+      description: this.description,
+      priority: this.selectedPriority || "",
+      due_date: this.dueDate ? new Date(this.dueDate).toISOString() : new Date().toISOString(),
+      available_date: this.availableDate ? new Date(this.availableDate).toISOString() : new Date().toISOString(),
+      visiting_slot: this.selectedVisitingHours || "",
+      status: 1,
+      responsible_user: this.selectedResponsiblePerson || "",
+      technician_id: "",
+      vendor_id: this.selectedVendor || "",
+      tags: this.tags.join(','),
+      assigned_to: 0
+    };
+
+    this.portfolioService.saveWorkOrder(payload).subscribe({
+      next: (res: any) => {
+        this.goBack();
+      },
+      error: (err: any) => {
+        console.error("Error saving work order:", err);
+      }
+    });
   }
 
   addTag(event: Event) {

@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 export interface WorkOrder {
   id: string;
@@ -30,10 +32,13 @@ export interface WorkOrder {
 })
 export class WorkOrderListComponent implements OnInit {
   private router = inject(Router);
+  private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   searchQuery: string = '';
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
+  isLoading: boolean = false;
 
   activeTab: string = 'All';
   tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
@@ -59,32 +64,65 @@ export class WorkOrderListComponent implements OnInit {
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
-  workOrderData: WorkOrder[] = [
-    { id: '43644', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'Medium', status: 'Open', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43645', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43646', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'Medium', status: 'Open', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43647', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43648', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43649', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43650', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'Low', status: 'Rejected', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43651', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'Medium', status: 'Open', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43652', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' },
-    { id: '43653', workOrder: 'Ac not working', property: 'Marina Heights Tower A', unit: 'Apartment-101-FR', priority: 'High', status: 'Closed', vendor: 'Rahman Mohammad', category: 'Air Conditioner', responsiblePerson: 'Sanul Hameed', technician: 'Kaif Mohammed', lastUpdate: '2026-07-28', createdAt: '2026-07-28', createdBy: 'Zaid Rahman' }
-  ];
-
-  get filteredData(): WorkOrder[] {
-    if (!this.searchQuery) return this.workOrderData;
-    return this.workOrderData.filter(w =>
-      w.workOrder.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      w.id.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-  }
+  workOrderData: WorkOrder[] = [];
 
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading = true;
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery,
+      pagecount: this.pageSize,
+      filter_by: this.activeTab !== 'All' ? 'status' : '',
+      filter_list: this.activeTab !== 'All' ? this.activeTab : '',
+      featureid: "WORKORDERS"
+    };
+
+    this.portfolioService.getMastersByPaging(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res && res.objResult && res.objResult.table) {
+          this.workOrderData = res.objResult.table;
+          this.totalRecords = res.objResult.total_records || res.objResult.table.length;
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error("Error loading work orders:", err);
+      }
+    });
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.loadData();
+  }
+
+  onSearch() {
+    this.pageNo = 1;
+    this.loadData();
+  }
+
+  onTabChange(tab: string) {
+    this.activeTab = tab;
+    this.pageNo = 1;
+    this.loadData();
+  }
 
   navigateToCreate() {
     this.router.navigate(['/facility/work-orders/create']);

@@ -5,6 +5,8 @@ import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { PortfolioService } from '../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../services/common.service';
 
 export interface Broadcast {
   id: string;
@@ -28,6 +30,8 @@ export interface Broadcast {
 })
 export class BroadcastListComponent implements OnInit {
   private router = inject(Router);
+  private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
@@ -55,32 +59,59 @@ export class BroadcastListComponent implements OnInit {
     { key: 'action', label: 'Action', visible: true, useTemplate: true },
   ];
 
-  broadcastData: Broadcast[] = [
-    { id: '31408', subject: 'Water maintenance notice', preview: 'Quick View', status: 'Published', broadcastType: 'Memo', sendTo: 'Property', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31609', subject: 'Fire drill announcement', preview: 'Quick View', status: 'Draft', broadcastType: 'Announcement', sendTo: 'Property', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31447', subject: 'Parking access update', preview: 'Quick View', status: 'Published', broadcastType: 'Memo', sendTo: 'Landlord', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31443', subject: 'Gym renewal or schedule', preview: 'Quick View', status: 'Draft', broadcastType: 'Lease', sendTo: 'Tenant', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31445', subject: 'Rent payment reminder', preview: 'Quick View', status: 'Published', broadcastType: 'Updates', sendTo: 'Lease', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31620', subject: 'Safety, cleaning alert', preview: 'Quick View', status: 'Draft', broadcastType: 'Memo', sendTo: 'Property', scheduled: true, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31619', subject: 'Elevator service notice', preview: 'Quick View', status: 'Published', broadcastType: 'Alert', sendTo: 'Lease', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31618', subject: 'Community event invitation', preview: 'Quick View', status: 'Published', broadcastType: 'Announcement', sendTo: 'Property', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31617', subject: 'Discount service notice', preview: 'Quick View', status: 'Draft', broadcastType: 'Announcement', sendTo: 'Tenant', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-    { id: '31616', subject: 'Water maintenance notice', preview: 'Quick View', status: 'Draft', broadcastType: 'Announcement', sendTo: 'Tenant', scheduled: false, date: '12-01-2026', createdAt: '10-01-2026, 20:14', updatedAt: '01-01-2026, 13:06' },
-  ];
-
-  get filteredData(): Broadcast[] {
-    if (!this.searchQuery) return this.broadcastData;
-    return this.broadcastData.filter(b =>
-      b.subject.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      b.id.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-  }
+  broadcastData: Broadcast[] = [];
 
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading = true;
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery,
+      pagecount: this.pageSize,
+      filter_by: "",
+      filter_list: "",
+      featureid: "BROADCASTS"
+    };
+
+    this.portfolioService.getMastersByPaging(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res && res.objResult && res.objResult.table) {
+          this.broadcastData = res.objResult.table;
+          this.totalRecords = res.objResult.total_records || res.objResult.table.length;
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error("Error loading broadcasts:", err);
+      }
+    });
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.loadData();
+  }
+
+  onSearch() {
+    this.pageNo = 1;
+    this.loadData();
+  }
 
   navigateToDetail(id: string) {
     this.router.navigate(['/broadcasts', id]);
