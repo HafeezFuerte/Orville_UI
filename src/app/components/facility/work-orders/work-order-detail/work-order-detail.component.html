@@ -1,0 +1,747 @@
+<!-- Work Order Detail Page -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-2">
+    <a (click)="goBack()" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
+      <i class="ri-arrow-left-line text-lg"></i>
+    </a>
+    <div>
+      <h3 class="!text-defaulttextcolor text-[1.125rem]! font-semibold m-0">Work Order details</h3>
+      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Facility</span>
+        <span>/</span>
+        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Work Orders</span>
+        <span>/</span>
+        <span class="text-gray-600">Work Order details</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      Edit Work Order
+    </button>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+  <!-- LEFT: Information Sidebar -->
+  <div class="xl:col-span-3 flex flex-col gap-4">
+    
+    <!-- Header Card -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h4 class="text-sm font-bold text-gray-800 m-0 mb-1">Ac not working</h4>
+          <p class="text-[11px] text-gray-500 m-0">Order: #92823</p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold text-danger border border-danger/20">High</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#1f2b45] text-white">Open</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-3 mt-2">
+        <button class="flex-1 py-1.5 text-[10px] font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+          View Activity
+        </button>
+        <button class="flex-1 py-1.5 text-[10px] font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-1">
+          Edit Work Order <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Information -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Information</h5>
+      </div>
+      <div class="p-5 flex flex-col gap-4">
+        <div class="relative">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Status</label>
+          <div (click)="showStatusDropdown = !showStatusDropdown" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-between cursor-pointer focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+              <span class="text-gray-700 font-medium">Resolved</span>
+            </div>
+            <i class="ri-arrow-down-s-line text-gray-400"></i>
+          </div>
+          <!-- Dropdown menu - progress -->
+          <div *ngIf="showStatusDropdown" class="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100 py-1">
+            <div class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-50">Dropdown menu - progress</div>
+            
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#1f2b45]"></span> Open
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-warning"></span> In Progress
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span> On Hold
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700 bg-gray-50/50">
+              <span class="w-2.5 h-2.5 rounded-full bg-success"></span> Resolved <i class="ri-check-line ml-auto text-success text-sm"></i>
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-danger"></span> Rejected
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-info"></span> Escalated
+            </div>
+            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-gray-500"></span> Re-Opened
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Resolved Note</label>
+          <textarea rows="3" placeholder="Enter"
+            class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-gray-700 resize-none"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Order Details -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Work Order Details</h5>
+      </div>
+      <div class="p-5">
+        <div class="flex flex-col gap-[2px] text-[11px]">
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">ID:</span>
+            <span class="text-gray-800 font-bold">{{ workOrderDetails.id }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Title:</span>
+            <span class="text-gray-800 font-bold">{{ workOrderDetails.title }}</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Status:</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Open</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Priority:</span>
+            <span class="text-danger font-bold">{{ workOrderDetails.priority }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Category:</span>
+            <span class="text-gray-800">{{ workOrderDetails.category }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Subcategory:</span>
+            <span class="text-gray-800">{{ workOrderDetails.subcategory }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Signatures:</span>
+            <span class="text-gray-800">{{ workOrderDetails.signatures }}</span>
+          </div>
+          
+          <div class="text-center my-2">
+            <button class="text-[10px] font-bold text-primary hover:underline bg-transparent border-0 flex items-center gap-1 mx-auto">
+              View more details <i class="ri-arrow-down-s-line"></i>
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Details:</span>
+            <span class="text-gray-800">It's been 2/4 days AC is not...</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Due Date:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Resolved Date:</span>
+            <span class="text-gray-800">{{ workOrderDetails.resolvedDate }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Created:</span>
+            <span class="text-gray-800">{{ workOrderDetails.createdDate }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Last Updated:</span>
+            <span class="text-gray-800">{{ workOrderDetails.lastUpdated }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Estimated Duration:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Recurring Schedule:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Recurring Interval:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Closing Status:</span>
+            <span class="text-gray-800 font-bold">{{ workOrderDetails.closingStatus }}</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Escalated:</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">No</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Tenant Rejected:</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">{{ workOrderDetails.tenantRejected }}</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Tenant Rejection Note:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Asset:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-gray-500 w-28 shrink-0">Available Date:</span>
+            <span class="text-gray-800">-</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Visiting Slot:</span>
+            <span class="text-gray-800 font-bold">9AM to 10AM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personnel -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Personnel</h5>
+      </div>
+      <div class="p-5">
+        <div class="flex flex-col gap-[2px] text-[11px]">
+          <!-- Active Tenant -->
+          <div class="flex gap-2 items-center relative">
+            <span class="text-gray-500 w-28 shrink-0">Active Tenant:</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer" (click)="togglePersonnelPopup('tenant')">{{ personnel.activeTenant }}</span>
+            
+            <!-- Tenant Details Popup -->
+            <div *ngIf="activePersonnelPopup === 'tenant'" class="absolute z-50 left-full ml-2 top-[-20px] w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-white">
+                <h5 class="text-xs font-bold text-gray-800 m-0">Tenant Details</h5>
+                <button class="text-[10px] text-gray-400 hover:text-gray-600 font-semibold bg-transparent border-0 flex items-center gap-1 cursor-pointer">View <i class="ri-arrow-right-line"></i></button>
+              </div>
+              <div class="p-4 flex flex-col gap-3 text-[11px] bg-white">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full bg-success/10 text-success flex items-center justify-center font-bold">JH</div>
+                  <div>
+                    <div class="font-bold text-gray-800">James T. Heal</div>
+                    <div class="text-gray-400 text-[9px]">Individual</div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1.5 mt-1">
+                  <div class="flex items-start gap-2">
+                    <i class="ri-mail-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Email</div>
+                      <div class="text-gray-700 font-medium">james_T_Heal&#64;gmail.com</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-phone-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Phone</div>
+                      <div class="text-gray-700 font-medium">+971 0005445</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-user-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Tenant Type</div>
+                      <div class="text-gray-700 font-medium">Individual Tenant</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-map-pin-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Location</div>
+                      <div class="text-gray-700 font-medium">Dubai Marina, Tower A, Dubai</div>
+                    </div>
+                  </div>
+                </div>
+                <button class="w-full mt-2 py-1.5 rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1">Edit Tenant <i class="ri-arrow-right-line"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Raised By -->
+          <div class="flex gap-2 items-center relative">
+            <span class="text-gray-500 w-28 shrink-0">Raised By:</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer" (click)="togglePersonnelPopup('raisedBy')">{{ personnel.raisedBy }}</span>
+
+            <!-- Contact Details Popup -->
+            <div *ngIf="activePersonnelPopup === 'raisedBy'" class="absolute z-50 left-full ml-2 top-[-20px] w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-white">
+                <h5 class="text-xs font-bold text-gray-800 m-0">Contact details</h5>
+                <button class="text-[10px] text-gray-400 hover:text-gray-600 font-semibold bg-transparent border-0 flex items-center gap-1 cursor-pointer">View <i class="ri-arrow-right-line"></i></button>
+              </div>
+              <div class="p-4 flex flex-col gap-3 text-[11px] bg-white">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full bg-warning/10 text-warning flex items-center justify-center font-bold">ZR</div>
+                  <div>
+                    <div class="font-bold text-gray-800">Zaid Rahman</div>
+                    <div class="text-gray-400 text-[9px]">Individual</div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1.5 mt-1">
+                  <div class="flex items-start gap-2">
+                    <i class="ri-mail-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Email</div>
+                      <div class="text-gray-700 font-medium">zaid_r&#64;gmail.com</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-phone-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Phone</div>
+                      <div class="text-gray-700 font-medium">+971 0005445</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-user-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Tenant Type</div>
+                      <div class="text-gray-700 font-medium">Individual Tenant</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <i class="ri-map-pin-line text-gray-400 mt-0.5"></i>
+                    <div class="flex-1">
+                      <div class="text-gray-400 text-[10px]">Location</div>
+                      <div class="text-gray-700 font-medium">Dubai Marina, Tower A, Dubai</div>
+                    </div>
+                  </div>
+                </div>
+                <button class="w-full mt-2 py-1.5 rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1">Edit <i class="ri-arrow-right-line"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Responsible Person(s):</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.responsiblePerson }}</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Support Technician:</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.technician }}</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Vendor:</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.vendor }}</span>
+          </div>
+          <div class="flex gap-2 items-center">
+            <span class="text-gray-500 w-28 shrink-0">Landlord:</span>
+            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.landlord }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Fields -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Custom Fields</h5>
+      </div>
+      <div class="p-5">
+        <p class="text-xs text-gray-400 italic m-0">No custom fields defined</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Main Content Tabs -->
+  <div class="xl:col-span-9 flex flex-col gap-4">
+    <!-- Tabs Header -->
+    <div class="flex items-center gap-2 mb-2 px-1">
+      <button *ngFor="let tab of tabs" 
+        (click)="activeTab = tab"
+        [ngClass]="activeTab === tab ? 'border-primary text-primary bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+        class="text-[12px] font-semibold px-5 py-2 border rounded-full transition-all duration-200 whitespace-nowrap">
+        {{ tab }}
+      </button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div *ngIf="activeTab === 'Overview'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h5 class="text-sm font-bold text-gray-800 m-0">Overview</h5>
+      </div>
+      <div class="p-6 flex flex-col gap-4">
+        
+        <!-- Attachments -->
+        <div class="flex flex-col gap-2 !mb-2">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Attachments</h5>
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Before Images -->
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
+                <p class="text-[11px] font-bold text-gray-700 m-0">Before Images</p>
+              </div>
+              <div class="p-4 flex flex-col items-center justify-center min-h-[166px]">
+                <div class="w-full h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 relative group cursor-pointer">
+                  <div class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-400">
+                    <i class="ri-image-2-line text-3xl"></i>
+                    <!-- Placeholder image text -->
+                    <span class="absolute bottom-2 left-2 text-[10px] font-bold text-gray-500 bg-white/80 px-1 rounded">24.5 °C</span>
+                  </div>
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <i class="ri-eye-line text-white text-xl"></i>
+                  </div>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 flex items-center gap-1 self-start"><i class="ri-image-line"></i> image.jpg</p>
+              </div>
+            </div>
+            <!-- After Images -->
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
+                <p class="text-[11px] font-bold text-gray-700 m-0">After Images</p>
+              </div>
+              <div class="p-4 flex items-center justify-center min-h-[166px]">
+                <div class="text-center text-gray-400">
+                  <i class="ri-image-line text-2xl mb-1 block text-gray-300"></i>
+                  <p class="text-[10px] m-0 font-medium">No after images</p>
+                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">After images will appear here when uploaded</p>
+                </div>
+              </div>
+            </div>
+            <!-- Videos -->
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
+                <p class="text-[11px] font-bold text-gray-700 m-0">Videos</p>
+              </div>
+              <div class="p-4 flex items-center justify-center min-h-[166px]">
+                <div class="text-center text-gray-400">
+                  <i class="ri-video-line text-2xl mb-1 block text-gray-300"></i>
+                  <p class="text-[10px] m-0 font-medium">No videos</p>
+                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">Videos will appear here when uploaded</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Costs -->
+        <div class="flex flex-col gap-[2px] !mb-2">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-sm font-bold text-gray-800 m-0">Costs</h5>
+            <button (click)="openAddCostModal()" class="px-3 py-1.5 text-[10px] rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
+              <i class="ri-add-line"></i> Add Additional Cost
+            </button>
+          </div>
+          <app-shared-table 
+            [columns]="costColumns" 
+            [data]="costs" 
+            [hasActions]="true" 
+            [totalRecords]="costs.length" 
+            [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'action'">
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="text-gray-400 hover:text-primary transition-colors bg-transparent border-0"><i class="ri-pencil-line"></i></button>
+                    <button class="text-gray-400 hover:text-danger transition-colors bg-transparent border-0"><i class="ri-delete-bin-line"></i></button>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+
+        <!-- Vendor Technician Time Track -->
+        <div class="flex flex-col gap-[2px] !mb-2">
+          <h5 class="text-sm font-bold text-gray-800 m-0 mb-2">Vendor Technician Time Track</h5>
+          <app-shared-table 
+            [columns]="timeTrackColumns" 
+            [data]="timeTracks" 
+            [hasActions]="false" 
+            [totalRecords]="timeTracks.length" 
+            [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'technician'">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold">{{ row.technician.charAt(0) }}</div>
+                    <span class="text-xs text-gray-700 font-medium">{{ row.technician }}</span>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+
+        <!-- Invoices -->
+        <div class="flex flex-col gap-[2px] !mb-2">
+          <h5 class="text-sm font-bold text-gray-800 m-0 mb-2">Invoices</h5>
+          <app-shared-table 
+            [columns]="invoiceColumns" 
+            [data]="invoices" 
+            [hasActions]="false" 
+            [totalRecords]="invoices.length" 
+            [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span *ngIf="row.status === 'Unpaid'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">Unpaid</span>
+                  <span *ngIf="row.status === 'Paid'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Paid</span>
+                  <span *ngIf="row.status === 'Draft'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-200 text-gray-700">Draft</span>
+                  <span *ngIf="row.status === 'Overdue'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-warning/10 text-warning">Overdue</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MESSAGES TAB -->
+    <div *ngIf="activeTab === 'Messages'" class="flex gap-6 pt-2 pb-4 h-[600px]">
+      
+      <!-- Left Pane (Chat List) -->
+      <div class="w-[300px] shrink-0 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 bg-white">
+          <h5 class="text-sm font-bold text-gray-800 m-0">Messages</h5>
+        </div>
+        <div class="flex-1 overflow-y-auto bg-white">
+          <!-- Chat Item -->
+          <div class="p-4 border-b border-gray-50 flex items-start gap-3 hover:bg-gray-50/50 cursor-pointer bg-gray-50/30">
+            <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center font-bold text-sm shrink-0 text-[#c59e5e]">MZ</div>
+            <div class="flex-1 overflow-hidden">
+              <div class="flex items-center justify-between mb-1">
+                <h6 class="text-xs font-bold text-gray-800 m-0">Mohammed Zaid</h6>
+                <span class="text-[10px] text-gray-400">09:58</span>
+              </div>
+              <p class="text-[10px] text-gray-500 m-0 line-clamp-2 leading-relaxed">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Pane (Active Chat) -->
+      <div class="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div class="flex flex-col">
+            <h5 class="text-sm font-bold text-gray-800 m-0 mb-1">Zaid Rahman</h5>
+            <span class="text-[10px] text-gray-500">Tenant</span>
+          </div>
+          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold text-success bg-success/10">
+            <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+            Active
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+          <div class="text-center">
+            <span class="px-3 py-1 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-semibold text-gray-500">Today</span>
+          </div>
+
+          <div *ngFor="let msg of messages" class="flex flex-col w-full" [class.items-end]="msg.isMe" [class.items-start]="!msg.isMe">
+            
+            <div class="flex items-end gap-3 max-w-[80%]" [class.flex-row-reverse]="msg.isMe">
+              <!-- Avatar -->
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm"
+                [class.bg-white]="!msg.isMe" [class.border]="!msg.isMe" [class.border-gray-200]="!msg.isMe" [class.text-[#c59e5e]]="!msg.isMe"
+                [class.bg-[#c59e5e]]="msg.isMe" [class.text-white]="msg.isMe">
+                <span class="text-[10px] font-bold">{{ msg.avatar }}</span>
+              </div>
+              
+              <!-- Message Bubble -->
+              <div class="flex flex-col" [class.items-end]="msg.isMe">
+                <div class="flex items-center gap-2 mb-1 px-1">
+                  <span class="text-[11px] font-bold text-gray-800" *ngIf="!msg.isMe">{{ msg.sender }}</span>
+                  <span class="text-[9px] text-gray-400" *ngIf="!msg.isMe">&bull; {{ msg.time }}</span>
+                  <span class="text-[9px] text-gray-400" *ngIf="msg.isMe">You &bull; {{ msg.time }}</span>
+                </div>
+                <div class="p-4 rounded-xl shadow-sm text-[11px] leading-relaxed"
+                  [class.bg-white]="!msg.isMe" [class.border]="!msg.isMe" [class.border-gray-100]="!msg.isMe" [class.text-gray-700]="!msg.isMe" [class.rounded-bl-none]="!msg.isMe"
+                  [class.bg-[#1f2b45]]="msg.isMe" [class.text-white]="msg.isMe" [class.rounded-br-none]="msg.isMe">
+                  {{ msg.text }}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-gray-100 bg-white">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg pr-2 overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all shadow-sm">
+            <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 bg-transparent border-0"><i class="ri-attachment-2 text-lg"></i></button>
+            <input type="text" [(ngModel)]="newMessage" (keydown.enter)="sendMessage()" placeholder="Write a message..." class="flex-1 py-3 px-2 text-xs bg-transparent border-0 focus:outline-none" />
+            <button (click)="sendMessage()" class="w-8 h-8 rounded bg-[#1f2b45] text-white flex items-center justify-center hover:bg-[#131b2e] transition-colors border-0">
+              <i class="ri-send-plane-fill text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+    <!-- NOTES TAB -->
+    <div *ngIf="activeTab === 'Notes'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h5 class="text-sm font-bold text-gray-800 m-0">Notes</h5>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Add Notes
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="noteColumns" 
+          [data]="notes" 
+          [hasActions]="false" 
+          [totalRecords]="notes.length" 
+          [pageSize]="10">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'content'">
+                <span class="text-xs text-gray-500 line-clamp-1 max-w-xs">{{ row.content }}</span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- QUOTATIONS TAB -->
+    <div *ngIf="activeTab === 'Quotations'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h5 class="text-sm font-bold text-gray-800 m-0">Quotations</h5>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Request Quotation
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="quotationColumns" 
+          [data]="quotations" 
+          [hasActions]="false" 
+          [totalRecords]="quotations.length" 
+          [pageSize]="10">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'status'">
+                <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-100 text-gray-700">Pending</span>
+                <span *ngIf="row.status === 'Approved'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-primary text-white">Approved</span>
+                <span *ngIf="row.status === 'Rejected'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">Rejected</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'action'">
+                <span class="text-[10px] text-primary font-bold hover:underline cursor-pointer whitespace-nowrap">View Activity</span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- ATTACHMENTS TAB -->
+    <div *ngIf="activeTab === 'Attachments'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h5 class="text-sm font-bold text-gray-800 m-0">Attachments</h5>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Add Attachment
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="attachmentColumns" 
+          [data]="attachments" 
+          [hasActions]="false" 
+          [totalRecords]="attachments.length" 
+          [pageSize]="10">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'documentStatus'">
+                <span *ngIf="row.documentStatus === 'Active'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Active</span>
+                <span *ngIf="row.documentStatus === 'Verified'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success">Verified</span>
+                <span *ngIf="row.documentStatus === 'Expired'" class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">Expired</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'files'">
+                <div class="flex items-center gap-1 text-primary hover:underline cursor-pointer font-semibold">
+                  <i class="ri-attachment-line"></i>
+                  <span>{{ row.files }}</span>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal: Add Additional Cost -->
+<div *ngIf="showAddCostModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-xl shadow-xl w-[450px] overflow-hidden border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <h4 class="text-sm font-bold text-gray-800 m-0">Add Additional Cost</h4>
+      <button (click)="closeAddCostModal()" class="text-gray-400 hover:text-gray-700 bg-transparent border-0"><i class="ri-close-line text-lg"></i></button>
+    </div>
+    <div class="p-6 flex flex-col gap-4">
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cost Description <span class="text-danger">*</span></label>
+        <input type="text" [(ngModel)]="costDescription" placeholder="Enter" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Category <span class="text-danger">*</span></label>
+          <select [(ngModel)]="costCategory" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20">
+            <option value="" disabled selected>Select Category</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cost <span class="text-danger">*</span></label>
+          <input type="number" [(ngModel)]="costAmount" placeholder="0.00" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Date</label>
+        <input type="date" [(ngModel)]="costDate" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-gray-500" />
+        <p class="text-[9px] text-gray-400 mt-1 mb-0">Leaving this empty sets the cost to the date of the Work Order.</p>
+      </div>
+      <label class="flex items-center gap-2 cursor-pointer mt-2">
+        <input type="checkbox" [(ngModel)]="includeInTotal" class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary/30" />
+        <span class="text-[11px] font-medium text-gray-700">Include this cost to the total cost</span>
+      </label>
+    </div>
+    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/50">
+      <button (click)="closeAddCostModal()" class="px-5 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 transition-colors border-0 bg-transparent">Cancel</button>
+      <button (click)="saveCost()" class="px-5 py-2 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">Save</button>
+    </div>
+  </div>
+</div>

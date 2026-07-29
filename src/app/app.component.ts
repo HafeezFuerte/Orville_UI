@@ -19,6 +19,7 @@ import {
 import { fromEvent } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from './components/common/store/login-auth-params/auth.selectors';
+import { LoaderService } from './services/loader.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -30,8 +31,9 @@ import { selectCurrentUser } from './components/common/store/login-auth-params/a
 export class AppComponent {
   title = 'ynex';
   public isSpinner = true;
+  loading$ = this.loaderService.loading$;
   constructor(public translate: TranslateService, private cdr: ChangeDetectorRef, private translateloader: TranslateloaderService,
-    private router: Router
+    private router: Router, private loaderService: LoaderService
   ) {}
   ngOnInit() {
     // 🟢 Reset scroll to top on every navigation end globaly

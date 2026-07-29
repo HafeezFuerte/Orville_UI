@@ -1,12 +1,20 @@
 <!-- Start::row-1 -->
 <div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-2">
-    <a routerLink="/contacts/support-technicians" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
-      <i class="ri-arrow-left-line text-lg"></i>
-    </a>
-    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">Support Technician Details</h3>
-    <div class="text-[11px] text-gray-400 font-medium ml-2 flex items-center gap-1">
-      <span>contacts</span> <span>/</span> <span>Support Technician</span> <span>/</span> <span class="text-gray-600">Details</span>
+  <div class="flex items-center gap-3">
+    <button type="button" routerLink="/contacts/support-technicians" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        Support Technician Details
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer">Contacts</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="hover:text-primary cursor-pointer">Support Technician</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      </ol>
     </div>
   </div>
   <div class="flex gap-2 items-center mt-2 md:mt-0">
@@ -41,20 +49,20 @@
     <div class="sticky-sidebar flex flex-col gap-y-2">
       
       <!-- Technician Name Header -->
-      <div class="!mb-1">
-        <h4 class="text-lg font-black text-gray-800 m-0">{{ technicianData?.contact_name || technicianData?.name || technician?.name || 'Loading...' }}</h4>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technicianData?.email_address || technicianData?.email || technician?.email || '' }}</p>
+      <div class="box-body p-4">
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h6>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
         <div class="flex gap-2 mt-2 text-[10px] font-semibold">
           <button [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]" class="px-4 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Edit Profile</button>
         </div>
       </div>
 
       <!-- Information -->
-      <div class="box !mb-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-100">
-          <h5 class="text-xs font-bold text-gray-800 m-0">Information</h5>
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Information</h6>
         </div>
-        <div class="p-4 flex flex-col gap-3 text-xs">
+        <div class="box-body p-4 flex flex-col gap-3 text-xs">
           <!-- Basic Info -->
           <div>
             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Basic Information</span>
@@ -142,9 +150,9 @@
     </div>
 
     <!-- TAB: Work Orders -->
-    <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
-      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <h5 class="text-xs font-bold text-gray-800 m-0">Assigned Work Orders</h5>
+    <div *ngIf="activeTab === 'Work Orders'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 p-4">
+      <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assigned Work Orders</h6>
       </div>
 
       <app-shared-table [columns]="workOrderColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">

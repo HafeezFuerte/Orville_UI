@@ -1,0 +1,307 @@
+<!-- Asset Detail Page -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-3">
+    <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        Assets Details
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Facility</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Assets</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      Edit Asset
+    </button>
+  </div>
+</div>
+
+
+
+<!-- Navigation Tabs -->
+<!-- Moved to right column -->
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 pb-16">
+  
+  <!-- LEFT COLUMN (Sticky Sidebar) -->
+  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-[2px]">
+    <div class="sticky-sidebar flex flex-col gap-4">
+      
+      <!-- Asset Header Card -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+        <h4 class="text-lg font-bold text-gray-800 mb-1 text-left">{{ assetData.name }}</h4>
+        <p class="text-xs text-gray-500 mb-5 text-left">Asset #{{ assetData.id }}</p>
+        <button class="w-full py-2.5 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+          View Activity
+        </button>
+      </div>
+      
+      <!-- Asset Information -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Asset Information</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">ID:</span> <span class="font-bold text-gray-800">{{ assetData.id }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Name:</span> <span class="font-bold text-gray-800">{{ assetData.name }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Model:</span> <span class="font-bold text-gray-800">{{ assetData.model }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Category:</span> <span class="font-bold text-gray-800">{{ assetData.category }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Subcategory:</span> <span class="font-bold text-gray-800">{{ assetData.subcategory }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Capacity:</span> <span class="font-bold text-gray-800">{{ assetData.capacity }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Color:</span> <span class="font-bold text-gray-800">{{ assetData.color }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Asset Code:</span> <span class="font-bold text-gray-800">{{ assetData.assetCode }}</span></div>
+          <div class="flex gap-2 items-center"><span class="text-gray-500 w-28 shrink-0">Status:</span> 
+            <span class="px-2 py-0.5 rounded bg-success/10 text-success text-[10px] font-bold">{{ assetData.status }}</span>
+          </div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Installation Date:</span> <span class="font-bold text-gray-800">{{ assetData.installationDate }}</span></div>
+          <div class="flex gap-2 items-center"><span class="text-gray-500 w-28 shrink-0">Warranty Status:</span> 
+            <span class="px-2 py-0.5 rounded bg-success text-white text-[10px] font-bold" *ngIf="assetData.warrantyStatus">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property & Unit -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property & Unit</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Property:</span> <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.property }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Unit:</span> <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.unit }}</span></div>
+        </div>
+      </div>
+
+      <!-- Additional Details -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Additional Details</h6>
+        </div>
+        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Status:</span> <span class="font-bold text-gray-800">{{ assetData.status }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Parts Included:</span> <span class="font-bold text-gray-800">{{ assetData.partsIncluded }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Purchase Date:</span> <span class="font-bold text-gray-800">{{ assetData.purchaseDate }}</span></div>
+          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Last Updated:</span> <span class="font-bold text-gray-800">{{ assetData.lastUpdated }}</span></div>
+        </div>
+      </div>
+
+      <!-- Custom Fields -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Custom Fields</h6>
+          <button class="text-primary hover:text-blue-700 transition-colors bg-transparent border-0"><i class="ri-add-line text-lg"></i></button>
+        </div>
+        <div class="box-body p-4 text-center text-gray-400 text-[11px] italic">
+          No custom fields added.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Tab Content) -->
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-4">
+    
+    <!-- Tabs Header -->
+    <div class="flex items-center gap-2 mb-2 px-1 overflow-x-auto">
+      <button *ngFor="let tab of tabs" 
+        (click)="setTab(tab)"
+        [ngClass]="activeTab === tab ? 'border-primary text-primary bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+        class="text-[12px] font-semibold px-5 py-2 border rounded-full transition-all duration-200 whitespace-nowrap">
+        {{ tab }}
+      </button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div *ngIf="activeTab === 'Overview'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 flex flex-col pt-2 pb-4">
+      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Overview</h6>
+      </div>
+      <div class="box-body p-4 flex flex-col gap-4">
+        
+        <!-- Purchase Information -->
+        <div class="flex flex-col gap-[2px] !mb-2">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5 mb-2">Purchase Information</h6>
+          <div class="grid grid-cols-2 gap-y-4 text-[11px]">
+            <div class="flex flex-col gap-1">
+              <span class="text-gray-500">Purchase Order No:</span>
+              <span class="font-bold text-gray-800">{{ assetData.purchaseOrderNo }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-gray-500">Price:</span>
+              <span class="font-bold text-gray-800">{{ assetData.price }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-gray-500">Vendor:</span>
+              <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.vendor }}</span>
+            </div>
+          </div>
+        </div>
+
+      <!-- Warranty Details -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="box-header p-4 border-b border-gray-100">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Warranty Details</h6>
+        </div>
+        <div class="box-body p-4 grid grid-cols-2 gap-y-4 text-xs">
+          <div class="flex flex-col gap-1">
+            <span class="text-gray-500">Warranty Provider:</span>
+            <span class="font-bold text-gray-800">{{ assetData.warrantyProvider }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-gray-500">Warranty Duration:</span>
+            <span class="font-bold text-gray-800">{{ assetData.warrantyDuration }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-gray-500">Warranty Start Date:</span>
+            <span class="font-bold text-gray-800">{{ assetData.warrantyStartDate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-gray-500">Warranty End Date:</span>
+            <span class="font-bold text-gray-800">{{ assetData.warrantyEndDate }}</span>
+          </div>
+          <div class="flex flex-col gap-1 col-span-2">
+            <span class="text-gray-500">Warranty Days Remaining:</span>
+            <div class="flex items-center gap-2 mt-1">
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" [style.width.%]="50"></div>
+              </div>
+              <span class="font-bold text-gray-800 whitespace-nowrap">{{ assetData.warrantyDaysRemaining }} Days Remaining</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    </div>
+    <!-- End Overview Tab -->
+
+    <!-- PARTS TAB -->
+    <div *ngIf="activeTab === 'Part'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+      <div class="box-body p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Add Part
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="partColumns" 
+          [data]="parts" 
+          [pageSize]="10">
+          
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- WORK ORDERS TAB -->
+    <div *ngIf="activeTab === 'Work Orders'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+      <div class="box-body p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Add Work Order
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="workOrderColumns" 
+          [data]="workOrders" 
+          [pageSize]="10">
+          
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'property'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'unit'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'vendor'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'priority'">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
+                      [ngClass]="{'bg-danger/10 text-danger': row.priority === 'High', 'bg-warning/10 text-warning': row.priority === 'Medium', 'bg-success/10 text-success': row.priority === 'Low'}">
+                  {{ row.priority }}
+                </span>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'status'">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
+                      [ngClass]="{'bg-[#1f2b45] text-white': row.status === 'Open', 'bg-warning text-white': row.status === 'Pending', 'bg-gray-200 text-gray-600': row.status === 'Closed'}">
+                  {{ row.status }}
+                </span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
+        </app-shared-table>
+      </div>
+    </div>
+
+    <!-- ATTACHMENTS TAB -->
+    <div *ngIf="activeTab === 'Attachments'">
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 flex flex-col">
+        <div class="box-body p-4">
+          <div class="flex items-center justify-between mb-4">
+          <div class="relative w-64">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+          </div>
+          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
+            <i class="ri-add-line text-sm"></i> Add Attachment
+          </button>
+        </div>
+        <app-shared-table 
+          [columns]="attachmentColumns" 
+          [data]="attachments" 
+          [pageSize]="10">
+          
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'id'">
+                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'documentStatus'">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
+                      [ngClass]="{'bg-[#1f2b45] text-white': row.documentStatus === 'Active', 'bg-success text-white': row.documentStatus === 'Verified', 'bg-danger text-white': row.documentStatus === 'Expired'}">
+                  {{ row.documentStatus }}
+                </span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
+        </app-shared-table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

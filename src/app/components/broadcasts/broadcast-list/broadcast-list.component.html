@@ -1,0 +1,119 @@
+<!-- Broadcast List Page -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-3">
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        Broadcasts
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer">Broadcasts</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">List</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm flex items-center gap-1.5 transition-all">
+      <i class="ri-bar-chart-2-fill text-sm"></i> Report
+    </button>
+    <button (click)="navigateToCreate()" class="px-3 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm flex items-center gap-1.5">
+      <i class="ri-add-line text-sm"></i> Add Broadcasts
+    </button>
+  </div>
+</div>
+
+<!-- Main card -->
+<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+  <!-- Toolbar -->
+  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+    <div class="relative">
+      <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search..."
+        class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
+      />
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Column Toggle -->
+      <div class="relative">
+        <button
+          (click)="showColumnDropdown = !showColumnDropdown"
+          class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm"
+        >
+          <i class="ri-list-settings-line text-sm"></i> Columns
+          <i class="ri-arrow-down-s-line text-xs"></i>
+        </button>
+        <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px]">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Toggle Columns</p>
+          <div *ngFor="let col of tableColumns" class="flex items-center gap-2 py-1 cursor-pointer hover:bg-gray-50 px-1.5 rounded" (click)="toggleColumn(col)">
+            <div class="w-3.5 h-3.5 rounded border flex items-center justify-center transition-all"
+              [class.bg-primary]="col.visible" [class.border-primary]="col.visible" [class.border-gray-300]="!col.visible">
+              <i *ngIf="col.visible" class="ri-check-line text-[8px] text-white"></i>
+            </div>
+            <span class="text-xs text-gray-700">{{ col.label }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Filter -->
+      <button (click)="showFilterPanel = !showFilterPanel" class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm">
+        <i class="ri-filter-3-line text-sm"></i> Filter
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="p-6">
+    <app-shared-table 
+      [columns]="visibleColumns" 
+      [data]="filteredData" 
+      [pageSize]="pageSize">
+      
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+          <!-- ID -->
+          <ng-container *ngSwitchCase="'id'">
+            <span (click)="navigateToDetail(row.id)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+          </ng-container>
+
+          <!-- Preview -->
+          <ng-container *ngSwitchCase="'preview'">
+            <button (click)="navigateToDetail(row.id)" class="px-2.5 py-1 text-[10px] font-semibold rounded bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0">
+              Quick View
+            </button>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container *ngSwitchCase="'status'">
+            <span *ngIf="row.status === 'Published'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">Published</span>
+            <span *ngIf="row.status === 'Draft'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">Draft</span>
+          </ng-container>
+
+          <!-- Scheduled -->
+          <ng-container *ngSwitchCase="'scheduled'">
+            <span *ngIf="row.scheduled" class="px-2 py-0.5 rounded text-[10px] font-bold bg-info/10 text-info">Yes</span>
+            <span *ngIf="!row.scheduled" class="text-gray-400">No</span>
+          </ng-container>
+
+          <!-- Action -->
+          <ng-container *ngSwitchCase="'action'">
+            <div class="flex items-center gap-1.5">
+              <button (click)="navigateToDetail(row.id)" class="w-7 h-7 rounded flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0" title="View">
+                <i class="ri-eye-line text-sm"></i>
+              </button>
+              <button class="w-7 h-7 rounded flex items-center justify-center bg-warning/10 text-warning hover:bg-warning/20 transition-all border-0" title="Edit">
+                <i class="ri-edit-line text-sm"></i>
+              </button>
+              <button class="w-7 h-7 rounded flex items-center justify-center bg-danger/10 text-danger hover:bg-danger/20 transition-all border-0" title="Delete">
+                <i class="ri-delete-bin-line text-sm"></i>
+              </button>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+    </app-shared-table>
+  </div>
+</div>

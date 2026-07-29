@@ -10,7 +10,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ToastrModule } from 'ngx-toastr';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { loaderInterceptor } from './services/loader.interceptor';
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { TranslateModule } from "@ngx-translate/core";
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -22,7 +23,7 @@ import { commonReducer } from './components/common/store/common-payload/common.r
 import { authReducer } from './components/common/store/login-auth-params/auth.reducer';
 import { metaReducers } from './components/common/store/login-auth-params/meta-reducers';
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(App_Route, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })), RouterOutlet, provideHttpClient(), ColorPickerModule, ColorPickerService, provideAnimations(), AngularFireModule,
+  providers: [provideRouter(App_Route, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })), RouterOutlet, provideHttpClient(withInterceptors([loaderInterceptor])), ColorPickerModule, ColorPickerService, provideAnimations(), AngularFireModule,
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,

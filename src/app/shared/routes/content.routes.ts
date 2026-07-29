@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { admin, dashboardRoutingModule } from '../../components/dashboards/dashboard.routes';
-import { servicesRoutingModule } from '../../components/services/services.routes'; 
 
 export const content: Routes = [
   {
@@ -14,6 +13,16 @@ export const content: Routes = [
     path: 'contacts',
     loadChildren: () =>
       import('../../components/contacts/contacts.routes').then((m) => m.contactsRoutingModule),
+  },
+  {
+    path: 'broadcasts',
+    loadChildren: () =>
+      import('../../components/broadcasts/broadcasts.routes').then((m) => m.broadcastsRoutingModule),
+  },
+  {
+    path: 'facility',
+    loadChildren: () =>
+      import('../../components/facility/facility.routes').then((m) => m.facilityRoutingModule),
   },
 ];
 

@@ -306,6 +306,9 @@ export class SidebarComponent {
     'Vendors': '/contacts/vendors',
     'Landlords': '/contacts/landlords', 
     'Support Technicians': '/contacts/support-technicians',
+    'Broadcasts': '/broadcasts',
+    'Work Orders': '/facility/work-orders',
+    'Assets': '/facility/assets',
   };
 
 

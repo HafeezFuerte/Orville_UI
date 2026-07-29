@@ -1,0 +1,150 @@
+<!-- Work Order List Page -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-3">
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        Work Orders
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer">Facility</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Work Orders</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm flex items-center gap-1.5 transition-all">
+      <i class="ri-bar-chart-2-fill text-sm"></i> Report
+    </button>
+    <button (click)="navigateToCreate()" class="px-3 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm flex items-center gap-1.5">
+      <i class="ri-add-line text-sm"></i> Add Work Order
+    </button>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-4 gap-4 mb-4">
+  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">New</p>
+    <div class="flex items-end gap-2">
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">48</h3>
+      <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 10 this week</span>
+    </div>
+  </div>
+  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Open</p>
+    <div class="flex items-end gap-2">
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">184</h3>
+      <span class="text-[10px] font-bold text-gray-400">21 due today</span>
+    </div>
+  </div>
+  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">In Progress</p>
+    <div class="flex items-end gap-2">
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">63</h3>
+      <span class="text-[10px] font-bold text-gray-400">12 with vendors</span>
+    </div>
+  </div>
+  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Resolved</p>
+    <div class="flex items-end gap-2">
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">536</h3>
+      <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 93% SLA met</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main card -->
+<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+  
+  <!-- Tabs -->
+  <div class="flex items-center gap-6 px-4 pt-3 border-b border-gray-100 overflow-x-auto">
+    <div class="flex items-center gap-2 mr-4 pb-3">
+      <span class="text-sm font-bold text-gray-800">Leases List</span>
+      <div class="flex items-center bg-gray-100 rounded p-0.5">
+        <button class="w-6 h-6 rounded bg-white shadow-sm flex items-center justify-center text-gray-800"><i class="ri-list-check text-xs"></i></button>
+        <button class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="ri-grid-fill text-xs"></i></button>
+      </div>
+    </div>
+    
+    <button *ngFor="let tab of tabs" 
+      (click)="activeTab = tab"
+      [class.text-primary]="activeTab === tab"
+      [class.border-primary]="activeTab === tab"
+      [class.text-gray-500]="activeTab !== tab"
+      [class.border-transparent]="activeTab !== tab"
+      class="text-[11px] font-semibold pb-3 border-b-2 hover:text-primary transition-colors whitespace-nowrap">
+      {{ tab }}
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+    <div class="relative">
+      <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search..."
+        class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
+      />
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Filter -->
+      <button class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm">
+        <i class="ri-filter-3-line text-sm"></i> Filter
+      </button>
+      <!-- Column Toggle -->
+      <button class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm">
+        <i class="ri-layout-column-line text-sm"></i> Column
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <app-shared-table 
+    [columns]="tableColumns" 
+    [data]="filteredData" 
+    [hasActions]="true" 
+    [totalRecords]="filteredData.length" 
+    [pageSize]="pageSize">
+    <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-container [ngSwitch]="col.key">
+        
+        <!-- ID Column -->
+        <ng-container *ngSwitchCase="'id'">
+          <span (click)="navigateToDetail(row.id)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+        </ng-container>
+
+        <!-- Priority Column -->
+        <ng-container *ngSwitchCase="'priority'">
+          <span *ngIf="row.priority === 'High'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-danger/10 text-danger">High</span>
+          <span *ngIf="row.priority === 'Medium'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">Medium</span>
+          <span *ngIf="row.priority === 'Low'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">Low</span>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container *ngSwitchCase="'status'">
+          <span *ngIf="row.status === 'Open'" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-gray-200 bg-white text-gray-700">Open</span>
+          <span *ngIf="row.status === 'Closed'" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2b45] text-white">Closed</span>
+          <span *ngIf="row.status === 'Rejected'" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-danger/10 text-danger">Rejected</span>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container *ngSwitchCase="'action'">
+          <div class="flex gap-1">
+            <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+              <i class="ri-edit-line text-xs"></i>
+            </button>
+            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+              <i class="ri-delete-bin-line text-xs"></i>
+            </button>
+          </div>
+        </ng-container>
+
+      </ng-container>
+    </ng-template>
+  </app-shared-table>
+</div>

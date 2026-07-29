@@ -122,6 +122,30 @@ export class NavService implements OnDestroy {
       ],
     },
 
+    { headTitle: 'COMMUNICATION' },
+    {
+      title: 'Broadcasts',
+      icon: 'mail-send',
+      type: 'sub',
+      active: false,
+      selected: false,
+      children: [
+        { path: '/broadcasts', title: 'Broadcasts', type: 'link' }
+      ]
+    },
+
+    { headTitle: 'OPERATIONS' },
+    {
+      title: 'Facility',
+      icon: 'building-3',
+      type: 'sub',
+      active: false,
+      selected: false,
+      children: [
+        { path: '/facility/work-orders', title: 'Work Order', type: 'link' }
+      ]
+    },
+
     { headTitle: 'PAGES' },
     {
       title: 'Pages',

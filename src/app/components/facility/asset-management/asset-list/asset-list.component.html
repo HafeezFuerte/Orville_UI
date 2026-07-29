@@ -1,0 +1,69 @@
+<!-- Asset List Page -->
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-3">
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
+        Assets
+      </h3>
+      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
+        <li class="hover:text-primary cursor-pointer">Facility</li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Assets</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex gap-2 items-center mt-2 md:mt-0">
+    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+    
+    <button (click)="navigateToCreate()" class="px-3 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm flex items-center gap-1.5">
+      <i class="ri-add-line text-sm"></i> Add New Asset 
+    </button>
+  </div>
+</div>
+
+
+<!-- Main card -->
+<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+  
+  <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+    <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assets list</h6>
+  </div>
+
+  <!-- Table -->
+  <app-shared-table 
+    [columns]="tableColumns" 
+    [data]="filteredData" 
+    [hasActions]="true" 
+    [totalRecords]="filteredData.length" 
+    [pageSize]="pageSize">
+    <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-container [ngSwitch]="col.key">
+        
+        <!-- ID Column -->
+        <ng-container *ngSwitchCase="'id'">
+          <span (click)="navigateToDetail(row.id)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container *ngSwitchCase="'status'">
+          <span *ngIf="row.status === 'Operational'" class="px-2.5 py-1 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Operational</span>
+          <span *ngIf="row.status === 'Down'" class="px-2.5 py-1 rounded bg-danger text-[10px] font-bold text-white shadow-sm">Down</span>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container *ngSwitchCase="'action'">
+          <div class="flex gap-1">
+            <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+              <i class="ri-edit-line text-xs"></i>
+            </button>
+            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+              <i class="ri-delete-bin-line text-xs"></i>
+            </button>
+          </div>
+        </ng-container>
+
+      </ng-container>
+    </ng-template>
+  </app-shared-table>
+</div>

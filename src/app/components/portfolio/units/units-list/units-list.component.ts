@@ -369,6 +369,15 @@ export class UnitsListComponent implements OnInit {
     }
   }
 
+  handleChildNotification(ev:any){
+    if(ev.action_name=="edit")
+      window.location.href='/edit-unit/'+ev.code;
+    else if (ev.action_name=="delete")
+    {
+      //this.deleteUnit(ev.code);
+    }
+  }
+
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNo = event.pageIndex + 1;
     this.pageSize = event.pageSize;

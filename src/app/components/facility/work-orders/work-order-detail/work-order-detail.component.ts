@@ -1,0 +1,286 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+
+@Component({
+  selector: 'app-work-order-detail',
+  standalone: true,
+  imports: [CommonModule, FormsModule, SharedTableComponent],
+  templateUrl: './work-order-detail.component.html',
+  styleUrl: './work-order-detail.component.scss'
+})
+export class WorkOrderDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  workOrderId: string = '';
+  activeTab: string = 'Overview';
+  tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Attachments'];
+
+  showAddCostModal = false;
+  costDescription = '';
+  costCategory = '';
+  costAmount = '';
+  costDate = '';
+  includeInTotal = true;
+  categories = ['Materials', 'Labor', 'Items'];
+
+  // Popup states
+  showStatusDropdown = false;
+  activePersonnelPopup: string | null = null;
+
+  // Mock Data
+  workOrderDetails = {
+    id: '327856',
+    title: 'Ac not working',
+    priority: 'High',
+    category: 'Air Conditioner',
+    subcategory: '-',
+    signatures: '-',
+    resolvedDate: '07-07-2024',
+    createdDate: '04-06-2024',
+    lastUpdated: '04-06-2024',
+    closingStatus: 'Closed',
+    tenantRejectReason: '-',
+    tenantRejected: 'No',
+    waitingSLA: 'Hold to SLA'
+  };
+
+  personnel = {
+    activeTenant: 'James T. Hind',
+    raisedBy: 'Zaid Rahman',
+    responsiblePerson: 'Sanul Hameed',
+    technician: 'Kaif Mohammed',
+    vendor: 'Rahman Mohammad',
+    landlord: 'Orville Real Estate'
+  };
+
+  costs = [
+    { detail: 'HVAC Filter Replacement', category: 'Materials', cost: '$45.00' },
+    { detail: '24/07 - 2 Hours', category: 'Labor', cost: '$150.00' },
+    { detail: 'refrigerant recharge', category: 'Items', cost: '$85.00' }
+  ];
+
+  costColumns = [
+    { key: 'detail', label: 'Detail', visible: true },
+    { key: 'category', label: 'Category', visible: true },
+    { key: 'cost', label: 'Cost', visible: true },
+    { key: 'action', label: 'Actions', visible: true, useTemplate: true }
+  ];
+
+  timeTracks = [
+    { technician: 'John Martinez', date: '06/15/2024', time: '9:30 AM', duration: '2h 30m' },
+    { technician: 'Sarah Jenkins', date: '06/16/2024', time: '11:45 AM', duration: '1h 15m' },
+    { technician: 'Robert Chen', date: '06/16/2024', time: '2:00 PM', duration: '3h 00m' }
+  ];
+
+  timeTrackColumns = [
+    { key: 'technician', label: 'Technician', visible: true, useTemplate: true },
+    { key: 'date', label: 'Date', visible: true },
+    { key: 'time', label: 'Time', visible: true },
+    { key: 'duration', label: 'Duration', visible: true }
+  ];
+
+  invoices = [
+    { id: '1817939', status: 'Unpaid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
+    { id: '1817940', status: 'Paid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
+    { id: '1817941', status: 'Draft', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
+    { id: '1817942', status: 'Unpaid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
+    { id: '1817943', status: 'Overdue', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' }
+  ];
+
+  invoiceColumns = [
+    { key: 'id', label: 'ID', visible: true, useTemplate: true },
+    { key: 'status', label: 'Status', visible: true, useTemplate: true },
+    { key: 'to', label: 'To', visible: true },
+    { key: 'unit', label: 'Unit / Common Area', visible: true },
+    { key: 'invoiceNumber', label: 'Invoice Number', visible: true },
+    { key: 'chequeNo', label: 'Cheque no', visible: true },
+    { key: 'invoiceDate', label: 'Invoice Date', visible: true },
+    { key: 'invoiceType', label: 'Invoice Type', visible: true },
+    { key: 'account', label: 'Account', visible: true },
+    { key: 'currency', label: 'Currency', visible: true },
+    { key: 'propertyName', label: 'Property Name', visible: true },
+    { key: 'propertyId', label: 'Property ID', visible: true },
+    { key: 'leaseId', label: 'Lease ID', visible: true },
+    { key: 'leaseStatus', label: 'Lease Status', visible: true },
+    { key: 'note', label: 'Note', visible: true },
+    { key: 'workOrder', label: 'Work Order', visible: true },
+    { key: 'amount', label: 'Amount', visible: true },
+    { key: 'grossAmount', label: 'Gross Amount', visible: true },
+    { key: 'paid', label: 'Paid', visible: true },
+    { key: 'paymentVia', label: 'Payment Via', visible: true },
+    { key: 'moneyHeldBy', label: 'Money Held By', visible: true },
+    { key: 'doRefNo', label: 'DO Ref No', visible: true },
+    { key: 'bankName', label: 'Bank Name', visible: true },
+    { key: 'internalStatus', label: 'Internal Status', visible: true },
+    { key: 'amtDue', label: 'Amt. Due', visible: true },
+    { key: 'dueDate', label: 'Due Date', visible: true },
+    { key: 'paidDate', label: 'Paid Date', visible: true },
+    { key: 'cheques', label: 'Cheque(s)', visible: true },
+    { key: 'days', label: 'Days', visible: true },
+    { key: 'writeAmountOff', label: 'Write-Amount Off', visible: true },
+    { key: 'createdBy', label: 'Created By', visible: true },
+    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+  ];
+
+  notes = [
+    { id: '51655', subject: 'Move-in condition', content: 'Tenant reported minor paint marks near the living room window. Schedule touch up...', via: 'Portal', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
+    { id: '51656', subject: 'Rent reminder', content: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first we...', via: 'Portal', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
+    { id: '51657', subject: 'Plumbing follow up', content: 'Kitchen sink drainage issue resolved. Vendor confirmed replacement part is required bef...', via: 'Office', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
+    { id: '51658', subject: 'Inspection scheduled', content: 'Quarterly property inspection booked. Tenant has acknowledged the proposed visit window.', via: 'Phone', noteDate: '12-01-2024', createdBy: 'Admin (System)' }
+  ];
+
+  noteColumns = [
+    { key: 'id', label: 'ID', visible: true, useTemplate: true },
+    { key: 'subject', label: 'Subject', visible: true },
+    { key: 'content', label: 'Content', visible: true, useTemplate: true },
+    { key: 'via', label: 'Via', visible: true },
+    { key: 'noteDate', label: 'Note Date', visible: true },
+    { key: 'createdAt', label: 'createdAt', visible: true },
+    { key: 'UpdatedBy', label: 'UpdatedBy', visible: true },
+    { key: 'createdBy', label: 'CreatedBy', visible: true },
+    { key: 'Action', label: 'Action', visible: true }
+
+  ];
+
+  quotations = [
+    { id: 'AFT-1001', status: 'Pending', vendorName: 'ProFix Services', quotationTitle: 'Kitchen plumbing repair', quotationNumber: 'QTN-2024-0001', totalPrice: 'AED 2,550.00', deliveryDate: '10-02-2024' },
+    { id: 'AFT-1002', status: 'Approved', vendorName: 'Bright Volt LLC', quotationTitle: 'Annual electrical inspection', quotationNumber: 'QTN-2024-0002', totalPrice: 'AED 3,250.00', deliveryDate: '15-02-2024' }
+  ];
+
+  quotationColumns = [
+    { key: 'id', label: 'ID', visible: true, useTemplate: true },
+    { key: 'status', label: 'Status', visible: true, useTemplate: true },
+    { key: 'vendorName', label: 'Vendor Name', visible: true },
+    { key: 'quotationTitle', label: 'Quotation Title', visible: true },
+    { key: 'quotationNumber', label: 'Quotation Number', visible: true },
+    { key: 'totalPrice', label: 'Total Price', visible: true },
+    { key: 'EstdPrice', label: 'Estd Price', visible: true },
+    { key: 'deliveryDate', label: 'Delivery Date', visible: true },
+    { key: 'quotationCategoryName', label: 'Quotation Category Name', visible: true },
+    { key: 'LandlordStatus', label: 'Landlord Status', visible: true },
+    { key: 'TenantStatus', label: 'Tenant Status', visible: true },
+    { key: 'Username', label: 'Username', visible: true },
+    { key: 'CreatedAt', label: 'Created At', visible: true },
+    { key: 'UpdatedAt', label: 'Updated At', visible: true },
+    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+  ];
+
+  attachments = [
+    { id: 'ATT-1001', fileType: 'Inspection Report', docId: 'DOC-1001', documentStatus: 'Active', issueDate: '10-01-2024', expiryDate: '10-01-2025', files: '1 file' },
+    { id: 'ATT-1002', fileType: 'Maintenance Report', docId: 'DOC-1002', documentStatus: 'Verified', issueDate: '12-01-2024', expiryDate: '12-01-2025', files: '1 file' }
+  ];
+
+  attachmentColumns = [
+    { key: 'id', label: 'ID', visible: true, useTemplate: true },
+    { key: 'fileType', label: 'File Type', visible: true },
+    { key: 'docId', label: 'Doc ID', visible: true },
+    { key: 'documentStatus', label: 'Document Status', visible: true, useTemplate: true },
+    { key: 'issueDate', label: 'Issue Date', visible: true },
+    { key: 'expiryDate', label: 'Expiry Date', visible: true },
+    { key: 'files', label: 'Files', visible: true, useTemplate: true },
+    { key: 'ShareLandlord', label: 'Share Landlord', visible: true },
+    { key: 'ShareTenant', label: 'Share Tenant ', visible: true },
+    { key: 'CreatedAt', label: 'Created At', visible: true },
+    { key: 'UpdatedAt', label: 'Updated At', visible: true },
+    { key: 'UploadedBy', label: 'Uploaded By', visible: true },
+    { key: 'UpdatedAt', label: 'Updated At', visible: true },
+    { key: 'Action', label: 'Action', visible: true, useTemplate: true }
+  ];
+
+  messages = [
+    {
+      sender: 'Mohammed Zaid',
+      role: 'Tenant',
+      avatar: 'MZ',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
+      time: '10:45',
+      isMe: false
+    },
+    {
+      sender: 'Me',
+      role: 'Admin',
+      avatar: 'ME',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
+      time: '10:45',
+      isMe: true
+    },
+    {
+      sender: 'Mohammed Zaid',
+      role: 'Tenant',
+      avatar: 'MZ',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
+      time: '10:45',
+      isMe: false
+    },
+    {
+      sender: 'Me',
+      role: 'Admin',
+      avatar: 'ME',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
+      time: '10:45',
+      isMe: true
+    }
+  ];
+
+  newMessage: string = '';
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.workOrderId = params['id'];
+      this.workOrderDetails.id = this.workOrderId || '327856';
+    });
+  }
+
+  goBack() {
+    this.router.navigate(['/facility/work-orders']);
+  }
+
+  openAddCostModal() {
+    this.showAddCostModal = true;
+  }
+
+  closeAddCostModal() {
+    this.showAddCostModal = false;
+  }
+
+  saveCost() {
+    if (this.costDescription && this.costCategory && this.costAmount) {
+      this.costs.push({
+        detail: this.costDescription,
+        category: this.costCategory,
+        cost: '$' + parseFloat(this.costAmount).toFixed(2)
+      });
+    }
+    this.closeAddCostModal();
+  }
+
+  togglePersonnelPopup(person: string) {
+    if (this.activePersonnelPopup === person) {
+      this.activePersonnelPopup = null;
+    } else {
+      this.activePersonnelPopup = person;
+    }
+  }
+
+  closePersonnelPopup() {
+    this.activePersonnelPopup = null;
+  }
+
+  sendMessage() {
+    if (this.newMessage.trim()) {
+      this.messages.push({
+        sender: 'Me',
+        role: 'Admin',
+        avatar: 'ME',
+        text: this.newMessage,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isMe: true
+      });
+      this.newMessage = '';
+    }
+  }
+}
