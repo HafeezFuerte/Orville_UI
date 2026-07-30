@@ -34,7 +34,7 @@ export class WorkOrderListComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
-
+  currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
@@ -43,24 +43,24 @@ export class WorkOrderListComponent implements OnInit {
   activeTab: string = 'All';
   tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
 
-  pageNo = 1;
+  pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
-
+//(localStorage.getItem("selectedLang")=="EN" ? 'status_nm' : 'status_nm_ar')
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'workOrder', label: 'Work order', visible: true },
+    { key: 'title', label: 'Title', visible: true },
     { key: 'property', label: 'Property', visible: true },
     { key: 'unit', label: 'Unit', visible: true },
     { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'vendor', label: 'Vendor', visible: true },
-    { key: 'category', label: 'Category', visible: true },
+    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
+    { key: 'vendor_name', label: 'Vendor', visible: true },
+    { key: 'maintenance_name', label: 'Category', visible: true },
     { key: 'responsiblePerson', label: 'Responsible person(s)', visible: true },
-    { key: 'technician', label: 'Technician', visible: true },
-    { key: 'lastUpdate', label: 'Last update', visible: true },
-    { key: 'createdAt', label: 'Created at', visible: true },
-    { key: 'createdBy', label: 'Created by', visible: true },
+    { key: 'technician_name', label: 'Technician', visible: true },
+    { key: 'modified_date', label: 'Last update', visible: true },
+    { key: 'created_date', label: 'Created at', visible: true },
+    { key: 'created_by_name', label: 'Created by', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
@@ -69,18 +69,29 @@ export class WorkOrderListComponent implements OnInit {
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }
-
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  }
+  getStatusClass(status_id: number): string {
+    switch (status_id) {
+      case 203: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary';
+      case 204: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning';
+      case 207: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success';
+      case 208: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-secondary/10 text-secondary';
+      default: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary';
+    }
+  }
   ngOnInit() {
     this.loadData();
   }
 
   loadData() {
     this.isLoading = true;
-    const currentUser = this.commonService.getCurrentUser();
+    
     const payload = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
       source: "web",
       languageid: 1,
       page_no: this.pageNo,
@@ -95,9 +106,9 @@ export class WorkOrderListComponent implements OnInit {
     this.portfolioService.getMastersByPaging(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res && res.objResult && res.objResult.table) {
-          this.workOrderData = res.objResult.table;
-          this.totalRecords = res.objResult.total_records || res.objResult.table.length;
+        if (res && res.objResult && res.objResult.workorders) {
+          this.workOrderData = res.objResult.workorders;
+          this.totalRecords = res.objResult.total_records || res.objResult.workorders.length;
         }
       },
       error: (err) => {

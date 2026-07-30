@@ -246,7 +246,8 @@ initializeTabs() {
       totalRecords: this.broadCastsData?.length || 0,
       loading: this.loading,
       hasActions: true,
-      addButtonText: 'Broadcasts'
+      addButtonText: 'Broadcasts',
+      redirect_addurl:'/broadcasts/create'
     },
     {
       key: 'notes',

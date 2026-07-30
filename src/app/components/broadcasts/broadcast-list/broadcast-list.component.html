@@ -76,24 +76,25 @@
       [pageIndex]="pageNo - 1"
       (pageChange)="onSharedTablePageChange($event)">
       
-      <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-template #colTemplate let-row="row"  let-col="col">
         <ng-container [ngSwitch]="col.key">
           <!-- ID -->
           <ng-container *ngSwitchCase="'id'">
-            <span (click)="navigateToDetail(row.id)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+            <span (click)="navigateToDetail(row.code)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.code }}</span>
           </ng-container>
 
           <!-- Preview -->
           <ng-container *ngSwitchCase="'preview'">
-            <button (click)="navigateToDetail(row.id)" class="px-2.5 py-1 text-[10px] font-semibold rounded bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0">
+            <button (click)="navigateToDetail(row.code)" class="px-2.5 py-1 text-[10px] font-semibold rounded bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0">
               Quick View
             </button>
           </ng-container>
 
           <!-- Status -->
           <ng-container *ngSwitchCase="'status'">
-            <span *ngIf="row.status === 'Published'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">Published</span>
-            <span *ngIf="row.status === 'Draft'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">Draft</span>
+            <span *ngIf="row.status === 108" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">{{row.status_text}}</span>
+            <span *ngIf="row.status === 110" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">{{row.status_text}}</span>
+            <span *ngIf="row.status === 109" class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">{{row.status_text}}</span>
           </ng-container>
 
           <!-- Scheduled -->

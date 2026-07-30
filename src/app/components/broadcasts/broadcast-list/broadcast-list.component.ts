@@ -38,7 +38,7 @@ export class BroadcastListComponent implements OnInit {
   showFilterPanel: boolean = false;
   isLoading: boolean = false;
 
-  pageNo = 1;
+  pageNo = 0;
   pageSize = 20;
   totalRecords = 0;
 
@@ -50,12 +50,12 @@ export class BroadcastListComponent implements OnInit {
     { key: 'subject', label: 'Subject', visible: true },
     { key: 'preview', label: 'Preview', visible: true, useTemplate: true },
     { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'broadcastType', label: 'Broadcast Type', visible: true },
-    { key: 'sendTo', label: 'Send To', visible: true },
+    { key: 'type', label: 'Broadcast Type', visible: true },
+    { key: 'contact', label: 'Send To', visible: true },
     { key: 'scheduled', label: 'Scheduled', visible: true, useTemplate: true },
-    { key: 'date', label: 'Date', visible: true },
-    { key: 'createdAt', label: 'Created At', visible: true },
-    { key: 'updatedAt', label: 'Updated At', visible: true },
+    { key: 'scheduled_date', label: 'Date', visible: true },
+    { key: 'created_date', label: 'Created At', visible: true },
+    { key: 'modified_date', label: 'Updated At', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true },
   ];
 
@@ -90,9 +90,9 @@ export class BroadcastListComponent implements OnInit {
     this.portfolioService.getMastersByPaging(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res && res.objResult && res.objResult.table) {
-          this.broadcastData = res.objResult.table;
-          this.totalRecords = res.objResult.total_records || res.objResult.table.length;
+        if (res && res.objResult && res.objResult.broadcasts) {
+          this.broadcastData = res.objResult.broadcasts;
+          this.totalRecords = res.objResult.total_records || res.objResult.broadcasts.length;
         }
       },
       error: (err) => {
@@ -112,7 +112,7 @@ export class BroadcastListComponent implements OnInit {
     this.pageNo = 1;
     this.loadData();
   }
-
+ 
   navigateToDetail(id: string) {
     this.router.navigate(['/broadcasts', id]);
   }

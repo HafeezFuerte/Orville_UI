@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
-import { CommonService } from '../../../../services/common.service';
+import { CommonService } from '../../../services/common.service';
 
 @Component({
   selector: 'app-create-broadcast',

@@ -29,7 +29,7 @@ import { LoaderService } from './services/loader.service';
   animations: []
 })
 export class AppComponent {
-  title = 'ynex';
+  title = 'Orville';
   public isSpinner = true;
   loading$ = this.loaderService.loading$;
   constructor(public translate: TranslateService, private cdr: ChangeDetectorRef, private translateloader: TranslateloaderService,
