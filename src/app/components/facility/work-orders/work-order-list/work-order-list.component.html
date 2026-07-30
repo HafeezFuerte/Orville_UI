@@ -29,28 +29,28 @@
   <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">New</p>
     <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">48</h3>
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.new}}</h3>
       <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 10 this week</span>
     </div>
   </div>
   <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Open</p>
     <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">184</h3>
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.open}}</h3>
       <span class="text-[10px] font-bold text-gray-400">21 due today</span>
     </div>
   </div>
   <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">In Progress</p>
     <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">63</h3>
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.inprogress}}</h3>
       <span class="text-[10px] font-bold text-gray-400">12 with vendors</span>
     </div>
   </div>
   <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Resolved</p>
     <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">536</h3>
+      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.resolved}}</h3>
       <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 93% SLA met</span>
     </div>
   </div>
@@ -120,8 +120,22 @@
         <ng-container *ngSwitchCase="'id'">
           <span (click)="navigateToDetail(row.code)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.code }}</span>
         </ng-container>
-
-        <!-- Priority Column -->
+         <!-- Property Column -->
+        <ng-container *ngSwitchCase="'property'">
+          <div class="flex flex-col">
+            <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/properties', row.property_code]">{{row.property}}</span>
+   
+            <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
+          </div>
+        </ng-container>
+          <!-- Unit Column -->
+          <ng-container *ngSwitchCase="'unit'">
+            <div class="flex flex-col">
+              <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/units', row.unit_code]">{{row.unit}}</span>
+      
+            </div>
+          </ng-container>
+       
         <ng-container *ngSwitchCase="'priority'">
           <span *ngIf="row.priority === 'High'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-danger/10 text-danger">High</span>
           <span *ngIf="row.priority === 'Medium'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">Medium</span>
@@ -130,7 +144,7 @@
 
         <!-- Status Column -->
         <ng-container *ngSwitchCase="'status_nm'">
-          <span   [class]="getStatusClass(row.status_id)">{{getArabicLookupName(row,'status_nm')}}</span> 
+          <span   [class]="row.class_name">{{getArabicLookupName(row,'status_nm')}}</span> 
         </ng-container>
 
         <!-- Action Column -->
