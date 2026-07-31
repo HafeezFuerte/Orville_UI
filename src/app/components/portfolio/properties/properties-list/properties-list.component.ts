@@ -147,20 +147,11 @@ private loadMetrics(
     };
 
     this.propertiesService.getProperties(payload).subscribe({
-      next: (response: any) => {
-        let apiProps: any[] = [];
-        if (Array.isArray(response)) {
-          apiProps = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiProps = response.objResult;
-          else if (response.objResult.property) apiProps = response.objResult.property;
-          else if (response.objResult.properties) apiProps = response.objResult.properties;
-          else if (response.objResult.Property) apiProps = response.objResult.Property;
-          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
-        }
-
-        this.properties = apiProps || []; 
+      next: (res: any) => { 
+        if (res && res.statusCode === "200") {
+        this.properties = res.objResult.property; 
         this.applyLocalFilters();
+        }
       },
       error: err => {
         console.error(err);
@@ -219,7 +210,7 @@ private loadMetrics(
 
   setCategoryFilter(category: 'All' | 'Units' | 'Rooms'): void {
     this.categoryFilter = category;
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadProperties();
   }
 
@@ -236,7 +227,7 @@ private loadMetrics(
   }
 
   onSearch(): void {
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.applyLocalFilters();
   }
 
@@ -250,7 +241,7 @@ private loadMetrics(
     this.selectedRefNo = null;
     this.selectedLandlord = null;
     this.categoryFilter = 'All';
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadProperties();
   }
 

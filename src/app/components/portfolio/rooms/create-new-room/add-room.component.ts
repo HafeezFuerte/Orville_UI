@@ -364,7 +364,8 @@ export class AddRoomComponent implements OnInit {
   }
 
   createNewLandlord() {
-    this.toastr.info('Create new landlord feature coming soon.', 'Info');
+   // this.toastr.info('Create new landlord feature coming soon.', 'Info');
+   window.location.href='/contacts/landlords/add-landlord';
   }
 
   scrollToTop() {

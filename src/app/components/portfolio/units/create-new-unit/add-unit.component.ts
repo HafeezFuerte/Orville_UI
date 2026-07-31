@@ -405,7 +405,7 @@ export class AddUnitComponent implements OnInit {
   }
 
   createNewLandlord() {
-    this.toastr.info('Feature to create new landlord clicked!', 'Info');
+    window.location.href='/contacts/landlords/add-landlord';
   }
 
   onUnitImageSelected(files: File[]): void {
