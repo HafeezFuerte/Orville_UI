@@ -32,6 +32,9 @@ export class CommonService {
  getCurrentUser(): AuthPayload | null {
     return this.currentUser;
   }
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
   updateHeaders(): HttpHeaders {
   
   if (!this.currentUser) {

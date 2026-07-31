@@ -275,8 +275,8 @@
       
       <!-- Top Left Status Badge (Glass Finish) -->
       <span class="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-extrabold uppercase rounded-md shadow-sm backdrop-blur-md transition-all duration-300"
-      [class]="getStatusClass(unit.unit_status_name)" >
-        {{unit.unit_status_name}}
+      [class]="unit.class_name" >
+        {{getArabicLookupName(unit,'unit_status_name')}}
       </span>
 
       <!-- Top Right Classy Circle Icon (Glass Finish) -->
@@ -325,8 +325,8 @@
 
       <!-- Info Row -->
       <div class="flex items-center justify-between text-[11px] font-medium text-gray-600 mt-1">
-        <span>Added: <span class="font-bold text-gray-700">{{unit.created_date.split('T')[0]}}</span></span>
-        <span>Fee: <span class="font-extrabold text-gray-800">{{unit.management_fee}}</span></span>
+        <span>Added: <span class="font-bold text-gray-700">{{unit.created_date | date:'MMM d yyyy'}}</span></span>
+        <span>Management Fee: <span class="font-extrabold text-gray-800">{{currentUser?.currencyCode + ' ' + unit.management_fee}}</span></span>
       </div>
     </div>
 

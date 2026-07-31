@@ -130,7 +130,7 @@ export class UnitsListComponent implements OnInit {
 
   // Mock Units Data
   allUnits: any = [];
-
+  selectedLang :any=localStorage.getItem("selectedLang");
   filteredUnits: any = [];
   paginatedUnits: any = [];
   currentUser: AuthPayload | null = null;
@@ -145,7 +145,9 @@ export class UnitsListComponent implements OnInit {
      this.loadMasterDataByType(11,0,"propertiesList",'',''); 
     this.loadUnits();
   }
-
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
     loadMasterDataByType(
     typeId: number,
     filterId: number,

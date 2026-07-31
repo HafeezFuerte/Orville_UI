@@ -105,16 +105,7 @@ export class WorkOrderListComponent implements OnInit {
   }
   getArabicLookupName(row:any,key:string){
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
-  }
-  getStatusClass(status_id: number): string {
-    switch (status_id) {
-      case 203: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary';
-      case 204: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning';
-      case 207: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success';
-      case 208: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-secondary/10 text-secondary';
-      default: return 'px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary';
-    }
-  }
+  } 
   ngOnInit() {
     this.loadData();
     this.loadMetrics();

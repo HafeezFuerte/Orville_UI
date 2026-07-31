@@ -260,7 +260,14 @@ private loadMetrics(
     this.userChangedPageSize = true;
     this.applyLocalFilters();
   }
-
+  handleChildNotification(ev:any){
+    if(ev.action_name=="edit")
+      window.location.href='/edit-property/'+ev.code;
+    else if (ev.action_name=="delete")
+    {
+      //this.deleteUnit(ev.code);
+    }
+  }
   get startRecord(): number {
     if (this.totalRecords === 0) return 0;
     return (this.pageNo - 1) * this.pageSize + 1;

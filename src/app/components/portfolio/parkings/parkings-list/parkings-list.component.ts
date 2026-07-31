@@ -8,7 +8,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PropertiesService } from '../../services/properties.service';
 import { ToastrService } from 'ngx-toastr';
-
+import { Common_TabsService } from '../../services/common_tabs.service';
+import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../../services/common.service';
 export interface Parking {
   id: number;
   parkingNo: string;
@@ -45,21 +47,10 @@ export class ParkingsListComponent implements OnInit {
     unit_code: null,
     parking_no: '',
     parking_type: null,
-    recurring_cycle: null,
+    recurring_cycle: null,status: null,
     remarks: ''
   };
-
-  parkingTypes = [
-    { id: 1, name: 'Free' },
-    { id: 2, name: 'Chargeable' }
-  ];
-
-  recurringCycles = [
-    { id: 1, name: 'Fixed' },
-    { id: 2, name: 'Daily' },
-    { id: 3, name: 'Weekly' },
-    { id: 4, name: 'Monthly' }
-  ];
+ 
 
   // Pagination
   pageNo = 1;
@@ -82,13 +73,14 @@ export class ParkingsListComponent implements OnInit {
     { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'parkingNo', label: 'Parking No.', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'property', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unit', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unit', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true }, 
+    { key: 'parking_status_nm', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'type', label: 'Type', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'fee', label: 'Fee', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'cycle', label: 'Cycle', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'remarks', label: 'Remarks', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'createdDate', label: 'Created', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'updatedDate', label: 'Updated', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'created_date', label: 'Created', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'modified_date', label: 'Updated', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   get visibleColumns() {
@@ -110,7 +102,7 @@ export class ParkingsListComponent implements OnInit {
   get allColumnsSelected(): boolean {
     return this.tableColumns.every(c => c.visible !== false);
   }
-
+  currentUser: AuthPayload | null = null;
   isEditMode: boolean = false;
   currentEditId: number = 0;
   currentEditCode: string = '';
@@ -120,11 +112,13 @@ export class ParkingsListComponent implements OnInit {
   }
 
   // Mock Parkings Data
-  allParkings: Parking[] = [];
+  allParkings: any[] = [];
 
   filteredParkings: Parking[] = [];
   paginatedParkings: Parking[] = [];
-
+  ParkingTypeList: any[] = [];
+  RecurringCycleList: any[] = [];
+  StatusList: any[] = [];
   propertiesList: any[] = [];
   allUnits: any[] = [];
   unitsList: any[] = [];
@@ -132,112 +126,79 @@ export class ParkingsListComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private propertiesService: PropertiesService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private commontabservice:Common_TabsService,
+    private commonService:CommonService
   ) { }
 
   ngOnInit(): void {
+    this.currentUser = this.commonService.getCurrentUser();
     this.loadMetrics();
     this.loadParkings();
-    this.loadProperties();
-    this.loadUnits();
+    this.loadMasterDataByType(2,12,'ParkingTypeList','','') 
+    this.loadMasterDataByType(2,14,'StatusList','','') 
+    this.loadMasterDataByType(2,13,'RecurringCycleList','','') 
+    this.loadMasterDataByType(11,0,'propertiesList','','') 
   }
 
   onPropertyChange(event: any) {
     this.parkingForm.unit_code = null;
-    const propertyCode = event?._safeCode || event?.code || event?.id;
-    
-    if (propertyCode) {
-      this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
-    } else {
-      this.unitsList = [...this.allUnits];
-    }
+    const propertyCode = event?._safeCode || event?.code || event?.id; 
+    this.unitsList=[];
+    this.loadMasterDataByType(3,0,'unitsList',propertyCode,'') 
   }
-
-  loadUnits() {
-    const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'Units'
-    };
-    this.propertiesService.getUnits(payload).subscribe({
-      next: (response: any) => {
-        let apiUnits: any[] = [];
-        if (Array.isArray(response)) {
-          apiUnits = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiUnits = response.objResult;
-          else if (response.objResult.unit) apiUnits = response.objResult.unit;
-          else if (response.objResult.units) apiUnits = response.objResult.units;
-          else if (response.objResult.Unit) apiUnits = response.objResult.Unit;
-          else if (response.objResult.Units) apiUnits = response.objResult.Units;
-        }
-
-        if (Array.isArray(apiUnits) && apiUnits.length > 0) {
-          this.allUnits = apiUnits.map((u: any) => ({
-            ...u,
-            _safeCode: u.unit_code || u.code || String(u.id || ''),
-            displayName: `${u.unit_code || u.code || u.id || ''} - ${u.unit_no || u.name || ''}`
-          }));
-          this.unitsList = [...this.allUnits];
-        }
+ 
+  private loadMasterDataByType(
+    typeId: number,
+    filterId: number,
+    target: 'propertiesList' | 'unitsList' | 'ParkingTypeList' |'StatusList' |'RecurringCycleList',
+    filtertext:string,
+    filterText1:string, 
+  ) {
+    this.commontabservice.getMasterByType({
+      typeId: typeId,
+      filterId,
+       filterText: filtertext,
+      filterText1: filterText1 
+    }).subscribe({
+      next: res => {
+        if(res['statusCode'] == 200)
+          this[target] = res.objResult.table;
+       
       },
-      error: (err: any) => {
-        console.error('Error loading units:', err);
-      }
+      error: console.error
     });
   }
-
-  loadMetrics() {
-    const payload = {
+  loadMetrics() { 
+    this.commontabservice.getMasterByType({
       typeId: 7,
-      filterId: 4,
-      filterText: "",
-      filterText1: "",
-      userId: 1,
-      clientId: "74BB6922",
-      companyId: 0
-    };
-    this.propertiesService.getMasterDetails(payload).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          let data = null;
-          if (res.objResult.table && Array.isArray(res.objResult.table) && res.objResult.table.length > 0) {
-            data = res.objResult.table[0];
-          } else if (res.objResult.Table && Array.isArray(res.objResult.Table) && res.objResult.Table.length > 0) {
-            data = res.objResult.Table[0];
-          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
-            data = res.objResult[0];
-          } else {
-            data = res.objResult;
-          }
-          
-          if (data) {
-            this.metrics = {
-              total: data.parkings !== undefined ? data.parkings : this.metrics.total,
-              available: data.available !== undefined ? data.available : this.metrics.available,
-              occupied: data.occupied !== undefined ? data.occupied : this.metrics.occupied,
-              reserved: data.maintainence !== undefined ? data.maintainence : this.metrics.reserved
-            };
-          }
+      filterid:0,
+       filterText: '',
+      filterText1: '' 
+    }).subscribe({
+      next: res => {
+        if(res['statusCode'] == 200){
+        let data = res.objResult.table[0]; 
+        if (data) {
+          this.metrics = {
+            total: data.parkings !== undefined ? data.parkings : this.metrics.total,
+            available: data.available !== undefined ? data.available : this.metrics.available,
+            occupied: data.occupied !== undefined ? data.occupied : this.metrics.occupied,
+            reserved: data.reserved !== undefined ? data.reserved : this.metrics.reserved
+          };
         }
+      }
       },
-      error: (err: any) => console.error("Error loading metrics:", err)
+      error: console.error
     });
+ 
   }
-
+ 
   loadParkings() {
     const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
       page_no: 0,
@@ -252,38 +213,7 @@ export class ParkingsListComponent implements OnInit {
     this.propertiesService.getParkings(payload).subscribe({
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) {
-          let apiParkings: any[] = [];
-          if (Array.isArray(response.objResult)) {
-            apiParkings = response.objResult;
-          } else if (response.objResult.parkings && Array.isArray(response.objResult.parkings)) {
-            apiParkings = response.objResult.parkings;
-          } else if (response.objResult.Parkings && Array.isArray(response.objResult.Parkings)) {
-            apiParkings = response.objResult.Parkings;
-          } else if (response.objResult.parking && Array.isArray(response.objResult.parking)) {
-            apiParkings = response.objResult.parking;
-          }
-
-          if (apiParkings.length > 0) {
-            this.allParkings = apiParkings.map((p: any) => ({
-              id: p.code ?? p.parking_no ?? '-',
-              parkingNo: p.parking_no ?? '-',
-              property: p.property ?? p.property_name ?? '-',
-              location: p.location ?? '-',
-              unit: p.unit_code ?? '-',
-              type: String(p.parking_type) === '1' ? 'Free' : String(p.parking_type) === '2' ? 'Chargeable' : p.parking_type === 'Free' ? 'Free' : p.parking_type === 'Chargeable' ? 'Chargeable' : (p.parking_type_nm ?? p.parking_type ?? '-'),
-              fee: (p.fee != null) ? (p.fee == 0 ? 'AED 0.00' : `AED ${p.fee}`) : '-',
-              cycle: String(p.recurring_cycle) === '1' ? 'Fixed' : String(p.recurring_cycle) === '2' ? 'Daily' : String(p.recurring_cycle) === '3' ? 'Weekly' : String(p.recurring_cycle) === '4' ? 'Monthly' : p.recurring_cycle === 'Fixed' ? 'Fixed' : p.recurring_cycle === 'Daily' ? 'Daily' : p.recurring_cycle === 'Weekly' ? 'Weekly' : p.recurring_cycle === 'Monthly' ? 'Monthly' : (p.recurring_cycle_nm ?? p.recurring_cycle ?? '-'),
-              remarks: p.remarks ?? '-',
-              createdDate: p.createdDate ?? p.created_date ?? '-',
-              updatedDate: p.updatedDate ?? p.updated_date ?? '-',
-              raw_property_code: p.property_code,
-              raw_unit_code: p.unit_code,
-              raw_parking_type: p.parking_type,
-              raw_recurring_cycle: p.recurring_cycle,
-              raw_id: p.id,
-              raw_code: p.code
-            }));
-          }
+          this.allParkings = response.objResult.parkings;  
         } else {
           this.allParkings = [];
         }
@@ -295,54 +225,13 @@ export class ParkingsListComponent implements OnInit {
       }
     });
   }
-
-  loadProperties() {
-    const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'Property'
-    };
-    this.propertiesService.getProperties(payload).subscribe({
-      next: (response: any) => {
-        let apiProps: any[] = [];
-        if (Array.isArray(response)) {
-          apiProps = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) apiProps = response.objResult;
-          else if (response.objResult.property) apiProps = response.objResult.property;
-          else if (response.objResult.properties) apiProps = response.objResult.properties;
-          else if (response.objResult.Property) apiProps = response.objResult.Property;
-          else if (response.objResult.Properties) apiProps = response.objResult.Properties;
-        }
-
-        if (Array.isArray(apiProps) && apiProps.length > 0) {
-          this.propertiesList = apiProps.map((p: any) => ({
-            ...p,
-            _safeCode: p.code || String(p.id),
-            displayName: `${p.code || p.id} - ${p.name}`
-          }));
-        }
-      },
-      error: (err: any) => {
-        console.error('Error loading properties:', err);
-      }
-    });
-  }
-
+ 
   applyFilters(): void {
     let temp = [...this.allParkings];
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
-      temp = temp.filter(p => p.property.toLowerCase().includes(q) || p.parkingNo.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q));
+      temp = temp.filter(p => p.property.toLowerCase().includes(q) || p.parking_no.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q));
     }
 
     this.filteredParkings = temp;
@@ -375,7 +264,9 @@ export class ParkingsListComponent implements OnInit {
     this.searchQuery = '';
     this.applyFilters();
   }
-
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
   toggleViewMode(): void {
     this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
     this.updatePagination();
@@ -393,6 +284,7 @@ export class ParkingsListComponent implements OnInit {
         parking_no: '',
         parking_type: null,
         recurring_cycle: null,
+        status:null,
         remarks: ''
       };
     }
@@ -400,22 +292,23 @@ export class ParkingsListComponent implements OnInit {
 
   editParking(row: any): void {
     this.isEditMode = true;
-    this.currentEditId = row.raw_id || 0;
-    this.currentEditCode = row.raw_code || '';
+    this.currentEditId = row.id || 0;
+    this.currentEditCode = row.code || '';
     
     // We must ensure unitsList is populated for the given property
-    const propertyCode = row.raw_property_code;
+    const propertyCode = row.property_code;
     if (propertyCode) {
-      this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
+      this.loadMasterDataByType(3,0,'unitsList',propertyCode,'') 
     }
     
     this.parkingForm = {
-      property_code: row.raw_property_code,
-      unit_code: row.raw_unit_code,
-      parking_no: row.parkingNo !== '-' ? row.parkingNo : '',
-      parking_type: row.raw_parking_type,
-      recurring_cycle: row.raw_recurring_cycle,
-      remarks: row.remarks !== '-' ? row.remarks : ''
+      property_code: row.property_code,
+      unit_code: row.unit_code,
+      parking_no: row.parking_no !== '-' ? row.parking_no : '',
+      parking_type: row.parking_type,
+      recurring_cycle: row.recurring_cycle,
+      remarks: row.remarks !== '-' ? row.remarks : '',
+      status:row.status
     };
     
     this.showAddModal = true;
@@ -428,9 +321,9 @@ export class ParkingsListComponent implements OnInit {
     }
 
     const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
       id: this.isEditMode ? this.currentEditId : 0,
@@ -439,7 +332,7 @@ export class ParkingsListComponent implements OnInit {
       code: this.isEditMode ? this.currentEditCode : "",
       parking_no: this.parkingForm.parking_no || '',
       parking_type: this.parkingForm.parking_type || '',
-      status: 1,
+      status: this.parkingForm.status || 96, // available id
       room_code: "",
       rooom_code: "",
       recurring_cycle: this.parkingForm.recurring_cycle || 0,

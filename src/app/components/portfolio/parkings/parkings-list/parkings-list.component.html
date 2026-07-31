@@ -153,27 +153,30 @@
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container *ngIf="col.key === 'id'">
-        <span class="font-bold text-gray-800">{{row.id}}</span>
+        <span (click)="editParking(row)" class="font-bold text-primary cursor-pointer hover:underline animate-pulse">{{row.code}}</span>
       </ng-container>
-
+      
       <ng-container *ngIf="col.key === 'parkingNo'">
-        <span class="font-semibold text-gray-800">{{row.parkingNo}}</span>
+        <span class="font-semibold text-gray-800">{{row.parking_no}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'property'">
+        
         <div class="flex flex-col">
-          <span class="font-bold text-gray-700">{{row.property}}</span>
-          <span class="text-[10px] text-gray-600 font-semibold">{{row.location}}</span>
+          <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/properties', row.property_code]">{{row.property}}</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
         </div>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'unit'">
-        <span class="font-semibold text-primary cursor-pointer hover:underline">{{row.unit}}</span>
+        <span class="font-semibold text-primary cursor-pointer hover:underline" [routerLink]="['/units', row.unit_code]">{{row.unit}}</span>
       </ng-container>
-
+      <ng-container *ngIf="col.key === 'parking_status_nm'">
+        <span  class="badge" [ngClass]="row.class_name">{{getArabicLookupName(row,'parking_status_nm')}} </span>
+      </ng-container>
       <ng-container *ngIf="col.key === 'type'">
-        <span class="badge" [ngClass]="row.type === 'Free' ? 'bg-info/10 text-info' : 'bg-primary/10 text-primary'">
-          {{row.type}}
+        <span class="badge" [ngClass]="row.type_class">
+          {{getArabicLookupName(row,'parking_type_nm')}} 
         </span>
       </ng-container>
 
@@ -182,19 +185,21 @@
       </ng-container>
 
       <ng-container *ngIf="col.key === 'cycle'">
-        <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30">{{row.cycle}}</span>
+        <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30"
+        [ngClass]="row.cycle_class" >
+        {{getArabicLookupName(row,'recurring_cycle_nm')}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'remarks'">
         <span class="text-gray-600">{{row.remarks}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'createdDate'">
-        <span>{{row.createdDate}}</span>
+      <ng-container *ngIf="col.key === 'created_date'">
+        <span>{{row.created_date | date:'MMM d yyyy'}}</span>
       </ng-container>
 
-      <ng-container *ngIf="col.key === 'updatedDate'">
-        <span>{{row.updatedDate}}</span>
+      <ng-container *ngIf="col.key === 'modified_date'">
+        <span>{{row.modified_date | date:'MMM d yyyy'}}</span>
       </ng-container>
     </ng-template>
 
@@ -237,17 +242,31 @@
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Property <span
             class="text-danger">*</span></label>
-        <ng-select [items]="propertiesList" bindLabel="displayName" bindValue="_safeCode" placeholder="Search property"
+        <ng-select [items]="propertiesList"   bindValue="code" placeholder="Search property"
           class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
-          [searchable]="true" (change)="onPropertyChange($event)"></ng-select>
+          [searchable]="true" (change)="onPropertyChange($event)">
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.code }} - {{ item.name }}
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.code }} - {{ item.name }}
+      </ng-template>
+      </ng-select>
       </div>
 
       <!-- Unit -->
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Unit <span
             class="text-danger">*</span></label>
-        <ng-select [items]="unitsList" bindLabel="displayName" bindValue="_safeCode" placeholder="Search unit"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true"></ng-select>
+        <ng-select [items]="unitsList"   bindValue="code" placeholder="Search unit"
+          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true">
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.code }} - {{ item.unit_no }}
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.code }} - {{ item.unit_no }}
+      </ng-template>
+    </ng-select>
       </div>
 
       <!-- Row: Parking No & Parking Type -->
@@ -262,7 +281,7 @@
         <div>
           <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Parking Type <span
               class="text-danger">*</span></label>
-          <ng-select [items]="[{id: 1, name: 'Free'}, {id: 2, name: 'Chargeable'}]" bindLabel="name" bindValue="id"
+          <ng-select [items]="ParkingTypeList" bindLabel="name" bindValue="id"
             placeholder="Select type" class="ng-select-sm w-full" appendTo="body"
             [(ngModel)]="parkingForm.parking_type" [searchable]="true"></ng-select>
         </div>
@@ -271,10 +290,17 @@
       <!-- Recurring Cycle -->
       <div>
         <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Recurring Cycle</label>
-        <ng-select [items]="[{id: 1, name: 'Fixed'}, {id: 2, name: 'Daily'}, {id: 3, name: 'Weekly'}, {id: 4, name: 'Monthly'}]"
+        <ng-select [items]="RecurringCycleList"
           bindLabel="name" bindValue="id" placeholder="Select cycle" class="ng-select-sm w-full" appendTo="body"
           [(ngModel)]="parkingForm.recurring_cycle" [searchable]="true"></ng-select>
       </div>
+ <!-- Status -->
+ <div>
+  <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Status</label>
+  <ng-select [items]="StatusList"
+    bindLabel="name" bindValue="id" placeholder="Select cycle" class="ng-select-sm w-full" appendTo="body"
+    [(ngModel)]="parkingForm.status" [searchable]="true"></ng-select>
+</div>
 
       <!-- Remarks -->
       <div>

@@ -6,5 +6,6 @@ export interface AuthPayload {
   roleName: string;
   userCode: string;
   token: string;
-  currencyCode: string;
+  currencyCode: string;  
 }
+

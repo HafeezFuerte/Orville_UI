@@ -297,8 +297,8 @@
       
       <!-- Top Left Status Badge (Glass Finish) -->
       <span class="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-extrabold uppercase rounded-md shadow-sm backdrop-blur-md transition-all duration-300"
-      [class]="getStatusClass(unit.room_status_name)" >
-        {{unit.room_status_name}}
+      [class]="unit.class_name" >
+      {{getArabicLookupName(unit,'room_status_name')}} 
       </span>
 
       <!-- Top Right Classy Circle Icon (Glass Finish) -->
@@ -319,7 +319,7 @@
         <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/50 mb-2 uppercase">
           {{unit.rentStatus}}
         </span>
-        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{unit.room_code}} - {{unit.property_Name}}</h5>
+        <h5 class="text-sm font-black text-gray-800 m-0 leading-tight">{{unit.property_Name}} - {{unit.unitcode}} </h5>
         <div class="flex items-center text-gray-600 text-[11px] font-medium mt-1">
           <i class="ri-map-pin-line text-xs me-0.5 text-gray-600"></i> {{unit.address_1}}
         </div>
@@ -347,8 +347,8 @@
 
       <!-- Info Row -->
       <div class="flex items-center justify-between text-[11px] font-medium text-gray-600 mt-1">
-        <span>Added: <span class="font-bold text-gray-700">{{unit.created_date.split('T')[0]}}</span></span>
-        <span>Fee: <span class="font-extrabold text-gray-800">{{unit.management_fee}}</span></span>
+        <span>Added: <span class="font-bold text-gray-700">{{unit.created_date | date:'MMM d yyyy'}}</span></span>
+        <span>Management Fee: <span class="font-extrabold text-gray-800">{{currentUser?.currencyCode + ' ' + unit.management_fee}}</span></span>
       </div>
     </div>
 

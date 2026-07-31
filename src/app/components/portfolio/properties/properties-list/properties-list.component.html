@@ -126,7 +126,7 @@
 
 <!-- 📋 1. LIST VIEW (TABLE) -->
 <div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
-  <app-shared-table [columns]="tableColumns" [data]="paginatedProperties" [loading]="false"
+  <app-shared-table (notify_edit_action)="handleChildNotification($event)" [columns]="tableColumns" [data]="paginatedProperties" [loading]="false"
     [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
@@ -138,7 +138,7 @@
       <ng-container *ngIf="col.key === 'name'">
         <div class="flex flex-col">
           <span class="font-bold text-gray-800 cursor-pointer hover:text-primary" [routerLink]="['/properties', row.id]">{{row.name}}</span>
-          <span class="text-[10px] text-gray-600 font-semibold">Dubai Marina, Tower A, Dubai</span>
+          <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
         </div>
       </ng-container>
 
@@ -183,7 +183,7 @@
     <!-- Actions Template -->
     <ng-template #actionTemplate let-row="row">
       <div class="flex gap-1">
-        <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+        <button [routerLink]="['/edit-property', row.code]" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
           <i class="ri-edit-line text-xs"></i>
         </button>
         <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
@@ -200,7 +200,7 @@
   <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl bg-white animate-fade-in flex flex-col" *ngFor="let property of paginatedProperties">
     <!-- Image Card Header -->
     <div class="relative h-40 overflow-hidden bg-gray-100">
-      <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+      <img [src]="property.property_image_path" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
       
       <!-- Bottom Left Category Badge -->
       <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md rounded-md flex items-center gap-1">
@@ -216,13 +216,13 @@
         <div class="flex flex-col">
           <h5 class="text-sm font-bold text-gray-800 m-0 leading-tight">{{property.name}}</h5>
           <div class="flex items-center text-gray-500 text-[10px] font-medium mt-1">
-            <i class="ri-map-pin-line me-1 text-gray-400"></i> Dubai Marina, Tower A, Dubai
+            <i class="ri-map-pin-line me-1 text-gray-400"></i> {{property.address_1}}
           </div>
         </div>
         <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full border flex items-center gap-1 shrink-0"
-          [ngClass]="property['internal Status'] === 'Active' ? 'border-success text-success bg-success/5' : 'border-warning text-warning bg-warning/5'">
-          <span class="w-1.5 h-1.5 rounded-full" [ngClass]="property['internal Status'] === 'Active' ? 'bg-success' : 'bg-warning'"></span>
-          {{property['internal Status'] || 'Active'}}
+          [ngClass]="property.property_status === 'Active' ? 'border-success text-success bg-success/5' : 'border-warning text-warning bg-warning/5'">
+          <span class="w-1.5 h-1.5 rounded-full" [ngClass]="property.property_status === 'Active' ? 'bg-success' : 'bg-warning'"></span>
+          {{property.property_status || 'Active'}}
         </span>
       </div>
 
@@ -258,7 +258,7 @@
       <div class="flex flex-col gap-2">
         <div class="flex justify-between items-center mb-1">
           <span class="text-[11px] font-bold text-gray-800">Units types</span>
-          <a href="javascript:void(0)" class="text-[10px] font-semibold text-primary hover:underline">Manage units</a>
+          <a href="javascript:void(0)" [routerLink]="['/properties', property.code]" class="text-[10px] font-semibold text-primary hover:underline">Manage units</a>
         </div>
         
         <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px]">
@@ -286,17 +286,17 @@
       </div>
       
       <div class="mt-2">
-        <span class="text-[9px] text-gray-400">Added May 20, 2024</span>
+        <span class="text-[11px] font-bold text-gray-800">Added on : {{property.created_date | date:'MMM d yyyy'}}</span>
       </div>
 
     </div>
 
     <!-- Footer Actions -->
     <div class="p-4 pt-0 mt-auto flex items-center gap-3">
-      <button type="button" class="flex-1 py-2 px-3 rounded-md border border-gray-200 bg-white text-gray-700 text-[11px] font-bold hover:bg-gray-50 transition-colors text-center shadow-sm">
+      <button type="button" [routerLink]="['/properties', property.code]" class="flex-1 py-2 px-3 rounded-md border border-gray-200 bg-white text-gray-700 text-[11px] font-bold hover:bg-gray-50 transition-colors text-center shadow-sm">
         Manage Units
       </button>
-      <button type="button" [routerLink]="['/properties', property.id]" class="flex-1 py-2 px-3 rounded-md bg-[#1f2b45] text-white text-[11px] font-bold hover:bg-[#131b2e] transition-colors flex items-center justify-center gap-1 shadow-sm border-0">
+      <button type="button" [routerLink]="['/edit-property', property.code]" class="flex-1 py-2 px-3 rounded-md bg-[#1f2b45] text-white text-[11px] font-bold hover:bg-[#131b2e] transition-colors flex items-center justify-center gap-1 shadow-sm border-0">
         View Property <i class="ri-arrow-right-line"></i>
       </button>
     </div>
