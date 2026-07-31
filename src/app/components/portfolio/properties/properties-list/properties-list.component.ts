@@ -54,8 +54,8 @@ export class PropertiesListComponent implements OnInit {
   filteredProperties: any[] = [];
   paginatedProperties: any[] = [];
 
-  pageNo = 1;
-  pageSize = 5;
+  pageNo = 0;
+  pageSize = 10;
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
@@ -138,10 +138,10 @@ private loadMetrics(
       clientId: "74BB6922",
       source: 'web',
       languageid: 1,
-      page_no: 0,
+      page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery || '',
-      pagecount: 100, // Load all to handle advanced dashboard filters locally for interactive UX
+      pagecount: this.pageSize, // Load all to handle advanced dashboard filters locally for interactive UX
       filter_by: this.categoryFilter !== 'All' ? this.categoryFilter : '',
       featureid: 'Property'
     };
@@ -150,6 +150,16 @@ private loadMetrics(
       next: (res: any) => { 
         if (res && res.statusCode === "200") {
         this.properties = res.objResult.property; 
+        if(res.objResult.rows_info)
+        {
+          this.totalRecords=res.objResult.rows_info[0].totalrecords;
+         // this.pageNo=res.objResult.rows_info[0].currentpage; 
+          this.totalPages=res.objResult.rows_info[0].noofpages;
+        }
+         
+        this.paginatedProperties=this.properties;
+    // Paginate
+      // const startIndex = (this.pageNo - 1) * this.pageSize;
         this.applyLocalFilters();
         }
       },
@@ -160,52 +170,52 @@ private loadMetrics(
   }
 
   applyLocalFilters(): void {
-    let result = this.properties;
+    // let result = this.properties;
 
-    // Apply text search
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(q) || 
-        p.type_name.toLowerCase().includes(q)
-      );
-    }
+    // // Apply text search
+    // if (this.searchQuery) {
+    //   const q = this.searchQuery.toLowerCase();
+    //   result = result.filter(p => 
+    //     p.name.toLowerCase().includes(q) || 
+    //     p.type_name.toLowerCase().includes(q)
+    //   );
+    // }
 
-    // Apply type filter
-    if (this.selectedType) {
-      result = result.filter(p => p.type_name === this.selectedType);
-    }
+    // // Apply type filter
+    // if (this.selectedType) {
+    //   result = result.filter(p => p.type_name === this.selectedType);
+    // }
 
-    // Apply status filter
-    if (this.selectedStatus) {
-      result = result.filter(p => p['internal Status'] === this.selectedStatus);
-    }
+    // // Apply status filter
+    // if (this.selectedStatus) {
+    //   result = result.filter(p => p['internal Status'] === this.selectedStatus);
+    // }
 
-    // Apply tag filter
-    if (this.selectedTag) {
-      result = result.filter(p => p.tags === this.selectedTag);
-    }
+    // // Apply tag filter
+    // if (this.selectedTag) {
+    //   result = result.filter(p => p.tags === this.selectedTag);
+    // }
 
-    // Apply ID filter
-    if (this.selectedId) {
-      result = result.filter(p => p.code === this.selectedId);
-    }
+    // // Apply ID filter
+    // if (this.selectedId) {
+    //   result = result.filter(p => p.code === this.selectedId);
+    // }
 
-    this.totalRecords = result.length;
+    // // this.totalRecords = result.length;
     
-    if (!this.userChangedPageSize) {
-      if (this.totalRecords <= 5) this.pageSize = 5;
-      else if (this.totalRecords <= 10) this.pageSize = 10;
-      else if (this.totalRecords <= 25) this.pageSize = 25;
-      else if (this.totalRecords <= 50) this.pageSize = 50;
-      else this.pageSize = 100;
-    }
+    // // if (!this.userChangedPageSize) {
+    // //   if (this.totalRecords <= 5) this.pageSize = 5;
+    // //   else if (this.totalRecords <= 10) this.pageSize = 10;
+    // //   else if (this.totalRecords <= 25) this.pageSize = 25;
+    // //   else if (this.totalRecords <= 50) this.pageSize = 50;
+    // //   else this.pageSize = 100;
+    // // }
     
-    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+    // // this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
-    // Paginate
-    const startIndex = (this.pageNo - 1) * this.pageSize;
-    this.paginatedProperties = result.slice(startIndex, startIndex + this.pageSize);
+    // // // Paginate
+    // // const startIndex = (this.pageNo - 1) * this.pageSize;
+    // this.paginatedProperties = result;
   }
 
   setCategoryFilter(category: 'All' | 'Units' | 'Rooms'): void {
@@ -228,7 +238,7 @@ private loadMetrics(
 
   onSearch(): void {
     this.pageNo = 0;
-    this.applyLocalFilters();
+    this.loadProperties();
   }
 
   clearFilters(): void {
@@ -246,10 +256,18 @@ private loadMetrics(
   }
 
   onSharedTablePageChange(event: any): void {
-    this.pageNo = event.pageIndex + 1;
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
     this.pageSize = event.pageSize;
     this.userChangedPageSize = true;
-    this.applyLocalFilters();
+    this.loadProperties();
   }
   handleChildNotification(ev:any){
     if(ev.action_name=="edit")
@@ -259,44 +277,44 @@ private loadMetrics(
       //this.deleteUnit(ev.code);
     }
   }
-  get startRecord(): number {
-    if (this.totalRecords === 0) return 0;
-    return (this.pageNo - 1) * this.pageSize + 1;
-  }
+  // get startRecord(): number {
+  //   if (this.totalRecords === 0) return 0;
+  //   return (this.pageNo - 1) * this.pageSize + 1;
+  // }
 
-  get endRecord(): number {
-    const end = this.pageNo * this.pageSize;
-    return end > this.totalRecords ? this.totalRecords : end;
-  }
+  // get endRecord(): number {
+  //   const end = this.pageNo * this.pageSize;
+  //   return end > this.totalRecords ? this.totalRecords : end;
+  // }
 
-  get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
+  // get pages(): number[] {
+  //   return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  // }
 
-  onPageSizeChange(): void {
-    this.pageNo = 1;
-    this.userChangedPageSize = true;
-    this.applyLocalFilters();
-  }
+  // onPageSizeChange(event:any): void {
+  //   this.pageNo = 0;
+  //   this.userChangedPageSize = true;
+  //   this.applyLocalFilters();
+  // }
 
-  previousPage(): void {
-    if (this.pageNo > 1) {
-      this.pageNo--;
-      this.applyLocalFilters();
-    }
-  }
+  // previousPage(): void {
+  //   if (this.pageNo > 1) {
+  //     this.pageNo--;
+  //     this.applyLocalFilters();
+  //   }
+  // }
 
-  nextPage(): void {
-    if (this.pageNo < this.totalPages) {
-      this.pageNo++;
-      this.applyLocalFilters();
-    }
-  }
+  // nextPage(): void {
+  //   if (this.pageNo < this.totalPages) {
+  //     this.pageNo++;
+  //     this.applyLocalFilters();
+  //   }
+  // }
 
-  goToPage(page: number): void {
-    if (page !== this.pageNo) {
-      this.pageNo = page;
-      this.applyLocalFilters();
-    }
-  }
+  // goToPage(page: number): void {
+  //   if (page !== this.pageNo) {
+  //     this.pageNo = page;
+  //     this.applyLocalFilters();
+  //   }
+  // }
 }

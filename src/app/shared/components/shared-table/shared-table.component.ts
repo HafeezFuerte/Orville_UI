@@ -52,7 +52,7 @@ export class SharedTableComponent {
   /** Event emitted when pagination changes */
   @Output() pageChange = new EventEmitter<PageEvent>();
  
-
+  @Input() pageSizeOptions = [5, 10, 25, 50, 100];
   @Output() notify_edit_action = new EventEmitter<string>();
   /** 
    * A reference to the ng-template passed from the parent component 
@@ -82,6 +82,9 @@ export class SharedTableComponent {
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser(); 
+    console.log(this.totalRecords);
+    console.log(this.pageIndex);
+    console.log(this.pageSize)
   }
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
