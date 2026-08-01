@@ -53,8 +53,8 @@ export class ParkingsListComponent implements OnInit {
  
 
   // Pagination
-  pageNo = 1;
-  pageSize = 5;
+  pageNo = 0;
+  pageSize = 10;
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
@@ -201,23 +201,28 @@ export class ParkingsListComponent implements OnInit {
       clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
-      page_no: 0,
+      page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery || "",
-      pagecount: 20,
+      pagecount: this.pageSize,
       filter_by: "",
       filter_list: "",
       featureid: "parkings"
     };
 
     this.propertiesService.getParkings(payload).subscribe({
-      next: (response: any) => {
-        if (response && response.statusCode === "200" && response.objResult) {
-          this.allParkings = response.objResult.parkings;  
-        } else {
-          this.allParkings = [];
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.paginatedParkings=response.objResult.parkings  
+          if(response.objResult.rows_info)
+          {
+            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
+            this.totalPages=response.objResult.rows_info[0].noofpages;
+          }
         }
-        this.applyFilters();
+        else
+          this.toastr.error("No record[s] found");
+
       },
       error: (err: any) => {
         console.error('Error loading parkings:', err);
@@ -227,37 +232,31 @@ export class ParkingsListComponent implements OnInit {
   }
  
   applyFilters(): void {
-    let temp = [...this.allParkings];
+    // let temp = [...this.allParkings];
 
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      temp = temp.filter(p => p.property.toLowerCase().includes(q) || p.parking_no.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q));
-    }
+    // if (this.searchQuery.trim()) {
+    //   const q = this.searchQuery.toLowerCase();
+    //   temp = temp.filter(p => p.property.toLowerCase().includes(q) || p.parking_no.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q));
+    // }
 
-    this.filteredParkings = temp;
-    this.totalRecords = temp.length;
+    // this.filteredParkings = temp;
+    // this.totalRecords = temp.length;
     
-    if (!this.userChangedPageSize) {
-      if (this.totalRecords <= 5) this.pageSize = 5;
-      else if (this.totalRecords <= 10) this.pageSize = 10;
-      else if (this.totalRecords <= 25) this.pageSize = 25;
-      else if (this.totalRecords <= 50) this.pageSize = 50;
-      else this.pageSize = 100;
-    }
+    // if (!this.userChangedPageSize) {
+    //   if (this.totalRecords <= 5) this.pageSize = 5;
+    //   else if (this.totalRecords <= 10) this.pageSize = 10;
+    //   else if (this.totalRecords <= 25) this.pageSize = 25;
+    //   else if (this.totalRecords <= 50) this.pageSize = 50;
+    //   else this.pageSize = 100;
+    // }
 
-    this.pageNo = 1;
-    this.updatePagination();
+    // this.pageNo = 1;
+    // this.updatePagination();
   }
-
-  updatePagination(): void {
-    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
-    const start = (this.pageNo - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.paginatedParkings = this.filteredParkings.slice(start, end);
-  }
-
+ 
   onSearch(): void {
-    this.applyFilters();
+    this.pageNo=0;
+    this.loadParkings();
   }
 
   clearFilters(): void {
@@ -268,8 +267,7 @@ export class ParkingsListComponent implements OnInit {
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
   toggleViewMode(): void {
-    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
-    this.updatePagination();
+    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list'; 
   }
 
   toggleAddModal(open: boolean): void {
@@ -353,58 +351,22 @@ export class ParkingsListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
+  
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;
+      this.userChangedPageSize = true;
     this.userChangedPageSize = true;
-    this.updatePagination();
+     this.loadParkings();
   }
-
-  onPageSizeChange(): void {
-    this.pageNo = 1;
-    this.userChangedPageSize = true;
-    this.updatePagination();
-  }
-
-  previousPage(): void {
-    if (this.pageNo > 1) {
-      this.pageNo--;
-      this.updatePagination();
-    }
-  }
-
-  nextPage(): void {
-    if (this.pageNo < this.totalPages) {
-      this.pageNo++;
-      this.updatePagination();
-    }
-  }
-
-  goToPage(page: number): void {
-    this.pageNo = page;
-    this.updatePagination();
-  }
-
-  get pages(): number[] {
-    const arr = [];
-    for (let i = 1; i <= this.totalPages; i++) {
-      arr.push(i);
-    }
-    return arr;
-  }
-
-  get startRecord(): number {
-    return this.totalRecords === 0 ? 0 : (this.pageNo - 1) * this.pageSize + 1;
-  }
-
-  get endRecord(): number {
-    const end = this.pageNo * this.pageSize;
-    return end > this.totalRecords ? this.totalRecords : end;
-  }
-
-  getTypeClass(type: string): string {
-    return type === 'Free' ? 'bg-light text-gray-600 border border-gray-200' : 'bg-primary/10 text-primary border border-primary/20';
-  }
-
+ 
+   
   trackByParkingId(index: number, item: Parking): number {
     return item.id;
   }

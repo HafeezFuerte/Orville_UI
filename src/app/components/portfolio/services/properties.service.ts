@@ -3,15 +3,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../../common/store/login-auth-params/auth.selectors';
-
+import { environment } from '../../../../environments/environment';
+ import { CommonService } from '../../../services/common.service';
 @Injectable({
   providedIn: 'root'
 })
+
 export class PropertiesService {
 
    loginUserData : any;
 
-  constructor(private http: HttpClient, private store: Store) {
+  constructor(private http: HttpClient, private store: Store,private commonservice:CommonService) {
      this.store.select(selectCurrentUser).subscribe(user => {
         this.loginUserData = user;
       });
@@ -19,208 +21,84 @@ export class PropertiesService {
 
   getProperties(payload: any): Observable<any> {
    
-  const getPropertiesUrl = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-    const accessToken = this.loginUserData.token;
-    const clientID = this.loginUserData.clientId;
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': clientID,
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
-
-   return this.http.post(getPropertiesUrl, payload, { headers });
+  const getPropertiesUrl = environment.apiurl+'api/Masters/get_masters_by_paging'; 
+   return this.http.post(getPropertiesUrl, payload, { headers: this.commonservice.updateHeaders() });
   }
 
   getTenants(payload: any): Observable<any> {
-    const url = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
-    const clientID = this.loginUserData?.clientId || '74BB6922';
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken,
-      'clientID': clientID,
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
-    return this.http.post(url, payload, { headers });
+    const url = environment.apiurl+'api/Masters/get_masters_by_paging'; 
+    return this.http.post(url, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   saveTenant(formData: FormData): Observable<any> {
-    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_tenants';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    return this.http.post(url, formData, { headers });
+    const url = environment.apiurl+'api/Masters/save_update_tenants';
+     
+    return this.http.post(url, formData,  { headers: this.commonservice.updateHeaders() });
   }
 
   saveLandlord(formData: FormData): Observable<any> {
-    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_landlords';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    return this.http.post(url, formData, { headers });
+    const url = environment.apiurl+'api/Masters/save_update_landlords';
+    
+    return this.http.post(url, formData,  { headers: this.commonservice.updateHeaders() });
   }
 
   saveVendor(formData: FormData): Observable<any> {
-    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_vendors';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    return this.http.post(url, formData, { headers });
+    const url = environment.apiurl+'api/Masters/save_update_vendors';
+   
+    return this.http.post(url, formData,  { headers: this.commonservice.updateHeaders() });
   }
 
   saveTechnician(formData: FormData): Observable<any> {
-    const url = 'https://orville.pulseadmin.in/api/Masters/save_update_technicians';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    return this.http.post(url, formData, { headers });
+    const url = environment.apiurl+'api/Masters/save_update_technicians';
+   
+    return this.http.post(url, formData,  { headers: this.commonservice.updateHeaders() });
   }
 
   getUnits(payload: any): Observable<any> {
-    const getUnitsUrl = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
+    const getUnitsUrl = environment.apiurl+'api/Masters/get_masters_by_paging';
+     
 
-    return this.http.post(getUnitsUrl, payload, { headers });
+    return this.http.post(getUnitsUrl, payload, { headers: this.commonservice.updateHeaders() });
   }
 
   getMasterDetails(payload: any): Observable<any> {
-    const getDetailsUrl = 'https://orville.pulseadmin.in/api/Masters/_getMasters';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
+    const getDetailsUrl = environment.apiurl+'api/Masters/_getMasters';
     
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
-
-    return this.http.post(getDetailsUrl, payload, { headers });
+    return this.http.post(getDetailsUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   addProperty(payload: any): Observable<any> {
-     const addPropertyUrl = "https://orville.pulseadmin.in/api/Masters/save_update_property";
-     const accessToken = this.loginUserData?.token || localStorage.getItem('token');
+     const addPropertyUrl = environment.apiurl+'api/Masters/save_update_property';
     
-    const headers = new HttpHeaders({
-    'AccessToken': accessToken || '',
-    'clientID': '74BB6922',
-    'LanguageID': '1',
-    'source': 'web',
-    'Accept': '*/*'
-  });
-   return this.http.post(addPropertyUrl, payload, { headers });
+   return this.http.post(addPropertyUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   addUnit(payload: any): Observable<any> {
-    const addUnitUrl = "https://orville.pulseadmin.in/api/Masters/save_update_units";
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
+    const addUnitUrl = environment.apiurl+'api/Masters/save_update_units';
     
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
     console.log("add unit --", payload);
-    return this.http.post(addUnitUrl, payload, { headers });
+    return this.http.post(addUnitUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   getRooms(payload: any): Observable<any> {
-    const getRoomsUrl = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
-
-    return this.http.post(getRoomsUrl, payload, { headers });
+    const getRoomsUrl = environment.apiurl+'api/Masters/get_masters_by_paging'; 
+    return this.http.post(getRoomsUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   addRoom(payload: any): Observable<any> {
-    const addRoomUrl = "https://orville.pulseadmin.in/api/Masters/save_update_rooms";
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    console.log("add room --", payload);
-    return this.http.post(addRoomUrl, payload, { headers });
+    const addRoomUrl = environment.apiurl+'api/Masters/save_update_rooms';
+     
+    return this.http.post(addRoomUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   addParking(payload: any): Observable<any> {
-    const addParkingUrl = "https://orville.pulseadmin.in/api/Masters/save_update_parkings";
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Accept': '*/*'
-    });
-    console.log("add parking --", payload);
-    return this.http.post(addParkingUrl, payload, { headers });
+    const addParkingUrl = environment.apiurl+'api/Masters/save_update_parkings';
+     
+    return this.http.post(addParkingUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
   getParkings(payload: any): Observable<any> {
-    const getParkingsUrl = 'https://orville.pulseadmin.in/api/Masters/get_masters_by_paging';
-    const accessToken = this.loginUserData?.token || localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'AccessToken': accessToken || '',
-      'clientID': '74BB6922',
-      'LanguageID': '1',
-      'source': 'web',
-      'Content-Type': 'application/json-patch+json',
-      'Accept': '*/*'
-    });
-
-    return this.http.post(getParkingsUrl, payload, { headers });
+    const getParkingsUrl = environment.apiurl+'api/Masters/get_masters_by_paging'; 
+    return this.http.post(getParkingsUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 }

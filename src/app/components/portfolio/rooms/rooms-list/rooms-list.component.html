@@ -143,7 +143,7 @@
     <div class="grid grid-cols-12 gap-3 items-end">
       <!-- Text Search -->
       <div class="col-span-12 md:col-span-3 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblSearchUnit' | translate }}</label>
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Search Room</label>
         <div class="input-group">
           <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()" [placeholder]="'web.Unit.phSearchUnit' | translate">
@@ -206,7 +206,7 @@
 <!-- 📋 1. LIST VIEW (TABLE) -->
 <div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
   <app-shared-table   (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="paginatedUnits" [loading]="false"
-    [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+    [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">
@@ -267,8 +267,8 @@
       </ng-container>
 
       <ng-container *ngIf="col.key === 'room_status_name'">
-        <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [class]="getStatusClass(row.room_status_name)">
-          {{row.room_status_name}}
+        <span class="badge" [ngClass]="row.class_name"> 
+          {{getArabicLookupName(row,'room_status_name')}} 
         </span>
       </ng-container>
     </ng-template>
@@ -366,29 +366,7 @@
 
 <!-- 📄 GRID PAGINATION FOOTER -->
 <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm" *ngIf="viewMode === 'grid'">
-  <div class="flex items-center gap-2">
-    <span class="text-xs text-gray-500 font-medium">Show</span>
-    <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-    </select>
-  </div>
   
-  <div class="text-xs text-gray-500 font-medium">
-    Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong> records
-  </div>
-
-  <div class="flex items-center gap-2">
-    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 1">
-      Previous
-    </button>
-    <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
-      [ngClass]="page === pageNo ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
-      {{page}}
-    </button>
-    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()" [disabled]="pageNo === totalPages">
-      Next
-    </button>
-  </div>
 </div>
 
 <!-- 🚪 SLIDING FILTER DRAWER -->

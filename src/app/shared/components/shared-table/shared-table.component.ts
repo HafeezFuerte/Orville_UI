@@ -1,7 +1,7 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent,MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../../components/common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
@@ -58,8 +58,7 @@ export class SharedTableComponent {
    * A reference to the ng-template passed from the parent component 
    * Example: <ng-template #actionTemplate let-row="row"> ... </ng-template>
    */
-  @ContentChild('actionTemplate') actionTemplate!: TemplateRef<any>;
-
+  @ContentChild('actionTemplate') actionTemplate!: TemplateRef<any>; 
   /** Reference for a custom column template */
   @Input() colTemplateName: string = '';
   @Input() customColTemplate?: TemplateRef<any>;

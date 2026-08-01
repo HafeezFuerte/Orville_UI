@@ -10,6 +10,7 @@ import { PropertiesService } from '../../services/properties.service';
 import { Common_TabsService } from '../../services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { ToastrService } from 'ngx-toastr';
 export interface Unit {
   id: number;
   name: string;
@@ -51,7 +52,7 @@ export class UnitsListComponent implements OnInit {
   // Drawer Visibility State
   isDrawerOpen: boolean = false;
   showColumnDropdown: boolean = false;
-
+ 
   // Drawer Custom Filters
   selectedTag: string | null = null;
   selectedArea: string | null = null;
@@ -60,7 +61,7 @@ export class UnitsListComponent implements OnInit {
   selectedOffPlanStatus: string | null = null;
   selectedLandlord: string | null = null;
   selectedInternalStatus: string | null = null;
-
+  pageSizeOptions = [5, 10, 25, 50, 100];
   // Dropdown lists
   categories: any[] = []; 
   statuses: any[] = []; 
@@ -78,11 +79,10 @@ export class UnitsListComponent implements OnInit {
   internalStatuses: string[] = ['Active', 'Draft', 'Suspended'];
 
   // Pagination
-  pageNo = 1;
-  pageSize = 5;
+  pageNo = 0;
+  pageSize = 10;
   totalPages = 0;
-  totalRecords = 0;
-  pageSizeOptions = [5, 10, 25, 50, 100];
+  totalRecords = 0; 
   userChangedPageSize = false;
 
   // Metrics
@@ -134,7 +134,7 @@ export class UnitsListComponent implements OnInit {
   filteredUnits: any = [];
   paginatedUnits: any = [];
   currentUser: AuthPayload | null = null;
-  constructor(public translate: TranslateService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
+  constructor(public translate: TranslateService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
@@ -174,129 +174,152 @@ export class UnitsListComponent implements OnInit {
   }
     });
   }
-  loadMetrics() {
-    const payload = {
+  loadMetrics() { 
+    this.commonservice.getMasterByType({
       typeId: 5,
-      filterId: 4,
-      filterText: "",
-      filterText1: "",
-      userid: this.currentUser?.userId,
-      company_id: this.currentUser?.companyId,
-      clientId: this.currentUser?.clientId,
-    };
-    this.propertiesService.getMasterDetails(payload).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          let  data = res.objResult.table[0]; 
+      filterId:0,
+      filterText: '',
+      filterText1: '' 
+    }).subscribe({
+      next: res => {
+  
+        if(res['statusCode'] == 200){
+        let  data = res.objResult.table[0]; 
           
-          if (data) {
-            this.metrics = {
-              total: data.units ?? data.totalUnits ?? data.total_units ?? data.TotalUnits ?? this.metrics.total,
-              vacant: data.vacant ?? data.available ?? data.vacantUnits ?? data.vacant_units ?? this.metrics.vacant,
-              occupied: data.occupied ?? data.occupiedUnits ?? data.occupied_units ?? this.metrics.occupied,
-              maintenance: data.maintainence ?? data.maintenance ?? data.maintenanceUnits ?? this.metrics.maintenance
-            };
-          }
+        if (data) {
+          this.metrics = {
+            total: data.units ?? this.metrics.total,
+            vacant: data.vacant  ?? this.metrics.vacant,
+            occupied: data.occupied ?? this.metrics.occupied,
+            maintenance: data.maintenance ?? this.metrics.maintenance
+          };
         }
+      }
       },
-      error: (err: any) => console.error("Error loading metrics:", err)
-    });
+      error: (err) => {
+    console.log('Full Error:', err);
+  }
+    }); 
+    
   }
 
   loadUnits(): void {
+
+    var filterList=[];
+     
+    if (this.selectedCategory) {
+      filterList.push({'key':'category','value': this.selectedCategory});
+    }
+    if (this.selectedStatus) {
+      filterList.push({'key':'P.unit_status','value': this.selectedStatus});
+    }
+    if (this.selectedBeds) {
+      filterList.push({'key':'P.beds','value': this.selectedBeds});
+    }
+    if (this.selectedPropertyCode) {
+      filterList.push({'key':'P.property_code','value': this.selectedPropertyCode});
+    } 
+
     const payload = {
       userid: this.currentUser?.userId,
       company_id: this.currentUser?.companyId,
       clientId: this.currentUser?.clientId,
       source: "web",
       languageid: 1,
-      page_no: 0,
-      seqno: 0,
+      page_no: this.pageNo,
+      seqno: 0, 
       search_keyword: this.searchQuery || "",
-      pagecount: 200,
+      pagecount: this.pageSize,
       filter_by: "",
-      filter_list: "",
+      filter_list: JSON.stringify(filterList),
       featureid: "Units"
     };
 
     this.propertiesService.getUnits(payload).subscribe({
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.allUnits=response.objResult.units  
+          this.paginatedUnits=response.objResult.units  
+          if(response.objResult.rows_info)
+          {
+            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
+            this.totalPages=response.objResult.rows_info[0].noofpages;
+          }
         }
-        this.filterAndPaginate();
+        else
+          this.toastr.error("No record[s] found");
+        //this.filterAndPaginate();
       },
       error: err => {
         console.error(err);
-        this.filterAndPaginate();
+        //this.filterAndPaginate();
       }
     });
   }
 
   filterAndPaginate(): void {
-    let result = this.allUnits;
+    // let result = this.allUnits;
 
-    // 1. Filter by category tabs OR selected category dropdown
-    if (this.categoryFilter !== 'All') {
-      result = result.filter((u:any) => u.category === this.categoryFilter);
-    } else if (this.selectedCategory) {
-      result = result.filter((u:any) => u.category === this.selectedCategory);
-    }
+    // // 1. Filter by category tabs OR selected category dropdown
+    // if (this.categoryFilter !== 'All') {
+    //   result = result.filter((u:any) => u.category === this.categoryFilter);
+    // } else if (this.selectedCategory) {
+    //   result = result.filter((u:any) => u.category === this.selectedCategory);
+    // }
 
-    // 2. Filter by status dropdown
-    if (this.selectedStatus) {
-      result = result.filter((u:any) => u.unit_status === this.selectedStatus);
-    }
+    // // 2. Filter by status dropdown
+    // if (this.selectedStatus) {
+    //   result = result.filter((u:any) => u.unit_status === this.selectedStatus);
+    // }
 
-    // 3. Filter by beds dropdown
-    if (this.selectedBeds) {
-      result = result.filter((u:any) => u.beds_id === this.selectedBeds);
-    }
+    // // 3. Filter by beds dropdown
+    // if (this.selectedBeds) {
+    //   result = result.filter((u:any) => u.beds_id === this.selectedBeds);
+    // }
 
-    // 4. Filter by property_code   dropdown
-    if (this.selectedPropertyCode) {
-      result = result.filter((u:any) => u.property_code === this.selectedPropertyCode);
-    }
+    // // 4. Filter by property_code   dropdown
+    // if (this.selectedPropertyCode) {
+    //   result = result.filter((u:any) => u.property_code === this.selectedPropertyCode);
+    // }
 
-    // 5. Drawer custom filters
-    if (this.selectedTag) {
-      result = result.filter((u:any) => u.tags === this.selectedTag);
-    }
-    if (this.selectedLandlord) {
-      result = result.filter((u:any) => u.landlord === this.selectedLandlord);
-    }
-    if (this.selectedId) {
-      result = result.filter((u:any) => u.id === this.selectedId);
-    }
-    if (this.selectedArea) {
-      result = result.filter((u:any) => u.area.toLowerCase().includes(this.selectedArea!.toLowerCase()));
-    }
+    // // 5. Drawer custom filters
+    // if (this.selectedTag) {
+    //   result = result.filter((u:any) => u.tags === this.selectedTag);
+    // }
+    // if (this.selectedLandlord) {
+    //   result = result.filter((u:any) => u.landlord === this.selectedLandlord);
+    // }
+    // if (this.selectedId) {
+    //   result = result.filter((u:any) => u.id === this.selectedId);
+    // }
+    // if (this.selectedArea) {
+    //   result = result.filter((u:any) => u.area.toLowerCase().includes(this.selectedArea!.toLowerCase()));
+    // }
 
-    // 6. Filter by search query
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      result = result.filter((u:any) => 
-        u.property_Name.toLowerCase().includes(query) || 
-        u.unit_code.toLowerCase().includes(query) ||
-        u.unit_no.toLowerCase().includes(query)
-      );
-    }
+    // // 6. Filter by search query
+    // if (this.searchQuery) {
+    //   const query = this.searchQuery.toLowerCase();
+    //   result = result.filter((u:any) => 
+    //     u.property_Name.toLowerCase().includes(query) || 
+    //     u.unit_code.toLowerCase().includes(query) ||
+    //     u.unit_no.toLowerCase().includes(query)
+    //   );
+    // }
 
-    this.totalRecords = result.length;
+    // this.totalRecords = result.length;
     
-    if (!this.userChangedPageSize) {
-      if (this.totalRecords <= 5) this.pageSize = 5;
-      else if (this.totalRecords <= 10) this.pageSize = 10;
-      else if (this.totalRecords <= 25) this.pageSize = 25;
-      else if (this.totalRecords <= 50) this.pageSize = 50;
-      else this.pageSize = 100;
-    }
+    // if (!this.userChangedPageSize) {
+    //   if (this.totalRecords <= 5) this.pageSize = 5;
+    //   else if (this.totalRecords <= 10) this.pageSize = 10;
+    //   else if (this.totalRecords <= 25) this.pageSize = 25;
+    //   else if (this.totalRecords <= 50) this.pageSize = 50;
+    //   else this.pageSize = 100;
+    // }
 
-    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+    // this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
-    // 7. Paginate
-    const startIndex = (this.pageNo - 1) * this.pageSize;
-    this.paginatedUnits = result.slice(startIndex, startIndex + this.pageSize);
+    // // 7. Paginate
+    // const startIndex = (this.pageNo - 1) * this.pageSize;
+    // this.paginatedUnits = result.slice(startIndex, startIndex + this.pageSize);
   }
 
   setCategoryFilter(category: 'All' | 'Residential' | 'Commercial'): void {
@@ -318,8 +341,8 @@ export class UnitsListComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.pageNo = 1;
-    this.filterAndPaginate();
+    this.pageNo = 0;
+    this.loadUnits();
   }
 
   clearFilters(): void {
@@ -335,42 +358,16 @@ export class UnitsListComponent implements OnInit {
     this.selectedOffPlanStatus = null;
     this.selectedLandlord = null;
     this.selectedInternalStatus = null;
+    this.selectedPropertyCode=null;
     this.categoryFilter = 'All';
-    this.pageNo = 1;
-    this.filterAndPaginate();
+    this.pageNo = 0;
+    this.loadUnits();
   }
 
   trackByUnitId(index: number, unit: any): number {
     return unit.id;
   }
-
-  onPageSizeChange(): void {
-    this.pageNo = 1;
-    this.userChangedPageSize = true;
-    this.filterAndPaginate();
-  }
-
-  previousPage(): void {
-    if (this.pageNo > 1) {
-      this.pageNo--;
-      this.filterAndPaginate();
-    }
-  }
-
-  nextPage(): void {
-    if (this.pageNo < this.totalPages) {
-      this.pageNo++;
-      this.filterAndPaginate();
-    }
-  }
-
-  goToPage(page: number): void {
-    if (page !== this.pageNo) {
-      this.pageNo = page;
-      this.filterAndPaginate();
-    }
-  }
-
+ 
   handleChildNotification(ev:any){
     if(ev.action_name=="edit")
       window.location.href='/edit-unit/'+ev.code;
@@ -381,33 +378,17 @@ export class UnitsListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    this.userChangedPageSize = true;
-    this.filterAndPaginate();
-  }
-
-  get startRecord(): number {
-    if (this.totalRecords === 0) return 0;
-    return (this.pageNo - 1) * this.pageSize + 1;
-  }
-
-  get endRecord(): number {
-    const end = this.pageNo * this.pageSize;
-    return end > this.totalRecords ? this.totalRecords : end;
-  }
-
-  get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Occupied': return 'bg-primary/10 text-primary border border-primary/20';
-      case 'Vacant': return 'bg-success/10 text-success border border-success/20';
-      case 'Sold': return 'bg-danger/10 text-danger border border-danger/20';
-      case 'Maintenance': return 'bg-warning/10 text-warning border border-warning/20';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  }
+   
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;
+      this.userChangedPageSize = true;
+    this.loadUnits();
+  } 
 }
