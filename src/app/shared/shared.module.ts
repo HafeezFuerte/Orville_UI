@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ContentLayoutComponent } from './layouts/content-layout/content-layout.component';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -18,12 +17,12 @@ import { LandingSwitcherComponent } from './components/landing-switcher/landing-
 import { LandingLayoutComponent } from './layouts/landing-layout/landing-layout.component';
 import { NgxColorsModule } from 'ngx-colors';
 import { TranslateModule } from "@ngx-translate/core";
-import { SharedCalendarComponent } from './components/calendar/calendar.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 @NgModule({
     declarations: [
         HeaderComponent,
         SidebarComponent,
-        ContentLayoutComponent,
         SwitcherComponent,
         PageHeaderComponent,
         TabToTopComponent,
@@ -43,13 +42,12 @@ import { SharedCalendarComponent } from './components/calendar/calendar.componen
         FormsModule,
         ReactiveFormsModule,
         ColorPickerModule,
-        SharedCalendarComponent
+        NgSelectModule
         // NgxColorsModule
     ],
     exports: [
         HeaderComponent,
         SidebarComponent,
-        ContentLayoutComponent,
         SwitcherComponent,
         PageHeaderComponent,
         TabToTopComponent,
@@ -60,7 +58,7 @@ import { SharedCalendarComponent } from './components/calendar/calendar.componen
         LandingSwitcherComponent,
         LandingLayoutComponent,
         TranslateModule,
-        SharedCalendarComponent
+        NgSelectModule
     ],
     providers: [ColorPickerService],
 })

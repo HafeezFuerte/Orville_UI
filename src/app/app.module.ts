@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ContentLayoutComponent } from './shared/layouts/content-layout/content-layout.component';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -20,19 +19,6 @@ import { NgxColorsModule } from 'ngx-colors';
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 @NgModule({
     declarations: [
-        HeaderComponent,
-        SidebarComponent,
-        ContentLayoutComponent,
-        SwitcherComponent,
-        PageHeaderComponent,
-        TabToTopComponent,
-        FooterComponent,
-        FullscreenDirective,
-        HoverEffectSidebarDirective,
-        AuthenticationLayoutComponent,
-        LandingSwitcherComponent,
-        LandingLayoutComponent,
-
     ],
 
     imports: [
@@ -46,19 +32,6 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
         // NgxColorsModule
     ],
     exports: [
-        HeaderComponent,
-        SidebarComponent,
-        ContentLayoutComponent,
-        SwitcherComponent,
-        PageHeaderComponent,
-        TabToTopComponent,
-        FooterComponent,
-        FullscreenDirective,
-        HoverEffectSidebarDirective,
-        AuthenticationLayoutComponent,
-        LandingSwitcherComponent,
-        LandingLayoutComponent,
-
     ],
     providers: [ColorPickerService, TranslateModule],
 })

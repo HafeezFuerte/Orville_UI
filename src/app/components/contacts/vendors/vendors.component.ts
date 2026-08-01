@@ -78,6 +78,10 @@ export class VendorsComponent implements OnInit {
   vendors: Vendor[] = [];
   paginatedVendors: Vendor[] = [];
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     this.loadVendors();
   }
@@ -153,14 +157,6 @@ export class VendorsComponent implements OnInit {
     this.loadVendors();
   }
   
-  getStatusClass(status: string) {
-    switch(status) {
-      case 'Active': return 'bg-success/10 text-success';
-      case 'Blocked': return 'bg-danger/10 text-danger';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  }
-
   handleEditAction(row: any) {
     if (row.action_name === 'edit') {
       this.router.navigate(['/contacts/vendors/edit-vendor', row.code]);

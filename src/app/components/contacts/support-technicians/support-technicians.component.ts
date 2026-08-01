@@ -76,6 +76,10 @@ export class SupportTechniciansComponent implements OnInit {
   technicians: Technician[] = [];
   paginatedTechnicians: Technician[] = [];
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     this.loadTechnicians();
   }
@@ -150,14 +154,6 @@ export class SupportTechniciansComponent implements OnInit {
     this.loadTechnicians();
   }
   
-  getStatusClass(status: string) {
-    switch(status) {
-      case 'Active': return 'bg-success/10 text-success';
-      case 'Blocked': return 'bg-danger/10 text-danger';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  }
-
   handleEditAction(row: any) {
     if (row.action_name === 'edit') {
       this.router.navigate(['/contacts/support-technicians/edit-support-technician', row.code]);

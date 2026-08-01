@@ -1,10 +1,14 @@
 import { Component, ElementRef, Renderer2 } from '@angular/core';
 import { Menu, NavService } from '../../services/nav.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from '../../shared.module';
 
 @Component({
     selector: 'app-content-layout',
+    standalone: true,
+    imports: [CommonModule, RouterModule, SharedModule],
     templateUrl: './content-layout.component.html',
     styleUrl: './content-layout.component.scss',
 })

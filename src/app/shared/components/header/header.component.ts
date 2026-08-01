@@ -18,6 +18,11 @@ interface Item {
 })
 
 export class HeaderComponent {
+  branches: string[] = ['Main Branch', 'Downtown Branch', 'Dubai Marina Branch', 'Business Bay Branch'];
+  buildings: string[] = ['Select Building', 'Building A', 'Building B', 'Tower 1', 'Tower 2', 'Marina Heights'];
+  selectedBranch: string | null = null;
+  selectedBuilding: string | null = null;
+
   cartItemCount: number = 5;
   notificationCount: number = 5;
   public isCollapsed = true;

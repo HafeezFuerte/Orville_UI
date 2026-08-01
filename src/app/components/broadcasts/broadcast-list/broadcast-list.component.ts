@@ -65,6 +65,10 @@ export class BroadcastListComponent implements OnInit {
     return this.tableColumns.filter(c => c.visible);
   }
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit() {
     this.loadData();
   }

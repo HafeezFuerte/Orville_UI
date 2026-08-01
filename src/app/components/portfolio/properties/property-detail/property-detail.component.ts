@@ -111,13 +111,6 @@ private createForms(): void {
   
   
 }
-getStatusClass(status: string) {
-  switch(status) {
-    case 'Active': return 'bg-success/10 text-success';
-    case 'Blocked': return 'bg-danger/10 text-danger';
-    default: return 'bg-gray-100 text-gray-600';
-  }
-}
 toggleMoreDetails(): void {
   this.showMoreDetails = !this.showMoreDetails;
 }

@@ -9,11 +9,12 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { ToastrService } from 'ngx-toastr';
 import { Store } from '@ngrx/store';
 import { selectCommonData } from '../../../common/store/common-payload/common.selectors';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [FileUploadComponent,RouterLink, TranslateModule, ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [FileUploadComponent,RouterLink, TranslateModule, ReactiveFormsModule, FormsModule, CommonModule, NgSelectModule],
   templateUrl: './add-property.component.html',
   styleUrl: './add-property.component.scss'
 })
@@ -437,13 +438,15 @@ if (errors.length > 0) {
 
     // API call here
 }
-onCountryChange(event: Event): void {
-  const countryId = (event.target as HTMLSelectElement).value;
-  this.loadMasterDataByType(2,1001,'states',countryId.toString(),'');
+onCountryChange(countryId: any): void {
+  if (countryId) {
+    this.loadMasterDataByType(2,1001,'states',countryId.toString(),'');
+  }
 }
-onStateChange(event: Event): void{
- const stateId = (event.target as HTMLSelectElement).value;
-  this.loadMasterDataByType(2,1002,"cities",stateId.toString(),'');
+onStateChange(stateId: any): void{
+  if (stateId) {
+    this.loadMasterDataByType(2,1002,"cities",stateId.toString(),'');
+  }
 }
 
 

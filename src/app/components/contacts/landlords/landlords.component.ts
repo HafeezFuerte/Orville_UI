@@ -79,6 +79,10 @@ export class LandlordsComponent implements OnInit {
   landlords: Landlord[] = [];
   paginatedLandlords: Landlord[] = [];
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     this.loadLandlords();
   }

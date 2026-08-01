@@ -19,6 +19,8 @@ import {
 import { fromEvent } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from './components/common/store/login-auth-params/auth.selectors';
+import { setAuthPropsData } from './components/common/store/login-auth-params/auth.actions';
+import { CommonService } from './services/common.service';
 import { LoaderService } from './services/loader.service';
 @Component({
   selector: 'app-root',
@@ -33,7 +35,8 @@ export class AppComponent {
   public isSpinner = true;
   loading$ = this.loaderService.loading$;
   constructor(public translate: TranslateService, private cdr: ChangeDetectorRef, private translateloader: TranslateloaderService,
-    private router: Router, private loaderService: LoaderService
+    private router: Router, private loaderService: LoaderService,
+    private store: Store, private commonService: CommonService
   ) {}
   ngOnInit() {
     // 🟢 Reset scroll to top on every navigation end globaly

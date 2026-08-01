@@ -139,12 +139,4 @@ export class AllContactsComponent implements OnInit {
     
     this.paginatedContacts = filtered;
   }
-
-  getStatusClass(status: string) {
-    switch(status) {
-      case 'Active': return 'bg-success/10 text-success';
-      case 'Blocked': return 'bg-danger/10 text-danger';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  }
 }

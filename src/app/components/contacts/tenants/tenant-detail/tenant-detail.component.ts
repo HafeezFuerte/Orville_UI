@@ -6,11 +6,13 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component';
 
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })
@@ -20,6 +22,30 @@ export class TenantDetailComponent implements OnInit {
   
   tenantId: any = null;
   tenantData: any = null;
+  notesForm: any = {};
+  attachmentsForm: any = {};
+
+  get selectedTab(): any {
+    if (this.activeTab === 'Notes') {
+      return {
+        key: 'notes',
+        entity: 'tenant',
+        entity_id: this.tenantId,
+        data: this.noteData || [],
+        form: this.notesForm
+      };
+    }
+    if (this.activeTab === 'Attachments') {
+      return {
+        key: 'attachments',
+        entity: 'tenant',
+        entity_id: this.tenantId,
+        data: this.attachmentData || [],
+        form: this.attachmentsForm
+      };
+    }
+    return null;
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
