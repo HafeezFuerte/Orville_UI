@@ -34,8 +34,13 @@
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <i class="ri-search-line text-gray-400"></i>
         </div>
-        <input type="text" class="form-control form-control-sm !text-[12px] pl-9 bg-gray-50 border-gray-200 rounded-md" [(ngModel)]="searchQuery"
+       
+          <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
+        <button type="button" (click)="onSearch()"
+          class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+          <i class="ri-search-line"></i>
+        </button>
       </div>
     </div>
     
@@ -81,7 +86,7 @@
 
   <div class="p-4">
     <app-shared-table [columns]="visibleColumns" [data]="paginatedLandlords" [loading]="isLoading"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" 
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo" 
       (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
 
       <!-- Custom Column Templates -->
@@ -95,7 +100,7 @@
             </ng-container>
             <ng-container *ngIf="!row.image_path || row.image_path.includes('default_user')">
               <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
-                {{ getInitials(row.name) }}
+                {{ getInitials(row.landlord) }}
               </div>
             </ng-container>
             <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts/landlords', row.code]">{{row.code}}</span>
@@ -103,35 +108,35 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'name'">
-          <span class="font-medium text-gray-800">{{row.name}}</span>
+          <span class="font-medium text-gray-800">{{row.landlord}}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'email'">
-          <span class="text-gray-600">{{row.email}}</span>
+          <span class="text-gray-600">{{row.email_address}}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'phoneNumber'">
-          <span class="text-gray-600">{{row.phoneNumber}}</span>
+          <span class="text-gray-600">{{row.phone_number}}</span>
         </ng-container>
         
         <ng-container *ngIf="col.key === 'company'">
-          <span class="text-gray-600">{{row.company}}</span>
+          <span class="text-gray-600">{{row.company_name}}</span>
         </ng-container>
         
         <ng-container *ngIf="col.key === 'noOfProperties'">
-          <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.noOfProperties}}</span>
+          <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.no_of_properties}}</span>
         </ng-container>
         
         <ng-container *ngIf="col.key === 'unitsRooms'">
-          <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.unitsRooms}}</span>
+          <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.units}}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'country'">
-          <span class="text-gray-600">{{row.country}}</span>
+          <span class="text-gray-600">{{row.country_name}}</span>
         </ng-container>
         
         <ng-container *ngIf="col.key === 'tag'">
-          <span class="text-gray-600">{{row.tag}}</span>
+          <span class="text-gray-600">{{row.tags}}</span>
         </ng-container>
 
       </ng-template>

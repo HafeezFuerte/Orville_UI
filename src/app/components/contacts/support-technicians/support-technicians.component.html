@@ -34,8 +34,12 @@
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <i class="ri-search-line text-gray-400"></i>
         </div>
-        <input type="text" class="form-control form-control-sm !text-[12px] pl-9 bg-gray-50 border-gray-200 rounded-md" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
+        <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
+      <button type="button" (click)="onSearch()"
+        class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+        <i class="ri-search-line"></i>
+      </button>
       </div>
     </div>
     
@@ -81,7 +85,7 @@
 
   <div class="p-4">
     <app-shared-table [columns]="visibleColumns" [data]="paginatedTechnicians" [loading]="isLoading"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" 
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo" 
       (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
 
       <!-- Custom Column Templates -->
@@ -107,11 +111,11 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'email'">
-          <span class="text-gray-600">{{row.email}}</span>
+          <span class="text-gray-600">{{row.email_address}}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'phoneNumber'">
-          <span class="text-gray-600">{{row.phoneNumber}}</span>
+          <span class="text-gray-600">{{row.phone}}</span>
         </ng-container>
         
         <ng-container *ngIf="col.key === 'username'">

@@ -7,7 +7,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../portfolio/services/properties.service';
 import { Router } from '@angular/router';
-
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
 export interface Tenant {
   id: number;
   code: string;
@@ -31,18 +33,19 @@ export interface Tenant {
 })
 export class TenantsComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
-  private router = inject(Router);
-
+  private router = inject(Router); 
+  private commonService = inject(CommonService);
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
   isLoading: boolean = false;
-
+  currentUser: AuthPayload | null = null;
+  private toastr =inject(ToastrService);
   // Pagination
-  pageNo = 1;
-  pageSize = 20;
+  pageNo = 0;
+  pageSize = 10;
   totalRecords = 0;
-
+  totalPages = 0;
   tableColumns = [
     { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'name', label: 'web.contacts.lblName', visible: true, useTemplate: true },
@@ -79,18 +82,19 @@ export class TenantsComponent implements OnInit {
   paginatedTenants: Tenant[] = [];
 
   ngOnInit(): void {
+    this.currentUser = this.commonService.getCurrentUser();
     this.loadTenants();
   }
 
   loadTenants() {
     this.isLoading = true;
     const payload = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: localStorage.getItem('clientId') || '74BB6922',
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: 'web',
       languageid: 1,
-      page_no: this.pageNo - 1,
+      page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery || '',
       pagecount: this.pageSize,
@@ -101,32 +105,18 @@ export class TenantsComponent implements OnInit {
 
     this.propertiesService.getTenants(payload).subscribe({
       next: (response: any) => {
-        this.isLoading = false;
-        let rawList: any[] = [];
-        if (Array.isArray(response)) {
-          rawList = response;
-        } else if (response && response.objResult) {
-          if (Array.isArray(response.objResult)) rawList = response.objResult;
-          else if (response.objResult.tenants) rawList = response.objResult.tenants;
-          else if (response.objResult.tenant) rawList = response.objResult.tenant;
+        this.isLoading=false;
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.paginatedTenants=response.objResult.tenants  
+          if(response.objResult.rows_info)
+          {
+            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
+            this.totalPages=response.objResult.rows_info[0].noofpages;
+          }
         }
-
-        this.tenants = (rawList || []).map((t: any) => ({
-          id: t.id || 0,
-          code: t.code || '',
-          name: t.tenant || '',
-          email: t.email_address || '-',
-          phoneNumber: t.phone_number || '-',
-          company: t.company_name || '-',
-          activeLease: t.active_lease || '-',
-          leases: t.total_leases || 0,
-          gender: t.gender || 'Male',
-          status: t.is_active ? 'Active' : 'Blocked',
-          image_path: t.image_path || ''
-        })).sort((a, b) => a.id - b.id);
-
-        this.totalRecords = response?.totalCount || this.tenants.length;
-        this.paginatedTenants = this.tenants;
+        else
+          this.toastr.error("No record[s] found");
+ 
       },
       error: (err) => {
         this.isLoading = false;
@@ -136,19 +126,26 @@ export class TenantsComponent implements OnInit {
   }
 
   onSearch() {
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadTenants();
   }
   
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadTenants();
   }
 
-  onSharedTablePageChange(event: any) {
-    this.pageNo = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
+  onSharedTablePageChange(event: any) { 
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;  
     this.loadTenants();
   }
 
