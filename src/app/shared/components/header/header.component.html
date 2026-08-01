@@ -33,6 +33,25 @@
 
       <div class="header-content-right">
 
+        <!-- Global Branch & Building Dropdowns -->
+        <div class="header-element hidden sm:flex items-center gap-2 py-[1rem] md:px-[0.65rem] px-2">
+          <ng-select #globalBranchSelect [items]="branches" [(ngModel)]="selectedBranch" placeholder="Select Branch" class="ng-select-sm w-36 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="$any(globalBranchSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
+
+          <ng-select #globalBldgSelect [items]="buildings" [(ngModel)]="selectedBuilding" placeholder="Select Building" class="ng-select-sm w-40 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="$any(globalBldgSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+
         <div class="header-element py-[1rem] md:px-[0.65rem] px-2 header-search">
           <button aria-label="button" type="button" data-hs-overlay="#search-modal"
             class="inline-flex flex-shrink-0 justify-center items-center gap-2  rounded-full font-medium focus:ring-offset-0 focus:ring-offset-white transition-all text-xs dark:bg-bgdark dark:hover:bg-black/20 dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white dark:focus:ring-white/10 dark:focus:ring-offset-white/10">

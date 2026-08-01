@@ -153,42 +153,68 @@
                 <label class="form-label">
                     {{ 'web.property.lblCountry' | translate }}
                 </label>
-                <select class="form-control w-full !rounded-md" formControlName="country" (change)="onCountryChange($event)">
-                    <option value="" disabled>
-                        Select Country
-                    </option>
-                    <option *ngFor="let country of countries" [value]="country.id">
-                        {{ country.country_name }}
-                    </option>
-                </select>
+                <ng-select
+                    #countrySelect
+                    class="w-full !rounded-md"
+                    [items]="countries"
+                    bindLabel="country_name"
+                    bindValue="id"
+                    formControlName="country"
+                    (change)="onCountryChange($event)"
+                    placeholder="Select Country"
+                    [searchable]="true"
+                    [clearable]="false">
+                    <ng-template ng-header-tmp>
+                        <div class="p-1.5 border-b border-gray-100">
+                            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                        </div>
+                    </ng-template>
+                </ng-select>
             </div>
             <!-- State -->
              <div class="col-span-12 md:col-span-4">
                 <label class="form-label">
                     {{ 'web.property.lblState' | translate }}
                 </label>
-                <select class="form-control w-full !rounded-md" formControlName="state" (change)="onStateChange($event)">
-                    <option value="" disabled>
-                        Select State
-                    </option>
-                    <option *ngFor="let state of states" [value]="state.id">
-                        {{ state.state_name }}
-                    </option>
-                </select>
+                <ng-select
+                    #stateSelect
+                    class="w-full !rounded-md"
+                    [items]="states"
+                    bindLabel="state_name"
+                    bindValue="id"
+                    formControlName="state"
+                    (change)="onStateChange($event)"
+                    placeholder="Select State"
+                    [searchable]="true"
+                    [clearable]="false">
+                    <ng-template ng-header-tmp>
+                        <div class="p-1.5 border-b border-gray-100">
+                            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                        </div>
+                    </ng-template>
+                </ng-select>
             </div>
             <!-- City -->
             <div class="col-span-12 md:col-span-4">
                 <label class="form-label">
                     {{ 'web.property.lblCity' | translate }}
                 </label>
-                <select class="form-control w-full !rounded-md" formControlName="city">
-                    <option value="" disabled>
-                        Select City
-                    </option>
-                    <option *ngFor="let city of cities" [value]="city.id">
-                        {{ city.city_name }}
-                    </option>
-                </select>
+                <ng-select
+                    #citySelect
+                    class="w-full !rounded-md"
+                    [items]="cities"
+                    bindLabel="city_name"
+                    bindValue="id"
+                    formControlName="city"
+                    placeholder="Select City"
+                    [searchable]="true"
+                    [clearable]="false">
+                    <ng-template ng-header-tmp>
+                        <div class="p-1.5 border-b border-gray-100">
+                            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="citySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                        </div>
+                    </ng-template>
+                </ng-select>
             </div>
             <!-- Zip -->
             <div class="col-span-12 md:col-span-4">
@@ -332,18 +358,22 @@
                     <span class="text-danger">*</span>
                 </label>
 
-                <select
-                    class="form-control w-full !rounded-md"
-                    formControlName="selectAccount">
-                    <option value="" disabled>
-                        Select Account
-                    </option>
-                    <option *ngFor="let account of accounts"
-                            [value]="account.id">
-                        {{ account.account_name }}
-                    </option>
-
-                </select>
+                <ng-select
+                    #accountSelect
+                    class="w-full !rounded-md"
+                    [items]="accounts"
+                    bindLabel="account_name"
+                    bindValue="id"
+                    formControlName="selectAccount"
+                    placeholder="Select Account"
+                    [searchable]="true"
+                    [clearable]="false">
+                    <ng-template ng-header-tmp>
+                        <div class="p-1.5 border-b border-gray-100">
+                            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="accountSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                        </div>
+                    </ng-template>
+                </ng-select>
             </div>
 
             <!-- Type -->
@@ -353,16 +383,20 @@
                     <span class="text-danger">*</span>
                 </label>
 
-                <select
-                    class="form-control w-full !rounded-md"
-                    formControlName="selectType">
-                    <option value="" disabled>
-                        Select Type
-                    </option>
-                    <option value="Standard">Standard</option>
-                    <option value="Percentage">Percentage</option>
-
-                </select>
+                <ng-select
+                    #typeSelect
+                    class="w-full !rounded-md"
+                    [items]="['Standard', 'Percentage']"
+                    formControlName="selectType"
+                    placeholder="Select Type"
+                    [searchable]="true"
+                    [clearable]="false">
+                    <ng-template ng-header-tmp>
+                        <div class="p-1.5 border-b border-gray-100">
+                            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="typeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                        </div>
+                    </ng-template>
+                </ng-select>
             </div>
 
             <!-- Amount -->
@@ -566,14 +600,22 @@
                             {{ 'web.property.lblPropertyType' | translate }}
                             <span class="text-danger">*</span>
                         </label>
-                        <select class="form-control w-full !rounded-md" formControlName="propertyType">
-                            <option value="" disabled>
-                                Select Property Type
-                            </option>
-                            <option *ngFor="let propertyType of propertyTypes" [value]="propertyType.id">
-                                {{ propertyType.name }}
-                            </option>
-                        </select>
+                        <ng-select
+                            #propTypeSelect
+                            class="w-full !rounded-md"
+                            [items]="propertyTypes"
+                            bindLabel="name"
+                            bindValue="id"
+                            formControlName="propertyType"
+                            placeholder="Select Property Type"
+                            [searchable]="true"
+                            [clearable]="false">
+                            <ng-template ng-header-tmp>
+                                <div class="p-1.5 border-b border-gray-100">
+                                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="propTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                                </div>
+                            </ng-template>
+                        </ng-select>
                     </div>
                     <!-- Purchase Value -->
                     <div class="col-span-12">

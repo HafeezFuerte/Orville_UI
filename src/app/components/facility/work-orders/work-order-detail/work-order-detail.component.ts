@@ -6,10 +6,13 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { CommonService } from '../../../../services/common.service';
 
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component';
+
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent],
   templateUrl: './work-order-detail.component.html',
   styleUrl: './work-order-detail.component.scss'
 })
@@ -22,6 +25,30 @@ export class WorkOrderDetailComponent implements OnInit {
   workOrderId: string = '';
   activeTab: string = 'Overview';
   tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Attachments'];
+  notesForm: any = {};
+  attachmentsForm: any = {};
+
+  get selectedTab(): any {
+    if (this.activeTab === 'Notes') {
+      return {
+        key: 'notes',
+        entity: 'workorder',
+        entity_id: this.workOrderId,
+        data: this.notes || [],
+        form: this.notesForm
+      };
+    }
+    if (this.activeTab === 'Attachments') {
+      return {
+        key: 'attachments',
+        entity: 'workorder',
+        entity_id: this.workOrderId,
+        data: this.attachments || [],
+        form: this.attachmentsForm
+      };
+    }
+    return null;
+  }
 
   showAddCostModal = false;
   costDescription = '';

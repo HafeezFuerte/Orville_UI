@@ -371,24 +371,8 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
-      <div class="flex justify-between items-center mb-3">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Attachments</h6>
-        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Attachment</button>
-      </div>
-      <app-shared-table [columns]="attachmentColumns" [data]="attachmentData" [loading]="false" [hasActions]="false">
-        <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container *ngIf="col.key === 'id'">
-            <span class="text-primary font-bold cursor-pointer">{{ row.id }}</span>
-          </ng-container>
-          <ng-container *ngIf="col.key === 'status'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-[#1f224f] text-white">{{ row.status }}</span>
-          </ng-container>
-          <ng-container *ngIf="col.key === 'files'">
-            <a href="javascript:void(0)" class="text-primary font-bold flex items-center gap-1"><i class="ri-file-text-line"></i> {{ row.files }}</a>
-          </ng-container>
-        </ng-template>
-      </app-shared-table>
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
+      <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Quotations -->
@@ -423,18 +407,8 @@
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
-      <div class="flex justify-between items-center mb-3">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Notes</h6>
-        <button class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm">+ Add Note</button>
-      </div>
-      <app-shared-table [columns]="noteColumns" [data]="noteData" [loading]="false" [hasActions]="false">
-        <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container *ngIf="col.key === 'via'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-gray-100 text-gray-600">{{ row.via }}</span>
-          </ng-container>
-        </ng-template>
-      </app-shared-table>
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-3 animate-fade-in">
+      <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: Users -->

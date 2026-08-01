@@ -44,8 +44,8 @@ export class AssetListComponent implements OnInit {
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
     { key: 'assetName', label: 'Asset Name', visible: true },
     { key: 'model', label: 'Model', visible: true },
-    { key: 'category', label: 'Category', visible: true },
-    { key: 'property', label: 'Property', visible: true },
+    { key: 'category', label: 'Category', visible: true, useTemplate: true },
+    { key: 'property', label: 'Property', visible: true, useTemplate: true },
     { key: 'unit', label: 'Unit', visible: true },
     { key: 'price', label: 'Price', visible: true },
     { key: 'status', label: 'Status', visible: true, useTemplate: true },
@@ -58,6 +58,10 @@ export class AssetListComponent implements OnInit {
 
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
+  }
+
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
   }
 
   ngOnInit() {

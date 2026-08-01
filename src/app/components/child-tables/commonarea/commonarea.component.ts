@@ -234,12 +234,4 @@ export class CommonAreaComponent {
   getValueWithCurrency(val: any) {
     return this.currentUser?.currencyCode + ' ' + val;
   }
-  getStatusClass(status: string) {
-    switch (status) {
-      case 'Occupied': return 'bg-secondary/10 text-secondary';
-      case 'Vacant': return 'bg-danger/10 text-danger';
-      case 'Sold': return 'bg-green/10 text-green';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  }
 }

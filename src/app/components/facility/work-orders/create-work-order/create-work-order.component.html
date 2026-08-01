@@ -17,8 +17,6 @@
     </div>
   </div>
   <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
     <button (click)="goBack()" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm">
       Cancel
     </button>
@@ -60,21 +58,45 @@
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Property <span class="text-danger">*</span></label>
-            <ng-select [items]="properties" [(ngModel)]="selectedProperty" placeholder="Select Property" class="ng-select-sm"></ng-select>
+            <ng-select #propSelect [items]="properties" [(ngModel)]="selectedProperty" placeholder="Select Property" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit</label>
-            <ng-select [items]="units" [(ngModel)]="selectedUnit" placeholder="Select Unit" class="ng-select-sm"></ng-select>
+            <ng-select #unitSelect [items]="units" [(ngModel)]="selectedUnit" placeholder="Select Unit" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Common area</label>
-            <ng-select [items]="commonAreas" [(ngModel)]="selectedCommonArea" placeholder="Select" class="ng-select-sm"></ng-select>
+            <ng-select #caSelect [items]="commonAreas" [(ngModel)]="selectedCommonArea" placeholder="Select" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="caSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Floor</label>
-            <ng-select [items]="floors" [(ngModel)]="selectedFloor" placeholder="Select" class="ng-select-sm"></ng-select>
+            <ng-select #floorSelect [items]="floors" [(ngModel)]="selectedFloor" placeholder="Select" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="floorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
         </div>
       </div>
@@ -89,21 +111,45 @@
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Maintenance Category <span class="text-danger">*</span></label>
-            <ng-select [items]="categories" bindLabel="name" bindValue="id" [(ngModel)]="selectedCategory" placeholder="Select Category" class="ng-select-sm"></ng-select>
+            <ng-select #catSelect [items]="categories" bindLabel="name" bindValue="id" [(ngModel)]="selectedCategory" placeholder="Select Category" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Maintenance Sub Category</label>
-            <ng-select [items]="subcategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedSubcategory" placeholder="Select Sub Category" class="ng-select-sm"></ng-select>
+            <ng-select #subcatSelect [items]="subcategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedSubcategory" placeholder="Select Sub Category" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="subcatSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Priority <span class="text-danger">*</span></label>
-            <ng-select [items]="priorities" [(ngModel)]="selectedPriority" placeholder="Select" class="ng-select-sm"></ng-select>
+            <ng-select #prioSelect [items]="priorities" [(ngModel)]="selectedPriority" placeholder="Select" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="prioSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Estimated Duration Type</label>
-            <ng-select [items]="durationTypes" [(ngModel)]="selectedDurationType" placeholder="Select" class="ng-select-sm"></ng-select>
+            <ng-select #durTypeSelect [items]="durationTypes" [(ngModel)]="selectedDurationType" placeholder="Select" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="durTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -114,7 +160,13 @@
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Visiting Hours</label>
-            <ng-select [items]="visitingHours" [(ngModel)]="selectedVisitingHours" placeholder="Select" class="ng-select-sm"></ng-select>
+            <ng-select #visitSelect [items]="visitingHours" [(ngModel)]="selectedVisitingHours" placeholder="Select" class="ng-select-sm">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-gray-100">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="visitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -252,15 +304,33 @@
       <div class="box-body p-4 flex flex-col gap-4">
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Responsible People</label>
-          <ng-select [items]="responsiblePeople" [(ngModel)]="selectedResponsiblePerson" placeholder="Select" class="ng-select-sm"></ng-select>
+          <ng-select #respSelect [items]="responsiblePeople" [(ngModel)]="selectedResponsiblePerson" placeholder="Select" class="ng-select-sm">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="respSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Tenant Details</label>
-          <ng-select [items]="tenants" [(ngModel)]="selectedTenant" placeholder="Select Tenant" class="ng-select-sm"></ng-select>
+          <ng-select #tenantSelect [items]="tenants" [(ngModel)]="selectedTenant" placeholder="Select Tenant" class="ng-select-sm">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Assign Vendor</label>
-          <ng-select [items]="vendors" [(ngModel)]="selectedVendor" placeholder="Select Vendor" class="ng-select-sm"></ng-select>
+          <ng-select #vendorSelect [items]="vendors" [(ngModel)]="selectedVendor" placeholder="Select Vendor" class="ng-select-sm">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="vendorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
         </div>
       </div>
     </div>

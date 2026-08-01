@@ -266,41 +266,8 @@
     </div>
 
     <!-- ATTACHMENTS TAB -->
-    <div *ngIf="activeTab === 'Attachments'">
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 flex flex-col">
-        <div class="box-body p-4">
-          <div class="flex items-center justify-between mb-4">
-          <div class="relative w-64">
-            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
-          </div>
-          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
-            <i class="ri-add-line text-sm"></i> Add Attachment
-          </button>
-        </div>
-        <app-shared-table 
-          [columns]="attachmentColumns" 
-          [data]="attachments" 
-          [pageSize]="10">
-          
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'id'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
-              </ng-container>
-
-              <ng-container *ngSwitchCase="'documentStatus'">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
-                      [ngClass]="{'bg-[#1f2b45] text-white': row.documentStatus === 'Active', 'bg-success text-white': row.documentStatus === 'Verified', 'bg-danger text-white': row.documentStatus === 'Expired'}">
-                  {{ row.documentStatus }}
-                </span>
-              </ng-container>
-            </ng-container>
-          </ng-template>
-
-        </app-shared-table>
-        </div>
-      </div>
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
+       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
   </div>

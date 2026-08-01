@@ -113,9 +113,7 @@ export class RoomsListComponent implements OnInit {
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
   }
-  getArabicLookupName(row:any,key:string){
-    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
-  } 
+
   toggleColumn(colKey: string) {
     const col = this.tableColumns.find(c => c.key === colKey);
     if (col) {
@@ -139,6 +137,10 @@ export class RoomsListComponent implements OnInit {
   paginatedUnits: any = [];
   currentUser: AuthPayload | null = null;
   constructor(public translate: TranslateService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
+
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();

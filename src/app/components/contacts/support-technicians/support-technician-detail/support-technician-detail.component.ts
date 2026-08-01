@@ -6,6 +6,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+
 @Component({
   selector: 'app-support-technician-detail',
   standalone: true,

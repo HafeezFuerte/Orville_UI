@@ -6,10 +6,13 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component';
+
 @Component({
   selector: 'app-vendor-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
   templateUrl: './vendor-detail.component.html',
   styleUrl: './vendor-detail.component.scss'
 })
@@ -19,6 +22,30 @@ export class VendorDetailComponent implements OnInit {
   
   vendorId: any = null;
   vendorData: any = null;
+  notesForm: any = {};
+  attachmentsForm: any = {};
+
+  get selectedTab(): any {
+    if (this.activeTab === 'Notes') {
+      return {
+        key: 'notes',
+        entity: 'vendor',
+        entity_id: this.vendorId,
+        data: this.noteData || [],
+        form: this.notesForm
+      };
+    }
+    if (this.activeTab === 'Attachments') {
+      return {
+        key: 'attachments',
+        entity: 'vendor',
+        entity_id: this.vendorId,
+        data: this.attachmentData || [],
+        form: this.attachmentsForm
+      };
+    }
+    return null;
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {

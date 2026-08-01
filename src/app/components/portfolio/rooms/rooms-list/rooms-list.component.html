@@ -223,7 +223,7 @@
 
       <ng-container *ngIf="col.key === 'category'">
         <span class="badge" [ngClass]="row.category_name === 'Residential' ? 'bg-info/10 text-info' : 'bg-warning/10 text-warning'">
-          {{row.category_name}}
+          {{getArabicLookupName(row, 'category_name')}}
         </span>
       </ng-container>
 
@@ -233,7 +233,7 @@
 
       <ng-container *ngIf="col.key === 'property_Name'">
         <div class="flex flex-col">
-          <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/properties', row.property_code]">{{row.property_Name}}</span>
+          <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/properties', row.property_code]">{{getArabicLookupName(row, 'property_Name')}}</span>
  
           <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
         </div>
@@ -255,7 +255,7 @@
       </ng-container>
 
       <ng-container *ngIf="col.key === 'unitType'">
-        <span>{{row.unit_type_name}}</span>
+        <span>{{getArabicLookupName(row, 'unit_type_name')}}</span>
       </ng-container>
 
       <ng-container *ngIf="col.key === 'floor_no'">
@@ -267,8 +267,8 @@
       </ng-container>
 
       <ng-container *ngIf="col.key === 'room_status_name'">
-        <span class="badge" [ngClass]="row.class_name"> 
-          {{getArabicLookupName(row,'room_status_name')}} 
+        <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [ngClass]="row.class_name">
+          {{getArabicLookupName(row,'room_status_name')}}
         </span>
       </ng-container>
     </ng-template>

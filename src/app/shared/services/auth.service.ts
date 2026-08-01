@@ -54,7 +54,6 @@ export class AuthService {
       tap((res) => {
         if (res["statusCode"] == "200") {
          
-          debugger;
           
           const user: User = {
             userName: res.objResult.username,

@@ -33,10 +33,12 @@ export interface Attachment {
   files: string;
 }
 
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+
 @Component({
   selector: 'app-asset-detail',
   standalone: true,
-  imports: [CommonModule, SharedTableComponent],
+  imports: [CommonModule, SharedTableComponent, AttachmentsComponent],
   templateUrl: './asset-detail.component.html',
   styleUrl: './asset-detail.component.scss'
 })
@@ -46,7 +48,21 @@ export class AssetDetailComponent implements OnInit {
 
   assetId: string = '';
   activeTab: string = 'Overview';
-  tabs: string[] = ['Overview', 'Part', 'Work Orders', 'Attachments'];
+  tabs: string[] = ['Overview', 'Parts', 'Work Orders', 'Attachments'];
+  attachmentsForm: any = {};
+
+  get selectedTab(): any {
+    if (this.activeTab === 'Attachments') {
+      return {
+        key: 'attachments',
+        entity: 'asset',
+        entity_id: this.assetId,
+        data: this.attachments || [],
+        form: this.attachmentsForm
+      };
+    }
+    return null;
+  }
 
   assetData = {
     id: '27650',

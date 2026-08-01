@@ -81,6 +81,10 @@ export class TenantsComponent implements OnInit {
   tenants: Tenant[] = [];
   paginatedTenants: Tenant[] = [];
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
     this.loadTenants();
@@ -147,14 +151,6 @@ export class TenantsComponent implements OnInit {
       this.pageNo=0;
       this.pageSize = event.pageSize;  
     this.loadTenants();
-  }
-
-  getStatusClass(status: string) {
-    switch(status) {
-      case 'Active': return 'bg-success/10 text-success';
-      case 'Blocked': return 'bg-danger/10 text-danger';
-      default: return 'bg-gray-100 text-gray-600';
-    }
   }
 
   handleEditAction(row: any) {

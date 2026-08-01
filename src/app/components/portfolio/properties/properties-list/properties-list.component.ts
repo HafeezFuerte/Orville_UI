@@ -70,6 +70,10 @@ export class PropertiesListComponent implements OnInit {
     private portfolioService: PortfolioService
   ) {}
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     
     this.loadMetrics(4,0, '', '','');

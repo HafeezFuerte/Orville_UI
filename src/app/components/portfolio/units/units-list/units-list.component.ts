@@ -136,6 +136,10 @@ export class UnitsListComponent implements OnInit {
   currentUser: AuthPayload | null = null;
   constructor(public translate: TranslateService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
 
+  getArabicLookupName(row: any, key: string): string {
+    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
     this.loadMetrics();
@@ -145,9 +149,7 @@ export class UnitsListComponent implements OnInit {
      this.loadMasterDataByType(11,0,"propertiesList",'',''); 
     this.loadUnits();
   }
-  getArabicLookupName(row:any,key:string){
-    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
-  } 
+
     loadMasterDataByType(
     typeId: number,
     filterId: number,
