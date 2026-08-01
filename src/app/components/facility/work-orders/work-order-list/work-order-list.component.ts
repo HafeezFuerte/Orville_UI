@@ -7,6 +7,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
 export interface WorkOrder {
   id: string;
   workOrder: string;
@@ -35,6 +36,7 @@ export class WorkOrderListComponent implements OnInit {
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
   private commontabService=inject(Common_TabsService);
+  private toastr =inject(ToastrService);
   currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
   branches = ['Main Branch', 'Branch A'];
@@ -42,7 +44,8 @@ export class WorkOrderListComponent implements OnInit {
   isLoading: boolean = false;
 
   activeTab: string = 'All';
-  tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
+  tabs:any[] =[];
+  //tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
   metrics = {
     total: 2955,
     new: 605,
@@ -53,6 +56,7 @@ export class WorkOrderListComponent implements OnInit {
   pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
+  totalPages=0;
 //(localStorage.getItem("selectedLang")=="EN" ? 'status_nm' : 'status_nm_ar')
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -109,11 +113,35 @@ export class WorkOrderListComponent implements OnInit {
   ngOnInit() {
     this.loadData();
     this.loadMetrics();
+    this.loadLookup(29, 'tabs', 'lookup_name');
   }
-
+  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: filterId,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.tabs.push({"id":"All","name":"All"}); 
+          this.tabs.push(...res.objResult.table); 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   loadData() {
     this.isLoading = true;
-    
+    var filterList=[];
+     
+    if (this.activeTab && this.activeTab!="All") {
+      filterList.push({'key':'P.status','value': this.activeTab});
+    }
     const payload = {
       userid: this.currentUser?.userId || 1,
       company_id: this.currentUser?.companyId || 1,
@@ -125,7 +153,7 @@ export class WorkOrderListComponent implements OnInit {
       search_keyword: this.searchQuery,
       pagecount: this.pageSize,
       filter_by: this.activeTab !== 'All' ? 'status' : '',
-      filter_list: this.activeTab !== 'All' ? this.activeTab : '',
+      filter_list: JSON.stringify(filterList),
       featureid: "WORKORDERS"
     };
 
@@ -134,8 +162,14 @@ export class WorkOrderListComponent implements OnInit {
         this.isLoading = false;
         if (res && res.objResult && res.objResult.workorders) {
           this.workOrderData = res.objResult.workorders;
-          this.totalRecords = res.objResult.total_records || res.objResult.workorders.length;
-        }
+          if(res.objResult.rows_info)
+          {
+            this.totalRecords=res.objResult.rows_info[0].totalrecords; 
+            this.totalPages=res.objResult.rows_info[0].noofpages;
+          }
+           
+        }else
+        this.toastr.error("No record[s] found");
       },
       error: (err) => {
         this.isLoading = false;
@@ -145,19 +179,26 @@ export class WorkOrderListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;  
     this.loadData();
   }
 
   onSearch() {
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadData();
   }
 
-  onTabChange(tab: string) {
-    this.activeTab = tab;
-    this.pageNo = 1;
+  onTabChange(tab: any) {
+    this.activeTab = tab?.id;
+    this.pageNo = 0;
     this.loadData();
   }
 

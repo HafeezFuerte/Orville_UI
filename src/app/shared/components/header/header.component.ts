@@ -3,7 +3,7 @@ import { Menu, NavService } from '../../services/nav.service';
 import { AuthService, User } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
+import { Common_TabsService } from '../../../components/portfolio/services/common_tabs.service';
 interface Item {
   id: number;
   name: string;
@@ -19,7 +19,7 @@ interface Item {
 
 export class HeaderComponent {
   branches: string[] = ['Main Branch', 'Downtown Branch', 'Dubai Marina Branch', 'Business Bay Branch'];
-  buildings: string[] = ['Select Building', 'Building A', 'Building B', 'Tower 1', 'Tower 2', 'Marina Heights'];
+  buildings: any[] = [];
   selectedBranch: string | null = null;
   selectedBuilding: string | null = null;
 
@@ -39,10 +39,29 @@ export class HeaderComponent {
     private renderer: Renderer2,
     private authService: AuthService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private commonservice:Common_TabsService
   ) {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     this.selectedLanguage = this.languages.find(l => l.code === savedLang) || this.languages[0];
+  }
+  loadLookup(typeId:number,filterId: number, targetProperty: string, nameField: string) {
+    this.commonservice.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {  
+          this.buildings=res.objResult.table; 
+        }
+        
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
   }
   logout(event: Event): void {
     event.preventDefault();  // Prevent default anchor behavior to allow Angular routing
@@ -158,7 +177,7 @@ export class HeaderComponent {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     const htmlElement = this.elementRef.nativeElement.ownerDocument.documentElement;
     this.renderer.setAttribute(htmlElement, 'dir', savedLang === 'AR' ? 'rtl' : 'ltr');
-
+    this.loadLookup(11,0,'','');
     this.navServices.items.subscribe((menuItems) => {
       this.items = menuItems;
     });

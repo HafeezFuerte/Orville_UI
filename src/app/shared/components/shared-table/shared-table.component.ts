@@ -80,10 +80,7 @@ export class SharedTableComponent {
   }
 
   ngOnInit(): void {
-    this.currentUser = this.commonService.getCurrentUser(); 
-    console.log(this.totalRecords);
-    console.log(this.pageIndex);
-    console.log(this.pageSize)
+    this.currentUser = this.commonService.getCurrentUser();  
   }
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);

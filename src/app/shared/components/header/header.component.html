@@ -43,12 +43,18 @@
             </ng-template>
           </ng-select>
 
-          <ng-select #globalBldgSelect [items]="buildings" [(ngModel)]="selectedBuilding" placeholder="Select Building" class="ng-select-sm w-40 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
+          <ng-select #globalBldgSelect bindValue="code" bindLabel="name" [items]="buildings" [(ngModel)]="selectedBuilding" placeholder="Select Building" class="ng-select-sm w-40 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="$any(globalBldgSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
+            <ng-template ng-label-tmp let-item="item">
+              {{ item.code }} - {{ item.name }}
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.code }} - {{ item.name }}
+        </ng-template>
           </ng-select>
         </div>
 

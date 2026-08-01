@@ -12,9 +12,7 @@
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
+  <div class="flex gap-2 items-center mt-2 md:mt-0"> 
     <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm flex items-center gap-1.5 transition-all">
       <i class="ri-bar-chart-2-fill text-sm"></i> Report
     </button>
@@ -24,37 +22,61 @@
   </div>
 </div>
 
-<!-- Stats Row -->
-<div class="grid grid-cols-4 gap-4 mb-4">
-  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">New</p>
-    <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.new}}</h3>
+<!-- 📊 Metrics Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
+  <!-- New-->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">New</span>
+      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.new}}</h5>
       <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 10 this week</span>
     </div>
   </div>
-  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Open</p>
-    <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.open}}</h3>
+
+  <!--Open Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Open</span>
+      <i class="ri-checkbox-blank-circle-line text-md text-success bg-danger/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.open}}</h5>
       <span class="text-[10px] font-bold text-gray-400">21 due today</span>
     </div>
   </div>
-  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">In Progress</p>
-    <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.inprogress}}</h3>
+
+  <!-- In Progress Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">In Progress</span>
+      <i class="ri-checkbox-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.inprogress}}</h5>
       <span class="text-[10px] font-bold text-gray-400">12 with vendors</span>
     </div>
   </div>
-  <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Resolved</p>
-    <div class="flex items-end gap-2">
-      <h3 class="text-2xl font-bold text-gray-800 m-0 leading-none">{{metrics.resolved}}</h3>
+
+  <!-- Resolved Card -->
+  <div
+    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] font-bold tracking-wider text-gray-500">Resolved</span>
+      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
+    </div>
+    <div>
+      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.resolved}}</h5>
       <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 93% SLA met</span>
     </div>
   </div>
 </div>
+ 
 
 <!-- Main card -->
 <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
@@ -71,12 +93,12 @@
     
     <button *ngFor="let tab of tabs" 
       (click)="onTabChange(tab)"
-      [class.text-primary]="activeTab === tab"
-      [class.border-primary]="activeTab === tab"
-      [class.text-gray-500]="activeTab !== tab"
-      [class.border-transparent]="activeTab !== tab"
+      [class.text-primary]="activeTab === tab.id"
+      [class.border-primary]="activeTab === tab.id"
+      [class.text-gray-500]="activeTab !== tab.id"
+      [class.border-transparent]="activeTab !== tab.id"
       class="text-[11px] font-semibold pb-3 border-b-2 hover:text-primary transition-colors whitespace-nowrap">
-      {{ tab }}
+      {{ tab.name }}
     </button>
   </div>
 
@@ -111,7 +133,7 @@
     [hasActions]="true" 
     [totalRecords]="totalRecords" 
     [pageSize]="pageSize"
-    [pageIndex]="pageNo - 1"
+    [pageIndex]="pageNo"
     (pageChange)="onSharedTablePageChange($event)">
     <ng-template #colTemplate let-row="row" let-col="col">
       <ng-container [ngSwitch]="col.key">
@@ -147,19 +169,20 @@
           <span   [class]="row.class_name">{{getArabicLookupName(row,'status_nm')}}</span> 
         </ng-container>
 
-        <!-- Action Column -->
-        <ng-container *ngSwitchCase="'action'">
-          <div class="flex gap-1">
-            <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-              <i class="ri-edit-line text-xs"></i>
-            </button>
-            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-              <i class="ri-delete-bin-line text-xs"></i>
-            </button>
-          </div>
-        </ng-container>
-
+      
       </ng-container>
     </ng-template>
+      <!-- Action Column -->
+      <ng-template #actionTemplate  >
+        <div class="flex gap-1">
+          <button class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+            <i class="ri-edit-line text-xs"></i>
+          </button>
+          <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+            <i class="ri-delete-bin-line text-xs"></i>
+          </button>
+        </div>
+      </ng-template>
+
   </app-shared-table>
 </div>
