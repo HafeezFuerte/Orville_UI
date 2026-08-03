@@ -382,10 +382,62 @@ export class RoomsListComponent implements OnInit {
  
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.userChangedPageSize = true;
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;
+      this.userChangedPageSize = true;
     this.loadRooms();
   } 
- 
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    if(this.pageNo==0)
+          this.pageNo=1;
+    return (this.pageNo-1) * this.pageSize+1;
+  }
+
+  get endRecord(): number {
+    if(this.pageNo==0)
+    this.pageNo=1;
+    const end = this.pageNo * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0;
+    this.userChangedPageSize = true;
+    this.loadRooms();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 1) {
+      this.pageNo--;
+      this.loadRooms();
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageNo < this.totalPages) {
+      this.pageNo++;
+      this.loadRooms();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadRooms();
+    }
+  }
 }

@@ -3,9 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 export const environment = {
   production: true,
-      // apiurl: "http://orville.pulseadmin.in/",
-
-            apiurl: "https://orville.pulseadmin.in/",
+     
+      apiurl: "https://orville.pulseadmin.in/",
+         //apiurl: "https://appapi.orvillerealestate.com/",
 
   firebase: {
     authDomain: "************************",

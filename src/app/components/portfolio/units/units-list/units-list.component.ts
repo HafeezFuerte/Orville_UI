@@ -379,6 +379,52 @@ export class UnitsListComponent implements OnInit {
     }
   }
 
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    if(this.pageNo==0)
+          this.pageNo=1;
+    return (this.pageNo-1) * this.pageSize+1;
+  }
+
+  get endRecord(): number {
+    if(this.pageNo==0)
+    this.pageNo=1;
+    const end = this.pageNo * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0;
+    this.userChangedPageSize = true;
+    this.loadUnits();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 1) {
+      this.pageNo--;
+      this.loadUnits();
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageNo < this.totalPages) {
+      this.pageNo++;
+      this.loadUnits();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo = page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadUnits();
+    }
+  }
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
    
     if(event.pageIndex>this.pageNo){

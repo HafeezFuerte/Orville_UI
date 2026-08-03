@@ -4,6 +4,8 @@ import { AuthService, User } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Common_TabsService } from '../../../components/portfolio/services/common_tabs.service';
+import { AuthPayload } from '../../../components/common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
 interface Item {
   id: number;
   name: string;
@@ -27,7 +29,7 @@ export class HeaderComponent {
   notificationCount: number = 5;
   public isCollapsed = true;
   public user: User | null = null;
-  currentUser: User | null = null;
+  currentUser: AuthPayload | null = null;
   selectedLanguage: any;
   languages = [
     { code: 'EN', name: 'English', flag: './assets/images/flags/us_flag.jpg' },
@@ -40,13 +42,14 @@ export class HeaderComponent {
     private authService: AuthService,
     private router: Router,
     private translate: TranslateService,
-    private commonservice:Common_TabsService
+    private commontabservice:Common_TabsService,
+    private commonservice:CommonService
   ) {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     this.selectedLanguage = this.languages.find(l => l.code === savedLang) || this.languages[0];
   }
   loadLookup(typeId:number,filterId: number, targetProperty: string, nameField: string) {
-    this.commonservice.getMasterByType({
+    this.commontabservice.getMasterByType({
       typeId: typeId,
       filterId: filterId,
       filterText: '',
@@ -174,6 +177,7 @@ export class HeaderComponent {
   public text!: string;
   public SearchResultEmpty: boolean = false;
   ngOnInit() {
+    this.currentUser = this.commonservice.getCurrentUser();
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     const htmlElement = this.elementRef.nativeElement.ownerDocument.documentElement;
     this.renderer.setAttribute(htmlElement, 'dir', savedLang === 'AR' ? 'rtl' : 'ltr');

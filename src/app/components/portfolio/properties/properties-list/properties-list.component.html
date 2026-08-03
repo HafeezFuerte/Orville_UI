@@ -242,7 +242,8 @@
       <div class="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 text-center">
         <div class="flex flex-col gap-1">
           <span class="text-gray-800 text-xs font-bold">{{property.total_units}}</span>
-          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Units</span>
+          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">
+            {{categoryFilter === 'Rooms' ?'Rooms' : 'Units'}}</span>
         </div>
         <div class="flex flex-col gap-1 border-x border-gray-100">
           <span class="text-gray-800 text-xs font-bold">{{property.occupied_units}}</span>
@@ -302,7 +303,32 @@
     </div>
   </div>
 </div>
- 
+ <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm" *ngIf="viewMode === 'grid'">
+  <div class="flex items-center gap-2">
+    <span class="text-xs text-gray-500 font-medium">Show</span>
+    <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+  
+  <div class="text-xs text-gray-500 font-medium">
+    Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong> records
+  </div>
+
+  <div class="flex items-center gap-2">
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 1">
+      Previous
+    </button>
+    <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
+      [ngClass]="page === pageNo ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
+      {{page}}
+    </button>
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()" [disabled]="pageNo === totalPages">
+      Next
+    </button>
+  </div>
+</div>
+
 
 <!-- 🚪 SLIDING FILTER DRAWER -->
 <div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>

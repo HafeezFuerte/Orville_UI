@@ -366,7 +366,29 @@
 
 <!-- 📄 GRID PAGINATION FOOTER -->
 <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm" *ngIf="viewMode === 'grid'">
+  <div class="flex items-center gap-2">
+    <span class="text-xs text-gray-500 font-medium">Show</span>
+    <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+    </select>
+  </div>
   
+  <div class="text-xs text-gray-500 font-medium">
+    Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong> records
+  </div>
+
+  <div class="flex items-center gap-2">
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 1">
+      Previous
+    </button>
+    <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
+      [ngClass]="page === pageNo ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
+      {{page}}
+    </button>
+    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()" [disabled]="pageNo === totalPages">
+      Next
+    </button>
+  </div>
 </div>
 
 <!-- 🚪 SLIDING FILTER DRAWER -->

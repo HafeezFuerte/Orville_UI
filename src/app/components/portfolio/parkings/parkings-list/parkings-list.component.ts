@@ -376,6 +376,16 @@ export class ParkingsListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize;
+      this.userChangedPageSize = true;
     this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize;
     this.userChangedPageSize = true;
