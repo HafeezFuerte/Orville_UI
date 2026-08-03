@@ -11,6 +11,8 @@ import { DetailTab } from '../../../../shared/models/detail-tab.model';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 export interface Unit {
   id: number;
   name: string;
@@ -52,10 +54,12 @@ export interface Unit {
   reraNumber?: string;
 }
 
+import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
+
 @Component({
   selector: 'app-unit-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent],
   templateUrl: './unit-detail.component.html',
   styleUrl: './unit-detail.component.scss'
 })
@@ -64,6 +68,9 @@ export class UnitDetailComponent implements OnInit {
   unit: Unit | null = null;
   activeTab: string = 'overview';
   showMoreDetails: boolean = false;
+  showAddInvoiceModal: boolean = false;
+  isDrawerOpen: boolean = false;
+  isColumnDropdownOpen: boolean = false;
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
   notesForm!: FormGroup;
@@ -414,14 +421,14 @@ export class UnitDetailComponent implements OnInit {
       },
   
       {
-        key: 'lblFinancials',
+        key: 'financials',
         label: 'web.common.lblFinancials',
         layout: 'content', 
         data: this.financials,
         totalRecords: this.financials?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Unit'
+        addButtonText: 'Financials'
       },
   
       {
@@ -432,12 +439,12 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.workOrders?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Room'
+        addButtonText: 'Work Order'
       },
   
      
   {
-        key: 'Legal',
+        key: 'legal',
         label: 'web.common.lblLegal',
         layout: 'content', 
         entity:"Units",
@@ -446,7 +453,7 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Common Area',
+        addButtonText: 'Legal Case',
         form: FormGroup,
         popupType: 'legal'
       },
@@ -503,7 +510,7 @@ export class UnitDetailComponent implements OnInit {
         addButtonText: 'Parking'
       },
       {
-        key: 'Inspections',
+        key: 'inspections',
         label: 'web.common.lblInspections',
         layout: 'table',
         columns: this.inpectionsColumns,
@@ -511,7 +518,7 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.inpectionsColumns?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Asset'
+        addButtonText: 'Inspection'
       }
   
     ];
@@ -523,6 +530,10 @@ export class UnitDetailComponent implements OnInit {
       return parts[1] || '209';
     }
     return '209';
+  }
+
+  toggleDrawer(state: boolean): void {
+    this.isDrawerOpen = state;
   }
 
   toggleMoreDetails(): void {

@@ -3,11 +3,10 @@
     <div>
         <h4 class="text-xs font-bold text-gray-800 m-0">{{ selectedTab?.label | translate}}</h4>
     </div>
-    <button type="button"  
-        class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold"
-        (click)="redirect_link()">
-        <i class="ri-add-line"></i>
-        Add {{selectedTab?.label }}
+    <button type="button" (click)="redirect_link()"
+        class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'Add ' + (selectedTab?.label | translate)">
+        <i class="ri-add-line text-[1rem]"></i>
     </button>
 </div>
 <div   class="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
@@ -25,21 +24,43 @@
 
     <!-- Right Buttons -->
     <div class="flex gap-2">
-        <button class="ti-btn ti-btn-light">
-            <i class="ri-filter-3-line me-1"></i>
-            {{ 'web.common.lblFilter' | translate }}
+        <button type="button" (click)="toggleDrawer(true)"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.common.lblFilter' | translate">
+            <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
         </button>
-        <button class="ti-btn ti-btn-light">
-            <i class="ri-layout-column-line me-1"></i>
-            {{ 'web.common.lblColumns' | translate }}
-        </button>
+        <div class="relative inline-block">
+            <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" (click)="toggleColumnDropdown()" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+            </button>
+            <!-- Dropdown -->
+            <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                    <span class="font-bold text-xs text-gray-700">Column</span>
+                    <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                </div>
+                <div class="max-h-60 overflow-y-auto">
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-gray-50 cursor-pointer rounded m-0">
+                        <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" 
+                               [checked]="allColumnsVisible" (change)="toggleAllColumns($event)">
+                        <span class="text-xs text-gray-700 font-semibold">Select All</span>
+                    </label>
+                    <label *ngFor="let col of columns" class="flex items-center gap-2 p-1.5 hover:bg-gray-50 cursor-pointer rounded m-0">
+                        <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" 
+                               [checked]="col.visible !== false" (change)="toggleColumn(col)">
+                        <span class="text-xs text-gray-700">{{ col.label | translate }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="table-responsive table-vertical-scroll w-full">
     <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
         <thead class="bg-info/10">
             <tr class="border-b border-defaultborder">
-                <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width">
+                <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of visibleColumns"
+                    [style.width]="col.width" [style.min-width]="col.width">
                     <ng-container *ngIf="headerTemplate; else defaultHeader">
                         <ng-container *ngTemplateOutlet="headerTemplate; context: { col: col }"></ng-container>
                     </ng-container>
@@ -55,7 +76,7 @@
         <tbody>
             <!-- Empty State -->
             <tr *ngIf="data.length === 0 && !loading">
-                <td [attr.colspan]="columns.length + (hasActions ? 1 : 0)" class="text-center py-6 bg-gray-50/30">
+                <td [attr.colspan]="visibleColumns.length + (hasActions ? 1 : 0)" class="text-center py-6 bg-gray-50/30">
                     <ng-container *ngIf="emptyTemplate; else defaultEmpty">
                         <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
                     </ng-container>
@@ -70,7 +91,7 @@
             <!-- Data Rows -->
             <ng-container *ngIf="!loading">
                 <tr *ngFor="let row of data" class="border-b border-defaultborder task-list">
-                    <td *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width" [class]="col.cellClass || ''">
+                    <td *ngFor="let col of visibleColumns" [style.width]="col.width" [style.min-width]="col.width" [class]="col.cellClass || ''">
                         <!-- Custom Content Projection based on Column Key -->
                         <ng-container *ngIf="colTemplate && (col.key === colTemplateName || col.useTemplate); else checkLink">
                             <ng-container *ngTemplateOutlet="colTemplate; context: { row: row, col: col }"></ng-container>
@@ -152,6 +173,61 @@
 </div>
 
 <!-- Pagination -->
-<mat-paginator *ngIf="!loading && totalRecords > 0" [length]="totalRecords" [pageSize]="pageSize"
+<mat-paginator *ngIf="!loading" [length]="totalRecords" [pageSize]="pageSize"
     [pageIndex]="pageIndex" [pageSizeOptions]="[50]" showFirstLastButtons (page)="onPageChange($event)">
 </mat-paginator>
+
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
+<div class="filter-drawer" [class.open]="isDrawerOpen">
+  <div class="drawer-header">
+    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
+    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
+      <i class="ri-close-line text-lg"></i>
+    </button>
+  </div>
+  <div class="drawer-body text-[11px]">
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterTags" (keyup.enter)="applyFilters()">
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterArea" (keyup.enter)="applyFilters()">
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterId" (keyup.enter)="applyFilters()">
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterRefNo" (keyup.enter)="applyFilters()">
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+      <select class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterOffPlanStatus" (change)="applyFilters()">
+        <option value="">Select Status</option>
+      </select>
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterLandlord" (keyup.enter)="applyFilters()">
+    </div>
+    <div class="flex flex-col mb-3">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+      <select class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterInternalStatus" (change)="applyFilters()">
+        <option value="">Select Status</option>
+      </select>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" (click)="applyFilters(); toggleDrawer(false)"
+      class="flex-1 ti-btn bg-primary text-white hover:bg-primary-hover font-semibold text-xs !py-2 !px-4 rounded-md">
+      Apply Filters
+    </button>
+    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
+      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">
+      Clear All
+    </button>
+  </div>
+</div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
@@ -12,42 +12,73 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })
 export class TenantDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private fb = inject(FormBuilder);
   
   tenantId: any = null;
   tenantData: any = null;
-  notesForm: any = {};
-  attachmentsForm: any = {};
+  notesForm!: FormGroup;
+  attachmentsForm!: FormGroup;
 
   get selectedTab(): any {
     if (this.activeTab === 'Notes') {
       return {
         key: 'notes',
+        label: 'Notes',
         entity: 'tenant',
         entity_id: this.tenantId,
         data: this.noteData || [],
-        form: this.notesForm
+        totalRecords: (this.noteData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.notesForm,
+        popupType: 'notes'
       };
     }
     if (this.activeTab === 'Attachments') {
       return {
         key: 'attachments',
+        label: 'Attachments',
         entity: 'tenant',
         entity_id: this.tenantId,
         data: this.attachmentData || [],
-        form: this.attachmentsForm
+        totalRecords: (this.attachmentData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.attachmentsForm,
+        popupType: 'attachment'
       };
     }
     return null;
   }
 
   ngOnInit() {
+    this.notesForm = this.fb.group({
+      subject: ['', Validators.required],
+      description: ['', Validators.required],
+      channel_type: [''],
+      note_date: [''],
+      code: ['']
+    });
+    this.attachmentsForm = this.fb.group({
+      documentType: ['', Validators.required],
+      documentNumber: ['', Validators.required],
+      issueDate: ['', Validators.required],
+      expiryDate: ['', Validators.required],
+      issuingAuthority: [''],
+      shareWithTenant: [''],
+      shareWithLandlord: [''],
+      propertyAttachment: [''],
+      code: ['']
+    });
     this.route.params.subscribe(params => {
       this.tenantId = params['id'];
       if (this.tenantId) {
@@ -63,7 +94,7 @@ export class TenantDetailComponent implements OnInit {
       filterText: this.tenantId,
       filterText1: "",
       userId: Number(localStorage.getItem('userId')) || 1,
-      clientId: localStorage.getItem('clientId') || "74BB6922",
+      clientId: "74BB6922",
       companyId: Number(localStorage.getItem('companyId')) || 1
     };
 

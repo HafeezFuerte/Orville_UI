@@ -411,11 +411,11 @@ exports.locale = {
                 "lblSearch": "Search..."
             },
             "common": {
+                "lblUnits": "Units",
                 "lblLeases": "Leases",
                 "lblCommonArea":"Common Area",
                 "lblTenantsHistory":"Tenants History",
                 "lblRooms":"Rooms",
-                "lblUnits":"Units",
                 "lblOverview":"Overview",
                 "lblFinancials":"Financials",
                 "lblInvoices": "Invoices",

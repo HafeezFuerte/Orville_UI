@@ -41,7 +41,27 @@ export class LandlordsComponent implements OnInit {
   showColumnDropdown: boolean = false;
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
   isLoading: boolean = false;
-  private toastr =inject(ToastrService);
+  private toastr = inject(ToastrService);
+  isDrawerOpen = false;
+
+  // Filter criteria
+  filterName: string = '';
+  filterEmail: string = '';
+  filterStatus: string | null = null;
+
+  statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterName = '';
+    this.filterEmail = '';
+    this.filterStatus = null;
+    this.pageNo = 1;
+    this.loadLandlords();
+  }
+
   // Pagination
   pageNo = 0;
   pageSize = 10;
@@ -105,7 +125,7 @@ export class LandlordsComponent implements OnInit {
       pagecount: this.pageSize,
       filter_by: this.statusFilter !== 'All' ? this.statusFilter : '',
       filter_list: '',
-      featureid: 'Landlords'
+      featureid: 'LANDLORDS'
     };
 
     this.propertiesService.getTenants(payload).subscribe({
@@ -121,7 +141,6 @@ export class LandlordsComponent implements OnInit {
         }
         else
           this.toastr.error("No record[s] found");
-
       },
       error: (err) => {
         this.isLoading = false;

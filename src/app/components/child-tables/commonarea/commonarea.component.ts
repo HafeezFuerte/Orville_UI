@@ -8,7 +8,7 @@ import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { Common_TabsService } from '../../portfolio/services/common_tabs.service'; 
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { CommonAreaPopupComponent } from '../modal-popups/common-area-popup/common-area-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
@@ -29,15 +29,21 @@ export class CommonAreaComponent {
   emptyMessage: string = 'web.common.lblNoRecordsFound';
 
   totalRecords: number = 0;
-  columns = [ 
+  columns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'area_name', label: 'web.property.lblAreaName', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    {  key: 'property', label: 'web.property.lblProperty', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
+    { key: 'property', label: 'web.property.lblProperty', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
     { key: 'floor_no', label: 'web.property.lblFloorNo', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
     { key: 'uploaded_date', label: 'web.Unit.lblCreatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     {key: 'modified_date', label: 'web.Unit.lblUpdatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
    
   ];
+  
+  isDrawerOpen = false;
+  isColumnDropdownOpen = false;
+  filterId = '';
+  filterAreaName = '';
+
   searchQuery: string = '';
   pageSize: number = 5;
   @Input() selectedTab: any = [];
@@ -115,38 +121,86 @@ export class CommonAreaComponent {
     }
     const values = this.selectedTab.form.value;
     const payload = {
-     ...this.commonService.commonPayload,
-     id:0,
-     property_code:this.selectedTab.entity_id,
-     area_name:values.areaName,
-     floor_no:values.floor,
-     desc:values.desc || '',
-     code:values.code || ''
-  };
-  this.common_TabsService.saveCommonArea(payload).subscribe({
-      next: (res) => { 
-        if (res["statusCode"] == "200") { 
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      id: 0,
+      property_code: this.selectedTab.entity_id,
+      code: values.code || '',
+      area_name: values.areaName,
+      floor_no: values.floor,
+      desc: values.desc || ''
+    };
+    this.common_TabsService.saveCommonArea(payload).subscribe({
+      next: (res) => {
+        if (res["statusCode"] == "200") {
           this.selectedTab.form.reset();
           this.closeModal();
-          this.data = res.objResult.table; 
-        } else{
-          this.toastr.error(res['message'],"Error");
+          this.data = res.objResult.table;
+        } else {
+          this.toastr.error(res['message'], "Error");
         }
       },
       error: console.error
-  });
+    });
   }
 
   search_with_keyword() {
-    let result =this.selectedTab?.data;
-    if(this.searchQuery){
-      result = this.selectedTab?.data.filter((p: any) =>
-      p.area_name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      p.floor_no.toLowerCase().includes(this.searchQuery.toLowerCase())
-    ); 
-    }
-    this.data=result;
+    this.applyFilters();
   }
+  
+  applyFilters() {
+    let result = this.selectedTab?.data || [];
+    
+    if (this.filterId) {
+      result = result.filter((p: any) => String(p.code).includes(this.filterId));
+    }
+    if (this.filterAreaName) {
+      result = result.filter((p: any) => p.area_name?.toLowerCase().includes(this.filterAreaName.toLowerCase()));
+    }
+    if(this.searchQuery){
+      result = result.filter((p: any) =>
+        (p.area_name && p.area_name.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
+        (p.floor_no && p.floor_no.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      ); 
+    }
+    this.data = result;
+  }
+
+  clearFilters() {
+    this.filterId = '';
+    this.filterAreaName = '';
+    this.searchQuery = '';
+    this.applyFilters();
+  }
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    return this.columns.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    this.columns.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    return this.columns.every((c: any) => c.visible !== false);
+  }
+
   openModal() {
     this.showModal = true;
     this.selectedTab.form.reset();
@@ -156,12 +210,12 @@ export class CommonAreaComponent {
     this.commonAreaForm = this.selectedTab?.form;
     this.selectedNote = {};
     this.data = this.selectedTab?.data;
-    this.totalRecords=this.data.length;
+    this.totalRecords = this.data.length;
     this.selectedTab.form = this.fb.group({
       areaName: ['', Validators.required],
       floor: ['', Validators.required],
-      code:[''],
-      desc:['']
+      code: [''],
+      desc: ['']
     });
   }
 
@@ -177,7 +231,8 @@ export class CommonAreaComponent {
         areaName: row?.area_name,
         floor: row?.floor_no,
         code: row?.code,
-        desc: row?.strdesc}); 
+        desc: row?.strdesc
+      });
     }
     else if (action == "delete") {
       this.deleteModal = true;
@@ -211,7 +266,7 @@ export class CommonAreaComponent {
         this.closeModal();
         this.data = res.objResult.table;
         this.selectedNote = {};
-        this.totalRecords=this.data.length;
+        this.totalRecords = this.data.length;
       },
       error: console.error
     });
@@ -233,5 +288,13 @@ export class CommonAreaComponent {
   }
   getValueWithCurrency(val: any) {
     return this.currentUser?.currencyCode + ' ' + val;
+  }
+  getStatusClass(status: string) {
+    switch (status) {
+      case 'Occupied': return 'bg-secondary/10 text-secondary';
+      case 'Vacant': return 'bg-danger/10 text-danger';
+      case 'Sold': return 'bg-green/10 text-green';
+      default: return 'bg-gray-100 text-gray-600';
+    }
   }
 }

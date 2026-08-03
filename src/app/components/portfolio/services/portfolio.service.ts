@@ -70,6 +70,12 @@ saveAsset(payload: FormData): Observable<any> {
     payload
   );
 }
+saveInventoryItem(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_update_inventoryitem',
+    payload
+  );
+}
 getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/get_masters_by_paging',

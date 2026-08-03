@@ -29,7 +29,7 @@ export class ParkingsComponent {
   emptyMessage: string = 'web.common.lblNoRecordsFound';
 
   totalRecords: number = 0;
-  columns = [
+  columns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'parking_no', label: 'web.property.lblParkingNo', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'property', label: 'web.property.lblProperty' , useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
@@ -107,6 +107,35 @@ export class ParkingsComponent {
     }
     return true;
   }
+  isColumnDropdownOpen = false;
+  isDrawerOpen = false;
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    return this.columns.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    this.columns.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    if (!this.columns?.length) return false;
+    return this.columns.every((c: any) => c.visible !== false);
+  }
+
   saveParking() { 
 
     const commonLabels = {
@@ -255,12 +284,45 @@ export class ParkingsComponent {
     if (!html) {
       return '-';
     }
-
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent || div.innerText || '-';
   }
   getValueWithCurrency(val: any) {
     return this.currentUser?.currencyCode + ' ' + val;
+  }
+
+  // Filter Drawer State Variables
+  filterTags: string = '';
+  filterArea: string = '';
+  filterId: string = '';
+  filterRefNo: string = '';
+  filterOffPlanStatus: string = '';
+  filterLandlord: string = '';
+  filterInternalStatus: string = '';
+
+  applyFilters() {
+    let result = this.selectedTab?.data || [];
+    if (this.filterId) {
+      result = result.filter((p: any) => p.code?.toString().includes(this.filterId));
+    }
+    if (this.filterTags) {
+      result = result.filter((p: any) => p.tags?.toLowerCase().includes(this.filterTags.toLowerCase()));
+    }
+    if (this.filterLandlord) {
+      result = result.filter((p: any) => p.landlord?.toLowerCase().includes(this.filterLandlord.toLowerCase()));
+    }
+    this.data = result;
+  }
+
+  clearFilters() {
+    this.filterTags = '';
+    this.filterArea = '';
+    this.filterId = '';
+    this.filterRefNo = '';
+    this.filterOffPlanStatus = '';
+    this.filterLandlord = '';
+    this.filterInternalStatus = '';
+    this.applyFilters();
   }
 }

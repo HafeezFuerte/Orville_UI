@@ -28,7 +28,7 @@
     
     <div class="flex items-center gap-2">
       <!-- Filter Button -->
-      <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
+      <button type="button" (click)="toggleDrawer(true)" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
         <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
         {{ 'web.contacts.lblFilter' | translate }}
       </button>
@@ -114,5 +114,76 @@
       </ng-template>
 
     </app-shared-table>
+  </div>
+</div>
+
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
+<div class="filter-drawer" [class.open]="isDrawerOpen">
+  <div class="drawer-header">
+    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
+    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
+      <i class="ri-close-line text-lg"></i>
+    </button>
+  </div>
+  <div class="drawer-body text-[11px]">
+    <!-- Filter by Tags -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+      <ng-select [(ngModel)]="selectedTag" [items]="tagsList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Tag" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Filter by Area (sqft) -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedArea"
+        (keyup.enter)="onSearch()" placeholder="e.g. 1523 Sqft">
+    </div>
+
+    <!-- Filter by ID -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+      <input type="number" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedId"
+        (keyup.enter)="onSearch()" placeholder="e.g. 31658">
+    </div>
+
+    <!-- Filter by Reference No -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
+      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="selectedRefNo"
+        (keyup.enter)="onSearch()" placeholder="Enter Ref No">
+    </div>
+
+    <!-- Off Plan Status -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+      <ng-select [(ngModel)]="selectedOffPlanStatus" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Off Plan Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Filter by Landlord -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+      <ng-select [(ngModel)]="selectedLandlord" [items]="landlordsList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Landlord" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Internal Status -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+      <ng-select [(ngModel)]="selectedInternalStatus" [items]="internalStatuses" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" placeholder="Select Internal Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" (click)="onSearch(); toggleDrawer(false)"
+      class="flex-1 ti-btn bg-primary text-white hover:bg-primary-hover font-semibold text-xs !py-2 !px-4 rounded-md">
+      Apply Filters
+    </button>
+    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
+      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">
+      Clear All
+    </button>
   </div>
 </div>

@@ -12,6 +12,7 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { NotesPopupComponent } from '../modal-popups/notes-popup/notes-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+
 @Component({
   selector: 'app-notes-table',
   standalone: true,
@@ -29,10 +30,9 @@ export class NotesComponent {
   emptyMessage: string = 'web.common.lblNoRecordsFound';
 
   totalRecords: number = 0;
-  columns = [
+  columns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'subject', label: 'web.property.lblSubject', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'channel_type_text', label: 'web.portfolio.popups.notes.lblCommChannel', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
     { key: 'description', label: 'web.property.lblContent', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
     { key: 'status', label: 'web.property.lblVia', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'uploaded_date', label: 'web.property.lblNoteDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
@@ -108,6 +108,35 @@ export class NotesComponent {
     }
     return true;
   }
+  isColumnDropdownOpen = false;
+  isDrawerOpen = false;
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    return this.columns.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    this.columns.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    if (!this.columns?.length) return false;
+    return this.columns.every((c: any) => c.visible !== false);
+  }
+
   saveNotes() {
     const labels = {
       subject: this.translate.instant('web.portfolio.popups.notes.lblSubject'),
@@ -147,8 +176,6 @@ export class NotesComponent {
           this.selectedTab.form.reset();
           this.closeModal();
           this.data = res.objResult.table;
-          // let tab = this.tabs.find(t => t.key === this.activeTab);
-          // tab!.data=this.notesData;
         }
         else {
           this.toastr.error(res['message'], "Error");
@@ -261,5 +288,39 @@ export class NotesComponent {
   }
   getValueWithCurrency(val: any) {
     return this.currentUser?.currencyCode + ' ' + val;
+  }
+
+  // Filter Drawer State Variables
+  filterTags: string = '';
+  filterArea: string = '';
+  filterId: string = '';
+  filterRefNo: string = '';
+  filterOffPlanStatus: string = '';
+  filterLandlord: string = '';
+  filterInternalStatus: string = '';
+
+  applyFilters() {
+    let result = this.selectedTab?.data || [];
+    if (this.filterId) {
+      result = result.filter((p: any) => p.code?.toString().includes(this.filterId));
+    }
+    if (this.filterTags) {
+      result = result.filter((p: any) => p.tags?.toLowerCase().includes(this.filterTags.toLowerCase()));
+    }
+    if (this.filterLandlord) {
+      result = result.filter((p: any) => p.landlord?.toLowerCase().includes(this.filterLandlord.toLowerCase()));
+    }
+    this.data = result;
+  }
+
+  clearFilters() {
+    this.filterTags = '';
+    this.filterArea = '';
+    this.filterId = '';
+    this.filterRefNo = '';
+    this.filterOffPlanStatus = '';
+    this.filterLandlord = '';
+    this.filterInternalStatus = '';
+    this.applyFilters();
   }
 }

@@ -41,6 +41,26 @@ export class VendorsComponent implements OnInit {
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
   isLoading: boolean = false;
   currentUser: AuthPayload | null = null;
+  isDrawerOpen = false;
+
+  // Filter criteria
+  filterName: string = '';
+  filterEmail: string = '';
+  filterStatus: string | null = null;
+
+  statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterName = '';
+    this.filterEmail = '';
+    this.filterStatus = null;
+    this.pageNo = 1;
+    this.loadVendors();
+  }
+
   // Pagination
   pageNo = 0;
   pageSize = 10;
@@ -104,7 +124,7 @@ export class VendorsComponent implements OnInit {
       pagecount: this.pageSize,
       filter_by: this.statusFilter !== 'All' ? this.statusFilter : '',
       filter_list: '',
-      featureid: 'Vendors'
+      featureid: 'VENDORS'
     };
 
     this.propertiesService.getTenants(payload).subscribe({
@@ -132,7 +152,7 @@ export class VendorsComponent implements OnInit {
     this.pageNo = 0;
     this.loadVendors();
   }
-  
+
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 0;
@@ -151,7 +171,7 @@ export class VendorsComponent implements OnInit {
       this.pageSize = event.pageSize;  
     this.loadVendors();
   }
-  
+
   handleEditAction(row: any) {
     if (row.action_name === 'edit') {
       this.router.navigate(['/contacts/vendors/edit-vendor', row.code]);

@@ -63,7 +63,7 @@ export class VendorDetailComponent implements OnInit {
       filterText: this.vendorId,
       filterText1: "",
       userId: Number(localStorage.getItem('userId')) || 1,
-      clientId: localStorage.getItem('clientId') || "74BB6922",
+      clientId: "74BB6922",
       companyId: Number(localStorage.getItem('companyId')) || 1
     };
 

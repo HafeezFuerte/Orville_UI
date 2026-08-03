@@ -51,6 +51,39 @@ export class DetailPageLayoutComponent {
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;
+  
+  isColumnDropdownOpen = false;
+  isDrawerOpen = false;
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    const cols = this.selectedTab?.columns || [];
+    return cols.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    const cols = this.selectedTab?.columns || [];
+    cols.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    const cols = this.selectedTab?.columns || [];
+    if (!cols.length) return false;
+    return cols.every((c: any) => c.visible !== false);
+  }
+
   constructor( 
     private toastr:ToastrService) {
   
@@ -105,5 +138,30 @@ export class DetailPageLayoutComponent {
   }
   onSave() {
     this.saveClick.emit(this.selectedTab?.key ?? '');
+  }
+
+  // Filter Drawer State Variables
+  filterTags: string = '';
+  filterArea: string = '';
+  filterId: string = '';
+  filterRefNo: string = '';
+  filterOffPlanStatus: string = '';
+  filterLandlord: string = '';
+  filterInternalStatus: string = '';
+
+  applyFilters() {
+    // For now, emit search query or handle locally
+    this.search_on_child_grid.emit(this.filterId || this.filterArea || this.filterTags); 
+  }
+
+  clearFilters() {
+    this.filterTags = '';
+    this.filterArea = '';
+    this.filterId = '';
+    this.filterRefNo = '';
+    this.filterOffPlanStatus = '';
+    this.filterLandlord = '';
+    this.filterInternalStatus = '';
+    this.applyFilters();
   }
 }

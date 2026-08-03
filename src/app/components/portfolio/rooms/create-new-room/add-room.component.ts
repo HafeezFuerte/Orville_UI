@@ -113,13 +113,13 @@ export class AddRoomComponent implements OnInit {
   loadRoomDetails(id: string) {
     this.isLoading = true;
     const payload = {
-      typeId: 14,
+      typeId: 15,
       filterId: 0,
       filterText: id,
       filterText1: "",
-      userid: this.currentUser?.userId,
-      company_id: this.currentUser?.companyId,
-      clientId: this.currentUser?.clientId,
+      userid: Number(this.currentUser?.userId || localStorage.getItem('userId')) || 1,
+      company_id: Number(this.currentUser?.companyId || localStorage.getItem('companyId')) || 1,
+      clientId: this.currentUser?.clientId || localStorage.getItem('clientId') || '74BB6922',
     };
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (response: any) => {
@@ -143,9 +143,7 @@ export class AddRoomComponent implements OnInit {
     const propertyCode = detail.property_code || detail.propertyCode || detail.property_id || detail.propertyCode;
     if (propertyCode) {
       this.roomForm.get('propertyCode')?.setValue(propertyCode);
-      if (this.allUnits.length > 0) {
-        this.unitsList = this.allUnits.filter(u => u.property_code === propertyCode || u.propertyCode === propertyCode || u.property_id === propertyCode);
-      }
+      this.loadUnits(3, propertyCode);
     }
 
     this.roomForm.patchValue({
@@ -393,20 +391,30 @@ export class AddRoomComponent implements OnInit {
     this.isLoading = true;
     const formValue = this.roomForm.value;
 
-    const payload = {
-      userid: this.currentUser?.userId,
-      company_id: this.currentUser?.companyId,
-      clientId: this.currentUser?.clientId,
+    // Gather selected amenities keys
+    const selectedAmenitiesArray: string[] = [];
+    if (formValue.amenities) {
+      Object.keys(formValue.amenities).forEach(key => {
+        if (formValue.amenities[key]) {
+          selectedAmenitiesArray.push(key);
+        }
+      });
+    }
+
+    const payload: any = {
+      userid: Number(this.currentUser?.userId || localStorage.getItem('userId')) || 1,
+      company_id: Number(this.currentUser?.companyId || localStorage.getItem('companyId')) || 1,
+      clientId: this.currentUser?.clientId || localStorage.getItem('clientId') || '74BB6922',
       source: "web",
       languageid: 1,
       property_code: formValue.propertyCode || '',
       unit_code: formValue.unitCode || '',
-      room_broucher: this.roomBroucherFile ? this.roomBroucherFile.name : "",
-      room_image: this.roomImageFile ? this.roomImageFile.name : "",
       category: formValue.category || '',
       room_type: Number(formValue.roomType) || 0,
       room_status: Number(formValue.status) || 0,
-      code: "",
+      amenities: selectedAmenitiesArray.join(','),
+      code: this.isEditMode ? this.roomId : "",
+      id: this.isEditMode ? Number(this.roomId) : 0,
       room_code: formValue.roomCode || '',
       beds: parseInt(formValue.beds) || 0,
       no_of_parkings: Number(formValue.parkingSpaces) || 0,
@@ -418,13 +426,13 @@ export class AddRoomComponent implements OnInit {
       gas_no: formValue.gasNo || '',
       room_no: formValue.roomNumber || '',
       tags: formValue.tags || '',
-      is_landlord_resident: formValue.landlordIsResident || false,
-      is_furnished: formValue.furnished || false,
-      is_smoking_allowed: formValue.smokingAllowed || false,
-      is_guest: formValue.guestAllowed || false,
-      is_accomodation: formValue.accommodation || false,
-      hide_price: formValue.hidePrice || false,
-      security_deposit: formValue.securityDepositInWallet || false,
+      is_landlord_resident: !!formValue.landlordIsResident,
+      is_furnished: !!formValue.furnished,
+      is_smoking_allowed: !!formValue.smokingAllowed,
+      is_guest: !!formValue.guestAllowed,
+      is_accomodation: !!formValue.accommodation,
+      hide_price: !!formValue.hidePrice,
+      security_deposit: !!formValue.securityDepositInWallet,
       rent_type: Number(formValue.rentType) || 0,
       deposit_amt: Number(formValue.deposit) || 0,
       market_value: Number(formValue.marketValue) || 0,
@@ -445,14 +453,14 @@ export class AddRoomComponent implements OnInit {
       watchman_charge: Number(formValue.cleanerCharges) || 0,
       swimming_pool_charge: Number(formValue.swimmingPoolCost) || 0,
       gym_charge: Number(formValue.gymCost) || 0,
-      sale_status: formValue.isForSale || false,
+      sale_status: !!formValue.isForSale,
       trakessi_no: formValue.trakessiNumber || '',
       rera_number: formValue.reraNumber || '',
-      is_it_verified: formValue.isVerified || false,
+      is_it_verified: !!formValue.isVerified,
       desc: formValue.description || '',
-      is_published: formValue.publishRoom || false,
-      flag: formValue.automationFlag || false,
-      disable_maintenance: formValue.automationDisableMaintenance || false,
+      is_published: !!formValue.publishRoom,
+      flag: !!formValue.automationFlag,
+      disable_maintenance: !!formValue.automationDisableMaintenance,
       estimate_stree_value: Number(formValue.estimatedStreetValue) || 0,
       estimate_revenue_per_year: Number(formValue.estimatedRevenueYear) || 0,
       estimate_opex_per_year: Number(formValue.estimatedOpexYear) || 0,

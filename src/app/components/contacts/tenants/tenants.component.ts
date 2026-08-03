@@ -40,7 +40,30 @@ export class TenantsComponent implements OnInit {
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
   isLoading: boolean = false;
   currentUser: AuthPayload | null = null;
-  private toastr =inject(ToastrService);
+  private toastr = inject(ToastrService);
+  isDrawerOpen = false;
+
+  // Filter criteria
+  filterName: string = '';
+  filterEmail: string = '';
+  filterGender: string | null = null;
+  filterStatus: string | null = null;
+
+  genderOptions = ['Male', 'Female', 'Other'];
+  statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterName = '';
+    this.filterEmail = '';
+    this.filterGender = null;
+    this.filterStatus = null;
+    this.pageNo = 1;
+    this.loadTenants();
+  }
+
   // Pagination
   pageNo = 0;
   pageSize = 10;
@@ -104,7 +127,7 @@ export class TenantsComponent implements OnInit {
       pagecount: this.pageSize,
       filter_by: this.statusFilter !== 'All' ? this.statusFilter : '',
       filter_list: '',
-      featureid: 'Tenants'
+      featureid: 'TENANTS'
     };
 
     this.propertiesService.getTenants(payload).subscribe({
@@ -120,7 +143,6 @@ export class TenantsComponent implements OnInit {
         }
         else
           this.toastr.error("No record[s] found");
- 
       },
       error: (err) => {
         this.isLoading = false;
@@ -133,7 +155,7 @@ export class TenantsComponent implements OnInit {
     this.pageNo = 0;
     this.loadTenants();
   }
-  
+
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 0;

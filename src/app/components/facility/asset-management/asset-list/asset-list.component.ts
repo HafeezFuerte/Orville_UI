@@ -36,7 +36,7 @@ export class AssetListComponent implements OnInit {
   buildings = ['All Buildings', 'Building 1'];
   isLoading: boolean = false;
 
-  pageNo = 1;
+  pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
 
@@ -102,13 +102,13 @@ export class AssetListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex + 1;
+    this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadData();
   }
 
   onSearch() {
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadData();
   }
 

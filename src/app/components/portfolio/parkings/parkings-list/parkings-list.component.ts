@@ -41,6 +41,10 @@ export class ParkingsListComponent implements OnInit {
   isDrawerOpen = false;
   showColumnDropdown = false;
 
+  selectedProperty: string | null = null;
+  selectedStatus: number | null = null;
+  selectedType: number | null = null;
+
   // Add Parking Form State
   parkingForm = {
     property_code: null,
@@ -195,6 +199,17 @@ export class ParkingsListComponent implements OnInit {
   }
  
   loadParkings() {
+    const filterList: any[] = [];
+    if (this.selectedProperty) {
+      filterList.push({ key: 'p.property_code', value: this.selectedProperty });
+    }
+    if (this.selectedStatus) {
+      filterList.push({ key: 'p.status', value: this.selectedStatus });
+    }
+    if (this.selectedType) {
+      filterList.push({ key: 'p.parking_type', value: this.selectedType });
+    }
+
     const payload = {
       userid: this.currentUser?.userId,
       company_id: this.currentUser?.companyId,
@@ -206,7 +221,7 @@ export class ParkingsListComponent implements OnInit {
       search_keyword: this.searchQuery || "",
       pagecount: this.pageSize,
       filter_by: "",
-      filter_list: "",
+      filter_list: JSON.stringify(filterList),
       featureid: "parkings"
     };
 
@@ -261,7 +276,11 @@ export class ParkingsListComponent implements OnInit {
 
   clearFilters(): void {
     this.searchQuery = '';
-    this.applyFilters();
+    this.selectedProperty = null;
+    this.selectedStatus = null;
+    this.selectedType = null;
+    this.pageNo = 0;
+    this.loadParkings();
   }
   getArabicLookupName(row:any,key:string){
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
@@ -319,9 +338,9 @@ export class ParkingsListComponent implements OnInit {
     }
 
     const payload = {
-      userid: this.currentUser?.userId,
-      company_id: this.currentUser?.companyId,
-      clientId: this.currentUser?.clientId,
+      userid: Number(this.currentUser?.userId || localStorage.getItem('userId')) || 1,
+      company_id: Number(this.currentUser?.companyId || localStorage.getItem('companyId')) || 1,
+      clientId: this.currentUser?.clientId || localStorage.getItem('clientId') || '74BB6922',
       source: "web",
       languageid: 1,
       id: this.isEditMode ? this.currentEditId : 0,
@@ -350,20 +369,17 @@ export class ParkingsListComponent implements OnInit {
     });
   }
 
+  handleEditAction(row: any) {
+    if (row.action_name === 'edit') {
+      this.editParking(row);
+    }
+  }
+
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-  
-    if(event.pageIndex>this.pageNo){
-      this.pageNo = this.pageNo + 1;
-      }
-      else{
-        this.pageNo = this.pageNo - 1;
-      }
-      if(this.pageNo<0)
-      this.pageNo=0;
-      this.pageSize = event.pageSize;
-      this.userChangedPageSize = true;
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.userChangedPageSize = true;
-     this.loadParkings();
+    this.loadParkings();
   }
  
    

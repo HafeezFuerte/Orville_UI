@@ -1,15 +1,13 @@
 <!-- Start::row -->
+<form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
     <div class="block justify-between page-header md:flex">
 
         <!-- Left Section -->
         <div class="flex items-center gap-3">
             <!-- Back Button -->
-            <button
-                type="button"
-                routerLink="/properties"
-                class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-                <i class="ri-arrow-left-line"></i>
-            </button>
+            <a routerLink="/properties" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" title="Back to Properties">
+                <i class="ri-arrow-left-line text-sm"></i>
+            </a>
             <!-- Title -->
             <div>
                 <h3 *ngIf="!is_edit" class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
@@ -26,7 +24,7 @@
                         /
                     </li>
                     <li class="text-[0.813rem] text-[#8c9097]">
-                      <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>  
+                        <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>  
                     </li>
                     <li class="px-2 text-[#8c9097]">
                         /
@@ -43,23 +41,7 @@
                 </ol>
             </div>
         </div>
-
-        <!-- Right Section -->
-        <div class="flex items-center gap-3 mt-4 md:mt-0">
-            <button
-                type="button"
-                [routerLink]="['/properties']"
-                class="ti-btn ti-btn-light btn-wave">
-                {{ 'web.property.lblCancel' | translate }}
-            </button>
-            <button
-                type="submit"
-                class="ti-btn ti-btn-primary btn-wave">
-                {{ 'web.property.lblSaveProperty' | translate }}
-            </button>
-        </div>
     </div>
-<form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
 <div class="grid grid-cols-12 gap-6">
     <!-- Left Panel -->
     <div class="col-span-12 xl:col-span-8">
@@ -697,5 +679,16 @@
 </div>
     </div>
 </div>
+
+  <!-- Fixed Floating Form Actions Bottom Bar -->
+  <div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl"
+    [style.right]="showScrollToTop ? '70px' : '20px'">
+    <button type="button" routerLink="/properties" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
+      {{ 'web.property.lblCancel' | translate }}
+    </button>
+    <button type="submit" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95">
+      {{ is_edit ? ('web.property.lblUpdateProperty' | translate) : ('web.property.lblSaveProperty' | translate) }}
+    </button>
+  </div>
 </form>
 <!-- End::row -->

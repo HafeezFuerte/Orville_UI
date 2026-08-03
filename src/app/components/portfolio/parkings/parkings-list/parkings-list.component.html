@@ -83,7 +83,7 @@
     <!-- Filter & Column Buttons -->
     <div class="flex items-center gap-2">
       <!-- Filter Button -->
-      <button type="button" (click)="toggleDrawer(true)"
+      <button type="button" (click)="isDrawerOpen = !isDrawerOpen"
         class="ti-btn border bg-white text-xs font-semibold py-1.5 px-3 rounded-md flex items-center gap-1.5 shadow-sm hover:bg-gray-50 transition-all duration-200">
         <i class="ri-filter-3-line"></i> Filter
       </button>
@@ -113,6 +113,36 @@
             </label>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Criteria Panel -->
+  <div *ngIf="isDrawerOpen" class="p-4 border-b border-gray-100 bg-gray-50/30 animate-fade-in text-[11px]">
+    <h6 class="font-bold text-gray-700 mb-3 text-xs">Filter Criteria</h6>
+    <div class="grid grid-cols-12 gap-3 items-end">
+      <!-- Property Filter -->
+      <div class="col-span-12 md:col-span-4 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Property</label>
+        <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
+          class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-span-6 md:col-span-4 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Status</label>
+        <ng-select [(ngModel)]="selectedStatus" [items]="StatusList" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
+          class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-span-6 md:col-span-4 text-[11px]">
+        <label class="form-label font-semibold text-gray-600 mb-1 block">Parking Type</label>
+        <ng-select [(ngModel)]="selectedType" [items]="ParkingTypeList" [searchable]="true" [clearable]="true"
+          (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Types"
+          class="ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
     </div>
   </div>
@@ -148,7 +178,7 @@
   *ngIf="viewMode === 'list'">
   <app-shared-table [columns]="visibleColumns" [data]="paginatedParkings" [loading]="false"
     [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
-    (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+    (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
 
     <!-- Custom Column Templates -->
     <ng-template #colTemplate let-row="row" let-col="col">

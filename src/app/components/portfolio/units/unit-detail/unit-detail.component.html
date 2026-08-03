@@ -312,7 +312,7 @@
     <!-- Active Tab Box Container -->
     <div class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
       <!-- 📋 OVERVIEW TAB CONTENT -->
-      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Unit Overview</h4>
@@ -326,8 +326,8 @@
                 <i class="ri-search-line text-xs"></i>
               </button>
             </div>
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-filter-3-line"></i> Filter
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
             </button>
           </div>
         </div>
@@ -335,8 +335,8 @@
         <!-- Leases Table -->
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Case</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
@@ -360,7 +360,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let lease of leases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let lease of leases" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{lease.id}}</td>
                 <td class="py-3 px-4 text-xs">
                   <span class="badge bg-danger/10 text-danger px-2 py-0.5 rounded text-[10px] font-bold">{{lease.legalCase}}</span>
@@ -513,14 +513,14 @@
       </div>
 
       <!-- 📋 FINANCIALS TAB CONTENT -->
-      <div *ngIf="activeTab === 'financials'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'financials'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Unit Financials</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track invoices and payments associated with this unit.</p>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Invoice
+          <button type="button" (click)="showAddInvoiceModal = true" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Invoice'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -533,20 +533,80 @@
             </button>
           </div>
           <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-filter-3-line"></i> Filter
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
             </button>
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-layout-column-line"></i> Column
-            </button>
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Column</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Name</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Type</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Internal Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Tags</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Leases</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Contracts</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupancy Rate</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Action</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
+                    </div>
+                </div>
+            </div>
+
+
           </div>
         </div>
 
         <!-- Financials Table -->
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">To</th>
@@ -587,7 +647,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let fin of financials" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let fin of financials" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{fin.id}}</td>
                 <td class="py-3 px-4 text-xs">
                   <span [class]="fin.status === 'Paid' ? 'badge bg-success/10 text-success' : fin.status === 'Unpaid' ? 'badge bg-danger/10 text-danger' : fin.status === 'Overdue' ? 'badge bg-warning/10 text-warning' : 'badge bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded text-[10px] font-bold">
@@ -640,28 +700,21 @@
           </table>
         </div>
 
-        <!-- Paginator summary info -->
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div class="flex items-center gap-2">
-            <span>Show</span>
-            <select class="form-select w-16 !text-xs !py-1">
-              <option value="10">10</option>
-              <option value="25">25</option>
-            </select>
-          </div>
-          <div>Showing 1 to 5 of 5 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="financials.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- 📋 INVENTORY TAB CONTENT -->
-      <div *ngIf="activeTab === 'inventory'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'inventory'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inventory Items</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track inventory items associated with this unit.</p>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Inventory
+          <button type="button" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Inventory'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -674,20 +727,42 @@
             </button>
           </div>
           <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-filter-3-line"></i> Filter
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
             </button>
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-layout-column-line"></i> Column
-            </button>
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Columns</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5">
+                        <label class="flex items-center gap-2 hover:bg-gray-50 cursor-pointer rounded m-0">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-[11px] text-gray-700 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-2 hover:bg-gray-50 cursor-pointer rounded m-0">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-[11px] text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-2 hover:bg-gray-50 cursor-pointer rounded m-0">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-[11px] text-gray-700">Status</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
           </div>
         </div>
 
         <!-- Inventory Table -->
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Name</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Item Location</th>
@@ -703,7 +778,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-               <tr *ngFor="let item of inventoryItems" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+               <tr *ngFor="let item of inventoryItems" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                  <td class="py-3 px-4 font-bold text-primary text-xs">{{item.id}}</td>
                  <td class="py-3 px-4 text-xs">
                    <span class="font-semibold text-gray-800 block leading-tight">{{item.itemName}}</span>
@@ -727,28 +802,21 @@
           </table>
         </div>
 
-        <!-- Paginator summary info -->
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div class="flex items-center gap-2">
-            <span>Show</span>
-            <select class="form-select w-16 !text-xs !py-1">
-              <option value="10">10</option>
-              <option value="25">25</option>
-            </select>
-          </div>
-          <div>Showing 1 to 6 of 6 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="inventoryItems.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- 📋 WORK ORDERS TAB CONTENT -->
-      <div *ngIf="activeTab === 'workorders'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'workorders'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Work Orders</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track maintenance work orders associated with this unit.</p>
           </div>
-          <button type="button" [routerLink]="['/facility/work-orders/create']" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Work Order
+          <button type="button" [routerLink]="['/facility/work-orders/create']" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Work Order'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -761,20 +829,80 @@
             </button>
           </div>
           <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-filter-3-line"></i> Filter
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
             </button>
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-layout-column-line"></i> Column
-            </button>
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Column</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Name</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Type</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Internal Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Tags</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Leases</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Contracts</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupancy Rate</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Action</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
+                    </div>
+                </div>
+            </div>
+
+
           </div>
         </div>
 
         <!-- Work Orders Table -->
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Title</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
@@ -798,7 +926,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let wo of workOrders" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let wo of workOrders" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.title}}</td>
                 <td class="py-3 px-4 text-xs">
@@ -835,33 +963,26 @@
           </table>
         </div>
 
-        <!-- Paginator summary info -->
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div class="flex items-center gap-2">
-            <span>Show</span>
-            <select class="form-select w-16 !text-xs !py-1">
-              <option value="10">10</option>
-              <option value="25">25</option>
-            </select>
-          </div>
-          <div>Showing 1 to 5 of 5 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="workOrders.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- 📋 ATTACHMENTS TAB CONTENT -->
-      <div *ngIf="activeTab === 'attachments'" class="flex flex-col gap-3 animate-fade-in"> 
+      <div *ngIf="activeTab === 'attachments'" class="flex flex-col gap-3"> 
          <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
       </div>
 
       <!-- 📋 LEGAL CASES TAB CONTENT -->
-      <div *ngIf="activeTab === 'Legal'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'legal'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Legal Cases</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Track and view litigation files for this unit.</p>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Legal Case
+          <button type="button" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Legal Case'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -872,15 +993,80 @@
               <i class="ri-search-line text-xs"></i>
             </button>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-            <i class="ri-layout-column-line"></i> Column
-          </button>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+            </button>
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Column</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Name</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Type</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Internal Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Tags</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Leases</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Contracts</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupancy Rate</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Action</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
+                    </div>
+                </div>
+            </div>
+
+
+          </div>
         </div>
 
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Details</th>
@@ -896,7 +1082,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let lc of legalCases" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let lc of legalCases" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{lc.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{lc.name}}</td>
                 <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="lc.details">{{lc.details}}</td>
@@ -922,30 +1108,31 @@
           </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div>Showing 1 to 5 of 5 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="legalCases.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- 📋 PARKINGS TAB CONTENT -->
-      <div *ngIf="activeTab === 'parkings'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'parkings'" class="flex flex-col gap-3">
         <app-parkings-table [selectedTab]="selectedTab"></app-parkings-table>
       </div>
 
       <!-- 📋 NOTES TAB CONTENT -->
-      <div *ngIf="activeTab === 'notes'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'notes'" class="flex flex-col gap-3">
         <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
       </div>
 
       <!-- 📋 BROADCASTS TAB CONTENT -->
-      <div *ngIf="activeTab === 'broadcasts'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'broadcasts'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Broadcasts</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage communication broadcasts sent to unit tenants.</p>
           </div>
-          <button type="button" [routerLink]="['/broadcasts/create']" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Broadcasts
+          <button type="button" [routerLink]="['/broadcasts/create']" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Broadcasts'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -957,19 +1144,79 @@
             </button>
           </div>
           <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-filter-3-line"></i> Filter
+            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
+              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
             </button>
-            <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-              <i class="ri-layout-column-line"></i> Column
-            </button>
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Column</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Name</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Type</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Internal Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Tags</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Leases</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Contracts</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupancy Rate</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Action</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
+                    </div>
+                </div>
+            </div>
+
+
           </div>
         </div>
 
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Preview</th>
@@ -990,7 +1237,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let bc of broadcasts" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let bc of broadcasts" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{bc.id}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{bc.subject}}</td>
                 <td class="py-3 px-4 font-medium text-gray-600 text-xs max-w-xs truncate" [title]="bc.preview">{{bc.preview}}</td>
@@ -1027,20 +1274,21 @@
           </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div>Showing 1 to 4 of 4 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="broadcasts.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- 📋 INSPECTIONS TAB CONTENT -->
-      <div *ngIf="activeTab === 'inspections'" class="flex flex-col gap-3 animate-fade-in">
+      <div *ngIf="activeTab === 'inspections'" class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
           <div>
             <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inspection</h4>
             <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track property inspections for this unit.</p>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-3 !text-[0.7rem] bg-primary text-white hover:bg-primary-hover flex items-center gap-1 shadow-sm font-semibold">
-            <i class="ri-add-line"></i> Add Inspection
+          <button type="button" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Inspection'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
 
@@ -1051,15 +1299,77 @@
               <i class="ri-search-line text-xs"></i>
             </button>
           </div>
-          <button type="button" class="ti-btn !py-1.5 !px-2.5 !text-[0.7rem] border bg-white text-gray-700 hover:bg-gray-50 flex items-center gap-1 shadow-sm">
-            <i class="ri-layout-column-line"></i> Column
-          </button>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <div class="relative inline-block">
+                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+                </button>
+                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                        <span class="font-bold text-xs text-gray-700">Column</span>
+                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">ID</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Name</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Type</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Internal Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Tags</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Leases</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Contracts</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Occupancy Rate</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
+                            <span class="text-xs text-gray-700">Action</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
+                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
+                    </div>
+                </div>
+            </div>
+
+
+          </div>
         </div>
 
         <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-gray-50/50">
-              <tr class="border-b border-gray-100">
+            <thead class="bg-info/10">
+              <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Inspection ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Company Id</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
@@ -1079,7 +1389,7 @@
                   <span class="text-gray-500 italic text-sm">No records found</span>
                 </td>
               </tr>
-              <tr *ngFor="let ins of inspections" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 transition-colors">
+              <tr *ngFor="let ins of inspections" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                 <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.inspectionId}}</td>
                 <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.companyId}}</td>
                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.name}}</td>
@@ -1111,10 +1421,160 @@
           </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div>Showing 1 to 5 of 5 records</div>
-        </div>
+        <!-- Pagination -->
+        <mat-paginator *ngIf="!loading" [length]="inspections.length || 0" [pageSize]="50"
+            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
+        </mat-paginator>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Add New Invoice Modal -->
+<app-reusable-modal
+    *ngIf="showAddInvoiceModal"
+    title="Add New Invoice"
+    subtitle="Create an invoice for this lease."
+    saveText="Save Invoice"
+    cancelText="Close"
+    (save)="showAddInvoiceModal = false"
+    (close)="showAddInvoiceModal = false">
+    
+    <div class="space-y-6">
+        <!-- Invoice Details Section -->
+        <div class="border border-gray-200 rounded-md p-4 bg-white relative">
+            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">Invoice Details</div>
+            <div class="absolute -top-3 right-3 bg-white px-2 text-xs font-semibold text-gray-600 flex items-center gap-1">
+                <input type="checkbox" class="form-checkbox text-primary rounded border-gray-300 w-3 h-3"> Inclusive Tax?
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <!-- Amount -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Amount <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-gray-50 !text-xs text-gray-500 border-e-0 font-medium">AED</span>
+                        <input type="number" class="form-control form-control-sm !text-xs border-s-0" placeholder="0.00">
+                    </div>
+                </div>
+                <!-- Account -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Account <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm !text-xs w-full text-gray-500">
+                        <option value="">Select Account</option>
+                    </select>
+                </div>
+                <!-- Due On -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Due On <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-gray-50 !text-xs text-gray-500 border-e-0"><i class="ri-calendar-line"></i></span>
+                        <input type="text" class="form-control form-control-sm !text-xs border-s-0" placeholder="DD/MM/YYYY">
+                    </div>
+                </div>
+                <!-- Invoice Number -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Invoice Number</label>
+                    <input type="text" class="form-control form-control-sm !text-xs w-full" placeholder="Enter">
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Setup Section -->
+        <div class="border border-gray-200 rounded-md p-4 bg-white relative mt-2">
+            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">Payment Setup</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <!-- Recurring Cycle -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Recurring Cycle <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm !text-xs w-full text-gray-500">
+                        <option value="">Select</option>
+                    </select>
+                </div>
+                <!-- Tax Profile -->
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Tax Profile</label>
+                    <select class="form-select form-select-sm !text-xs w-full text-gray-500">
+                        <option value="">Select Account</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-reusable-modal>
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
+<div class="filter-drawer" [class.open]="isDrawerOpen">
+  <div class="drawer-header">
+    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
+    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
+      <i class="ri-close-line text-lg"></i>
+    </button>
+  </div>
+  <div class="drawer-body p-4 flex flex-col gap-3 text-[11px]">
+    <!-- Filter by Tags -->
+    <div class="relative">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <i class="ri-price-tag-3-line text-gray-400"></i>
+      </div>
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Tags">
+    </div>
+    <!-- Filter by Area (sqft) -->
+    <div class="relative">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <i class="ri-ruler-line text-gray-400"></i>
+      </div>
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Area (sqft)">
+    </div>
+    <!-- Filter by ID -->
+    <div class="relative">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <i class="ri-search-line text-gray-400"></i>
+      </div>
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by ID">
+    </div>
+    <!-- Filter by Reference no -->
+    <div class="relative">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <i class="ri-search-line text-gray-400"></i>
+      </div>
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Reference no">
+    </div>
+    <!-- Off Plan Status -->
+    <div>
+      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md">
+        <option value="">Off Plan Status</option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
+    <!-- Filter by Landlord -->
+    <div class="relative">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <i class="ri-user-line text-gray-400"></i>
+      </div>
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Landlord">
+    </div>
+    <!-- Internal Status -->
+    <div>
+      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md">
+        <option value="">Internal Status</option>
+        <option>Active</option>
+        <option>Inactive</option>
+      </select>
+    </div>
+  </div>
+  <div class="drawer-footer flex justify-between gap-4 p-4 border-t border-gray-100">
+    <button type="button" (click)="toggleDrawer(false)"
+      class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors">
+      Clear
+    </button>
+    <button type="button" (click)="toggleDrawer(false)"
+      class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors">
+      Close
+    </button>
+  </div>
+</div>
+
+

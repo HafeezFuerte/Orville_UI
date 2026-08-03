@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormArray, FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
@@ -19,9 +19,16 @@ import { NgSelectModule } from '@ng-select/ng-select';
   styleUrl: './add-property.component.scss'
 })
 export class AddPropertyComponent {
-public propertyForm!: FormGroup;
-propertyImages: File[] = [];
-public isLoading = false;
+  public propertyForm!: FormGroup;
+  propertyImages: File[] = [];
+  public isLoading = false;
+  public showScrollToTop = false;
+
+  @HostListener("window:scroll", [])
+  onWindowScroll() {
+    const number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    this.showScrollToTop = number > 600;
+  }
 propertyTypes: any[] = [];
 countries: any[] = [];
 states: any[] = [];

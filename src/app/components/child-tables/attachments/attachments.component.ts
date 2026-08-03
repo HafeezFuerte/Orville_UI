@@ -29,7 +29,7 @@ export class AttachmentsComponent {
   emptyMessage: string = 'web.common.lblNoRecordsFound';
 
   totalRecords: number = 0;
-  columns = [ 
+  columns: any[] = [ 
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'document_type_name', label: 'web.property.lblFileType',  useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'doc_no', label: 'web.property.lblDocID', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
@@ -106,6 +106,37 @@ export class AttachmentsComponent {
     }
     return true;
   }
+  
+  isEditMode: boolean = false;
+  isColumnDropdownOpen = false;
+  isDrawerOpen = false;
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    return this.columns.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    this.columns.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    if (!this.columns?.length) return false;
+    return this.columns.every((c: any) => c.visible !== false);
+  }
+
   saveAttachment(){
     const attachmentLabels = {
       documentType: this.translate.instant('web.portfolio.popups.attachments.lblDocumentType'),
@@ -144,7 +175,8 @@ export class AttachmentsComponent {
         if (res["statusCode"] == "200") { 
           this.selectedTab.form.reset();
           this.closeModal();
-          this.data = res.objResult.table; 
+          this.data = res.objResult.table || []; 
+          this.totalRecords = this.data.length;
         }
         else{
           this.toastr.error(res['message'],"Error");
@@ -164,6 +196,7 @@ export class AttachmentsComponent {
     this.data=result; 
   }
   openModal() {
+    this.isEditMode = false;
     this.showModal = true;
     this.selectedTab.form.reset();
   }
@@ -171,7 +204,8 @@ export class AttachmentsComponent {
     this.currentUser = this.commonService.getCurrentUser();
     this.attachmentsForm = this.selectedTab?.form;
     this.selectedNote = {};
-    this.data = this.selectedTab?.data;
+    this.data = this.selectedTab?.data || [];
+    this.totalRecords = this.data.length;
     this.selectedTab.form = this.fb.group({
       documentType: ['', Validators.required],
       documentNumber: ['', Validators.required],
@@ -192,6 +226,7 @@ export class AttachmentsComponent {
     row.action_name = action;
     this.selectedNote = row;
     if (action == "edit") {
+      this.isEditMode = true;
       this.showModal = true;
       this.selectedTab.form.patchValue({
         documentType: row?.document_type,
@@ -209,7 +244,9 @@ export class AttachmentsComponent {
     }
   }
   private formatDate(date:any) {
+    if (!date) return '';
     const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
     let month = '' + (d.getMonth() + 1);
     let day = '' + d.getDate();
     const year = d.getFullYear();
@@ -259,7 +296,6 @@ export class AttachmentsComponent {
     if (!html) {
       return '-';
     }
-
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent || div.innerText || '-';
@@ -267,4 +303,31 @@ export class AttachmentsComponent {
   getValueWithCurrency(val: any) {
     return this.currentUser?.currencyCode + ' ' + val;
   }
+
+  // Filter Drawer State Variables
+  filterId: string = '';
+  filterFileType: string = '';
+  filterDocumentStatus: string = '';
+
+  applyFilters() {
+    let result = this.selectedTab?.data || [];
+    if (this.filterId) {
+      result = result.filter((p: any) => p.code?.toString().includes(this.filterId));
+    }
+    if (this.filterFileType) {
+      result = result.filter((p: any) => p.document_type_name?.toLowerCase().includes(this.filterFileType.toLowerCase()));
+    }
+    if (this.filterDocumentStatus) {
+      result = result.filter((p: any) => p.document_status_name?.toLowerCase().includes(this.filterDocumentStatus.toLowerCase()));
+    }
+    this.data = result;
+  }
+
+  clearFilters() {
+    this.filterId = '';
+    this.filterFileType = '';
+    this.filterDocumentStatus = '';
+    this.applyFilters();
+  }
+
 }

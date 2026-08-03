@@ -40,6 +40,25 @@ export class SupportTechniciansComponent implements OnInit {
   showColumnDropdown: boolean = false;
   statusFilter: 'All' | 'Active' | 'Blocked' = 'All';
   isLoading: boolean = false;
+  isDrawerOpen = false;
+
+  // Filter criteria
+  filterName: string = '';
+  filterEmail: string = '';
+  filterStatus: string | null = null;
+
+  statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterName = '';
+    this.filterEmail = '';
+    this.filterStatus = null;
+    this.pageNo = 1;
+    this.loadTechnicians();
+  }
 
   // Pagination
   pageNo = 0;
@@ -120,7 +139,6 @@ export class SupportTechniciansComponent implements OnInit {
         }
         else
           this.toastr.error("No record[s] found"); 
- 
       },
       error: (err: any) => {
         this.isLoading = false;
@@ -133,7 +151,7 @@ export class SupportTechniciansComponent implements OnInit {
     this.pageNo = 0;
     this.loadTechnicians();
   }
-  
+
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 0;
@@ -152,7 +170,7 @@ export class SupportTechniciansComponent implements OnInit {
       this.pageSize = event.pageSize;  
     this.loadTechnicians();
   }
-  
+
   handleEditAction(row: any) {
     if (row.action_name === 'edit') {
       this.router.navigate(['/contacts/support-technicians/edit-support-technician', row.code]);

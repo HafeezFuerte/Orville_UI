@@ -366,6 +366,7 @@ exports.locale = {
                 "lblProTipDescription": "Make sure to fill in the latitude and longitude for accurate location mapping. Property type determines the lease templates available."
             },
             "common": {
+                 "lblUnits": "الوحدات",
                 "lblEmployeePortal": "بوابة الموظف",
                 "lblAttendancetab": "تصحيح الحضور",
  "lblPayrollDate": "تاريخ الرواتب",

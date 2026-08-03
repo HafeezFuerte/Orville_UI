@@ -107,13 +107,13 @@ export class BroadcastListComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex + 1;
+    this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadData();
   }
 
   onSearch() {
-    this.pageNo = 1;
+    this.pageNo = 0;
     this.loadData();
   }
  

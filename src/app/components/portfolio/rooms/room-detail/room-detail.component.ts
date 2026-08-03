@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { PropertiesService } from '../../services/properties.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
@@ -53,10 +54,12 @@ export interface Room {
   reraNumber?: string;
 }
 
+import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
+
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, ReusableModalComponent],
   templateUrl: './room-detail.component.html',
   styleUrl: './room-detail.component.scss'
 })
@@ -65,9 +68,13 @@ export class RoomDetailComponent implements OnInit {
   unit: Room | null = null;
   activeTab: string = 'overview';
   showMoreDetails: boolean = false;
+  showAddInvoiceModal: boolean = false;
+  showAddInventoryModal: boolean = false;
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
   notesForm!: FormGroup;
+  isColumnDropdownOpen: boolean = false;
+  isDrawerOpen: boolean = false;
   inpectionsColumns = [
     { key: 'lease_code', label: 'web.common.lblID',is_editCol:true},
     { key: 'tenant ', label: 'web.common.lblName' },
@@ -103,7 +110,13 @@ export class RoomDetailComponent implements OnInit {
   mode: 'property' | 'unit' | 'room' | 'parking' = 'unit';
   item: any = null;
   currentUser: AuthPayload | null = null;
-  constructor(private route: ActivatedRoute,  private commonService: CommonService, private propertiesService: PropertiesService) {}
+  inventoryItemName: string = '';
+  inventoryItemLocation: string = '';
+  inventoryItemQty: number = 1;
+  inventoryItemExpiry: string = '';
+  inventoryFiles: File[] = [];
+
+  constructor(private route: ActivatedRoute,  private commonService: CommonService, private propertiesService: PropertiesService, private portfolioService: PortfolioService) {}
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
@@ -402,13 +415,6 @@ export class RoomDetailComponent implements OnInit {
       // { key: 'financials', label: 'web.Unit.lblFinancials' },
       // { key: 'inventory', label: 'web.Unit.lblInventory' },
       // { key: 'workorders', label: 'web.Unit.lblWorkOrders' },
-      // { key: 'attachments', label: 'web.Unit.lblAttachments' },
-      // { key: 'legal', label: 'web.Unit.lblLegal' },
-      // { key: 'parkings', label: 'web.Unit.lblParkings' },
-      // { key: 'notes', label: 'web.Unit.lblNotes' },
-      // { key: 'broadcasts', label: 'web.Unit.lblBroadcasts' },
-      // { key: 'inspections', label: 'web.Unit.lblInspections' }
-
       {
         key: 'overview',
         label: 'web.common.lblOverview',
@@ -416,7 +422,7 @@ export class RoomDetailComponent implements OnInit {
       },
   
       {
-        key: 'lblFinancials',
+        key: 'financials',
         label: 'web.common.lblFinancials',
         layout: 'content', 
         data: this.financials,
@@ -426,6 +432,17 @@ export class RoomDetailComponent implements OnInit {
         addButtonText: 'Unit'
       },
   
+      {
+        key: 'inventory',
+        label: 'web.common.lblInventory',
+        layout: 'content', 
+        data: this.inventoryItems,
+        totalRecords: this.inventoryItems?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Inventory'
+      },
+
       {
         key: 'workorders',
         label: 'web.common.lblWorkOrders',
@@ -437,21 +454,6 @@ export class RoomDetailComponent implements OnInit {
         addButtonText: 'Room'
       },
   
-     
-  {
-        key: 'Legal',
-        label: 'web.common.lblLegal',
-        layout: 'content', 
-        entity:"Units",
-        entity_id:this.roomId,
-        data: this.legalCases,
-        totalRecords: this.legalCases?.length || 0,
-        loading: this.loading,
-        hasActions: true,
-        addButtonText: 'Common Area',
-        form: FormGroup,
-        popupType: 'legal'
-      },
       {
         key: 'attachments',
         label: 'web.common.lblAttachments',
@@ -467,15 +469,31 @@ export class RoomDetailComponent implements OnInit {
         popupType: 'attachment'      
       },
       {
-        key: 'broadcasts',
-        label: 'web.common.lblBroadcasts',
-        layout: 'table',
-        columns: this.broadCastsColumns,
-        data: this.broadcasts,
-        totalRecords: this.broadcasts?.length || 0,
+        key: 'Legal',
+        label: 'web.common.lblLegal',
+        layout: 'content', 
+        entity:"Units",
+        entity_id:this.roomId,
+        data: this.legalCases,
+        totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Broadcasts'
+        addButtonText: 'Common Area',
+        form: FormGroup,
+        popupType: 'legal'
+      },
+      {
+        key: 'parkings',
+        label: 'web.common.lblParkings',
+        layout: 'content', 
+        data: this.parkings,
+        entity:"Units",
+        entity_id:this.unit?.property,
+        filter_code:this.roomId,
+        totalRecords: this.parkings?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Parking'
       },
       {
         key: 'notes',
@@ -492,22 +510,20 @@ export class RoomDetailComponent implements OnInit {
         popupType: 'notes'
       },
       {
-        key: 'parkings',
-        label: 'web.common.lblParkings',
-        layout: 'content', 
-        data: this.parkings,
-        entity:"Units",
-        entity_id:this.unit?.property,
-        filter_code:this.roomId,
-        totalRecords: this.parkings?.length || 0,
+        key: 'broadcasts',
+        label: 'web.common.lblBroadcasts',
+        layout: 'content',
+        columns: this.broadCastsColumns,
+        data: this.broadcasts,
+        totalRecords: this.broadcasts?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Parking'
+        addButtonText: 'Broadcasts'
       },
       {
-        key: 'Inspections',
+        key: 'inspections',
         label: 'web.common.lblInspections',
-        layout: 'table',
+        layout: 'content',
         columns: this.inpectionsColumns,
         data: this.inspections,
         totalRecords: this.inpectionsColumns?.length || 0,
@@ -529,5 +545,58 @@ export class RoomDetailComponent implements OnInit {
 
   toggleMoreDetails(): void {
     this.showMoreDetails = !this.showMoreDetails;
+  }
+
+  toggleDrawer(state: boolean): void {
+    this.isDrawerOpen = state;
+  }
+
+  onInventoryFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      for (let i = 0; i < event.target.files.length; i++) {
+        this.inventoryFiles.push(event.target.files[i]);
+      }
+    }
+  }
+
+  saveInventoryItem() {
+    const formData = new FormData();
+    formData.append('userid', (this.currentUser?.userId || 1).toString());
+    formData.append('company_id', (this.currentUser?.companyId || 1).toString());
+    formData.append('clientId', this.currentUser?.clientId || '74BB6922');
+    formData.append('source', 'web');
+    formData.append('languageid', '1');
+    formData.append('code', '');
+    formData.append('entity', 'Units');
+    formData.append('entity_id', this.roomId);
+    formData.append('item_name', this.inventoryItemName || '');
+    formData.append('location', this.inventoryItemLocation || '');
+    formData.append('expiry_date', this.inventoryItemExpiry ? new Date(this.inventoryItemExpiry).toISOString() : '');
+    formData.append('qty', (this.inventoryItemQty || 0).toString());
+
+    if (this.inventoryFiles && this.inventoryFiles.length > 0) {
+      this.inventoryFiles.forEach((file: File) => {
+        formData.append('file_paths', file);
+      });
+    }
+
+    this.portfolioService.saveInventoryItem(formData).subscribe({
+      next: (res: any) => {
+        if (res.statusCode === 200) {
+          this.showAddInventoryModal = false;
+          this.inventoryItemName = '';
+          this.inventoryItemLocation = '';
+          this.inventoryItemQty = 1;
+          this.inventoryItemExpiry = '';
+          this.inventoryFiles = [];
+          this.fetchDetails(this.roomId);
+        } else {
+          console.error('Failed to save inventory item:', res);
+        }
+      },
+      error: (err) => {
+        console.error('Error saving inventory item:', err);
+      }
+    });
   }
 }

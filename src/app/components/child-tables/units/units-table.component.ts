@@ -22,7 +22,7 @@ export class UnitsTableComponent {
      searchQuery: string = '';
   /** The data to display in the table */
   @Input() data: any[] = [];
-  unitColumns = [
+  unitColumns: any[] = [
     { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/units",edit_col:"code",
     useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false},
     { key: 'unit_code', label: 'web.common.lblName', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: ''},
@@ -43,7 +43,7 @@ export class UnitsTableComponent {
     { key: 'sale_status', label: 'web.contacts.lblSaleStatus', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' } 
   ];
   
-  roomColumns = [
+  roomColumns: any[] = [
     { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/rooms",edit_col:"code",
     useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false},
     { key: 'property_Name', label: 'web.property.lblProperty', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
@@ -116,6 +116,35 @@ export class UnitsTableComponent {
   
   }
 
+  isColumnDropdownOpen = false;
+  isDrawerOpen = false;
+
+  toggleDrawer(open: boolean) {
+    this.isDrawerOpen = open;
+  }
+
+  toggleColumnDropdown() {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
+  }
+
+  get visibleColumns() {
+    return this.columns.filter((c: any) => c.visible !== false);
+  }
+
+  toggleColumn(col: any) {
+    col.visible = !(col.visible !== false);
+  }
+
+  toggleAllColumns(event: any) {
+    const isChecked = event.target.checked;
+    this.columns.forEach((c: any) => c.visible = isChecked);
+  }
+
+  get allColumnsVisible() {
+    if (!this.columns?.length) return false;
+    return this.columns.every((c: any) => c.visible !== false);
+  }
+
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser(); 
     if(this.selectedTab.key=="units")
@@ -148,6 +177,7 @@ export class UnitsTableComponent {
     row.action_name=action;
     this.notify_edit_action.emit(row);
   }
+
   linkClick(row:any,col:any){ 
     window.open(row[col.key],"_blank");
   }
@@ -166,4 +196,38 @@ export class UnitsTableComponent {
 getValueWithCurrency(val:any){
   return this.currentUser?.currencyCode+ ' '+ val;
 }
+
+  // Filter Drawer State Variables
+  filterTags: string = '';
+  filterArea: string = '';
+  filterId: string = '';
+  filterRefNo: string = '';
+  filterOffPlanStatus: string = '';
+  filterLandlord: string = '';
+  filterInternalStatus: string = '';
+
+  applyFilters() {
+    let result = this.selectedTab?.data || [];
+    if (this.filterId) {
+      result = result.filter((p: any) => p.code?.toString().includes(this.filterId));
+    }
+    if (this.filterTags) {
+      result = result.filter((p: any) => p.tags?.toLowerCase().includes(this.filterTags.toLowerCase()));
+    }
+    if (this.filterLandlord) {
+      result = result.filter((p: any) => p.landlord?.toLowerCase().includes(this.filterLandlord.toLowerCase()));
+    }
+    this.data = result;
+  }
+
+  clearFilters() {
+    this.filterTags = '';
+    this.filterArea = '';
+    this.filterId = '';
+    this.filterRefNo = '';
+    this.filterOffPlanStatus = '';
+    this.filterLandlord = '';
+    this.filterInternalStatus = '';
+    this.applyFilters();
+  }
 }
