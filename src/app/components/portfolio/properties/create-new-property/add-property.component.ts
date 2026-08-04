@@ -319,6 +319,7 @@ validatePayments(errors: string[]): void {
   });
 }
 onSubmit() { 
+  debugger;
   const propertyFormLabels = {
   propertyName: this.translate.instant('web.property.lblPropertyName'),
   propertyType: this.translate.instant('web.property.lblPropertyType'),
@@ -354,7 +355,8 @@ onSubmit() {
   propertyImage: this.translate.instant('web.property.lblPropertyImage')
 };
  const errors: string[] = [];
-
+ const form = this.propertyForm.value;
+    
 this.validateForm(this.propertyForm, propertyFormLabels, errors);
 
 this.validatePayments(errors);
@@ -373,7 +375,6 @@ if (errors.length > 0) {
 
   return;
 }
-    const form = this.propertyForm.value;
     
     const request = {
       userid: Number(localStorage.getItem('userId')) || 1,
@@ -446,13 +447,13 @@ if (errors.length > 0) {
     // API call here
 }
 onCountryChange(countryId: any): void {
-  if (countryId) {
-    this.loadMasterDataByType(2,1001,'states',countryId.toString(),'');
+  if (countryId) { 
+    this.loadMasterDataByType(2,1001,'states',countryId.id,'');
   }
 }
 onStateChange(stateId: any): void{
   if (stateId) {
-    this.loadMasterDataByType(2,1002,"cities",stateId.toString(),'');
+    this.loadMasterDataByType(2,1002,"cities",stateId.id,'');
   }
 }
 
