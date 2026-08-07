@@ -8,10 +8,12 @@ import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-shared-units-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule],
+  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule, FilterDrawerComponent],
   templateUrl: './units-table.component.html',
   styleUrls: ['./units-table.component.scss']
 })

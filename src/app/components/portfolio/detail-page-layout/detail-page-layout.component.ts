@@ -19,10 +19,11 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NotesPopupComponent } from '../../child-tables/modal-popups/notes-popup/notes-popup.component';
 import { ConfirmPopupComponent } from '../popups/confirm-dialog/confirm-dialog';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 @Component({
   selector: 'app-detail-page-layout',
   standalone: true,
-  imports: [FormsModule,CommonModule,RouterModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent,ConfirmPopupComponent, TranslateModule, NotesPopupComponent],
+  imports: [FormsModule,CommonModule,RouterModule, SharedTableComponent, ReusableModalComponent, CommonAreaPopupComponent,AttachmentPopupComponent,ConfirmPopupComponent, TranslateModule, NotesPopupComponent, FilterDrawerComponent],
   templateUrl: './detail-page-layout.component.html'
 })
 export class DetailPageLayoutComponent {

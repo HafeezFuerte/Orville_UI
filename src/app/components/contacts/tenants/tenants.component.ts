@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 export interface Tenant {
   id: number;
   code: string;
@@ -27,7 +28,7 @@ export interface Tenant {
 @Component({
   selector: 'app-tenants',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './tenants.component.html',
   styleUrl: './tenants.component.scss'
 })

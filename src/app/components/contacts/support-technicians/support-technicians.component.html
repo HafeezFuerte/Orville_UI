@@ -13,13 +13,15 @@
     </div>
   </div>
   <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium" title="Export">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+      [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <i class="ri-download-2-line text-sm"></i>
-      {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" routerLink="/contacts/support-technicians/add-support-technician" class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border border-primary flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm gap-1.5 font-medium">
+    <button type="button" routerLink="/contacts/support-technicians/add-support-technician"
+      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
+      [attr.data-tooltip]="'web.contacts.lblAddTechnician' | translate">
       <i class="ri-add-line text-sm"></i>
-      {{ 'web.contacts.lblAddTechnician' | translate }}
     </button>
   </div>
 </div>
@@ -53,17 +55,18 @@
 
       <div class="flex items-center gap-2">
         <!-- Filter Button -->
-        <button type="button" (click)="toggleDrawer(true)" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
-          <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-          {{ 'web.contacts.lblFilter' | translate }}
+        <button type="button" (click)="toggleDrawer(true)"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+          <i class="ri-filter-3-line text-sm"></i>
         </button>
 
         <!-- Column Button with dropdown overlay -->
         <div class="relative">
           <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-            class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
-            <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-            {{ 'web.contacts.lblColumn' | translate }}
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+            <i class="ri-layout-column-line text-sm"></i>
           </button>
           
           <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
@@ -153,22 +156,19 @@
 </div>
 
 <!-- 🚪 SLIDING FILTER DRAWER -->
-<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
-<div class="filter-drawer" [class.open]="isDrawerOpen">
-  <div class="drawer-header">
-    <h5 class="m-0 text-sm font-bold text-gray-800">Filter Technicians</h5>
-    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
-      <i class="ri-close-line text-lg"></i>
-    </button>
-  </div>
-  <div class="drawer-body text-[11px]">
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="onSearch()" 
+  (clear)="clearFilters()">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Name</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterName" placeholder="Enter name">
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterName" placeholder="Enter name">
     </div>
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Email</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterEmail" placeholder="Enter email">
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterEmail" placeholder="Enter email">
     </div>
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Status</label>
@@ -176,10 +176,5 @@
         placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
-  <div class="drawer-footer">
-    <button type="button" (click)="onSearch(); toggleDrawer(false)"
-      class="flex-1 ti-btn bg-primary text-white font-semibold text-xs !py-2 !px-4 rounded-md">Apply Filters</button>
-    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
-      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">Clear All</button>
-  </div>
-</div>
+  
+</app-filter-drawer>

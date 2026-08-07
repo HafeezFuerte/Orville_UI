@@ -13,10 +13,12 @@ import { NotesPopupComponent } from '../modal-popups/notes-popup/notes-popup.com
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-notes-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, NotesPopupComponent, TranslateModule, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, NotesPopupComponent, TranslateModule, MatPaginatorModule, FilterDrawerComponent],
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss']
 })

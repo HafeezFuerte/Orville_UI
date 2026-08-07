@@ -8,11 +8,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
   selector: 'app-vendor-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, FilterDrawerComponent],
   templateUrl: './vendor-detail.component.html',
   styleUrl: './vendor-detail.component.scss'
 })
@@ -29,19 +30,31 @@ export class VendorDetailComponent implements OnInit {
     if (this.activeTab === 'Notes') {
       return {
         key: 'notes',
+        label: 'Notes',
         entity: 'vendor',
         entity_id: this.vendorId,
         data: this.noteData || [],
-        form: this.notesForm
+        totalRecords: (this.noteData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.notesForm,
+        popupType: 'notes'
       };
     }
     if (this.activeTab === 'Attachments') {
       return {
         key: 'attachments',
+        label: 'Attachments',
         entity: 'vendor',
         entity_id: this.vendorId,
         data: this.attachmentData || [],
-        form: this.attachmentsForm
+        totalRecords: (this.attachmentData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.attachmentsForm,
+        popupType: 'attachment'
       };
     }
     return null;
@@ -105,6 +118,17 @@ export class VendorDetailComponent implements OnInit {
   showPersonalDetails = true;
   showActionDropdown = false;
   showSubscriptionsModal = false;
+  showAddUserModal = false;
+  showAddTechnicianModal = false;
+  showFilterDrawer = false;
+  
+  showUnitColumnDropdown = false;
+  showBillColumnDropdown = false;
+  showPoColumnDropdown = false;
+
+  toggleDrawer(show: boolean) {
+    this.showFilterDrawer = show;
+  }
 
   // Assigned category toggles
   categories = [
@@ -327,6 +351,11 @@ export class VendorDetailComponent implements OnInit {
     { key: 'email', label: 'web.contacts.lblEmail', visible: true },
     { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true },
     { key: 'role', label: 'web.contacts.lblRole', visible: true },
+    { key: 'type', label: 'web.contacts.lblType', visible: true },
+    { key: 'timezone', label: 'web.contacts.lblTimeZone', visible: true },
+    { key: 'country', label: 'web.contacts.lblCountry', visible: true },
+    { key: 'isDefault', label: 'web.contacts.lblDefault', visible: true },
+    { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
   ];
@@ -352,5 +381,59 @@ export class VendorDetailComponent implements OnInit {
 
   setFinancialSubTab(subTab: string) {
     this.activeFinancialSubTab = subTab;
+  }
+
+  get visibleUnitColumns() {
+    return this.unitColumns.filter(col => col.visible !== false);
+  }
+
+  toggleUnitColumn(colKey: string) {
+    const col = this.unitColumns.find(c => c.key === colKey);
+    if (col) col.visible = !col.visible;
+  }
+
+  toggleAllUnitColumns(event: any) {
+    const checked = event.target.checked;
+    this.unitColumns.forEach(c => c.visible = checked);
+  }
+
+  get allUnitColumnsSelected(): boolean {
+    return this.unitColumns.every(c => c.visible !== false);
+  }
+
+  get visibleBillColumns() {
+    return this.billColumns.filter(col => col.visible !== false);
+  }
+
+  toggleBillColumn(colKey: string) {
+    const col = this.billColumns.find(c => c.key === colKey);
+    if (col) col.visible = !col.visible;
+  }
+
+  toggleAllBillColumns(event: any) {
+    const checked = event.target.checked;
+    this.billColumns.forEach(c => c.visible = checked);
+  }
+
+  get allBillColumnsSelected(): boolean {
+    return this.billColumns.every(c => c.visible !== false);
+  }
+
+  get visiblePoColumns() {
+    return this.poColumns.filter(col => col.visible !== false);
+  }
+
+  togglePoColumn(colKey: string) {
+    const col = this.poColumns.find(c => c.key === colKey);
+    if (col) col.visible = !col.visible;
+  }
+
+  toggleAllPoColumns(event: any) {
+    const checked = event.target.checked;
+    this.poColumns.forEach(c => c.visible = checked);
+  }
+
+  get allPoColumnsSelected(): boolean {
+    return this.poColumns.every(c => c.visible !== false);
   }
 }

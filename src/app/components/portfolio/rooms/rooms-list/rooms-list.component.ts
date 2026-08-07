@@ -11,6 +11,7 @@ import { Common_TabsService } from '../../services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 export interface Room {
   id: number;
   name: string;
@@ -34,7 +35,7 @@ export interface Room {
 @Component({
   selector: 'app-rooms-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule],
+  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
   templateUrl: './rooms-list.component.html',
   styleUrl: './rooms-list.component.scss'
 })

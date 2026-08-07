@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
@@ -22,7 +23,7 @@ export interface Asset {
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss'
 })
@@ -55,6 +56,24 @@ export class AssetListComponent implements OnInit {
   ];
 
   assetData: Asset[] = [];
+
+  showColumnDropdown: boolean = false;
+
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find(c => c.key === key);
+    if (col) {
+      col.visible = !col.visible;
+    }
+  }
+
+  toggleAllColumns(event: any): void {
+    const checked = event.target.checked;
+    this.tableColumns.forEach(c => c.visible = checked);
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
@@ -89,9 +108,15 @@ export class AssetListComponent implements OnInit {
     this.portfolioService.getMastersByPaging(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res && res.objResult && res.objResult.table) {
-          this.assetData = res.objResult.table;
-          this.totalRecords = res.objResult.total_records || res.objResult.table.length;
+        if (res && res.objResult) {
+          const rawAssets = res.objResult.assets || res.objResult.table || [];
+          this.assetData = rawAssets.map((item: any) => ({
+            ...item,
+            assetName: item.asset_name || item.assetName || '',
+            Vendor: item.vendor || item.Vendor || '',
+            PurchaseDate: item.purchase_date || item.PurchaseDate || ''
+          })).sort((a: any, b: any) => a.id - b.id);
+          this.totalRecords = res.objResult.total_records || (res.objResult.rows_info && res.objResult.rows_info[0]?.totalrecords) || this.assetData.length;
         }
       },
       error: (err) => {

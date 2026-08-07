@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 export interface Technician {
   id: number;
   code: string;
@@ -26,7 +27,7 @@ export interface Technician {
 @Component({
   selector: 'app-support-technicians',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './support-technicians.component.html',
   styleUrl: './support-technicians.component.scss'
 })

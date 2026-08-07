@@ -200,37 +200,25 @@
 </app-delete-confirmation>
 
 <!-- 🚪 SLIDING FILTER DRAWER -->
-<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
-<div class="filter-drawer" [class.open]="isDrawerOpen">
-  <div class="drawer-header">
-    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
-    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
-      <i class="ri-close-line text-lg"></i>
-    </button>
-  </div>
-  <div class="drawer-body text-[11px]">
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="applyFilters()" 
+  (clear)="clearFilters()">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
     <!-- Filter by ID -->
-    <div class="flex flex-col mb-3">
+    <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterId"
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterId"
         (keyup.enter)="applyFilters()" placeholder="e.g. 52658">
     </div>
 
     <!-- Filter by Area Name -->
-    <div class="flex flex-col mb-3">
+    <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area Name</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterAreaName"
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterAreaName"
         (keyup.enter)="applyFilters()" placeholder="e.g. Community Hall">
     </div>
   </div>
-  <div class="drawer-footer">
-    <button type="button" (click)="applyFilters(); toggleDrawer(false)"
-      class="flex-1 ti-btn bg-primary text-white hover:bg-primary-hover font-semibold text-xs !py-2 !px-4 rounded-md">
-      Apply Filters
-    </button>
-    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
-      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">
-      Clear All
-    </button>
-  </div>
-</div>
+  
+</app-filter-drawer>

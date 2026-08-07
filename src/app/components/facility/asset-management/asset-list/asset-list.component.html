@@ -12,12 +12,16 @@
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    
-    <button (click)="navigateToCreate()" class="px-3 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm flex items-center gap-1.5">
-      <i class="ri-add-line text-sm"></i> Add New Asset 
+  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+      [attr.data-tooltip]="'Report'">
+      <i class="ri-bar-chart-2-fill text-sm"></i>
+    </button>
+    <button type="button" (click)="navigateToCreate()"
+      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
+      [attr.data-tooltip]="'Add Asset'">
+      <i class="ri-add-line text-sm"></i>
     </button>
   </div>
 </div>
@@ -28,21 +32,63 @@
   
   <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
     <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assets list</h6>
-    <div class="relative">
-      <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearch()"
-        placeholder="Search..."
-        class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
-      />
+    <div class="flex items-center gap-3">
+      <div class="input-group w-56">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search..."
+          class="form-control !text-[11px] !py-1.5 bg-gray-50 border-gray-200"
+        />
+        <button type="button" (click)="onSearch()"
+          class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
+          <i class="ri-search-line"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Filter Button -->
+        <button type="button"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+          <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        </button>
+
+        <!-- Column Button with dropdown overlay -->
+        <div class="relative">
+          <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'Columns'">
+            <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
+          </button>
+
+          <!-- Column toggling checklist dropdown overlay -->
+          <div *ngIf="showColumnDropdown"
+            class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+            <label
+              class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
+              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              Select All
+            </label>
+            <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+              <label *ngFor="let col of tableColumns"
+                class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
+                  class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+                {{ col.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Table -->
   <app-shared-table 
-    [columns]="tableColumns" 
+    [columns]="visibleColumns" 
     [data]="assetData" 
     [hasActions]="true" 
     [totalRecords]="totalRecords" 

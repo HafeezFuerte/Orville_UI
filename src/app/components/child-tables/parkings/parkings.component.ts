@@ -12,10 +12,12 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { ParkingPopupComponent } from '../modal-popups/parking-popup/parking-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-parkings-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, ParkingPopupComponent, TranslateModule, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, ParkingPopupComponent, TranslateModule, MatPaginatorModule, FilterDrawerComponent],
   templateUrl: './parkings.component.html',
   styleUrls: ['./parkings.component.scss']
 })

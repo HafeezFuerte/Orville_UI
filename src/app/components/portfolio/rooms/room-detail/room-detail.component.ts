@@ -55,11 +55,12 @@ export interface Room {
 }
 
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, ReusableModalComponent],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, ReusableModalComponent, FilterDrawerComponent],
   templateUrl: './room-detail.component.html',
   styleUrl: './room-detail.component.scss'
 })

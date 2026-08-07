@@ -83,16 +83,18 @@
     <!-- Filter & Column Buttons -->
     <div class="flex items-center gap-2">
       <!-- Filter Button -->
-      <button type="button" (click)="isDrawerOpen = !isDrawerOpen"
-        class="ti-btn border bg-white text-xs font-semibold py-1.5 px-3 rounded-md flex items-center gap-1.5 shadow-sm hover:bg-gray-50 transition-all duration-200">
-        <i class="ri-filter-3-line"></i> Filter
+      <button type="button" (click)="toggleDrawer(true)"
+        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
       </button>
 
       <!-- Column Button with dropdown overlay -->
       <div class="relative">
         <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-          class="ti-btn border bg-white text-xs font-semibold py-1.5 px-3 rounded-md flex items-center gap-1.5 shadow-sm hover:bg-gray-50 transition-all duration-200">
-          <i class="ri-menu-add-line"></i> Column
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Columns'">
+          <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
         </button>
 
         <!-- Column toggling checklist dropdown overlay -->
@@ -117,35 +119,6 @@
     </div>
   </div>
 
-  <!-- Search Criteria Panel -->
-  <div *ngIf="isDrawerOpen" class="p-4 border-b border-gray-100 bg-gray-50/30 animate-fade-in text-[11px]">
-    <h6 class="font-bold text-gray-700 mb-3 text-xs">Filter Criteria</h6>
-    <div class="grid grid-cols-12 gap-3 items-end">
-      <!-- Property Filter -->
-      <div class="col-span-12 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Property</label>
-        <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
-          class="ng-select-sm w-full" appendTo="body"></ng-select>
-      </div>
-
-      <!-- Status Filter -->
-      <div class="col-span-6 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Status</label>
-        <ng-select [(ngModel)]="selectedStatus" [items]="StatusList" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
-          class="ng-select-sm w-full" appendTo="body"></ng-select>
-      </div>
-
-      <!-- Type Filter -->
-      <div class="col-span-6 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">Parking Type</label>
-        <ng-select [(ngModel)]="selectedType" [items]="ParkingTypeList" [searchable]="true" [clearable]="true"
-          (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Types"
-          class="ng-select-sm w-full" appendTo="body"></ng-select>
-      </div>
-    </div>
-  </div>
 
   <div class="box-body !p-4">
     <div class="grid grid-cols-12 gap-3 items-end">
@@ -355,3 +328,37 @@
     </div>
   </div>
 </div>
+
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="onSearch()" 
+  (clear)="clearFilters()">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
+    <!-- Property Filter -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Property</label>
+      <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
+        class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Status</label>
+      <ng-select [(ngModel)]="selectedStatus" [items]="StatusList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
+        class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+
+    <!-- Type Filter -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Parking Type</label>
+      <ng-select [(ngModel)]="selectedType" [items]="ParkingTypeList" [searchable]="true" [clearable]="true"
+        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Types"
+        class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+  </div>
+  
+</app-filter-drawer>

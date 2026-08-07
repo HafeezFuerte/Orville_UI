@@ -48,6 +48,7 @@ export class AddTenantComponent implements OnInit {
 
   selectedCountry: any = null;
   selectedNationality: any = null;
+  existingTenants: any[] = [];
 
   countryMetadata: { [key: string]: { code: string; dialCode: string } } = {
     'afghanistan': { code: 'af', dialCode: '+93' },
@@ -324,8 +325,28 @@ export class AddTenantComponent implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
-    this.loadLookup(1001, 'states', 'state_name');
-    this.loadLookup(1002, 'cities', 'city_name');
+
+    this.propertiesService.getTenants({
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 1000,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'TENANTS'
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult && res.objResult.tenants) {
+          this.existingTenants = res.objResult.tenants;
+        }
+      }
+    });
+
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
@@ -336,11 +357,11 @@ export class AddTenantComponent implements OnInit {
     });
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(filterId: number, targetProperty: string, nameField: string, filterText: string = '', callback?: () => void) {
     this.portfolioService.getMasterByType({
       typeId: 2,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
@@ -349,12 +370,37 @@ export class AddTenantComponent implements OnInit {
             id: item.id,
             name: item[nameField] || item.lookup_name || item.name || ''
           }));
+          if (callback) callback();
         }
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
+  }
+
+  onCountryChange(country: any) {
+    this.tenantData.stateid = null;
+    this.tenantData.city = null;
+    this.states = [];
+    this.cities = [];
+    if (country && country.id) {
+      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
+      this.tenantData.country_id = country.id;
+    } else {
+      this.tenantData.country_id = null;
+    }
+  }
+
+  onStateChange(state: any) {
+    this.tenantData.city = null;
+    this.cities = [];
+    if (state && state.id) {
+      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
+      this.tenantData.stateid = state.id;
+    } else {
+      this.tenantData.stateid = null;
+    }
   }
 
   loadCountries() {
@@ -392,7 +438,7 @@ export class AddTenantComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         console.log("Tenant Details API Response:", res);
-        let tenant = null;
+        let tenant: any = null;
         if (res.statusCode == 200 && res.objResult) {
           if (res.objResult.table && res.objResult.table[0]) {
             tenant = res.objResult.table[0];
@@ -412,9 +458,9 @@ export class AddTenantComponent implements OnInit {
             code: tenant.code || '',
             username: tenant.username || '',
             honorific: tenant.honorific || null,
-            first_name: tenant.first_name || tenant.tenant?.split(' ')[0] || '',
-            last_name: tenant.last_name || tenant.tenant?.split(' ')[1] || '',
-            middle_name: tenant.middle_name || '',
+            first_name: tenant.first_name || (tenant.tenant ? tenant.tenant.trim().split(/\s+/)[0] : '') || '',
+            middle_name: tenant.middle_name || (tenant.tenant && tenant.tenant.trim().split(/\s+/).length >= 3 ? tenant.tenant.trim().split(/\s+/)[1] : '') || '',
+            last_name: tenant.last_name || (tenant.tenant ? (tenant.tenant.trim().split(/\s+/).length === 2 ? tenant.tenant.trim().split(/\s+/)[1] : tenant.tenant.trim().split(/\s+/).slice(2).join(' ')) : '') || '',
             mobile_no: tenant.mobile_no || tenant.phone_number || '',
             gender: tenant.gender || null,
             dob: tenant.dob || '',
@@ -451,6 +497,17 @@ export class AddTenantComponent implements OnInit {
 
         const natLookup = this.tenantData.nationality || 'United Arab Emirates';
         this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
+
+        if (this.selectedCountry && this.selectedCountry.id) {
+          this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
+            this.tenantData.stateid = tenant.stateid || null;
+            if (this.tenantData.stateid) {
+              this.loadLookup(1002, 'cities', 'city_name', this.tenantData.stateid.toString(), () => {
+                this.tenantData.city = tenant.city || null;
+              });
+            }
+          });
+        }
       },
       error: (err) => {
         console.error('Error loading tenant details:', err);
@@ -479,6 +536,23 @@ export class AddTenantComponent implements OnInit {
       return;
     }
 
+    const email = this.tenantData.email_address;
+    const mobile = this.tenantData.mobile_no;
+    
+    const isDuplicate = this.existingTenants.some((l: any) => {
+      if (this.isEditMode && (l.id === this.tenantDbId || l.code === this.tenantId)) {
+        return false;
+      }
+      const dupEmail = email && l.email_address && l.email_address.toLowerCase() === email.toLowerCase();
+      const dupMobile = mobile && l.phone_number && l.phone_number.replace(/\D/g, '') === mobile.replace(/\D/g, '');
+      return dupEmail || dupMobile;
+    });
+
+    if (isDuplicate) {
+      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      return;
+    }
+
     const requestJson = {
       userid: Number(localStorage.getItem('userId')) || 1,
       company_id: Number(localStorage.getItem('companyId')) || 1,
@@ -491,6 +565,7 @@ export class AddTenantComponent implements OnInit {
       username: this.tenantData.username || '',
       profileImage_path: '',
       honorific: this.tenantData.honorific || '',
+      tenant: this.tenantData.first_name + ' ' + this.tenantData.last_name,
       first_name: this.tenantData.first_name,
       last_name: this.tenantData.last_name,
       middle_name: this.tenantData.middle_name || '',

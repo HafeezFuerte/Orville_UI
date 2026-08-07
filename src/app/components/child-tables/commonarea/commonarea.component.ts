@@ -12,10 +12,12 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { CommonAreaPopupComponent } from '../modal-popups/common-area-popup/common-area-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-commonarea-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, CommonAreaPopupComponent, TranslateModule, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, CommonAreaPopupComponent, TranslateModule, MatPaginatorModule, FilterDrawerComponent],
   templateUrl: './commonarea.component.html',
   styleUrls: ['./commonarea.component.scss']
 })

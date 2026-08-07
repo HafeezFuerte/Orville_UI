@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 export interface Landlord {
   id: number;
   code: string;
@@ -28,7 +29,7 @@ export interface Landlord {
 @Component({
   selector: 'app-landlords',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './landlords.component.html',
   styleUrl: './landlords.component.scss'
 })
@@ -66,7 +67,7 @@ export class LandlordsComponent implements OnInit {
   pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
-  totalPages=0;
+  totalPages = 0;
   tableColumns = [
     { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'name', label: 'web.contacts.lblName', visible: true, useTemplate: true },
@@ -130,13 +131,12 @@ export class LandlordsComponent implements OnInit {
 
     this.propertiesService.getTenants(payload).subscribe({
       next: (response: any) => {
-        this.isLoading = false; 
-        if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedLandlords=response.objResult.landlords  
-          if(response.objResult.rows_info)
-          {
-            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
-            this.totalPages=response.objResult.rows_info[0].noofpages;
+        this.isLoading = false;
+        if (response && response.statusCode === "200" && response.objResult) {
+          this.paginatedLandlords = response.objResult.landlords
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords;
+            this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         }
         else
@@ -153,7 +153,7 @@ export class LandlordsComponent implements OnInit {
     this.pageNo = 0;
     this.loadLandlords();
   }
-  
+
   setStatusFilter(status: 'All' | 'Active' | 'Blocked') {
     this.statusFilter = status;
     this.pageNo = 0;
@@ -161,16 +161,16 @@ export class LandlordsComponent implements OnInit {
   }
 
   onSharedTablePageChange(event: any) {
-   
-    if(event.pageIndex>this.pageNo){
+
+    if (event.pageIndex > this.pageNo) {
       this.pageNo = this.pageNo + 1;
-      }
-      else{
-        this.pageNo = this.pageNo - 1;
-      }
-      if(this.pageNo<0)
-      this.pageNo=0;
-      this.pageSize = event.pageSize; 
+    }
+    else {
+      this.pageNo = this.pageNo - 1;
+    }
+    if (this.pageNo < 0)
+      this.pageNo = 0;
+    this.pageSize = event.pageSize;
     this.loadLandlords();
   }
 

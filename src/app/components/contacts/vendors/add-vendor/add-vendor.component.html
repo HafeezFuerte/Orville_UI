@@ -115,7 +115,7 @@
         
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Country <span class="text-danger">*</span></label>
-          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="selectedCountry">
+          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="selectedCountry" (change)="onCountryChange($event)">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -146,7 +146,7 @@
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">State/ Province</label>
-            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="vendorData.stateid" bindValue="id" bindLabel="name">
+            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="vendorData.stateid" bindValue="id" bindLabel="name" (change)="onStateChange($event)">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
                   <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">

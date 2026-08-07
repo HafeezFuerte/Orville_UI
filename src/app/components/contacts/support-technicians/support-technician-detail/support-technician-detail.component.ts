@@ -96,7 +96,7 @@ export class SupportTechnicianDetailComponent implements OnInit {
     { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'title', label: 'web.contacts.lblSubject', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'closingStatus', label: 'web.contacts.lblStatus', visible: true },
+    { key: 'closingStatus', label: 'web.contacts.lblclosingStatus', visible: true },
     { key: 'internalStatus', label: 'web.contacts.lblInternalStatus', visible: true },
     { key: 'dueDate', label: 'web.contacts.lblDueDate', visible: true },
     { key: 'priority', label: 'web.contacts.lblPriority', visible: true, useTemplate: true },
@@ -104,6 +104,26 @@ export class SupportTechnicianDetailComponent implements OnInit {
   ];
 
   workOrderData: any[] = [];
+  searchQuery = '';
+  showColumnDropdown = false;
+
+  get visibleColumns() {
+    return this.workOrderColumns.filter(col => col.visible !== false);
+  }
+
+  toggleColumn(colKey: string) {
+    const col = this.workOrderColumns.find(c => c.key === colKey);
+    if (col) col.visible = !col.visible;
+  }
+
+  toggleAllColumns(event: any) {
+    const checked = event.target.checked;
+    this.workOrderColumns.forEach(c => c.visible = checked);
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.workOrderColumns.every(c => c.visible !== false);
+  }
 
   setTab(tab: string) {
     this.activeTab = tab;

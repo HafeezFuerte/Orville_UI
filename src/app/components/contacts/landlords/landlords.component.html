@@ -13,20 +13,22 @@
     </div>
   </div>
   <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium" title="Export">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+      [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <i class="ri-download-2-line text-sm"></i>
-      {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" routerLink="/contacts/landlords/add-landlord" class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border border-primary flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm gap-1.5 font-medium">
+    <button type="button" routerLink="/contacts/landlords/add-landlord"
+      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
+      [attr.data-tooltip]="'web.contacts.lblAddLandlord' | translate">
       <i class="ri-add-line text-sm"></i>
-      {{ 'web.contacts.lblAddLandlord' | translate }}
     </button>
   </div>
 </div>
 
 <!-- 📋 LIST VIEW (TABLE) -->
 <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-  
+
   <div class="box-header !py-3 !px-4 border-b bg-white flex justify-between items-center w-full flex-wrap gap-3">
     <div class="flex items-center gap-4 w-full md:w-auto max-w-md">
       <!-- Text Search -->
@@ -34,8 +36,8 @@
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <i class="ri-search-line text-gray-400"></i>
         </div>
-       
-          <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
+
+        <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
         <button type="button" (click)="onSearch()"
           class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
@@ -43,38 +45,50 @@
         </button>
       </div>
     </div>
-    
+
     <div class="flex items-center gap-4">
       <!-- Status Tabs -->
       <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
-        <button (click)="setStatusFilter('All')" [class]="statusFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblAll' | translate }}</button>
-        <button (click)="setStatusFilter('Active')" [class]="statusFilter === 'Active' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblActive' | translate }}</button>
-        <button (click)="setStatusFilter('Blocked')" [class]="statusFilter === 'Blocked' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblBlocked' | translate }}</button>
+        <button (click)="setStatusFilter('All')"
+          [class]="statusFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblAll' | translate }}</button>
+        <button (click)="setStatusFilter('Active')"
+          [class]="statusFilter === 'Active' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblActive' | translate }}</button>
+        <button (click)="setStatusFilter('Blocked')"
+          [class]="statusFilter === 'Blocked' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
+          class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.contacts.lblBlocked' | translate }}</button>
       </div>
 
       <div class="flex items-center gap-2">
         <!-- Filter Button -->
-        <button type="button" (click)="toggleDrawer(true)" class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
-          <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-          {{ 'web.contacts.lblFilter' | translate }}
+        <button type="button" (click)="toggleDrawer(true)"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+          <i class="ri-filter-3-line text-sm"></i>
         </button>
 
         <!-- Column Button with dropdown overlay -->
         <div class="relative">
           <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-            class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm gap-1.5 font-medium">
-            <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-            {{ 'web.contacts.lblColumn' | translate }}
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+            <i class="ri-layout-column-line text-sm"></i>
           </button>
-          
-          <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
-            <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
-              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+
+          <div *ngIf="showColumnDropdown"
+            class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
+            <label
+              class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
+              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
               {{ 'web.contacts.lblSelectAll' | translate }}
             </label>
             <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-              <label *ngFor="let col of tableColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              <label *ngFor="let col of tableColumns"
+                class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
+                  class="form-checkbox h-3.5 w-3.5 text-primary rounded">
                 {{ col.label | translate }}
               </label>
             </div>
@@ -86,24 +100,28 @@
 
   <div class="p-4">
     <app-shared-table [columns]="visibleColumns" [data]="paginatedLandlords" [loading]="isLoading"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo" 
-      (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)"
+      [hasActions]="true">
 
       <!-- Custom Column Templates -->
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container *ngIf="col.key === 'id'">
           <div class="flex items-center gap-2">
             <ng-container *ngIf="row.image_path && !row.image_path.includes('default_user')">
-              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+              <div
+                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
                 <img src="{{row.image_path}}" class="w-full h-full rounded-full" />
               </div>
             </ng-container>
             <ng-container *ngIf="!row.image_path || row.image_path.includes('default_user')">
-              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
+              <div
+                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
                 {{ getInitials(row.landlord) }}
               </div>
             </ng-container>
-            <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts/landlords', row.code]">{{row.code}}</span>
+            <span class="font-bold text-primary cursor-pointer hover:underline"
+              [routerLink]="['/contacts/landlords', row.code]">{{row.code}}</span>
           </div>
         </ng-container>
 
@@ -118,15 +136,15 @@
         <ng-container *ngIf="col.key === 'phoneNumber'">
           <span class="text-gray-600">{{row.phone_number}}</span>
         </ng-container>
-        
+
         <ng-container *ngIf="col.key === 'company'">
           <span class="text-gray-600">{{row.company_name}}</span>
         </ng-container>
-        
+
         <ng-container *ngIf="col.key === 'noOfProperties'">
           <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.no_of_properties}}</span>
         </ng-container>
-        
+
         <ng-container *ngIf="col.key === 'unitsRooms'">
           <span class="bg-[#1a1c3d] text-white px-2 py-1 rounded text-xs font-bold">{{row.units}}</span>
         </ng-container>
@@ -134,7 +152,7 @@
         <ng-container *ngIf="col.key === 'country'">
           <span class="text-gray-600">{{row.country_name}}</span>
         </ng-container>
-        
+
         <ng-container *ngIf="col.key === 'tag'">
           <span class="text-gray-600">{{row.tags}}</span>
         </ng-container>
@@ -144,7 +162,8 @@
       <!-- Actions Template -->
       <ng-template #actionTemplate let-row="row">
         <div class="flex justify-center w-full">
-          <button class="w-8 h-8 rounded-md text-gray-400 hover:text-gray-700 flex items-center justify-center transition-all duration-200">
+          <button
+            class="w-8 h-8 rounded-md text-gray-400 hover:text-gray-700 flex items-center justify-center transition-all duration-200">
             <i class="ri-more-fill text-lg"></i>
           </button>
         </div>
@@ -155,22 +174,19 @@
 </div>
 
 <!-- 🚪 SLIDING FILTER DRAWER -->
-<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
-<div class="filter-drawer" [class.open]="isDrawerOpen">
-  <div class="drawer-header">
-    <h5 class="m-0 text-sm font-bold text-gray-800">Filter Landlords</h5>
-    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
-      <i class="ri-close-line text-lg"></i>
-    </button>
-  </div>
-  <div class="drawer-body text-[11px]">
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="onSearch()" 
+  (clear)="clearFilters()">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Name</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterName" placeholder="Enter name">
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterName" placeholder="Enter name">
     </div>
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Email</label>
-      <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="filterEmail" placeholder="Enter email">
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterEmail" placeholder="Enter email">
     </div>
     <div class="flex flex-col">
       <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Status</label>
@@ -178,10 +194,5 @@
         placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
-  <div class="drawer-footer">
-    <button type="button" (click)="onSearch(); toggleDrawer(false)"
-      class="flex-1 ti-btn bg-primary text-white font-semibold text-xs !py-2 !px-4 rounded-md">Apply Filters</button>
-    <button type="button" (click)="clearFilters(); toggleDrawer(false)"
-      class="flex-1 ti-btn ti-btn-light border font-semibold text-xs !py-2 !px-4 rounded-md">Clear All</button>
-  </div>
-</div>
+  
+</app-filter-drawer>

@@ -55,11 +55,12 @@ export interface Unit {
 }
 
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
   selector: 'app-unit-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent, FilterDrawerComponent],
   templateUrl: './unit-detail.component.html',
   styleUrl: './unit-detail.component.scss'
 })

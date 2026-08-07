@@ -9,10 +9,12 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { PropertiesService } from '../../services/properties.service';
 import { PortfolioService } from '../../services/portfolio.service';
 
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-properties-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule],
+  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
   templateUrl: './properties-list.component.html',
   styleUrl: './properties-list.component.scss'
 })
@@ -30,12 +32,16 @@ export class PropertiesListComponent implements OnInit {
   selectedId: number | null = null;
   selectedRefNo: string | null = null;
   selectedLandlord: string | null = null;
+  selectedOffPlanStatus: string | null = null;
+  selectedInternalStatus: string | null = null;
 
   // Dropdown lists
   typesList: string[] = ['Residential', 'Commercial'];
   statusesList: string[] = ['Active', 'Draft', 'Suspended'];
   tagsList: string[] = ['Premium', 'Best Seller', 'Compact', 'Luxury', 'Corporate', 'Prime Location'];
   landlordsList: string[] = ['Orville Real Estate', 'Emaar Properties', 'DIFC Investments', 'Emaar Malls'];
+  offPlanStatuses: string[] = ['Yes', 'No'];
+  internalStatuses: string[] = ['Active', 'Draft', 'Suspended'];
 
   // Table Columns Definition
   tableColumns = [
@@ -253,6 +259,8 @@ private loadMetrics(
     this.selectedId = null;
     this.selectedRefNo = null;
     this.selectedLandlord = null;
+    this.selectedOffPlanStatus = null;
+    this.selectedInternalStatus = null;
     this.categoryFilter = 'All';
     this.pageNo = 0;
     this.loadProperties();

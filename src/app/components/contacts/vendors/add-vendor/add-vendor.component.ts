@@ -46,6 +46,7 @@ export class AddVendorComponent implements OnInit {
   vendorTypes: any[] = [];
   categories: any[] = [];
   docTypes = ['Trade License', 'Emirates ID', 'Passport'];
+  existingVendors: any[] = [];
 
   // Form State
   displayAsCompany = false;
@@ -289,10 +290,30 @@ export class AddVendorComponent implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
-    this.loadLookup(1001, 'states', 'state_name');
-    this.loadLookup(1002, 'cities', 'city_name');
     this.loadLookup(15, 'vendorTypes', 'lookup_name');
     this.loadLookup(16, 'categories', 'lookup_name');
+
+    this.propertiesService.getTenants({
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 1000,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'VENDORS'
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult && res.objResult.vendors) {
+          this.existingVendors = res.objResult.vendors;
+        }
+      }
+    });
+
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
@@ -303,11 +324,11 @@ export class AddVendorComponent implements OnInit {
     });
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(filterId: number, targetProperty: string, nameField: string, filterText: string = '', callback?: () => void) {
     this.portfolioService.getMasterByType({
       typeId: 2,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
@@ -316,12 +337,37 @@ export class AddVendorComponent implements OnInit {
             id: item.id,
             name: item[nameField] || item.lookup_name || item.name || ''
           }));
+          if (callback) callback();
         }
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
+  }
+
+  onCountryChange(country: any) {
+    this.vendorData.stateid = null;
+    this.vendorData.city = null;
+    this.states = [];
+    this.cities = [];
+    if (country && country.id) {
+      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
+      this.vendorData.country_id = country.id;
+    } else {
+      this.vendorData.country_id = null;
+    }
+  }
+
+  onStateChange(state: any) {
+    this.vendorData.city = null;
+    this.cities = [];
+    if (state && state.id) {
+      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
+      this.vendorData.stateid = state.id;
+    } else {
+      this.vendorData.stateid = null;
+    }
   }
 
   loadCountries() {
@@ -358,7 +404,7 @@ export class AddVendorComponent implements OnInit {
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        let vendor = null;
+        let vendor: any = null;
         if (res.statusCode == 200 && res.objResult) {
           if (res.objResult.table && res.objResult.table[0]) {
             vendor = res.objResult.table[0];
@@ -375,9 +421,9 @@ export class AddVendorComponent implements OnInit {
             email_address: vendor.email_address || '',
             username: vendor.username || '',
             honorific: vendor.honorific || null,
-            first_name: vendor.first_name || vendor.contact_name?.split(' ')[0] || '',
-            last_name: vendor.last_name || vendor.contact_name?.split(' ')[1] || '',
-            middle_name: vendor.middle_name || '',
+            first_name: vendor.first_name || (vendor.contact_name ? vendor.contact_name.trim().split(/\s+/)[0] : '') || '',
+            middle_name: vendor.middle_name || (vendor.contact_name && vendor.contact_name.trim().split(/\s+/).length >= 3 ? vendor.contact_name.trim().split(/\s+/)[1] : '') || '',
+            last_name: vendor.last_name || (vendor.contact_name ? (vendor.contact_name.trim().split(/\s+/).length === 2 ? vendor.contact_name.trim().split(/\s+/)[1] : vendor.contact_name.trim().split(/\s+/).slice(2).join(' ')) : '') || '',
             mobile_no: vendor.phone_number || vendor.mobile_no || '',
             gender: vendor.gender || null,
             address1: vendor.address1 || '',
@@ -392,7 +438,7 @@ export class AddVendorComponent implements OnInit {
             tax_registration_no: vendor.tax_registration_no || '',
             trade_license: vendor.trade_license || '',
             vendor_type: vendor.vendor_type || null,
-            category: vendor.maintainance_categories || null
+            category: (typeof vendor.maintainance_categories === 'string') ? vendor.maintainance_categories.split(',') : (vendor.maintainance_categories || null)
           };
           this.vendorDbId = Number(vendor.id) || 0;
           this.displayAsCompany = vendor.display_as_company || false;
@@ -404,6 +450,17 @@ export class AddVendorComponent implements OnInit {
 
           const natLookup = this.vendorData.nationality || 'United Arab Emirates';
           this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
+
+          if (this.selectedCountry && this.selectedCountry.id) {
+            this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
+              this.vendorData.stateid = vendor.stateid || null;
+              if (this.vendorData.stateid) {
+                this.loadLookup(1002, 'cities', 'city_name', this.vendorData.stateid.toString(), () => {
+                  this.vendorData.city = vendor.city || null;
+                });
+              }
+            });
+          }
         }
       },
       error: (err) => {
@@ -413,6 +470,23 @@ export class AddVendorComponent implements OnInit {
   }
 
   saveVendor() {
+    const email = this.vendorData.email_address;
+    const mobile = this.vendorData.mobile_no;
+    
+    const isDuplicate = this.existingVendors.some((l: any) => {
+      if (this.isEditMode && (l.id === this.vendorDbId || l.code === this.vendorId)) {
+        return false;
+      }
+      const dupEmail = email && l.email_address && l.email_address.toLowerCase() === email.toLowerCase();
+      const dupMobile = mobile && l.phone_number && l.phone_number.replace(/\D/g, '') === mobile.replace(/\D/g, '');
+      return dupEmail || dupMobile;
+    });
+
+    if (isDuplicate) {
+      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      return;
+    }
+
     const requestJson = {
       userid: Number(localStorage.getItem('userId')) || 1,
       company_id: Number(localStorage.getItem('companyId')) || 1,
@@ -444,7 +518,7 @@ export class AddVendorComponent implements OnInit {
       auto_assign_assignment: this.assignment,
       allow_create_work_order: this.qualifies,
       allow_create_quotation: false,
-      maintainance_categories: this.vendorData.category || ''
+      maintainance_categories: Array.isArray(this.vendorData.category) ? this.vendorData.category.join(',') : (this.vendorData.category || '')
     };
 
     const formData = new FormData();

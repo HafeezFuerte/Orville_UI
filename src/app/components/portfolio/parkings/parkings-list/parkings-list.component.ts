@@ -25,10 +25,12 @@ export interface Parking {
   updatedDate: string;
 }
 
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-parkings-list',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
   templateUrl: './parkings-list.component.html',
   styleUrl: './parkings-list.component.scss'
 })

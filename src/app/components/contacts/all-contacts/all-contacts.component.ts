@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 
 export interface Contact {
   id: number;
@@ -23,7 +24,7 @@ export interface Contact {
 @Component({
   selector: 'app-all-contacts',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './all-contacts.component.html',
   styleUrl: './all-contacts.component.scss'
 })

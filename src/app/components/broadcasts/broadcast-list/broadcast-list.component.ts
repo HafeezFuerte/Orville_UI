@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../services/common.service';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 
 export interface Broadcast {
   id: string;
@@ -24,7 +25,7 @@ export interface Broadcast {
 @Component({
   selector: 'app-broadcast-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
   templateUrl: './broadcast-list.component.html',
   styleUrl: './broadcast-list.component.scss'
 })
@@ -36,7 +37,12 @@ export class BroadcastListComponent implements OnInit {
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   showFilterPanel: boolean = false;
+  showFilterDrawer: boolean = false;
   isLoading: boolean = false;
+
+  toggleDrawer(show: boolean) {
+    this.showFilterDrawer = show;
+  }
 
   pageNo = 0;
   pageSize = 20;
@@ -123,6 +129,19 @@ export class BroadcastListComponent implements OnInit {
 
   navigateToCreate() {
     this.router.navigate(['/broadcasts/create']);
+  }
+
+  navigateToEdit(id: string) {
+    this.router.navigate(['/broadcasts/create'], { queryParams: { editId: id } });
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
+
+  toggleAllColumns(event: any): void {
+    const checked = event.target.checked;
+    this.tableColumns.forEach(c => c.visible = checked);
   }
 
   toggleColumn(col: any) {

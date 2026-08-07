@@ -12,14 +12,16 @@
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-select [items]="branches" placeholder="Select Branch" class="ng-select-sm w-40 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    <ng-select [items]="buildings" placeholder="Select Building" class="ng-select-sm w-44 bg-white border-0 shadow-sm" [clearable]="false"></ng-select>
-    <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm flex items-center gap-1.5 transition-all">
-      <i class="ri-bar-chart-2-fill text-sm"></i> Report
+  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
+    <button type="button"
+      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+      [attr.data-tooltip]="'Report'">
+      <i class="ri-bar-chart-2-fill text-sm"></i>
     </button>
-    <button (click)="navigateToCreate()" class="px-3 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm flex items-center gap-1.5">
-      <i class="ri-add-line text-sm"></i> Add Broadcasts
+    <button type="button" (click)="navigateToCreate()"
+      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
+      [attr.data-tooltip]="'Add Broadcasts'">
+      <i class="ri-add-line text-sm"></i>
     </button>
   </div>
 </div>
@@ -27,42 +29,59 @@
 <!-- Main card -->
 <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
   <!-- Toolbar -->
-  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-    <div class="relative">
-      <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearch()"
-        placeholder="Search..."
-        class="form-control w-56 !rounded-md text-xs py-1.5 pl-8 bg-gray-50 border-gray-200"
-      />
+  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-wrap gap-3">
+    <div class="flex items-center gap-4 flex-wrap">
+      <h6 class="box-title font-semibold text-gray-800 text-sm m-0">Broadcasts List</h6>
+      <div class="flex items-center gap-2">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search..."
+          class="form-control text-xs w-64 bg-gray-50 border border-gray-200 rounded-md py-1.5 px-3 focus:bg-white focus:border-primary transition-all"
+        />
+        <button type="button" (click)="onSearch()"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Search'">
+          <i class="ri-search-line text-sm"></i>
+        </button>
+      </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- Column Toggle -->
+      <!-- Filter Button -->
+      <button type="button" (click)="toggleDrawer(true)"
+        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+      </button>
+
+      <!-- Column Button with dropdown overlay -->
       <div class="relative">
-        <button
-          (click)="showColumnDropdown = !showColumnDropdown"
-          class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm"
-        >
-          <i class="ri-list-settings-line text-sm"></i> Columns
-          <i class="ri-arrow-down-s-line text-xs"></i>
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Columns'">
+          <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
         </button>
-        <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px]">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Toggle Columns</p>
-          <div *ngFor="let col of tableColumns" class="flex items-center gap-2 py-1 cursor-pointer hover:bg-gray-50 px-1.5 rounded" (click)="toggleColumn(col)">
-            <div class="w-3.5 h-3.5 rounded border flex items-center justify-center transition-all"
-              [class.bg-primary]="col.visible" [class.border-primary]="col.visible" [class.border-gray-300]="!col.visible">
-              <i *ngIf="col.visible" class="ri-check-line text-[8px] text-white"></i>
-            </div>
-            <span class="text-xs text-gray-700">{{ col.label }}</span>
+
+        <!-- Column toggling checklist dropdown overlay -->
+        <div *ngIf="showColumnDropdown"
+          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+          <label
+            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] border-b pb-1.5 mb-1">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+            Select All
+          </label>
+          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+            <label *ngFor="let col of tableColumns"
+              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col)"
+                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              {{ col.label }}
+            </label>
           </div>
         </div>
       </div>
-      <!-- Filter -->
-      <button (click)="showFilterPanel = !showFilterPanel" class="px-3 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-all shadow-sm">
-        <i class="ri-filter-3-line text-sm"></i> Filter
-      </button>
     </div>
   </div>
  
@@ -106,10 +125,10 @@
           <!-- Action -->
           <ng-container *ngSwitchCase="'action'">
             <div class="flex items-center gap-1.5">
-              <button (click)="navigateToDetail(row.id)" class="w-7 h-7 rounded flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0" title="View">
+              <button (click)="navigateToDetail(row.code)" class="w-7 h-7 rounded flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0" title="View">
                 <i class="ri-eye-line text-sm"></i>
               </button>
-              <button class="w-7 h-7 rounded flex items-center justify-center bg-warning/10 text-warning hover:bg-warning/20 transition-all border-0" title="Edit">
+              <button (click)="navigateToEdit(row.code)" class="w-7 h-7 rounded flex items-center justify-center bg-warning/10 text-warning hover:bg-warning/20 transition-all border-0" title="Edit">
                 <i class="ri-edit-line text-sm"></i>
               </button>
               <button class="w-7 h-7 rounded flex items-center justify-center bg-danger/10 text-danger hover:bg-danger/20 transition-all border-0" title="Delete">
@@ -122,3 +141,5 @@
     </app-shared-table>
   </div>
 </div>
+
+<app-filter-drawer [isOpen]="showFilterDrawer" (closeDrawer)="toggleDrawer(false)"></app-filter-drawer>

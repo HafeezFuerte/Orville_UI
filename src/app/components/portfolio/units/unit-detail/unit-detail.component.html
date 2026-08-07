@@ -1504,46 +1504,43 @@
     </div>
 </app-reusable-modal>
 <!-- 🚪 SLIDING FILTER DRAWER -->
-<div class="drawer-backdrop" [class.open]="isDrawerOpen" (click)="toggleDrawer(false)"></div>
-<div class="filter-drawer" [class.open]="isDrawerOpen">
-  <div class="drawer-header">
-    <h5 class="m-0 text-sm font-bold text-gray-800">Filters</h5>
-    <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors p-1" (click)="toggleDrawer(false)">
-      <i class="ri-close-line text-lg"></i>
-    </button>
-  </div>
-  <div class="drawer-body p-4 flex flex-col gap-3 text-[11px]">
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="toggleDrawer(false)" 
+  (clear)="toggleDrawer(false)">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
     <!-- Filter by Tags -->
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
         <i class="ri-price-tag-3-line text-gray-400"></i>
       </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Tags">
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Tags">
     </div>
     <!-- Filter by Area (sqft) -->
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
         <i class="ri-ruler-line text-gray-400"></i>
       </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Area (sqft)">
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Area (sqft)">
     </div>
     <!-- Filter by ID -->
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
         <i class="ri-search-line text-gray-400"></i>
       </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by ID">
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by ID">
     </div>
     <!-- Filter by Reference no -->
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
         <i class="ri-search-line text-gray-400"></i>
       </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Reference no">
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Reference no">
     </div>
     <!-- Off Plan Status -->
     <div>
-      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md">
+      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md w-full bg-gray-50 border-gray-200">
         <option value="">Off Plan Status</option>
         <option>Yes</option>
         <option>No</option>
@@ -1554,27 +1551,18 @@
       <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
         <i class="ri-user-line text-gray-400"></i>
       </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md" placeholder="Filter by Landlord">
+      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Landlord">
     </div>
     <!-- Internal Status -->
     <div>
-      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md">
+      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md w-full bg-gray-50 border-gray-200">
         <option value="">Internal Status</option>
         <option>Active</option>
         <option>Inactive</option>
       </select>
     </div>
   </div>
-  <div class="drawer-footer flex justify-between gap-4 p-4 border-t border-gray-100">
-    <button type="button" (click)="toggleDrawer(false)"
-      class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors">
-      Clear
-    </button>
-    <button type="button" (click)="toggleDrawer(false)"
-      class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors">
-      Close
-    </button>
-  </div>
-</div>
+  
+</app-filter-drawer>
 
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
@@ -27,7 +28,7 @@ export interface WorkOrder {
 @Component({
   selector: 'app-work-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
   templateUrl: './work-order-list.component.html',
   styleUrl: './work-order-list.component.scss'
 })
@@ -104,6 +105,24 @@ export class WorkOrderListComponent implements OnInit {
       error: (err: any) => console.error("Error loading metrics:", err)
     });
   }
+  showColumnDropdown: boolean = false;
+
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find(c => c.key === key);
+    if (col) {
+      col.visible = !col.visible;
+    }
+  }
+
+  toggleAllColumns(event: any): void {
+    const checked = event.target.checked;
+    this.tableColumns.forEach(c => c.visible = checked);
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
+
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }

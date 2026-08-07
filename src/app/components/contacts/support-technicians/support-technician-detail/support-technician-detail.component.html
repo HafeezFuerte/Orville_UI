@@ -46,44 +46,42 @@
   <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
     <div class="sticky-sidebar flex flex-col gap-y-2">
       
-      <!-- Technician Name Header -->
-      <div class="box-body p-4">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h6>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
-        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
-          <button [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]" class="px-4 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Edit Profile</button>
+      <!-- Sticky Sidebar content in one single box card -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col gap-4 !mb-2">
+        <!-- Technician Name Header -->
+        <div class="border-b border-gray-100 pb-3">
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h6>
+          <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
+          <div class="flex gap-2 mt-2 text-[10px] font-semibold">
+            <button [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]" class="px-4 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Edit Profile</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Information</h6>
-        </div>
-        <div class="box-body p-4 flex flex-col gap-3 text-xs">
+        <!-- Information -->
+        <div class="flex flex-col gap-3.5 text-xs">
           <!-- Basic Info -->
           <div>
             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Basic Information</span>
             <div class="flex flex-col gap-2">
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Name:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.name }}</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.contact_name || technicianData?.name || technician.name }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Email:</span>
-                <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ technician.email }}</span>
+                <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ technicianData?.email_address || technicianData?.email || technician.email }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Phone:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.phone }}</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.mobile || technicianData?.phone_no || technician.phone }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Username:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.username }}</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.user_name || technician.username }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Status:</span>
-                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-success/10 text-success border border-success/20 w-fit">{{ technician.status }}</span>
+                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-success/10 text-success border border-success/20 w-fit">Active</span>
               </div>
             </div>
           </div>
@@ -94,7 +92,7 @@
             <div class="flex flex-col gap-2">
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Assigned Job:</span>
-                <span class="text-gray-800 font-semibold col-span-2 break-all">{{ technician.assignedJob }}</span>
+                <span class="text-gray-800 font-semibold col-span-2 break-all">{{ technicianData?.email_id || technician.assignedJob }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Responsible for WO:</span>
@@ -109,7 +107,7 @@
             <div class="flex flex-col gap-2">
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">ID:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.id }}</span>
+                <span class="text-gray-800 font-bold col-span-2">{{ technicianId }}</span>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <span class="text-gray-500 font-medium">Created At:</span>
@@ -147,13 +145,43 @@
       </button>
     </div>
 
-    <!-- TAB: Work Orders -->
     <div *ngIf="activeTab === 'Work Orders'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 p-4">
       <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assigned Work Orders</h6>
       </div>
 
-      <app-shared-table [columns]="workOrderColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
+      <div class="p-4 flex justify-between items-center gap-3 border-b border-gray-100 flex-wrap">
+        <div class="flex items-center gap-2">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search" 
+            class="form-control text-xs w-64 bg-gray-50 border border-gray-200 rounded-md py-1.5 px-3 focus:bg-white focus:border-primary transition-all">
+          <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Search'">
+            <i class="ri-search-line text-sm"></i>
+          </button>
+        </div>
+        
+        <div class="relative">
+          <button (click)="showColumnDropdown = !showColumnDropdown"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+            <i class="ri-layout-column-line text-sm"></i>
+          </button>
+          
+          <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
+              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              Select All
+            </label>
+            <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+              <label *ngFor="let col of workOrderColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+                {{ col.label | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <app-shared-table [columns]="visibleColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container *ngIf="col.key === 'id'">
             <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>

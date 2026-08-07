@@ -47,6 +47,7 @@ export class AddSupportTechnicianComponent implements OnInit {
   technicianTypes: any[] = [];
   categories: any[] = [];
   docTypes = ['Trade License', 'Emirates ID', 'Passport'];
+  existingTechnicians: any[] = [];
 
   // Form State
   displayAsCompany = false;
@@ -288,10 +289,30 @@ export class AddSupportTechnicianComponent implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
-    this.loadLookup(1001, 'states', 'state_name');
-    this.loadLookup(1002, 'cities', 'city_name');
     this.loadLookup(15, 'technicianTypes', 'lookup_name');
     this.loadLookup(30, 'categories', 'lookup_name'); // Maintenance Category
+
+    this.propertiesService.getTenants({
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 1000,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'SUPPORT_TECHNICIANS'
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult && res.objResult.support_technicians) {
+          this.existingTechnicians = res.objResult.support_technicians;
+        }
+      }
+    });
+
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
@@ -302,11 +323,11 @@ export class AddSupportTechnicianComponent implements OnInit {
     });
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(filterId: number, targetProperty: string, nameField: string, filterText: string = '', callback?: () => void) {
     this.portfolioService.getMasterByType({
       typeId: 2,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
@@ -315,12 +336,37 @@ export class AddSupportTechnicianComponent implements OnInit {
             id: item.id,
             name: item[nameField] || item.lookup_name || item.name || ''
           }));
+          if (callback) callback();
         }
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
+  }
+
+  onCountryChange(country: any) {
+    this.technicianData.stateid = null;
+    this.technicianData.city = null;
+    this.states = [];
+    this.cities = [];
+    if (country && country.id) {
+      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
+      this.technicianData.country_id = country.id;
+    } else {
+      this.technicianData.country_id = null;
+    }
+  }
+
+  onStateChange(state: any) {
+    this.technicianData.city = null;
+    this.cities = [];
+    if (state && state.id) {
+      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
+      this.technicianData.stateid = state.id;
+    } else {
+      this.technicianData.stateid = null;
+    }
   }
 
   loadCountries() {
@@ -354,7 +400,7 @@ export class AddSupportTechnicianComponent implements OnInit {
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        let tech = null;
+        let tech: any = null;
         if (res.statusCode == 200 && res.objResult) {
           if (res.objResult.table && res.objResult.table[0]) {
             tech = res.objResult.table[0];
@@ -368,13 +414,13 @@ export class AddSupportTechnicianComponent implements OnInit {
 
         if (tech) {
           this.technicianData = {
-            email_address: tech.email_address || '',
+            email_address: tech.email || tech.email_address || '',
             username: tech.username || '',
             honorific: tech.honorific || null,
-            first_name: tech.first_name || tech.technician_name?.split(' ')[0] || '',
-            last_name: tech.last_name || tech.technician_name?.split(' ')[1] || '',
-            middle_name: tech.middle_name || '',
-            mobile_no: tech.phone_number || tech.mobile_no || '',
+            first_name: tech.first_name || (tech.technician_name ? tech.technician_name.trim().split(/\s+/)[0] : '') || '',
+            middle_name: tech.middle_name || (tech.technician_name && tech.technician_name.trim().split(/\s+/).length >= 3 ? tech.technician_name.trim().split(/\s+/)[1] : '') || '',
+            last_name: tech.last_name || (tech.technician_name ? (tech.technician_name.trim().split(/\s+/).length === 2 ? tech.technician_name.trim().split(/\s+/)[1] : tech.technician_name.trim().split(/\s+/).slice(2).join(' ')) : '') || '',
+            mobile_no: tech.phone || tech.phone_number || tech.mobile_no || tech.phone_no || tech.mobile || '',
             gender: tech.gender || null,
             address1: tech.address1 || '',
             address2: tech.address2 || '',
@@ -397,6 +443,17 @@ export class AddSupportTechnicianComponent implements OnInit {
 
           const lookup = this.technicianData.country_id || 'United Arab Emirates';
           this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
+
+          if (this.selectedCountry && this.selectedCountry.id) {
+            this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
+              this.technicianData.stateid = tech.stateid || null;
+              if (this.technicianData.stateid) {
+                this.loadLookup(1002, 'cities', 'city_name', this.technicianData.stateid.toString(), () => {
+                  this.technicianData.city = tech.city || null;
+                });
+              }
+            });
+          }
         }
       },
       error: (err) => {
@@ -411,21 +468,45 @@ export class AddSupportTechnicianComponent implements OnInit {
       return;
     }
 
+    const email = this.technicianData.email_address;
+    const mobile = this.technicianData.mobile_no;
+    
+    const isDuplicate = this.existingTechnicians.some((l: any) => {
+      if (this.isEditMode && (l.id === this.technicianDbId || l.code === this.technicianId)) {
+        return false;
+      }
+      const dupEmail = email && l.email_address && l.email_address.toLowerCase() === email.toLowerCase();
+      const dupMobile = mobile && l.phone_number && l.phone_number.replace(/\D/g, '') === mobile.replace(/\D/g, '');
+      return dupEmail || dupMobile;
+    });
+
+    if (isDuplicate) {
+      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      return;
+    }
+
     const requestJson = {
       userid: Number(localStorage.getItem('userId')) || 1,
       company_id: Number(localStorage.getItem('companyId')) || 1,
       clientId: '74BB6922',
       source: 'web',
       languageid: 1,
+      email: this.technicianData.email_address,
       email_address: this.technicianData.email_address,
+      email_id: this.technicianData.email_address,
+      emailid: this.technicianData.email_address,
+      emailId: this.technicianData.email_address,
       code: this.isEditMode ? this.technicianId : '',
       id: this.isEditMode ? this.technicianDbId : 0,
       username: this.technicianData.username || '',
       profileImage_path: '',
       password: '', // default empty
+      technician_name: this.technicianData.first_name + ' ' + this.technicianData.last_name,
       first_name: this.technicianData.first_name,
       last_name: this.technicianData.last_name,
       mobile_no: this.technicianData.mobile_no || '',
+      phone: this.technicianData.mobile_no || '',
+      phone_number: this.technicianData.mobile_no || '',
       country_id: Number(this.selectedCountry?.id) || 0,
       role_id: 0, // default
       department: Number(this.technicianData.technician_type) || 0,

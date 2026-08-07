@@ -48,6 +48,7 @@ export class AddLandlordComponent implements OnInit {
   // Form State
   displayAsCompany = false;
   autoSignLeases = false;
+  existingLandlords: any[] = [];
 
   // Settings
   transferAmount = false;
@@ -294,8 +295,28 @@ export class AddLandlordComponent implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
-    this.loadLookup(1001, 'states', 'state_name');
-    this.loadLookup(1002, 'cities', 'city_name');
+    
+    this.propertiesService.getTenants({
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 1000,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'LANDLORDS'
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult && res.objResult.landlords) {
+          this.existingLandlords = res.objResult.landlords;
+        }
+      }
+    });
+
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
@@ -306,11 +327,11 @@ export class AddLandlordComponent implements OnInit {
     });
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(filterId: number, targetProperty: string, nameField: string, filterText: string = '', callback?: () => void) {
     this.portfolioService.getMasterByType({
       typeId: 2,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
@@ -319,12 +340,37 @@ export class AddLandlordComponent implements OnInit {
             id: item.id,
             name: item[nameField] || item.lookup_name || item.name || ''
           }));
+          if (callback) callback();
         }
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
+  }
+
+  onCountryChange(country: any) {
+    this.landlordData.stateid = null;
+    this.landlordData.city = null;
+    this.states = [];
+    this.cities = [];
+    if (country && country.id) {
+      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
+      this.landlordData.country_id = country.id;
+    } else {
+      this.landlordData.country_id = null;
+    }
+  }
+
+  onStateChange(state: any) {
+    this.landlordData.city = null;
+    this.cities = [];
+    if (state && state.id) {
+      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
+      this.landlordData.stateid = state.id;
+    } else {
+      this.landlordData.stateid = null;
+    }
   }
 
   loadCountries() {
@@ -361,7 +407,7 @@ export class AddLandlordComponent implements OnInit {
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        let landlord = null;
+        let landlord: any = null;
         if (res.statusCode == 200 && res.objResult) {
           if (res.objResult.table && res.objResult.table[0]) {
             landlord = res.objResult.table[0];
@@ -378,9 +424,9 @@ export class AddLandlordComponent implements OnInit {
             email_address: landlord.email_address || '',
             username: landlord.username || '',
             honorific: landlord.honorific || null,
-            first_name: landlord.first_name || landlord.landlord?.split(' ')[0] || '',
-            last_name: landlord.last_name || landlord.landlord?.split(' ')[1] || '',
-            middle_name: landlord.middle_name || '',
+            first_name: landlord.first_name || (landlord.landlord ? landlord.landlord.trim().split(/\s+/)[0] : '') || '',
+            middle_name: landlord.middle_name || (landlord.landlord && landlord.landlord.trim().split(/\s+/).length >= 3 ? landlord.landlord.trim().split(/\s+/)[1] : '') || '',
+            last_name: landlord.last_name || (landlord.landlord ? (landlord.landlord.trim().split(/\s+/).length === 2 ? landlord.landlord.trim().split(/\s+/)[1] : landlord.landlord.trim().split(/\s+/).slice(2).join(' ')) : '') || '',
             mobile_no: landlord.phone_number || landlord.mobile_no || '',
             gender: landlord.gender || null,
             address1: landlord.address1 || '',
@@ -404,6 +450,17 @@ export class AddLandlordComponent implements OnInit {
 
           const natLookup = this.landlordData.nationality || 'United Arab Emirates';
           this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
+
+          if (this.selectedCountry && this.selectedCountry.id) {
+            this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
+              this.landlordData.stateid = landlord.stateid || null;
+              if (this.landlordData.stateid) {
+                this.loadLookup(1002, 'cities', 'city_name', this.landlordData.stateid.toString(), () => {
+                  this.landlordData.city = landlord.city || null;
+                });
+              }
+            });
+          }
         }
       },
       error: (err) => {
@@ -413,6 +470,23 @@ export class AddLandlordComponent implements OnInit {
   }
 
   saveLandlord() {
+    const email = this.landlordData.email_address;
+    const mobile = this.landlordData.mobile_no;
+    
+    const isDuplicate = this.existingLandlords.some((l: any) => {
+      if (this.isEditMode && (l.id === this.landlordDbId || l.code === this.landlordId)) {
+        return false;
+      }
+      const dupEmail = email && l.email_address && l.email_address.toLowerCase() === email.toLowerCase();
+      const dupMobile = mobile && l.phone_number && l.phone_number.replace(/\D/g, '') === mobile.replace(/\D/g, '');
+      return dupEmail || dupMobile;
+    });
+
+    if (isDuplicate) {
+      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      return;
+    }
+
     const requestJson = {
       userid: Number(localStorage.getItem('userId')) || 1,
       company_id: Number(localStorage.getItem('companyId')) || 1,
@@ -425,6 +499,7 @@ export class AddLandlordComponent implements OnInit {
       username: this.landlordData.username || '',
       profileImage_path: '',
       honorific: this.landlordData.honorific || '',
+      landlord: this.landlordData.first_name + ' ' + this.landlordData.last_name,
       first_name: this.landlordData.first_name,
       last_name: this.landlordData.last_name,
       middle_name: this.landlordData.middle_name || '',

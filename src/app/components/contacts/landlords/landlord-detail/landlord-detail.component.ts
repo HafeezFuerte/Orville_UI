@@ -29,19 +29,31 @@ export class LandlordDetailComponent implements OnInit {
     if (this.activeTab === 'Notes') {
       return {
         key: 'notes',
+        label: 'Notes',
         entity: 'landlord',
         entity_id: this.landlordId,
         data: this.noteData || [],
-        form: this.notesForm
+        totalRecords: (this.noteData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.notesForm,
+        popupType: 'notes'
       };
     }
     if (this.activeTab === 'Attachments') {
       return {
         key: 'attachments',
+        label: 'Attachments',
         entity: 'landlord',
         entity_id: this.landlordId,
         data: this.attachmentData || [],
-        form: this.attachmentsForm
+        totalRecords: (this.attachmentData || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.attachmentsForm,
+        popupType: 'attachment'
       };
     }
     return null;

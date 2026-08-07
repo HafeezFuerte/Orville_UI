@@ -20,7 +20,10 @@
   <div class="flex gap-2 items-center mt-2 md:mt-0">
 
     <div class="flex items-center gap-2 ml-4">
-      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">
+        <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+        Active
+      </span>
 
       <!-- Dropdown button and menu wrapper -->
       <div class="relative">
@@ -31,7 +34,7 @@
         <!-- Dropdown menu -->
         <div *ngIf="showActionDropdown"
           class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-          <button *ngFor="let option of actionOptions" (click)="
+          <button *ngFor="let option of actionOptions" (click)="$event.stopPropagation();
             showActionDropdown = false;
             option.label === 'Inflow' ? showInflowModal = true :
             option.label === 'Outflow' ? showOutflowModal = true :
@@ -49,8 +52,9 @@
       </div>
 
       <button [routerLink]="['/contacts/landlords/edit-landlord', landlordId]"
-        class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-        {{ 'web.contacts.lblEditLandlord' | translate }}
+        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'web.contacts.lblEditLandlord' | translate">
+        <i class="ri-edit-line text-sm"></i>
       </button>
     </div>
   </div>
@@ -62,17 +66,20 @@
   <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
     <div class="sticky-sidebar flex flex-col gap-y-2">
 
-      <!-- Landlord Name Header -->
-      <div class="!mb-1">
+      <!-- Landlord Name Header Box -->
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col gap-2 !mb-2">
         <h4 class="text-lg font-black text-gray-800 m-0">{{ landlordData?.landlord || landlordData?.name || landlord.name || 'Loading...' }}</h4>
         <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ landlordData?.email_address || landlordData?.email || landlord.email || '' }}</p>
         <div class="flex gap-2 mt-2 text-[10px] font-semibold">
-          <button
-            class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">{{
-            'web.contacts.lblViewActivity' | translate }}</button>
+          <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.contacts.lblViewActivity' | translate">
+            <i class="ri-history-line text-sm"></i>
+          </button>
           <button (click)="showSubscriptionsModal = true"
-            class="px-3 py-1 rounded-md border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50">Email
-            Sub (3/30)</button>
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'Email Sub (3/30)'">
+            <i class="ri-mail-settings-line text-sm"></i>
+          </button>
         </div>
       </div>
 
@@ -412,8 +419,8 @@
     </div>
 
     <!-- TAB: Wallet -->
-    <div *ngIf="activeTab === 'Wallet'" class="flex flex-col gap-y-2 animate-fade-in">
-
+    <div *ngIf="activeTab === 'Wallet'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-5 flex flex-col gap-4 animate-fade-in">
+      
       <!-- Warning Alert -->
       <div
         class="flex items-center justify-between p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning-800 text-[11px] font-semibold">
@@ -471,30 +478,27 @@
       </div>
 
       <!-- Other Amounts -->
-      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm !mb-2">
-        <h6 class="text-[10px] text-gray-500 font-bold uppercase mb-2">{{ 'web.contacts.lblOtherAmounts' | translate }}
-        </h6>
-        <div class="flex justify-between items-center bg-gray-50 rounded-lg p-2.5">
-          <span class="text-xs text-gray-600 font-medium">{{ 'web.contacts.lblPortfolioPerformance' | translate
-            }}</span>
-          <span class="text-sm font-black text-gray-800">AED 46,533,471.47</span>
-        </div>
+      <div class="bg-gray-50 rounded-lg p-3 flex justify-between items-center border border-gray-100">
+        <span class="text-xs text-gray-600 font-medium">{{ 'web.contacts.lblPortfolioPerformance' | translate
+          }}</span>
+        <span class="text-sm font-black text-gray-800">AED 46,533,471.47</span>
       </div>
 
       <!-- Transaction Ledger Table -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 p-4">
-        <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblTransactionLedger' | translate }}</h6>
+      <div class="flex flex-col gap-3 mt-2">
+        <div class="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-gray-100">
+          <h6 class="font-bold text-gray-800 text-sm m-0">{{ 'web.contacts.lblTransactionLedger' | translate }}</h6>
           <div class="flex gap-2">
             <div class="input-group input-group-sm w-48 relative">
               <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
                 <i class="ri-search-line text-gray-400 text-xs"></i>
               </span>
-              <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50" placeholder="Search...">
+              <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50 border-gray-200" placeholder="Search...">
             </div>
             <button
-              class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
-              <i class="ri-layout-column-line"></i> {{ 'web.contacts.lblColumn' | translate }}
+              class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+              [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+              <i class="ri-layout-column-line"></i>
             </button>
           </div>
         </div>
@@ -504,13 +508,12 @@
           <ng-template #colTemplate let-row="row" let-col="col">
             <ng-container *ngIf="col.key === 'paymentVia'">
               <span *ngIf="row.paymentVia === 'Cash'"
-                class="badge bg-primary/10 text-primary font-bold px-2 py-0.5 rounded text-[10px] uppercase">Cash</span>
+                class="badge rounded bg-primary/10 text-primary font-bold px-2 py-0.5 text-[10px] uppercase">Cash</span>
               <span *ngIf="row.paymentVia !== 'Cash'">{{ row.paymentVia }}</span>
             </ng-container>
           </ng-template>
         </app-shared-table>
       </div>
-
     </div>
 
     <!-- TAB: Units -->
@@ -730,23 +733,24 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: User -->
     <div *ngIf="activeTab === 'User'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
-      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUsers' | translate }}</h6>
         <button (click)="showAddUserModal = true"
-          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
-          <i class="ri-add-line"></i> Add User
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Add User'">
+          <i class="ri-add-line text-sm"></i>
         </button>
       </div>
 
@@ -769,13 +773,13 @@
 
     <!-- TAB: Emergency Contact -->
     <div *ngIf="activeTab === 'Emergency Contact'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
-      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}
-        </h6>
+      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}</h6>
         <button (click)="showAddEmergencyContactModal = true"
-          class="px-3 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold shadow-sm flex items-center gap-1">
-          <i class="ri-add-line"></i> Add Emergency Contact
+          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          [attr.data-tooltip]="'Add Emergency Contact'">
+          <i class="ri-add-line text-sm"></i>
         </button>
       </div>
 

@@ -1,0 +1,92 @@
+<!-- Filter Drawer Backdrop -->
+<div 
+  class="drawer-backdrop fixed inset-0 bg-black/30 backdrop-blur-sm z-[999]"
+  [class.show]="isOpen"
+  (click)="closeDrawer()">
+</div>
+
+<!-- Filter Drawer Panel -->
+<div 
+  class="filter-drawer fixed right-0 top-0 h-full w-[380px] bg-white border-l border-gray-100 shadow-2xl z-[1000] flex flex-col"
+  [class.open]="isOpen">
+  
+  <!-- Header -->
+  <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+    <h5 class="text-sm font-bold text-gray-800 m-0">Filters</h5>
+    <button (click)="closeDrawer()" class="text-gray-400 hover:text-gray-600 transition-colors bg-transparent border-0 p-0 flex items-center justify-center">
+      <i class="ri-close-line text-xl"></i>
+    </button>
+  </div>
+
+  <!-- Scrollable Form Fields Body -->
+  <div class="flex-1 overflow-y-auto p-5 space-y-4">
+    <div class="flex flex-col gap-4 text-[11px]">
+      <!-- Filter by Tags -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+        <ng-select [ngModel]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" [items]="tagsList" [searchable]="true" [clearable]="true"
+          placeholder="Select Tag" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Filter by Area (sqft) -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+        <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [ngModel]="selectedArea" (ngModelChange)="selectedAreaChange.emit($event)"
+          placeholder="e.g. 1523 Sqft">
+      </div>
+
+      <!-- Filter by ID -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+        <input type="number" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [ngModel]="selectedId" (ngModelChange)="selectedIdChange.emit($event)"
+          placeholder="e.g. 31658">
+      </div>
+
+      <!-- Filter by Reference No -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
+        <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [ngModel]="selectedRefNo" (ngModelChange)="selectedRefNoChange.emit($event)"
+          placeholder="Enter Ref No">
+      </div>
+
+      <!-- Off Plan Status -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+        <ng-select [ngModel]="selectedOffPlanStatus" (ngModelChange)="selectedOffPlanStatusChange.emit($event)" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
+          placeholder="Select Off Plan Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Filter by Landlord -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+        <ng-select [ngModel]="selectedLandlord" (ngModelChange)="selectedLandlordChange.emit($event)" [items]="landlordsList" [searchable]="true" [clearable]="true"
+          placeholder="Select Landlord" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+
+      <!-- Internal Status -->
+      <div class="flex flex-col">
+        <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+        <ng-select [ngModel]="selectedInternalStatus" (ngModelChange)="selectedInternalStatusChange.emit($event)" [items]="internalStatuses" [searchable]="true" [clearable]="true"
+          placeholder="Select Internal Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+    </div>
+    
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-3">
+    <button 
+      type="button" 
+      (click)="applyFilters()" 
+      class="flex-1 px-4 py-2 text-xs font-semibold rounded-md bg-primary hover:bg-primary-hover text-white border-0 transition-all shadow-sm">
+      Apply Filters
+    </button>
+    <button 
+      type="button" 
+      (click)="clearFilters()" 
+      class="flex-1 px-4 py-2 text-xs font-semibold rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all border-0">
+      Clear All
+    </button>
+  </div>
+</div>

@@ -12,10 +12,12 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { AttachmentPopupComponent } from '../modal-popups/attachments-popup/attachment-popup.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-attachments-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, AttachmentPopupComponent, TranslateModule, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, AttachmentPopupComponent, TranslateModule, MatPaginatorModule, FilterDrawerComponent],
   templateUrl: './attachments.component.html',
   styleUrls: ['./attachments.component.scss']
 })
