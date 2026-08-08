@@ -24,6 +24,11 @@ export const content: Routes = [
     loadChildren: () =>
       import('../../components/facility/facility.routes').then((m) => m.facilityRoutingModule),
   },
+  {
+    path: 'leases',
+    loadChildren: () =>
+      import('../../components/leases/leases.routes').then((m) => m.leasesRoutingModule),
+  },
 ];
 
 @NgModule({

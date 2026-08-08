@@ -1,0 +1,327 @@
+<div class="block justify-between page-header md:flex mb-6 items-center">
+  <div class="flex items-center gap-3">
+    <!-- Back arrow button -->
+    <a (click)="goBack()" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm cursor-pointer" [attr.title]="'web.leases.lblLeaseManagement' | translate">
+      <i class="ri-arrow-left-line text-sm"></i>
+    </a>
+    <div>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ 'web.leases.lblNewLease' | translate }}</h3>
+      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+        <span class="cursor-pointer hover:text-primary" (click)="goBack()">{{ 'web.leases.lblLeaseManagement' | translate }}</span>
+        <span>/</span>
+        <span class="text-gray-600">{{ 'web.leases.lblNewLease' | translate }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 gap-6 mt-4 pb-16">
+  <!-- LEFT COLUMN: Selection Details -->
+  <div class="col-span-12 lg:col-span-8 flex flex-col gap-4">
+    <!-- Selection Details Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblSelectionDetails' | translate }}</h6>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblTenant' | translate }} *</label>
+          <ng-select [(ngModel)]="selectedTenant" [items]="tenantsList" bindLabel="name" bindValue="id" (change)="onTenantChange($event)" placeholder="{{ 'web.leases.lblTenant' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblProperty' | translate }} *</label>
+          <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" bindLabel="name" bindValue="code" (change)="onPropertyChange($event)" placeholder="{{ 'web.leases.lblProperty' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblUnit' | translate }} *</label>
+          <ng-select [(ngModel)]="selectedUnit" [items]="unitsList" bindLabel="name" bindValue="code" (change)="onUnitChange($event)" placeholder="{{ 'web.leases.lblUnit' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRoom' | translate }}</label>
+          <ng-select [(ngModel)]="selectedRoom" [items]="roomsList" bindLabel="name" bindValue="code" placeholder="{{ 'web.leases.lblRoom' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent Assignment Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblAgentAssignment' | translate }}</h6>
+      <div class="text-xs">
+        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAgentAssignment' | translate }}</label>
+        <ng-select [(ngModel)]="selectedAgent" [items]="agentsList" bindLabel="name" bindValue="id" placeholder="{{ 'web.leases.lblAgentAssignment' | translate }}" class="ng-select-sm w-full"></ng-select>
+      </div>
+    </div>
+
+    <!-- Lease Details Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblLeaseDetails' | translate }}</h6>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseType' | translate }}</label>
+          <ng-select [(ngModel)]="selectedLeaseType" [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
+          <ng-select [(ngModel)]="selectedLeaseCategory" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblStartDate' | translate }} *</label>
+          <input type="date" [(ngModel)]="startDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblEndDate' | translate }}</label>
+          <input type="date" [(ngModel)]="endDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-2">
+        <input type="checkbox" [(ngModel)]="isShortTerm" id="isShortTerm" class="form-checkbox h-3.5 w-3.5 text-primary rounded" />
+        <label for="isShortTerm" class="text-xs text-gray-600 cursor-pointer">{{ 'web.leases.lblShortTerm' | translate }}</label>
+      </div>
+    </div>
+
+    <!-- Rent & Payments Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblRentPayments' | translate }}</h6>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRent' | translate }} *</label>
+          <div class="input-group">
+            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">AED</span>
+            <input type="number" [(ngModel)]="rentAmount" (ngModelChange)="calculateRentDetails()" class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblTotalPayments' | translate }}</label>
+          <input type="number" [(ngModel)]="totalPayments" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
+          <ng-select [(ngModel)]="moneyHeldBy" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
+          <ng-select [(ngModel)]="paymentMethod" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAnnualRent' | translate }}</label>
+          <input type="text" [value]="'AED ' + (annualRent | number:'1.2-2')" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMonthlyRent' | translate }}</label>
+          <input type="text" [value]="'AED ' + (monthlyRent | number:'1.2-2')" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+        </div>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button type="button" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+          {{ 'web.leases.lblGeneratePayment' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4 flex items-center gap-1.5">
+        {{ 'web.leases.lblAdditionalInfo' | translate }}
+        <i class="ri-information-line text-gray-400 text-[13px] cursor-pointer" [attr.data-tooltip]="'Additional lease details and audit logs'"></i>
+      </h6>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblNoOfPerson' | translate }}</label>
+          <input type="number" [(ngModel)]="noOfPerson" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblCreatedBy' | translate }}</label>
+          <input type="text" [(ngModel)]="createdBy" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Created At</label>
+          <input type="date" [(ngModel)]="createdAt" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoveInDate' | translate }}</label>
+          <input type="date" [(ngModel)]="moveInDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPayingDate' | translate }}</label>
+          <input type="date" [(ngModel)]="payingDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Selection Summary (Sticky Sidebar) -->
+  <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
+    <!-- Tenants Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.contacts.lblTenants' | translate }}</h5>
+      </div>
+      <div class="p-5 flex flex-col gap-4">
+        <!-- Selected Tenant summary -->
+        <div *ngIf="selectedTenantObj" class="p-3.5 rounded-lg bg-[#1f2b45]/5 border border-[#1f2b45]/10 flex items-center justify-between text-xs">
+          <div>
+            <p class="font-bold text-[#1f2b45] m-0">{{ selectedTenantObj.name }}</p>
+            <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ selectedTenantObj.phone }} | {{ selectedTenantObj.email }}</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Primary</span>
+        </div>
+        <p *ngIf="!selectedTenantObj" class="text-xs text-gray-400 italic">No tenant selected</p>
+
+        <!-- Occupants section -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Occupants</span>
+            <button (click)="openOccupantsModal()" type="button" class="w-6 h-6 rounded bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center justify-center border-0 shadow-sm" title="Add Occupant">
+              <i class="ri-add-line text-xs font-bold"></i>
+            </button>
+          </div>
+          <!-- Occupant list items -->
+          <div *ngIf="occupants.length > 0" class="flex flex-col gap-2">
+            <div *ngFor="let occ of occupants; let idx = index" class="p-3 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between text-xs">
+              <div>
+                <p class="font-bold text-gray-700 m-0">{{ occ.name }}</p>
+                <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ occ.phone }}</p>
+              </div>
+              <div class="flex gap-1.5">
+                <button (click)="editOccupant(idx)" class="w-6 h-6 rounded bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all" title="Edit"><i class="ri-edit-line text-[10px]"></i></button>
+                <button (click)="removeOccupant(idx)" class="w-6 h-6 rounded bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all" title="Delete"><i class="ri-delete-bin-line text-[10px]"></i></button>
+              </div>
+            </div>
+          </div>
+          <p *ngIf="occupants.length === 0" class="text-xs text-gray-400 italic">No occupants added</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Units Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.leases.lblUnit' | translate }}s</h5>
+      </div>
+      <div class="p-5 flex flex-col gap-3 text-xs">
+        <div *ngIf="selectedUnitObj" class="p-3.5 rounded-lg bg-success/5 border border-success/10 flex items-center justify-between">
+          <div>
+            <p class="font-bold text-success m-0">{{ selectedUnitObj.name }}</p>
+            <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ selectedPropertyObj?.name }}</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success text-white">Primary</span>
+        </div>
+        <p *ngIf="!selectedUnitObj" class="text-xs text-gray-400 italic">Select a unit to see summary</p>
+      </div>
+    </div>
+
+    <!-- Lease Details Card -->
+    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.leases.lblLeaseDetails' | translate }}</h5>
+      </div>
+      <div class="p-5 flex flex-col gap-[2px] text-xs">
+        <div class="flex gap-2">
+          <span class="text-gray-500 w-28 shrink-0">Type:</span>
+          <span class="text-gray-800 font-bold">{{ isShortTerm ? 'Short Term' : 'Long Term' }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-500 w-28 shrink-0">Lease Type:</span>
+          <span class="text-gray-800 font-bold">{{ selectedLeaseType }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-500 w-28 shrink-0">Category:</span>
+          <span class="text-[#1f2b45] font-bold">{{ selectedLeaseCategory }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Occupant Modal Overlay -->
+<div *ngIf="showOccupantsModal" class="fixed inset-0 z-[150] overflow-y-auto bg-black/50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in border border-gray-100">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+      <div>
+        <h6 class="font-bold text-gray-800 text-sm m-0">Occupants</h6>
+        <p class="text-[10px] text-gray-400 m-0 mt-0.5">Add people who will live in this unit during the lease period.</p>
+      </div>
+      <button (click)="closeOccupantsModal()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0" [attr.data-tooltip]="'web.contacts.lblCancel' | translate"><i class="ri-close-line text-lg"></i></button>
+    </div>
+
+    <!-- Body containing Form and List -->
+    <div class="p-6 flex flex-col gap-4 text-xs max-h-[450px] overflow-y-auto">
+      <!-- Input fields row -->
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.contacts.lblName' | translate }} *</label>
+        <input type="text" [(ngModel)]="occupantName" placeholder="Enter full name" class="form-control form-control-sm !text-xs border-gray-200" />
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Phone on Lease</label>
+          <div class="flex">
+            <span class="input-group-text bg-gray-50 border-gray-200 text-gray-500 !text-xs px-2 flex items-center gap-1"><span class="flag-icon flag-icon-ae">🇦🇪</span></span>
+            <input type="text" [(ngModel)]="occupantPhone" placeholder="Enter" class="form-control form-control-sm !text-xs border-gray-200 border-s-0 rounded-s-none" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.contacts.lblEmail' | translate }}</label>
+          <input type="email" [(ngModel)]="occupantEmail" placeholder="Email" class="form-control form-control-sm !text-xs border-gray-200" />
+        </div>
+      </div>
+
+      <!-- Add Occupant trigger button inside popup -->
+      <button type="button" (click)="addOccupant()" [attr.data-tooltip]="(editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate" class="w-full py-2 border border-dashed border-primary/40 text-primary bg-primary/5 hover:bg-primary/10 transition-all rounded font-semibold flex items-center justify-center gap-1.5 mt-2">
+        <i class="ri-add-line"></i> {{ (editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate }}
+      </button>
+
+      <hr class="border-gray-100 my-1" />
+
+      <!-- List of Added Occupants inside popup -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Added occupants</span>
+          <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[10px] text-gray-500 font-semibold">{{ occupants.length }} added</span>
+        </div>
+        
+        <div *ngIf="occupants.length > 0" class="flex flex-col gap-2">
+          <div *ngFor="let occ of occupants; let idx = index" class="p-3.5 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between">
+            <div class="grid grid-cols-3 gap-2 w-full pr-4 text-[11px]">
+              <div>
+                <p class="text-gray-400 font-medium m-0">Name</p>
+                <p class="font-bold text-gray-700 m-0">{{ occ.name }}</p>
+              </div>
+              <div>
+                <p class="text-gray-400 font-medium m-0">Phone</p>
+                <p class="font-semibold text-gray-600 m-0">{{ occ.phone || '-' }}</p>
+              </div>
+              <div>
+                <p class="text-gray-400 font-medium m-0">Email</p>
+                <p class="font-semibold text-gray-600 m-0 truncate" title="{{ occ.email }}">{{ occ.email || '-' }}</p>
+              </div>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+              <button type="button" (click)="editOccupant(idx)" [attr.data-tooltip]="'Edit'" class="w-7 h-7 rounded border border-gray-200 bg-white hover:bg-primary/5 hover:text-primary transition-all flex items-center justify-center text-gray-500 shadow-sm"><i class="ri-edit-line text-xs"></i></button>
+              <button type="button" (click)="removeOccupant(idx)" [attr.data-tooltip]="'Delete'" class="w-7 h-7 rounded border border-gray-200 bg-white hover:bg-danger/5 hover:text-danger transition-all flex items-center justify-center text-gray-500 shadow-sm"><i class="ri-delete-bin-line text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="occupants.length === 0" class="text-xs text-gray-400 italic text-center py-4 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">No occupants added yet</p>
+      </div>
+    </div>
+
+    <!-- Footer actions -->
+    <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 text-xs">
+      <button (click)="closeOccupantsModal()" type="button" [attr.data-tooltip]="'Close'" class="px-4 py-1.5 rounded bg-white border border-gray-200 text-gray-500 hover:bg-gray-100 transition-all font-semibold flex items-center gap-1 shadow-sm">
+        <i class="ri-close-line"></i> Close
+      </button>
+      <button (click)="closeOccupantsModal()" type="button" [attr.data-tooltip]="'Save'" class="px-4 py-1.5 rounded bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold flex items-center gap-1 shadow-sm">
+        <i class="ri-save-line"></i> Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Fixed Floating Form Actions Bottom Bar -->
+<div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
+  <button type="button" (click)="goBack()" [attr.data-tooltip]="'web.contacts.lblCancel' | translate" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95 flex items-center gap-1.5">
+    <i class="ri-close-line"></i> {{ 'web.contacts.lblCancel' | translate }}
+  </button>
+  <button type="button" (click)="saveLease()" [attr.data-tooltip]="'web.leases.lblAddLease' | translate" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
+    <i class="ri-save-line"></i> {{ 'web.leases.lblAddLease' | translate }}
+  </button>
+</div>

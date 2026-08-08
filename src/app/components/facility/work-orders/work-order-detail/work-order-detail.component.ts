@@ -7,7 +7,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 import { CommonService } from '../../../../services/common.service';
 
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
-import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component'; 
 
 @Component({
   selector: 'app-work-order-detail',
