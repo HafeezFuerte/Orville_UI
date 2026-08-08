@@ -10,19 +10,31 @@ import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 export interface WorkOrder {
-  id: string;
-  workOrder: string;
-  property: string;
-  unit: string;
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'Open' | 'Closed' | 'Rejected';
-  vendor: string;
-  category: string;
-  responsiblePerson: string;
-  technician: string;
-  lastUpdate: string;
-  createdAt: string;
-  createdBy: string;
+  id?: string;
+  code?: string;
+  title?: string;
+  workOrder?: string;
+  property?: string;
+  property_code?: string;
+  address_1?: string;
+  unit?: string;
+  unit_code?: string;
+  priority?: string;
+  status?: string;
+  status_nm?: string;
+  class_name?: string;
+  vendor?: string;
+  vendor_name?: string;
+  category?: string;
+  maintenance_name?: string;
+  responsiblePerson?: string;
+  responsible_person?: string;
+  responsible_user?: string;
+  technician?: string;
+  technician_name?: string;
+  lastUpdate?: string;
+  createdAt?: string;
+  createdBy?: string;
 }
 
 @Component({
@@ -40,6 +52,7 @@ export class WorkOrderListComponent implements OnInit {
   private toastr =inject(ToastrService);
   currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
+  viewMode: 'list' | 'grid' = 'list';
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
   isLoading: boolean = false;
@@ -66,10 +79,10 @@ export class WorkOrderListComponent implements OnInit {
     { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
     { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
     { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
-    { key: 'vendor_name', label: 'Vendor', visible: true },
+    { key: 'vendor_name', label: 'Vendor', visible: true, useTemplate: true },
     { key: 'maintenance_name', label: 'Category', visible: true },
-    { key: 'responsiblePerson', label: 'Responsible person(s)', visible: true },
-    { key: 'technician_name', label: 'Technician', visible: true },
+    { key: 'responsiblePerson', label: 'Responsible person(s)', visible: true, useTemplate: true },
+    { key: 'technician_name', label: 'Technician', visible: true, useTemplate: true },
     { key: 'modified_date', label: 'Last update', visible: true },
     { key: 'created_date', label: 'Created at', visible: true },
     { key: 'created_by_name', label: 'Created by', visible: true },
@@ -225,7 +238,69 @@ export class WorkOrderListComponent implements OnInit {
     this.router.navigate(['/facility/work-orders/create']);
   }
 
+  handleEditAction(row: any) {
+    this.router.navigate(['/facility/work-orders/edit', row.code]);
+  }
+
   navigateToDetail(id: string) {
     this.router.navigate(['/facility/work-orders', id]);
+  }
+
+  setViewMode(mode: 'list' | 'grid'): void {
+    this.viewMode = mode;
+  }
+
+  get startRecord(): number {
+    return this.pageNo * this.pageSize + 1;
+  }
+
+  get endRecord(): number {
+    const end = (this.pageNo + 1) * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pages(): number[] {
+    const pagesArray: number[] = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.pageNo - 1);
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pagesArray.push(i);
+    }
+    return pagesArray;
+  }
+
+  get pageSizeOptions(): number[] {
+    return [10, 20, 50, 100];
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageNo < this.totalPages - 1) {
+      this.pageNo++;
+      this.loadData();
+    }
+  }
+
+  goToPage(page: number): void {
+    this.pageNo = page - 1;
+    this.loadData();
+  }
+
+  onPageSizeChange(event: any): void {
+    this.pageSize = +event.target.value;
+    this.pageNo = 0;
+    this.loadData();
   }
 }

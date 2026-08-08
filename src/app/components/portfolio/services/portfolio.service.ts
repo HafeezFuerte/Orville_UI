@@ -64,7 +64,7 @@ saveBroadcast(payload: any): Observable<any> {
     payload
   );
 }
-saveAsset(payload: FormData): Observable<any> {
+saveAsset(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/save_update_assets',
     payload

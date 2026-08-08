@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 
 export interface Part {
   id: string;
@@ -45,6 +47,8 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 export class AssetDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private propertiesService = inject(PropertiesService);
+  private commonService = inject(CommonService);
 
   assetId: string = '';
   activeTab: string = 'Overview';
@@ -55,60 +59,53 @@ export class AssetDetailComponent implements OnInit {
     if (this.activeTab === 'Attachments') {
       return {
         key: 'attachments',
+        label: 'Attachments',
         entity: 'asset',
         entity_id: this.assetId,
         data: this.attachments || [],
-        form: this.attachmentsForm
+        totalRecords: (this.attachments || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.attachmentsForm,
+        popupType: 'attachment'
       };
     }
     return null;
   }
 
   assetData = {
-    id: '27650',
-    name: 'Microwave Oven Super General',
-    model: 'SGMV81M0G-W (Super General)',
-    category: 'Home Appliances',
+    id: '-',
+    name: '-',
+    model: '-',
+    category: '-',
     subcategory: '-',
     capacity: '-',
-    color: 'White',
-    assetCode: 'Asset Code 1',
-    status: 'Operational',
-    installationDate: '10-01-2023',
-    warrantyStatus: true,
-    property: 'Dubai Marina, Tower A, Dubai',
-    unit: 'Apartment 100 - FR A',
-    partsIncluded: 'Microwave',
-    purchaseDate: '10-01-2023',
-    lastUpdated: '10-01-2023',
-    
-    // Purchase Information
-    purchaseOrderNo: 'PO-2024-001',
-    price: 'AED 385.00',
-    vendor: 'Rahman Mohammad',
-    
-    // Warranty Details
-    warrantyProvider: 'Samsung',
-    warrantyDuration: '12 Months',
-    warrantyStartDate: '10-01-2023',
-    warrantyEndDate: '10-01-2024',
-    warrantyDaysRemaining: 180
+    color: '-',
+    assetCode: '-',
+    status: '-',
+    installationDate: '-',
+    warrantyStatus: false,
+    property: '-',
+    unit: '-',
+    partsIncluded: '-',
+    purchaseDate: '-',
+    lastUpdated: '-',
+    purchaseOrderNo: '-',
+    price: '-',
+    vendor: '-',
+    warrantyProvider: '-',
+    warrantyDuration: '-',
+    warrantyStartDate: '-',
+    warrantyEndDate: '-',
+    warrantyDaysRemaining: 0
   };
 
-  parts: Part[] = [
-    { id: 'PT-1001', partName: 'Microwave', partNumber: 'PART-001', category: 'Electrical', subcategory: 'N/A', unit: 'AED 150.00', cost: 'AED 150.00' },
-    { id: 'PT-1002', partName: 'Oven Door', partNumber: 'PART-002', category: 'Electrical', subcategory: 'N/A', unit: 'AED 200.00', cost: 'AED 200.00' }
-  ];
+  parts: Part[] = [];
 
-  workOrders: WorkOrder[] = [
-    { id: '82658', workOrder: 'Oven not working', property: 'Marina Heights Tower A', unit: 'Apartment 101 - FR A', priority: 'Medium', status: 'Open', vendor: 'Rahman Mohammad' },
-    { id: '82659', workOrder: 'Oven not working', property: 'Marina Heights Tower A', unit: 'Apartment 101 - FR A', priority: 'High', status: 'Pending', vendor: 'Rahman Mohammad' }
-  ];
+  workOrders: WorkOrder[] = [];
 
-  attachments: Attachment[] = [
-    { id: 'ATT-1001', fileName: 'Inspection Report', docId: 'DOC-1001', documentStatus: 'Active', issueDate: '10-01-2024', expiryDate: '10-01-2025', files: '1 file' },
-    { id: 'ATT-1002', fileName: 'Maintenance Report', docId: 'DOC-1002', documentStatus: 'Verified', issueDate: '12-01-2024', expiryDate: '12-01-2025', files: '1 file' }
-  ];
+  attachments: any[] = [];
 
   partColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -164,11 +161,108 @@ export class AssetDetailComponent implements OnInit {
     this.assetId = this.route.snapshot.paramMap.get('id') || '';
     if (this.assetId) {
       this.assetData.id = this.assetId;
+      this.loadAssetDetails();
     }
+  }
+
+  loadAssetDetails() {
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 22,
+      typeid: 22,
+      filterId: 0,
+      filterText: this.assetId,
+      filterText1: "",
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const details = res.objResult.assets || res.objResult.table || res.objResult;
+          if (Array.isArray(details) && details.length > 0) {
+            const data = details[0];
+            this.assetData = {
+              id: data.id || data.code || this.assetId,
+              name: data.asset_name || data.name || '-',
+              model: data.model || '-',
+              category: data.category_name || data.category || data.asset_category || '-',
+              subcategory: data.subcategory_name || data.subcategory || data.asset_subcategory || '-',
+              capacity: data.capacity || '-',
+              color: data.color || '-',
+              assetCode: data.barcode || data.asset_code || data.code || '-',
+              status: data.status || '-',
+              installationDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
+              warrantyStatus: data.total_warranty ? true : false,
+              property: data.property_name || data.property_code || data.property || '-',
+              unit: data.unit_name || data.unit_code || data.unit || '-',
+              partsIncluded: data.parts || '-',
+              purchaseDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
+              lastUpdated: data.last_update || data.updatedAt || data.purchase_date || '-',
+              purchaseOrderNo: data.po_no || data.purchase_order || '-',
+              price: data.price || '-',
+              vendor: data.vendor_name || data.vendor_id || '-',
+              warrantyProvider: data.manufacturer || '-',
+              warrantyDuration: data.total_warranty || '-',
+              warrantyStartDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
+              warrantyEndDate: data.expiry_date ? data.expiry_date.substring(0, 10) : '-',
+              warrantyDaysRemaining: data.expiry_date ? Math.ceil((new Date(data.expiry_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) : 0
+            };
+          }
+          const partList = res.objResult.parts || res.objResult.part_dtls || res.objResult.table1;
+          if (Array.isArray(partList)) {
+            this.parts = partList.map((p: any) => ({
+              id: p.id || p.code || '',
+              partName: p.partName || p.name || '',
+              partNumber: p.partNumber || p.number || '',
+              category: p.category || '',
+              subcategory: p.subcategory || '',
+              unit: p.unit || '',
+              cost: p.cost || ''
+            }));
+          }
+          const woList = res.objResult.work_orders || res.objResult.workorders || res.objResult.table2;
+          if (Array.isArray(woList)) {
+            this.workOrders = woList.map((w: any) => ({
+              id: w.id || w.code || '',
+              workOrder: w.workOrder || w.title || '',
+              property: w.property || '',
+              unit: w.unit || '',
+              priority: w.priority || 'Medium',
+              status: w.status || 'Open',
+              vendor: w.vendor || ''
+            }));
+          }
+          const docList = res.objResult.documents || res.objResult.document || res.objResult.attachments;
+          if (Array.isArray(docList)) {
+            this.attachments = docList.map((d: any) => ({
+              code: d.code || d.id,
+              document_type_name: d.document_type_name || d.fileType || '',
+              doc_no: d.doc_no || d.docId || '',
+              document_status_name: d.document_status_name || d.documentStatus || '',
+              issue_date: d.issue_date || d.issueDate || '',
+              expiry_date: d.expiry_date || d.expiryDate || '',
+              file_path: d.file_path || d.files || ''
+            }));
+          }
+        }
+      },
+      error: (err: any) => console.error("Error loading asset details:", err)
+    });
   }
 
   goBack() {
     this.router.navigate(['/facility/assets']);
+  }
+
+  navigateToEdit() {
+    this.router.navigate(['/facility/assets/edit', this.assetId]);
+  }
+
+  navigateToAddWorkOrder() {
+    this.router.navigate(['/facility/work-orders/create']);
   }
 
   setTab(tabName: string) {

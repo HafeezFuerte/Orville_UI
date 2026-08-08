@@ -18,8 +18,10 @@
     </div>
   </div>
   <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-      Edit Asset
+    <button (click)="navigateToEdit()" type="button"
+      class="relative z-50 w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+      [attr.data-tooltip]="'Edit Asset'">
+      <i class="ri-edit-line text-sm"></i>
     </button>
   </div>
 </div>
@@ -29,23 +31,36 @@
 <!-- Navigation Tabs -->
 <!-- Moved to right column -->
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 pb-16">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-2 pb-16">
   
   <!-- LEFT COLUMN (Sticky Sidebar) -->
   <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-[2px]">
-    <div class="sticky-sidebar flex flex-col gap-4">
+    <div class="sticky-sidebar flex flex-col gap-2">
       
       <!-- Asset Header Card -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
-        <h4 class="text-lg font-bold text-gray-800 mb-1 text-left">{{ assetData.name }}</h4>
-        <p class="text-xs text-gray-500 mb-5 text-left">Asset #{{ assetData.id }}</p>
-        <button class="w-full py-2.5 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
-          View Activity
-        </button>
+      <div class="box bg-white rounded-xl border border-gray-200 shadow-sm p-5 !mb-0">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h4 class="text-sm font-bold text-gray-800 m-0 mb-1">{{ assetData.name }}</h4>
+            <p class="text-[11px] text-gray-500 m-0">Asset #{{ assetData.id }}</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-1.5 mt-2">
+          <button type="button"
+            class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'View Activity'">
+            <i class="ri-history-line text-[13px]"></i>
+          </button>
+          <button (click)="navigateToEdit()" type="button"
+            class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'Edit Asset'">
+            <i class="ri-edit-line text-[13px]"></i>
+          </button>
+        </div>
       </div>
       
       <!-- Asset Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
         <div class="box-header p-4 border-b border-gray-100">
           <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Asset Information</h6>
         </div>
@@ -69,7 +84,7 @@
       </div>
 
       <!-- Property & Unit -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
         <div class="box-header p-4 border-b border-gray-100">
           <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property & Unit</h6>
         </div>
@@ -80,7 +95,7 @@
       </div>
 
       <!-- Additional Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
         <div class="box-header p-4 border-b border-gray-100">
           <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Additional Details</h6>
         </div>
@@ -93,7 +108,7 @@
       </div>
 
       <!-- Custom Fields -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
         <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
           <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Custom Fields</h6>
           <button class="text-primary hover:text-blue-700 transition-colors bg-transparent border-0"><i class="ri-add-line text-lg"></i></button>
@@ -107,10 +122,10 @@
   </div>
 
   <!-- RIGHT COLUMN (Tab Content) -->
-  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-4">
+  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-2">
     
     <!-- Tabs Header -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2 mb-3">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2 !mb-0">
       <button *ngFor="let tab of tabs" 
         (click)="setTab(tab)"
         [class]="activeTab === tab ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
@@ -120,14 +135,14 @@
     </div>
 
     <!-- OVERVIEW TAB -->
-    <div *ngIf="activeTab === 'Overview'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 flex flex-col pt-2 pb-4">
+    <div *ngIf="activeTab === 'Overview'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0 flex flex-col pt-2 pb-4">
       <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Overview</h6>
       </div>
-      <div class="box-body p-4 flex flex-col gap-4">
+      <div class="box-body p-4 flex flex-col gap-2">
         
         <!-- Purchase Information -->
-        <div class="flex flex-col gap-[2px] !mb-2">
+        <div class="flex flex-col gap-[2px] !mb-0">
           <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5 mb-2">Purchase Information</h6>
           <div class="grid grid-cols-2 gap-y-4 text-[11px]">
             <div class="flex flex-col gap-1">
@@ -192,8 +207,10 @@
             <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
           </div>
-          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
-            <i class="ri-add-line text-sm"></i> Add Part
+          <button type="button"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'Add Part'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
         <app-shared-table 
@@ -221,8 +238,10 @@
             <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
           </div>
-          <button class="px-3 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1.5">
-            <i class="ri-add-line text-sm"></i> Add Work Order
+          <button (click)="navigateToAddWorkOrder()" type="button"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'Add Work Order'">
+            <i class="ri-add-line text-[1rem]"></i>
           </button>
         </div>
         <app-shared-table 
@@ -266,7 +285,7 @@
     </div>
 
     <!-- ATTACHMENTS TAB -->
-    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in !mb-0">
        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 

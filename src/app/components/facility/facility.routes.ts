@@ -15,6 +15,11 @@ export const facilityRoutingModule: Routes = [
           import('./work-orders/create-work-order/create-work-order.component').then((m) => m.CreateWorkOrderComponent),
       },
       {
+        path: 'edit/:id',
+        loadComponent: () =>
+          import('./work-orders/create-work-order/create-work-order.component').then((m) => m.CreateWorkOrderComponent),
+      },
+      {
         path: ':id',
         loadComponent: () =>
           import('./work-orders/work-order-detail/work-order-detail.component').then((m) => m.WorkOrderDetailComponent),
@@ -31,6 +36,11 @@ export const facilityRoutingModule: Routes = [
       },
       {
         path: 'create',
+        loadComponent: () =>
+          import('./asset-management/create-asset/create-asset.component').then((m) => m.CreateAssetComponent),
+      },
+      {
+        path: 'edit/:id',
         loadComponent: () =>
           import('./asset-management/create-asset/create-asset.component').then((m) => m.CreateAssetComponent),
       },

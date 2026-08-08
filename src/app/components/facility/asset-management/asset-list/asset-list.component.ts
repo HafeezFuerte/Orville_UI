@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 
 export interface Asset {
   id: string;
@@ -23,7 +24,7 @@ export interface Asset {
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss'
 })
@@ -36,6 +37,13 @@ export class AssetListComponent implements OnInit {
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
   isLoading: boolean = false;
+
+  isDrawerOpen: boolean = false;
+  filterName: string = '';
+  filterCategory: any = null;
+  filterStatus: any = null;
+  assetCategories: any[] = [];
+  statusOptions = ['Operational', 'Down'];
 
   pageNo = 0;
   pageSize = 10;
@@ -84,6 +92,34 @@ export class AssetListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadCategories();
+    this.loadData();
+  }
+
+  loadCategories() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 26,
+      filterText: '',
+      filterText1: ''
+    }).subscribe((res: any) => {
+      if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+        this.assetCategories = res.objResult.table.map((item: any) => ({
+          id: item.id,
+          name: item.lookup_name || item.name || ''
+        }));
+      }
+    });
+  }
+
+  toggleDrawer(state: boolean) {
+    this.isDrawerOpen = state;
+  }
+
+  clearFilters() {
+    this.filterName = '';
+    this.filterCategory = null;
+    this.filterStatus = null;
     this.loadData();
   }
 
@@ -98,10 +134,10 @@ export class AssetListComponent implements OnInit {
       languageid: 1,
       page_no: this.pageNo,
       seqno: 0,
-      search_keyword: this.searchQuery,
+      search_keyword: this.searchQuery || this.filterName || "",
       pagecount: this.pageSize,
-      filter_by: "",
-      filter_list: "",
+      filter_by: this.filterStatus ? `status:${this.filterStatus}` : "",
+      filter_list: this.filterCategory ? `category:${this.filterCategory}` : "",
       featureid: "ASSETS"
     };
 
@@ -139,6 +175,13 @@ export class AssetListComponent implements OnInit {
 
   navigateToCreate() {
     this.router.navigate(['/facility/assets/create']);
+  }
+
+  handleEditAction(row: any) {
+    if (row && (row.action_name === 'edit' || !row.action_name)) {
+      localStorage.setItem('selectedAsset', JSON.stringify(row));
+      this.router.navigate(['/facility/assets/edit', row.code || row.id]);
+    }
   }
 
   navigateToDetail(id: string) {

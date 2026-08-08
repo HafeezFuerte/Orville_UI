@@ -6,38 +6,30 @@
     </button>
     <div>
       <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        New Asset
+        {{ editId ? 'Edit Asset' : 'New Asset' }}
       </h3>
       <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
         <li class="hover:text-primary cursor-pointer" (click)="goBack()">Facility</li>
         <li class="px-2 text-gray-400">/</li>
         <li class="hover:text-primary cursor-pointer" (click)="goBack()">Assets</li>
         <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Create New Asset</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ editId ? 'Edit Asset' : 'Create New Asset' }}</li>
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button (click)="goBack()" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm">
-      Cancel
-    </button>
-    <button (click)="saveAsset()" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-      Create Asset
-    </button>
-  </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 pb-16">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-2 pb-16">
   
   <!-- Left Side: Main Form -->
-  <div class="xl:col-span-8 flex flex-col gap-6">
+  <div class="xl:col-span-8">
+    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0 p-8 flex flex-col gap-8">
 
-    <!-- Asset Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+      <!-- Asset Information -->
+      <div>
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Asset Information</h6>
-      </div>
-      <div class="box-body p-4">
+        <p class="text-[11px] text-gray-400 mt-1 mb-5">Primary details of the asset.</p>
+
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Asset Name <span class="text-danger">*</span></label>
@@ -51,7 +43,7 @@
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Asset category <span class="text-danger">*</span></label>
-            <ng-select #catSelect [items]="assetCategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssetCategory" placeholder="Select" class="ng-select-sm">
+            <ng-select #catSelect [items]="assetCategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssetCategory" (change)="onCategoryChange()" placeholder="Select" class="ng-select-sm">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
                   <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -97,18 +89,18 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Property Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+      <hr class="border-gray-100 m-0">
+
+      <!-- Property Information -->
+      <div>
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property Information</h6>
-      </div>
-      <div class="box-body p-4">
+        <p class="text-[11px] text-gray-400 mt-1 mb-5">Link asset with your portfolio items.</p>
+
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Property</label>
-            <ng-select #propSelect [items]="properties" [(ngModel)]="selectedProperty" placeholder="Select Property" class="ng-select-sm">
+            <ng-select #propSelect [items]="properties" bindLabel="name" bindValue="code" [(ngModel)]="selectedProperty" (change)="onPropertyChange()" placeholder="Select Property" class="ng-select-sm">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
                   <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -118,7 +110,7 @@
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit</label>
-            <ng-select #unitSelect [items]="propertyUnits" [(ngModel)]="selectedPropertyUnit" placeholder="Select Unit" class="ng-select-sm">
+            <ng-select #unitSelect [items]="propertyUnits" bindLabel="name" bindValue="code" [(ngModel)]="selectedPropertyUnit" placeholder="Select Unit" class="ng-select-sm">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
                   <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -140,25 +132,23 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Description -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+      <hr class="border-gray-100 m-0">
+
+      <!-- Description -->
+      <div>
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Description</h6>
-      </div>
-      <div class="box-body p-4">
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Description</label>
+        <p class="text-[11px] text-gray-400 mt-1 mb-5">Provide additional notes or specifications.</p>
         <textarea [(ngModel)]="description" rows="4" placeholder="Enter Description..." class="w-full px-3 py-2.5 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none"></textarea>
       </div>
-    </div>
 
-    <!-- Purchase Details -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
+      <hr class="border-gray-100 m-0">
+
+      <!-- Purchase Details -->
+      <div>
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Purchase Details</h6>
-      </div>
-      <div class="box-body p-4">
+        <p class="text-[11px] text-gray-400 mt-1 mb-5">Financial and warranty details.</p>
+
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Price <span class="text-danger">*</span></label>
@@ -187,18 +177,22 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Attachments -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Attachments</h6>
-        <button class="px-3 py-1.5 text-[10px] font-semibold rounded bg-[#c59e5e] text-white hover:bg-[#b08b50] transition-colors border-0 flex items-center gap-1" (click)="attachmentInput.click()">
-          <i class="ri-add-line"></i> Add Attachment
-        </button>
-        <input #attachmentInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
-      </div>
-      <div class="box-body p-4">
+      <hr class="border-gray-100 m-0">
+
+      <!-- Attachments -->
+      <div>
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Attachments</h6>
+            <p class="text-[11px] text-gray-400 mt-1 mb-0">Upload documents or images associated with this asset.</p>
+          </div>
+          <button class="px-3 py-1.5 text-[10px] font-semibold rounded bg-[#c59e5e] text-white hover:bg-[#b08b50] transition-colors border-0 flex items-center gap-1" (click)="attachmentInput.click()">
+            <i class="ri-add-line"></i> Add Attachment
+          </button>
+          <input #attachmentInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
+        </div>
+
         <div class="border border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors mb-4" (click)="attachmentInput.click()">
           <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
             <i class="ri-file-3-line text-gray-400 text-lg"></i>
@@ -222,23 +216,15 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Bottom Actions -->
-    <div class="flex items-center gap-4 mt-2">
-      <button (click)="goBack()" class="px-6 py-2 text-xs font-bold rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all shadow-sm">Cancel</button>
-      <button (click)="saveAsset()" class="px-6 py-2 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-        Create Asset
-      </button>
     </div>
-
   </div>
 
   <!-- Right Side: Barcode Details & Assignment -->
-  <div class="xl:col-span-4 flex flex-col gap-6">
+  <div class="xl:col-span-4 flex flex-col gap-2">
 
     <!-- Barcode Details -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
       <div class="box-header p-4 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Barcode Details</h6>
       </div>
@@ -256,7 +242,7 @@
     </div>
 
     <!-- Add Parts -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
       <div class="box-header p-4 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Add Parts to your inventory Asset</h6>
       </div>
@@ -266,14 +252,14 @@
     </div>
 
     <!-- Assignment -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
+    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
       <div class="box-header p-4 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assignment</h6>
       </div>
       <div class="box-body p-4 flex flex-col gap-4">
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Assign To Worker</label>
-          <ng-select #workerSelect [items]="assignWorkers" [(ngModel)]="selectedAssignWorker" placeholder="Select" class="ng-select-sm">
+          <ng-select #workerSelect [items]="assignWorkers" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssignWorker" placeholder="Select" class="ng-select-sm">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="workerSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -283,7 +269,7 @@
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Assign To Vendor</label>
-          <ng-select #vendorSelect [items]="assignVendors" [(ngModel)]="selectedAssignVendor" placeholder="Select" class="ng-select-sm">
+          <ng-select #vendorSelect [items]="assignVendors" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssignVendor" placeholder="Select" class="ng-select-sm">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="vendorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -296,4 +282,10 @@
 
   </div>
 
+</div>
+
+<!-- Floating actions footer -->
+<div class="fixed bottom-5 right-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl">
+  <button type="button" (click)="goBack()" class="px-6 py-2 text-xs font-semibold rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
+  <button type="button" (click)="saveAsset()" class="px-6 py-2 text-xs font-semibold rounded-full bg-primary hover:bg-primary-hover text-white transition-all shadow-md active:scale-95">{{ editId ? 'Save Asset' : 'Create Asset' }}</button>
 </div>

@@ -32,19 +32,31 @@ export class WorkOrderDetailComponent implements OnInit {
     if (this.activeTab === 'Notes') {
       return {
         key: 'notes',
+        label: 'Notes',
         entity: 'workorder',
         entity_id: this.workOrderId,
         data: this.notes || [],
-        form: this.notesForm
+        totalRecords: (this.notes || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.notesForm,
+        popupType: 'notes'
       };
     }
     if (this.activeTab === 'Attachments') {
       return {
         key: 'attachments',
+        label: 'Attachments',
         entity: 'workorder',
         entity_id: this.workOrderId,
         data: this.attachments || [],
-        form: this.attachmentsForm
+        totalRecords: (this.attachments || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.attachmentsForm,
+        popupType: 'attachment'
       };
     }
     return null;
@@ -158,10 +170,10 @@ export class WorkOrderDetailComponent implements OnInit {
   ];
 
   notes = [
-    { id: '51655', subject: 'Move-in condition', content: 'Tenant reported minor paint marks near the living room window. Schedule touch up...', via: 'Portal', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
-    { id: '51656', subject: 'Rent reminder', content: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first we...', via: 'Portal', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
-    { id: '51657', subject: 'Plumbing follow up', content: 'Kitchen sink drainage issue resolved. Vendor confirmed replacement part is required bef...', via: 'Office', noteDate: '12-01-2024', createdBy: 'Admin (System)' },
-    { id: '51658', subject: 'Inspection scheduled', content: 'Quarterly property inspection booked. Tenant has acknowledged the proposed visit window.', via: 'Phone', noteDate: '12-01-2024', createdBy: 'Admin (System)' }
+    { code: '51655', subject: 'Move-in condition', description: 'Tenant reported minor paint marks near the living room window. Schedule touch up...', status: 'Portal', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
+    { code: '51656', subject: 'Rent reminder', description: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first we...', status: 'Portal', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
+    { code: '51657', subject: 'Plumbing follow up', description: 'Kitchen sink drainage issue resolved. Vendor confirmed replacement part is required bef...', status: 'Office', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
+    { code: '51658', subject: 'Inspection scheduled', description: 'Quarterly property inspection booked. Tenant has acknowledged the proposed visit window.', status: 'Phone', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' }
   ];
 
   noteColumns = [
@@ -201,8 +213,8 @@ export class WorkOrderDetailComponent implements OnInit {
   ];
 
   attachments = [
-    { id: 'ATT-1001', fileType: 'Inspection Report', docId: 'DOC-1001', documentStatus: 'Active', issueDate: '10-01-2024', expiryDate: '10-01-2025', files: '1 file' },
-    { id: 'ATT-1002', fileType: 'Maintenance Report', docId: 'DOC-1002', documentStatus: 'Verified', issueDate: '12-01-2024', expiryDate: '12-01-2025', files: '1 file' }
+    { code: 'ATT-1001', document_type_name: 'Inspection Report', doc_no: 'DOC-1001', document_status_name: 'Active', issue_date: '2024-01-10T00:00:00', expiry_date: '2025-01-10T00:00:00', file_path: 'Inspection_Report.pdf' },
+    { code: 'ATT-1002', document_type_name: 'Maintenance Report', doc_no: 'DOC-1002', document_status_name: 'Verified', issue_date: '2024-01-12T00:00:00', expiry_date: '2025-01-12T00:00:00', file_path: 'Maintenance_Report.pdf' }
   ];
 
   attachmentColumns = [
@@ -272,6 +284,7 @@ export class WorkOrderDetailComponent implements OnInit {
     const currentUser = this.commonService.getCurrentUser();
     const payload = {
       typeId: 21,
+      typeid: 21,
       filterId: 0,
       filterText: this.workOrderId,
       filterText1: "",
@@ -309,6 +322,29 @@ export class WorkOrderDetailComponent implements OnInit {
               vendor: data.vendor || '-',
               landlord: data.landlord || '-'
             };
+            const noteList = res.objResult.note || res.objResult.notes || res.objResult.note_dtls;
+            if (Array.isArray(noteList) && noteList.length > 0) {
+              this.notes = noteList.map((n: any) => ({
+                code: n.code || n.id,
+                subject: n.subject || '',
+                description: n.desc || n.description || '',
+                status: n.channel_type || n.status || '',
+                uploaded_date: n.uploaded_date || n.created_date || n.createdAt || '',
+                created_by: n.created_by || n.createdBy || ''
+              }));
+            }
+            const docList = res.objResult.documents || res.objResult.document || res.objResult.attachments;
+            if (Array.isArray(docList) && docList.length > 0) {
+              this.attachments = docList.map((d: any) => ({
+                code: d.code || d.id,
+                document_type_name: d.document_type_name || d.fileType || '',
+                doc_no: d.doc_no || d.docId || '',
+                document_status_name: d.document_status_name || d.documentStatus || '',
+                issue_date: d.issue_date || d.issueDate || '',
+                expiry_date: d.expiry_date || d.expiryDate || '',
+                file_path: d.file_path || d.files || ''
+              }));
+            }
           }
         }
       },
@@ -316,6 +352,10 @@ export class WorkOrderDetailComponent implements OnInit {
         console.error("Error loading work order details:", err);
       }
     });
+  }
+
+  navigateToEdit() {
+    this.router.navigate(['/facility/work-orders/edit', this.workOrderId]);
   }
 
   goBack() {

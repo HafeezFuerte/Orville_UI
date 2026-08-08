@@ -47,7 +47,7 @@ export class NotesComponent {
   pageSize: number = 5;
   @Input() selectedTab: any = [];
   /** Current page index */
-  pageIndex: number = 1;
+  pageIndex: number = 0;
 
   /** Flag to show/hide the action column */
   hasActions: boolean = false;
