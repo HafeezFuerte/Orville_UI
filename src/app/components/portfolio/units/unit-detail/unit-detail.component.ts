@@ -8,11 +8,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { DetailTab } from '../../../../shared/models/detail-tab.model';
-import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component'; 
+import {InventoryItemComponent} from '../../../child-tables/inventoryitem/inventoryitem.component'; 
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
-import { MatPaginatorModule } from '@angular/material/paginator';
-
+import { MatPaginatorModule } from '@angular/material/paginator';  
 export interface Unit {
   id: number;
   name: string;
@@ -23,6 +23,7 @@ export interface Unit {
   area: string;
   floor: string;
   property: string; 
+  property_code: string; 
   location: string;
   landlord: string;
   tags: string;
@@ -60,7 +61,7 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 @Component({
   selector: 'app-unit-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent, FilterDrawerComponent],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent,InventoryItemComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent, FilterDrawerComponent],
   templateUrl: './unit-detail.component.html',
   styleUrl: './unit-detail.component.scss'
 })
@@ -165,7 +166,8 @@ export class UnitDetailComponent implements OnInit {
               baths: detail.baths || this.unit?.baths || '1 Bath',
               area: detail.area || this.unit?.area || '1200 Sqft',
               floor: detail.floor_no || detail.floor || this.unit?.floor || '1 Floor',
-              property: detail.property_Name || 'Marina Height Towers', 
+              property: detail.property_Name || 'Marina Height Towers',   
+              property_code: detail.property_code || 'Marina Height Towers', 
               location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
               landlord: detail.landlord_codes || detail.landlord || this.unit?.landlord || 'Orville Real Estate',
               tags: detail.tags || this.unit?.tags || 'Premium',
@@ -207,186 +209,7 @@ export class UnitDetailComponent implements OnInit {
           this.parkings = response.objResult.parking;
           this.inspections = response.objResult.inspections;
           this.workOrders = response.objResult.workorders;
-          this.initModeData(); 
-          // // 📋 1. Leases/Overview Tab
-          // const leasesList = response.objResult.leases || response.objResult.lease || response.objResult.table1 || [];
-          // if (Array.isArray(leasesList) && leasesList.length > 0) {
-          //   this.leases = leasesList.map((u: any) => ({
-          //     id: u.id || u.code || 31658,
-          //     legalCase: u.legal_case || u.legalCase || 'No',
-          //     unit: u.unit_no || u.unit || 'Apartment 205-PR-4',
-          //     property: u.property_code || u.property || 'Marina Heights Tower',
-          //     status: u.status || 'Active',
-          //     rent: u.rent ? this.currentUser?.currencyCode+` ${u.rent}` : 'AED 24,000.00',
-          //     startDate: u.start_date || u.startDate || '07-01-2026',
-          //     endDate: u.end_date || u.endDate || '06-01-2028',
-          //     renewed: u.renewed || 'No',
-          //     multiUnit: u.multi_unit || 'No',
-          //     created: u.created || '07-01-2026',
-          //     remarks: u.remarks || 'Lease agreement',
-          //     createdBy: u.created_by || u.createdBy || 'Admin',
-          //     internalStatus: u.internal_status || u.internalStatus || 'Approved'
-          //   }));
-          // }
-
-          // // 📋 2. Financials/Invoices Tab
-          // const financialsList = response.objResult.financials || response.objResult.invoices || response.objResult.table2 || [];
-          // if (Array.isArray(financialsList) && financialsList.length > 0) {
-          //   this.financials = financialsList.map((fin: any) => ({
-          //     id: fin.id || 1817909,
-          //     status: fin.status || 'Unpaid',
-          //     to: fin.to || 'Atif Shahzad',
-          //     unitCommonArea: fin.unit_common_area || fin.unitCommonArea || '103-PR-10',
-          //     invoiceNumber: fin.invoice_number || fin.invoiceNumber || 'INV-26-00067223',
-          //     chequeNo: fin.cheque_no || fin.chequeNo || '67223',
-          //     invoiceDate: fin.invoice_date || fin.invoiceDate || '06-07-2026',
-          //     invoiceType: fin.invoice_type || fin.invoiceType || 'Charge',
-          //     account: fin.account || 'Rental Income',
-          //     currency: this.currentUser?.currencyCode,
-          //     propertyName: fin.property_name || fin.propertyName || 'Marina Heights Tower',
-          //     propertyId: fin.property_id || fin.propertyId || 12534,
-          //     leaseId: fin.lease_id || fin.leaseId || 53443,
-          //     leaseStatus: fin.lease_status || fin.leaseStatus || 'Active',
-          //     note: fin.note || 'Lease financial entry',
-          //     workOrder: fin.work_order || fin.workOrder || 'Repair Water Leak',
-          //     amount: fin.amount ? this.currentUser?.currencyCode+` ${fin.amount}` : 'AED 1,000.00',
-          //     grossAmount: fin.gross_amount ? this.currentUser?.currencyCode+` ${fin.gross_amount}` : 'AED 1,000.00',
-          //     paid: fin.paid ? this.currentUser?.currencyCode+`${fin.paid}` : 'AED 500.00',
-          //     paymentVia: fin.payment_via || fin.paymentVia || 'Cash',
-          //     moneyHeldBy: fin.money_held_by || fin.moneyHeldBy || 'Company',
-          //     ddRefNo: fin.dd_ref_no || fin.ddRefNo || 'DF2512689',
-          //     bankName: fin.bank_name || fin.bankName || 'ENBD Bank',
-          //     internalStatus: fin.internal_status || fin.internalStatus || 'All',
-          //     archived: fin.archived || '-',
-          //     dueDate: fin.due_date || fin.dueDate || '10-06-2026',
-          //     paidDate: fin.paid_date || fin.paidDate || '09-07-2026',
-          //     cheques: fin.cheques || '-',
-          //     days: fin.days || '20 Days',
-          //     writeAmountOff: fin.write_amount_off ? this.currentUser?.currencyCode+` ${fin.write_amount_off}` : this.currentUser?.currencyCode+'0.00',
-          //     createdBy: fin.created_by || fin.createdBy || 'Manager'
-          //   }));
-          // }
-
-          // // 📋 3. Inventory Tab
-          // const inventoryList = response.objResult.inventory || response.objResult.inventories || response.objResult.table3 || [];
-          // if (Array.isArray(inventoryList) && inventoryList.length > 0) {
-          //   this.inventoryItems = inventoryList.map((item: any) => ({
-          //     id: item.id || 31658,
-          //     itemName: item.item_name || item.itemName || 'Fire Extinguisher',
-          //     itemSub: item.item_sub || item.itemSub || 'Inventory item',
-          //     itemLocation: item.item_location || item.itemLocation || 'Kitchen Area',
-          //     qty: item.qty || 2,
-          //     expiry: item.expiry || '05-06-2026',
-          //     createdAt: item.created_at || item.createdAt || '09-06-2026',
-          //     attachments: item.attachments || '1 file'
-          //   }));
-          // }
-
-          // // 📋 4. Work Orders Tab
-          // const woList = response.objResult.workOrders || response.objResult.workorders || response.objResult.table4 || [];
-          // if (Array.isArray(woList) && woList.length > 0) {
-          //   this.workOrders = woList.map((wo: any) => ({
-          //     id: wo.id || 'WO-1001',
-          //     title: wo.title || 'Repair Water Leak',
-          //     status: wo.status || 'Open',
-          //     closingStatus: wo.closing_status || wo.closingStatus || 'Pending',
-          //     internalStatus: wo.internal_status || wo.internalStatus || 'Assigned',
-          //     dueDate: wo.due_date || wo.dueDate || '15-07-2026',
-          //     priority: wo.priority || 'High',
-          //     property: wo.property || 'Sunrise Apartments',
-          //     vendor: wo.vendor || 'ABC Plumbing',
-          //     user: wo.user || 'John Smith',
-          //     tags: wo.tags || 'Plumbing, Emergency',
-          //     maintenanceCategory: wo.maintenance_category || wo.maintenanceCategory || 'Plumbing',
-          //     responsiblePersons: wo.responsible_persons || wo.responsiblePersons || 'Michael Brown',
-          //     updatedAt: wo.updated_at || wo.updatedAt || '10-07-2026 09:15 AM',
-          //     createdAt: wo.created_at || wo.createdAt || '09-07-2026 10:00 AM'
-          //   }));
-          // }
-
-          // // 📋 5. Attachments Tab
-         
-
-          // // 📋 6. Legal Tab
-          // const legalList = response.objResult.legal || response.objResult.legalCases || response.objResult.table6 || [];
-          // if (Array.isArray(legalList) && legalList.length > 0) {
-          //   this.legalCases = legalList.map((lc: any) => ({
-          //     id: lc.id || 'LC-1001',
-          //     name: lc.name || 'Rent Recovery Case',
-          //     details: lc.details || 'Tenant has 3 months overdue rent.',
-          //     legalFirm: lc.legal_firm || lc.legalFirm || 'Smith & Partners',
-          //     caseDate: lc.case_date || lc.caseDate || '15-07-2026',
-          //     status: lc.status || 'Open'
-          //   }));
-          // }
-
-          // // 📋 7. Parkings Tab
-          // const parkingList = response.objResult.parkings || response.objResult.table7 || [];
-          // if (Array.isArray(parkingList) && parkingList.length > 0) {
-          //   this.parkings = parkingList.map((pk: any) => ({
-          //     id: pk.id || 31658,
-          //     parkingNo: pk.parking_no || pk.parkingNo || 'P-004',
-          //     propertyName: pk.property_name || pk.propertyName || 'Marina Height Towers',
-          //     unitName: pk.unit_name || pk.unitName || 'Apartment 209',
-          //     type: pk.type || 'Free',
-          //     fee: pk.fee || 'AED 100.00',
-          //     cycle: pk.cycle || 'Fixed',
-          //     remarks: pk.remarks || 'Parking created',
-          //     created: pk.created || '07-01-2026',
-          //     updated: pk.updated || '07-01-2026'
-          //   }));
-          // }
-
-          // // 📋 8. Notes Tab
-          // const notesList = response.objResult.notes || response.objResult.table8 || [];
-          // if (Array.isArray(notesList) && notesList.length > 0) {
-          //   this.notes = notesList.map((nt: any) => ({
-          //     id: nt.id || 31658,
-          //     subject: nt.subject || 'Move-in condition',
-          //     content: nt.content || 'Tenant reported minor paint marks.',
-          //     via: nt.via || 'Portal',
-          //     noteDate: nt.note_date || nt.noteDate || '12-01-2026',
-          //     createdBy: nt.created_by || nt.createdBy || 'Admin User',
-          //     files: nt.files || '1 file',
-          //     createdAt: nt.created_at || nt.createdAt || '12-01-2026',
-          //     updatedAt: nt.updated_at || nt.updatedAt || '12-01-2026'
-          //   }));
-          // }
-
-          // // 📋 9. Broadcasts Tab
-          // const broadcastsList = response.objResult.broadcasts || response.objResult.table9 || [];
-          // if (Array.isArray(broadcastsList) && broadcastsList.length > 0) {
-          //   this.broadcasts = broadcastsList.map((bc: any) => ({
-          //     id: bc.id || 31658,
-          //     subject: bc.subject || 'Water maintenance notice',
-          //     preview: bc.preview || 'Water supply will be interrupted...',
-          //     status: bc.status || 'Sent',
-          //     type: bc.type || 'Email + SMS',
-          //     sendable: bc.sendable || 'Yes',
-          //     peopleCount: bc.people_count || bc.peopleCount || 421,
-          //     scheduled: bc.scheduled || 'No',
-          //     date: bc.date || '12-01-2026',
-          //     createdAt: bc.created_at || bc.createdAt || '10-01-2026, 09:14',
-          //     updatedAt: bc.updated_at || bc.updatedAt || '12-01-2026, 13:06'
-          //   }));
-          // }
-
-          // // 📋 10. Inspections Tab
-          // const inspectionsList = response.objResult.inspections || response.objResult.table10 || [];
-          // if (Array.isArray(inspectionsList) && inspectionsList.length > 0) {
-          //   this.inspections = inspectionsList.map((ins: any) => ({
-          //     inspectionId: ins.inspection_id || ins.inspectionId || 31658,
-          //     companyId: ins.company_id || ins.companyId || 118,
-          //     name: ins.name || 'Move Out',
-          //     status: ins.status || 'Pending',
-          //     type: ins.type || 'Move Out',
-          //     unit: ins.unit || '215-PR-1',
-          //     scheduled: ins.scheduled || 'Yes',
-          //     dateTime: ins.date_time || ins.dateTime || '10-01-2026, 09:14',
-          //     userId: ins.user_id || ins.userId || 59838,
-          //     environment: ins.environment || 'localhost:3000'
-          //   }));
-          // }
+          this.initModeData();  
         }
       },
       error: err => {
@@ -431,7 +254,18 @@ export class UnitDetailComponent implements OnInit {
         hasActions: true,
         addButtonText: 'Financials'
       },
-  
+      {
+        key: 'inventory',
+        label: 'web.common.lblInventory',
+        layout: 'content', 
+        entity:"Units",
+        entity_id:this.unitId,
+        data: this.inventoryItems,
+        totalRecords: this.inventoryItems?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Inventory'
+      },
       {
         key: 'workorders',
         label: 'web.common.lblWorkOrders',
@@ -503,7 +337,7 @@ export class UnitDetailComponent implements OnInit {
         layout: 'content', 
         data: this.parkings,
         entity:"Units",
-        entity_id:this.unit?.property,
+        entity_id:this.unit?.property_code,
         filter_code:this.unitId,
         totalRecords: this.parkings?.length || 0,
         loading: this.loading,

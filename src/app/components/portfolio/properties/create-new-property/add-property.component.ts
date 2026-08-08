@@ -319,7 +319,6 @@ validatePayments(errors: string[]): void {
   });
 }
 onSubmit() { 
-  debugger;
   const propertyFormLabels = {
   propertyName: this.translate.instant('web.property.lblPropertyName'),
   propertyType: this.translate.instant('web.property.lblPropertyType'),
@@ -355,8 +354,7 @@ onSubmit() {
   propertyImage: this.translate.instant('web.property.lblPropertyImage')
 };
  const errors: string[] = [];
- const form = this.propertyForm.value;
-    
+
 this.validateForm(this.propertyForm, propertyFormLabels, errors);
 
 this.validatePayments(errors);
@@ -375,6 +373,7 @@ if (errors.length > 0) {
 
   return;
 }
+    const form = this.propertyForm.value;
     
     const request = {
       userid: Number(localStorage.getItem('userId')) || 1,

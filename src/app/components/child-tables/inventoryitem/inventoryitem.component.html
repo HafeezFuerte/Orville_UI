@@ -1,0 +1,224 @@
+<!-- Toolbar -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+    <div>
+        <h4 class="text-xs font-bold text-gray-800 m-0">{{ selectedTab?.label | translate}}</h4>
+    </div>
+    <button type="button" *ngIf="selectedTab?.label !== 'Broadcasts'" (click)="openModal()"
+        class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm"
+        [attr.data-tooltip]="'Add ' + ('web.portfolio.popups.commonArea.lblNewCommonArea' | translate)">
+        <i class="ri-add-line text-[1rem]"></i>
+    </button>
+</div>
+<div   class="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
+    <!-- Search -->
+    <div class="w-full md:w-96">
+        <div class="input-group">
+            <input [(ngModel)]="searchQuery" (keyup.enter)="search_with_keyword()" type="text" class="form-control"
+                placeholder="Search">
+            <button class="input-group-text bg-primary/10 text-primary" (click)="search_with_keyword()">
+                <i class="ri-search-line"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Right Buttons -->
+    <div class="flex gap-2">
+        <button type="button" (click)="toggleDrawer(true)"
+            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+            [attr.data-tooltip]="'web.common.lblFilter' | translate">
+            <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        </button>
+        <div class="relative inline-block">
+            <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" (click)="toggleColumnDropdown()" [attr.data-tooltip]="'web.common.lblColumns' | translate">
+                <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+            </button>
+            <!-- Dropdown -->
+            <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
+                <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+                    <span class="font-bold text-xs text-gray-700">Column</span>
+                    <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
+                </div>
+                <div class="max-h-60 overflow-y-auto">
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-gray-50 cursor-pointer rounded m-0">
+                        <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" 
+                               [checked]="allColumnsVisible" (change)="toggleAllColumns($event)">
+                        <span class="text-xs text-gray-700 font-semibold">Select All</span>
+                    </label>
+                    <label *ngFor="let col of columns" class="flex items-center gap-2 p-1.5 hover:bg-gray-50 cursor-pointer rounded m-0">
+                        <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" 
+                               [checked]="col.visible !== false" (change)="toggleColumn(col)">
+                        <span class="text-xs text-gray-700">{{ col.label | translate }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive table-vertical-scroll w-full">
+    <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+        <thead class="bg-info/10">
+            <tr class="border-b border-defaultborder">
+                <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of visibleColumns"
+                    [style.width]="col.width" [style.min-width]="col.width">
+                    <ng-container *ngIf="headerTemplate; else defaultHeader">
+                        <ng-container *ngTemplateOutlet="headerTemplate; context: { col: col }"></ng-container>
+                    </ng-container>
+                    <ng-template #defaultHeader>
+                        {{ col.label | translate }}
+                    </ng-template>
+                </th>
+                <th scope="col" class="text-start">
+                    {{ 'web.common.lblAction' | translate }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Empty State -->
+            <tr *ngIf="data.length === 0 && !loading">
+                <td [attr.colspan]="visibleColumns.length + (hasActions ? 1 : 0)" class="text-center py-6 bg-gray-50/30">
+                    <ng-container *ngIf="emptyTemplate; else defaultEmpty">
+                        <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
+                    </ng-container>
+                    <ng-template #defaultEmpty>
+                        <span class="text-gray-500 italic text-sm">
+                            {{ emptyMessage | translate }}
+                        </span>
+                    </ng-template>
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <ng-container *ngIf="!loading">
+                <tr *ngFor="let row of data" class="border-b border-defaultborder task-list">
+                    <td *ngFor="let col of visibleColumns" [style.width]="col.width" [style.min-width]="col.width"
+                        [class]="col.cellClass || ''">
+                        <!-- Custom Content Projection based on Column Key -->
+                        <ng-container
+                            *ngIf="colTemplate && (col.key === colTemplateName || col.useTemplate); else checkLink">
+                            <ng-container
+                                *ngTemplateOutlet="colTemplate; context: { row: row, col: col }"></ng-container>
+                        </ng-container>
+
+                        <!-- Link Rendering -->
+                        <ng-template #checkLink>
+                            <ng-container *ngIf="col.isLink; else defaultData">
+                                <span class="text-defaulttextcolor underline cursor-pointer font-medium"
+                                    (click)="linkClick(row,col )">
+                                    {{ row[col.key]!=null ? 'View File': 'N/A' }}
+                                </span>
+                            </ng-container>
+                        </ng-template>
+
+                        <!-- Default Data Rendering -->
+                        <ng-template #defaultData>
+                            <span *ngIf="col.isHtml; else editLink" [ngClass]="{'font-semibold': col.key === 'name'}">
+
+                                {{ stripHtml(row[col.key]) }}
+
+                            </span>
+                            <ng-template #editLink>
+
+                                <span *ngIf="col.is_editCol; else statusCol"
+                                    class="font-bold text-primary cursor-pointer hover:underline">
+                                    <a  (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
+                                 
+                                </span>
+                                <!-- <span  *ngIf="col.is_editCol && col.redirect_url==null; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
+                                (click)="edit_action(row,'edit')">
+                                {{row[col.key]}}</span> -->
+                            </ng-template>
+                            <ng-template #statusCol>
+                                <span *ngIf="col.is_status; else currencyCol"
+                                    class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
+                                    [ngClass]="row.class_name">
+                                    {{row[col.key]}}
+                                </span>
+                            </ng-template>
+                            <ng-template #currencyCol>
+                                <span *ngIf="col.is_include_currency; else normalText"
+                                    [ngClass]="{'font-semibold': col.key === 'name'}">
+                                    {{getValueWithCurrency(row[col.key])}}
+                                </span>
+                            </ng-template>
+
+                            <ng-template #normalText>
+                                <span *ngIf="!col.key.includes('date')"
+                                    [ngClass]="{'font-semibold': col.key === 'name'}">
+                                    {{ row[col.key] || '-' }}
+                                </span>
+                                <span *ngIf="col.key.includes('date')">
+                                    {{ row[col.key]!=null ? row[col.key].split('T')[0] : '-' }}
+                                </span>
+                            </ng-template>
+                        </ng-template>
+                    </td>
+                    <!-- Action Column (Injected via ng-template) -->
+                    <td>
+                        <div class="flex gap-1">
+                            <button (click)="edit_action(row,'edit')"
+                                class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
+                                data-tooltip="Edit">
+                                <i class="ri-edit-line text-xs"></i>
+                            </button>
+                            <button (click)="edit_action(row,'delete')"
+                                class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
+                                data-tooltip="Delete">
+                                <i class="ri-delete-bin-line text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- <ng-container *ngTemplateOutlet="actionTemplate; context: { row: row }"></ng-container> -->
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading"
+        class="flex flex-col items-center justify-center py-12 bg-gray-50/10 border-b border-x border-defaultborder">
+        <div class="ti-spinner text-primary !w-8 !h-8 mb-2" role="status"></div>
+        <span class="text-xs text-gray-500 font-medium tracking-wide">{{ 'web.common.lblLoading' | translate }}</span>
+    </div>
+</div>
+
+<!-- Pagination -->
+<mat-paginator *ngIf="!loading" [length]="totalRecords" [pageSize]="pageSize"
+    [pageIndex]="pageIndex" [pageSizeOptions]="[50]" showFirstLastButtons (page)="onPageChange($event)">
+</mat-paginator> 
+<app-reusable-modal
+    *ngIf="showModal"
+    [title]="'Add ' + (selectedTab?.addButtonText || '')"
+    subtitle="Enter details"
+    (save)="saveRecord()"
+    (close)="closeModal()"> 
+    <app-inventory-item-popup *ngIf="showModal"  [form]="selectedTab!.form!">
+    </app-inventory-item-popup> 
+</app-reusable-modal> 
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleteNote()">
+</app-delete-confirmation>
+
+<!-- 🚪 SLIDING FILTER DRAWER -->
+<app-filter-drawer 
+  [(isOpen)]="isDrawerOpen" 
+  (apply)="applyFilters()" 
+  (clear)="clearFilters()">
+  
+  <div class="flex flex-col gap-4 text-[11px]">
+    <!-- Filter by ID -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterId"
+        (keyup.enter)="applyFilters()" placeholder="e.g. 52658">
+    </div>
+
+    <!-- Filter by Area Name -->
+    <div class="flex flex-col">
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area Name</label>
+      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterAreaName"
+        (keyup.enter)="applyFilters()" placeholder="e.g. Community Hall">
+    </div>
+  </div>
+  
+</app-filter-drawer>
