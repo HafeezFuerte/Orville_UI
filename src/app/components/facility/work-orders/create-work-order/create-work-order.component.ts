@@ -77,6 +77,24 @@ export class CreateWorkOrderComponent implements OnInit {
     this.loadTenants();
     this.loadVendors();
 
+    // Temporary diagnostic: query actual tenants list to inspect codes
+    this.propertiesService.getTenants({
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 5,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'TENANTS'
+    }).subscribe(res => {
+      console.log('Diagnostic getTenants list response:', res);
+    });
+
     this.loadProperties(() => {
       this.route.params.subscribe(params => {
         if (params['id']) {
@@ -325,10 +343,10 @@ export class CreateWorkOrderComponent implements OnInit {
       filterId: 0,
       filterText: 's',
       filterText1: '',
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1,
-      company_id: currentUser?.companyId || 1
+      userId: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
+      clientId: "74BB6922",
+      companyId: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
+      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1
     };
 
     console.log('loadResponsiblePeople (Technicians) Payload:', payload);
@@ -356,50 +374,29 @@ export class CreateWorkOrderComponent implements OnInit {
 
   loadTenants() {
     const currentUser = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 19,
-      typeid: 19,
-      filterId: 0,
-      filterText: 't',
-      filterText1: '',
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1,
-      company_id: currentUser?.companyId || 1
-    };
-
-    console.log('loadTenants Payload:', payload);
-    this.propertiesService.getMasterDetails(payload).subscribe({
+    this.portfolioService.getMastersByPaging({
+      userid: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
+      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
+      clientId: "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 100,
+      filter_by: '',
+      featureid: 'TENANTS'
+    }).subscribe({
       next: (res: any) => {
-        console.log('loadTenants Response:', res);
         if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
+          const list = res.objResult.tenants || res.objResult.table || res.objResult;
           if (Array.isArray(list)) {
-            if (list.length > 0) {
-              console.log('Raw Tenant First Item:', JSON.stringify(list[0]));
-            }
             this.tenants = list.map((item: any) => ({
-              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
-              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.tenant || item.Tenant || item.code || item.Code || '-',
-              id: item.id || item.Id
+              code: item.code || item.id || '',
+              name: item.tenant || item.name || item.code || '-',
+              id: item.id
             }));
-            console.log('Mapped tenants:', this.tenants);
-
-            // Diagnostic Loop: Query typeId 27 for every tenant in the list
-            list.forEach((item: any) => {
-              const testPayload = {
-                typeId: 27,
-                filterId: 0,
-                filterText: String(item.user_code || item.id),
-                filterText1: '',
-                userId: currentUser?.userId || 1,
-                clientId: currentUser?.clientId || "74BB6922",
-                companyId: currentUser?.companyId || 1
-              };
-              this.propertiesService.getMasterDetails(testPayload).subscribe(testRes => {
-                console.log(`Diagnostic typeId 27 for ${item.column1} (${item.user_code || item.id}):`, testRes);
-              });
-            });
+            console.log('Mapped tenants from paging:', this.tenants);
           }
         }
       },
@@ -409,34 +406,29 @@ export class CreateWorkOrderComponent implements OnInit {
 
   loadVendors() {
     const currentUser = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 19,
-      typeid: 19,
-      filterId: 0,
-      filterText: 'v',
-      filterText1: '',
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1,
-      company_id: currentUser?.companyId || 1
-    };
-
-    console.log('loadVendors Payload:', payload);
-    this.propertiesService.getMasterDetails(payload).subscribe({
+    this.portfolioService.getMastersByPaging({
+      userid: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
+      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
+      clientId: "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 100,
+      filter_by: '',
+      featureid: 'VENDORS'
+    }).subscribe({
       next: (res: any) => {
-        console.log('loadVendors Response:', res);
         if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
+          const list = res.objResult.vendors || res.objResult.table || res.objResult;
           if (Array.isArray(list)) {
-            if (list.length > 0) {
-              console.log('Raw Vendor First Item:', JSON.stringify(list[0]));
-            }
             this.vendors = list.map((item: any) => ({
-              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
-              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.company_name || item.Company_name || item.contact_name || item.Contact_name || item.code || item.Code || '-',
-              id: item.id || item.Id
+              code: item.code || item.id || '',
+              name: item.company_name || item.contact_name || item.name || item.code || '-',
+              id: item.id
             }));
-            console.log('Mapped vendors:', this.vendors);
+            console.log('Mapped vendors from paging:', this.vendors);
           }
         }
       },
@@ -557,44 +549,53 @@ export class CreateWorkOrderComponent implements OnInit {
       return;
     }
 
-    const currentUser = this.commonService.getCurrentUser();
-    const payload = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: selectedItem.name,
-      pagecount: 10,
-      filter_by: '',
-      filter_list: '',
-      featureid: 'TENANTS'
+    const queryDetails = (textVal: string) => {
+      const payload = {
+        typeId: 27,
+        filterId: 0,
+        filterText: String(textVal),
+        filterText1: "",
+        userId: Number(localStorage.getItem('userId')) || 1,
+        clientId: "74BB6922",
+        companyId: Number(localStorage.getItem('companyId')) || 1
+      };
+      console.log('Querying typeId 27 for:', textVal, 'with payload:', payload);
+      return this.propertiesService.getMasterDetails(payload);
     };
 
-    console.log('Querying tenant details via getTenants with payload:', payload);
-    this.propertiesService.getTenants(payload).subscribe({
+    queryDetails(selectedItem.code).subscribe({
       next: (res: any) => {
-        console.log('getTenants details Response:', res);
-        if (res && res.statusCode === "200" && res.objResult && res.objResult.tenants && res.objResult.tenants.length > 0) {
-          const data = res.objResult.tenants[0];
-          this.selectedTenantDetails = {
-            name: data.tenant || data.name || '-',
-            status: data.status || 'Active',
-            email: data.email_address || '-',
-            phone: data.phone_number || '-',
-            type: data.tenant_type_name || 'Individual Tenant',
-            location: data.address1 || data.address || '-'
-          };
-          console.log('Mapped Tenant Details from list search:', this.selectedTenantDetails);
+        console.log('typeId 27 Code Response:', res);
+        const hasRecords = res && res.objResult && (
+          (res.objResult.tenant_dtls && res.objResult.tenant_dtls.length > 0) || 
+          (res.objResult.table && res.objResult.table.length > 0)
+        );
+
+        if (hasRecords) {
+          this.mapTenantDetails(res);
+        } else if (selectedItem.id) {
+          console.log('No records found with code. Retrying details query with numeric ID:', selectedItem.id);
+          queryDetails(String(selectedItem.id)).subscribe({
+            next: (resFallback: any) => {
+              console.log('typeId 27 Fallback Response:', resFallback);
+              if (resFallback && resFallback.objResult) {
+                this.mapTenantDetails(resFallback);
+              } else {
+                this.selectedTenantDetails = null;
+              }
+            },
+            error: (err) => {
+              console.error("Error loading tenant details with fallback ID:", err);
+              this.selectedTenantDetails = null;
+            }
+          });
         } else {
-          console.warn('No tenant record found in list search.');
+          console.warn('No records found and no fallback numeric ID available.');
           this.selectedTenantDetails = null;
         }
       },
       error: (err) => {
-        console.error("Error loading tenant details from list search:", err);
+        console.error("Error loading tenant details with code:", err);
         this.selectedTenantDetails = null;
       }
     });
