@@ -7,6 +7,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-work-order',
@@ -219,8 +220,40 @@ export class CreateWorkOrderComponent implements OnInit {
     this.portfolioService.saveWorkOrder(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-          this.toastr.success(res.message || "Work order saved successfully");
-          this.goBack();
+          const workOrderCode = res.objResult?.code || res.objResult?.id || this.editId || "";
+          
+          // Prepare file upload tasks
+          const uploadTasks: Observable<any>[] = [];
+          
+          this.beforeImages.forEach(file => {
+            uploadTasks.push(this.uploadFile(file, 'Before Image', workOrderCode));
+          });
+          this.afterImages.forEach(file => {
+            uploadTasks.push(this.uploadFile(file, 'After Image', workOrderCode));
+          });
+          this.videos.forEach(file => {
+            uploadTasks.push(this.uploadFile(file, 'Video', workOrderCode));
+          });
+          this.attachments.forEach(file => {
+            uploadTasks.push(this.uploadFile(file, 'Attachment', workOrderCode));
+          });
+
+          if (uploadTasks.length > 0) {
+            forkJoin(uploadTasks).subscribe({
+              next: () => {
+                this.toastr.success("Work order and all files saved successfully");
+                this.goBack();
+              },
+              error: (err) => {
+                console.error("Error uploading files:", err);
+                this.toastr.warning("Work order saved, but some files failed to upload");
+                this.goBack();
+              }
+            });
+          } else {
+            this.toastr.success(res.message || "Work order saved successfully");
+            this.goBack();
+          }
         } else {
           this.toastr.error(res.message || "Failed to save work order");
         }
@@ -230,6 +263,26 @@ export class CreateWorkOrderComponent implements OnInit {
         this.toastr.error("An error occurred while saving the work order");
       }
     });
+  }
+
+  uploadFile(file: File, documentType: string, workOrderCode: string): Observable<any> {
+    const request = {
+      ...this.commonService.commonPayload,
+      code: '',
+      entity_id: workOrderCode,
+      entity: 'workorder',
+      document_type: documentType,
+      document_no: 'DOC-' + Math.floor(Math.random() * 1000000),
+      issue_date: new Date().toISOString().substring(0, 10),
+      expiry_date: new Date(Date.now() + 365*24*60*60*1000).toISOString().substring(0, 10),
+      issuing_authority: 'System',
+      share_with_tenants: true,
+      share_with_landlords: true
+    };
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(request));
+    formData.append('file_path', file);
+    return this.portfolioService.saveAttachment(formData);
   }
 
   addTag(event: Event) {
@@ -265,27 +318,35 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   loadResponsiblePeople() {
-    this.portfolioService.getMastersByPaging({
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'SUPPORT_TECHNICIANS'
-    }).subscribe({
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 19,
+      typeid: 19,
+      filterId: 0,
+      filterText: 's',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1,
+      company_id: currentUser?.companyId || 1
+    };
+
+    console.log('loadResponsiblePeople (Technicians) Payload:', payload);
+    this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
+        console.log('loadResponsiblePeople (Technicians) Response:', res);
         if (res && res.objResult) {
-          const list = res.objResult.support_technicians || res.objResult.table || res.objResult;
+          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
+            if (list.length > 0) {
+              console.log('Raw Technician First Item:', JSON.stringify(list[0]));
+            }
             this.responsiblePeople = list.map((item: any) => ({
-              code: item.code || item.id,
-              name: item.name || item.technician_name || item.code
+              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
+              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.technician_name || item.Technician_name || item.code || item.Code || '-',
+              id: item.id || item.Id
             }));
+            console.log('Mapped responsiblePeople:', this.responsiblePeople);
           }
         }
       },
@@ -294,27 +355,51 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   loadTenants() {
-    this.portfolioService.getMastersByPaging({
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'TENANTS'
-    }).subscribe({
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 19,
+      typeid: 19,
+      filterId: 0,
+      filterText: 't',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1,
+      company_id: currentUser?.companyId || 1
+    };
+
+    console.log('loadTenants Payload:', payload);
+    this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
+        console.log('loadTenants Response:', res);
         if (res && res.objResult) {
-          const list = res.objResult.tenants || res.objResult.table || res.objResult;
+          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
+            if (list.length > 0) {
+              console.log('Raw Tenant First Item:', JSON.stringify(list[0]));
+            }
             this.tenants = list.map((item: any) => ({
-              code: item.code || item.id,
-              name: item.tenant || item.name || item.code
+              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
+              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.tenant || item.Tenant || item.code || item.Code || '-',
+              id: item.id || item.Id
             }));
+            console.log('Mapped tenants:', this.tenants);
+
+            // Diagnostic Loop: Query typeId 27 for every tenant in the list
+            list.forEach((item: any) => {
+              const testPayload = {
+                typeId: 27,
+                filterId: 0,
+                filterText: String(item.user_code || item.id),
+                filterText1: '',
+                userId: currentUser?.userId || 1,
+                clientId: currentUser?.clientId || "74BB6922",
+                companyId: currentUser?.companyId || 1
+              };
+              this.propertiesService.getMasterDetails(testPayload).subscribe(testRes => {
+                console.log(`Diagnostic typeId 27 for ${item.column1} (${item.user_code || item.id}):`, testRes);
+              });
+            });
           }
         }
       },
@@ -323,27 +408,35 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   loadVendors() {
-    this.portfolioService.getMastersByPaging({
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'VENDORS'
-    }).subscribe({
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 19,
+      typeid: 19,
+      filterId: 0,
+      filterText: 'v',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1,
+      company_id: currentUser?.companyId || 1
+    };
+
+    console.log('loadVendors Payload:', payload);
+    this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
+        console.log('loadVendors Response:', res);
         if (res && res.objResult) {
-          const list = res.objResult.vendors || res.objResult.table || res.objResult;
+          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
+            if (list.length > 0) {
+              console.log('Raw Vendor First Item:', JSON.stringify(list[0]));
+            }
             this.vendors = list.map((item: any) => ({
-              code: item.code || item.id,
-              name: item.company_name || item.contact_name || item.name || item.code
+              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
+              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.company_name || item.Company_name || item.contact_name || item.Contact_name || item.code || item.Code || '-',
+              id: item.id || item.Id
             }));
+            console.log('Mapped vendors:', this.vendors);
           }
         }
       },
@@ -437,6 +530,7 @@ export class CreateWorkOrderComponent implements OnInit {
             if (tenantVal) {
               const match = this.tenants.find(t => String(t.code) === String(tenantVal) || String(t.name) === String(tenantVal));
               this.selectedTenant = match ? match.code : tenantVal;
+              this.onTenantChange();
             }
             
             if (data.tags) {
@@ -447,5 +541,90 @@ export class CreateWorkOrderComponent implements OnInit {
       },
       error: (err: any) => console.error("Error loading work order details:", err)
     });
+  }
+
+  selectedTenantDetails: any = null;
+
+  onTenantChange() {
+    if (!this.selectedTenant) {
+      this.selectedTenantDetails = null;
+      return;
+    }
+
+    const selectedItem = this.tenants.find(t => t.code === this.selectedTenant);
+    if (!selectedItem) {
+      this.selectedTenantDetails = null;
+      return;
+    }
+
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: selectedItem.name,
+      pagecount: 10,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'TENANTS'
+    };
+
+    console.log('Querying tenant details via getTenants with payload:', payload);
+    this.propertiesService.getTenants(payload).subscribe({
+      next: (res: any) => {
+        console.log('getTenants details Response:', res);
+        if (res && res.statusCode === "200" && res.objResult && res.objResult.tenants && res.objResult.tenants.length > 0) {
+          const data = res.objResult.tenants[0];
+          this.selectedTenantDetails = {
+            name: data.tenant || data.name || '-',
+            status: data.status || 'Active',
+            email: data.email_address || '-',
+            phone: data.phone_number || '-',
+            type: data.tenant_type_name || 'Individual Tenant',
+            location: data.address1 || data.address || '-'
+          };
+          console.log('Mapped Tenant Details from list search:', this.selectedTenantDetails);
+        } else {
+          console.warn('No tenant record found in list search.');
+          this.selectedTenantDetails = null;
+        }
+      },
+      error: (err) => {
+        console.error("Error loading tenant details from list search:", err);
+        this.selectedTenantDetails = null;
+      }
+    });
+  }
+
+  mapTenantDetails(res: any) {
+    const tenantList = res.objResult.tenant_dtls || res.objResult.table || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
+    if (Array.isArray(tenantList) && tenantList.length > 0) {
+      const data = tenantList[0];
+      this.selectedTenantDetails = {
+        name: data.name || data.tenant || data.tenant_name || data.column1 || data.Name || data.Tenant || '-',
+        status: data.status || data.Status || 'Active',
+        email: data.email || data.Email || data.email_address || '-',
+        phone: data.mobile || data.phone || data.Mobile || data.Phone || data.mobile_no || data.phone_number || '-',
+        type: data.tenant_type_name || data.type || data.Tenant_type_name || data.Type || 'Individual Tenant',
+        location: data.address || data.location || data.Address || data.Location || data.address1 || '-'
+      };
+      console.log('Mapped Tenant Details:', this.selectedTenantDetails);
+    }
+  }
+
+  viewTenant() {
+    if (this.selectedTenant) {
+      this.router.navigate(['/contacts/tenants', this.selectedTenant]);
+    }
+  }
+
+  editTenant() {
+    if (this.selectedTenant) {
+      this.router.navigate(['/contacts/tenants/edit', this.selectedTenant]);
+    }
   }
 }
