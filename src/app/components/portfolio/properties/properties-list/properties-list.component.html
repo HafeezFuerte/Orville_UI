@@ -1,338 +1,326 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex">
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">{{ 'web.property.lblProperties' | translate }}</h3>
-    <p>{{ 'web.property.lblPropertyDesc' | translate }}</p>
+    <h3 class="ov-page-title">{{ 'web.property.lblProperties' | translate }}</h3>
+    <p class="ov-page-sub">{{ metrics.properties || 0 }} properties under management</p>
+    <p class="sr-only">{{ 'web.property.lblPropertyDesc' | translate }}</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" [attr.data-tooltip]="'web.common.lblExport' | translate">
-      <i class="ri-download-2-line text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+      <i class="ri-download-2-line text-[18px]"></i>
+      Export
     </button>
-    <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" [attr.data-tooltip]="'web.common.lblImport' | translate">
-      <i class="ri-upload-2-line text-sm"></i>
+    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Import">
+      <i class="ri-upload-2-line text-[18px]"></i>
+      Import
     </button>
-    <button type="button" class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover" [attr.data-tooltip]="'web.property.lblNewProperty' | translate" routerLink="/add-property">
-      <i class="ri-add-line text-sm"></i>
+    <button type="button" class="ov-btn ov-btn-ghost" routerLink="/broadcasts" data-tooltip="Send Broadcast">
+      <i class="ri-megaphone-line text-[18px]"></i>
+      Send Broadcast
+    </button>
+    <button type="button" class="ov-btn ov-btn-primary" routerLink="/add-property"
+      [attr.data-tooltip]="'web.property.lblNewProperty' | translate">
+      <i class="ri-add-line text-[18px]"></i>
+      Add Property
     </button>
   </div>
 </div>
 
-<!-- 📊 Metrics Row -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
-  <!-- Total Properties Card -->
-  <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">{{ 'web.property.lblTotalProperties' | translate }}</span>
-      <i class="ri-building-2-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.properties}}</h5>
-      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">{{ 'web.property.lblPortfolio' | translate }}</span>
-    </div>
+<div class="ov-kpi-row mb-5">
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">{{ 'web.property.lblTotalProperties' | translate }}</span>
+    <div class="ov-kpi__val">{{ metrics.properties }}</div>
+    <div class="ov-kpi__sub">Across all categories <span class="sr-only">{{ 'web.property.lblPortfolio' | translate }}</span></div>
   </div>
-
-  <!-- Total Units Card -->
-  <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">{{ 'web.property.lblTotalUnitsRooms' | translate }}</span>
-      <i class="ri-home-4-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.units}}</h5>
-      <span class="text-[10px] text-danger font-medium mt-1.5 block">{{metrics.occupied}} {{ 'web.property.lblOccupied' | translate }}</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">{{ 'web.property.lblTotalUnitsRooms' | translate }}</span>
+    <div class="ov-kpi__val">{{ metrics.units }}</div>
+    <div class="ov-kpi__sub"><span class="font-bold">{{ metrics.occupied }}</span> {{ 'web.property.lblOccupied' | translate }}</div>
   </div>
-
-  <!-- Active Leases Card -->
-  <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">{{ 'web.property.lblActiveLeases' | translate }}</span>
-      <i class="ri-contacts-book-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.active_leases}}</h5>
-      <span class="text-[10px] text-success font-medium mt-1.5 block">{{ 'web.property.lblCurrentlyRunning' | translate }}</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">{{ 'web.property.lblActiveLeases' | translate }}</span>
+    <div class="ov-kpi__val">{{ metrics.active_leases }}</div>
+    <div class="ov-kpi__sub">{{ 'web.property.lblCurrentlyRunning' | translate }}</div>
   </div>
-
-  <!-- Avg. Occupancy Card -->
-  <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">{{ 'web.property.lblAvgOccupancy' | translate }}</span>
-      <i class="ri-pie-chart-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics['avg.Occupancy']}}</h5>
-      <span class="text-[10px] text-warning font-normal mt-1.5 block">{{ 'web.property.lblPortfolioAvg' | translate }}</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">{{ 'web.property.lblAvgOccupancy' | translate }}</span>
+    <div class="ov-kpi__val">{{ metrics['avg.Occupancy'] }}</div>
+    <div class="ov-kpi__sub">{{ 'web.property.lblPortfolioAvg' | translate }}</div>
   </div>
 </div>
 
-<!-- 🔍 Search & Filters Bar -->
-<div class="box mb-2 rounded-md overflow-visible bg-white shadow-sm border border-gray-100">
-  <div class="box-header !py-2.5 !px-4 border-b bg-gray-50/50 flex justify-between items-center w-full">
-    <div class="flex items-center gap-4">
-      <h5 class="box-title text-xs font-bold text-gray-700 m-0">{{ 'web.property.lblProperty' | translate }}</h5>
-      <!-- Category Tabs (Left) -->
-      <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
-        <button (click)="setCategoryFilter('All')" [class]="categoryFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.common.lblAll' | translate }}</button>
-        <button (click)="setCategoryFilter('Units')" [class]="categoryFilter === 'Units' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.Unit.lblUnits' | translate }}</button>
-        <button (click)="setCategoryFilter('Rooms')" [class]="categoryFilter === 'Rooms' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'" class="px-3 py-1 text-[10px] rounded-md transition-all">{{ 'web.property.lblRooms' | translate }}</button>
-      </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <!-- Filter drawer trigger button -->
-      <button type="button" (click)="toggleDrawer(true)"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-      </button>
-
-      <!-- View switcher single toggle button -->
-      <button type="button" (click)="toggleViewMode()"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-        [attr.data-tooltip]="viewMode === 'list' ? 'Switch to Grid' : 'Switch to List'">
-        <i [class]="viewMode === 'list' ? 'ri-grid-fill text-[0.9rem] align-middle' : 'ri-list-check-2 text-[0.9rem] align-middle'"></i>
-      </button>
-    </div>
-  </div>
-
-  <div class="box-body !p-4">
-    <div class="grid grid-cols-12 gap-3 items-end">
-      <!-- Text Search -->
-      <div class="col-span-12 md:col-span-4 text-[11px]">
-        <label class="form-label font-semibold text-gray-600 mb-1 block">{{ 'web.property.lblSearchProperty' | translate }}</label>
-        <div class="input-group">
-          <input type="text" class="form-control form-control-sm !text-[11px]" [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()" [placeholder]="'web.property.phSearchProperty' | translate">
-          <button type="button" (click)="onSearch()"
-            class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-            <i class="ri-search-line"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Clear Filters Button -->
-      <div class="col-span-12 md:col-span-1 text-end">
-        <button type="button" (click)="clearFilters()"
-          class="w-full ti-btn ti-btn-light !py-1 !px-3 !m-0 rounded-md shadow-sm border text-[11px] font-semibold"
-          title="Reset Filters">
-          {{ 'web.property.lblCancel' | translate }}
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Property List</h5>
+      <p class="sr-only">{{ 'web.property.lblProperty' | translate }}</p>
+      <div class="inline-flex h-9 items-center overflow-hidden rounded-lg border border-defaultborder">
+        <button type="button" (click)="setViewMode('list')" class="ov-icon-btn !h-9 !w-10 rounded-none border-0"
+          [class.is-on]="viewMode === 'list'"
+          [attr.data-tooltip]="'Switch to List'">
+          <i class="ri-list-check-2 text-[18px]"></i>
+        </button>
+        <button type="button" (click)="setViewMode('grid')" class="ov-icon-btn !h-9 !w-10 rounded-none border-0 border-s border-defaultborder"
+          [class.is-on]="viewMode === 'grid'"
+          [attr.data-tooltip]="'Switch to Grid'">
+          <i class="ri-layout-grid-line text-[18px]"></i>
         </button>
       </div>
     </div>
+    <div class="ov-seg ov-seg--solid">
+      <button type="button" (click)="setTypeFilter(null)" class="ov-seg__btn" [class.is-active]="!selectedType">{{ 'web.common.lblAll' | translate }}</button>
+      <button type="button" (click)="setTypeFilter('Residential')" class="ov-seg__btn" [class.is-active]="selectedType === 'Residential'">Residential</button>
+      <button type="button" (click)="setTypeFilter('Commercial')" class="ov-seg__btn" [class.is-active]="selectedType === 'Commercial'">Commercial</button>
+    </div>
   </div>
-</div>
 
-<!-- 📋 1. LIST VIEW (TABLE) -->
-<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in" *ngIf="viewMode === 'list'">
-  <app-shared-table (notify_edit_action)="handleChildNotification($event)" [columns]="tableColumns" [data]="paginatedProperties" [loading]="false"
-    [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+  <div class="flex flex-wrap items-center gap-3 px-5 py-3">
+    <div class="ov-seg ov-seg--solid">
+      <button type="button" (click)="setCategoryFilter('All')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'All'">{{ 'web.common.lblAll' | translate }}</button>
+      <button type="button" (click)="setCategoryFilter('Units')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Units'">{{ 'web.Unit.lblUnits' | translate }}</button>
+      <button type="button" (click)="setCategoryFilter('Rooms')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Rooms'">{{ 'web.property.lblRooms' | translate }}</button>
+    </div>
+  </div>
 
-    <!-- Custom Column Templates -->
-    <ng-template #colTemplate let-row="row" let-col="col">
-      <ng-container *ngIf="col.key === 'code'">
-        <span class="font-bold text-primary cursor-pointer hover:underline animate-pulse" [routerLink]="['/properties', row.code]">{{row.code}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'name'">
-        <div class="flex flex-col">
-          <span class="font-bold text-gray-800 cursor-pointer hover:text-primary" [routerLink]="['/properties', row.id]">{{row.name}}</span>
-          <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 py-0 pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="property-search">{{ 'web.property.lblSearchProperty' | translate }}</label>
+      <i class="ri-search-line ov-search__icon"></i>
+      <input id="property-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()" placeholder="Filter Items by Property Name">
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-ghost !w-[100px]"
+        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        <i class="ri-filter-3-line text-[18px]"></i>
+        Filter
+      </button>
+      <div class="relative">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-ghost !w-[100px]"
+          [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+          <i class="ri-layout-column-line text-[18px]"></i>
+          Column
+        </button>
+        <div *ngIf="showColumnDropdown" class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="h-3.5 w-3.5 rounded text-primary">
+            {{ 'web.contacts.lblSelectAll' | translate }}
+          </label>
+          <label *ngFor="let col of tableColumns" class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)" class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
         </div>
-      </ng-container>
+      </div>
+      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" title="Reset Filters">
+        Clear
+      </button>
+    </div>
+  </div>
 
-      <ng-container *ngIf="col.key === 'type_name'">
-        <span class="badge bg-primary/10 text-primary">{{getArabicLookupName(row, 'type_name')}}</span>
-      </ng-container>
+  <div class="px-5 pb-0 pt-5" *ngIf="viewMode === 'list'">
+    <app-shared-table (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="paginatedProperties" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
 
-      <ng-container *ngIf="col.key === 'internal Status'">
-        <span class="badge" [ngClass]="row['internal Status'] === 'Active' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">
-          {{row['internal Status'] || 'Active'}}
-        </span>
-      </ng-container>
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container *ngIf="col.key === 'code'">
+          <a class="ov-link" [routerLink]="['/properties', row.code]">{{row.code}}</a>
+        </ng-container>
 
-      <ng-container *ngIf="col.key === 'tags'">
-        <span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary font-semibold">{{row.tags || 'Premium'}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'total_leases'">
-        <span>{{row.total_leases || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'contracts'">
-        <span>{{row.contracts || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'total_units'">
-        <span class="font-bold text-gray-700">{{row.occupied_units || 0}} / {{row.total_units || 0}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'occupancy_rate'">
-        <div class="flex items-center gap-2">
-          <div class="w-24 bg-gray-100 rounded-full h-1.5 dark:bg-gray-700">
-            <div class="bg-primary h-1.5 rounded-full" [style.width.%]="row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100) : 0"></div>
+        <ng-container *ngIf="col.key === 'name'">
+          <div class="flex flex-col">
+            <span class="font-semibold text-defaulttextcolor cursor-pointer hover:text-primary" [routerLink]="['/properties', row.id]">{{row.name}}</span>
+            <span class="flex items-center gap-1 text-[12px] text-textmuted font-normal">
+              <i class="ri-map-pin-line text-[14px]"></i>
+              {{row.address_1}}
+            </span>
           </div>
-          <span class="text-xs font-bold text-gray-700">
-            {{row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100).toFixed(1) : 0}}%
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'type_name'">
+          <span class="ov-type-pill" [class.ov-type-pill--commercial]="isCommercialType(row)">
+            {{ getArabicLookupName(row, 'type_name') }}
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'internal Status'">
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{row['internal Status'] || 'All'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'tags'">
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{row.tags || 'Tags'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'total_leases'">
+          <span>{{row.total_leases || 0}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'contracts'">
+          <span>{{row.contracts || 0}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'total_units'">
+          <span class="font-medium text-defaulttextcolor">{{row.occupied_units || 0}}/{{row.total_units || 0}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'occupancy_rate'">
+          <div class="ov-occupancy">
+            <div class="ov-occupancy__track">
+              <div class="ov-occupancy__fill"
+                [style.width.%]="row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100) : 0"></div>
+            </div>
+            <span class="text-[14px] font-medium leading-[14px]">
+              {{ row.total_units > 0 ? ((row.occupied_units / row.total_units) * 100).toFixed(1) : '0.0' }}%
+            </span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'action'">
+          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+              (click)="toggleRowAction(row.code, $event)" data-tooltip="Action">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+            <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="viewProperty(row.code)">View</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="editProperty(row.code)">Edit</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null">Delete</button>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+
+    </app-shared-table>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-5 pb-5" *ngIf="viewMode === 'grid'">
+    <div class="overflow-hidden border border-defaultborder rounded-2xl bg-white flex flex-col dark:bg-bodybg dark:border-white/10" *ngFor="let property of paginatedProperties">
+      <div class="relative h-40 overflow-hidden bg-light">
+        <img [src]="property.property_image_path" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+        <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md rounded-md flex items-center gap-1">
+          <i class="ri-building-line"></i> {{property.type_name || 'Residential'}}
+        </span>
+      </div>
+
+      <div class="p-4 flex flex-col flex-1 gap-4">
+        <div class="flex justify-between items-start gap-2">
+          <div class="flex flex-col min-w-0">
+            <h5 class="text-sm font-bold text-defaulttextcolor m-0 leading-tight">{{property.name}}</h5>
+            <div class="flex items-center text-textmuted text-[12px] font-medium mt-1">
+              <i class="ri-map-pin-line me-1"></i> {{property.address_1}}
+            </div>
+          </div>
+          <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full border flex items-center gap-1 shrink-0"
+            [ngClass]="property.property_status === 'Active' ? 'border-success text-success bg-success/5' : 'border-warning text-warning bg-warning/5'">
+            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="property.property_status === 'Active' ? 'bg-success' : 'bg-warning'"></span>
+            {{property.property_status || 'Active'}}
           </span>
         </div>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-textmuted font-semibold text-[12px]">Occupancy</span>
+            <span class="font-bold text-defaulttextcolor text-[12px]">{{ property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100).toFixed(0) : 0 }}%</span>
+          </div>
+          <div class="w-full bg-light rounded-full h-1.5">
+            <div class="bg-primary h-1.5 rounded-full" [style.width.%]="property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100) : 0"></div>
+          </div>
+          <span class="text-[12px] text-textmuted font-medium">{{property.occupied_units}} {{ 'web.property.lblOf' | translate }} {{property.total_units}} {{ 'web.property.lblUnitsOccupied' | translate }}</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 py-3 border-y border-defaultborder text-center">
+          <div class="flex flex-col gap-1">
+            <span class="text-defaulttextcolor text-xs font-bold">{{property.total_units}}</span>
+            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">
+              {{categoryFilter === 'Rooms' ? 'Rooms' : 'Units'}}</span>
+          </div>
+          <div class="flex flex-col gap-1 border-x border-defaultborder">
+            <span class="text-defaulttextcolor text-xs font-bold">{{property.occupied_units}}</span>
+            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Occupied</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-defaulttextcolor text-xs font-bold">{{property.total_units - property.occupied_units}}</span>
+            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Vacant</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-[12px] font-bold text-defaulttextcolor">Units types</span>
+            <a href="javascript:void(0)" [routerLink]="['/properties', property.code]" class="ov-link !text-[12px]">Manage units</a>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[12px]">
+            <div class="flex justify-between items-center">
+              <span class="text-textmuted flex items-center gap-1.5"><i class="ri-home-4-line"></i> Studio</span>
+              <span class="font-bold text-defaulttextcolor">10</span>
+            </div>
+            <div class="flex justify-between items-center border-l border-defaultborder pl-4">
+              <span class="text-textmuted flex items-center gap-1.5"><i class="ri-hotel-bed-line"></i> 1 bedroom</span>
+              <span class="font-bold text-defaulttextcolor">10</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-textmuted flex items-center gap-1.5"><i class="ri-hotel-bed-fill"></i> 2 bedroom</span>
+              <span class="font-bold text-defaulttextcolor">13</span>
+            </div>
+            <div class="flex justify-between items-center border-l border-defaultborder pl-4">
+              <span class="text-textmuted flex items-center gap-1.5"><i class="ri-building-4-line"></i> 3 bedroom</span>
+              <span class="font-bold text-defaulttextcolor">10</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-textmuted flex items-center gap-1.5"><i class="ri-home-smile-line"></i> Villa</span>
+              <span class="font-bold text-defaulttextcolor">03</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <span class="text-[12px] font-medium text-textmuted">Added {{property.created_date | date:'MMM d, yyyy'}}</span>
+        </div>
+      </div>
+
+      <div class="p-4 pt-0 mt-auto flex items-center gap-3">
+        <button type="button" [routerLink]="['/properties', property.code]" class="flex-1 ov-btn ov-btn-ghost !h-9 text-[12px] font-semibold">
+          Manage Units
+        </button>
+        <button type="button" [routerLink]="['/edit-property', property.code]" class="flex-1 ov-btn ov-btn-primary !h-9 text-[12px] font-semibold">
+          View Property <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+        </select>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    </div>
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+        <i class="ri-arrow-left-s-line text-[16px]"></i>
+      </button>
+      <ng-container *ngFor="let item of pagerItems">
+        <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+        <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+          [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
       </ng-container>
-    </ng-template>
-
-    <!-- Actions Template -->
-    <ng-template #actionTemplate let-row="row">
-      <div class="flex gap-1">
-        <button [routerLink]="['/edit-property', row.code]" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-          <i class="ri-edit-line text-xs"></i>
-        </button>
-        <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-          <i class="ri-delete-bin-line text-xs"></i>
-        </button>
-      </div>
-    </ng-template>
-
-  </app-shared-table>
-</div>
-
-<!-- 🎴 2. GRID / CARD VIEW -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" *ngIf="viewMode === 'grid'">
-  <div class="box overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl bg-white animate-fade-in flex flex-col" *ngFor="let property of paginatedProperties">
-    <!-- Image Card Header -->
-    <div class="relative h-40 overflow-hidden bg-gray-100">
-      <img [src]="property.property_image_path" [alt]="property.name" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
-      
-      <!-- Bottom Left Category Badge -->
-      <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md rounded-md flex items-center gap-1">
-        <i class="ri-building-line"></i> {{property.type_name || 'Residential'}}
-      </span>
-    </div>
-
-    <!-- Card Body -->
-    <div class="p-4 flex flex-col flex-1 gap-4">
-      
-      <!-- Title & Status -->
-      <div class="flex justify-between items-start gap-2">
-        <div class="flex flex-col">
-          <h5 class="text-sm font-bold text-gray-800 m-0 leading-tight">{{property.name}}</h5>
-          <div class="flex items-center text-gray-500 text-[10px] font-medium mt-1">
-            <i class="ri-map-pin-line me-1 text-gray-400"></i> {{property.address_1}}
-          </div>
-        </div>
-        <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full border flex items-center gap-1 shrink-0"
-          [ngClass]="property.property_status === 'Active' ? 'border-success text-success bg-success/5' : 'border-warning text-warning bg-warning/5'">
-          <span class="w-1.5 h-1.5 rounded-full" [ngClass]="property.property_status === 'Active' ? 'bg-success' : 'bg-warning'"></span>
-          {{property.property_status || 'Active'}}
-        </span>
-      </div>
-
-      <!-- Occupancy Info block -->
-      <div class="flex flex-col gap-1.5">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-gray-600 font-bold text-[11px]">Occupancy</span>
-          <span class="font-bold text-gray-800 text-[11px]">{{ property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100).toFixed(0) : 0 }}%</span>
-        </div>
-        <div class="w-full bg-gray-100 rounded-full h-1.5">
-          <div class="bg-primary h-1.5 rounded-full" [style.width.%]="property.total_units > 0 ? ((property.occupied_units / property.total_units) * 100) : 0"></div>
-        </div>
-        <span class="text-[9px] text-gray-400 font-medium">{{property.occupied_units}} {{ 'web.property.lblOf' | translate }} {{property.total_units}} {{ 'web.property.lblUnitsOccupied' | translate }}</span>
-      </div>
-
-      <!-- Features spec block -->
-      <div class="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 text-center">
-        <div class="flex flex-col gap-1">
-          <span class="text-gray-800 text-xs font-bold">{{property.total_units}}</span>
-          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">
-            {{categoryFilter === 'Rooms' ?'Rooms' : 'Units'}}</span>
-        </div>
-        <div class="flex flex-col gap-1 border-x border-gray-100">
-          <span class="text-gray-800 text-xs font-bold">{{property.occupied_units}}</span>
-          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Occupied</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-gray-800 text-xs font-bold">{{property.total_units - property.occupied_units}}</span>
-          <span class="text-gray-500 text-[9px] font-medium uppercase tracking-wider">Vacant</span>
-        </div>
-      </div>
-
-      <!-- Units Breakdown details -->
-      <div class="flex flex-col gap-2">
-        <div class="flex justify-between items-center mb-1">
-          <span class="text-[11px] font-bold text-gray-800">Units types</span>
-          <a href="javascript:void(0)" [routerLink]="['/properties', property.code]" class="text-[10px] font-semibold text-primary hover:underline">Manage units</a>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px]">
-          <div class="flex justify-between items-center">
-            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-home-4-line text-gray-400"></i> Studio</span>
-            <span class="font-bold text-gray-800">10</span>
-          </div>
-          <div class="flex justify-between items-center border-l border-gray-100 pl-4">
-            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-hotel-bed-line text-gray-400"></i> 1 bedroom</span>
-            <span class="font-bold text-gray-800">10</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-hotel-bed-fill text-gray-400"></i> 2 bedroom</span>
-            <span class="font-bold text-gray-800">13</span>
-          </div>
-          <div class="flex justify-between items-center border-l border-gray-100 pl-4">
-            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-building-4-line text-gray-400"></i> 3 bedroom</span>
-            <span class="font-bold text-gray-800">10</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-500 flex items-center gap-1.5"><i class="ri-home-smile-line text-gray-400"></i> Villa</span>
-            <span class="font-bold text-gray-800">03</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="mt-2">
-        <span class="text-[11px] font-bold text-gray-800">Added on : {{property.created_date | date:'MMM d yyyy'}}</span>
-      </div>
-
-    </div>
-
-    <!-- Footer Actions -->
-    <div class="p-4 pt-0 mt-auto flex items-center gap-3">
-      <button type="button" [routerLink]="['/properties', property.code]" class="flex-1 py-2 px-3 rounded-md border border-gray-200 bg-white text-gray-700 text-[11px] font-bold hover:bg-gray-50 transition-colors text-center shadow-sm">
-        Manage Units
-      </button>
-      <button type="button" [routerLink]="['/edit-property', property.code]" class="flex-1 py-2 px-3 rounded-md bg-[#1f2b45] text-white text-[11px] font-bold hover:bg-[#131b2e] transition-colors flex items-center justify-center gap-1 shadow-sm border-0">
-        View Property <i class="ri-arrow-right-line"></i>
+      <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+        <i class="ri-arrow-right-s-line text-[16px]"></i>
       </button>
     </div>
   </div>
 </div>
- <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm" *ngIf="viewMode === 'grid'">
-  <div class="flex items-center gap-2">
-    <span class="text-xs text-gray-500 font-medium">Show</span>
-    <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
-      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-    </select>
-  </div>
-  
-  <div class="text-xs text-gray-500 font-medium">
-    Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong> records
-  </div>
 
-  <div class="flex items-center gap-2">
-    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 1">
-      Previous
-    </button>
-    <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
-      [ngClass]="page === pageNo ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
-      {{page}}
-    </button>
-    <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()" [disabled]="pageNo === totalPages">
-      Next
-    </button>
-  </div>
-</div>
-
-
-<!-- 🚪 SLIDING FILTER DRAWER -->
-<app-filter-drawer 
-  [(isOpen)]="isDrawerOpen" 
+<app-filter-drawer
+  [(isOpen)]="isDrawerOpen"
   [(selectedTag)]="selectedTag"
   [(selectedArea)]="selectedArea"
   [(selectedId)]="selectedId"
@@ -340,7 +328,6 @@
   [(selectedOffPlanStatus)]="selectedOffPlanStatus"
   [(selectedLandlord)]="selectedLandlord"
   [(selectedInternalStatus)]="selectedInternalStatus"
-  (apply)="onSearch()" 
+  (apply)="onSearch()"
   (clear)="clearFilters()">
 </app-filter-drawer>
-<!--End::row-1 -->

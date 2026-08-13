@@ -247,6 +247,7 @@ exports.locale = {
                 "lblProperty": "Property",
                 "lblCancel": "Cancel",
                 "lblSaveProperty": "Save Property",
+                "lblUpdateProperty": "Update Property",
                 "lblViewActivity": "View Activity",
                 "lblEditProperty": "Edit Property",
                 "lblPropertyBasics": "Property Basics",

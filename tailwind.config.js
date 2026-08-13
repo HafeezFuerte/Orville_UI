@@ -70,6 +70,8 @@ module.exports = {
         secondary: "rgb(var(--secondary))",
         success: "rgb(var(--success))",
         info: "rgb(var(--info))",
+        link: "rgb(var(--link))",
+        "link-hover": "rgb(var(--link-hover))",
         warning: "rgb(var(--warning))",
         danger: "rgb(var(--danger))",
         light:"rgb(var(--light))",

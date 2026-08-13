@@ -310,6 +310,7 @@ exports.locale = {
                 "lblProperty": "Property",
                 "lblCancel": "Cancel",
                 "lblSaveProperty": "Save Property",
+                "lblUpdateProperty": "Update Property",
 
                 "lblPropertyBasics": "Property Basics",
                 "lblCoreIdentityReferenceInformation": "Core identity and reference information",

@@ -1,0 +1,940 @@
+/* Orville DS — compiled by Angular via src/styles.scss (ng serve does not run npm run postcss).
+   Theme tokens only — no hardcoded primary hex. */
+
+:root {
+  --link: 37 99 235;
+  --link-hover: 29 78 216;
+}
+
+.dark {
+  --link: 96 165 250;
+  --link-hover: 147 197 253;
+}
+
+.ov-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Add Property — Figma 2104:79975 header full-width; 2104:80027 body 768+20+400 */
+form.ov-add-form {
+  display: flex !important;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.ov-add-header {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 20px 0 16px !important;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-add-header__start {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.ov-add-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.ov-add-header .ov-btn {
+  padding-inline: 20px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+}
+
+.ov-add-header .ov-btn-ghost {
+  border-color: transparent;
+  color: rgb(var(--text-muted));
+}
+
+.ov-add-header .ov-page-title {
+  font-weight: 700;
+  letter-spacing: 0.48px;
+}
+
+.ov-add-header .ov-page-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  letter-spacing: 0.26px;
+}
+
+.ov-page-sub__current {
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-add-body {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 400px !important;
+  column-gap: 20px;
+  row-gap: 1.25rem;
+  width: 100%;
+  max-width: 1188px;
+  margin-inline: auto;
+}
+
+.ov-add-layout__main {
+  grid-column: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ov-add-layout__aside {
+  grid-column: 2;
+  display: flex;
+  width: 400px;
+  max-width: 400px;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 84px;
+  align-self: start;
+}
+
+@media (max-width: 767px) {
+  .ov-add-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .ov-add-layout__aside {
+    grid-column: 1;
+    width: 100%;
+    max-width: none;
+    position: static;
+  }
+}
+
+.ov-add-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 1188px;
+  margin: 0.5rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.ov-label {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.28px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-input {
+  display: block;
+  width: 100% !important;
+  min-height: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--default-border));
+  background: rgb(var(--default-background));
+  padding: 12px 20px;
+  font-size: 14px !important;
+  font-weight: 400;
+  line-height: 1.25;
+  color: rgb(var(--default-text-color));
+
+  &::placeholder {
+    color: rgb(var(--text-muted));
+    opacity: 1;
+  }
+
+  &:focus {
+    border-color: rgb(var(--primary));
+    outline: none;
+    box-shadow: 0 0 0 1px rgb(var(--primary));
+    background: rgb(var(--default-background));
+  }
+}
+
+.ov-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 20px;
+  row-gap: 16px;
+  width: 100%;
+}
+
+.ov-fields + .ov-fields {
+  margin-top: 16px;
+}
+
+.ov-fields__full {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.ov-fields > * {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .ov-fields--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ov-fields--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ov-fields--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.dark .ov-input {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.8);
+}
+
+textarea.ov-input {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.ov-input-addon {
+  display: flex;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.ov-input-addon__prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-inline-end: 1px solid rgb(var(--default-border));
+  background: rgb(var(--light));
+  color: rgb(var(--text-muted));
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ov-input-addon .ov-input {
+  border: 0;
+  border-radius: 0;
+  min-height: 38px;
+  height: 38px;
+}
+
+.ov-card__head {
+  padding: 20px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-card__head .ov-card-sub {
+  margin-top: 6px;
+}
+
+.ov-card__body {
+  padding: 20px;
+}
+
+/* Property Amenities — Figma 2104:80590 */
+.ov-amenities .ov-card__head {
+  padding: 20px;
+}
+
+.ov-amenities .ov-card__head .ov-card-sub {
+  margin-top: 6px;
+}
+
+.ov-amenities .ov-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 20px 24px;
+}
+
+.ov-amenities__include {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+}
+
+.ov-amenities__include .ov-label {
+  margin-bottom: 0;
+}
+
+.ov-amenities__include .ov-card-sub {
+  margin-top: 10px;
+}
+
+.ov-amenities__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ov-amenities__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 20px;
+  row-gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .ov-amenities__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .ov-amenities__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ov-amenities__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 30px;
+  margin: 0;
+}
+
+.ov-amenities__item .form-check-input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.ov-amenities__item .form-check-label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+}
+
+.ov-amenities__all .form-check-label {
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.box.ov-card {
+  margin-bottom: 0;
+  box-shadow: none;
+  border-radius: 1rem;
+}
+
+.ng-select.ov-select .ng-select-container .ng-value-container,
+.ng-select.ov-select .ng-select-container .ng-value-container .ng-placeholder,
+.ng-select.ov-select .ng-select-container .ng-value-container .ng-input > input {
+  font-size: 14px !important;
+}
+
+.ov-search {
+  position: relative;
+  width: 100%;
+  max-width: 437px;
+}
+
+.ov-search__icon {
+  pointer-events: none;
+  position: absolute;
+  inset-inline-start: 1.25rem;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-search__input {
+  height: 40px;
+  border-radius: 0.5rem;
+  padding-inline-start: 2.75rem;
+  padding-inline-end: 1rem;
+}
+
+.ov-btn {
+  display: inline-flex;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--default-border));
+  padding: 0 1rem;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.ov-btn-ghost {
+  background: #fff;
+  color: rgb(var(--default-text-color));
+
+  &:hover {
+    background: rgb(var(--light));
+  }
+}
+
+.dark .ov-btn-ghost {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.ov-btn-primary {
+  border-color: transparent;
+  background: rgb(var(--primary));
+  color: #fff;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.ov-icon-btn {
+  display: inline-flex;
+  height: 32px;
+  width: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: rgb(var(--primary));
+    background: rgb(var(--primary));
+    color: #fff;
+  }
+}
+
+.ov-icon-btn--primary {
+  border-color: transparent;
+  background: rgb(var(--primary) / 0.1);
+  color: rgb(var(--primary));
+
+  &:hover {
+    background: rgb(var(--primary));
+    color: #fff;
+  }
+}
+
+.ov-icon-btn--danger {
+  border-color: transparent;
+  background: rgb(var(--danger) / 0.1);
+  color: rgb(var(--danger));
+
+  &:hover {
+    background: rgb(var(--danger));
+    color: #fff;
+  }
+}
+
+.ov-icon-btn--bare {
+  border: 0 !important;
+  background: transparent;
+  color: rgb(var(--text-muted));
+
+  &:hover {
+    border: 0 !important;
+    background: rgb(var(--light));
+    color: rgb(var(--default-text-color));
+  }
+}
+
+.ov-icon-btn.is-on {
+  border-color: rgb(var(--primary));
+  background: rgb(var(--primary));
+  color: #fff;
+
+  &:hover {
+    background: rgb(var(--primary));
+    color: #fff;
+    opacity: 0.9;
+  }
+}
+
+.ov-seg {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  gap: 2px;
+  border-radius: 0.5rem;
+  background: rgb(var(--light));
+  padding: 2px;
+}
+
+.ov-seg__btn {
+  height: 100%;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  padding: 0 0.75rem;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+
+  &:hover {
+    color: rgb(var(--default-text-color));
+  }
+}
+
+.ov-seg__btn.is-active {
+  background: #fff;
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+.ov-seg--solid .ov-seg__btn.is-active {
+  background: rgb(var(--primary));
+  color: #fff;
+  box-shadow: none;
+}
+
+.ov-kpi-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+}
+
+@media (min-width: 640px) {
+  .ov-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .ov-kpi-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.875rem;
+  }
+}
+
+.dark .ov-kpi-row {
+  background: rgb(var(--body-bg));
+}
+
+.ov-kpi {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+}
+
+.ov-kpi__badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background: rgb(var(--body-bg));
+  padding: 0.25rem 0.625rem;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24px;
+  color: rgb(var(--info));
+}
+
+.ov-kpi__val {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 34px;
+  letter-spacing: 0.52px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-kpi__sub {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.28px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-back {
+  display: inline-flex;
+  height: 46px;
+  width: 46px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 0;
+  border-radius: 0.5rem;
+  background: rgb(var(--primary) / 0.08);
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--primary) / 0.14);
+    color: rgb(var(--default-text-color));
+  }
+}
+
+.ov-card {
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  box-shadow: none;
+}
+
+.ov-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-card-sub {
+  margin: 0.25rem 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 31px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-page-sub {
+  margin: 0.25rem 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 40px;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ng-select.ov-select .ng-select-container {
+  min-height: 40px !important;
+  height: 40px !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid rgb(var(--default-border)) !important;
+  background: rgb(var(--default-background)) !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+}
+
+.ng-select.ov-select .ng-arrow-wrapper {
+  position: relative !important;
+  width: 38px !important;
+  height: 40px !important;
+  padding-right: 16px !important;
+}
+
+.ng-select.ov-select .ng-arrow-wrapper .ng-arrow {
+  display: none !important;
+  border: 0 none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+.ng-select.ov-select .ng-arrow-wrapper::after {
+  content: "" !important;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M4.5 6.75L9 11.25L13.5 6.75' stroke='%236B6B7D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px 18px no-repeat;
+}
+
+.ng-select.ov-select.ng-select-opened .ng-arrow-wrapper::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.ov-type-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  background: rgb(var(--info) / 0.12);
+  color: rgb(var(--info));
+}
+
+.ov-type-pill--commercial {
+  background: rgb(var(--light));
+  color: rgb(var(--default-text-color));
+}
+
+.ov-occupancy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ov-occupancy__track {
+  width: 102px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgb(var(--default-border));
+  overflow: hidden;
+}
+
+.ov-occupancy__fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: rgb(var(--info));
+}
+
+.ov-table {
+  margin-bottom: 0;
+  width: 100%;
+  text-align: start;
+  color: rgb(var(--default-text-color));
+  border-collapse: collapse;
+}
+
+.ov-table thead tr th {
+  height: 58px;
+  padding: 20px 12px 12px 12px;
+  border-bottom: 1px solid rgb(var(--default-border));
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  color: rgb(var(--default-text-color));
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.ov-table tbody tr {
+  height: 55px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-table tbody tr:hover {
+  background: rgb(var(--light));
+}
+
+.ov-table tbody td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: rgb(var(--default-text-color));
+}
+
+/* Figma link #2563EB — use .ov-link / .text-link everywhere for clickable text */
+.ov-link,
+.text-link {
+  color: rgb(var(--link)) !important;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ov-link:hover,
+.text-link:hover {
+  color: rgb(var(--link-hover)) !important;
+  text-decoration: underline;
+}
+
+/* Beat text-info / text-primary / inline --info on actual link text (not buttons, not badges) */
+.main-content td a:not([class*="btn"]):not([class*="w-7"]):not([class*="rounded-md"]),
+.main-content td .text-primary.cursor-pointer:not([class*="btn"]):not([class*="w-7"]):not([class*="rounded-md"]),
+.main-content td .text-info.cursor-pointer,
+.main-content .hover\:underline:not(.text-danger):not([class*="text-danger"]):not([class*="btn"]),
+.main-content a.hover\:underline:not([class*="btn"]),
+.main-content a.text-info:not([class*="btn"]),
+.main-content [routerlink]:not(button):not([class*="btn"]):not(.ov-btn):not(.ov-icon-btn):not(.ov-seg__btn):not(.ov-back),
+.main-content a:not([class*="btn"]):not(.ov-btn):not(.ov-back):not(.ov-icon-btn):not(.side-menu__item):not(.ov-seg__btn) {
+  color: rgb(var(--link)) !important;
+}
+
+.main-content td .text-primary.cursor-pointer:not([class*="btn"]):hover,
+.main-content td .text-info.cursor-pointer:hover,
+.main-content .hover\:underline:not(.text-danger):hover,
+.main-content a.hover\:underline:not([class*="btn"]):hover,
+.main-content a.text-info:not([class*="btn"]):hover,
+.main-content [routerlink]:not(button):not([class*="btn"]):hover,
+.main-content a:not([class*="btn"]):not(.ov-btn):not(.ov-back):hover {
+  color: rgb(var(--link-hover)) !important;
+}
+
+.dark .ov-table thead tr th {
+  background: rgb(var(--body-bg));
+}
+
+app-shared-table .mat-mdc-paginator {
+  background: transparent !important;
+  color: rgb(var(--text-muted)) !important;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+app-shared-table .mat-mdc-paginator .mat-mdc-paginator-container {
+  padding: 8px 4px 0;
+  min-height: 48px;
+}
+
+.ov-page {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 56px;
+  padding: 20px;
+}
+
+.ov-page__meta,
+.ov-page__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ov-page__meta,
+.ov-page__label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-page__size {
+  position: relative;
+  width: 80px;
+  height: 36px;
+}
+
+.ov-page__size select {
+  width: 100%;
+  height: 36px;
+  padding: 0 28px 0 10px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+  background: rgb(var(--light));
+  color: rgb(var(--link));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  appearance: none;
+  cursor: pointer;
+}
+
+.ov-page__size i {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-page__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+  background: #fff;
+  color: rgb(var(--text-muted));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.ov-page__btn:hover:not(:disabled):not(.is-active) {
+  background: rgb(var(--light));
+}
+
+.ov-page__btn.is-active {
+  border-color: rgb(var(--primary));
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+.ov-page__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ov-page__ellipsis {
+  display: inline-flex;
+  width: 24px;
+  justify-content: center;
+  font-size: 14px;
+  color: rgb(var(--text-muted));
+}

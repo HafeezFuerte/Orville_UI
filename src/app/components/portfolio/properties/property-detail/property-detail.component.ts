@@ -32,6 +32,7 @@ export class PropertyDetailComponent implements OnInit {
   property: any = null;
   activeTab = 'overview';
   showMoreDetails: boolean = false;
+  showActionMenu = false;
   loading = false;
   paginatedProperties: any[] = [];
   commonAreaForm!: FormGroup;
@@ -115,6 +116,13 @@ export class PropertyDetailComponent implements OnInit {
   }
   toggleMoreDetails(): void {
     this.showMoreDetails = !this.showMoreDetails;
+  }
+
+  get occupancyPct(): number {
+    const total = Number(this.property?.total_units) || 0;
+    const occupied = Number(this.property?.occupied_units) || 0;
+    if (total <= 0) return 0;
+    return Math.round((occupied / total) * 1000) / 10;
   }
 
   private loadMasterDataByType(

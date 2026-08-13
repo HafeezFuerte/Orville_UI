@@ -1,1185 +1,1252 @@
-<div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+<div class="orville-insights flex-1 overflow-y-auto custom-scrollbar p-6">
 
-  <!-- Header row with date and greeting -->
-  <div class="flex items-center justify-between mb-0 min-w-[800px]">
-    <div>
-      <div class="flex items-center gap-2 text-gray-500 text-sm mb-1">
-        <i class="ri-calendar-event-line"></i>
-        <span>{{ todayDate }}</span>
+  <header class="orville-insights__header">
+    <p class="orville-insights__date">
+      <img class="orville-insights__date-icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14">
+      <span>{{ todayDate }}</span>
+    </p>
+    <h1 class="orville-insights__title">
+      Good Morning, <span class="orville-insights__name">{{ userName }}</span>
+    </h1>
+  </header>
+
+  <section class="orville-insights-card orville-insights-wrap">
+    <div class="orville-insights-card__head">
+      <div>
+        <h2 class="orville-insights-card__title">Property Dashboard Highlights</h2>
+        <p class="orville-insights-card__sub">Track property totals and monitor trends over time.</p>
       </div>
-      <h1 class="text-xl font-bold text-gray-800">
-        Good Morning, <span class="text-[#845adf]">{{ userName }}</span>
-      </h1>
     </div>
 
-
-
-  </div>
-
-  <!-- Row 1 Header -->
-  <div class="mb-2">
-    <h2 class="text-xl font-bold text-gray-800">Property Dashboard Highlights</h2>
-    <p class="text-gray-500 text-sm">Track property totals and monitor trends over time.</p>
-  </div>
-
-  <!-- Row 1: 5 Highlight Cards -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <!-- Properties Created -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+  <div class="orville-hl-grid">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-2xl font-bold text-gray-800">{{ highlightMetrics.properties.count }}</span>
-          <span class="text-xs text-gray-500 font-semibold">Total Property</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">{{ highlightMetrics.properties.count }}</span>
+          <span class="orville-hl__unit">Total Property</span>
         </div>
-        <h4 class="text-sm font-bold text-gray-800">Properties created</h4>
-        <p class="text-[10px] text-gray-400">New properties per month (calendar year)</p>
+        <h4 class="orville-hl__name">Properties created</h4>
+        <p class="orville-hl__sub">New properties per month (calendar year)</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart">
         <apx-chart [series]="sparklineBarOptions.series" [chart]="sparklineBarOptions.chart"
           [colors]="sparklineBarOptions.colors" [plotOptions]="sparklineBarOptions.plotOptions"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Units Created -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-2xl font-bold text-gray-800">{{ highlightMetrics.units.count }}</span>
-          <span class="text-xs text-gray-500 font-semibold">Total Units</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">{{ highlightMetrics.units.count }}</span>
+          <span class="orville-hl__unit">Total Units</span>
         </div>
-        <h4 class="text-sm font-bold text-gray-800">Units Created</h4>
-        <p class="text-[10px] text-gray-400">Units created per month (calendar year)</p>
+        <h4 class="orville-hl__name">Units Created</h4>
+        <p class="orville-hl__sub">Units created per month (calendar year)</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart">
         <apx-chart [series]="sparklineLineOptions.series" [chart]="sparklineLineOptions.chart"
           [colors]="sparklineLineOptions.colors" [stroke]="sparklineLineOptions.stroke"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Rooms Created -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-2xl font-bold text-gray-800">{{ highlightMetrics.rooms.count }}</span>
-          <span class="text-xs text-gray-500 font-semibold">Total Rooms</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">{{ highlightMetrics.rooms.count }}</span>
+          <span class="orville-hl__unit">Total Rooms</span>
         </div>
-        <h4 class="text-sm font-bold text-gray-800">Rooms Created</h4>
-        <p class="text-[10px] text-gray-400">Rooms created per month (calendar year)</p>
+        <h4 class="orville-hl__name">Rooms Created</h4>
+        <p class="orville-hl__sub">Rooms created per month (calendar year)</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart">
         <apx-chart [series]="sparklineRoomsOptions.series" [chart]="sparklineRoomsOptions.chart"
           [colors]="sparklineRoomsOptions.colors" [stroke]="sparklineRoomsOptions.stroke"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Occupancy -->
-    <div
-      class="w-[250px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col items-center justify-center">
-      <div class="w-full">
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">{{ highlightMetrics.occupancy.percentage }}%</span>
-          <span class="text-[10px] text-gray-500">({{ highlightMetrics.occupancy.units }} units)</span>
+    <article class="orville-hl orville-hl--ring">
+      <div>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">{{ highlightMetrics.occupancy.percentage }}%</span>
+          <span class="orville-hl__unit">({{ highlightMetrics.occupancy.units }} units)</span>
         </div>
-        <h4 class="text-sm font-bold text-gray-800">Occupancy</h4>
-        <p class="text-[10px] text-gray-400">Residential vs commercial</p>
+        <h4 class="orville-hl__name">Occupancy</h4>
+        <p class="orville-hl__sub">Residential vs commercial occupancy</p>
       </div>
-      <div class="-mt-4">
+      <div class="orville-hl__chart orville-hl__chart--ring">
         <apx-chart [series]="occupancyRadialOptions.series" [chart]="occupancyRadialOptions.chart"
           [colors]="occupancyRadialOptions.colors" [plotOptions]="occupancyRadialOptions.plotOptions"
           [stroke]="occupancyRadialOptions.stroke"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Vacant Units -->
-    <div
-      class="w-[250px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col items-center justify-center">
-      <div class="w-full">
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">{{ highlightMetrics.vacant.percentage }}%</span>
-          <span class="text-[10px] text-gray-500">({{ highlightMetrics.vacant.units }} units)</span>
+    <article class="orville-hl orville-hl--ring">
+      <div>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">{{ highlightMetrics.vacant.percentage }}%</span>
+          <span class="orville-hl__unit">({{ highlightMetrics.vacant.units }} units)</span>
         </div>
-        <h4 class="text-sm font-bold text-gray-800">Vacant units</h4>
-        <p class="text-[10px] text-gray-400">Residential vs commercial</p>
+        <h4 class="orville-hl__name">Vacant units</h4>
+        <p class="orville-hl__sub">Residential vs commercial vacancy</p>
       </div>
-      <div class="-mt-4">
+      <div class="orville-hl__chart orville-hl__chart--ring">
         <apx-chart [series]="vacantRadialOptions.series" [chart]="vacantRadialOptions.chart"
           [colors]="vacantRadialOptions.colors" [plotOptions]="vacantRadialOptions.plotOptions"
           [stroke]="vacantRadialOptions.stroke"></apx-chart>
       </div>
-    </div>
+    </article>
   </div>
 
-  <!-- Row 2: Properties, Units, Rooms, Parking -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[300px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col">
-      <h4 class="text-sm font-bold text-gray-800 border-b pb-2 mb-2">Properties</h4>
-      <div class="flex justify-center mt-2 flex-1">
-        <apx-chart [series]="propertiesDonutOptions.series" [chart]="propertiesDonutOptions.chart"
-          [labels]="propertiesDonutOptions.labels" [colors]="propertiesDonutOptions.colors"
-          [dataLabels]="{ enabled: false }" [plotOptions]="propertiesDonutOptions.plotOptions"
-          [stroke]="propertiesDonutOptions.stroke"></apx-chart>
+  <div class="orville-insights__row orville-insights__row--4">
+    <article class="orville-insights-card orville-donut-card">
+      <h4 class="orville-insights-card__title orville-insights-card__head">Properties</h4>
+      <div class="orville-donut-body">
+        <div class="orville-donut-chart">
+          <apx-chart [series]="propertiesDonutOptions.series" [chart]="propertiesDonutOptions.chart"
+            [labels]="propertiesDonutOptions.labels" [colors]="propertiesDonutOptions.colors"
+            [dataLabels]="propertiesDonutOptions.dataLabels" [plotOptions]="propertiesDonutOptions.plotOptions"
+            [stroke]="propertiesDonutOptions.stroke" [legend]="propertiesDonutOptions.legend"></apx-chart>
+        </div>
+        <div class="orville-legend orville-legend--plain">
+          <div class="orville-legend__row">
+            <span>Residential</span>
+            <span class="orville-legend__val">17</span>
+          </div>
+          <div class="orville-legend__row">
+            <span>Commercial</span>
+            <span class="orville-legend__val">0</span>
+          </div>
+          <div class="orville-legend__row">
+            <span>Mixed-use</span>
+            <span class="orville-legend__val">2</span>
+          </div>
+        </div>
       </div>
-      <div class="mt-4 text-xs font-semibold text-gray-500 space-y-2">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> Residential</div>
-          <span class="text-gray-800 font-bold">17</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#94a3b8]"></span> Commercial</div>
-          <span class="text-gray-800 font-bold">0</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#06b6d4]"></span> Mixed-use</div>
-          <span class="text-gray-800 font-bold">2</span>
-        </div>
-      </div>
-    </div>
+    </article>
 
-    <div
-      class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
-      <div>
-        <h4 class="text-sm font-bold text-gray-800 border-b pb-2 mb-2">Units</h4>
-        <div class="flex gap-4">
-          <div class="flex-1 flex justify-center mt-2">
-            <apx-chart [series]="unitsDonutOptions.series" [chart]="unitsDonutOptions.chart"
-              [labels]="unitsDonutOptions.labels" [colors]="unitsDonutOptions.colors" [dataLabels]="{ enabled: false }"
-              [plotOptions]="unitsDonutOptions.plotOptions" [stroke]="unitsDonutOptions.stroke"></apx-chart>
+    <article class="orville-insights-card orville-donut-card">
+      <h4 class="orville-insights-card__title orville-insights-card__head">Units</h4>
+      <div class="orville-donut-body">
+        <div class="orville-donut-chart">
+          <apx-chart [series]="unitsDonutOptions.series" [chart]="unitsDonutOptions.chart"
+            [labels]="unitsDonutOptions.labels" [colors]="unitsDonutOptions.colors"
+            [dataLabels]="unitsDonutOptions.dataLabels" [plotOptions]="unitsDonutOptions.plotOptions"
+            [stroke]="unitsDonutOptions.stroke" [legend]="unitsDonutOptions.legend"></apx-chart>
+        </div>
+        <div class="orville-legend">
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#26264F"></span> 1 BHK</div>
+            <span class="orville-legend__val">985</span>
           </div>
-          <div class="flex-1 flex flex-col justify-center text-xs font-semibold text-gray-500 space-y-3">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> 1 BHK</div>
-              <span class="text-gray-800 font-bold">985</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#06b6d4]"></span> 2 BHK</div>
-              <span class="text-gray-800 font-bold">756</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> 3 BHK</div>
-              <span class="text-gray-800 font-bold">758</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span> Studio</div>
-              <span class="text-gray-800 font-bold">456</span>
-            </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#3E6FA8"></span> 2 BHK</div>
+            <span class="orville-legend__val">756</span>
+          </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#BD9759"></span> 3 BHK</div>
+            <span class="orville-legend__val">758</span>
+          </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#27865B"></span> Studio</div>
+            <span class="orville-legend__val">456</span>
           </div>
         </div>
       </div>
-      <div class="mt-4 pt-3 border-t flex justify-between text-xs">
-        <div class="text-center"><span class="text-gray-400 block mb-1">Occupied</span><strong
-            class="text-gray-800">2319</strong></div>
-        <div class="text-center"><span class="text-gray-400 block mb-1">Vacant</span><strong
-            class="text-gray-800">605</strong></div>
-        <div class="text-center"><span class="text-gray-400 block mb-1">Maintenance</span><strong
-            class="text-gray-800">31</strong></div>
+      <div class="orville-stats-bar">
+        <div><span>Occupied</span><strong>2319</strong></div>
+        <div><span>Vacant</span><strong>605</strong></div>
+        <div><span>Maintenance</span><strong>31</strong></div>
       </div>
-    </div>
+    </article>
 
-    <div
-      class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
-      <div>
-        <h4 class="text-sm font-bold text-gray-800 border-b pb-2 mb-2">Rooms</h4>
-        <div class="flex gap-4">
-          <div class="flex-1 flex justify-center mt-2">
-            <apx-chart [series]="roomsDonutOptions.series" [chart]="roomsDonutOptions.chart"
-              [labels]="roomsDonutOptions.labels" [colors]="roomsDonutOptions.colors" [dataLabels]="{ enabled: false }"
-              [plotOptions]="roomsDonutOptions.plotOptions" [stroke]="roomsDonutOptions.stroke"></apx-chart>
+    <article class="orville-insights-card orville-donut-card">
+      <h4 class="orville-insights-card__title orville-insights-card__head">Rooms</h4>
+      <div class="orville-donut-body">
+        <div class="orville-donut-chart">
+          <apx-chart [series]="roomsDonutOptions.series" [chart]="roomsDonutOptions.chart"
+            [labels]="roomsDonutOptions.labels" [colors]="roomsDonutOptions.colors"
+            [dataLabels]="roomsDonutOptions.dataLabels" [plotOptions]="roomsDonutOptions.plotOptions"
+            [stroke]="roomsDonutOptions.stroke" [legend]="roomsDonutOptions.legend"></apx-chart>
+        </div>
+        <div class="orville-legend">
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#26264F"></span> 1 BHK</div>
+            <span class="orville-legend__val">985</span>
           </div>
-          <div class="flex-1 flex flex-col justify-center text-xs font-semibold text-gray-500 space-y-3">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> 1 BHK</div>
-              <span class="text-gray-800 font-bold">985</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#06b6d4]"></span> 2 BHK</div>
-              <span class="text-gray-800 font-bold">756</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> 3 BHK</div>
-              <span class="text-gray-800 font-bold">758</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span> Studio</div>
-              <span class="text-gray-800 font-bold">456</span>
-            </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#3E6FA8"></span> 2 BHK</div>
+            <span class="orville-legend__val">756</span>
+          </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#BD9759"></span> 3 BHK</div>
+            <span class="orville-legend__val">758</span>
+          </div>
+          <div class="orville-legend__row">
+            <div><span class="orville-legend__dot" style="background:#27865B"></span> Studio</div>
+            <span class="orville-legend__val">456</span>
           </div>
         </div>
       </div>
-      <div class="mt-4 pt-3 border-t flex justify-between text-xs">
-        <div class="text-center"><span class="text-gray-400 block mb-1">Occupied</span><strong
-            class="text-gray-800">2319</strong></div>
-        <div class="text-center"><span class="text-gray-400 block mb-1">Vacant</span><strong
-            class="text-gray-800">605</strong></div>
-        <div class="text-center"><span class="text-gray-400 block mb-1">Maintenance</span><strong
-            class="text-gray-800">31</strong></div>
+      <div class="orville-stats-bar">
+        <div><span>Occupied</span><strong>2319</strong></div>
+        <div><span>Vacant</span><strong>605</strong></div>
+        <div><span>Maintenance</span><strong>31</strong></div>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[180px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col">
-      <h4 class="text-sm font-bold text-gray-800 border-b pb-2 mb-4">Parking</h4>
-      <div class="flex flex-col gap-4 text-center justify-center flex-1">
-        <div>
-          <p class="text-[10px] text-gray-400 font-semibold mb-1">Occupied</p>
-          <strong class="text-gray-800 font-bold">2319</strong>
+    <article class="orville-insights-card orville-donut-card">
+      <h4 class="orville-insights-card__title orville-insights-card__head">Parking</h4>
+      <div class="orville-park">
+        <div class="orville-park__tile">
+          <span>Occupied</span>
+          <strong>2319</strong>
         </div>
-        <div>
-          <p class="text-[10px] text-gray-400 font-semibold mb-1">Vacant</p>
-          <strong class="text-gray-800 font-bold">605</strong>
+        <div class="orville-park__tile">
+          <span>Vacant</span>
+          <strong>605</strong>
         </div>
-        <div>
-          <p class="text-[10px] text-gray-400 font-semibold mb-1">Maintenance</p>
-          <strong class="text-gray-800 font-bold">31</strong>
+        <div class="orville-park__tile">
+          <span>Maintenance</span>
+          <strong>31</strong>
         </div>
       </div>
-    </div>
+    </article>
   </div>
+  </section>
 
-  <!-- Row 3: Contacts & Landlords -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[600px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-      <h4 class="text-sm font-bold text-gray-800 border-b pb-4 mb-4">Contact Status Analytics</h4>
-
-      <div class="flex items-center gap-3 mb-2">
-        <button class="bg-[#f0f9ff] text-[#3b82f6] px-4 py-1 rounded-full text-xs font-semibold">All</button>
-        <button class="text-gray-500 hover:text-gray-700 px-4 py-1 text-xs font-semibold">Tenants</button>
-        <button class="text-gray-500 hover:text-gray-700 px-4 py-1 text-xs font-semibold">Landlords</button>
-        <button class="text-gray-500 hover:text-gray-700 px-4 py-1 text-xs font-semibold">Vendors</button>
-        <button class="text-gray-500 hover:text-gray-700 px-4 py-1 text-xs font-semibold">Support</button>
+  <div class="orville-insights__row orville-insights__row--2">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <h4 class="orville-insights-card__title">Contact Status Analytics</h4>
       </div>
 
-      <div class="flex items-center gap-10">
-        <div class="flex-1 flex justify-center">
+      <div class="orville-tabs">
+        <button type="button" class="orville-tabs__btn is-active">All</button>
+        <button type="button" class="orville-tabs__btn">Tenants</button>
+        <button type="button" class="orville-tabs__btn">Landlords</button>
+        <button type="button" class="orville-tabs__btn">Vendors</button>
+        <button type="button" class="orville-tabs__btn">Support</button>
+      </div>
+
+      <div class="orville-contact-body">
+        <div class="orville-contact-chart">
           <apx-chart [series]="contactStatusDonutOptions.series" [chart]="contactStatusDonutOptions.chart"
             [labels]="contactStatusDonutOptions.labels" [colors]="contactStatusDonutOptions.colors"
-            [dataLabels]="{ enabled: false }" [plotOptions]="contactStatusDonutOptions.plotOptions"
-            [stroke]="contactStatusDonutOptions.stroke"></apx-chart>
-        </div>
-        <div class="flex-1 flex flex-col gap-6">
-          <div class="bg-[#f8fafc] p-3 rounded-lg flex items-center justify-between border border-gray-100">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#ccfbf1] flex items-center justify-center text-[#14b8a6]">
-                <i class="ri-user-line"></i>
-              </div>
-              <span class="text-sm text-gray-500 font-medium">Active</span>
-            </div>
-            <strong class="text-xl text-gray-800">5,164</strong>
-          </div>
-          <div class="bg-[#f8fafc] p-3 rounded-lg flex items-center justify-between border border-gray-100">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#ffedd5] flex items-center justify-center text-[#f97316]">
-                <i class="ri-user-unfollow-line"></i>
-              </div>
-              <span class="text-sm text-gray-500 font-medium">Inactive</span>
-            </div>
-            <strong class="text-xl text-gray-800">3</strong>
+            [dataLabels]="contactStatusDonutOptions.dataLabels" [plotOptions]="contactStatusDonutOptions.plotOptions"
+            [stroke]="contactStatusDonutOptions.stroke" [legend]="contactStatusDonutOptions.legend"></apx-chart>
+          <div class="orville-contact-legend">
+            <span><span class="orville-contact-legend__dot orville-contact-legend__dot--ok"></span>Active</span>
+            <span><span class="orville-contact-legend__dot orville-contact-legend__dot--warn"></span>Inactive</span>
           </div>
         </div>
+        <div class="orville-contact-tiles">
+          <div class="orville-contact-tile">
+            <div class="orville-contact-tile__icon">
+              <img src="assets/images/insights/user-check.svg" alt="" width="30" height="30">
+            </div>
+            <div>
+              <p class="orville-contact-tile__label">Active</p>
+              <p class="orville-contact-tile__val">5,164</p>
+            </div>
+          </div>
+          <div class="orville-contact-tile">
+            <div class="orville-contact-tile__icon">
+              <img src="assets/images/insights/user-x.svg" alt="" width="30" height="30">
+            </div>
+            <div>
+              <p class="orville-contact-tile__label">Inactive</p>
+              <p class="orville-contact-tile__val">3</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
 
-    <div
-      class="w-[600px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative overflow-hidden">
-      <div class="absolute top-0 right-0 p-4">
-        <div
-          class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-          O</div>
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <h4 class="orville-insights-card__title">Top Landlords</h4>
       </div>
-      <h4 class="text-xs text-gray-500 font-bold mb-1">Top Landlords</h4>
-      <h2 class="text-2xl font-bold text-gray-800 mb-1">AED 28.5M</h2>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Total units in the top 1</p>
-
-      <div class="-ml-2">
-        <apx-chart [series]="topLandlordsOptions.series" [chart]="topLandlordsOptions.chart"
-          [colors]="topLandlordsOptions.colors" [plotOptions]="topLandlordsOptions.plotOptions"
-          [xaxis]="topLandlordsOptions.xaxis"></apx-chart>
+      <div class="orville-landlords-sum">
+        <div class="orville-landlords-sum__val">AED 28.5M</div>
+        <div class="orville-landlords-sum__sub">Total units in the top 1</div>
       </div>
-    </div>
+      <div class="orville-landlords-bars">
+        <div class="orville-landlords-col">
+          <span class="orville-landlords-col__val">2,982</span>
+          <span class="orville-landlords-col__bar orville-landlords-col__bar--fill"></span>
+          <span class="orville-landlords-col__label">Orville Real Estate</span>
+        </div>
+        <div class="orville-landlords-col" *ngFor="let _ of landlordPlaceholders">
+          <span class="orville-landlords-col__bar orville-landlords-col__bar--empty"></span>
+          <span class="orville-landlords-col__label orville-landlords-col__label--ghost">Orville Real Estate</span>
+        </div>
+      </div>
+    </article>
   </div>
 
-  <!-- Row 4 Header -->
-  <div class="mb-4 mt-8">
-    <h2 class="text-lg font-bold text-gray-800">Lease Highlights</h2>
-    <p class="text-gray-500 text-sm">Track total lease values and understand monthly trends at a glance.</p>
-  </div>
-
-  <!-- Row 4: 5 Lease Highlights Cards -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <!-- Current -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+  <section class="orville-insights-card orville-insights-wrap">
+    <div class="orville-insights-card__head">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">24,106</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total current</span>
-        </div>
-        <h4 class="text-[10px] font-bold text-gray-800">23,489 last year</h4>
-        <p class="text-[9px] text-gray-400">New leases per month (calendar year)</p>
-      </div>
-      <div class="mt-4">
-        <apx-chart [series]="leaseCurrentOptions.series" [chart]="leaseCurrentOptions.chart"
-          [colors]="leaseCurrentOptions.colors" [plotOptions]="leaseCurrentOptions.plotOptions"></apx-chart>
+        <h2 class="orville-insights-card__title">Lease Highlights</h2>
+        <p class="orville-insights-card__sub">Track total lease values and understand monthly trends at a glance.</p>
       </div>
     </div>
 
-    <!-- Active -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+  <div class="orville-hl-grid">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">2,330</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Active</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">24,106</span>
+          <span class="orville-hl__unit">Total current</span>
         </div>
-        <h4 class="text-[10px] font-bold text-gray-800">2,331 last year</h4>
-        <p class="text-[9px] text-gray-400">Active leases per month (calendar year)</p>
+        <h4 class="orville-hl__name">23,489 last year</h4>
+        <p class="orville-hl__sub">New leases per month (calendar year)</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart">
+        <div class="orville-hl__bars orville-hl__bars--teal">
+          <div class="orville-hl__bar-track" *ngFor="let h of leaseYtdBars">
+            <span class="orville-hl__bar-fill" [style.height.%]="h"></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="orville-hl">
+      <div>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">2,330</span>
+          <span class="orville-hl__unit">Total Active</span>
+        </div>
+        <h4 class="orville-hl__name">2,331 last year</h4>
+        <p class="orville-hl__sub">Active leases per month (calendar year)</p>
+      </div>
+      <div class="orville-hl__chart orville-hl__chart--line">
         <apx-chart [series]="leaseActiveOptions.series" [chart]="leaseActiveOptions.chart"
-          [colors]="leaseActiveOptions.colors" [stroke]="leaseActiveOptions.stroke"></apx-chart>
+          [colors]="leaseActiveOptions.colors" [stroke]="leaseActiveOptions.stroke"
+          [dataLabels]="leaseActiveOptions.dataLabels" [legend]="leaseActiveOptions.legend"
+          [grid]="leaseActiveOptions.grid" [xaxis]="leaseActiveOptions.xaxis"
+          [yaxis]="leaseActiveOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Completed -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">11,269</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Completed</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">11,269</span>
+          <span class="orville-hl__unit">Total Completed</span>
         </div>
-        <h4 class="text-[10px] font-bold text-gray-800">21,178 last year</h4>
-        <p class="text-[9px] text-gray-400">Rooms created per month (calendar year)</p>
+        <h4 class="orville-hl__name">21,178 last year</h4>
+        <p class="orville-hl__sub">Completed leases per month (calendar year)</p>
       </div>
-      <div class="mt-4">
-        <apx-chart [series]="leaseCompletedOptions.series" [chart]="leaseCompletedOptions.chart"
-          [colors]="leaseCompletedOptions.colors" [plotOptions]="leaseCompletedOptions.plotOptions"></apx-chart>
+      <div class="orville-hl__chart">
+        <div class="orville-hl__bars orville-hl__bars--purple">
+          <div class="orville-hl__bar-track" *ngFor="let h of leaseYtdBars">
+            <span class="orville-hl__bar-fill" [style.height.%]="h"></span>
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Renewed -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">17,161</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Renewed</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">17,161</span>
+          <span class="orville-hl__unit">Total Renewed</span>
         </div>
-        <h4 class="text-[10px] font-bold text-gray-800">9,424 last year</h4>
-        <p class="text-[9px] text-gray-400">New leases per month (calendar year)</p>
+        <h4 class="orville-hl__name">9,424 last year</h4>
+        <p class="orville-hl__sub">Renewed leases per month (calendar year)</p>
       </div>
-      <div class="mt-4">
-        <apx-chart [series]="leaseRenewedOptions.series" [chart]="leaseRenewedOptions.chart"
-          [colors]="leaseRenewedOptions.colors" [plotOptions]="leaseRenewedOptions.plotOptions"></apx-chart>
+      <div class="orville-hl__chart">
+        <div class="orville-hl__bars orville-hl__bars--blue">
+          <div class="orville-hl__bar-track" *ngFor="let h of leaseYtdBars">
+            <span class="orville-hl__bar-fill" [style.height.%]="h"></span>
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Draft -->
-    <div
-      class="w-[280px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">465</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Draft</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">465</span>
+          <span class="orville-hl__unit">Total Draft</span>
         </div>
-        <h4 class="text-[10px] font-bold text-gray-800">590 last year</h4>
-        <p class="text-[9px] text-gray-400">New leases per month (calendar year)</p>
+        <h4 class="orville-hl__name">598 last year</h4>
+        <p class="orville-hl__sub">Draft leases per month (calendar year)</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart orville-hl__chart--line">
         <apx-chart [series]="leaseDraftOptions.series" [chart]="leaseDraftOptions.chart"
-          [colors]="leaseDraftOptions.colors" [stroke]="leaseDraftOptions.stroke"></apx-chart>
+          [colors]="leaseDraftOptions.colors" [stroke]="leaseDraftOptions.stroke"
+          [dataLabels]="leaseDraftOptions.dataLabels" [legend]="leaseDraftOptions.legend"
+          [grid]="leaseDraftOptions.grid" [xaxis]="leaseDraftOptions.xaxis"
+          [yaxis]="leaseDraftOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
   </div>
+  </section>
 
-  <!-- Row 5: Income & Expense -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[700px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-      <div class="flex items-center justify-between border-b pb-4 mb-4">
+  <div class="orville-insights__row orville-insights__row--2">
+    <article class="orville-insights-card">
+      <div class="orville-insights-card__head">
         <div>
-          <h4 class="text-sm font-bold text-gray-800">Income Overview</h4>
-          <p class="text-[10px] text-gray-400">Track paid and outstanding totals across invoices and bills.</p>
+          <h4 class="orville-insights-card__title">Income Overview</h4>
+          <p class="orville-insights-card__sub">Track paid and outstanding totals across invoices and bills.</p>
         </div>
-        <div class="bg-gray-100 rounded text-xs p-1 flex font-semibold">
-          <button class="bg-white shadow-sm rounded px-3 py-1">Invoice</button>
-          <button class="px-3 py-1 text-gray-500">Bills</button>
+        <div class="orville-seg">
+          <button type="button" class="orville-seg__btn is-active">Invoice</button>
+          <button type="button" class="orville-seg__btn">Bills</button>
         </div>
       </div>
-      <div class="flex">
-        <div class="flex-1 -ml-4">
+      <div class="orville-income">
+        <div class="orville-income__chart">
           <apx-chart [series]="incomeOverviewOptions.series" [chart]="incomeOverviewOptions.chart"
             [colors]="incomeOverviewOptions.colors" [plotOptions]="incomeOverviewOptions.plotOptions"
-            [xaxis]="incomeOverviewOptions.xaxis"></apx-chart>
+            [dataLabels]="incomeOverviewOptions.dataLabels" [legend]="incomeOverviewOptions.legend"
+            [grid]="incomeOverviewOptions.grid" [xaxis]="incomeOverviewOptions.xaxis"
+            [yaxis]="incomeOverviewOptions.yaxis"></apx-chart>
         </div>
-        <div class="w-1/3 flex flex-col justify-center gap-6">
-          <div class="text-center">
-            <div class="text-xl font-bold text-gray-800">95.8%</div>
-            <div class="text-[10px] text-gray-400">Percentage of total paid</div>
+        <div class="orville-income__stats">
+          <div class="orville-income__pct">
+            <div class="orville-income__pct-val">95.8 %</div>
+            <div class="orville-insights-card__sub">Percentage of total paid</div>
           </div>
-          <div class="bg-blue-50 text-center py-4 rounded-lg border border-blue-100">
-            <div class="text-xs text-blue-500 font-bold mb-1">PAID</div>
-            <div class="text-lg font-bold text-gray-800">AED 47,987,089</div>
-          </div>
-          <div class="text-center">
-            <div class="text-xs text-red-500 font-bold mb-1">Outstanding</div>
-            <div class="text-lg font-bold text-gray-800">AED 753,047</div>
+          <div class="orville-income__tiles">
+            <div class="orville-income-tile">
+              <span class="orville-income-tile__badge orville-income-tile__badge--ok">Paid</span>
+              <div class="orville-income-tile__val">AED 47,987,089</div>
+            </div>
+            <div class="orville-income-tile">
+              <span class="orville-income-tile__badge orville-income-tile__badge--err">Outstanding</span>
+              <div class="orville-income-tile__val">AED 753,047</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[700px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-      <h4 class="text-sm font-bold text-gray-800 border-b pb-4 mb-4">Expense by Category</h4>
-      <div class="flex justify-center mt-8">
-        <apx-chart [series]="expensePieOptions.series" [chart]="expensePieOptions.chart"
-          [labels]="expensePieOptions.labels" [colors]="expensePieOptions.colors" [fill]="expensePieOptions.fill"
-          [legend]="expensePieOptions.legend" [stroke]="expensePieOptions.stroke"></apx-chart>
+    <article class="orville-insights-card">
+      <h4 class="orville-insights-card__title orville-insights-card__head">Expense by Category</h4>
+      <div class="orville-expense">
+        <div class="orville-expense__chart">
+          <apx-chart [series]="expensePieOptions.series" [chart]="expensePieOptions.chart"
+            [labels]="expensePieOptions.labels" [colors]="expensePieOptions.colors" [fill]="expensePieOptions.fill"
+            [legend]="expensePieOptions.legend" [stroke]="expensePieOptions.stroke"
+            [dataLabels]="expensePieOptions.dataLabels" [yaxis]="expensePieOptions.yaxis"
+            [plotOptions]="expensePieOptions.plotOptions"></apx-chart>
+        </div>
+        <div class="orville-expense__legend">
+          <div class="orville-expense__item" *ngFor="let item of expenseLegend">
+            <span class="orville-expense__dot" [style.background]="item.color"></span>
+            {{ item.label }}
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
   </div>
 
-  <!-- Row 6 Header -->
-  <div class="mb-4 mt-8">
-    <h2 class="text-lg font-bold text-gray-800">Work Order Insights</h2>
-    <p class="text-gray-500 text-sm">Track work order activity, completion status, and pending tasks in one overview.
-    </p>
-  </div>
-
-  <!-- Row 6: Work Order Insights Cards -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <!-- Total Order -->
-    <div
-      class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+  <section class="orville-insights-card orville-insights__section--spaced">
+    <div class="orville-insights-card__head">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">91</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Order</span>
-        </div>
-        <h4 class="text-[10px] font-bold text-gray-800">845 Last year</h4>
-        <p class="text-[9px] text-gray-400">Created during the current year</p>
+        <h2 class="orville-insights-card__title">Work Order Insights</h2>
+        <p class="orville-insights-card__sub">Track work order activity, completion status, and pending tasks in one overview.</p>
       </div>
-      <div class="mt-4">
+    </div>
+    <div class="orville-insights__row orville-insights__row--3" style="margin-bottom:0">
+    <article class="orville-hl">
+      <div>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">91</span>
+          <span class="orville-hl__unit">Total Order</span>
+        </div>
+        <h4 class="orville-hl__name">865 Last year</h4>
+        <p class="orville-hl__sub">Created during the current year</p>
+      </div>
+      <div class="orville-hl__chart">
         <apx-chart [series]="woTotalOrderOptions.series" [chart]="woTotalOrderOptions.chart"
           [colors]="woTotalOrderOptions.colors" [plotOptions]="woTotalOrderOptions.plotOptions"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- New Order -->
-    <div
-      class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">20</span>
-          <span class="text-[10px] text-gray-500 font-semibold">New Order</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">20</span>
+          <span class="orville-hl__unit">New Order</span>
         </div>
-        <p class="text-[9px] text-gray-400 mt-2">Created during the current year</p>
+        <p class="orville-hl__sub mt-2">Created during the current year</p>
       </div>
-      <div class="mt-8">
+      <div class="orville-hl__chart">
         <apx-chart [series]="woNewOrderOptions.series" [chart]="woNewOrderOptions.chart"
           [colors]="woNewOrderOptions.colors" [stroke]="woNewOrderOptions.stroke"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <!-- Total Resolved -->
-    <div
-      class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col justify-between">
+    <article class="orville-hl">
       <div>
-        <div class="flex items-baseline gap-1 mb-1">
-          <span class="text-xl font-bold text-gray-800">87</span>
-          <span class="text-[10px] text-gray-500 font-semibold">Total Resolved</span>
+        <div class="orville-hl__value-row">
+          <span class="orville-hl__value">87</span>
+          <span class="orville-hl__unit">Total Resolved</span>
         </div>
-        <h4 class="text-[10px] font-bold text-gray-800">845 Last year</h4>
-        <p class="text-[9px] text-gray-400">Resolved during the current year</p>
+        <h4 class="orville-hl__name">845 last year</h4>
+        <p class="orville-hl__sub">Resolved during the current year</p>
       </div>
-      <div class="mt-4">
+      <div class="orville-hl__chart">
         <apx-chart [series]="woTotalResolvedOptions.series" [chart]="woTotalResolvedOptions.chart"
           [colors]="woTotalResolvedOptions.colors" [plotOptions]="woTotalResolvedOptions.plotOptions"></apx-chart>
       </div>
+    </article>
     </div>
-  </div>
+  </section>
 
-  <!-- Row 7: Request Analysis & Status Donuts -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Request's Analysis</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Request status breakdown by total.</p>
-      <div class="flex justify-center">
+  <div class="orville-insights__row orville-insights__row--3">
+    <article class="orville-insights-card orville-wo-donut">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Request's Analysis</h4>
+          <p class="orville-insights-card__sub">Request status breakdown by total.</p>
+        </div>
+      </div>
+      <div class="orville-wo-donut__chart">
         <apx-chart [series]="workOrderRequestsOptions.series" [chart]="workOrderRequestsOptions.chart"
           [labels]="workOrderRequestsOptions.labels" [colors]="workOrderRequestsOptions.colors"
-          [plotOptions]="workOrderRequestsOptions.plotOptions" [stroke]="workOrderRequestsOptions.stroke"></apx-chart>
+          [plotOptions]="workOrderRequestsOptions.plotOptions" [stroke]="workOrderRequestsOptions.stroke"
+          [dataLabels]="workOrderRequestsOptions.dataLabels" [legend]="workOrderRequestsOptions.legend"></apx-chart>
       </div>
-      <div class="flex justify-center gap-4 mt-4 text-xs font-semibold text-gray-500">
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> Open</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span> Closed</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> Other</div>
+      <div class="orville-chip-legend">
+        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Open</span>
+        <span><i class="orville-chip-legend__dot" style="background:#27865B"></i>Closed</span>
+        <span><i class="orville-chip-legend__dot" style="background:#D08A28"></i>Other</span>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Work Order's Status</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Compare monthly work order progress by status.</p>
-      <div class="flex justify-center">
+    <article class="orville-insights-card orville-wo-donut">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Work Order's Status</h4>
+          <p class="orville-insights-card__sub">Compare monthly work order progress by status.</p>
+        </div>
+      </div>
+      <div class="orville-wo-donut__chart">
         <apx-chart [series]="workOrderStatusOptions.series" [chart]="workOrderStatusOptions.chart"
-          [dataLabels]="{ enabled: false }" [labels]="workOrderStatusOptions.labels"
-          [colors]="workOrderStatusOptions.colors" [plotOptions]="workOrderStatusOptions.plotOptions"
-          [stroke]="workOrderStatusOptions.stroke"></apx-chart>
+          [labels]="workOrderStatusOptions.labels" [colors]="workOrderStatusOptions.colors"
+          [plotOptions]="workOrderStatusOptions.plotOptions" [stroke]="workOrderStatusOptions.stroke"
+          [dataLabels]="workOrderStatusOptions.dataLabels" [legend]="workOrderStatusOptions.legend"></apx-chart>
       </div>
-      <div class="flex justify-center gap-4 mt-4 text-xs font-semibold text-gray-500">
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> New</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> Resolved</div>
+      <div class="orville-chip-legend">
+        <span><i class="orville-chip-legend__dot" style="background:#3E6FA8"></i>New</span>
+        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Resolved</span>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Work Order Distribution by Maintenance Categories</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Track open work orders across maintenance categories.</p>
-      <div class="flex justify-center">
+    <article class="orville-insights-card orville-wo-donut">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Work Order Distribution by Maintenance Categories</h4>
+          <p class="orville-insights-card__sub">Track open work orders across maintenance categories.</p>
+        </div>
+      </div>
+      <div class="orville-wo-donut__chart orville-wo-donut__chart--sm">
         <apx-chart [series]="workOrderDistOptions.series" [chart]="workOrderDistOptions.chart"
-          [dataLabels]="{ enabled: false }" [labels]="workOrderDistOptions.labels"
-          [colors]="workOrderDistOptions.colors" [plotOptions]="workOrderDistOptions.plotOptions"
-          [stroke]="workOrderDistOptions.stroke"></apx-chart>
+          [labels]="workOrderDistOptions.labels" [colors]="workOrderDistOptions.colors"
+          [plotOptions]="workOrderDistOptions.plotOptions" [stroke]="workOrderDistOptions.stroke"
+          [dataLabels]="workOrderDistOptions.dataLabels" [legend]="workOrderDistOptions.legend"></apx-chart>
       </div>
-      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 text-[10px] font-semibold text-gray-500">
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> Electrical</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Doors & Locks</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span> Plumbing</div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#6366f1]"></span> Air Conditioner
-        </div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ec4899]"></span> Cleaning Issues
-        </div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8b5cf6]"></span> Joinery</div>
+      <div class="orville-chip-legend orville-chip-legend--grid">
+        <span><i class="orville-chip-legend__dot" style="background:#3E6FA8"></i>Electrical</span>
+        <span><i class="orville-chip-legend__dot" style="background:#6B8FBF"></i>Doors &amp; Locks</span>
+        <span><i class="orville-chip-legend__dot" style="background:#9BB3D1"></i>Plumbing</span>
+        <span><i class="orville-chip-legend__dot" style="background:#D08A28"></i>Air Conditioner</span>
+        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Cleaning Issues</span>
+        <span><i class="orville-chip-legend__dot" style="background:#27865B"></i>Joinery</span>
       </div>
-    </div>
+    </article>
   </div>
 
-  <!-- Row 8: Work Order Deep Dive -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Work Order Resolve Rate</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">View daily work order counts with hover details for each
-        data.</p>
-      <div class="mb-4">
-        <div class="text-2xl font-bold text-gray-800">85</div>
-        <div class="text-xs text-gray-500">Total work orders - Past 7 days</div>
+  <div class="orville-insights__row orville-insights__row--3">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Work Order Resolve Rate</h4>
+          <p class="orville-insights-card__sub">View daily work order counts with hover details for each date.</p>
+        </div>
       </div>
-      <div class="-ml-2">
+      <div class="orville-landlords-sum">
+        <div class="orville-landlords-sum__val">85</div>
+        <div class="orville-landlords-sum__sub">Total work orders · Past 7 days</div>
+      </div>
+      <div class="orville-wo-bar">
         <apx-chart [series]="woResolveRateOptions.series" [chart]="woResolveRateOptions.chart"
           [colors]="woResolveRateOptions.colors" [plotOptions]="woResolveRateOptions.plotOptions"
-          [xaxis]="woResolveRateOptions.xaxis"></apx-chart>
+          [dataLabels]="woResolveRateOptions.dataLabels" [legend]="woResolveRateOptions.legend"
+          [grid]="woResolveRateOptions.grid" [xaxis]="woResolveRateOptions.xaxis"
+          [yaxis]="woResolveRateOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Purchase Order Highlights</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Monitor quotation trends, resolve rates, and vendor
-        responses at a glance.</p>
-
-      <div class="grid grid-cols-2 gap-4 mt-6">
-        <div
-          class="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center flex flex-col items-center justify-center h-24">
-          <div class="text-2xl font-bold text-gray-800">26%</div>
-          <div class="text-[10px] text-gray-500 font-semibold mt-1">Resolve rate</div>
-        </div>
-        <div
-          class="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center flex flex-col items-center justify-center h-24">
-          <div class="text-2xl font-bold text-gray-800">89</div>
-          <div class="text-[10px] text-gray-500 font-semibold mt-1">New Request For Quotation</div>
-        </div>
-        <div
-          class="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center flex flex-col items-center justify-center h-24">
-          <div class="text-2xl font-bold text-gray-800">347</div>
-          <div class="text-[10px] text-gray-500 font-semibold mt-1">Vendor's Responses</div>
-        </div>
-        <div
-          class="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center flex flex-col items-center justify-center h-24">
-          <div class="text-2xl font-bold text-gray-800">17</div>
-          <div class="text-[10px] text-gray-500 font-semibold mt-1">Rejected</div>
+    <article class="orville-insights-card">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Purchase Order Highlights</h4>
+          <p class="orville-insights-card__sub">Monitor quotation trends, resolve rates, and vendor responses at a glance.</p>
         </div>
       </div>
-    </div>
-
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Unit Health Monitor</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Compare work order volume across the top 5 units.</p>
-      <div class="mb-4">
-        <div class="text-2xl font-bold text-gray-800">85</div>
-        <div class="text-xs text-gray-500">Total work orders - Past 7 days</div>
+      <div class="orville-po-grid">
+        <div class="orville-po-tile">
+          <div class="orville-po-tile__val">26%</div>
+          <div class="orville-po-tile__label">Resolve rate</div>
+        </div>
+        <div class="orville-po-tile">
+          <div class="orville-po-tile__val">89</div>
+          <div class="orville-po-tile__label">New Request for Quotation</div>
+        </div>
+        <div class="orville-po-tile">
+          <div class="orville-po-tile__val">347</div>
+          <div class="orville-po-tile__label">Vendor's Responses</div>
+        </div>
+        <div class="orville-po-tile">
+          <div class="orville-po-tile__val">17</div>
+          <div class="orville-po-tile__label">Rejected</div>
+        </div>
       </div>
-      <div class="-ml-2">
+    </article>
+
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Unit Health Monitor</h4>
+          <p class="orville-insights-card__sub">Compare work order volume across the top 5 units.</p>
+        </div>
+      </div>
+      <div class="orville-landlords-sum">
+        <div class="orville-landlords-sum__val">85</div>
+        <div class="orville-landlords-sum__sub">Total work orders · Past 7 days</div>
+      </div>
+      <div class="orville-wo-bar">
         <apx-chart [series]="unitHealthOptions.series" [chart]="unitHealthOptions.chart"
           [colors]="unitHealthOptions.colors" [plotOptions]="unitHealthOptions.plotOptions"
-          [xaxis]="unitHealthOptions.xaxis"></apx-chart>
+          [dataLabels]="unitHealthOptions.dataLabels" [legend]="unitHealthOptions.legend"
+          [grid]="unitHealthOptions.grid" [xaxis]="unitHealthOptions.xaxis"
+          [yaxis]="unitHealthOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
   </div>
 
-  <!-- Row 9: Priority & Tickets Graph -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[900px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Work Orders based on Priority</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Priority volume with current mix %.</p>
-
-      <div class="flex justify-between items-start mb-2">
-        <div>
-          <h5 class="text-sm font-bold text-gray-800">Distribution</h5>
-          <p class="text-xs text-gray-500">Month wise stacked count breakdown.</p>
-        </div>
-        <div class="text-right flex items-center gap-4">
-          <div>
-            <h5 class="text-sm font-bold text-gray-800">Report</h5>
-            <p class="text-xs text-gray-500">Current mix - 43.8% of total</p>
-          </div>
-          <div class="flex gap-2">
-            <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 flex items-center gap-3">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold">Low</div>
-                <div class="text-lg font-bold text-gray-800">15.4%</div>
-              </div>
-              <div class="w-8 h-8 rounded bg-blue-400 text-white flex items-center justify-center"><i
-                  class="ri-arrow-down-line"></i></div>
-            </div>
-            <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 flex items-center gap-3">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold">Medium</div>
-                <div class="text-lg font-bold text-gray-800">3.2%</div>
-              </div>
-              <div class="w-8 h-8 rounded bg-blue-600 text-white flex items-center justify-center"><i
-                  class="ri-subtract-line"></i></div>
-            </div>
-            <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 flex items-center gap-3">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold">High</div>
-                <div class="text-lg font-bold text-gray-800">22.2%</div>
-              </div>
-              <div class="w-8 h-8 rounded bg-blue-500 text-white flex items-center justify-center"><i
-                  class="ri-arrow-up-line"></i></div>
-            </div>
-            <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 flex items-center gap-3">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold">Critical</div>
-                <div class="text-lg font-bold text-gray-800">0%</div>
-              </div>
-              <div class="w-8 h-8 rounded bg-blue-500 text-white flex items-center justify-center"><i
-                  class="ri-error-warning-line"></i></div>
-            </div>
-          </div>
-        </div>
+  <article class="orville-insights-card orville-priority">
+    <div class="orville-insights-card__head">
+      <div>
+        <h4 class="orville-insights-card__title">Work Orders based on Priority</h4>
+        <p class="orville-insights-card__sub">Priority volume with current mix %.</p>
       </div>
-
-      <div class="-ml-2 mt-4">
+    </div>
+    <div class="orville-priority__body">
+      <div class="orville-priority__dist">
+        <div class="orville-priority__kicker">
+          <h5 class="orville-priority__h">Distribution</h5>
+          <p class="orville-insights-card__sub">Month-wise stacked count breakdown.</p>
+        </div>
         <apx-chart [series]="woPriorityOptions.series" [chart]="woPriorityOptions.chart"
           [colors]="woPriorityOptions.colors" [plotOptions]="woPriorityOptions.plotOptions"
-          [xaxis]="woPriorityOptions.xaxis"></apx-chart>
+          [dataLabels]="woPriorityOptions.dataLabels" [legend]="woPriorityOptions.legend"
+          [grid]="woPriorityOptions.grid" [xaxis]="woPriorityOptions.xaxis"
+          [yaxis]="woPriorityOptions.yaxis"></apx-chart>
       </div>
-    </div>
-
-    <div class="w-[450px] flex-shrink-0 flex flex-col gap-6">
-      <!-- Status Wise Tickets -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex-1">
-        <h4 class="text-sm font-bold text-gray-800 mb-1">Status Wise Tickets Graph</h4>
-        <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Request status breakdown by total.</p>
-        <div class="flex items-center justify-between">
-          <div class="flex-1 flex justify-center -ml-4">
-            <apx-chart [series]="statusWiseTicketsOptions.series" [chart]="statusWiseTicketsOptions.chart"
-              [dataLabels]="{ enabled: false }" [labels]="statusWiseTicketsOptions.labels"
-              [colors]="statusWiseTicketsOptions.colors" [plotOptions]="statusWiseTicketsOptions.plotOptions"
-              [stroke]="statusWiseTicketsOptions.stroke"></apx-chart>
-          </div>
-          <div class="flex flex-col gap-3">
-            <div class="bg-gray-50 px-4 py-3 rounded-lg border border-gray-100 flex items-center gap-6">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold uppercase">Open</div>
-                <div class="text-lg font-bold text-gray-800">60%</div>
-              </div>
-              <i class="ri-flag-2-line text-blue-500 bg-blue-50 p-2 rounded"></i>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 rounded-lg border border-gray-100 flex items-center gap-6">
-              <div>
-                <div class="text-[10px] text-gray-500 font-semibold uppercase">Closed</div>
-                <div class="text-lg font-bold text-gray-800">37.1%</div>
-              </div>
-              <i class="ri-check-line text-blue-500 bg-blue-50 p-2 rounded"></i>
-            </div>
-          </div>
+      <div class="orville-priority__report">
+        <div class="orville-priority__kicker">
+          <h5 class="orville-priority__h">Report</h5>
+          <p class="orville-insights-card__sub">Current mix — 40.8% of total</p>
         </div>
-      </div>
-
-      <!-- Department Ticket Assignments -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-        <h4 class="text-sm font-bold text-gray-800 mb-1">Department Ticket Assignments</h4>
-        <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Month wise stacked count breakdown.</p>
-        <div class="flex items-center justify-between">
-          <div class="w-24 h-24 rounded-full border-8 border-teal-400 flex flex-col items-center justify-center">
-            <span class="text-[9px] text-gray-500 font-semibold">Total Ticket</span>
-            <span class="text-lg font-bold text-gray-800">58</span>
+        <div class="orville-priority__tiles">
+          <div class="orville-priority__tile">
+            <div>
+              <div class="orville-priority__tile-label">Low</div>
+              <div class="orville-priority__tile-val">15.4%</div>
+            </div>
+            <span class="orville-priority__icon"><i class="ri-arrow-down-line"></i></span>
           </div>
-          <div class="flex-1 ml-6">
-            <div class="flex justify-between items-end mb-2">
-              <div class="text-xs text-gray-500 font-semibold mb-1">Departments<br><span
-                  class="text-lg font-bold text-gray-800">3</span></div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Manage groups</div>
+          <div class="orville-priority__tile">
+            <div>
+              <div class="orville-priority__tile-label">Medium</div>
+              <div class="orville-priority__tile-val">3.2%</div>
             </div>
-            <div class="flex items-center justify-between text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded">
-              <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-teal-400 rounded-full"></span> Accounting
-                Group</div>
-              <span>12 - 21%</span>
+            <span class="orville-priority__icon"><i class="ri-subtract-line"></i></span>
+          </div>
+          <div class="orville-priority__tile">
+            <div>
+              <div class="orville-priority__tile-label">High</div>
+              <div class="orville-priority__tile-val">22.2%</div>
             </div>
+            <span class="orville-priority__icon"><i class="ri-arrow-up-line"></i></span>
+          </div>
+          <div class="orville-priority__tile">
+            <div>
+              <div class="orville-priority__tile-label">Critical</div>
+              <div class="orville-priority__tile-val">0%</div>
+            </div>
+            <span class="orville-priority__icon"><i class="ri-error-warning-line"></i></span>
           </div>
         </div>
       </div>
     </div>
+  </article>
+
+  <div class="orville-insights__row orville-insights__row--2">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <h4 class="orville-insights-card__title">Department Ticket Assignments</h4>
+      </div>
+      <div class="orville-dept">
+        <div class="orville-dept__chart">
+          <apx-chart [series]="deptTicketOptions.series" [chart]="deptTicketOptions.chart"
+            [labels]="deptTicketOptions.labels" [colors]="deptTicketOptions.colors"
+            [plotOptions]="deptTicketOptions.plotOptions" [stroke]="deptTicketOptions.stroke"
+            [dataLabels]="deptTicketOptions.dataLabels" [legend]="deptTicketOptions.legend"></apx-chart>
+        </div>
+        <div class="orville-dept__side">
+          <div class="orville-dept__head">
+            <div>
+              <div class="orville-dept__k">Departments</div>
+              <div class="orville-dept__n">3</div>
+            </div>
+            <span class="orville-dept__link">Manage groups</span>
+          </div>
+          <div class="orville-dept__row" *ngFor="let g of deptGroups">
+            <span class="orville-dept__dot" [style.background]="g.color"></span>
+            <div class="orville-dept__meta">
+              <div class="orville-dept__row-top">
+                <span>{{ g.label }}</span>
+                <span>{{ g.meta }}</span>
+              </div>
+              <div class="orville-dept__track">
+                <span class="orville-dept__fill" [style.width]="g.width" [style.background]="g.color"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="orville-insights-card">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Status Wise Tickets Graph</h4>
+          <p class="orville-insights-card__sub">Request status breakdown by total.</p>
+        </div>
+      </div>
+      <div class="orville-status">
+        <div class="orville-status__chart">
+          <apx-chart [series]="statusWiseTicketsOptions.series" [chart]="statusWiseTicketsOptions.chart"
+            [labels]="statusWiseTicketsOptions.labels" [colors]="statusWiseTicketsOptions.colors"
+            [plotOptions]="statusWiseTicketsOptions.plotOptions" [stroke]="statusWiseTicketsOptions.stroke"
+            [dataLabels]="statusWiseTicketsOptions.dataLabels" [legend]="statusWiseTicketsOptions.legend"></apx-chart>
+          <div class="orville-chip-legend">
+            <span *ngFor="let item of statusLegend">
+              <i class="orville-chip-legend__dot" [style.background]="item.color"></i>{{ item.label }}
+            </span>
+          </div>
+        </div>
+        <div class="orville-status__tiles">
+          <div class="orville-status__tile">
+            <div>
+              <div class="orville-status__tile-label">open</div>
+              <div class="orville-status__tile-val">60%</div>
+            </div>
+            <span class="orville-contact-tile__icon"><i class="ri-flag-2-fill"></i></span>
+          </div>
+          <div class="orville-status__tile">
+            <div>
+              <div class="orville-status__tile-label">closed</div>
+              <div class="orville-status__tile-val">37.1%</div>
+            </div>
+            <span class="orville-contact-tile__icon"><i class="ri-flag-off-fill"></i></span>
+          </div>
+        </div>
+      </div>
+    </article>
   </div>
 
-  <!-- Row 10: Tickets Analysis -->
-  <div class="flex overflow-x-auto gap-3 mb-2 pb-4 custom-scrollbar">
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">New Tickets</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Last 30 days of new tickets with date-wise hover details.
-      </p>
-      <div class="mb-4">
-        <div class="text-2xl font-bold text-gray-800">215</div>
-        <div class="text-xs text-gray-500">Total new tickets - Past 7 days</div>
+  <div class="orville-insights__row orville-insights__row--3">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">New Tickets</h4>
+          <p class="orville-insights-card__sub">Last 30 days of new tickets with date-wise hover details.</p>
+        </div>
       </div>
-      <div class="-ml-4 -mr-2">
+      <div class="orville-landlords-sum">
+        <div class="orville-landlords-sum__val">215</div>
+        <div class="orville-landlords-sum__sub">Total new tickets · Past 7 days</div>
+      </div>
+      <div class="orville-axis-chart">
         <apx-chart [series]="newTicketsOptions.series" [chart]="newTicketsOptions.chart"
           [colors]="newTicketsOptions.colors" [plotOptions]="newTicketsOptions.plotOptions"
-          [xaxis]="newTicketsOptions.xaxis"></apx-chart>
+          [dataLabels]="newTicketsOptions.dataLabels" [legend]="newTicketsOptions.legend"
+          [grid]="newTicketsOptions.grid" [xaxis]="newTicketsOptions.xaxis"
+          [yaxis]="newTicketsOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Ticket Sources</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Ticket sources — share of total tickets.</p>
-      <div class="flex-1 flex flex-col items-center justify-center">
-        <div class="-mt-4">
+    <article class="orville-insights-card orville-insights-card--flush flex flex-col">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Ticket Sources</h4>
+          <p class="orville-insights-card__sub">Ticket sources — share of total tickets.</p>
+        </div>
+      </div>
+      <div class="orville-src">
+        <div class="orville-src__chart">
           <apx-chart [series]="ticketSourcesOptions.series" [chart]="ticketSourcesOptions.chart"
-            [colors]="ticketSourcesOptions.colors" [plotOptions]="ticketSourcesOptions.plotOptions"></apx-chart>
+            [colors]="ticketSourcesOptions.colors" [plotOptions]="ticketSourcesOptions.plotOptions"
+            [legend]="ticketSourcesOptions.legend" [dataLabels]="ticketSourcesOptions.dataLabels"
+            [stroke]="ticketSourcesOptions.stroke"></apx-chart>
         </div>
-        <div class="flex items-center justify-center gap-6 mt-2 w-full border-t pt-4">
-          <div class="text-center">
-            <div class="text-xs font-bold text-gray-700">Manual</div>
-            <div class="text-[10px] text-gray-500">1,209 tickets</div>
+        <div class="orville-src__legend">
+          <div class="orville-src__pill">
+            <span class="orville-legend__dot" style="background:#26264F"></span>
+            <div>
+              <div class="orville-src__name">Manual</div>
+              <div class="orville-src__count">1,209 tickets</div>
+            </div>
           </div>
-          <div class="text-center border-l border-r px-6">
-            <div class="text-xs font-bold text-gray-700">Email</div>
-            <div class="text-[10px] text-gray-500">347 tickets</div>
+          <div class="orville-src__pill">
+            <span class="orville-legend__dot" style="background:#3E6FA8"></span>
+            <div>
+              <div class="orville-src__name">Email</div>
+              <div class="orville-src__count">367 tickets</div>
+            </div>
           </div>
-          <div class="text-center">
-            <div class="text-xs font-bold text-gray-700">Contact form</div>
-            <div class="text-[10px] text-gray-500">4 tickets</div>
+          <div class="orville-src__pill">
+            <span class="orville-legend__dot" style="background:#9BB3D1"></span>
+            <div>
+              <div class="orville-src__name">Contact form</div>
+              <div class="orville-src__count">4 tickets</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <h4 class="text-sm font-bold text-gray-800 mb-1">Units Published By Month</h4>
-      <p class="text-[10px] text-gray-400 border-b pb-4 mb-4">Newly published units by month with count hover details.
-      </p>
-      <div class="mt-8 -ml-4 -mr-2">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Units Published By Month</h4>
+          <p class="orville-insights-card__sub">Newly published units by month with count hover details.</p>
+        </div>
+      </div>
+      <div class="orville-axis-chart">
         <apx-chart [series]="unitsPublishedOptions.series" [chart]="unitsPublishedOptions.chart"
           [colors]="unitsPublishedOptions.colors" [plotOptions]="unitsPublishedOptions.plotOptions"
-          [xaxis]="unitsPublishedOptions.xaxis"></apx-chart>
+          [dataLabels]="unitsPublishedOptions.dataLabels" [legend]="unitsPublishedOptions.legend"
+          [grid]="unitsPublishedOptions.grid" [xaxis]="unitsPublishedOptions.xaxis"
+          [yaxis]="unitsPublishedOptions.yaxis"></apx-chart>
       </div>
-    </div>
+    </article>
   </div>
 
-  <!-- Row 11: Happiness Meter -->
-  <div class="mb-2 rounded-xl overflow-hidden shadow-sm relative text-white min-w-[900px]"
-    style="background: linear-gradient(90deg, #1e3a8a 0%, #312e81 50%, #4c1d95 100%);">
-    <div class="p-4">
-      <div class="flex items-center justify-between mb-4">
-        <h4 class="text-lg font-bold">Happiness Meter</h4>
-        <div class="flex items-center gap-2 text-sm font-medium opacity-80">
-          <i class="ri-team-line"></i> Total Participants: 17
-        </div>
-      </div>
-
-      <div class="flex items-center justify-between gap-3 pb-2">
-        <!-- Happy -->
-        <div
-          class="flex-1 bg-white/10 rounded-lg p-3 border border-white/20 flex items-center justify-between backdrop-blur-sm">
-          <div>
-            <div class="text-xs opacity-80 uppercase tracking-wider mb-1">Happy</div>
-            <div class="text-2xl font-bold">52.94%</div>
-            <div class="text-xs bg-white/20 px-2 py-0.5 rounded-full inline-block mt-2">9 Tenants</div>
-          </div>
-          <i class="ri-emotion-happy-line text-5xl opacity-80 text-teal-300"></i>
-        </div>
-
-        <!-- Neutral -->
-        <div
-          class="flex-1 bg-white/10 rounded-lg p-3 border border-white/20 flex items-center justify-between backdrop-blur-sm">
-          <div>
-            <div class="text-xs opacity-80 uppercase tracking-wider mb-1">Neutral</div>
-            <div class="text-2xl font-bold">5.88%</div>
-            <div class="text-xs bg-white/20 px-2 py-0.5 rounded-full inline-block mt-2">1 Tenant</div>
-          </div>
-          <i class="ri-emotion-normal-line text-5xl opacity-80 text-orange-300"></i>
-        </div>
-
-        <!-- Unhappy -->
-        <div
-          class="flex-1 bg-white/10 rounded-lg p-3 border border-white/20 flex items-center justify-between backdrop-blur-sm">
-          <div>
-            <div class="text-xs opacity-80 uppercase tracking-wider mb-1">Unhappy</div>
-            <div class="text-2xl font-bold">29.41%</div>
-            <div class="text-xs bg-white/20 px-2 py-0.5 rounded-full inline-block mt-2">5 Tenants</div>
-          </div>
-          <i class="ri-emotion-unhappy-line text-5xl opacity-80 text-red-300"></i>
-        </div>
+  <section class="orville-happiness">
+    <span class="orville-happiness__blob orville-happiness__blob--a"></span>
+    <span class="orville-happiness__blob orville-happiness__blob--b"></span>
+    <span class="orville-happiness__blob orville-happiness__blob--c"></span>
+    <div class="orville-happiness__head">
+      <h4 class="orville-happiness__title">Happiness Meter</h4>
+      <div class="orville-happiness__meta">
+        <i class="ri-user-6-line"></i>
+        <span>Total Participants: 17</span>
       </div>
     </div>
-    <!-- Decorative circles -->
-    <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-green-400 opacity-20"></div>
-    <div class="absolute bottom-10 -right-4 w-16 h-16 rounded-full bg-blue-400 opacity-20"></div>
-  </div> <!-- Row 12: Unit Stats & Rental Stats -->
-  <div class="mb-4 mt-8 min-w-[800px]">
-    <h2 class="text-lg font-bold text-gray-800">Unit Stats</h2>
-    <p class="text-gray-500 text-sm">2,955 units across your portfolio</p>
-  </div>
-
-  <div class="flex overflow-x-auto gap-3 mb-6 pb-4 custom-scrollbar">
-    <!-- Left Column: Donuts -->
-    <div class="w-[450px] flex-shrink-0 flex flex-col gap-6">
-      <!-- Occupancy -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col relative h-[350px]">
-        <h4 class="text-sm font-bold text-gray-800">Occupancy</h4>
-        <div class="text-[10px] text-gray-400">All units</div>
-        <div class="mt-4 flex justify-center w-full flex-1">
-          <apx-chart [series]="unitStatsOccupancyOptions.series" [chart]="unitStatsOccupancyOptions.chart"
-            [dataLabels]="{ enabled: false }" [labels]="unitStatsOccupancyOptions.labels"
-            [colors]="unitStatsOccupancyOptions.colors"
-            [plotOptions]="unitStatsOccupancyOptions.plotOptions"></apx-chart>
+    <div class="orville-happiness__grid">
+      <div class="orville-happiness__tile">
+        <div>
+          <div class="orville-happiness__label">Happy</div>
+          <div class="orville-happiness__pct">52.94%</div>
+          <div class="orville-happiness__chip">9 tenants</div>
         </div>
-        <div
-          class="flex items-center gap-6 mt-4 w-full border-t pt-4 px-4 text-xs font-semibold text-gray-600 justify-center">
-          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> Occupied</div>
-          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#e5e7eb]"></span> Vacant</div>
-        </div>
+        <img class="orville-happiness__face" src="assets/images/insights/happy.svg" alt="" width="68" height="68">
       </div>
-      <!-- Unit Types -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col relative h-[350px]">
-        <h4 class="text-sm font-bold text-gray-800">Unit Types</h4>
-        <div class="text-[10px] text-gray-400">Distribution by category</div>
-        <div class="mt-4 flex justify-center w-full flex-1">
-          <apx-chart [series]="unitTypesDonutOptions.series" [chart]="unitTypesDonutOptions.chart"
-            [dataLabels]="{ enabled: false }" [labels]="unitTypesDonutOptions.labels"
-            [colors]="unitTypesDonutOptions.colors" [plotOptions]="unitTypesDonutOptions.plotOptions"></apx-chart>
+      <div class="orville-happiness__tile">
+        <div>
+          <div class="orville-happiness__label">Neutral</div>
+          <div class="orville-happiness__pct">5.88%</div>
+          <div class="orville-happiness__chip">1 tenant</div>
         </div>
-        <div
-          class="flex flex-wrap items-center justify-center gap-3 mt-4 w-full border-t pt-4 text-[10px] font-semibold text-gray-600">
-          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8b5cf6]"></span> 1 BHK</div>
-          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#06b6d4]"></span> 2 BHK</div>
-          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> 3 BHK</div>
-          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Apartment</div>
-          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ec4899]"></span> Full Floor</div>
+        <img class="orville-happiness__face" src="assets/images/insights/neutral.svg" alt="" width="68" height="68">
+      </div>
+      <div class="orville-happiness__tile">
+        <div>
+          <div class="orville-happiness__label">Unhappy</div>
+          <div class="orville-happiness__pct">29.41%</div>
+          <div class="orville-happiness__chip">5 tenants</div>
         </div>
+        <img class="orville-happiness__face" src="assets/images/insights/unhappy.svg" alt="" width="68" height="68">
       </div>
     </div>
+  </section>
 
-    <!-- Right Column: Stats Grids -->
-    <div class="w-[900px] flex-shrink-0 flex flex-col gap-6">
-      <!-- Rental Stats -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 h-[350px]">
-        <div class="flex items-center justify-between border-b pb-4 mb-6">
-          <h4 class="text-sm font-bold text-gray-800">Rental Stats For All Units</h4>
-          <div class="bg-gray-100 rounded text-xs p-1 flex font-semibold">
-            <button class="bg-white shadow-sm rounded px-3 py-1">All</button>
-            <button class="px-3 py-1 text-gray-500">Residential</button>
-            <button class="px-3 py-1 text-gray-500">Commercial</button>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-building-4-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Rental Values For All Units</div>
-              <div class="text-lg font-bold text-gray-800">AED 46,092,131.00</div>
-              <div class="text-[10px] text-gray-400">Sum of all paid & unpaid rental income invoices</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-calendar-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Total annual values</div>
-              <div class="text-lg font-bold text-gray-800">AED 71,154,694.10</div>
-              <div class="text-[10px] text-gray-400">Annual rent value for all currently active leases</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500 text-blue-500">
-              <i class="ri-line-chart-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Rent Income For All Units</div>
-              <div class="text-lg font-bold text-gray-800">AED 40,916,886.00</div>
-              <div class="text-[10px] text-gray-400">Sum of all paid rental income invoices</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500 text-orange-500">
-              <i class="ri-alert-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Rent Due For All Units</div>
-              <div class="text-lg font-bold text-gray-800">AED 5,001,820.53</div>
-              <div class="text-[10px] text-gray-400">Sum of all unpaid rental income invoices due till today</div>
-            </div>
-          </div>
-        </div>
+  <section class="orville-insights-card orville-insights-card--flush">
+    <div class="orville-insights-card__head">
+      <div>
+        <h2 class="orville-insights-card__title">Unit Stats</h2>
+        <p class="orville-insights-card__sub">2,955 units across your portfolio</p>
       </div>
+      <div class="orville-seg">
+        <button type="button" class="orville-seg__btn is-active">All</button>
+        <button type="button" class="orville-seg__btn">Residential</button>
+        <button type="button" class="orville-seg__btn">Commercial</button>
+      </div>
+    </div>
+    <div class="orville-unit-body">
+      <div class="orville-insights__row orville-insights__row--unit">
+        <div class="orville-stack">
+          <article class="orville-unit-panel">
+            <h4 class="orville-insights-card__title">Occupancy</h4>
+            <p class="orville-insights-card__sub">All units</p>
+            <div class="orville-wo-donut__chart">
+              <apx-chart [series]="unitStatsOccupancyOptions.series" [chart]="unitStatsOccupancyOptions.chart"
+                [dataLabels]="unitStatsOccupancyOptions.dataLabels" [labels]="unitStatsOccupancyOptions.labels"
+                [colors]="unitStatsOccupancyOptions.colors" [legend]="unitStatsOccupancyOptions.legend"
+                [plotOptions]="unitStatsOccupancyOptions.plotOptions"></apx-chart>
+            </div>
+            <div class="orville-chip-legend">
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#26264F"></span> Occupied</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3E6FA8"></span> Vacant</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#A78BFA"></span> Sold</span>
+            </div>
+          </article>
+          <article class="orville-unit-panel">
+            <h4 class="orville-insights-card__title">Unit Types</h4>
+            <p class="orville-insights-card__sub">Distribution by category</p>
+            <div class="orville-wo-donut__chart">
+              <apx-chart [series]="unitTypesDonutOptions.series" [chart]="unitTypesDonutOptions.chart"
+                [dataLabels]="unitTypesDonutOptions.dataLabels" [labels]="unitTypesDonutOptions.labels"
+                [colors]="unitTypesDonutOptions.colors" [legend]="unitTypesDonutOptions.legend"
+                [plotOptions]="unitTypesDonutOptions.plotOptions"></apx-chart>
+            </div>
+            <div class="orville-chip-legend">
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#6366F1"></span> 1-BHK</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#14B8A6"></span> 2-BHK</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#FACC15"></span> 3-BHK</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3B82F6"></span> Apartment</span>
+              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#F97316"></span> Full Floor</span>
+            </div>
+          </article>
+        </div>
 
-      <!-- Market Values -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 h-[350px]">
-        <h4 class="text-sm font-bold text-gray-800 border-b pb-4 mb-6">Market Values For All Units</h4>
-        <div class="grid grid-cols-2 gap-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-funds-line"></i>
+        <div class="orville-stack">
+          <article class="orville-unit-panel orville-unit-panel--flush">
+            <h4 class="orville-unit-panel__title">Rental Stats for All Units</h4>
+            <div class="orville-stat-grid orville-stat-grid--lined">
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-database-2-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Rental Values for All Units</div>
+                  <div class="orville-stat__value">AED 46,092,131.00</div>
+                  <div class="orville-stat__hint">Sum of all paid & unpaid rental income invoices</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-calendar-schedule-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Total annual values</div>
+                  <div class="orville-stat__value">AED 71,154,694.10</div>
+                  <div class="orville-stat__hint">Annual rent value for all currently active leases</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Rent Income for All Units</div>
+                  <div class="orville-stat__value">AED 40,916,886.00</div>
+                  <div class="orville-stat__hint">Sum of all paid rental income invoices</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-time-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Rent Due for All Units</div>
+                  <div class="orville-stat__value">AED 5,001,820.53</div>
+                  <div class="orville-stat__hint">Sum of all unpaid rental income invoices due till today</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-calendar-todo-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Upcoming rent for All Units</div>
+                  <div class="orville-stat__value">AED 5,925.00</div>
+                  <div class="orville-stat__hint">Sum of all unpaid rental income invoices starting from tomorrow</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-receipt-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Total expense value</div>
+                  <div class="orville-stat__value">AED 0.00</div>
+                  <div class="orville-stat__hint">Sum of all paid expenses till today</div>
+                </div>
+              </div>
             </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Total Market Value</div>
-              <div class="text-lg font-bold text-gray-800">AED 46,092,131.00</div>
-              <div class="text-[10px] text-gray-400">Sum of all unit market values</div>
+          </article>
+
+          <article class="orville-unit-panel orville-unit-panel--flush">
+            <h4 class="orville-unit-panel__title">Market Values for All Units</h4>
+            <div class="orville-stat-grid orville-stat-grid--lined">
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-building-4-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Total Market Value</div>
+                  <div class="orville-stat__value">AED 46,092,131.00</div>
+                  <div class="orville-stat__hint">Estimated market value of all units</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-home-gear-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Total Market Rent Value</div>
+                  <div class="orville-stat__value">AED 71,154,694.10</div>
+                  <div class="orville-stat__hint">Estimated annual market rent across all units</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-layout-masonry-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Rentable Area</div>
+                  <div class="orville-stat__value">40,916.89 Sqft</div>
+                  <div class="orville-stat__hint">Total rentable area across all units</div>
+                </div>
+              </div>
+              <div class="orville-stat">
+                <div class="orville-stat__icon"><i class="ri-pie-chart-2-line"></i></div>
+                <div>
+                  <div class="orville-stat__label">Avg. Market Rent Per (Sqft.)</div>
+                  <div class="orville-stat__value">AED 122.50</div>
+                  <div class="orville-stat__hint">Average market rent per square foot</div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-file-list-3-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Total Market Value</div>
-              <div class="text-lg font-bold text-gray-800">AED 71,154,694.10</div>
-              <div class="text-[10px] text-gray-400">Annual rent value for all currently active leases</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-layout-masonry-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Rentable Area</div>
-              <div class="text-lg font-bold text-gray-800">AED 40,916,886.00</div>
-              <div class="text-[10px] text-gray-400">Sum of all paid rental income invoices</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-pie-chart-2-line"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Avg. Market Rent /sq.ft.</div>
-              <div class="text-lg font-bold text-gray-800">AED 5,001,820.53</div>
-              <div class="text-[10px] text-gray-400">Sum of all unpaid rental income invoices due till today</div>
-            </div>
-          </div>
+          </article>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Row 13: Portfolio Overview -->
-  <div class="mb-4 mt-8 min-w-[800px]">
-    <h2 class="text-lg font-bold text-gray-800">Portfolio Overview</h2>
-    <p class="text-gray-500 text-sm">Annual Rent Recognized Revenue</p>
-  </div>
-  <div class="flex overflow-x-auto gap-3 mb-6 pb-4 custom-scrollbar">
-    <div class="w-[1374px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-6 relative">
-      <div class="flex justify-center gap-12 mb-8 absolute top-8 left-0 right-0 z-10">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 px-6 py-3 flex items-center gap-4">
-          <div class="text-gray-400 text-xl"><i class="ri-line-chart-line"></i></div>
+  <section class="orville-insights-card orville-insights-card--flush">
+    <div class="orville-insights-card__head">
+      <div>
+        <p class="orville-insights-card__kicker">Portfolio Overview</p>
+        <h2 class="orville-insights-card__title">Annual Rent Recognized Revenue</h2>
+      </div>
+    </div>
+    <div class="orville-rent">
+      <div class="orville-rent__kpis">
+        <div class="orville-rent__kpi">
           <div>
-            <div class="text-[10px] text-gray-500 font-semibold uppercase">Peak Year</div>
-            <div class="text-lg font-bold text-gray-800">2026</div>
+            <span class="orville-income-tile__badge">Peak Year</span>
+            <div class="orville-rent__kpi-val">2026</div>
+            <div class="orville-insights-card__sub">Highest recognized</div>
           </div>
+          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
         </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 px-6 py-3 flex items-center gap-4">
-          <div class="text-gray-400 text-xl"><i class="ri-money-dollar-circle-line"></i></div>
+        <div class="orville-rent__kpi">
           <div>
-            <div class="text-[10px] text-gray-500 font-semibold uppercase">Peak Revenue</div>
-            <div class="text-lg font-bold text-gray-800">AED 28.5M</div>
+            <span class="orville-income-tile__badge">Peak Revenue</span>
+            <div class="orville-rent__kpi-val">AED 28.5M</div>
+            <div class="orville-insights-card__sub">In 2026</div>
           </div>
+          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
         </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 px-6 py-3 flex items-center gap-4">
-          <div class="text-gray-400 text-xl"><i class="ri-bar-chart-box-line"></i></div>
+        <div class="orville-rent__kpi">
           <div>
-            <div class="text-[10px] text-gray-500 font-semibold uppercase">Total AED 46M</div>
-            <div class="text-lg font-bold text-gray-800">AED 46M</div>
+            <span class="orville-income-tile__badge">Total (2025–26)</span>
+            <div class="orville-rent__kpi-val">AED 46M</div>
+            <div class="orville-insights-card__sub">Combined peak years</div>
           </div>
+          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
         </div>
       </div>
-      <div class="mt-20">
+      <div class="orville-axis-chart orville-axis-chart--rent">
         <apx-chart [series]="annualRentOptions.series" [chart]="annualRentOptions.chart"
           [plotOptions]="annualRentOptions.plotOptions" [xaxis]="annualRentOptions.xaxis"
-          [colors]="annualRentOptions.colors" [dataLabels]="annualRentOptions.dataLabels"></apx-chart>
+          [yaxis]="annualRentOptions.yaxis" [grid]="annualRentOptions.grid"
+          [colors]="annualRentOptions.colors" [dataLabels]="annualRentOptions.dataLabels"
+          [legend]="annualRentOptions.legend" [stroke]="annualRentOptions.stroke"></apx-chart>
+      </div>
+      <div class="orville-chip-legend">
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#26264F"></span> Recognized rent revenue (AED)</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Row 14: Leases -->
-  <div class="flex overflow-x-auto gap-3 mb-6 pb-4 custom-scrollbar">
-    <div class="w-[450px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col">
-      <h4 class="text-sm font-bold text-gray-800">Lease Status by Month</h4>
-      <div class="text-[10px] text-gray-400">Distribution by category</div>
-      <div class="mt-4 flex justify-center w-full flex-1">
+  <div class="orville-insights__row orville-insights__row--unit">
+    <article class="orville-insights-card orville-insights-card--flush">
+      <div class="orville-insights-card__head">
+        <div>
+          <h4 class="orville-insights-card__title">Lease Status by Month</h4>
+          <p class="orville-insights-card__sub">Distribution by category</p>
+        </div>
+        <button type="button" class="orville-date-chip">
+          June 2026
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+      </div>
+      <div class="orville-wo-donut__chart">
         <apx-chart [series]="leaseStatusDonutOptions.series" [chart]="leaseStatusDonutOptions.chart"
           [labels]="leaseStatusDonutOptions.labels" [colors]="leaseStatusDonutOptions.colors"
-          [plotOptions]="leaseStatusDonutOptions.plotOptions" [dataLabels]="{ enabled: false }"></apx-chart>
+          [plotOptions]="leaseStatusDonutOptions.plotOptions" [dataLabels]="leaseStatusDonutOptions.dataLabels"
+          [legend]="leaseStatusDonutOptions.legend"></apx-chart>
       </div>
-      <div class="flex flex-col gap-2 mt-4 text-[10px] font-semibold text-gray-600">
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Renewing Leases
-        </div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#94a3b8]"></span> Not Renewing Leases
-        </div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span> Contacted Leases
-        </div>
-        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span> No Response Leases
-        </div>
+      <div class="orville-lease-legend">
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#14B8A6"></span> Renewing Leases</span>
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#FACC15"></span> Not Renewing Leases</span>
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#6366F1"></span> Contacted Leases</span>
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#F97316"></span> No Response Leases</span>
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3B82F6"></span> Renewal Notice Served Leases</span>
+        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#A855F7"></span> Ending Leases</span>
       </div>
-    </div>
+    </article>
 
-    <div class="w-[900px] flex-shrink-0 flex flex-col gap-6">
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <h4 class="text-sm font-bold text-gray-800 border-b pb-4 mb-6">Active Lease Stats</h4>
-        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-file-text-line"></i>
-            </div>
+    <div class="orville-stack">
+      <article class="orville-unit-panel orville-unit-panel--flush">
+        <h4 class="orville-unit-panel__title">Active Lease Stats</h4>
+        <div class="orville-stat-grid orville-stat-grid--lined">
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-building-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Total Active Lease Value</div>
-              <div class="text-lg font-bold text-gray-800">AED 6,181,862.00</div>
+              <div class="orville-stat__label">Total Active Leases Value</div>
+              <div class="orville-stat__value">AED 5,181,852.00</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-calendar-2-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-timer-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Average Lease Duration</div>
-              <div class="text-lg font-bold text-gray-800">27 Days</div>
-              <div class="text-[10px] text-gray-400">The average length of a lease</div>
+              <div class="orville-stat__label">Average Lease Duration</div>
+              <div class="orville-stat__value">27 Days</div>
+              <div class="orville-stat__hint">Indicates the average length of leases across all units. This can help in understanding tenant stability and forecasting future vacancies.</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-timer-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-calendar-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Average Vacancy Duration</div>
-              <div class="text-lg font-bold text-gray-800">11.00 Days</div>
-              <div class="text-[10px] text-gray-400">The average time it takes to fill a vacant unit.</div>
+              <div class="orville-stat__label">Average Vacancy Duration</div>
+              <div class="orville-stat__value">11.00 Days</div>
+              <div class="orville-stat__hint">The average time it takes to fill a vacant unit.</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-error-warning-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Delinquency Rate</div>
-              <div class="text-lg font-bold text-gray-800">15.06%</div>
-              <div class="text-[10px] text-gray-400">The percentage of tenants late on payments.</div>
+              <div class="orville-stat__label">Delinquency Rate</div>
+              <div class="orville-stat__value">15.06%</div>
+              <div class="orville-stat__hint">The percentage of tenants who are late on their rent payments.</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-line-chart-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-arrow-left-down-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Outstanding on Rent (%)</div>
-              <div class="text-lg font-bold text-gray-800">3.24%</div>
-              <div class="text-[10px] text-gray-400">The percentage of outstanding rent.</div>
+              <div class="orville-stat__label">Outstanding on Rent (%)</div>
+              <div class="orville-stat__value">3.24%</div>
+              <div class="orville-stat__hint">The percentage of outstanding rent and security deposit.</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-checkbox-circle-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-percent-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Rent Collection Rate</div>
-              <div class="text-lg font-bold text-gray-800">5.40%</div>
-              <div class="text-[10px] text-gray-400">The rent collected on time.</div>
+              <div class="orville-stat__label">Rent Collection Rate</div>
+              <div class="orville-stat__value">5.40%</div>
+              <div class="orville-stat__hint">The % of Rent that is collected on time This efficiency and timeliness of rent collection.</div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <h4 class="text-sm font-bold text-gray-800 border-b pb-4 mb-6">Renewal Stats</h4>
-        <div class="grid grid-cols-2 gap-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-refresh-line"></i>
-            </div>
+      </article>
+      <article class="orville-unit-panel orville-unit-panel--flush">
+        <h4 class="orville-unit-panel__title">Renewal Stats</h4>
+        <div class="orville-stat-grid orville-stat-grid--lined">
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-refresh-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Renewal Rate</div>
-              <div class="text-lg font-bold text-gray-800">81.12%</div>
+              <div class="orville-stat__label">Renewals Rate</div>
+              <div class="orville-stat__value">81.12%</div>
+              <div class="orville-stat__hint">The % of tenants who choose to renew their leases instead of vacating the property</div>
             </div>
           </div>
-          <div class="flex items-start gap-4">
-            <div
-              class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
-              <i class="ri-swap-line"></i>
-            </div>
+          <div class="orville-stat">
+            <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
             <div>
-              <div class="text-xs text-gray-500 font-semibold mb-1">Tenant Turnover Rate (%)</div>
-              <div class="text-lg font-bold text-gray-800">45.83%</div>
+              <div class="orville-stat__label">Tenant Turnover Rate (%)</div>
+              <div class="orville-stat__value">45.83%</div>
+              <div class="orville-stat__hint">The rate at which tenants leave and new ones come in It's crucial for understanding the frequency of tenant changes.</div>
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </div>
   </div>
 
-  <!-- Row 15: Country Overview -->
-  <div class="flex overflow-x-auto gap-3 mb-6 pb-4 custom-scrollbar">
-    <div class="w-[1374px] flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-      <div class="flex justify-between items-center mb-6 border-b pb-4">
-        <h4 class="text-sm font-bold text-gray-800">Country Overview</h4>
-        <div class="bg-gray-100 rounded text-xs p-1 flex font-semibold">
-          <button class="bg-white shadow-sm rounded px-3 py-1">Tenants</button>
-          <button class="px-3 py-1 text-gray-500">Landlords</button>
-          <button class="px-3 py-1 text-gray-500">Vendors</button>
-        </div>
-      </div>
-      <div class="flex gap-8">
-        <div class="flex-1 flex items-center justify-center bg-blue-50/30 rounded-lg p-6">
-          <img src="assets/images/world-map.png" alt="World Map" class="w-full h-[250px] object-contain opacity-80"
-            onerror="this.onerror=null; this.src='assets/images/insights/map.png';">
-        </div>
-        <div class="w-[450px]">
-          <h4 class="text-sm font-bold text-gray-800 mb-6">Tenant By Country</h4>
-          <div class="flex justify-between text-xs font-bold text-gray-700 border-b pb-2 mb-4">
-            <span>Total Tenant<br><span class="text-lg">5102</span></span>
-            <span>Data Entered<br><span class="text-lg">4151</span></span>
-            <span>Data not Entered<br><span class="text-lg">948</span></span>
-          </div>
-          <apx-chart [series]="tenantByCountryOptions.series" [chart]="tenantByCountryOptions.chart"
-            [plotOptions]="tenantByCountryOptions.plotOptions" [xaxis]="tenantByCountryOptions.xaxis"
-            [colors]="tenantByCountryOptions.colors" [dataLabels]="tenantByCountryOptions.dataLabels"></apx-chart>
-        </div>
+  <article class="orville-insights-card orville-insights-card--flush">
+    <div class="orville-insights-card__head">
+      <h4 class="orville-insights-card__title">Country Overview</h4>
+      <div class="orville-seg">
+        <button type="button" class="orville-seg__btn is-active">Tenants</button>
+        <button type="button" class="orville-seg__btn">Landlords</button>
+        <button type="button" class="orville-seg__btn">Vendors</button>
       </div>
     </div>
-  </div>
+    <div class="orville-country">
+      <div class="orville-country__map" aria-hidden="true">
+        <svg viewBox="0 0 860 376" xmlns="http://www.w3.org/2000/svg" class="orville-country__svg">
+          <g fill="#E4E4EC">
+            <path d="M152 18h182l18 42-24 60H128l-20-48 44-54z"/>
+            <path d="M53 26h210l22 48-40 94H72L40 88z"/>
+            <path d="M268 282l38 12 12 82-48 6-36-70z"/>
+            <path d="M264 270l30 8 8 96-36 8-28-78z"/>
+            <path d="M773 227h37l8 23-22 8z"/>
+            <path d="M663 205h111l12 32-96 12z"/>
+            <path d="M503 223h26l8 30-22 8z"/>
+            <path d="M554 92h41l8 24-28 8z"/>
+            <path d="M532 65h87l12 40-78 8z"/>
+          </g>
+          <g fill="#3E6FA8">
+            <path d="M152 18c48-8 120 4 168 28l14 34-28 52H136l-24-42 40-72z"/>
+            <path d="M88 32c62 4 140 18 188 56l8 38-48 72H96L56 92z"/>
+            <path d="M460 154l38 8 18 36-24 42-42-12-16-38z"/>
+            <path d="M514 186l24 4 12 34-22 12-24-18z"/>
+            <path d="M532 66c28 2 64 8 82 22l6 18-64 12-28-18z"/>
+            <path d="M554 94l36 6 8 16-28 10z"/>
+            <path d="M593 120l66 18 12 48-48 18-42-28z"/>
+            <path d="M664 206c36 0 84 8 108 22l8 22-96 12-28-18z"/>
+            <path d="M773 228l36 6 6 16-22 8z"/>
+            <path d="M268 282l36 10 10 72-42 10-32-62z"/>
+            <path d="M411 98l48 8 22 42-28 28-46-12z"/>
+            <path d="M391 184l18 4 8 14-16 8z"/>
+          </g>
+        </svg>
+      </div>
+      <aside class="orville-country__side">
+        <h4 class="orville-insights-card__title">Tenant by Country</h4>
+        <div class="orville-country__stats">
+          <div>
+            <div class="orville-stat__label">Total Tenant</div>
+            <div class="orville-stat__value">5102</div>
+          </div>
+          <div>
+            <div class="orville-stat__label">Data Entered</div>
+            <div class="orville-stat__value">4151</div>
+          </div>
+          <div>
+            <div class="orville-stat__label">Data not Entered</div>
+            <div class="orville-stat__value">948</div>
+          </div>
+        </div>
+        <div class="orville-country__list">
+          <div class="orville-country__row" *ngFor="let row of countryRows">
+            <div class="orville-country__name">{{ row.name }}</div>
+            <div class="orville-country__barline">
+              <div class="orville-country__track">
+                <span class="orville-country__fill" [style.width]="row.width"></span>
+              </div>
+              <span class="orville-country__count">{{ row.count }}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </article>
 
 </div>

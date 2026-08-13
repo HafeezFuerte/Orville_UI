@@ -1,49 +1,40 @@
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <!-- Back arrow button -->
-    <a [routerLink]="['/properties']" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" title="Back to Properties">
-      <i class="ri-arrow-left-line text-sm"></i>
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a [routerLink]="['/properties']" class="ov-back" title="Back to Properties">
+      <i class="ri-arrow-left-line text-[24px]"></i>
     </a>
     <div>
-  <div>
-    <h3
-      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
-      {{property?.name || 'Marina Heights Towers'}}
-    </h3>
-    <ol class="flex items-center whitespace-nowrap">
-      <li class="text-[0.813rem] text-[#8c9097]">
-        <a [routerLink]="['/insights']"> {{ 'web.common.lblHome' | translate }}</a>
-      </li>
-      <li class="px-2 text-[#8c9097]">
-        /
-      </li>
-      <li class="text-[0.813rem] text-[#8c9097]">
-        <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>
-      </li>
-      <li class="px-2 text-[#8c9097]">
-        /
-      </li>
-      <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
-        <a [routerLink]="['/properties', property?.code]"> {{property?.name}}</a>
-      </li>
-      <li class="px-2 text-[#8c9097]">
-        /
-      </li>
-      <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
-        {{ 'web.property.lblDetails' | translate }}
-      </li>
-    </ol>
-  </div> 
-</div>
-</div>
-<div class="flex gap-2 items-center mt-2 md:mt-0">
-  <div class="flex items-center gap-2 ml-4">
-    <button type="button"
-      class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm"
-      [routerLink]="['/edit-property', property?.code]">
+      <h3 class="ov-page-title">{{ property?.name || 'Marina Heights Towers' }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+        <li class="px-2">/</li>
+        <li><a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a></li>
+        <li class="px-2">/</li>
+        <li><a [routerLink]="['/properties', property?.code]">{{ property?.name }}</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">{{ 'web.property.lblDetails' | translate }}</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionMenu = !showActionMenu">
+        Action
+        <i class="ri-arrow-down-s-line text-[16px]"></i>
+      </button>
+      <div *ngIf="showActionMenu" class="absolute end-0 z-30 mt-1.5 min-w-[160px] rounded-lg border border-defaultborder bg-white p-1 shadow-lg dark:bg-bodybg">
+        <button type="button" class="block w-full rounded-md border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light">
+          {{ 'web.property.lblViewActivity' | translate }}
+        </button>
+        <a [routerLink]="['/edit-property', property?.code]" class="block rounded-md px-3 py-2 text-[14px] text-defaulttextcolor hover:bg-light">
+          {{ 'web.property.lblEditProperty' | translate }}
+        </a>
+      </div>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/edit-property', property?.code]">
       {{ 'web.property.lblEditProperty' | translate }}
     </button>
-  </div></div>
+  </div>
 </div>
 
 <div class="grid grid-cols-12 gap-6 mt-4">
@@ -51,327 +42,301 @@
   <app-detail-page-layout class="col-span-12" [tabs]="tabs" (notify_edit_action)="handleEditNotification($event)"
     (search_on_child_grid)="handleSearch($event)" [(activeTab)]="activeTab" (saveClick)="savePopup($event)">
 
-    <!-- LEFT PANEL -->
     <ng-template #leftPanel>
-      <!-- Left Side: Property/Unit Summary & Info Card -->
-      <div class="col-span-12 lg:col-span-4 flex flex-col gap-3">
-        <!-- Card 1: Short summary & Quick Actions -->
-        <div class="box bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-          <div class="p-6 flex flex-col gap-5">
-            <!-- Main details -->
+      <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
+        <div class="box ov-card overflow-hidden">
+          <div class="p-5 flex flex-col gap-4">
             <div>
-              <h4 class="text-base font-black text-gray-800 m-0 leading-tight">{{property?.name || 'Marina Heights
-                Towers'}}</h4>
-              <span class="text-xs text-gray-400 font-medium mt-1 flex items-center gap-0.5">
-                <i class="ri-map-pin-line text-sm"></i> {{property?.address_1}}
+              <h4 class="ov-card-title">{{ property?.name || 'Marina Heights Towers' }}</h4>
+              <span class="ov-card-sub mt-1 flex items-center gap-1">
+                <i class="ri-map-pin-line text-[14px]"></i> {{ property?.address_1 }}
               </span>
             </div>
 
-            <!-- Badge category -->
-            <div>
-              <span class="badge bg-primary/10 text-primary font-bold px-3 py-1.5 rounded-lg text-[10px]">
-                <i class="ri-home-gear-line text-xs me-1"></i> {{property?.type_name || 'Residential'}}
-              </span>
+            <span class="inline-flex w-fit items-center rounded-md bg-primary/10 px-2.5 py-1 text-[12px] font-medium text-primary">
+              {{ property?.type_name || 'Residential' }}
+            </span>
+
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between items-center text-[14px]">
+                <span class="text-textmuted">{{ 'web.property.lblOccupancy' | translate }}</span>
+                <span class="font-semibold text-defaulttextcolor">{{ occupancyPct }}%</span>
+              </div>
+              <div class="w-full bg-light rounded-full h-1.5 dark:bg-white/10">
+                <div class="bg-primary h-1.5 rounded-full" [style.width.%]="occupancyPct"></div>
+              </div>
+              <span class="text-[12px] text-textmuted">{{ property?.occupied_units || 0 }} of {{ property?.total_units || 0 }} {{ 'web.property.lblOccupancyUnitsText' | translate }}</span>
             </div>
 
-            <!-- Occupancy Bar -->
-            <div class="flex flex-col gap-2 py-1">
-              <div class="flex justify-between items-center text-xs">
-                <span class="text-gray-500 font-medium">{{ 'web.property.lblOccupancy' | translate }}</span>
-                <span class="font-extrabold text-gray-800">85%</span>
-              </div>
-              <div class="w-full bg-gray-100 rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-              </div>
-              <span class="text-[10px] text-gray-400">{{property?.occupied_units}} of {{property?.total_units}} {{
-                'web.property.lblOccupancyUnitsText' | translate }}</span>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex gap-2 pt-2">
-              <button type="button"
-                class="w-1/2 ti-btn ti-btn-light !py-2 border font-bold text-xs rounded-lg shadow-sm">
+            <div class="flex gap-2">
+              <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 text-[12px]">
                 {{ 'web.property.lblViewActivity' | translate }}
               </button>
-              <button [routerLink]="['/edit-property', property?.code]" type="button"
-                class="w-1/2 ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">
+              <button [routerLink]="['/edit-property', property?.code]" type="button" class="flex-1 ov-btn ov-btn-primary !h-9 text-[12px]">
                 {{ 'web.property.lblEditProperty' | translate }}
-                <i class="ri-arrow-right-line ms-1"></i>
+                <i class="ri-arrow-right-line"></i>
               </button>
             </div>
-            <h5 class="text-xs font-bold text-gray-700 mb-3">{{ 'web.property.lblInformation' | translate }}</h5>
-            <!-- Property details list table -->
-            <div class="border-t border-gray-100 pt-4 mt-2">
-              <h5 class="text-xs font-bold text-gray-700 mb-3">{{ 'web.property.lblPropertyDetails' | translate }}</h5>
-              <div class="flex flex-col gap-2 text-xs text-gray-600">
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.common.lblID' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.code || 31658}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.common.lblName' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.name || 'Marina Heights Towers'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblCategory' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.category_name}}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyType' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblTags' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.tags || 31658}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblTotalUnits' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.total_units || 'Marina Heights Towers'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblFloors' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.no_of_floors}}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblOccupancy' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.occupied_units || 'Residential'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblSize' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.size_sqft}}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyValue' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.purchase_value}}</span>
-                </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px] pt-1">
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblTags' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.tags || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblPrefix' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.prefix || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblAddress1' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.address_1 || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblState' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.state_name || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblCity' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.city_name || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblZipCode' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.zip_code || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblCommunity' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.community || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblCountry' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.country_name || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblFloors' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.no_of_floors || '-' }}</div>
+              </div>
+              <div>
+                <div class="text-textmuted">{{ 'web.property.lblTotalUnits' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.total_units || '-' }}</div>
+              </div>
+              <div class="col-span-2">
+                <div class="text-textmuted">Parking</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.parking_spaces || '-' }}</div>
+              </div>
+              <div class="col-span-2">
+                <div class="text-textmuted">{{ 'web.property.lblDescription' | translate }}</div>
+                <div class="font-medium text-defaulttextcolor">{{ property?.description || '-' }}</div>
               </div>
             </div>
-            <!-- Property details list table -->
-            <div class="border-t border-gray-100 pt-4 mt-2 text-center">
-              <a href="javascript:void(0);" class="text-primary font-medium inline-flex items-center">
-                {{ 'web.property.lblViewMoreDetails' | translate }}
-                <i class="ri-arrow-down-s-line ms-1"></i>
-              </a>
-              <div class="flex flex-col gap-2 text-xs text-gray-600">
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblPropertyPrefix' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.prefix || 31658}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblAddress1' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.address_1 || 31658}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblAddress2' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.address_2 || 'Marina Heights Towers'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblCity' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.city_name || 'Marina Heights Towers'}}</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblState' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.state_name || 'Residential'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblCountry' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.country_name || 31658}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblCommunity' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.name || 'Marina Heights Towers'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblLandNo' | translate }}:</span>
-                  <span class="font-bold text-gray-800">Home</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblCreated' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b border-gray-50">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblLastUpdate' | translate }}:</span>
-                  <span class="font-bold text-gray-800">Home</span>
-                </div>
-                <div class="flex justify-between py-1">
-                  <span class="text-gray-600 font-medium">{{ 'web.property.lblDescription' | translate }}:</span>
-                  <span class="font-bold text-gray-800">{{property?.type_name || 'Residential'}}</span>
-                </div>
+
+            <h5 class="ov-card-title text-[14px]">{{ 'web.property.lblInformation' | translate }}</h5>
+            <h5 class="text-[14px] font-semibold text-defaulttextcolor">{{ 'web.property.lblPropertyDetails' | translate }}</h5>
+            <div class="flex flex-col gap-2 text-[14px]">
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.common.lblID' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.code || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.common.lblName' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.name || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblCategory' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.category_name || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblPropertyType' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.type_name || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblSize' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.size_sqft || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-textmuted">{{ 'web.property.lblPropertyValue' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.purchase_value || '-' }}</span>
               </div>
             </div>
-          </div>
-        </div>
-        <!-- Card 2: Locations & Coordinates Details -->
-        <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-          <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Locations & Coordinates</h5>
-          <div class="flex flex-col gap-2 text-xs">
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblCity' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.city_name || 'Marina Heights Towers'}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblState' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.state_name || 'Residential'}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblCountry' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.country_name}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblCommunity' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.community}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblZipCode' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.zip_code}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblLatitude' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.lat}}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblLongitude' | translate }}:</span>
-              <span class="font-bold text-gray-800">{{property?.lon}}</span>
+
+            <button type="button" (click)="toggleMoreDetails()" class="text-primary font-medium inline-flex items-center justify-center border-0 bg-transparent p-0">
+              {{ 'web.property.lblViewMoreDetails' | translate }}
+              <i class="ri-arrow-down-s-line ms-1" [class.rotate-180]="showMoreDetails"></i>
+            </button>
+            <div *ngIf="showMoreDetails" class="flex flex-col gap-2 text-[14px]">
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblAddress2' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.address_2 || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblLandNo' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.land_no || '-' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-defaultborder">
+                <span class="text-textmuted">{{ 'web.property.lblCreated' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ property?.created_date | date:'MMM d, yyyy' }}</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-textmuted">{{ 'web.property.lblLastUpdate' | translate }}</span>
+                <span class="font-medium text-defaulttextcolor">{{ (property?.updated_date || property?.modified_date || property?.created_date) | date:'MMM d, yyyy' }}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Card 3: Custom Fields -->
-        <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-          <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblCustomFields' | translate }}
-          </h5>
-          <div class="flex flex-col gap-2 text-xs">
-            <div class="flex flex-col py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblMakaniNo' | translate }}</span>
-              <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
+        <div class="box ov-card p-4 flex flex-col gap-2.5">
+          <h5 class="ov-card-title border-b border-defaultborder pb-2">Locations & Coordinates</h5>
+          <div class="flex flex-col gap-2 text-[14px]">
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblCity' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.city_name || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblState' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.state_name || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblCountry' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.country_name || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblCommunity' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.community || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblZipCode' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.zip_code || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-defaultborder">
+              <span class="text-textmuted">{{ 'web.property.lblLatitude' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.lat || '-' }}</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-textmuted">{{ 'web.property.lblLongitude' | translate }}</span>
+              <span class="font-medium text-defaulttextcolor">{{ property?.lon || '-' }}</span>
             </div>
           </div>
         </div>
-        <!-- Card 4: Service Request  -->
-        <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-          <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblServiceRequest' | translate
-            }}</h5>
-          <div class="flex flex-col gap-2 text-xs">
-            <div class="flex justify-between items-center py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblServiceRequestsEnabled' | translate }}</span>
-              <div class="shrink-0">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="serviceRequest" checked>
-                </div>
-              </div>
-            </div>
-            <div class="flex justify-between py-1 border-b border-gray-50">
-              <span class="text-gray-600 font-medium">{{ 'web.property.lblServiceRequestDescription' | translate
-                }}</span>
-              <span class="font-bold text-gray-800">-</span>
-            </div>
+
+        <div class="box ov-card p-4 flex flex-col gap-2.5">
+          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblCustomFields' | translate }}</h5>
+          <div class="flex flex-col py-1">
+            <span class="text-textmuted text-[14px]">{{ 'web.property.lblMakaniNo' | translate }}</span>
+            <span class="font-medium text-defaulttextcolor text-[14px] mt-0.5">{{ property?.makani_no || 'No value set' }}</span>
           </div>
         </div>
-        <!-- Card 5: Amenities-->
-        <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-          <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.property.lblAmenities' | translate }}
-          </h5>
+
+        <div class="box ov-card p-4 flex flex-col gap-2.5">
+          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblServiceRequest' | translate }}</h5>
+          <div class="flex justify-between items-center py-1 border-b border-defaultborder">
+            <span class="text-textmuted text-[14px]">{{ 'web.property.lblServiceRequestsEnabled' | translate }}</span>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="serviceRequest" checked>
+            </div>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-textmuted text-[14px]">{{ 'web.property.lblServiceRequestDescription' | translate }}</span>
+            <span class="font-medium text-defaulttextcolor">-</span>
+          </div>
+        </div>
+
+        <div class="box ov-card p-4 flex flex-col gap-2.5">
+          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblAmenities' | translate }}</h5>
           <div class="flex flex-wrap gap-1.5 pt-1">
             <span *ngFor="let amenity of property?.amenities">
               <span *ngIf="amenity.amenity"
-                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[12px] font-medium text-primary">
                 <i class="ri-checkbox-circle-fill"></i>
                 {{ amenity.amenity }}
               </span>
             </span>
           </div>
         </div>
-
       </div>
     </ng-template>
 
-    <!-- UNITS TAB -->
     <ng-template #units>
-      <app-shared-units-table [selectedTab]="selectedTab"   [data]="selectedTab?.data || []"
+      <app-shared-units-table [selectedTab]="selectedTab" [data]="selectedTab?.data || []"
         [loading]="selectedTab?.loading || false" [totalRecords]="selectedTab?.totalRecords || 0"
         [pageSize]="selectedTab?.pageSize || 50" [pageIndex]="selectedTab?.pageIndex || 0"
         [hasActions]="selectedTab?.hasActions || false"
         (notify_edit_action)="handleEditNotification($event)"></app-shared-units-table>
-
     </ng-template>
-    <!-- Notes TAB -->
+
     <ng-template #notes>
       <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
-
     </ng-template>
-    <!-- Attachments TAB -->
+
     <ng-template #attachments>
       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
-
     </ng-template>
 
-     <!-- CommonArea TAB -->
-     <ng-template #commonarea>
+    <ng-template #commonarea>
       <app-commonarea-table [selectedTab]="selectedTab"></app-commonarea-table>
-
     </ng-template>
-      <!-- Parking TAB -->
-      <ng-template #parkings>
-        <app-parkings-table [selectedTab]="selectedTab"></app-parkings-table>
-  
-      </ng-template>
 
-    <!-- OVERVIEW TAB -->
+    <ng-template #parkings>
+      <app-parkings-table [selectedTab]="selectedTab"></app-parkings-table>
+    </ng-template>
+
     <ng-template #overview>
-
-      <!-- Paste EVERYTHING from your current OVERVIEW tab here -->
-      <!-- OVERVIEW TAB -->
-      <div class="flex flex-col gap-6 animate-fade-in">
+      <div class="flex flex-col gap-5">
         <div>
-          <h5 class="text-sm font-black text-gray-800 m-0">Property Overview</h5>
-          <p class="text-xs text-gray-400 mt-1">Real-time occupancy rates and performance breakdowns.</p>
+          <h5 class="ov-card-title">Property Overview</h5>
+          <p class="ov-card-sub">Real-time occupancy rates and performance breakdowns.</p>
         </div>
 
-        <!-- Circular gauges grid (Figma layout) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 border border-gray-50 rounded-xl bg-gray-50/20 p-4">
-          <!-- First Circle: Occupancy Rate (Rooms) -->
-          <div
-            class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-            <div class="relative w-36 h-36">
-              <!-- SVG circular meter -->
-              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                <path class="text-gray-100" stroke-width="2.5" stroke="currentColor" fill="none"
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="ov-card flex flex-col items-center p-5">
+            <div class="w-full mb-4">
+              <div class="text-[16px] font-semibold text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[14px] text-textmuted">Rooms</div>
+            </div>
+            <div class="relative size-[228px]">
+              <svg class="size-full -rotate-90" viewBox="0 0 36 36">
+                <path class="text-light" stroke-width="2.5" stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="text-primary" stroke-dasharray="80.4, 100" stroke-width="2.5" stroke-linecap="round"
+                <path class="text-primary" [attr.stroke-dasharray]="occupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
                   stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-xl font-black text-gray-800">80.4%</span>
-                <span class="text-[9px] font-bold text-gray-400 uppercase">Occupied</span>
+                <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ occupancyPct }}%</span>
+                <span class="text-[14px] font-medium text-textmuted">Occupied</span>
               </div>
             </div>
-            <h6 class="font-extrabold text-gray-700 text-xs mt-4">Occupancy Rate (Rooms)</h6>
-            <p class="text-[10px] text-gray-400 mt-1">52 / 55 units occupied</p>
+            <div class="mt-4 text-center">
+              <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[14px] text-textmuted">{{ property?.occupied_units || 0 }} / {{ property?.total_units || 0 }} units</div>
+              <div class="text-[14px] text-textmuted">Number of occupied rooms</div>
+            </div>
           </div>
 
-          <!-- Second Circle: Occupancy Rate (Units) -->
-          <div
-            class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-            <div class="relative w-36 h-36">
-              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                <path class="text-gray-100" stroke-width="2.5" stroke="currentColor" fill="none"
+          <div class="ov-card flex flex-col items-center p-5">
+            <div class="w-full mb-4">
+              <div class="text-[16px] font-semibold text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[14px] text-textmuted">Units</div>
+            </div>
+            <div class="relative size-[228px]">
+              <svg class="size-full -rotate-90" viewBox="0 0 36 36">
+                <path class="text-light" stroke-width="2.5" stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="text-indigo-500" stroke-dasharray="78.4, 100" stroke-width="2.5" stroke-linecap="round"
+                <path class="text-primary" [attr.stroke-dasharray]="occupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
                   stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-xl font-black text-gray-800">78.4%</span>
-                <span class="text-[9px] font-bold text-gray-400 uppercase">Occupied</span>
+                <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ occupancyPct }}%</span>
+                <span class="text-[14px] font-medium text-textmuted">Occupied</span>
               </div>
             </div>
-            <h6 class="font-extrabold text-gray-700 text-xs mt-4">Occupancy Rate (Units)</h6>
-            <p class="text-[10px] text-gray-400 mt-1">49 / 54 units occupied</p>
+            <div class="mt-4 text-center">
+              <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[14px] text-textmuted">{{ property?.occupied_units || 0 }} / {{ property?.total_units || 0 }} units</div>
+              <div class="text-[14px] text-textmuted">Number of occupied units</div>
+            </div>
           </div>
         </div>
       </div>
-
     </ng-template>
   </app-detail-page-layout>
 

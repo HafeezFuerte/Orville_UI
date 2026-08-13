@@ -1,6 +1,6 @@
 <div class="table-responsive table-vertical-scroll w-full">
-    <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-        <thead class="bg-info/10">
+    <table class="table ov-table whitespace-nowrap min-w-full">
+        <thead class="ov-table__head">
             <tr class="border-b border-defaultborder">
                 <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width">
                     <ng-container *ngIf="headerTemplate; else defaultHeader">
@@ -42,7 +42,7 @@
                         <!-- Link Rendering -->
                         <ng-template #checkLink>
                             <ng-container *ngIf="col.isLink; else defaultData">
-                                <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick(row,col )">
+                                <span class="ov-link underline" (click)="linkClick(row,col )">
                                     {{ row[col.key]!=null ? 'View File': 'N/A' }}
                                 </span>
                             </ng-container>
@@ -59,10 +59,10 @@
                             </span>
                             <ng-template #editLink>
                                 
-                                <span  *ngIf="col.is_editCol; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
+                                <span  *ngIf="col.is_editCol; else statusCol" class="ov-link" 
                                 >
-                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
-                                <a *ngIf="col.is_editCol && col.redirect_url !=null" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{row[col.key]}}</a>
+                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  class="ov-link" (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
+                                <a *ngIf="col.is_editCol && col.redirect_url !=null" class="ov-link" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{row[col.key]}}</a>
                                 </span>
                                 <!-- <span  *ngIf="col.is_editCol && col.redirect_url==null; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
                                 (click)="edit_action(row,'edit')">
@@ -92,10 +92,10 @@
                     <!-- Action Column (Injected via ng-template) -->
                     <td *ngIf="hasActions">
                         <div class="flex gap-1">
-                            <button (click)="edit_action(row,'edit')" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+                            <button type="button" (click)="edit_action(row,'edit')" class="ov-icon-btn ov-icon-btn--primary" data-tooltip="Edit">
                               <i class="ri-edit-line text-xs"></i>
                             </button>
-                            <button  (click)="edit_action(row,'delete')" class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+                            <button type="button" (click)="edit_action(row,'delete')" class="ov-icon-btn ov-icon-btn--danger" data-tooltip="Delete">
                               <i class="ri-delete-bin-line text-xs"></i>
                             </button>
                           </div>
@@ -115,6 +115,6 @@
 </div>
 
 <!-- Pagination -->
-<mat-paginator *ngIf="!loading" [length]="totalRecords" [pageSize]="pageSize"
+<mat-paginator *ngIf="!loading && showPaginator" [length]="totalRecords" [pageSize]="pageSize"
     [pageIndex]="pageIndex" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons (page)="onPageChange($event)">
 </mat-paginator>

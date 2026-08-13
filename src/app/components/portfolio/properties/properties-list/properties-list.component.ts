@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -22,6 +22,7 @@ export class PropertiesListComponent implements OnInit {
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Units' | 'Rooms' = 'All';
   searchQuery: string = '';
+  showColumnDropdown = false;
 
   // Advanced Filters & Drawer States
   isDrawerOpen: boolean = false;
@@ -45,16 +46,27 @@ export class PropertiesListComponent implements OnInit {
 
   // Table Columns Definition
   tableColumns = [
-    { key: 'code', label: 'ID', headerClass: 'text-start', useTemplate: true },
-    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true },
-    { key: 'type_name', label: 'Type', headerClass: 'text-start', useTemplate: true },
-    { key: 'internal Status', label: 'Internal Status', headerClass: 'text-start', useTemplate: true },
-    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true },
-    { key: 'total_leases', label: 'Leases', headerClass: 'text-start', useTemplate: true },
-    { key: 'contracts', label: 'Contracts', headerClass: 'text-start', useTemplate: true },
-    { key: 'total_units', label: 'Occupied/Total Units', headerClass: 'text-start', useTemplate: true },
-    { key: 'occupancy_rate', label: 'Occupancy Rate', headerClass: 'text-start', useTemplate: true }
+    { key: 'code', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'type_name', label: 'Type', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'internal Status', label: 'Internal Status', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'total_leases', label: 'Leases', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'contracts', label: 'Contracts', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'total_units', label: 'Occupied/ Total Units', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'occupancy_rate', label: 'Occupancy Rate', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
+
+  openActionCode: string | number | null = null;
+
+  get visibleColumns() {
+    return this.tableColumns.filter(col => col.visible !== false);
+  }
+
+  get allColumnsSelected() {
+    return this.tableColumns.every(col => col.visible !== false);
+  }
 
   properties: any[] = [];
   filteredProperties: any[] = [];
@@ -167,8 +179,7 @@ private loadMetrics(
           this.totalPages=res.objResult.rows_info[0].noofpages;
         }
          
-        this.paginatedProperties=this.properties;
-    // Paginate  
+        this.paginatedProperties = this.properties;
         this.applyLocalFilters();
         }
       },
@@ -179,6 +190,13 @@ private loadMetrics(
   }
 
   applyLocalFilters(): void {
+    let result = this.properties || [];
+    if (this.selectedType) {
+      const type = this.selectedType.toLowerCase();
+      result = result.filter(p => (p.type_name || '').toLowerCase() === type);
+    }
+    this.paginatedProperties = result;
+
     // let result = this.properties;
 
     // // Apply text search
@@ -233,8 +251,27 @@ private loadMetrics(
     this.loadProperties();
   }
 
+  setTypeFilter(type: string | null): void {
+    this.selectedType = type;
+    this.applyLocalFilters();
+  }
+
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find(c => c.key === key);
+    if (col) {
+      col.visible = col.visible === false;
+    }
+  }
+
+  toggleAllColumns(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.tableColumns.forEach(col => col.visible = checked);
+  }
+
   setViewMode(mode: 'list' | 'grid'): void {
     this.viewMode = mode;
+    this.showColumnDropdown = false;
+    this.openActionCode = null;
   }
 
   toggleViewMode(): void {
@@ -288,17 +325,49 @@ private loadMetrics(
       //this.deleteUnit(ev.code);
     }
   }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionCode = null;
+  }
+
+  toggleRowAction(code: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  viewProperty(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/properties/' + code;
+  }
+
+  editProperty(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/edit-property/' + code;
+  }
+
+  isCommercialType(row: any): boolean {
+    return String(this.getArabicLookupName(row, 'type_name') || '').toLowerCase().includes('commercial');
+  }
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
   get startRecord(): number {
     if (this.totalRecords === 0) return 0;
-    if(this.pageNo==0)
-          this.pageNo=1;
-    return (this.pageNo-1) * this.pageSize+1;
+    return (this.displayPage - 1) * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    if(this.pageNo==0)
-    this.pageNo=1;
-    const end = this.pageNo * this.pageSize;
+    const end = this.displayPage * this.pageSize;
     return end > this.totalRecords ? this.totalRecords : end;
   }
 
@@ -313,14 +382,14 @@ private loadMetrics(
   }
 
   previousPage(): void {
-    if (this.pageNo > 1) {
+    if (this.pageNo > 0) {
       this.pageNo--;
       this.loadProperties();
     }
   }
 
   nextPage(): void {
-    if (this.pageNo < this.totalPages) {
+    if (this.displayPage < this.totalPages) {
       this.pageNo++;
       this.loadProperties();
     }

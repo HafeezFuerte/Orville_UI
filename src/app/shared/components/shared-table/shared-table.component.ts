@@ -49,6 +49,9 @@ export class SharedTableComponent {
   /** Flag to show/hide the action column */
   @Input() hasActions: boolean = false;
 
+  /** Hide Material paginator when the parent renders Figma pagination */
+  @Input() showPaginator: boolean = true;
+
   /** Event emitted when pagination changes */
   @Output() pageChange = new EventEmitter<PageEvent>();
  
