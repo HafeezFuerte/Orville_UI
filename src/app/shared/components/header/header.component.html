@@ -1,19 +1,19 @@
 <!-- Start::Header -->
 <header class="app-header">
-  <nav class="main-header !h-[3.75rem]" aria-label="Global">
+  <nav class="main-header !h-16" aria-label="Global">
     <div class="main-header-container ps-[0.725rem] pe-[1rem] ">
 
       <div class="header-content-left">
         <!-- Start::header-element -->
         <div class="header-element">
           <div class="horizontal-logo">
-            <a routerLink="/dashboard/crm" class="header-logo">
-              <img src="./assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
-              <img src="./assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
-              <img src="./assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
-              <img src="./assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
-              <img src="./assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
-              <img src="./assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
+            <a routerLink="/dashboard/crm" class="header-logo orville-sidebar-logo">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="desktop-logo orville-logo-emblem" width="32" height="32">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="toggle-logo orville-logo-emblem" width="32" height="32">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="desktop-dark orville-logo-emblem" width="32" height="32">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="toggle-dark orville-logo-emblem" width="32" height="32">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="desktop-white orville-logo-emblem" width="32" height="32">
+              <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="toggle-white orville-logo-emblem" width="32" height="32">
             </a>
           </div>
         </div>
@@ -27,6 +27,13 @@
           <!-- End::header-link -->
         </div>
         <!-- End::header-element -->
+
+        <div class="header-element !items-center header-search ps-2">
+          <button aria-label="Search" type="button" data-hs-overlay="#search-modal" class="orville-search-pill">
+            <img src="./assets/images/nav/search.svg" alt="" width="15" height="15">
+            <span class="orville-search-label">Search</span>
+          </button>
+        </div>
       </div>
 
 
@@ -34,8 +41,8 @@
       <div class="header-content-right">
 
         <!-- Global Branch & Building Dropdowns -->
-        <div class="header-element hidden sm:flex items-center gap-2 py-[1rem] md:px-[0.65rem] px-2">
-          <ng-select #globalBranchSelect [items]="branches" [(ngModel)]="selectedBranch" placeholder="Select Branch" class="ng-select-sm w-36 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
+        <div class="header-element hidden sm:flex items-center gap-5 py-[0.75rem]">
+          <ng-select #globalBranchSelect [items]="branches" [(ngModel)]="selectedBranch" placeholder="Select Branch" class="orville-header-select" [clearable]="false">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="$any(globalBranchSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -43,7 +50,7 @@
             </ng-template>
           </ng-select>
 
-          <ng-select #globalBldgSelect bindValue="code" bindLabel="name" [items]="buildings" [(ngModel)]="selectedBuilding" placeholder="Select Building" class="ng-select-sm w-40 text-xs bg-white rounded-md border border-gray-200" [clearable]="false">
+          <ng-select #globalBldgSelect bindValue="code" bindLabel="name" [items]="buildings" [(ngModel)]="selectedBuilding" placeholder="Select Building" class="orville-header-select" [clearable]="false">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="$any(globalBldgSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -58,21 +65,15 @@
           </ng-select>
         </div>
 
-        <div class="header-element py-[1rem] md:px-[0.65rem] px-2 header-search">
-          <button aria-label="button" type="button" data-hs-overlay="#search-modal"
-            class="inline-flex flex-shrink-0 justify-center items-center gap-2  rounded-full font-medium focus:ring-offset-0 focus:ring-offset-white transition-all text-xs dark:bg-bgdark dark:hover:bg-black/20 dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white dark:focus:ring-white/10 dark:focus:ring-offset-white/10">
-            <i class="bx bx-search-alt-2 header-link-icon"></i>
-          </button>
-        </div>
-
         <!-- start header country -->
 
         <div
-          class="header-element py-[1rem] md:px-[0.65rem] px-2  header-country hs-dropdown ti-dropdown  hidden sm:block [--placement:bottom-left]">
+          class="header-element header-country hs-dropdown ti-dropdown hidden sm:flex !items-center [--placement:bottom-left]">
 
           <button id="dropdown-flag" type="button"
-            class="hs-dropdown-toggle ti-dropdown-toggle !p-0 flex-shrink-0  !border-0 !rounded-full !shadow-none">
-            <img [src]="selectedLanguage.flag" alt="flag-img" class="h-[1.25rem] w-[1.25rem] rounded-full">
+            class="hs-dropdown-toggle orville-icon-btn !shadow-none"
+            [attr.aria-label]="selectedLanguage.name">
+            {{ selectedLanguage.code }}
           </button>
 
           <div class="hs-dropdown-menu ti-dropdown-menu min-w-[10rem] hidden !-mt-3" aria-labelledby="dropdown-flag">
@@ -98,16 +99,16 @@
         <!-- end header country -->
 
         <!-- light and dark theme -->
-        <div class="header-element header-theme-mode hidden !items-center sm:block !py-[1rem] md:!px-[0.65rem] px-2">
-          <a aria-label="anchor"
-            class="hs-dark-mode-active:hidden flex hs-dark-mode group flex-shrink-0 justify-center items-center gap-2  rounded-full font-medium transition-all text-xs dark:bg-bgdark dark:hover:bg-black/20 dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white dark:focus:ring-white/10 dark:focus:ring-offset-white/10"
-            href="javascript:void(0);" data-hs-theme-click-value="dark" (click)="themeChange('dark', 'dark','dark')">
-            <i class="bx bx-moon header-link-icon"></i>
+        <div class="header-element header-theme-mode hidden !items-center sm:flex">
+          <a *ngIf="!isDarkTheme" aria-label="Switch to dark theme"
+            class="orville-icon-btn"
+            href="javascript:void(0);" (click)="themeChange('dark', 'dark', 'dark')">
+            <i class="bx bx-moon"></i>
           </a>
-          <a aria-label="anchor"
-            class="hs-dark-mode-active:flex hidden hs-dark-mode group flex-shrink-0 justify-center items-center gap-2  rounded-full font-medium text-defaulttextcolor  transition-all text-xs dark:bg-bodybg dark:bg-bgdark dark:hover:bg-black/20 dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white dark:focus:ring-white/10 dark:focus:ring-offset-white/10"
-            href="javascript:void(0);" data-hs-theme-click-value="light" (click)="themeChange('light', 'light','dark')">
-            <i class="bx bx-sun header-link-icon"></i>
+          <a *ngIf="isDarkTheme" aria-label="Switch to light theme"
+            class="orville-icon-btn"
+            href="javascript:void(0);" (click)="themeChange('light', 'light', 'light')">
+            <i class="bx bx-sun"></i>
           </a>
         </div>
         <!-- End light and dark theme -->
@@ -289,17 +290,13 @@
 
         <!--Header Notifictaion -->
         <div
-          class="header-element py-[1rem] md:px-[0.65rem] px-2 notifications-dropdown header-notification hs-dropdown ti-dropdown !hidden md:!block [--placement:bottom-left]">
+          class="header-element notifications-dropdown header-notification hs-dropdown ti-dropdown !hidden md:!flex !items-center [--placement:bottom-left]">
           <button id="dropdown-notification" type="button"
-            class="hs-dropdown-toggle relative ti-dropdown-toggle !p-0 !border-0 flex-shrink-0  !rounded-full !shadow-none align-middle text-xs">
-            <i class="bx bx-bell header-link-icon  text-[1.125rem]"></i>
-            <span class="flex absolute h-5 w-5 -top-[0.25rem] end-0  -me-[0.6rem]">
-              <span
-                class="animate-slow-ping absolute inline-flex -top-[2px] -start-[2px] h-full w-full rounded-full bg-secondary/40 opacity-75"></span>
-              <span
-                class="relative inline-flex justify-center items-center rounded-full  h-[14.7px] w-[14px] bg-secondary text-[0.625rem] text-white"
-                id="notification-icon-badge">{{ notificationCount }}</span>
+            class="hs-dropdown-toggle orville-notify-wrap !p-0 !border-0 !bg-transparent !shadow-none !rounded-none">
+            <span class="orville-icon-btn">
+              <img src="./assets/images/nav/bell.svg" alt="" width="18" height="18">
             </span>
+            <span class="orville-notify-badge" id="notification-icon-badge">{{ notificationCount }}</span>
           </button>
           <div
             class="main-header-dropdown !-mt-3 !p-0 hs-dropdown-menu ti-dropdown-menu bg-white !w-[22rem] border-0 border-defaultborder hidden !m-0"
@@ -586,7 +583,7 @@
         <!--End Related Apps -->
 
         <!-- Fullscreen -->
-        <div class="header-element header-fullscreen py-[1rem] md:px-[0.65rem] px-2">
+        <div class="header-element header-fullscreen !items-center">
           <!-- Start::header-link -->
           <a aria-label="anchor" appFullscreen (click)="toggleFullScreen()"
             class="inline-flex flex-shrink-0 justify-center items-center gap-2" [ngClass]="{
@@ -603,18 +600,26 @@
         </div>
         <!-- End Full screen -->
 
+        <div class="orville-header-divider hidden md:block"></div>
+
         <!-- Header Profile -->
         <div
-          class="header-element md:!px-[0.65rem] px-2 hs-dropdown !items-center ti-dropdown [--placement:bottom-left]">
+          class="header-element hs-dropdown !items-center ti-dropdown [--placement:bottom-left]">
 
           <button id="dropdown-profile" type="button"
-            class="hs-dropdown-toggle ti-dropdown-toggle !gap-2 !p-0 flex-shrink-0 sm:me-2 me-0 !rounded-full !shadow-none text-xs align-middle !border-0 !shadow-transparent relative">
-            <!-- Circle with first letter of username -->
-            <div *ngIf="currentUser?.userName"
-              class="inline-flex items-center justify-center rounded-full bg-primary text-white font-semibold"
-              style="width: 32px; height: 32px;">
-              {{ currentUser?.userName?.charAt(0)?.toUpperCase() }}
-            </div>
+            class="hs-dropdown-toggle orville-profile-trigger ti-dropdown-toggle !p-0 !border-0 !shadow-none !bg-transparent">
+            <span class="inline-flex items-center gap-[11px]">
+              <span *ngIf="currentUser?.userName"
+                class="inline-flex items-center justify-center rounded-full bg-primary text-white font-semibold"
+                style="width: 32px; height: 32px;">
+                {{ currentUser?.userName?.charAt(0)?.toUpperCase() }}
+              </span>
+              <span class="orville-profile-meta hidden sm:flex">
+                <span class="orville-profile-name">{{ currentUser?.userName }}</span>
+                <span class="orville-profile-role">{{ currentUser?.roleName }}</span>
+              </span>
+            </span>
+            <img src="./assets/images/nav/profile-chevron.svg" alt="" class="orville-profile-chevron hidden sm:block" width="14" height="14">
           </button>
 
 

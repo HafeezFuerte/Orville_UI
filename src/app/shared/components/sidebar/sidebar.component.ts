@@ -311,6 +311,60 @@ export class SidebarComponent {
     'Assets': '/facility/assets',
   };
 
+  private figmaIconMap: { [key: string]: string } = {
+    'my day': './assets/images/nav/my-day.svg',
+    'insights': './assets/images/nav/insights.svg',
+    'properties': './assets/images/nav/properties.svg',
+    'units': './assets/images/nav/properties.svg',
+    'rooms': './assets/images/nav/properties.svg',
+    'parkings': './assets/images/nav/properties.svg',
+    'contacts': './assets/images/nav/contacts.svg',
+    'all contacts': './assets/images/nav/contacts.svg',
+    'tenants': './assets/images/nav/contacts.svg',
+    'vendors': './assets/images/nav/contacts.svg',
+    'landlords': './assets/images/nav/contacts.svg',
+    'support technicians': './assets/images/nav/contacts.svg',
+    'lease management': './assets/images/nav/lease.svg',
+    'leases': './assets/images/nav/lease.svg',
+    'contracts': './assets/images/nav/contracts.svg',
+    'accounting': './assets/images/nav/accounting.svg',
+    'commissions': './assets/images/nav/commissions.svg',
+    'collection request': './assets/images/nav/collection.svg',
+    'property listings': './assets/images/nav/listings.svg',
+    'reminders': './assets/images/nav/reminders.svg',
+    'broadcasts': './assets/images/nav/broadcasts.svg',
+    'bookings': './assets/images/nav/bookings.svg',
+    'community': './assets/images/nav/community.svg',
+    'facility': './assets/images/nav/facility.svg',
+    'work orders': './assets/images/nav/facility.svg',
+    'assets': './assets/images/nav/facility.svg',
+    'guests': './assets/images/nav/guests.svg',
+    'legal': './assets/images/nav/legal.svg',
+    'inspections': './assets/images/nav/inspections.svg',
+    'reports': './assets/images/nav/reports.svg',
+    'documents': './assets/images/nav/documents.svg',
+    'download': './assets/images/nav/download.svg',
+    'setting': './assets/images/nav/settings.svg',
+    'settings': './assets/images/nav/settings.svg',
+  };
+
+  getFigmaIcon(title?: string): string | null {
+    if (!title) {
+      return null;
+    }
+    const normalized = title.trim().toLowerCase();
+    if (this.figmaIconMap[normalized]) {
+      return this.figmaIconMap[normalized];
+    }
+    const keys = Object.keys(this.figmaIconMap).sort((a, b) => b.length - a.length);
+    for (const key of keys) {
+      if (normalized.includes(key)) {
+        return this.figmaIconMap[key];
+      }
+    }
+    return null;
+  }
+
 
 
   //Active Nav State

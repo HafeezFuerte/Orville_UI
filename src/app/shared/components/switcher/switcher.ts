@@ -146,6 +146,8 @@ export function handleThemeUpdate(cssVars: any) {
     if (localStorage.getItem('ynex-menu-mode')) {
       const type: any = localStorage.getItem('ynex-menu-mode');
       html?.setAttribute('data-menu-styles', type);
+    } else {
+      html?.setAttribute('data-menu-styles', 'light');
     }
     if (localStorage.getItem('ynex-header-position')) {
       const type: any = localStorage.getItem('ynex-header-position');
@@ -158,6 +160,8 @@ export function handleThemeUpdate(cssVars: any) {
     if (localStorage.getItem('ynex-header-mode')) {
       const type: any = localStorage.getItem('ynex-header-mode');
       html?.setAttribute('data-header-styles', type);
+    } else {
+      html?.setAttribute('data-header-styles', 'light');
     }
   
     if (localStorage.getItem("ynex-background-mode-body")) {
@@ -215,20 +219,31 @@ export function handleThemeUpdate(cssVars: any) {
     }
     if (localStorage.getItem("ynex-primary-mode")) {
       const type: any = localStorage.getItem("ynex-primary-mode");
-      html?.style.setProperty('--primary-rgb', type);
-      html?.style.setProperty('--primary', type);
+      if (!isLegacyYnexPurple(type)) {
+        html?.style.setProperty('--primary-rgb', type);
+        html?.style.setProperty('--primary', type);
+      }
     }
     if (localStorage.getItem("ynexlight-primary-color")) {
       const type: any = localStorage.getItem("ynexlight-primary-color");
-  
-  
-      html?.style.setProperty('--primary-rgb', type);
-      html?.style.setProperty('-primary', type);
+      if (!isLegacyYnexPurple(type)) {
+        html?.style.setProperty('--primary-rgb', type);
+        html?.style.setProperty('--primary', type);
+      }
     }
     if (localStorage.getItem("ynexlight-primary-color1")) {
       const type: any = localStorage.getItem("ynexlight-primary-color1");
-      // html?.style.setProperty('--primary-rgb', type);
-      html?.style.setProperty('--primary', type);
+      if (!isLegacyYnexPurple(type)) {
+        html?.style.setProperty('--primary', type);
+      }
     }
+  }
+
+  function isLegacyYnexPurple(value: string | null): boolean {
+    if (!value) {
+      return false;
+    }
+    const compact = value.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+    return compact === '132 90 223' || compact.startsWith('132 90 223');
   }
   

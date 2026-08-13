@@ -1,0 +1,247 @@
+:host {
+  --orville-accent: 189 151 89;
+  --orville-nav-active-bg: 238 238 245;
+  font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
+}
+
+.orville-sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.orville-logo-full {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.orville-logo-wordmark {
+  display: grid;
+  gap: 6px;
+}
+
+.orville-logo-emblem {
+  width: 47px !important;
+  height: 47px !important;
+  max-height: 47px !important;
+  object-fit: contain;
+}
+
+.orville-logo-word {
+  width: 98px !important;
+  height: 18px !important;
+  max-height: 18px !important;
+}
+
+.orville-logo-tag {
+  width: 98px !important;
+  height: 5px !important;
+  max-height: 5px !important;
+}
+
+.orville-create-wrap {
+  padding: 12px 10px 8px;
+}
+
+.orville-create-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 13px;
+  cursor: pointer;
+
+  img {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+}
+
+.orville-nav-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 6px;
+  background-color: currentColor;
+  -webkit-mask: var(--orville-icon) center / contain no-repeat;
+  mask: var(--orville-icon) center / contain no-repeat;
+}
+
+:host ::ng-deep {
+  .main-menu > .slide > .side-menu__item {
+    font-size: 14px !important;
+
+    .side-menu__label {
+      font-size: 14px !important;
+      line-height: 18px !important;
+    }
+  }
+
+  .orville-parent-item {
+    background: transparent !important;
+    color: rgb(var(--text-muted)) !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+
+    .side-menu__label,
+    .orville-nav-icon,
+    .side-menu__icon,
+    .side-menu__angle {
+      color: rgb(var(--text-muted)) !important;
+      font-weight: 400 !important;
+      font-size: 14px !important;
+    }
+  }
+
+  .slide-menu.child1,
+  .slide-menu.child2,
+  .slide-menu.child3 {
+    padding: 4px 0 0 !important;
+
+    .slide,
+    li {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .slide + .slide {
+      margin-top: 4px !important;
+    }
+
+    .side-menu__item,
+    .orville-sub-item {
+      display: flex;
+      align-items: center;
+      min-height: 32px;
+      height: 32px;
+      padding: 0 8px 0 34px !important;
+      border-radius: 4px;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      line-height: 16px;
+      letter-spacing: 0.24px;
+      color: #6b6b7d !important;
+      background: transparent !important;
+
+      &::before {
+        display: none !important;
+        content: none !important;
+        border: 0 !important;
+      }
+
+      .orville-nav-icon,
+      .side-menu__icon {
+        display: none;
+      }
+
+      .side-menu__label {
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        line-height: 16px !important;
+        letter-spacing: 0.24px;
+        color: inherit !important;
+      }
+
+      &:hover:not(.active) {
+        background-color: rgb(var(--orville-nav-active-bg)) !important;
+        color: #6b6b7d !important;
+      }
+
+      &.active {
+        background-color: rgb(var(--orville-nav-active-bg)) !important;
+        color: rgb(var(--orville-accent)) !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        min-height: 32px;
+        height: 32px;
+        padding: 0 8px 0 34px !important;
+
+        .side-menu__label {
+          font-size: 12px !important;
+          font-weight: 400 !important;
+          color: rgb(var(--orville-accent)) !important;
+        }
+      }
+    }
+  }
+
+  .slide-menu.child2 .side-menu__item,
+  .slide-menu.child3 .side-menu__item {
+    padding-left: 48px !important;
+  }
+}
+
+:host-context([data-menu-styles='dark']),
+:host-context([data-menu-styles='color']),
+:host-context([data-menu-styles='gradient']) {
+  ::ng-deep .orville-parent-item {
+    color: rgb(255 255 255 / 0.72) !important;
+    background: transparent !important;
+
+    .side-menu__label,
+    .orville-nav-icon,
+    .side-menu__icon,
+    .side-menu__angle {
+      color: rgb(255 255 255 / 0.72) !important;
+    }
+  }
+
+  ::ng-deep .slide-menu .side-menu__item,
+  ::ng-deep .slide-menu .orville-sub-item {
+    color: rgb(255 255 255 / 0.72) !important;
+
+    .side-menu__label {
+      color: rgb(255 255 255 / 0.72) !important;
+    }
+
+    &.active,
+    &:hover {
+      color: #fff !important;
+      background-color: rgb(255 255 255 / 0.08) !important;
+
+      .side-menu__label,
+      .side-menu__angle {
+        color: #fff !important;
+      }
+    }
+
+    &::before {
+      display: none !important;
+      content: none !important;
+    }
+  }
+}
+
+:host-context([data-nav-layout='horizontal']) {
+  .orville-create-wrap {
+    display: none;
+  }
+}
+
+:host-context([data-toggled='icon-overlay-close']:not([icon-overlay='open'])),
+:host-context([data-toggled='icon-text-close']:not([icon-text='open'])),
+:host-context([data-vertical-style='closed']) {
+  .orville-logo-wordmark,
+  .orville-create-label {
+    display: none;
+  }
+
+  .orville-create-wrap {
+    padding-inline: 6px;
+  }
+
+  .orville-create-btn {
+    padding: 8px;
+  }
+}

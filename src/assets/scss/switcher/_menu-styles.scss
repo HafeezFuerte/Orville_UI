@@ -649,18 +649,20 @@
 
 [data-menu-styles="light"] {
   .app-sidebar {
-    --menu-prime-color: 128 135 147;
-    @apply bg-white border-[#f3f3f3] #{!important};
+    --menu-prime-color: 107 107 125;
+    --orville-accent: 189 151 89;
+    --orville-nav-active-bg: 238 238 245;
+    @apply bg-defaultbackground border-headerbordercolor #{!important};
 
     .slide__category::before {
       @apply border-black/50;
     }
 
     .main-sidebar-header {
-      @apply bg-white border-[#f3f3f3] backdrop-blur-3xl #{!important};
+      @apply bg-defaultbackground border-headerbordercolor backdrop-blur-3xl #{!important};
 
       .header-logo {
-        img {
+        img:not(.orville-logo-emblem):not(.orville-logo-word):not(.orville-logo-tag) {
           @apply h-8 leading-8;
         }
 
@@ -682,35 +684,78 @@
     // }
 
     .app-sidebar {
-      @apply bg-white border-[#f3f3f3] #{!important};
+      @apply bg-defaultbackground border-headerbordercolor #{!important};
+    }
+
+    .slide {
+      @apply px-[0.45rem];
+    }
+
+    .main-menu > .slide + .slide {
+      margin-top: 8px;
     }
 
     .side-menu__label {
-      @apply text-[#536485] #{!important};
+      color: rgb(var(--text-muted)) !important;
+      font-size: 14px !important;
+      letter-spacing: 0.28px;
+      font-weight: 400;
+    }
+
+    .slide-menu .side-menu__label {
+      font-size: 12px !important;
     }
 
     .side-menu__icon {
-      @apply text-[#536485] #{!important};
+      color: rgb(var(--text-muted)) !important;
     }
 
     .side-menu__item {
-      @apply text-[#536485];
+      color: rgb(var(--text-muted));
+      min-height: 32px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 14px;
 
       &:hover {
-        @apply text-[#536485] bg-[#f3f6f8] #{!important};
+        color: rgb(var(--text-muted)) !important;
+        background-color: rgb(var(--orville-nav-active-bg)) !important;
 
         .side-menu__label,
         .side-menu__angle {
-          @apply text-[#536485];
+          color: rgb(var(--text-muted));
         }
 
         .side-menu__icon {
-          @apply text-[#536485] fill-[#536485] #{!important};
+          color: rgb(var(--text-muted)) !important;
+          fill: rgb(var(--text-muted)) !important;
         }
       }
 
       &.active {
-        @apply font-semibold bg-[#f3f6f8];
+        font-weight: 700;
+        background-color: rgb(var(--orville-nav-active-bg)) !important;
+        color: rgb(var(--orville-accent)) !important;
+
+        .side-menu__label,
+        .orville-nav-icon,
+        .side-menu__icon {
+          color: rgb(var(--orville-accent)) !important;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .orville-parent-item {
+      background: transparent !important;
+      color: rgb(var(--text-muted)) !important;
+
+      .side-menu__label,
+      .orville-nav-icon,
+      .side-menu__icon,
+      .side-menu__angle {
+        color: rgb(var(--text-muted)) !important;
+        font-weight: 400 !important;
       }
     }
 
@@ -719,16 +764,38 @@
       &.child2,
       &.child3 {
         .side-menu__item {
-          @apply text-[#536485] before:border-[#536485]/80;
+          color: #6b6b7d !important;
+          background: transparent !important;
 
-          &.active,
-          &:active,
-          &:hover,
-          &.hover {
-            @apply text-[#536485] before:border-[#536485] #{!important};
+          .side-menu__label {
+            color: #6b6b7d !important;
+            font-weight: 400 !important;
+          }
 
+          &::before {
+            display: none !important;
+            content: none !important;
+          }
+
+          &:hover:not(.active) {
+            background-color: rgb(var(--orville-nav-active-bg)) !important;
+            color: #6b6b7d !important;
+
+            .side-menu__label {
+              color: #6b6b7d !important;
+            }
+          }
+
+          &.active {
+            color: rgb(var(--orville-accent)) !important;
+            background-color: rgb(var(--orville-nav-active-bg)) !important;
+            font-weight: 400;
+
+            .side-menu__label,
             .side-menu__angle {
-              @apply text-[#536485] #{!important};
+              color: rgb(var(--orville-accent)) !important;
+              font-weight: 400 !important;
+              font-size: 12px !important;
             }
           }
         }

@@ -29,8 +29,10 @@ module.exports = {
       full: "9999px",
     },
     fontFamily: {
-      inter: ["Inter", "sans-serif"],
-      Montserrat: ["Montserrat","sans-serif"],
+      sans: ["Hanken Grotesk", "sans-serif"],
+      hanken: ["Hanken Grotesk", "sans-serif"],
+      inter: ["Hanken Grotesk", "sans-serif"],
+      Montserrat: ["Hanken Grotesk", "sans-serif"],
     },
     fontSize: {
       defaultsize: '0.813rem',
