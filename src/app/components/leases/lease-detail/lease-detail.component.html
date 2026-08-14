@@ -6,12 +6,12 @@
     </a>
     <div>
       <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ leaseInfo.name }}</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+      <div class="text-[11px] text-gray-600 font-medium flex items-center gap-1">
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">Home</span>
         <span>/</span>
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">Lease</span>
         <span>/</span>
-        <span class="text-gray-600">{{ leaseInfo.name }}</span>
+        <span class="text-gray-600">{{ leaseInfo.active_lease }}</span>
         <span>/</span>
         <span class="text-gray-600">Details</span>
       </div>
@@ -46,12 +46,15 @@
         <!-- Status & Main actions card -->
         <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-4">
           <div>
-            <h6 class="font-bold text-gray-800 text-sm m-0">{{ leaseInfo.name }}</h6>
+            <h6 class="font-bold text-gray-800 text-sm m-0">{{ leaseInfo.active_lease }}</h6>
+            <span class="text-xs text-gray-400 font-medium mt-1 flex items-center gap-0.5">
+              <i class="ri-map-pin-line text-sm"></i> {{leaseInfo?.address_1}}
+            </span>
             <div class="flex items-center gap-2 mt-2">
               <span class="px-2 py-0.5 rounded text-[9px] bg-gray-100 text-gray-500 font-bold border border-gray-200/50 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {{ leaseInfo.status }}
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {{ getArabicLookupName(leaseInfo,'status_nm') }}
               </span>
-              <span class="px-2 py-0.5 rounded text-[9px] bg-[#1f2b45] text-white font-bold flex items-center gap-1">
+              <span *ngIf="leaseInfo.is_renewed == true" class="px-2 py-0.5 rounded text-[9px] bg-[#1f2b45] text-white font-bold flex items-center gap-1">
                 Renewed
               </span>
             </div>
@@ -68,7 +71,7 @@
         </div>
 
         <!-- Warning Message if Draft -->
-        <div *ngIf="leaseInfo.status === 'Draft'" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
+        <div *ngIf="leaseInfo.status === '177'" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
           <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Lease in Draft Mode</p>
           <p class="m-0 text-[10px] leading-relaxed text-gray-600">Your lease is in draft mode. Once you activate it, the invoices will be posted in the accounting.</p>
         </div>
@@ -79,59 +82,59 @@
           
           <div class="flex flex-col gap-2.5">
             <div class="flex justify-between">
-              <span class="text-gray-400">Lease ID:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.id }}</span>
+              <span class="text-gray-600">Lease ID:</span>
+              <span class="font-bold text-gray-700">{{ leaseInfo.code }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Tenant:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.tenant }}</span>
+              <span class="text-gray-600">Tenant:</span>
+              <span [routerLink]="['/contacts/tenants/edit-tenant', leaseInfo?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.tenant }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Property:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.property }}</span>
+              <span class="text-gray-600">Property:</span>
+              <span [routerLink]="['/edit-property', leaseInfo?.property_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.property }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Unit:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.unit }}</span>
+              <span class="text-gray-600">Unit:</span>
+              <span [routerLink]="['/edit-unit', leaseInfo?.unit_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.unitcode }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Duration:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.duration }}</span>
+              <span class="text-gray-600">Duration:</span>
+              <span class="font-semibold text-gray-700">{{ leaseInfo.total_months }} months</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">No of Occupants:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.noOfOccupants }}</span>
+              <span class="text-gray-600">No of Occupants:</span>
+              <span class="font-semibold text-gray-700">{{ leaseInfo.no_of_persons }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.startDate }}</span>
+              <span class="text-gray-600">Start Date:</span>
+              <span class="font-semibold text-gray-700">{{ leaseInfo.start_date | date:'MMM d yyyy'}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.endDate }}</span>
+              <span class="text-gray-600">End Date:</span>
+              <span class="font-semibold text-gray-700">{{ leaseInfo.end_date | date:'MMM d yyyy' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Lease Days Left:</span>
+              <span class="text-gray-600">Lease Days Left:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.leaseDaysLeft }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Collector:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.collector }}</span>
+              <span class="text-gray-600">Collector:</span>
+              <span class="font-semibold text-gray-700">{{ leaseInfo.collectedby }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Short Term:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">No</span>
+              <span class="text-gray-600">Short Term:</span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">{{leaseInfo.is_lease_short_term == true ? 'Yes' :'No'}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Renewed:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success border border-success/20">Yes</span>
+              <span class="text-gray-600">Renewed:</span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success border border-success/20">{{leaseInfo.is_renewed == true ? 'Yes' :'No'}}</span>
+            </div>
+            <div class="flex justify-between" *ngIf="leaseInfo.is_renewed == true">
+              <span class="text-gray-600">Renewed From:</span>
+              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.renewed_from || '-' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Renewed From:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.renewedFrom }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Is Multi Unit:</span>
+              <span class="text-gray-600">Is Multi Unit:</span>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">No</span>
             </div>
           </div>
@@ -142,56 +145,57 @@
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Financial Information</h6>
           <div class="flex flex-col gap-2.5">
             <div class="flex justify-between">
-              <span class="text-gray-400">Total Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.totalRent }}</span>
+              <span class="text-gray-600">Total Rent:</span>
+              <span class="font-bold text-gray-700">{{ currentUser?.currencyCode + ' ' +  leaseInfo.rent_amount }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Annual Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.annualRent }}</span>
+              <span class="text-gray-600">Annual Rent:</span>
+              <span class="font-bold text-gray-700">{{  currentUser?.currencyCode + ' ' + leaseInfo.annual_rent }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Monthly Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.monthlyRent }}</span>
+              <span class="text-gray-600">Monthly Rent:</span>
+              <span class="font-bold text-gray-700">{{  currentUser?.currencyCode + ' ' + leaseInfo.monthly_rent }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">No of Payments:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.noOfPayments }}</span>
+              <span class="text-gray-600">No of Payments:</span>
+              <span class="font-bold text-gray-700">{{ leaseInfo.total_payments }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Unit Market Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.unitMarketRent }}</span>
+              <span class="text-gray-600">Unit Market Rent:</span>
+              <span class="font-bold text-gray-700">{{  currentUser?.currencyCode + ' ' + leaseInfo.market_rent }}</span>
             </div>
           </div>
         </div>
 
         <!-- Previous Lease Information -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
+        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3"
+        *ngIf="leaseInfo.is_renewed == true">
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblPreviousLease' | translate }}</h6>
           <div class="flex flex-col gap-2.5">
             <div class="flex flex-col gap-0.5">
-              <span class="text-gray-400">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
-              <a class="font-bold text-primary hover:underline cursor-pointer">Lease - 31650 - Marina Heights Towers</a>
+              <span class="text-gray-600">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
+              <a class="font-bold text-primary hover:underline cursor-pointer">{{leaseInfo.renewed_lease}}</a>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Status:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/15 text-success">Active</span>
+              <span class="text-gray-600">Status:</span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/15 text-success">{{ getArabicLookupName(leaseInfo,'ll_status_nm')}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
-              <span class="font-semibold text-gray-700">08-01-2025</span>
+              <span class="text-gray-600">Start Date:</span>
+              <span class="font-semibold text-gray-700">{{leaseInfo.start_date |  date:'MMM d yyyy'}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
-              <span class="font-semibold text-gray-700">06-30-2026</span>
+              <span class="text-gray-600">End Date:</span>
+              <span class="font-semibold text-gray-700">{{leaseInfo.end_date |  date:'MMM d yyyy'}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Monthly Rent:</span>
-              <span class="font-bold text-gray-700">AED 2,200.00</span>
+              <span class="text-gray-600">Monthly Rent:</span>
+              <span class="font-bold text-gray-700">{{leaseInfo.monthly_rent}}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Days Left:</span>
+            <!-- <div class="flex justify-between">
+              <span class="text-gray-600">Days Left:</span>
               <span class="font-bold text-gray-700">4 days</span>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -199,7 +203,7 @@
         <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblDubaiTenancy' | translate }}</h6>
           <div class="flex items-center justify-between">
-            <span class="text-gray-400">No lease terms configured</span>
+            <span class="text-gray-600">No lease terms configured</span>
             <button type="button" [attr.data-tooltip]="'web.leases.lblViewTerms' | translate" class="px-3 py-1 text-[10px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center gap-1">
               {{ 'web.leases.lblViewTerms' | translate }} <i class="ri-arrow-right-s-line"></i>
             </button>
@@ -210,7 +214,7 @@
         <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblMoveInChecklist' | translate }}</h6>
           <div class="flex items-center justify-between">
-            <span class="text-gray-400">No checklist items configured</span>
+            <span class="text-gray-600">No checklist items configured</span>
             <button type="button" [attr.data-tooltip]="'web.leases.lblViewChecklist' | translate" class="px-3 py-1 text-[10px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center gap-1">
               {{ 'web.leases.lblViewChecklist' | translate }} <i class="ri-arrow-right-s-line"></i>
             </button>
@@ -221,26 +225,13 @@
         <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Custom Fields</h6>
           <div class="flex flex-col gap-2.5">
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblNoOfPerson' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblMoveInDate' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblCreatedBy' | translate }}:</span>
-              <span class="font-semibold text-gray-700">Zaid Rahman</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Created Date:</span>
-              <span class="font-semibold text-gray-700">08-26-2026</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblPayingDate' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
-            </div>
+            <div class="flex justify-between" *ngFor="let c of customFields">
+              <span class="text-gray-600">{{ c.field_name }}:</span>
+              <span class="font-semibold text-gray-700">{{c.field_value}}</span>
+            </div> 
+            <div class="flex justify-between" *ngIf="customFields.length==0">
+              <span class="text-gray-600">No custom fields</span>
+            </div> 
           </div>
         </div>
 
@@ -266,17 +257,17 @@
                 <div class="flex justify-between items-start">
                   <div>
                     <span class="text-[9px] font-bold text-white/60 tracking-wider uppercase">Current Balance</span>
-                    <h4 class="text-xl font-black mt-1">AED 1,500.00</h4>
+                    <h4 class="text-xl font-black mt-1">  {{currentUser?.currencyCode + ' ' + leaseInfo?.income_amt}}</h4>
                   </div>
                 </div>
                 <div class="flex justify-between border-t border-white/10 pt-3 text-[10px]">
                   <div>
                     <span class="text-white/60 block">Total Income</span>
-                    <span class="font-bold">AED 1,200.00</span>
+                    <span class="font-bold">{{currentUser?.currencyCode + ' ' + leaseInfo?.income_amt}}</span>
                   </div>
                   <div>
                     <span class="text-white/60 block">Security Deposit</span>
-                    <span class="font-bold">AED 300.00</span>
+                    <span class="font-bold">{{currentUser?.currencyCode + ' ' + leaseInfo?.security_income_amt}}</span>
                   </div>
                 </div>
               </div>
@@ -284,20 +275,20 @@
               <!-- Single Cards grid -->
               <div class="grid grid-cols-2 gap-3 md:col-span-1">
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Paid</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Paid</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{currentUser?.currencyCode}} 0.00</h5>
                 </div>
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Upcoming</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Upcoming</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{currentUser?.currencyCode}} 0.00</h5>
                 </div>
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Bounced</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Bounced</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{currentUser?.currencyCode}} 0.00</h5>
                 </div>
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Write Off</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Write Off</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{currentUser?.currencyCode}} 0.00</h5>
                 </div>
               </div>
             </div>
@@ -305,20 +296,20 @@
             <!-- Other amounts row -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Equity</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Equity</span>
+                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">{{currentUser?.currencyCode}} 0.00</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Outstanding Cheques</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Outstanding Cheques</span>
+                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">{{currentUser?.currencyCode}} 0.00</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Refundable Amount</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 300.00</h5>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Refundable Amount</span>
+                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">{{currentUser?.currencyCode + ' ' + leaseInfo?.security_income_amt}}</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Pending Adjustments</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Pending Adjustments</span>
+                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">{{currentUser?.currencyCode}} 0.00</h5>
               </div>
             </div>
           </div>
@@ -326,21 +317,33 @@
           <!-- Invoice Schedules Grid -->
           <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Invoice Schedules (Fixed) 1</h6>
+              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Invoice Schedules</h6>
             </div>
             <div class="p-4">
               <app-shared-table [columns]="invoiceColumns" [data]="invoiceSchedules" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'invoiceId'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.invoiceId }}</span>
+                    <ng-container *ngSwitchCase="'amt'">
+                      <span class="font-bold text-gray-700">{{ row.amt }}</span>
                     </ng-container>
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-semibold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'adv_amt'">
+                      <span class="font-bold text-gray-700">{{ row.adv_amt }}</span>
                     </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span class="px-2 py-0.5 rounded bg-danger/10 text-danger text-[9px] font-bold border border-danger/20">Unpaid</span>
+                    <ng-container *ngSwitchCase="'account_name'">
+                      <span class="font-bold text-gray-700">{{ row.account_name }}</span>
                     </ng-container>
+                    <ng-container *ngSwitchCase="'due_date'">
+                      <span class="font-bold text-gray-700">{{ row.due_date | date:'yyyy-MM-dd' }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'recurring_cycle'">
+                      <span class="font-bold text-gray-700">{{ row.recurring_cycle }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'payment_type'">
+                      <span class="font-bold text-gray-700">{{ row.payment_type }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'attachment_path'">
+                      <span class="font-bold text-gray-700">{{ row.attachment_path}}</span>
+                    </ng-container> 
                   </ng-container>
                 </ng-template>
               </app-shared-table>
@@ -380,13 +383,16 @@
           <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
               <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Tenants</h6>
+              <button  [routerLink]="['/contacts/tenants/add-tenant']" type="button"   class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
+                <i class="ri-add-line text-[11px]"></i> Add Tenant
+              </button>
             </div>
             <div class="p-4">
               <app-shared-table [columns]="tenantColumns" [data]="tenantsData" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
+                    <ng-container *ngSwitchCase="'code'">
+                      <span [routerLink]="['/contacts/tenants/edit-tenant', row.code]" class="text-primary font-bold hover:underline cursor-pointer">{{ row.code }}</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'activeLease'">
                       <span class="text-primary hover:underline cursor-pointer font-medium">{{ row.activeLease }}</span>
@@ -464,7 +470,8 @@
 
         <!-- 4. WORK ORDERS TAB -->
         <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+          <app-workorders-table [selectedTab]="selectedTab" [data]="selectedTab?.data || []"></app-workorders-table>
+          <!-- <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
               <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Work Orders</h6>
             </div>
@@ -492,59 +499,17 @@
                 </ng-template>
               </app-shared-table>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <!-- 5. E-DOCUMENTS TAB -->
         <div *ngIf="activeTab === 'E-Documents'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">E-Documents</h6>
-            </div>
-            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div *ngFor="let doc of eDocumentsData" class="p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-all flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded bg-danger/10 text-danger flex items-center justify-center font-bold text-xs">PDF</div>
-                  <div>
-                    <p class="font-bold text-gray-700 m-0 text-xs">{{ doc.name }}</p>
-                    <p class="text-[10px] text-gray-400 m-0 mt-0.5">{{ doc.size }} | {{ doc.updated }}</p>
-                  </div>
-                </div>
-                <button type="button" [attr.data-tooltip]="'Download'" class="w-8 h-8 rounded bg-white border border-gray-200 text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center shadow-sm">
-                  <i class="ri-download-2-line text-sm"></i>
-                </button>
-              </div>
-            </div>
-          </div>
+          <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
         </div>
 
         <!-- 6. NOTICES TAB -->
         <div *ngIf="activeTab === 'Notices'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Notices</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="noticesColumns" [data]="noticesData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'preview'">
-                      <button type="button" [attr.data-tooltip]="'Quick View'" class="px-2.5 py-1 text-[10px] font-semibold border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all rounded shadow-sm flex items-center gap-1">
-                        <i class="ri-eye-line"></i> Quick View
-                      </button>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Published'" class="px-2 py-0.5 rounded bg-success text-white text-[10px] font-bold shadow-sm">Published</span>
-                      <span *ngIf="row.status === 'Draft'" class="px-2 py-0.5 rounded bg-gray-500 text-white text-[10px] font-bold shadow-sm">Draft</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
-          </div>
+          
         </div>
 
         <!-- 7. LEGAL TAB -->
@@ -613,26 +578,14 @@
     <ng-template #units>
       <!-- UNITS TAB -->
       <div *ngIf="activeTab === 'units'" class="flex flex-col gap-4 text-xs">
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Units</h6>
-          </div>
-          <div class="p-4">
-            <app-shared-table [columns]="unitsColumns" [data]="unitsData" [hasActions]="false">
-              <ng-template #colTemplate let-row="row" let-col="col">
-                <ng-container [ngSwitch]="col.key">
-                  <ng-container *ngSwitchCase="'status'">
-                    <span class="px-2 py-0.5 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Occupied</span>
-                  </ng-container>
-                </ng-container>
-              </ng-template>
-            </app-shared-table>
-          </div>
-        </div>
+        <app-shared-units-table [selectedTab]="selectedTab"   [data]="selectedTab?.data || []"
+        [loading]="selectedTab?.loading || false" [totalRecords]="selectedTab?.totalRecords || 0"
+        [pageSize]="selectedTab?.pageSize || 50" [pageIndex]="selectedTab?.pageIndex || 0"
+        [hasActions]="selectedTab?.hasActions || false" ></app-shared-units-table>
       </div>
 
       <!-- Default Placeholder for other tabs -->
-      <div *ngIf="activeTab !== 'units' && activeTab !== 'Tenant' && activeTab !== 'Financials' && activeTab !== 'Cheques' && activeTab !== 'Work Orders' && activeTab !== 'E-Documents' && activeTab !== 'Notices' && activeTab !== 'Legal' && activeTab !== 'notes' && activeTab !== 'attachments' && activeTab !== 'Inspections'" class="p-8 text-center text-gray-400 bg-white border border-gray-100 rounded-xl shadow-sm">
+      <div *ngIf="activeTab !== 'units' && activeTab !== 'Tenant' && activeTab !== 'Financials' && activeTab !== 'Cheques' && activeTab !== 'Work Orders' && activeTab !== 'E-Documents' && activeTab !== 'Notices' && activeTab !== 'Legal' && activeTab !== 'notes' && activeTab !== 'attachments' && activeTab !== 'Inspections'" class="p-8 text-center text-gray-600 bg-white border border-gray-100 rounded-xl shadow-sm">
         <i class="ri-folder-open-line text-2xl block mb-2 text-gray-300"></i>
         No data configured for tab: {{ activeTab }}
       </div>
@@ -640,12 +593,12 @@
 
     <!-- PROJECTED NOTES SLOT -->
     <ng-template #notes>
-      <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
+      <app-notes-table [selectedTab]="selectedTab" ></app-notes-table>
     </ng-template>
 
     <!-- PROJECTED ATTACHMENTS SLOT -->
     <ng-template #attachments>
-      <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
+      <app-attachments-table [selectedTab]="selectedTab" ></app-attachments-table>
     </ng-template>
 
   </app-detail-page-layout>
@@ -656,9 +609,9 @@
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div>
           <h5 class="text-xs font-bold text-gray-800 m-0">Add New Invoice</h5>
-          <p class="text-[10px] text-gray-400 m-0">Create an invoice for this lease.</p>
+          <p class="text-[10px] text-gray-600 m-0">Create an invoice for this lease.</p>
         </div>
-        <button (click)="closeInvoiceModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button (click)="closeInvoiceModal()" class="text-gray-600 hover:text-gray-600 transition-all">
           <i class="ri-close-line text-lg"></i>
         </button>
       </div>
@@ -716,9 +669,9 @@
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div>
           <h5 class="text-xs font-bold text-gray-800 m-0">Add Inspection</h5>
-          <p class="text-[10px] text-gray-400 m-0">Schedule an inspection for this lease.</p>
+          <p class="text-[10px] text-gray-600 m-0">Schedule an inspection for this lease.</p>
         </div>
-        <button (click)="closeInspectionModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button (click)="closeInspectionModal()" class="text-gray-600 hover:text-gray-600 transition-all">
           <i class="ri-close-line text-lg"></i>
         </button>
       </div>

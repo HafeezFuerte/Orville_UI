@@ -1,22 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { CommonService } from '../../../services/common.service';
-export interface LookupPayload {
-  filterId: number;
-  typeId?: number;
-  filterText?: string;
-  filterText1?: string;
-  userId: number;
-  clientId: string;
-  companyId: string;
-}
+import { environment } from '../../../environments/environment';
+import { CommonService } from '../../services/common.service'; 
 @Injectable({
   providedIn: 'root'
 })
-
-export class Common_TabsService {
+export class LeasesService {
+ 
 currentUser: any;
 getMasterAPI = environment.apiurl+'api/Masters/_getMasters';
 
@@ -34,33 +25,16 @@ private postAPI(url: string, payload: any): Observable<any> {
     : this.commonService.updateHeaders();
   return this.http.post(url, payload, { headers });
 }
-saveAttachment(payload: any): Observable<any> {
+ 
+saveLease(payload: any): Observable<any> {
   return this.postAPI(
-    environment.apiurl + 'api/Masters/save_documents',
+    environment.apiurl + 'api/Application/save_update_lease',
     payload
   );
-}
-saveCommonArea(payload: any): Observable<any> {
+} 
+getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
-    environment.apiurl + 'api/Masters/save_commonarea',
-    payload
-  );
-}
-saveInventoryItem(payload: any): Observable<any> {
-  return this.postAPI(
-    environment.apiurl + 'api/Masters/save_update_inventoryitem',
-    payload
-  );
-}
-saveParking(payload: any): Observable<any> {
-  return this.postAPI(
-    environment.apiurl + 'api/Masters/save_update_parkings',
-    payload
-  );
-}
-saveNotes(payload: any): Observable<any> {
-  return this.postAPI(
-    environment.apiurl + 'api/Masters/save_notes',
+    environment.apiurl + 'api/Masters/get_masters_by_paging',
     payload
   );
 }
@@ -82,9 +56,5 @@ getMasterByType(options: any): Observable<any> {
     this.getMasterAPI,
     this.createPayload(options)
   );
-}
-getCommonGrid(payload: any): Observable<any> {
-  const c = environment.apiurl+'api/Masters/get_masters_by_paging'; 
-  return this.http.post(c, payload,  { headers: this.commonService.updateHeaders() });
 }
 }

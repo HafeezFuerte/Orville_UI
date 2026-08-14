@@ -43,8 +43,7 @@ export class PropertyDetailComponent implements OnInit {
   unitsData: any = [];
   roomsData = [];
   tenantsData = [];
-  commonAreaData = [];
-  broadcastsData = [];
+  commonAreaData = []; 
   attachmentsData = [];
   broadCastsData = [];
   assetsData = [];

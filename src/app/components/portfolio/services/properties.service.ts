@@ -101,4 +101,5 @@ export class PropertiesService {
     const getParkingsUrl = environment.apiurl+'api/Masters/get_masters_by_paging'; 
     return this.http.post(getParkingsUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
+  
 }

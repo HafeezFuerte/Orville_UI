@@ -94,33 +94,23 @@
 
   <!-- Header with Title on Left, Status Tabs on Right -->
   <div
-    class="box-header p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    class="flex items-center gap-6 px-4 pt-3 border-b border-gray-100 overflow-x-auto">
     <h6 class="box-title font-semibold text-gray-800 text-sm mb-0">{{ 'web.leases.lblLeasesList' | translate }}</h6>
-
-    <!-- Status Tabs beside "Leases List" on the right -->
-    <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
-      <button (click)="setStatusFilter('All')"
-        [class]="activeStatusFilter === 'All' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
-        class="px-3 py-1 text-[10px] rounded-md transition-all">All</button>
-      <button (click)="setStatusFilter('Active')"
-        [class]="activeStatusFilter === 'Active' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
-        class="px-3 py-1 text-[10px] rounded-md transition-all">Active</button>
-      <button (click)="setStatusFilter('Draft')"
-        [class]="activeStatusFilter === 'Draft' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
-        class="px-3 py-1 text-[10px] rounded-md transition-all">Draft</button>
-      <button (click)="setStatusFilter('Completed')"
-        [class]="activeStatusFilter === 'Completed' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
-        class="px-3 py-1 text-[10px] rounded-md transition-all">Completed</button>
-      <button (click)="setStatusFilter('Pending Approvals')"
-        [class]="activeStatusFilter === 'Pending Approvals' ? 'bg-white shadow-sm font-bold text-gray-800' : 'text-gray-500 font-medium hover:text-gray-800'"
-        class="px-3 py-1 text-[10px] rounded-md transition-all">Pending</button>
-    </div>
+    <button *ngFor="let tab of tabs" 
+    (click)="onTabChange(tab)"
+    [class.text-primary]="activeStatusFilter === tab.id"
+    [class.border-primary]="activeStatusFilter === tab.id"
+    [class.text-gray-500]="activeStatusFilter !== tab.id"
+    [class.border-transparent]="activeStatusFilter !== tab.id"
+    class="text-[11px] font-semibold pb-3 border-b-2 hover:text-primary transition-colors whitespace-nowrap">
+    {{ tab.name }}
+  </button> 
   </div>
 
   <!-- Secondary Bar: Search Input on Left, Filter & Column Buttons on Right -->
   <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center  gap-3 bg-gray-50/30">
     <div class="input-group w-62">
-      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" placeholder="Search leases..."
+      <input type="text" [(ngModel)]="searchQuery"   placeholder="Search leases..."
         class="form-control !text-[11px] !py-1.5 bg-white border-gray-200" />
       <button type="button" (click)="onSearch()"
         class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
@@ -142,7 +132,7 @@
 
   <!-- Table with Padding Wrapper -->
   <div class="p-6">
-    <app-shared-table [columns]="visibleColumns" [data]="filteredLeases" [hasActions]="true"
+    <app-shared-table [columns]="visibleColumns" [data]="allLeases" [hasActions]="true"
       [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
       (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
@@ -150,24 +140,30 @@
 
           <!-- ID Column -->
           <ng-container *ngSwitchCase="'id'">
-            <a [routerLink]="['/leases', row.id]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</a>
+            <a [routerLink]="['/leases', row.lease_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.lease_code }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'active_lease'">
+            <a [routerLink]="['/leases', row.lease_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.active_lease }}</a>
           </ng-container>
 
           <!-- Status Column -->
-          <ng-container *ngSwitchCase="'status'">
-            <span *ngIf="row.status === 'Active'"
-              class="px-2 py-0.5 rounded bg-success text-[10px] font-bold text-white shadow-sm">Active</span>
-            <span *ngIf="row.status === 'Draft'"
-              class="px-2 py-0.5 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Draft</span>
-            <span *ngIf="row.status === 'Completed'"
-              class="px-2 py-0.5 rounded bg-info text-[10px] font-bold text-white shadow-sm">Completed</span>
-            <span *ngIf="row.status === 'Pending Approvals'"
-              class="px-2 py-0.5 rounded bg-warning text-[10px] font-bold text-white shadow-sm">Pending</span>
+          <ng-container *ngSwitchCase="'status_nm'">
+            <span  class="px-2 py-0.5 rounded  text-[10px] font-bold text-white shadow-sm" [ngClass]="row.class_name">{{getArabicLookupName(row,'status_nm')}} </span>
+          
           </ng-container>
 
+          <ng-container *ngSwitchCase="'tenant'">
+            <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.tenant }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'property'">
+            <a [routerLink]="['/properties', row.property_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.property }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'unit_code'">
+            <a [routerLink]="['/units', row.unitcode]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.unit_code }}</a>
+          </ng-container>
           <!-- Rent Column -->
-          <ng-container *ngSwitchCase="'rent'">
-            <span class="font-bold text-gray-700">AED {{ row.rent | number:'1.2-2' }}</span>
+          <ng-container *ngSwitchCase="'rent_amount'">
+            <span class="font-bold text-gray-700"> {{row.rent_amount | number:'1.2-2' }}</span>
           </ng-container>
 
         </ng-container>

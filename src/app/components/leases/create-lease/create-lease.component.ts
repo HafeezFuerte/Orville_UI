@@ -1,11 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule,formatDate  } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
+import {LeasesService} from '../leases.service';
 interface Occupant {
   name: string;
   phone: string;
@@ -15,14 +19,25 @@ interface Occupant {
 @Component({
   selector: 'app-create-lease',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule,FileUploadComponent, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './create-lease.component.html',
   styleUrl: './create-lease.component.scss'
 })
 export class CreateLeaseComponent implements OnInit {
   private router = inject(Router);
   private toastr = inject(ToastrService);
-
+  private commontab_service=inject(Common_TabsService);
+  private lease_service=inject(LeasesService);
+   private commonService=inject(CommonService);
+  currentUser: AuthPayload | null = null;
+  attachedFiles:any=[];
+  attachedFile:any='';
+  addpaymentbloc:any= {    includetax:false,    isSecurityDeposit:0,rentAmount:0,    attachedFile:null,    dueDate:null,memo:'',
+    moneyHeldBy:null,    recurrenceCycle:null,cheque_no:'',cheque_date:'',bank:'',held_by:null,  taxProfile:null,  account:null,  paymentMethod:null,invno:''}
+  showAddPayment:boolean=false;
+  leaseCode: string = '';
+  lease_id:number=0;
+  isLoading:boolean=false;
   // Form Fields
   selectedTenant: any = null;
   selectedProperty: any = null;
@@ -31,50 +46,43 @@ export class CreateLeaseComponent implements OnInit {
   selectedAgent: any = null;
 
   isShortTerm: boolean = false;
-  selectedLeaseType: string = 'Fixed';
-  selectedLeaseCategory: string = 'Residential';
+  selectedLeaseType: any=null;
+  selectedLeaseCategory: any=null; 
   startDate: string = '';
   endDate: string = '';
   
   rentAmount: number = 0;
-  totalPayments: number = 4;
-  moneyHeldBy: string = 'Company';
-  paymentMethod: string = 'Bank Transfer';
+  totalPayments: number = 0;
+  months: number = 0;
+  moneyHeldBy: any=null; 
+  paymentMethod: any=null; 
   annualRent: number = 0;
   monthlyRent: number = 0;
-
-  noOfPerson: number = 1;
-  createdBy: string = 'Zaid Rahman';
-  moveInDate: string = '';
-  createdAt: string = '';
-  payingDate: string = '';
+  
+  additionalbloc:any= {  no_of_persons: 0,  user_id: '',created_by: '',  move_in_date: '',  created_date: '',  paying_date: ''}
 
   // Dropdowns lists
-  tenantsList = [
-    { id: 101, name: 'Louis Medina', email: 'louis.medina@example.com', phone: '+971 50 123 4567' },
-    { id: 102, name: 'James T. Hirai', email: 'james.hirai@example.com', phone: '+971 50 765 4321' },
-    { id: 103, name: 'Sarah Malik', email: 'sarah.malik@example.com', phone: '+971 52 987 6543' }
-  ];
+  tenantsList:any[]=[] ;
+  alltenantsList :any[]=[] ;
 
-  propertiesList = [
-    { code: 'PROP-MH', name: 'Marina Heights Tower' },
-    { code: 'PROP-OT', name: 'Orville Tower' },
-    { code: 'PROP-BP', name: 'Business Park' }
-  ];
-
+  agentsList:any[]=[] ;
+  allagentsList :any[]=[] ;
+  paymentSchedules :any[]=[] ;
+  propertiesList :any[]=[] ;
+  allpropertiesList :any[]=[] ;
   unitsList: any[] = [];
+  allunitsList: any[] = [];
   roomsList: any[] = [];
-
-  agentsList = [
-    { id: 1, name: 'Zaid Rahman (Manager)' },
-    { id: 2, name: 'Omer Khan (Sales)' },
-    { id: 3, name: 'James J (Agent)' }
-  ];
-
-  leaseTypes = ['Fixed', 'Flexible', 'Sub-Lease'];
-  leaseCategories = ['Residential', 'Commercial', 'Industrial'];
-  paymentMethods = ['Bank Transfer', 'Cheque', 'Credit Card', 'Cash'];
-  moneyHeldOptions = ['Company', 'Landlord', 'Escrow Agent'];
+  allroomsList: any[] = [];
+   
+  heldByList:any[]=[];
+  taxProfilesList:any[]=[];
+  recurringList:any[]=[];
+  coaList:any[]=[];
+  leaseTypes:any[]=[];// = ['Fixed', 'Flexible', 'Sub-Lease'];
+  leaseCategories:any[]=[];// = ['Residential', 'Commercial', 'Industrial'];
+  paymentMethods:any[]=[];// = ['Bank Transfer', 'Cheque', 'Credit Card', 'Cash'];
+  moneyHeldOptions:any[]=[];// = ['Company', 'Landlord', 'Escrow Agent'];
 
   // Summary Models
   selectedTenantObj: any = null;
@@ -89,10 +97,130 @@ export class CreateLeaseComponent implements OnInit {
   occupants: Occupant[] = [];
   editingOccupantIndex: number | null = null;
 
-  ngOnInit() {
+  ngOnInit() { 
+    this.currentUser = this.commonService.getCurrentUser();
+    this.additionalbloc.created_by = this.currentUser?.userName || 'Admin';
+    this.additionalbloc.user_id = this.currentUser?.userId || '1';
+    this.loadLookup(45,0, '', '');  //get all masters 
+    this.loadLookup(11,0, 'propertiesList', '');
     this.resetForm();
+  //   this.paymentSchedules.push({"Amount":8333.5,"AdvAmt":8333.5,"AccountId":40,"Account":"Rent Income","DueDate":"2026-08-10",
+  // "Recurrence":"Fixed","PaymentType":"Cheque","isEdited":1,"row_no":1});
   }
-
+  onSearch(event:string,list:any ) { 
+    const searchTerm = event.toLowerCase();  
+    if (!searchTerm) {
+      (this as any)[list+'List'] = [...(this as any)['all'+list+'List']];
+    } else {
+      (this as any)[list+'List'] = (this as any)['all'+list+'List'].filter((item:any) => 
+        item.name.toLowerCase().includes(searchTerm)
+      );
+    }
+  }
+  showPaymentBlock(flg:number){
+    this.addpaymentbloc.isSecurityDeposit=flg;
+    this.showAddPayment=flg==0 ? false : true;
+  }
+  onFilesSelected(files: File[]) {
+    if (files.length > 0) {
+      this.attachedFile=files[0];
+    } else {
+      this.attachedFile=null;
+    }
+  }
+  savePayments(){
+    if(this.addpaymentbloc.rentAmount==null || this.addpaymentbloc.rentAmount==0){
+      this.toastr.error("Invalid   amount");
+    }
+    else  if(this.addpaymentbloc.dueDate==null || this.addpaymentbloc.dueDate==''){
+      this.toastr.error("Invalid   due Date");
+    }
+    // else  if(this.addpaymentbloc.account==null || this.addpaymentbloc.account==''){
+    //   this.toastr.error("Invalid  account");
+    // }
+    else{
+      
+      this.paymentSchedules.push({
+        "Amount":Number(this.addpaymentbloc.rentAmount.toFixed(2)),
+        "AdvAmt":0,  
+        "cheque_no":this.addpaymentbloc.cheque_no,
+        "cheque_date":this.addpaymentbloc.cheque_date,
+        "bank":this.addpaymentbloc.bank,
+        "held_by":this.addpaymentbloc.held_by?.id,
+        "AccountCode":this.addpaymentbloc.isSecurityDeposit==2 ?'F4F69': this.addpaymentbloc.account?.id,
+        "Account":this.addpaymentbloc.isSecurityDeposit==2 ?'Security Deposit':this.addpaymentbloc.account?.name,
+        "DueDate":this.addpaymentbloc.dueDate,
+        "Recurrence_id":this.addpaymentbloc.isSecurityDeposit==2 ?'90':this.addpaymentbloc.recurrenceCycle?.id,
+        "Recurrence":this.addpaymentbloc.isSecurityDeposit==2 ?'Fixed':this.addpaymentbloc.recurrenceCycle?.name,
+        "PaymentTypeid":this.addpaymentbloc.paymentMethod?.id,
+        "PaymentType":this.addpaymentbloc.paymentMethod?.name,
+        "TaxProfileId":this.addpaymentbloc.taxProfile?.id,
+        "TaxProfile":this.addpaymentbloc.taxProfile?.name,
+        "Memo":this.addpaymentbloc.memo,
+        "InvoiceNo":this.addpaymentbloc.invno,
+        "isEdit":0,
+        "row_no":this.paymentSchedules.length+1});
+        if(this.attachedFile)
+          this.attachedFiles.push({"row_no":this.paymentSchedules.length,"file":this.attachedFile})
+    }
+  }
+  generatePayments(){
+    if(this.startDate==null || this.startDate==""){
+      this.toastr.error("Invalid start Date");
+    }
+    else  if(this.endDate==null || this.endDate==""){
+      this.toastr.error("Invalid end Date");
+    }
+    else if(this.rentAmount==null || this.rentAmount==0){
+      this.toastr.error("Invalid rent amount");
+    }
+    else if(this.totalPayments==null || this.totalPayments==0){
+      this.toastr.error("Invalid total payments");
+    }
+    else if(this.moneyHeldBy==null || this.moneyHeldBy==0){
+      this.toastr.error("Invalid money held by");
+    }
+    else if(this.paymentMethod==null || this.paymentMethod==0){
+      this.toastr.error("Invalid payment method");
+    }
+    else if(this.annualRent==null || this.annualRent==0){
+      this.toastr.error("Invalid annualRent");
+    }
+    else{
+      this.monthlyRent= Number((this.rentAmount / this.totalPayments).toFixed(2));
+      this.paymentSchedules=[];
+      let dueDate=this.startDate;
+      for (let index = 0; index < this.totalPayments; index++) {
+        this.paymentSchedules.push({
+        "Amount":Number((this.rentAmount / this.totalPayments).toFixed(2)),
+        "AdvAmt":0,  
+        "cheque_no":this.addpaymentbloc.cheque_no,
+        "cheque_date":this.addpaymentbloc.cheque_date,
+        "bank":this.addpaymentbloc.bank,
+        "held_by":this.addpaymentbloc.held_by?.id,
+        "AccountCode":"7C2EF",
+        "Account":"Rent Income",
+        "DueDate":dueDate,
+        "Recurrence_id":this.selectedLeaseType?.id,
+        "Recurrence":this.selectedLeaseType?.name,
+        "PaymentTypeid":this.paymentMethod?.id,
+        "PaymentType":this.paymentMethod?.name,
+        "TaxProfileId":0,
+        "TaxProfile":'-',
+        "Memo":'',
+        "InvoiceNo":'',
+        "isEdited":0,
+        "row_no":(index+1)});
+        dueDate=this.addMonthsToDate(this.totalPayments,dueDate);
+        
+      }
+    }
+  }
+  addMonthsToDate(months: number,currentdate:string) {
+    const currentVal = currentdate ? new Date(currentdate) : new Date();
+    currentVal.setMonth(currentVal.getMonth() + months);
+    return formatDate(currentVal, 'yyyy-MM-dd', 'en-US');
+  }
   resetForm() {
     this.selectedTenant = null;
     this.selectedProperty = null;
@@ -100,57 +228,60 @@ export class CreateLeaseComponent implements OnInit {
     this.selectedRoom = null;
     this.selectedAgent = null;
     this.occupants = [];
-    this.createdAt = new Date().toISOString().substring(0, 10);
+    this.additionalbloc.created_date = new Date().toISOString().substring(0, 10);
+    this.additionalbloc.created_by = this.currentUser?.userName || 'Admin';
+    this.additionalbloc.user_id = this.currentUser?.userId || '1';
+    this.attachedFiles=[];
   }
 
-  onTenantChange(tenantId: number) {
-    this.selectedTenantObj = this.tenantsList.find(t => t.id === tenantId) || null;
+  onTenantChange(tenantId: any) {
+    this.selectedTenantObj = tenantId;
   }
 
-  onPropertyChange(propertyCode: string) {
-    this.selectedPropertyObj = this.propertiesList.find(p => p.code === propertyCode) || null;
+  onPropertyChange(propertyCode: any) { 
+    this.selectedPropertyObj=propertyCode;
     this.selectedUnit = null;
-    this.selectedUnitObj = null;
-    this.selectedRoom = null;
-    this.roomsList = [];
-
-    if (propertyCode === 'PROP-MH') {
-      this.unitsList = [
-        { code: 'U-205', name: 'Apartment 205-PR-4' },
-        { code: 'U-206', name: 'Apartment 206-PR-4' },
-        { code: 'U-301', name: 'Apartment 301-PR-5' }
-      ];
-    } else {
-      this.unitsList = [
-        { code: 'U-101', name: 'Office 101' },
-        { code: 'U-102', name: 'Office 102' }
-      ];
-    }
+    this.selectedUnitObj = null; 
+    this.roomsList=this.unitsList=this.allroomsList=this.allunitsList=[];
+    this.loadLookup(44,0, 'unitsList', propertyCode?.code); 
   }
 
   onUnitChange(unitCode: string) {
-    this.selectedUnitObj = this.unitsList.find(u => u.code === unitCode) || null;
+    this.selectedUnitObj = unitCode;
     this.selectedRoom = null;
-
-    if (unitCode === 'U-205') {
-      this.roomsList = [
-        { code: 'R-BED1', name: 'Master Bedroom' },
-        { code: 'R-BED2', name: 'Second Bedroom' },
-        { code: 'R-LIV', name: 'Living Room' }
-      ];
-    } else {
-      this.roomsList = [
-        { code: 'R-OFF1', name: 'Conference Room' },
-        { code: 'R-OFF2', name: 'Main Hall' }
-      ];
-    }
+    this.roomsList= this.allroomsList=[];
+    if(this.selectedPropertyObj && this.selectedUnitObj)
+      this.loadLookup(38,0, 'roomsList', this.selectedPropertyObj.code,this.selectedUnitObj.code); 
   }
 
   calculateRentDetails() {
     this.annualRent = this.rentAmount;
-    this.monthlyRent = Number((this.rentAmount / 12).toFixed(2));
+    //this.monthlyRent = Number((this.rentAmount / 12).toFixed(2));
   }
+  calculatemonths(){
+    if (!this.startDate || !this.endDate) return;
 
+    const d1 = new Date(this.startDate);
+    const d2 = new Date(this.endDate);
+
+    // Calculate structural month differences based on the year
+    let months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+
+    // Optional: Adjust if you want only completed full months
+    if (d2.getDate() < d1.getDate()) {
+      months--;
+    } 
+    // Set the signal value (taking absolute value to prevent negative numbers)
+    this.months=(Math.abs(months));
+  }
+  calculateEndDate(){
+    if (!this.startDate || !this.months) return;
+    const currentVal = this.startDate ? new Date(this.startDate) : new Date();
+    currentVal.setMonth(currentVal.getMonth() + this.months);
+    this.endDate=formatDate(currentVal, 'yyyy-MM-dd', 'en-US');
+  }
   openOccupantsModal() {
     this.occupantName = '';
     this.occupantPhone = '';
@@ -158,11 +289,46 @@ export class CreateLeaseComponent implements OnInit {
     this.editingOccupantIndex = null;
     this.showOccupantsModal = true;
   }
+  edit_action(row:any,action:string){
 
+  }
   closeOccupantsModal() {
     this.showOccupantsModal = false;
   }
-
+  loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string='') {
+    this.commontab_service.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: filterText1
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          if(typeId==45)
+          {
+            this.leaseTypes=res.objResult.table || [];
+            this.leaseCategories=res.objResult.table1 || [];
+            this.moneyHeldOptions=res.objResult.table2 || [];
+            this.paymentMethods=res.objResult.table3 || [];
+            this.tenantsList=this.alltenantsList=res.objResult.table4 || [];
+            this.agentsList=this.allagentsList=res.objResult.table5 || [];
+            this.recurringList=this.allagentsList=res.objResult.table6 || [];
+            this.coaList=this.allagentsList=res.objResult.table7 || [];
+            this.taxProfilesList=this.allagentsList=res.objResult.table8 || []; 
+            this.heldByList=this.allagentsList=res.objResult.table9 || [];
+          }
+          else{
+            (this as any)[targetProperty] = res.objResult.table;
+            (this as any)['all'+targetProperty]=(this as any)[targetProperty]; 
+          }
+         
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   addOccupant() {
     if (!this.occupantName.trim()) {
       this.toastr.warning('Please enter an occupant name');
@@ -194,7 +360,12 @@ export class CreateLeaseComponent implements OnInit {
     this.editingOccupantIndex = index;
     this.showOccupantsModal = true;
   }
-
+  onChangeSelect(element:any,item:any){
+    (this as any)[item as any]=element; 
+  }
+  onChangeSelect_2(element:any,item:any){
+    this.addpaymentbloc[item as any]=element; 
+  }
   removeOccupant(index: number) {
     this.occupants.splice(index, 1);
     this.toastr.info('Occupant removed');
@@ -205,8 +376,85 @@ export class CreateLeaseComponent implements OnInit {
       this.toastr.error('Please complete all required fields (Tenant, Property, Unit)');
       return;
     }
-    this.toastr.success('Lease agreement registered successfully');
-    this.router.navigate(['/leases']);
+    else if (this.startDate=='' || this.startDate==null){
+      this.toastr.error('Invalid start date');
+      return;
+    }
+    else if (this.endDate=='' || this.endDate==null){
+      this.toastr.error('Invalid end date');
+      return;
+    }
+    else if (this.rentAmount==0 || this.rentAmount==null){
+      this.toastr.error('Invalid rent amount');
+      return;
+    }
+    else if (this.paymentSchedules.length==0){
+      this.toastr.error('Invalid payment schedules');
+      return;
+    }
+    else{
+
+      let clsLeaseInfo:any={};
+      clsLeaseInfo.is_lease_short_term=this.isShortTerm;
+      clsLeaseInfo.lease_type=this.selectedLeaseType.id;
+      clsLeaseInfo.lease_category=this.selectedLeaseCategory.id;
+      clsLeaseInfo.start_date=this.startDate;
+      clsLeaseInfo.end_date=this.endDate;
+      clsLeaseInfo.total_months=this.months;
+
+      let clsRentInfo :any={};
+      clsRentInfo.rent_amount=this.rentAmount || 0;
+      clsRentInfo.total_payments=this.totalPayments || 0;
+      clsRentInfo.money_held_by=this.moneyHeldBy.id || 0;
+      clsRentInfo.payment_type=this.paymentMethod.id || 0;
+      clsRentInfo.annual_rent=this.annualRent || 0;
+      clsRentInfo.monthly_rent=this.monthlyRent || 0;
+ 
+      const request = {
+        userid: this.currentUser?.userId,
+        code: this.leaseCode || '',
+        source: 'web',
+        company_id: this.currentUser?.companyId,
+        tenantId: '',
+        clientId: this.currentUser?.clientId, 
+        tenant_code: this.selectedTenantObj?.code,
+        property_code: this.selectedPropertyObj.code,
+        unit_code: this.selectedUnitObj.code,
+        room_code: this.selectedRoom?.code || '',
+        rent_collector:this.selectedAgent?.code ||'',
+        clsLeaseInfo: clsLeaseInfo,
+        clsRentInfo: clsRentInfo, 
+        clsAddtionalInfo: this.additionalbloc,  
+        clsPaymentSchedules: this.paymentSchedules,
+        id: this.lease_id || 0,
+   
+      }; 
+      const formData = new FormData();
+debugger;
+    // JSON goes as ONE field
+    formData.append('reqObject', JSON.stringify(request));
+      this.attachedFiles.forEach((element:any) => {
+      formData.append(element.row_no, element.file); 
+    });
+   
+     this.lease_service.saveLease(formData).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res["statusCode"] == "200") {
+            this.toastr.success('Lease agreement registered successfully');
+            this.router.navigate(['/leases']); 
+          }
+          else{
+            this.toastr.error(res['message']);
+            return;
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+        },
+      });
+    }
+   
   }
 
   goBack() {

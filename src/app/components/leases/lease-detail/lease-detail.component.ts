@@ -1,27 +1,36 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,FormGroup } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DetailPageLayoutComponent } from '../../portfolio/detail-page-layout/detail-page-layout.component';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { NotesComponent } from '../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../child-tables/attachments/attachments.component';
-
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { DetailTab } from '../../../shared/models/detail-tab.model';
-
+import { ToastrService } from 'ngx-toastr';
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
+import { UnitsTableComponent } from '../../child-tables/units/units-table.component';
+import {WorkordersTableComponent} from '../../child-tables/workorders/workorders.component';
+ 
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
+  imports: [CommonModule, FormsModule, RouterModule,WorkordersTableComponent, TranslateModule,UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })
 export class LeaseDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
-
+  private router = inject(Router); 
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+  private commontabservice =inject(Common_TabsService);
   leaseId: string = '';
+  Form!: FormGroup;
+  currentUser = this.commonService.getCurrentUser();
   activeTab: string = 'Overview';
   showInvoiceModal: boolean = false;
   showInspectionModal: boolean = false;
@@ -43,49 +52,24 @@ export class LeaseDetailComponent implements OnInit {
   }
 
   // Sidebar / Left panel metadata
-  leaseInfo: any = {
-    id: '31650',
-    name: 'Lease - 31650 - Marina Heights Towers',
-    status: 'Draft',
-    tenant: 'James T. Hirai',
-    property: 'Dubai Marina, Tower A, Dubai',
-    unit: 'Apartment 402-PR-4',
-    duration: '1 month',
-    noOfOccupants: 0,
-    startDate: '07-01-2026',
-    endDate: '06-01-2028',
-    leaseDaysLeft: 'N/A',
-    collector: 'Sheikh Aqib',
-    shortTerm: 'No',
-    renewed: 'Yes',
-    renewedFrom: 'Lease #116971',
-    isMultiUnit: 'No',
-    previousLeaseRent: 'AED 3300.00',
-    remark: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    totalRent: 'AED 2,200.00',
-    annualRent: 'AED 321,200.00',
-    monthlyRent: 'AED 26,400.00',
-    noOfPayments: 8,
-    unitMarketRent: 'AED 26,400.00'
-  };
-
+  leaseInfo: any = {}; 
   // Sub-grid columns
-  invoiceColumns = [
-    { key: 'invoiceId', label: 'web.leases.lblInvoiceID', visible: true, useTemplate: true },
-    { key: 'amount', label: 'web.common.lblAmount', visible: true, useTemplate: true },
-    { key: 'account', label: 'web.leases.lblAccount', visible: true },
-    { key: 'dueDate', label: 'web.leases.lblEndDate', visible: true },
-    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'paymentVia', label: 'web.leases.lblPaymentVia', visible: true },
-    { key: 'recurringCycle', label: 'web.leases.lblRecurringCycle', visible: true }
+  invoiceColumns = [ 
+    { key: 'amt', label: 'Amount' +' ('+ this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
+    { key: 'adv_amt', label: 'Adv.Amount'+' ('+ this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
+    { key: 'account_name', label: 'web.leases.lblAccount', visible: true,useTemplate: true },
+    { key: 'due_date', label: 'web.leases.lblEndDate', visible: true,useTemplate: true },
+    { key: 'recurring_cycle', label: 'web.leases.lblRecurringCycle', visible: true, useTemplate: true },
+    { key: 'payment_type', label: 'Payment Type', visible: true,useTemplate: true },
+    { key: 'attachment_path', label: 'Attachment', visible: true,useTemplate: true }
   ];
 
   tenantColumns = [
-    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'name', label: 'web.common.lblName', visible: true },
-    { key: 'email', label: 'web.common.lblEmail', visible: true },
-    { key: 'phone', label: 'web.common.lblPhoneNumber', visible: true },
-    { key: 'company', label: 'web.common.lblCompany', visible: true },
+    { key: 'code', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'tenant', label: 'web.common.lblName', visible: true },
+    { key: 'email_address', label: 'web.common.lblEmail', visible: true },
+    { key: 'phone_number', label: 'web.common.lblPhoneNumber', visible: true },
+    { key: 'company_name', label: 'web.common.lblCompany', visible: true },
     { key: 'activeLease', label: 'web.leases.lblActiveLease', visible: true, useTemplate: true },
     { key: 'leasesCount', label: 'web.common.lblLeases', visible: true, useTemplate: true },
     { key: 'gender', label: 'web.leases.lblGender', visible: true },
@@ -147,19 +131,7 @@ export class LeaseDetailComponent implements OnInit {
     { key: 'landlord', label: 'web.leases.lblLandlord', visible: true },
     { key: 'unit', label: 'web.leases.lblUnit', visible: true },
     { key: 'attachment', label: 'Attachment', visible: true }
-  ];
-
-  unitsColumns = [
-    { key: 'floorNumber', label: 'web.contacts.lblFloorNumber', visible: true },
-    { key: 'managementFee', label: 'web.Unit.lblManagementFee', visible: true },
-    { key: 'status', label: 'web.Unit.lblStatus', visible: true, useTemplate: true },
-    { key: 'internalStatus', label: 'web.contacts.lblInternalStatus', visible: true },
-    { key: 'size', label: 'web.contacts.lblSize', visible: true },
-    { key: 'marketRent', label: 'web.contacts.lblMarketRent', visible: true },
-    { key: 'deposit', label: 'web.Unit.lblDeposit', visible: true },
-    { key: 'published', label: 'web.contacts.lblPublished', visible: true },
-    { key: 'forSale', label: 'web.contacts.lblForSale', visible: true }
-  ];
+  ]; 
 
   inspectionsColumns = [
     { key: 'id', label: 'Inspection ID', visible: true, useTemplate: true },
@@ -172,38 +144,9 @@ export class LeaseDetailComponent implements OnInit {
     { key: 'userId', label: 'web.leases.lblUserId', visible: true },
     { key: 'createdAt', label: 'web.leases.lblCreated', visible: true }
   ];
+ 
 
-  workOrdersColumns = [
-    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'title', label: 'Title', visible: true },
-    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'closingStatus', label: 'Closing Status', visible: true, useTemplate: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'dueDate', label: 'Due Date', visible: true },
-    { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
-    { key: 'property', label: 'web.leases.lblProperty', visible: true },
-    { key: 'vendor', label: 'web.contacts.lblVendor', visible: true },
-    { key: 'user', label: 'web.contacts.lblUser', visible: true },
-    { key: 'tags', label: 'web.contacts.lblTags', visible: true },
-    { key: 'maintenanceCategory', label: 'web.contacts.lblMaintenanceCategory', visible: true },
-    { key: 'responsiblePerson', label: 'web.contacts.lblResponsiblePerson', visible: true },
-    { key: 'updatedAt', label: 'web.contacts.lblUpdatedAt', visible: true },
-    { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true }
-  ];
-
-  noticesColumns = [
-    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'subject', label: 'web.property.lblSubject', visible: true },
-    { key: 'preview', label: 'web.property.lblPreview', visible: true, useTemplate: true },
-    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'broadcastType', label: 'web.property.lblBroadcastType', visible: true },
-    { key: 'sendable', label: 'web.property.lblSendable', visible: true },
-    { key: 'scheduled', label: 'web.property.lblScheduled', visible: true },
-    { key: 'date', label: 'web.common.lblDate', visible: true },
-    { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true },
-    { key: 'updatedAt', label: 'web.contacts.lblUpdatedAt', visible: true }
-  ];
-
+   
   legalColumns = [
     { key: 'escalationOption', label: 'web.leases.lblEscalationOption', visible: true },
     { key: 'property', label: 'web.leases.lblProperty', visible: true },
@@ -218,10 +161,11 @@ export class LeaseDetailComponent implements OnInit {
   ];
 
   // Grid Data Lists
-  invoiceSchedules = [
-    { invoiceId: '52658', amount: 2200.00, account: 'Rental Income', dueDate: '01-07-2026', status: 'Unpaid', paymentVia: 'Cash', recurringCycle: 'Fixed' },
-    { invoiceId: '52659', amount: 2200.00, account: 'Rental Income', dueDate: '01-07-2026', status: 'Unpaid', paymentVia: 'Cash', recurringCycle: 'Fixed' }
-  ];
+  invoiceSchedules:any[]=[];
+  //  = [
+  //   { invoiceId: '52658', amount: 2200.00, account: 'Rental Income', dueDate: '01-07-2026', status: 'Unpaid', paymentVia: 'Cash', recurringCycle: 'Fixed' },
+  //   { invoiceId: '52659', amount: 2200.00, account: 'Rental Income', dueDate: '01-07-2026', status: 'Unpaid', paymentVia: 'Cash', recurringCycle: 'Fixed' }
+  // ];
 
   tenantsData = [
     { id: '1368', name: 'Ahmad Yasmin', company: 'Orville real estate', activeLease: 'Lease - 134073 - Marina Heights Towers', leasesCount: 2, gender: 'Male', status: 'Active' }
@@ -236,9 +180,8 @@ export class LeaseDetailComponent implements OnInit {
     { id: 'CHQ-002', invoiceId: 'INV-2025-001', chequeNo: '45896321', bankNo: 'BNK-001', bankName: 'NBD Bank', chequeDate: '05-06-2026', heldBy: 'Finance Office', amount: 150000.00, status: 'Pending', createdAt: '10-06-2026', inHand: 'Yes', returned: 'Yes', returnedDate: '-', bounceDate: '-', bounceReason: '-', withdrawalReason: 'Customer Request', contactName: 'John Smith', landlord: 'Orville Res. Estate', unit: 'A-101', attachment: 'cheque_scan.pdf' }
   ];
 
-  unitsData = [
-    { floorNumber: 'Ground', managementFee: '-', status: 'Occupied', internalStatus: '-', size: '1206 Sqft', marketRent: 'AED 80,000.00', deposit: 'AED 6000', published: 'Yes', forSale: 'No' }
-  ];
+  unitsData:any[]=[];
+  loading:boolean=false;
 
   inspectionsData = [
     { id: '31668', name: 'Move Out', status: 'Completed', type: 'Move Out', property: 'Marina Heights Tower', unit: '215 PR 1', scheduled: 'Yes', userId: 59688, createdAt: '10-01-2026, 09:14' },
@@ -248,16 +191,9 @@ export class LeaseDetailComponent implements OnInit {
     { id: '31672', name: 'Move Out', status: 'Completed', type: 'Move Out', property: 'Marina Heights Tower', unit: '215 PR 1', scheduled: 'Yes', userId: 59688, createdAt: '10-01-2026, 09:14' }
   ];
 
-  workOrdersData = [
-    { id: 'WO-1001', title: 'Repair Water Leak', status: 'Open', closingStatus: 'Pending', internalStatus: 'Assigned', dueDate: '16-07-2026', priority: 'High', property: 'Sunrise Ap...', vendor: 'ABC Plumbing', user: 'John Smith', tags: 'Plumbing, Emergency', maintenanceCategory: 'Plumbing', responsiblePerson: 'Michael Brown', updatedAt: '10-07-2026 09:15 AM', createdAt: '09-07-2026 09:15 AM' },
-    { id: 'WO-1002', title: 'Replace Corridor Lights', status: 'In Progress', closingStatus: 'Pending', internalStatus: 'Working', dueDate: '18-07-2026', priority: 'Medium', property: 'Green Heig...', vendor: 'Bright Electric Ltd.', user: 'Sarah Lee', tags: 'Electrical', maintenanceCategory: 'Electrical', responsiblePerson: 'David Wilson', updatedAt: '11-07-2026 02:30 PM', createdAt: '10-07-2026 02:30 PM' },
-    { id: 'WO-1003', title: 'HVAC Annual Service', status: 'Completed', closingStatus: 'Closed', internalStatus: 'Verified', dueDate: '08-07-2026', priority: 'Low', property: 'Oak Reside...', vendor: 'CoolAir Services', user: 'Emma Davis', tags: 'Preventive', maintenanceCategory: 'HVAC', responsiblePerson: 'Chris Johnson', updatedAt: '09-07-2026 11:45 AM', createdAt: '08-07-2026 11:45 AM' }
-  ];
+  workOrdersData:any=[];
 
-  noticesData = [
-    { id: '31658', subject: 'Water maintenance notice', preview: 'Quick View', status: 'Published', broadcastType: 'Memo', sendable: 'Dept.', scheduled: 'Yes', date: '12:00', createdAt: '08-07-2026', updatedAt: '09-07-2026' },
-    { id: '31659', subject: 'Fire drill announcement', preview: 'Quick View', status: 'Draft', broadcastType: 'Announcement', sendable: 'Property', scheduled: 'No', date: '12:00', createdAt: '10-07-2026', updatedAt: '10-07-2026' }
-  ];
+  noticesData:any=[]; 
 
   legalData = [
     { escalationOption: 'Court Filing', property: 'Sunrise Apartments', unit: 'A-101', lease: 'LEASE-2025-001', unitBlocked: 'Yes', tenantBlocked: 'No', hearingsCount: 2, attachmentsCount: 6, notesCount: 3, internalStatus: 'Under Review' },
@@ -273,33 +209,190 @@ export class LeaseDetailComponent implements OnInit {
     { name: 'Lease Agreement.pdf', size: '2.4 MB', updated: 'Updated 25-06-2025 10:03 AM' },
     { name: 'Lease Agreement.pdf', size: '3.4 MB', updated: 'Updated 29-06-2025 09:30 AM' }
   ];
-
+  customFields:any[]=[];
   notesData: any[] = [];
   attachmentsData: any[] = [];
 
   // Tabs structure
-  tabs: DetailTab[] = [
-    { key: 'Overview', label: 'Overview', layout: 'content' },
-    { key: 'Tenant', label: 'Tenant', layout: 'content' },
-    { key: 'Financials', label: 'Financials', layout: 'content' },
-    { key: 'Cheques', label: 'Cheques', layout: 'content' },
-    { key: 'units', label: 'Units', layout: 'content' },
-    { key: 'Work Orders', label: 'Work Orders', layout: 'content' },
-    { key: 'E-Documents', label: 'E-Documents', layout: 'content' },
-    { key: 'Notices', label: 'Notices', layout: 'content' },
-    { key: 'attachments', label: 'Attachments', layout: 'content', data: [], totalRecords: 0, addButtonText: 'Attachments', popupType: 'attachment' },
-    { key: 'Legal', label: 'Legal', layout: 'content' },
-    { key: 'notes', label: 'Notes', layout: 'content', data: [], totalRecords: 0, addButtonText: 'Notes', popupType: 'notes' },
-    { key: 'Inspections', label: 'Inspections', layout: 'content' }
-  ];
+  tabs: DetailTab[] = [];
+    
 
   get selectedTab(): DetailTab | undefined {
     return this.tabs.find(t => t.key === this.activeTab);
   }
+  initializeTabs() {
+
+    this.tabs = [
+      { key: 'Overview', label: 'Overview', layout: 'content' },
+      { key: 'Tenant', label: 'Tenant', layout: 'content' },
+      { key: 'Financials', label: 'Financials', layout: 'content' },
+      { key: 'Cheques', label: 'Cheques', layout: 'content' },
+      {
+        key: 'units',
+        label: 'web.common.lblUnits',
+        layout: 'content',
+        data: this.unitsData,
+        totalRecords: this.unitsData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Unit'
+      },
+      { key: 'Work Orders', label: 'Work Orders', layout: 'content' ,
+      entity: "Lease",
+      entity_id: this.leaseId,
+      data: this.workOrdersData,
+      totalRecords: this.workOrdersData?.length || 0,
+      loading: this.loading,
+      hasActions: true,
+      addButtonText: 'Workorders',
+      form: this.Form
+      },
+      { 
+        key: 'E-Documents', 
+       label: 'E-Documents',
+      layout: 'content',
+      entity: "Lease",
+      entity_id: this.leaseId,
+      data: this.attachmentsData,
+      totalRecords: this.attachmentsData?.length || 0,
+      loading: this.loading,
+      hasActions: true,
+      addButtonText: 'Attachments',
+      form: this.Form,
+      popupType: 'attachment' },
+      {
+        key: 'Notices',
+        label: 'Notices',
+        layout: 'table', 
+        data: this.noticesData,
+        totalRecords: this.noticesData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Broadcasts',
+        redirect_addurl: '/broadcasts/create'
+      },
+
+      { key: 'Notices', label: 'Notices', layout: 'content' },
+      {
+        key: 'attachments',
+        label: 'web.common.lblAttachments',
+        layout: 'content',
+        entity: "Lease",
+        entity_id: this.leaseId,
+        data: this.attachmentsData,
+        totalRecords: this.attachmentsData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.Form,
+        popupType: 'attachment'
+      },
+      { key: 'Legal', label: 'Legal', layout: 'content' },
+       {
+        key: 'notes',
+        label: 'web.common.lblNotes',
+        layout: 'content',
+        entity: "Lease",
+        entity_id: this.leaseId,
+        data: this.notesData,
+        totalRecords: this.notesData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.Form,
+        popupType: 'notes'
+      },
+      { key: 'Inspections', label: 'Inspections', layout: 'content' }
+   
+      // {
+      //   key: 'overview',
+      //   label: 'web.common.lblOverview',
+      //   layout: 'content'
+      // },
+
+      
+
+      // {
+      //   key: 'rooms',
+      //   label: 'web.common.lblRooms',
+      //   layout: 'content',
+      //   data: this.roomsData,
+      //   totalRecords: this.roomsData?.length || 0,
+      //   loading: this.loading,
+      //   hasActions: true,
+      //   addButtonText: 'Room'
+      // },
+
+         
+      // {
+      //   key: 'broadcasts',
+      //   label: 'web.common.lblBroadcasts',
+      //   layout: 'table',
+      //   columns: this.broadCastsColumns,
+      //   data: this.broadCastsData,
+      //   totalRecords: this.broadCastsData?.length || 0,
+      //   loading: this.loading,
+      //   hasActions: true,
+      //   addButtonText: 'Broadcasts',
+      //   redirect_addurl: '/broadcasts/create'
+      // },
+      
+      // {
+      //   key: 'parkings',
+      //   label: 'web.common.lblParkings',
+      //   layout: 'content',
+      //   data: this.parkingData,
+      //   entity_id: this.propertyCode,
+      //   totalRecords: this.parkingData?.length || 0,
+      //   loading: this.loading,
+      //   hasActions: true,
+      //   addButtonText: 'Parking'
+      // },
+       
+
+    ];
+
+  }
 
   ngOnInit() {
+    
     this.route.paramMap.subscribe(params => {
       this.leaseId = params.get('id') ?? '';
+    });
+    this.getLeaseDetails();
+  }
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
+  getLeaseDetails() {
+    this.commontabservice.getMasterByType({
+      typeId: 22,
+      filterId: 0,
+      filterText: this.leaseId,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.lease) {
+            this.leaseInfo=res.objResult.lease[0]; 
+            this.attachmentsData = res.objResult.documents|| [];   
+            this.unitsData=res.objResult.units || [];
+            this.tenantsData = res.objResult.tenants|| [];
+            this.financialsData =  [];
+            this.notesData = res.objResult.notes;  
+            this.noticesData = res.objResult.broadcasts;
+            this.inspectionsData = res.objResult.inspections;
+            this.legalData = res.objResult.legal_cases;
+            this.workOrdersData = res.objResult.workorders || []; 
+            this.customFields= res.objResult.customFields || [];
+            this.invoiceSchedules=res.objResult.payment_schedules || [];
+            this.initializeTabs();
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching typeid: 22:`, err);
+      }
     });
   }
 

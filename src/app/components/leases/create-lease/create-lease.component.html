@@ -24,19 +24,83 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblTenant' | translate }} *</label>
-          <ng-select [(ngModel)]="selectedTenant" [items]="tenantsList" bindLabel="name" bindValue="id" (change)="onTenantChange($event)" placeholder="{{ 'web.leases.lblTenant' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select #tenantSelect [(ngModel)]="selectedTenant" 
+          [items]="tenantsList"  
+          bindValue="code" 
+          (change)="onTenantChange($event)"   [searchable]="true"
+          [clearable]="true"
+           placeholder="{{ 'web.leases.lblTenant' | translate }}" class="ng-select-sm w-full">
+           <ng-template ng-header-tmp>
+            <div class="p-1.5 border-b border-gray-100">
+              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'tenants')" (click)="$event.stopPropagation()">
+            </div>
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.code }} - {{ item.name }}
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.code }} - {{ item.name }}
+      </ng-template>
+        </ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblProperty' | translate }} *</label>
-          <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" bindLabel="name" bindValue="code" (change)="onPropertyChange($event)" placeholder="{{ 'web.leases.lblProperty' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select #propSelect [(ngModel)]="selectedProperty" [items]="propertiesList" 
+            bindValue="code"
+            (change)="onPropertyChange($event)" 
+            [searchable]="true"
+            [clearable]="true"
+            placeholder="{{ 'web.leases.lblProperty' | translate }}" 
+            class="ng-select-sm w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'properties')" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+            <ng-template ng-label-tmp let-item="item">
+              {{ item.code }} - {{ item.name }}
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.code }} - {{ item.name }}
+        </ng-template>
+
+          </ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblUnit' | translate }} *</label>
-          <ng-select [(ngModel)]="selectedUnit" [items]="unitsList" bindLabel="name" bindValue="code" (change)="onUnitChange($event)" placeholder="{{ 'web.leases.lblUnit' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select #unitSelect  [(ngModel)]="selectedUnit" 
+          [items]="unitsList"  
+           bindValue="code" 
+           bindLabel="unit"
+          (change)="onUnitChange($event)" 
+          [searchable]="true"
+          [clearable]="true"
+          placeholder="{{ 'web.leases.lblUnit' | translate }}" 
+          class="ng-select-sm w-full">
+          <ng-template ng-header-tmp>
+            <div class="p-1.5 border-b border-gray-100">
+              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'units')" (click)="$event.stopPropagation()">
+            </div>
+          </ng-template>
+       
+    </ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRoom' | translate }}</label>
-          <ng-select [(ngModel)]="selectedRoom" [items]="roomsList" bindLabel="name" bindValue="code" placeholder="{{ 'web.leases.lblRoom' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="selectedRoom" [items]="roomsList"
+          [searchable]="true"
+          [clearable]="true"
+           bindLabel="room"
+           (change)="onChangeSelect($event,'selectedRoom')"
+           bindValue="code" 
+           placeholder="{{ 'web.leases.lblRoom' | translate }}" class="ng-select-sm w-full">
+           <ng-template ng-header-tmp>
+            <div class="p-1.5 border-b border-gray-100">
+              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'rooms')" (click)="$event.stopPropagation()">
+            </div>
+          </ng-template>
+       
+          </ng-select>
         </div>
       </div>
     </div>
@@ -46,8 +110,25 @@
       <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblAgentAssignment' | translate }}</h6>
       <div class="text-xs">
         <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAgentAssignment' | translate }}</label>
-        <ng-select [(ngModel)]="selectedAgent" [items]="agentsList" bindLabel="name" bindValue="id" placeholder="{{ 'web.leases.lblAgentAssignment' | translate }}" class="ng-select-sm w-full"></ng-select>
-      </div>
+        <ng-select #tenantSelect [(ngModel)]="selectedAgent" 
+        [items]="agentsList"  
+        bindValue="code"   [searchable]="true"
+        [clearable]="true"
+        (change)="onChangeSelect($event,'selectedAgent')"
+         placeholder="{{ 'web.leases.lblAgentAssignment' | translate }}" class="ng-select-sm w-full">
+         <ng-template ng-header-tmp>
+          <div class="p-1.5 border-b border-gray-100">
+            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'tenants')" (click)="$event.stopPropagation()">
+          </div>
+        </ng-template>
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.code }} - {{ item.name }}
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item">
+        {{ item.code }} - {{ item.name }}
+    </ng-template>
+      </ng-select>
+  </div>
     </div>
 
     <!-- Lease Details Card -->
@@ -56,19 +137,26 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseType' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseType" [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="selectedLeaseType"    (change)="onChangeSelect($event,'selectedLeaseType')"  placeholder="Lease Type"  bindLabel="name"   [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseCategory" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="selectedLeaseCategory" (change)="onChangeSelect($event,'selectedLeaseCategory')"  placeholder="Lease Category"  bindLabel="name" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
-        <div>
+      
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-4"> 
+        <div class="grid-cols-3">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblStartDate' | translate }} *</label>
-          <input type="date" [(ngModel)]="startDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="startDate" (change)="calculatemonths()"  class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
-        <div>
+        <div class="grid-cols-3">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Months</label>
+          <input type="number" [(ngModel)]="months" (change)="calculateEndDate()" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div class="grid-cols-3">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblEndDate' | translate }}</label>
-          <input type="date" [(ngModel)]="endDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="endDate" (change)="calculatemonths()"  class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
       </div>
       <div class="flex items-center gap-2 mt-2">
@@ -84,8 +172,8 @@
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRent' | translate }} *</label>
           <div class="input-group">
-            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">AED</span>
-            <input type="number" [(ngModel)]="rentAmount" (ngModelChange)="calculateRentDetails()" class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
+            <input type="number" [(ngModel)]="rentAmount" (change)="calculateRentDetails()"  class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
           </div>
         </div>
         <div>
@@ -94,28 +182,193 @@
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
-          <ng-select [(ngModel)]="moneyHeldBy" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="moneyHeldBy" (change)="onChangeSelect($event,'moneyHeldBy')" placeholder="Money Held"   bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
-          <ng-select [(ngModel)]="paymentMethod" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="paymentMethod" (change)="onChangeSelect($event,'paymentMethod')" placeholder="Payment Type"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAnnualRent' | translate }}</label>
-          <input type="text" [value]="'AED ' + (annualRent | number:'1.2-2')" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+          <div class="input-group">
+            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
+            <input type="number" [(ngModel)]="annualRent" class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+          </div> 
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMonthlyRent' | translate }}</label>
-          <input type="text" [value]="'AED ' + (monthlyRent | number:'1.2-2')" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+          <div class="input-group">
+            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
+            <input type="number" [(ngModel)]="monthlyRent" class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+          </div> 
+        
         </div>
       </div>
       <div class="flex justify-end mt-4">
-        <button type="button" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+        <button type="button" (click)="generatePayments()" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
           {{ 'web.leases.lblGeneratePayment' | translate }}
         </button>
       </div>
     </div>
+  <!-- Payment Schedule -->
+  <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6"> 
+    <div>
+      <h6 class="box-title mb-1">Payment Schedule</h6>
+      <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">
+        Select from the different options below to set the payment schedule of the lease. You can set a recurring payment schedule or a one time schedule.
+      </p>
+  </div>
+    <div class="flex justify-end mt-4">
+      <button type="button" (click)="showPaymentBlock(1)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      Add Payment
+      </button>
+      <button type="button" (click)="showPaymentBlock(2)" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+        Add Security Deposit
+        </button>
+    </div>
+     <!-- Add Payment | Security Deposit -->
+     <div *ngIf="showAddPayment" class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <div class="md:grid-cols-1">
+        <div class="form-check form-switch">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Include Tax</label>
+          <input [(ngModel)]="addpaymentbloc.includetax"
+              class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+              type="checkbox">
 
+      </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+      
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Amount*</label>
+          <div class="input-group">
+            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
+            <input type="number" [(ngModel)]="addpaymentbloc.rentAmount"   class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+          </div>
+        </div> 
+        <div >
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Due On*</label>
+          <input type="date" [(ngModel)]="addpaymentbloc.dueDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Account*</label>
+          <ng-select [(ngModel)]="addpaymentbloc.account" (change)="onChangeSelect_2($event,'account')" placeholder="Account"  bindLabel="name" [items]="coaList"  class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Memo</label>
+          <input type="text" [(ngModel)]="addpaymentbloc.memo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" placeholder="If left blank,will show 'rent'" />
+        </div>
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Recurrence Cycle<em>*</em></label>
+          <ng-select [(ngModel)]="addpaymentbloc.recurrenceCycle"    (change)="onChangeSelect_2($event,'recurrenceCycle')"  placeholder="Recurrence Cycle"  bindLabel="name"   [items]="recurringList"   class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Tax Profile</label>
+          <ng-select [(ngModel)]="addpaymentbloc.taxProfile"    (change)="onChangeSelect_2($event,'taxProfile')"  placeholder="Tax Profile" bindLabel="name"   [items]="taxProfilesList"  class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
+          <ng-select [(ngModel)]="addpaymentbloc.moneyHeldBy" (change)="onChangeSelect_2($event,'moneyHeldBy')"    bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
+          <ng-select [(ngModel)]="addpaymentbloc.paymentMethod" (change)="onChangeSelect_2($event,'paymentMethod')"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Invoice Number</label>
+          <input type="text" [(ngModel)]="addpaymentbloc.invno" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"  />
+        </div> 
+      </div>
+      <div *ngIf="addpaymentbloc.paymentMethod?.id==169" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-4"> 
+        <div class="grid-cols-3">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cheque No</label>
+          <input type="text" [(ngModel)]="addpaymentbloc.cheque_no"    class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div class="grid-cols-3">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cheque Date</label>
+          <input type="date" [(ngModel)]="addpaymentbloc.cheque_date"   class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div class="grid-cols-3">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Bank</label>
+          <input type="text" [(ngModel)]="addpaymentbloc.bank"   class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Held By</label>
+          <ng-select [(ngModel)]="addpaymentbloc.held_by" (change)="onChangeSelect_2($event,'held_by')" placeholder="Held By"  bindLabel="name" [items]="heldByList"  class="ng-select-sm w-full"></ng-select>
+        </div>
+      </div>
+      <div class="box-body md:grid-cols-1" *ngIf="addpaymentbloc.isSecurityDeposit==1">
+
+        <app-file-upload
+            [accept]="'image/*'" 
+            (filesChanged)="onFilesSelected($event)"
+            [buttonText]="'web.property.lblUploadImage' | translate"
+            [dropText]="'web.property.lblDropYourImageHereOr' | translate"
+            [browseText]="'web.property.lblBrowse' | translate"
+            >
+        </app-file-upload>
+
+    </div>
+      <div class="flex justify-end mt-4">
+        <button type="button" (click)="savePayments()" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+          Save
+        </button>
+        <button type="button" (click)="showPaymentBlock(0)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+          Cancel
+        </button>
+      </div>
+    </div>
+    <div *ngIf="paymentSchedules.length > 0" class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
+      <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+        <thead class="bg-info/10">
+          <tr class="border-b border-defaultborder">
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount {{currentUser?.currencyCode}} </th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Advance  {{currentUser?.currencyCode}} </th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Recurrence</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Payment Via</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Attachment</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th> 
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="paymentSchedules.length === 0">
+            <td colspan="10" class="text-center py-6 bg-gray-50/30">
+              <span class="text-gray-500 italic text-sm">No records found</span>
+            </td>
+          </tr>
+          <tr *ngFor="let wo of paymentSchedules" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
+            <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.Amount}}</td>
+            <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.AdvAmt}}</td> 
+            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.Account}}</td> 
+            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.DueDate}}</td>
+            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.Recurrence}}</td>
+            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.PaymentType}}</td> 
+            <td><a>{{wo.attachmentName}}</a></td><td>
+              <div class="flex gap-1">
+                <button (click)="edit_action(wo,'edit')"
+                    class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
+                    data-tooltip="Edit">
+                    <i class="ri-edit-line text-xs"></i>
+                </button> 
+            </div>
+
+            </td><td>
+              <div>
+              <button (click)="edit_action(wo,'delete')"
+              class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
+              data-tooltip="Delete">
+              <i class="ri-delete-bin-line text-xs"></i>
+          </button>
+            </div></td><td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
     <!-- Additional Information -->
     <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
       <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4 flex items-center gap-1.5">
@@ -125,23 +378,23 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblNoOfPerson' | translate }}</label>
-          <input type="number" [(ngModel)]="noOfPerson" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="number" [(ngModel)]="additionalbloc.no_of_persons" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblCreatedBy' | translate }}</label>
-          <input type="text" [(ngModel)]="createdBy" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
+          <input type="text" [(ngModel)]="additionalbloc.created_by" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Created At</label>
-          <input type="date" [(ngModel)]="createdAt" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="additionalbloc.created_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoveInDate' | translate }}</label>
-          <input type="date" [(ngModel)]="moveInDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="additionalbloc.move_in_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPayingDate' | translate }}</label>
-          <input type="date" [(ngModel)]="payingDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="additionalbloc.paying_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
       </div>
     </div>
@@ -220,11 +473,11 @@
         </div>
         <div class="flex gap-2">
           <span class="text-gray-500 w-28 shrink-0">Lease Type:</span>
-          <span class="text-gray-800 font-bold">{{ selectedLeaseType }}</span>
+          <span class="text-gray-800 font-bold">{{ selectedLeaseType?.name }}</span>
         </div>
         <div class="flex gap-2">
           <span class="text-gray-500 w-28 shrink-0">Category:</span>
-          <span class="text-[#1f2b45] font-bold">{{ selectedLeaseCategory }}</span>
+          <span class="text-[#1f2b45] font-bold">{{ selectedLeaseCategory?.name }}</span>
         </div>
       </div>
     </div>
