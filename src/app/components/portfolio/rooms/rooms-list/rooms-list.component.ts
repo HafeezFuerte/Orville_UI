@@ -211,7 +211,7 @@ export class RoomsListComponent implements OnInit {
     
   }
 
-  loadRooms(): void {
+  loadRooms(append = false): void {
     var filterList=[];
      
     if (this.selectedCategory) {
@@ -246,7 +246,8 @@ export class RoomsListComponent implements OnInit {
     this.propertiesService.getUnits(payload).subscribe({
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedUnits=response.objResult.rooms  
+          const nextBatch = response.objResult.rooms || [];
+          this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...nextBatch] : nextBatch;
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -368,10 +369,27 @@ export class RoomsListComponent implements OnInit {
     this.viewMode = mode;
     this.showColumnDropdown = false;
     this.openActionCode = null;
+    this.pageNo = 0;
+    this.loadRooms();
+  }
+
+  get canLoadMore(): boolean {
+    return this.displayPage < (this.totalPages || 1);
+  }
+
+  loadMore(): void {
+    if (!this.canLoadMore) return;
+    this.pageNo++;
+    this.loadRooms(true);
+  }
+
+  isActiveGridStatus(status: string | null | undefined): boolean {
+    const value = (status || '').toLowerCase();
+    return !value || value === 'active' || value.includes('active');
   }
 
   toggleViewMode(): void {
-    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+    this.setViewMode(this.viewMode === 'list' ? 'grid' : 'list');
   }
 
   toggleDrawer(open: boolean): void {

@@ -144,19 +144,38 @@ export class VendorDetailComponent implements OnInit {
     { name: 'Doors & Locks', active: true }
   ];
 
-  // Action Dropdown list
-  actionOptions = [
-    { label: 'Edit Vendor', icon: 'ri-edit-line' },
-    { label: 'Add Lease', icon: 'ri-file-add-line' },
-    { label: 'Add Attachment', icon: 'ri-attachment-line' },
-    { label: 'Add User', icon: 'ri-user-add-line' },
-    { label: 'Add Emergency Contact', icon: 'ri-phone-line' },
+  // Action Dropdown list (Figma vendor-detail Action menu)
+  actionOptions: {
+    label: string;
+    icon: string;
+    asset?: string;
+    danger?: boolean;
+    dangerIcon?: boolean;
+  }[] = [
+    { label: 'Edit Vendor', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+    { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
     { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
-    { label: 'Send Email', icon: 'ri-mail-send-line' },
-    { label: 'View activity', icon: 'ri-history-line' },
-    { label: 'Unlock Tenant', icon: 'ri-lock-unlock-line' },
-    { label: 'Archive Tenant', icon: 'ri-archive-line' }
+    { label: 'Add Quotation', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
+    { label: 'Add User', icon: 'ri-user-add-line' },
+    { label: 'Send Email', icon: 'ri-mail-line' },
+    { label: 'View Activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+    { label: 'Assign Properties', icon: 'ri-home-4-line' },
+    { label: 'Block Vendor', icon: 'ri-forbid-line', dangerIcon: true }
   ];
+
+  get hasDangerAction(): boolean {
+    return this.actionOptions.some((o: any) => o.danger);
+  }
+
+  onVendorAction(label: string): void {
+    this.showActionDropdown = false;
+    if (label === 'Edit Vendor') {
+      window.location.href = '/contacts/vendors/edit-vendor/' + this.vendorId;
+      return;
+    }
+    if (label === 'Add Attachment') this.showSubscriptionsModal = true;
+    else if (label === 'Add User') this.showAddUserModal = true;
+  }
 
   // Mock subscriptions
   subscriptions = [

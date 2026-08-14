@@ -41,14 +41,26 @@ export class DetailPageLayoutComponent {
   overview!: TemplateRef<any>;
   @ContentChild('units')
   units!: TemplateRef<any>; 
-  @ContentChild('notes')
+  @ContentChild('notesTpl')
   notes!: TemplateRef<any>; 
-  @ContentChild('attachments')
+  @ContentChild('attachmentsTpl')
   attachments!: TemplateRef<any>; 
-  @ContentChild('commonarea')
+  @ContentChild('commonareaTpl')
   commonarea!: TemplateRef<any>;
-  @ContentChild('parkings')
+  @ContentChild('parkingsTpl')
   parkings!: TemplateRef<any>;
+  @ContentChild('financialsTpl')
+  financials!: TemplateRef<any>;
+  @ContentChild('inventoryTpl')
+  inventory!: TemplateRef<any>;
+  @ContentChild('workordersTpl')
+  workorders!: TemplateRef<any>;
+  @ContentChild('legalTpl')
+  legal!: TemplateRef<any>;
+  @ContentChild('inspectionsTpl')
+  inspections!: TemplateRef<any>;
+  @ContentChild('broadcastsTpl')
+  broadcasts!: TemplateRef<any>;
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;
@@ -117,12 +129,8 @@ export class DetailPageLayoutComponent {
     }
   }
   checkCommonTab(){
-    return this.selectedTab?.key!='units' && 
-    this.selectedTab?.key!='notes' && 
-    this.selectedTab?.key!='attachments' && 
-    this.selectedTab?.key!='commonarea'&& 
-    this.selectedTab?.key!='parkings' && 
-    this.selectedTab?.key!='rooms'
+    const key = this.selectedTab?.key;
+    return key === 'overview';
   }
   changeTab(tab: DetailTab) {
     this.activeTab = tab.key;

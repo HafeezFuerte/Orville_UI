@@ -1,1 +1,26 @@
-/* Open/close motion uses Tailwind translate/opacity utilities in the template. */
+/* Closed drawer is *ngIf'd out — no fixed panel during route/load FOUC. */
+
+@keyframes ov-filter-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ov-filter-panel-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.ov-filter-drawer__backdrop {
+  animation: ov-filter-backdrop-in 0.25s ease-out;
+}
+
+.ov-filter-drawer__panel {
+  animation: ov-filter-panel-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-filter-drawer__backdrop,
+  .ov-filter-drawer__panel {
+    animation: none;
+  }
+}

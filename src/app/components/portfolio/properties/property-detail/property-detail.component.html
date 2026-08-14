@@ -18,17 +18,51 @@
   </div>
   <div class="flex flex-wrap items-center gap-2">
     <div class="relative">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionMenu = !showActionMenu">
-        Action
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionMenu = !showActionMenu" [attr.aria-expanded]="showActionMenu">
+        {{ 'web.property.lblAction' | translate }}
         <i class="ri-arrow-down-s-line text-[16px]"></i>
       </button>
-      <div *ngIf="showActionMenu" class="absolute end-0 z-30 mt-1.5 min-w-[160px] rounded-lg border border-defaultborder bg-white p-1 shadow-lg dark:bg-bodybg">
-        <button type="button" class="block w-full rounded-md border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light">
-          {{ 'web.property.lblViewActivity' | translate }}
-        </button>
-        <a [routerLink]="['/edit-property', property?.code]" class="block rounded-md px-3 py-2 text-[14px] text-defaulttextcolor hover:bg-light">
-          {{ 'web.property.lblEditProperty' | translate }}
-        </a>
+      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <a role="menuitem" class="ov-action-menu__item" [routerLink]="['/edit-property', property?.code]" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+            </span>
+            <span>{{ 'web.property.lblEditProperty' | translate }}</span>
+          </a>
+          <a role="menuitem" class="ov-action-menu__item" [routerLink]="['/add-unit']" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/plus.svg" alt="" width="14" height="14">
+            </span>
+            <span>Add Unit</span>
+          </a>
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionAddAttachment()">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/paperclip.svg" alt="" width="14" height="14">
+            </span>
+            <span>Add Attachment</span>
+          </button>
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionAddNotes()">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/file-invoice.svg" alt="" width="14" height="14">
+            </span>
+            <span>Add Notes</span>
+          </button>
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionViewActivity()">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+            </span>
+            <span>{{ 'web.property.lblViewActivity' | translate }}</span>
+          </button>
+        </div>
+        <div class="ov-action-menu__footer">
+          <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="onActionArchive()">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
+            </span>
+            <span>Archive</span>
+          </button>
+        </div>
       </div>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/edit-property', property?.code]">
@@ -37,215 +71,249 @@
   </div>
 </div>
 
-<div class="grid grid-cols-12 gap-6 mt-4">
-
-  <app-detail-page-layout class="col-span-12" [tabs]="tabs" (notify_edit_action)="handleEditNotification($event)"
+<app-detail-page-layout [tabs]="tabs" (notify_edit_action)="handleEditNotification($event)"
     (search_on_child_grid)="handleSearch($event)" [(activeTab)]="activeTab" (saveClick)="savePopup($event)">
 
     <ng-template #leftPanel>
-      <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
-        <div class="box ov-card overflow-hidden">
-          <div class="p-5 flex flex-col gap-4">
-            <div>
-              <h4 class="ov-card-title">{{ property?.name || 'Marina Heights Towers' }}</h4>
-              <span class="ov-card-sub mt-1 flex items-center gap-1">
-                <i class="ri-map-pin-line text-[14px]"></i> {{ property?.address_1 }}
-              </span>
-            </div>
-
-            <span class="inline-flex w-fit items-center rounded-md bg-primary/10 px-2.5 py-1 text-[12px] font-medium text-primary">
-              {{ property?.type_name || 'Residential' }}
+      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-4">
+        <div class="flex flex-col gap-3.5">
+          <div>
+            <h4 class="ov-card-title">{{ property?.name || 'Marina Heights Towers' }}</h4>
+            <span class="ov-card-sub mt-1.5 flex items-center gap-1.5 !text-[13px]">
+              <i class="ri-map-pin-line text-[13px]"></i> {{ property?.address_1 }}
             </span>
+          </div>
 
-            <div class="flex flex-col gap-1.5">
-              <div class="flex justify-between items-center text-[14px]">
-                <span class="text-textmuted">{{ 'web.property.lblOccupancy' | translate }}</span>
-                <span class="font-semibold text-defaulttextcolor">{{ occupancyPct }}%</span>
+          <span class="inline-flex w-fit items-center gap-1.5 rounded-full bg-info/10 px-[15px] py-1 h-7 text-[13px] font-medium tracking-[0.26px] text-info">
+            <i class="ri-home-4-line text-[15px]"></i>
+            {{ property?.type_name || 'Residential' }}
+          </span>
+
+          <div class="rounded-lg bg-bodybg px-5 py-2.5 flex flex-col gap-2.5">
+            <div class="flex items-end justify-between gap-3">
+              <div class="flex flex-col gap-1">
+                <div class="text-[14px] font-semibold text-defaulttextcolor">{{ 'web.property.lblOccupancy' | translate }}</div>
+                <div class="text-[12px] font-light text-textmuted">
+                  {{ occupiedUnits }} {{ 'web.property.lblOf' | translate }} {{ totalUnits }} {{ 'web.property.lblUnitsOccupied' | translate }}
+                </div>
               </div>
-              <div class="w-full bg-light rounded-full h-1.5 dark:bg-white/10">
-                <div class="bg-primary h-1.5 rounded-full" [style.width.%]="occupancyPct"></div>
-              </div>
-              <span class="text-[12px] text-textmuted">{{ property?.occupied_units || 0 }} of {{ property?.total_units || 0 }} {{ 'web.property.lblOccupancyUnitsText' | translate }}</span>
+              <div class="text-[18px] font-bold text-textmuted leading-none">{{ occupancyPct }}%</div>
             </div>
-
-            <div class="flex gap-2">
-              <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 text-[12px]">
-                {{ 'web.property.lblViewActivity' | translate }}
-              </button>
-              <button [routerLink]="['/edit-property', property?.code]" type="button" class="flex-1 ov-btn ov-btn-primary !h-9 text-[12px]">
-                {{ 'web.property.lblEditProperty' | translate }}
-                <i class="ri-arrow-right-line"></i>
-              </button>
+            <div class="w-full rounded-[10px] h-2.5 bg-primary/10">
+              <div class="bg-info h-2.5 rounded-[10px]" [style.width.%]="occupancyPct"></div>
             </div>
+          </div>
 
-            <div class="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px] pt-1">
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblTags' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.tags || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblPrefix' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.prefix || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblAddress1' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.address_1 || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblState' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.state_name || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblCity' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.city_name || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblZipCode' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.zip_code || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblCommunity' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.community || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblCountry' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.country_name || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblFloors' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.no_of_floors || '-' }}</div>
-              </div>
-              <div>
-                <div class="text-textmuted">{{ 'web.property.lblTotalUnits' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.total_units || '-' }}</div>
-              </div>
-              <div class="col-span-2">
-                <div class="text-textmuted">Parking</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.parking_spaces || '-' }}</div>
-              </div>
-              <div class="col-span-2">
-                <div class="text-textmuted">{{ 'web.property.lblDescription' | translate }}</div>
-                <div class="font-medium text-defaulttextcolor">{{ property?.description || '-' }}</div>
-              </div>
-            </div>
-
-            <h5 class="ov-card-title text-[14px]">{{ 'web.property.lblInformation' | translate }}</h5>
-            <h5 class="text-[14px] font-semibold text-defaulttextcolor">{{ 'web.property.lblPropertyDetails' | translate }}</h5>
-            <div class="flex flex-col gap-2 text-[14px]">
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.common.lblID' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.code || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.common.lblName' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.name || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblCategory' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.category_name || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblPropertyType' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.type_name || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblSize' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.size_sqft || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1">
-                <span class="text-textmuted">{{ 'web.property.lblPropertyValue' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.purchase_value || '-' }}</span>
-              </div>
-            </div>
-
-            <button type="button" (click)="toggleMoreDetails()" class="text-primary font-medium inline-flex items-center justify-center border-0 bg-transparent p-0">
-              {{ 'web.property.lblViewMoreDetails' | translate }}
-              <i class="ri-arrow-down-s-line ms-1" [class.rotate-180]="showMoreDetails"></i>
+          <div class="flex gap-5">
+            <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
+              {{ 'web.property.lblViewActivity' | translate }}
             </button>
-            <div *ngIf="showMoreDetails" class="flex flex-col gap-2 text-[14px]">
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblAddress2' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.address_2 || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblLandNo' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.land_no || '-' }}</span>
-              </div>
-              <div class="flex justify-between py-1 border-b border-defaultborder">
-                <span class="text-textmuted">{{ 'web.property.lblCreated' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ property?.created_date | date:'MMM d, yyyy' }}</span>
-              </div>
-              <div class="flex justify-between py-1">
-                <span class="text-textmuted">{{ 'web.property.lblLastUpdate' | translate }}</span>
-                <span class="font-medium text-defaulttextcolor">{{ (property?.updated_date || property?.modified_date || property?.created_date) | date:'MMM d, yyyy' }}</span>
-              </div>
+            <a [routerLink]="['/edit-property', property?.code]" class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
+              {{ 'web.property.lblEditProperty' | translate }}
+              <i class="ri-arrow-right-line text-[14px]"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="border-t border-defaultborder"></div>
+        <h5 class="ov-card-title m-0">{{ 'web.property.lblInformation' | translate }}</h5>
+
+        <div class="ov-card overflow-hidden py-5">
+          <div class="flex items-center justify-between px-5">
+            <h5 class="ov-card-title m-0">{{ 'web.property.lblPropertyDetails' | translate }}</h5>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+          </div>
+          <div class="flex flex-col gap-4 px-5 mt-5">
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.common.lblID' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.code || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.common.lblName' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCategory' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.category_name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblPropertyType' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.type_name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblTags' | translate }}:</span>
+              <span class="ov-kv__value">{{ tagsDisplay }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblTotalUnits' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.total_units || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblFloors' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.no_of_floors || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblOccupancy' | translate }}:</span>
+              <span class="ov-kv__value">{{ occupancyPct }}%</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblSize' | translate }}:</span>
+              <span class="ov-kv__value">{{ sizeDisplay }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblPropertyValue' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.purchase_value || '-' }}</span>
+            </div>
+          </div>
+          <div class="border-t border-defaultborder mt-5"></div>
+          <button type="button" (click)="toggleMoreDetails()" class="ov-link !text-[13px] font-semibold inline-flex items-center justify-center border-0 bg-transparent p-0 w-full mt-5">
+            {{ 'web.property.lblViewMoreDetails' | translate }}
+            <i class="ri-arrow-down-s-line ms-1" [class.rotate-180]="showMoreDetails"></i>
+          </button>
+          <div *ngIf="showMoreDetails" class="flex flex-col gap-4 px-5 mt-5">
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblPropertyPrefix' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.prefix || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblAddress1' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.address_1 || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblAddress2' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.address_2 || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCity' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.city_name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblState' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.state_name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCountry' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.country_name || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCommunity' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.community || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblLandNo' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.land_no || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCreated' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.created_date | date:'MM-dd-yyyy' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblLastUpdate' | translate }}:</span>
+              <span class="ov-kv__value">{{ (property?.updated_date || property?.modified_date || property?.created_date) | date:'dd-MM-yyyy' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblDescription' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.description || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblZipCode' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.zip_code || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Parking:</span>
+              <span class="ov-kv__value">{{ property?.parking_spaces || '-' }}</span>
             </div>
           </div>
         </div>
 
-        <div class="box ov-card p-4 flex flex-col gap-2.5">
-          <h5 class="ov-card-title border-b border-defaultborder pb-2">Locations & Coordinates</h5>
-          <div class="flex flex-col gap-2 text-[14px]">
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblCity' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.city_name || '-' }}</span>
+        <div class="ov-card overflow-hidden py-5">
+          <div class="flex items-center justify-between px-5">
+            <h5 class="ov-card-title m-0">Location &amp; Coordinates</h5>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+          </div>
+          <div class="flex flex-col gap-4 px-5 mt-5">
+            <div class="ov-map" *ngIf="mapEmbedUrl; else mapPlaceholder">
+              <iframe [src]="mapEmbedUrl" title="Property location" loading="lazy"></iframe>
             </div>
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblState' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.state_name || '-' }}</span>
+            <ng-template #mapPlaceholder>
+              <div class="ov-map flex items-center justify-center text-[12px] text-textmuted">
+                {{ property?.address_1 || ('web.property.lblAddress' | translate) }}
+              </div>
+            </ng-template>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCity' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.city_name || '-' }}</span>
             </div>
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblCountry' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.country_name || '-' }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblState' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.state_name || '-' }}</span>
             </div>
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblCommunity' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.community || '-' }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCountry' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.country_name || '-' }}</span>
             </div>
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblZipCode' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.zip_code || '-' }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblCommunity' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.community || '-' }}</span>
             </div>
-            <div class="flex justify-between py-1 border-b border-defaultborder">
-              <span class="text-textmuted">{{ 'web.property.lblLatitude' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.lat || '-' }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblZipCode' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.zip_code || '-' }}</span>
             </div>
-            <div class="flex justify-between py-1">
-              <span class="text-textmuted">{{ 'web.property.lblLongitude' | translate }}</span>
-              <span class="font-medium text-defaulttextcolor">{{ property?.lon || '-' }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblLatitude' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.lat || '-' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.property.lblLongitude' | translate }}:</span>
+              <span class="ov-kv__value">{{ property?.lon || '-' }}</span>
             </div>
           </div>
         </div>
 
-        <div class="box ov-card p-4 flex flex-col gap-2.5">
-          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblCustomFields' | translate }}</h5>
-          <div class="flex flex-col py-1">
-            <span class="text-textmuted text-[14px]">{{ 'web.property.lblMakaniNo' | translate }}</span>
-            <span class="font-medium text-defaulttextcolor text-[14px] mt-0.5">{{ property?.makani_no || 'No value set' }}</span>
+        <div class="ov-card overflow-hidden py-5">
+          <div class="flex items-center justify-between px-5">
+            <h5 class="ov-card-title m-0">{{ 'web.property.lblCustomFields' | translate }}</h5>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+          </div>
+          <div class="border-t border-defaultborder mt-[18px]"></div>
+          <div class="px-5 pt-4">
+            <div class="text-[14px] font-semibold text-defaulttextcolor">{{ 'web.property.lblMakaniNo' | translate }}</div>
+            <div class="text-[14px] text-textmuted mt-1.5">{{ property?.makani_no || 'No value set' }}</div>
           </div>
         </div>
 
-        <div class="box ov-card p-4 flex flex-col gap-2.5">
-          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblServiceRequest' | translate }}</h5>
-          <div class="flex justify-between items-center py-1 border-b border-defaultborder">
-            <span class="text-textmuted text-[14px]">{{ 'web.property.lblServiceRequestsEnabled' | translate }}</span>
-            <div class="form-check form-switch">
+        <div class="ov-card overflow-hidden py-5">
+          <div class="px-5">
+            <h5 class="ov-card-title m-0">{{ 'web.property.lblServiceRequest' | translate }}</h5>
+          </div>
+          <div class="border-t border-defaultborder mt-[18px]"></div>
+          <div class="flex items-start justify-between gap-3 px-5 pt-4">
+            <div class="flex flex-col gap-2.5 min-w-0">
+              <span class="text-[14px] font-medium text-textmuted">{{ 'web.property.lblServiceRequestsEnabled' | translate }}</span>
+              <span class="text-[14px] text-textmuted leading-[18px]">{{ 'web.property.lblServiceRequestDescription' | translate }}</span>
+            </div>
+            <div class="form-check form-switch m-0 shrink-0">
               <input class="form-check-input" type="checkbox" id="serviceRequest" checked>
             </div>
           </div>
-          <div class="flex justify-between py-1">
-            <span class="text-textmuted text-[14px]">{{ 'web.property.lblServiceRequestDescription' | translate }}</span>
-            <span class="font-medium text-defaulttextcolor">-</span>
-          </div>
         </div>
 
-        <div class="box ov-card p-4 flex flex-col gap-2.5">
-          <h5 class="ov-card-title border-b border-defaultborder pb-2">{{ 'web.property.lblAmenities' | translate }}</h5>
-          <div class="flex flex-wrap gap-1.5 pt-1">
+        <div class="ov-card overflow-hidden py-5">
+          <div class="px-5">
+            <h5 class="ov-card-title m-0">{{ 'web.property.lblAmenities' | translate }}</h5>
+          </div>
+          <div class="border-t border-defaultborder mt-[18px]"></div>
+          <div class="flex flex-wrap gap-2.5 px-5 pt-4">
             <span *ngFor="let amenity of property?.amenities">
-              <span *ngIf="amenity.amenity"
-                class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[12px] font-medium text-primary">
-                <i class="ri-checkbox-circle-fill"></i>
+              <span *ngIf="amenity.amenity" class="ov-amenity-chip">
+                <i class="ri-check-line text-[16px]"></i>
                 {{ amenity.amenity }}
               </span>
             </span>
@@ -262,19 +330,19 @@
         (notify_edit_action)="handleEditNotification($event)"></app-shared-units-table>
     </ng-template>
 
-    <ng-template #notes>
+    <ng-template #notesTpl>
       <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </ng-template>
 
-    <ng-template #attachments>
+    <ng-template #attachmentsTpl>
       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </ng-template>
 
-    <ng-template #commonarea>
+    <ng-template #commonareaTpl>
       <app-commonarea-table [selectedTab]="selectedTab"></app-commonarea-table>
     </ng-template>
 
-    <ng-template #parkings>
+    <ng-template #parkingsTpl>
       <app-parkings-table [selectedTab]="selectedTab"></app-parkings-table>
     </ng-template>
 
@@ -282,45 +350,50 @@
       <div class="flex flex-col gap-5">
         <div>
           <h5 class="ov-card-title">Property Overview</h5>
-          <p class="ov-card-sub">Real-time occupancy rates and performance breakdowns.</p>
+          <p class="sr-only">Real-time occupancy rates and performance breakdowns.</p>
+        </div>
+
+        <div class="w-full rounded-xl border border-defaultborder bg-white px-5 py-4">
+          <div class="text-[14px] text-textmuted leading-4">Property Type</div>
+          <div class="text-[24px] font-semibold leading-[31px] text-defaulttextcolor mt-0.5">{{ property?.type_name || 'Residential' }}</div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="ov-card flex flex-col items-center p-5">
+          <div class="box ov-card flex flex-col items-center p-5">
             <div class="w-full mb-4">
-              <div class="text-[16px] font-semibold text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Occupancy Rate</div>
               <div class="text-[14px] text-textmuted">Rooms</div>
             </div>
             <div class="relative size-[228px]">
               <svg class="size-full -rotate-90" viewBox="0 0 36 36">
                 <path class="text-light" stroke-width="2.5" stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="text-primary" [attr.stroke-dasharray]="occupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
+                <path class="text-info" [attr.stroke-dasharray]="roomsOccupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
                   stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ occupancyPct }}%</span>
+                <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ roomsOccupancyPct }}%</span>
                 <span class="text-[14px] font-medium text-textmuted">Occupied</span>
               </div>
             </div>
             <div class="mt-4 text-center">
               <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">{{ property?.occupied_units || 0 }} / {{ property?.total_units || 0 }} units</div>
+              <div class="text-[14px] text-textmuted">{{ occupiedRooms }} / {{ totalRooms }} units</div>
               <div class="text-[14px] text-textmuted">Number of occupied rooms</div>
             </div>
           </div>
 
-          <div class="ov-card flex flex-col items-center p-5">
+          <div class="box ov-card flex flex-col items-center p-5">
             <div class="w-full mb-4">
-              <div class="text-[16px] font-semibold text-defaulttextcolor">Occupancy Rate</div>
+              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Occupancy Rate</div>
               <div class="text-[14px] text-textmuted">Units</div>
             </div>
             <div class="relative size-[228px]">
               <svg class="size-full -rotate-90" viewBox="0 0 36 36">
                 <path class="text-light" stroke-width="2.5" stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="text-primary" [attr.stroke-dasharray]="occupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
+                <path class="text-purple" [attr.stroke-dasharray]="occupancyPct + ', 100'" stroke-width="2.5" stroke-linecap="round"
                   stroke="currentColor" fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               </svg>
@@ -331,7 +404,7 @@
             </div>
             <div class="mt-4 text-center">
               <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">{{ property?.occupied_units || 0 }} / {{ property?.total_units || 0 }} units</div>
+              <div class="text-[14px] text-textmuted">{{ occupiedUnits }} / {{ totalUnits }} units</div>
               <div class="text-[14px] text-textmuted">Number of occupied units</div>
             </div>
           </div>
@@ -339,5 +412,3 @@
       </div>
     </ng-template>
   </app-detail-page-layout>
-
-</div>

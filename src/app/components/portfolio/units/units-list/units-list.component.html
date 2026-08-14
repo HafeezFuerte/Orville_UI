@@ -73,21 +73,21 @@
     </div>
   </div>
 
-  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 py-0 pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
       <label class="sr-only" for="unit-search">{{ 'web.Unit.lblSearchUnit' | translate }}</label>
       <i class="ri-search-line ov-search__icon"></i>
       <input id="unit-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
         (keyup.enter)="onSearch()" placeholder="Filter items by Unit No">
     </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-ghost !w-[100px]"
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[18px]"></i>
+        <i class="ri-equalizer-line text-[18px]"></i>
         Filter
       </button>
       <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-ghost !w-[100px]"
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <i class="ri-layout-column-line text-[18px]"></i>
           Column
@@ -192,66 +192,83 @@
     </app-shared-table>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-5 pb-5" *ngIf="viewMode === 'grid'">
-    <div class="overflow-hidden border border-defaultborder rounded-2xl bg-white flex flex-col dark:bg-bodybg dark:border-white/10" *ngFor="let unit of paginatedUnits; trackBy: trackByUnitId">
-      <div class="relative h-40 overflow-hidden bg-light">
-        <img [src]="unit.unit_image" [alt]="unit.unit_code" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
-        <span class="absolute bottom-3 left-3 px-2.5 py-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md rounded-md flex items-center gap-1">
-          <i class="ri-home-4-line"></i> {{unit.category_name}}
+  <div class="ov-grid px-5 pt-5 pb-5" *ngIf="viewMode === 'grid'">
+    <article class="ov-grid-card" *ngFor="let unit of paginatedUnits; trackBy: trackByUnitId">
+      <div class="ov-grid-card__media">
+        <img [src]="unit.unit_image" [alt]="unit.unit_code" class="ov-grid-card__img">
+        <span class="ov-grid-card__badge">
+          <img src="assets/images/property-grid/home-badge.svg" alt="" width="16" height="16">
+          {{ unit.category_name || 'Residential' }}
         </span>
       </div>
 
-      <div class="p-4 flex flex-col flex-1 gap-4">
-        <div class="flex justify-between items-start gap-2">
-          <div class="flex flex-col min-w-0">
-            <h5 class="text-sm font-bold text-defaulttextcolor m-0 leading-tight">{{unit.unit_code}} - {{unit.property_Name}}</h5>
-            <div class="flex items-center text-textmuted text-[12px] font-medium mt-1">
-              <i class="ri-map-pin-line me-1"></i> {{unit.address_1}}
+      <div class="ov-grid-card__body">
+        <div class="ov-grid-card__head">
+          <div class="ov-grid-card__identity">
+            <span class="ov-grid-card__icon" aria-hidden="true">
+              <img src="assets/images/property-grid/home-header.svg" alt="" width="20" height="20">
+            </span>
+            <div class="min-w-0">
+              <h5 class="ov-grid-card__name">{{ unit.unit_code }} - {{ unit.property_Name }}</h5>
+              <p class="ov-grid-card__addr">
+                <i class="ri-map-pin-line"></i>
+                <span>{{ unit.address_1 }}</span>
+              </p>
             </div>
           </div>
-          <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full border flex items-center gap-1 shrink-0"
-            [ngClass]="unit.class_name">
-            {{getArabicLookupName(unit,'unit_status_name')}}
+          <span class="ov-grid-card__status"
+            [class.ov-grid-card__status--muted]="!isActiveGridStatus(getArabicLookupName(unit, 'unit_status_name'))">
+            <span class="ov-grid-card__status-dot"></span>
+            {{ getArabicLookupName(unit, 'unit_status_name') }}
           </span>
         </div>
 
-        <div class="grid grid-cols-4 gap-1 py-3 border-y border-defaultborder text-center">
-          <div class="flex flex-col gap-1">
-            <span class="text-defaulttextcolor text-xs font-bold">{{unit.beds !== 'N/A' ? unit.beds : '0'}}</span>
-            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Beds</span>
+        <div class="ov-grid-card__stats ov-grid-card__stats--4">
+          <div class="ov-grid-card__stat">
+            <span class="ov-grid-card__stat-val">{{ unit.beds !== 'N/A' ? unit.beds : '0' }}</span>
+            <span class="ov-grid-card__stat-lbl">Beds</span>
           </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-defaulttextcolor text-xs font-bold">{{unit.baths}}</span>
-            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Baths</span>
+          <div class="ov-grid-card__stat">
+            <span class="ov-grid-card__stat-val">{{ unit.baths || 0 }}</span>
+            <span class="ov-grid-card__stat-lbl">Baths</span>
           </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-defaulttextcolor text-xs font-bold">{{unit.area}}</span>
-            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Area</span>
+          <div class="ov-grid-card__stat">
+            <span class="ov-grid-card__stat-val">{{ unit.area || 0 }}</span>
+            <span class="ov-grid-card__stat-lbl">Area</span>
           </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-defaulttextcolor text-xs font-bold">{{unit.floor_no}}</span>
-            <span class="text-textmuted text-[9px] font-medium uppercase tracking-wider">Floor</span>
+          <div class="ov-grid-card__stat">
+            <span class="ov-grid-card__stat-val">{{ unit.floor_no || 0 }}</span>
+            <span class="ov-grid-card__stat-lbl">Floor</span>
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[12px] font-medium text-textmuted">
-          <span>Added {{unit.created_date | date:'MMM d, yyyy'}}</span>
-          <span class="font-bold text-defaulttextcolor">{{currentUser?.currencyCode + ' ' + unit.management_fee}}</span>
+        <div class="ov-grid-card__meta">
+          <span>Management fee</span>
+          <span class="ov-grid-card__meta-fee">{{ currentUser?.currencyCode }} {{ unit.management_fee }}</span>
         </div>
       </div>
 
-      <div class="p-4 pt-0 mt-auto flex items-center gap-3">
-        <button type="button" [routerLink]="['/edit-unit', unit.code]" class="flex-1 ov-btn ov-btn-ghost !h-9 text-[12px] font-semibold">
-          Manage Unit
-        </button>
-        <button type="button" [routerLink]="['/units', unit.code]" class="flex-1 ov-btn ov-btn-primary !h-9 text-[12px] font-semibold">
-          View Unit <i class="ri-arrow-right-line"></i>
-        </button>
+      <div class="ov-grid-card__footer">
+        <span class="ov-grid-card__added">Added {{ unit.created_date | date:'MMM d, yyyy' }}</span>
+        <div class="ov-grid-card__actions">
+          <a [routerLink]="['/edit-unit', unit.code]" class="ov-grid-card__btn ov-grid-card__btn--ghost">Manage Unit</a>
+          <a [routerLink]="['/units', unit.code]" class="ov-grid-card__btn ov-grid-card__btn--primary">
+            View Unit
+            <img src="assets/images/property-grid/arrow.svg" alt="" width="16" height="8">
+          </a>
+        </div>
       </div>
-    </div>
+    </article>
   </div>
 
-  <div class="ov-page">
+  <div class="ov-grid-loadmore" *ngIf="viewMode === 'grid' && canLoadMore">
+    <button type="button" class="ov-btn ov-btn-ghost ov-grid-loadmore__btn" (click)="loadMore()">
+      Load more
+      <i class="ri-arrow-down-s-line text-[16px]"></i>
+    </button>
+  </div>
+
+  <div class="ov-page" *ngIf="viewMode === 'list'">
     <div class="ov-page__meta">
       <span class="ov-page__label">Show</span>
       <div class="ov-page__size">
@@ -264,17 +281,19 @@
     </div>
     <div class="ov-page__nav">
       <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
-      <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-        <i class="ri-arrow-left-s-line text-[16px]"></i>
-      </button>
-      <ng-container *ngFor="let item of pagerItems">
-        <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-        <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-          [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
-      </ng-container>
-      <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
-        <i class="ri-arrow-right-s-line text-[16px]"></i>
-      </button>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <i class="ri-arrow-left-s-line text-[16px]"></i>
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <i class="ri-arrow-right-s-line text-[16px]"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>

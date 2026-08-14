@@ -153,7 +153,7 @@ private loadMetrics(
   });
 }
 
-  loadProperties(): void {
+  loadProperties(append = false): void {
     const payload = {
       userid: 1,
       company_id: 1,
@@ -171,7 +171,8 @@ private loadMetrics(
     this.propertiesService.getProperties(payload).subscribe({
       next: (res: any) => { 
         if (res && res.statusCode === "200") {
-        this.properties = res.objResult.property; 
+        const nextBatch = res.objResult.property || [];
+        this.properties = append ? [...(this.properties || []), ...nextBatch] : nextBatch;
         if(res.objResult.rows_info)
         {
           this.totalRecords=res.objResult.rows_info[0].totalrecords;
@@ -272,6 +273,18 @@ private loadMetrics(
     this.viewMode = mode;
     this.showColumnDropdown = false;
     this.openActionCode = null;
+    this.pageNo = 0;
+    this.loadProperties();
+  }
+
+  get canLoadMore(): boolean {
+    return this.displayPage < (this.totalPages || 1);
+  }
+
+  loadMore(): void {
+    if (!this.canLoadMore) return;
+    this.pageNo++;
+    this.loadProperties(true);
   }
 
   toggleViewMode(): void {

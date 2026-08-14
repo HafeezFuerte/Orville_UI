@@ -142,17 +142,36 @@ export class TenantDetailComponent implements OnInit {
   showAddNoteModal = false;
 
   actionOptions = [
-    { label: 'Edit Tenant', icon: 'ri-edit-line' },
-    { label: 'Add Lease', icon: 'ri-file-add-line' },
-    { label: 'Add Attachment', icon: 'ri-attachment-line' },
+    { label: 'Edit Tenant', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+    { label: 'Add Lease', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
+    { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
     { label: 'Add User', icon: 'ri-user-add-line' },
     { label: 'Add Emergency Contact', icon: 'ri-phone-line' },
     { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
-    { label: 'Send Email', icon: 'ri-mail-send-line' },
-    { label: 'View activity', icon: 'ri-history-line' },
-    { label: 'Unlock Tenant', icon: 'ri-lock-unlock-line' },
-    { label: 'Archive Tenant', icon: 'ri-archive-line' }
+    { label: 'Send Email', icon: 'ri-mail-line' },
+    { label: 'View activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+    { label: 'Unblock Tenant', icon: 'ri-forbid-line' },
+    { label: 'Archive Tenant', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
   ];
+
+  get hasDangerAction(): boolean {
+    return this.actionOptions.some((o: any) => o.danger);
+  }
+
+  onTenantAction(label: string): void {
+    this.showActionDropdown = false;
+    if (label === 'Edit Tenant') {
+      // Primary Edit button handles navigation; keep menu item for parity
+      window.location.href = '/contacts/tenants/edit-tenant/' + this.tenantId;
+      return;
+    }
+    if (label === 'Add Lease') this.showAddLeaseModal = true;
+    else if (label === 'Add Attachment') this.showAddAttachmentModal = true;
+    else if (label === 'Add User') this.showAddUserModal = true;
+    else if (label === 'Add Emergency Contact') this.showAddEmergencyContactModal = true;
+    else if (label === 'Add Broadcast') this.showAddBroadcastModal = true;
+    else if (label === 'Send Email') this.showSendEmailModal = true;
+  }
 
   subscriptions = [
     { name: 'Document Expiry Email', subscribed: true },

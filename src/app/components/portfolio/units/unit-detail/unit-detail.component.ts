@@ -12,7 +12,7 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 import {InventoryItemComponent} from '../../../child-tables/inventoryitem/inventoryitem.component'; 
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
-import { MatPaginatorModule } from '@angular/material/paginator';  
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';  
 export interface Unit {
   id: number;
   name: string;
@@ -53,15 +53,26 @@ export interface Unit {
   serviceDisabled?: boolean;
   trakessiNumber?: string;
   reraNumber?: string;
+  createdBy?: string;
+  parkingCount?: string | number;
+  autoAssign?: boolean;
+  hasElectricity?: boolean;
+  hasGas?: boolean;
+  alertMessage?: string;
+  marketingTitle?: string;
+  marketingDescription?: string;
+  unitDetailsText?: string;
+  amenities?: any[];
 }
 
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-layout.component';
 
 @Component({
   selector: 'app-unit-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent,InventoryItemComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, MatPaginatorModule, ReusableModalComponent, FilterDrawerComponent],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent,InventoryItemComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent],
   templateUrl: './unit-detail.component.html',
   styleUrl: './unit-detail.component.scss'
 })
@@ -69,10 +80,37 @@ export class UnitDetailComponent implements OnInit {
   unitId!: string;
   unit: Unit | null = null;
   activeTab: string = 'overview';
-  showMoreDetails: boolean = false;
+  showMoreDetails: boolean = true;
+  showActionMenu = false;
   showAddInvoiceModal: boolean = false;
   isDrawerOpen: boolean = false;
   isColumnDropdownOpen: boolean = false;
+  tabSearchQuery = '';
+  defaultAmenities = [
+    'Kids Play Area',
+    'BBQ Deck',
+    'Concierge',
+    'Covered Parking',
+    'High-Speed Wi-Fi',
+    'Swimming Pool',
+    'Fully Equipped Gym',
+    '24/7 Security'
+  ];
+  chartTicks = ['40 M', '30 M', '20 M', '10 M', '0'];
+  monthBars = [
+    { m: 'Jan', h: 23, empty: false },
+    { m: 'Feb', h: 30, empty: false },
+    { m: 'Mar', h: 88, empty: false },
+    { m: 'Apr', h: 53, empty: false },
+    { m: 'May', h: 47, empty: false },
+    { m: 'Jun', h: 197, empty: false },
+    { m: 'Jul', h: 246, empty: false },
+    { m: 'Aug', h: 269, empty: true },
+    { m: 'Sep', h: 269, empty: true },
+    { m: 'Oct', h: 269, empty: true },
+    { m: 'Nov', h: 269, empty: true },
+    { m: 'Dec', h: 269, empty: true }
+  ];
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
   notesForm!: FormGroup;
@@ -196,7 +234,17 @@ export class UnitDetailComponent implements OnInit {
               managementFeeType: detail.management_fee_type || 'Percentage',
               serviceDisabled: detail.disable_maintainence || false,
               trakessiNumber: detail.trakessi_number || '-',
-              reraNumber: detail.rera_number || '-'
+              reraNumber: detail.rera_number || '-',
+              createdBy: detail.created_by_name || detail.created_by || detail.created_user || '-',
+              parkingCount: detail.parking_no || detail.parking_count || detail.parking || '',
+              autoAssign: !!detail.auto_assign,
+              hasElectricity: !!(detail.electricity_no || detail.has_electricity || detail.is_electricity),
+              hasGas: !!(detail.gas_no || detail.has_gas || detail.is_gas),
+              alertMessage: detail.alert_message || '-',
+              marketingTitle: detail.marketing_title || '-',
+              marketingDescription: detail.marketing_description || '-',
+              unitDetailsText: detail.unit_details || detail.description || '-',
+              amenities: detail.amenities || []
             };
             this.item = this.unit;
           }
@@ -276,22 +324,6 @@ export class UnitDetailComponent implements OnInit {
         hasActions: true,
         addButtonText: 'Work Order'
       },
-  
-     
-  {
-        key: 'legal',
-        label: 'web.common.lblLegal',
-        layout: 'content', 
-        entity:"Units",
-        entity_id:this.unitId,
-        data: this.legalCases,
-        totalRecords: this.legalCases?.length || 0,
-        loading: this.loading,
-        hasActions: true,
-        addButtonText: 'Legal Case',
-        form: FormGroup,
-        popupType: 'legal'
-      },
       {
         key: 'attachments',
         label: 'web.common.lblAttachments',
@@ -307,15 +339,31 @@ export class UnitDetailComponent implements OnInit {
         popupType: 'attachment'      
       },
       {
-        key: 'broadcasts',
-        label: 'web.common.lblBroadcasts',
-        layout: 'table',
-        columns: this.broadCastsColumns,
-        data: this.broadcasts,
-        totalRecords: this.broadcasts?.length || 0,
+        key: 'legal',
+        label: 'web.common.lblLegal',
+        layout: 'content', 
+        entity:"Units",
+        entity_id:this.unitId,
+        data: this.legalCases,
+        totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Broadcasts'
+        addButtonText: 'Legal Case',
+        form: FormGroup,
+        popupType: 'legal'
+      },
+      {
+        key: 'parkings',
+        label: 'web.common.lblParkings',
+        layout: 'content', 
+        data: this.parkings,
+        entity:"Units",
+        entity_id:this.unit?.property_code,
+        filter_code:this.unitId,
+        totalRecords: this.parkings?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Parking'
       },
       {
         key: 'notes',
@@ -332,22 +380,20 @@ export class UnitDetailComponent implements OnInit {
         popupType: 'notes'
       },
       {
-        key: 'parkings',
-        label: 'web.common.lblParkings',
-        layout: 'content', 
-        data: this.parkings,
-        entity:"Units",
-        entity_id:this.unit?.property_code,
-        filter_code:this.unitId,
-        totalRecords: this.parkings?.length || 0,
+        key: 'broadcasts',
+        label: 'web.common.lblBroadcasts',
+        layout: 'content',
+        columns: this.broadCastsColumns,
+        data: this.broadcasts,
+        totalRecords: this.broadcasts?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Parking'
+        addButtonText: 'Broadcasts'
       },
       {
         key: 'inspections',
         label: 'web.common.lblInspections',
-        layout: 'table',
+        layout: 'content',
         columns: this.inpectionsColumns,
         data: this.inspections,
         totalRecords: this.inpectionsColumns?.length || 0,
@@ -362,9 +408,27 @@ export class UnitDetailComponent implements OnInit {
   get unitNo(): string {
     if (this.unit && this.unit.name) {
       const parts = this.unit.name.split(' ');
-      return parts[1] || '209';
+      return parts[1] || this.unit.name;
     }
-    return '209';
+    return '-';
+  }
+
+  get landlordCount(): number {
+    return this.unit?.landlord ? 1 : 0;
+  }
+
+  get parkingDisplay(): string {
+    if (this.unit?.parkingCount) {
+      return String(this.unit.parkingCount);
+    }
+    return this.parkings?.length ? String(this.parkings.length) : '-';
+  }
+
+  get displayAmenities(): string[] {
+    const fromApi = (this.unit?.amenities || [])
+      .map((item: any) => (typeof item === 'string' ? item : item?.amenity || item?.name || ''))
+      .filter((name: string) => !!name);
+    return fromApi.length ? fromApi : this.defaultAmenities;
   }
 
   toggleDrawer(state: boolean): void {
@@ -373,5 +437,9 @@ export class UnitDetailComponent implements OnInit {
 
   toggleMoreDetails(): void {
     this.showMoreDetails = !this.showMoreDetails;
+  }
+
+  toggleColumnDropdown(): void {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
   }
 }

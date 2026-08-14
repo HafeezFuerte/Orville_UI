@@ -1,178 +1,208 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6">
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">{{ 'web.contacts.lblAllContacts' | translate }}</h3>
-    <p class="text-gray-500 text-sm mt-1">{{ 'web.contacts.lblViewEveryContact' | translate }}</p>
+    <h3 class="ov-page-title">{{ 'web.contacts.lblAllContacts' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.contacts.lblViewEveryContact' | translate }}</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" title="Export">
-      <i class="ri-download-2-line text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost"
+      [attr.data-tooltip]="'web.contacts.lblExport' | translate">
+      <i class="ri-download-2-line text-[18px]"></i>
+      {{ 'web.contacts.lblExport' | translate }}
     </button>
   </div>
 </div>
 
-<!-- 📋 LIST VIEW (TABLE) -->
-<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 animate-fade-in">
-  
-  <div class="box-header !py-3 !px-4 border-b bg-white flex justify-between items-center w-full">
-    <div class="flex items-center gap-4 w-full max-w-md">
-      <!-- Text Search -->
-      <div class="input-group w-full relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i class="ri-search-line text-gray-400"></i>
-        </div>
-        <input type="text" class="form-control form-control-sm !text-[12px] pl-9 bg-gray-50 border-gray-200 rounded-md" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" [placeholder]="'web.contacts.lblSearchByName' | translate">
-      </div>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Lists</h5>
     </div>
-    
-    <div class="flex items-center gap-2">
-      <!-- Filter Button -->
-      <button type="button" (click)="toggleDrawer(true)"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-        [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
-        <i class="ri-filter-3-line text-sm"></i>
-      </button>
+  </div>
 
-      <!-- Column Button with dropdown overlay -->
-      <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="all-contacts-search">{{ 'web.contacts.lblSearchByName' | translate }}</label>
+      <i class="ri-search-line ov-search__icon"></i>
+      <input id="all-contacts-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()" placeholder="Search by name, email and phone">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
+        [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+        <i class="ri-equalizer-line text-[18px]"></i>
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-          <i class="ri-layout-column-line text-sm"></i>
+          <i class="ri-layout-column-line text-[18px]"></i>
+          Column
         </button>
-        
-        <!-- Column toggling checklist dropdown overlay -->
-        <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
-          <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
-            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+        <div *ngIf="showColumnDropdown"
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="h-3.5 w-3.5 rounded text-primary">
             {{ 'web.contacts.lblSelectAll' | translate }}
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            <label *ngFor="let col of tableColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              {{ col.label | translate }}
-            </label>
-          </div>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label | translate }}
+          </label>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="p-4">
+  <div class="px-5 pb-0 pt-5">
     <app-shared-table [columns]="visibleColumns" [data]="paginatedContacts" [loading]="false"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1" (pageChange)="onSharedTablePageChange($event)" [hasActions]="true">
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo - 1"
+      (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
 
-      <!-- Custom Column Templates -->
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container *ngIf="col.key === 'id'">
-         
-          <div class="flex items-center gap-2">
-            <ng-container *ngIf="row.image_path!=null && row.image_path!=''">
-              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
-               <p><img src="{{row.image_path}}" class="w-100 rounded-full" /></p>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="(row.image_path==null || row.image_path=='')">
-              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-xs border border-gray-200 uppercase">
-                {{ getInitials(row.name)  }}
-              </div>
-            </ng-container>
-           
-            <span class="font-bold text-primary cursor-pointer hover:underline" [routerLink]="['/contacts', (row.contact_type || '').toLowerCase(), row.code]">{{row.code}}</span>
+          <div class="flex items-center gap-2.5">
+            <span class="ov-avatar" *ngIf="row.image_path && !row.image_path.includes('default_user')">
+              <img [src]="row.image_path" alt="" />
+            </span>
+            <span class="ov-avatar" *ngIf="!row.image_path || row.image_path.includes('default_user')">
+              {{ getInitials(row.name) }}
+            </span>
+            <a class="ov-link font-semibold"
+              [routerLink]="['/contacts', contactTypePath(row), row.code || row.id]">
+              {{ row.id || row.code }}
+            </a>
           </div>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'name'">
-          <span class="font-medium text-gray-800">{{row.name}}</span>
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{ row.name }}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'email'">
-          <span class="text-gray-600">{{row.email}}</span>
-        </ng-container>
-        <ng-container *ngIf="col.key === 'contact_type'">
-          <span class="text-gray-600">{{row.contact_type}}</span>
+          <span class="text-[14px] text-textmuted">{{ row.email || row.email_address || '-' }}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'phoneNumber'">
-          <span class="text-gray-600">{{row.phoneNumber}}</span>
+          <span class="text-[14px] text-textmuted">{{ row.phoneNumber || row.phone_number || row.phone || '-' }}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'contact_type'">
+          <span class="text-[14px] text-textmuted">{{ row.contact_type || '-' }}</span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'status'">
-          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [ngClass]="row.class_name">
-            {{row.status}}
+          <span class="ov-status"
+            [class.ov-status--active]="isActiveStatus(row.status)"
+            [class.ov-status--blocked]="isBlockedStatus(row.status)"
+            [class.ov-status--muted]="!isActiveStatus(row.status) && !isBlockedStatus(row.status)">
+            {{ row.status || '-' }}
           </span>
         </ng-container>
-      </ng-template>
 
-      <!-- Actions Template -->
-      <ng-template #actionTemplate let-row="row">
-        <div class="flex justify-center w-full">
-          <button class="w-8 h-8 rounded-md text-gray-400 hover:text-gray-700 flex items-center justify-center transition-all duration-200">
-            <i class="ri-more-fill text-lg"></i>
-          </button>
-        </div>
+        <ng-container *ngIf="col.key === 'action'">
+          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+              (click)="toggleRowAction(row.code || row.id, $event)" data-tooltip="Action">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+            <div *ngIf="openActionCode === (row.code || row.id)"
+              class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+              <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
+                [routerLink]="['/contacts', contactTypePath(row), row.code || row.id]"
+                (click)="openActionCode = null">View</a>
+              <button type="button"
+                class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="openActionCode = null">Edit</button>
+            </div>
+          </div>
+        </ng-container>
       </ng-template>
-
     </app-shared-table>
+  </div>
+
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    </div>
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <i class="ri-arrow-left-s-line text-[16px]"></i>
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <i class="ri-arrow-right-s-line text-[16px]"></i>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- 🚪 SLIDING FILTER DRAWER -->
-<app-filter-drawer 
-  [(isOpen)]="isDrawerOpen" 
-  (apply)="onSearch()" 
+<app-filter-drawer
+  [(isOpen)]="isDrawerOpen"
+  (apply)="onSearch()"
   (clear)="clearFilters()">
-  
+
   <div class="flex flex-col gap-4 text-[11px]">
-    <!-- Filter by Tags -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+      <label class="ov-label mb-1.5">Filter by Tags</label>
       <ng-select [(ngModel)]="selectedTag" [items]="tagsList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" placeholder="Select Tag" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
 
-    <!-- Filter by Area (sqft) -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
-      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="selectedArea"
+      <label class="ov-label mb-1.5">Filter by Area (sqft)</label>
+      <input type="text" class="ov-input" [(ngModel)]="selectedArea"
         (keyup.enter)="onSearch()" placeholder="e.g. 1523 Sqft">
     </div>
 
-    <!-- Filter by ID -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
-      <input type="number" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="selectedId"
+      <label class="ov-label mb-1.5">Filter by ID</label>
+      <input type="number" class="ov-input" [(ngModel)]="selectedId"
         (keyup.enter)="onSearch()" placeholder="e.g. 31658">
     </div>
 
-    <!-- Filter by Reference No -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
-      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="selectedRefNo"
+      <label class="ov-label mb-1.5">Filter by Reference No</label>
+      <input type="text" class="ov-input" [(ngModel)]="selectedRefNo"
         (keyup.enter)="onSearch()" placeholder="Enter Ref No">
     </div>
 
-    <!-- Off Plan Status -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+      <label class="ov-label mb-1.5">Off Plan Status</label>
       <ng-select [(ngModel)]="selectedOffPlanStatus" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
         (change)="onSearch()" placeholder="Select Off Plan Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
 
-    <!-- Filter by Landlord -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+      <label class="ov-label mb-1.5">Filter by Landlord</label>
       <ng-select [(ngModel)]="selectedLandlord" [items]="landlordsList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" placeholder="Select Landlord" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
 
-    <!-- Internal Status -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+      <label class="ov-label mb-1.5">Internal Status</label>
       <ng-select [(ngModel)]="selectedInternalStatus" [items]="internalStatuses" [searchable]="true" [clearable]="true"
         (change)="onSearch()" placeholder="Select Internal Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
-  
 </app-filter-drawer>

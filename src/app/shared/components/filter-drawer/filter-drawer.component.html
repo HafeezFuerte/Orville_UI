@@ -1,16 +1,20 @@
+<!-- Closed = not in DOM. Avoids FOUC of fixed right panel during route/load. -->
 <div
-  class="fixed inset-0 z-[999] bg-black/30 backdrop-blur-sm transition-opacity duration-300"
-  [ngClass]="isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
+  *ngIf="isOpen"
+  class="fixed inset-0 z-[999] bg-black/30 backdrop-blur-sm ov-filter-drawer__backdrop"
   (click)="closeDrawer()">
 </div>
 
 <div
-  class="fixed right-0 top-0 z-[1000] flex h-full w-[380px] flex-col border-l border-defaultborder bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-bodybg"
-  [ngClass]="isOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'">
+  *ngIf="isOpen"
+  class="fixed right-0 top-0 z-[1000] flex h-full w-[380px] flex-col border-l border-defaultborder bg-white shadow-2xl dark:bg-bodybg ov-filter-drawer__panel"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Filters">
 
   <div class="flex items-center justify-between border-b border-defaultborder px-5 py-4">
     <h5 class="m-0 text-sm font-bold text-defaulttextcolor">Filters</h5>
-    <button type="button" (click)="closeDrawer()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor">
+    <button type="button" (click)="closeDrawer()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor" aria-label="Close filters">
       <i class="ri-close-line text-xl"></i>
     </button>
   </div>

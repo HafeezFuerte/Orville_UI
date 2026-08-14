@@ -1,341 +1,445 @@
-<!-- Breadcrumbs & Page Header -->
-<div class="block justify-between page-header md:flex mb-3">
-  <div class="flex items-center gap-3">
-    <!-- Back arrow button -->
-    <a [routerLink]="['/units']" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [title]="'Back to ' + (mode | titlecase)">
-      <i class="ri-arrow-left-line text-sm"></i>
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a [routerLink]="['/units']" class="ov-back" title="Back to Units">
+      <i class="ri-arrow-left-line text-[24px]"></i>
     </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{unit?.name || 'Details'}}</h3>
-      <ol class="flex items-center whitespace-nowrap">
-        <li class="text-[0.813rem] text-[#8c9097]">
-          <a [routerLink]="['/insights']"> {{ 'web.common.lblHome' | translate }}</a>
-        </li>
-        <li class="px-2 text-[#8c9097]">
-          /
-        </li>
-        <li class="text-[0.813rem] text-[#8c9097]">
-          <a [routerLink]="['/units']">{{ 'web.common.lblUnits' | translate }}</a>
-        </li>
-        <li class="px-2 text-[#8c9097]">
-          /
-        </li>
-        <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
-          <a [routerLink]="['/units', unitId]"> {{unit?.name}}</a>
-        </li>
-        <li class="px-2 text-[#8c9097]">
-          /
-        </li>
-        <li class="text-[0.813rem] font-semibold !text-defaulttextcolor dark:!text-defaulttextcolor/70">
-          {{ 'web.property.lblDetails' | translate }}
-        </li>
+      <h3 class="ov-page-title">{{unit?.name || 'Details'}}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+        <li class="px-2">/</li>
+        <li><a [routerLink]="['/units']">{{ 'web.common.lblUnits' | translate }}</a></li>
+        <li class="px-2">/</li>
+        <li><a [routerLink]="['/units', unitId]">{{unit?.name}}</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">{{ 'web.property.lblDetails' | translate }}</li>
       </ol>
- 
     </div>
-   
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button type="button"
-      class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm"
-      [routerLink]="['/edit-unit', unitId]">
-        Edit Unit
-    </button>
+  <div class="flex flex-wrap items-center gap-4">
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionMenu = !showActionMenu">
+        {{ 'web.property.lblAction' | translate }}
+        <i class="ri-arrow-down-s-line text-[16px]"></i>
+      </button>
+      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <a role="menuitem" class="ov-action-menu__item" [routerLink]="['/edit-unit', unitId]" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+            </span>
+            <span>Edit</span>
+          </a>
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
+            </span>
+            <span>Quotation PDF</span>
+          </button>
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+            </span>
+            <span>{{ 'web.property.lblViewActivity' | translate }}</span>
+          </button>
+        </div>
+        <div class="ov-action-menu__footer">
+          <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
+            </span>
+            <span>Archive</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/edit-unit', unitId]">Edit Unit</button>
   </div>
 </div>
 
-<!-- 📦 Main Content Row -->
-<div class="grid grid-cols-12 gap-3">
-  <!-- Left Side: Property/Unit Summary & Info Card -->
-  <div class="col-span-12 lg:col-span-4 flex flex-col gap-3">
-    <!-- Card 1: Short summary & Quick Actions -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-3">
-      <h4 class="text-sm font-bold text-gray-800 m-0">{{unit?.name || 'Apartment 209'}}</h4>
-      <div class="flex items-center text-gray-600 text-xs font-medium">
-        <i class="ri-home-line me-1 text-gray-600"></i>   {{unit?.property || 'Dubai Marina, Tower A, Dubai'}}
-      </div>
-      <div class="flex items-center text-gray-600 text-xs font-medium">
-        <i class="ri-map-pin-line me-1 text-gray-600"></i>   {{unit?.propertyAddress || 'Dubai Marina, Tower A, Dubai'}}
-      </div>
+<app-detail-page-layout class="col-span-12" [tabs]="tabs" [(activeTab)]="activeTab">
 
-      <!-- Badges -->
-      <div class="flex flex-wrap items-center gap-1.5">
-        <span class="badge bg-info/10 text-info px-2.5 py-0.5 rounded text-[10px] font-bold uppercase">{{unit?.category || 'Residential'}}</span>
-        <span class="badge bg-success/10 text-success px-2.5 py-0.5 rounded text-[10px] font-bold uppercase">{{unit?.status || 'Occupied'}}</span>
-      </div>
-
-      <!-- Quick status badges list from figma image 4 -->
-      <div class="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-100 pt-3">
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">Furnished</span>
-          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.furnished ? 'bg-success' : 'bg-danger'">
-            {{ unit?.furnished ? 'Yes' : 'No' }}
+  <ng-template #leftPanel>
+    <div class="box ov-card overflow-hidden p-5 flex flex-col gap-4">
+      <div class="flex flex-col gap-3.5">
+        <div>
+          <h4 class="ov-card-title">{{ unit?.name || 'Apartment 209' }}</h4>
+          <span class="ov-card-sub mt-1.5 flex items-center gap-1.5 !text-[13px]">
+            <i class="ri-map-pin-line text-[13px]"></i> {{ unit?.propertyAddress || unit?.location }}
           </span>
         </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">Smoking</span>
-          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.smoking ? 'bg-success' : 'bg-danger'">
-            {{ unit?.smoking ? 'Yes' : 'No' }}
+
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="inline-flex w-fit items-center gap-1.5 rounded-full bg-info/10 px-[15px] py-1 h-7 text-[13px] font-medium tracking-[0.26px] text-info">
+            <i class="ri-home-4-line text-[15px]"></i>
+            {{ unit?.category || 'Residential' }}
+          </span>
+          <span class="inline-flex w-fit items-center justify-center rounded-full px-[15px] py-1 h-7 text-[13px] font-medium tracking-[0.26px] text-white"
+                [ngClass]="unit?.status === 'Occupied' ? 'bg-success text-white' : 'bg-primary text-white'">
+            {{ unit?.status || 'Occupied' }}
           </span>
         </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">For Sale</span>
-          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.saleStatus ? 'bg-success' : 'bg-danger'">
-            {{ unit?.saleStatus ? 'Yes' : 'No' }}
-          </span>
-        </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">Under Dispute</span>
-          <span class="badge text-white px-1.5 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.underDispute ? 'bg-danger' : 'bg-success'">
-            {{ unit?.underDispute ? 'Yes' : 'No' }}
-          </span>
-        </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded col-span-2">
-          <span class="text-gray-600">Property Address</span>
-          <span class="font-bold text-gray-800 text-[10px] truncate max-w-[130px]" [title]="unit?.propertyAddress">
-            {{ unit?.propertyAddress }}
-          </span>
-        </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">Created</span>
-          <span class="font-bold text-gray-800 text-[9px]">{{ unit?.createdDate }}</span>
-        </div>
-        <div class="flex justify-between items-center bg-gray-50/50 p-1.5 rounded">
-          <span class="text-gray-600">Last Update</span>
-          <span class="font-bold text-gray-800 text-[9px]">{{ unit?.lastUpdate }}</span>
+
+        <div class="flex gap-5">
+          <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
+            {{ 'web.property.lblViewActivity' | translate }}
+          </button>
+          <a [routerLink]="['/edit-unit', unitId]" class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
+            Edit Unit
+            <i class="ri-arrow-right-line text-[14px]"></i>
+          </a>
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="flex flex-col gap-2 border-t border-gray-100 pt-3">
-        <button [routerLink]="['/edit-unit',unitId]" type="button" class="w-full ti-btn ti-btn-light !py-1.5 !m-0 border font-bold text-xs hover:bg-gray-100 flex items-center justify-center gap-1 shadow-sm">
-          View Activity
-        </button>
-        <button [routerLink]="['/edit-unit', unitId]" type="button" class="w-full ti-btn bg-primary text-white hover:bg-primary-hover !py-1.5 !m-0 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
-          Edit {{mode | titlecase}} <i class="ri-arrow-right-line"></i>
-        </button>
-      </div>
-    </div>
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title m-0">{{ 'web.property.lblInformation' | translate }}</h5>
 
-    <!-- Card 2: Financial Information (figma image 4 bottom) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Unit.lblFinancialInfo' | translate }}</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblMarketRent' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.marketRent }}</span>
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Landlord ({{ landlordCount }})</h5>
         </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblDeposit' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.deposit }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentType' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.rentType }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblRentPerSqft' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.rentPerSqft }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblTotalServiceCharges' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.totalServiceCharges }}</span>
+        <div class="px-5 mt-5">
+          <a class="ov-link !text-[14px] font-bold" [routerLink]="['/contacts/landlords']">{{ unit?.landlord || '-' }}</a>
         </div>
       </div>
-    </div>
 
-    <!-- Card 3: Fee & Price Details (figma image 1 top left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Unit.lblFeeSaleDetails' | translate }}</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblServiceCharges' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.serviceCharges }}</span>
+      <div class="ov-card overflow-hidden py-5">
+        <div class="flex items-center justify-between px-5">
+          <h5 class="ov-card-title m-0">Unit Details</h5>
+          <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
+            <i class="ri-more-2-fill text-[18px]"></i>
+          </button>
         </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Sale Price</span>
-          <span class="font-bold text-gray-800">{{ unit?.salePrice }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Threshold Value</span>
-          <span class="font-bold text-gray-800">{{ unit?.thresholdValue }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">{{ 'web.Unit.lblManagementFee' | translate }}</span>
-          <span class="font-bold text-gray-800">{{ unit?.managementFee }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Fee Type</span>
-          <span class="font-bold text-gray-800">{{ unit?.managementFeeType }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 4: Service Request (figma image 1 middle left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">{{ 'web.Property.lblServiceRequest' | translate }}</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between items-center py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Service Disabled</span>
-          <span class="badge text-white px-2 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.serviceDisabled ? 'bg-danger' : 'bg-success'">
-            {{ unit?.serviceDisabled ? 'Yes' : 'No' }}
-          </span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Alert Message</span>
-          <span class="font-bold text-gray-800">-</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 5: Permit Information (figma image 1 bottom left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Permit Information</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Trakessi Number</span>
-          <span class="font-bold text-gray-800">{{ unit?.trakessiNumber }}</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">RERA Number</span>
-          <span class="font-bold text-gray-800">{{ unit?.reraNumber }}</span>
-        </div>
-        <div class="flex justify-between items-center py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Permit Verified</span>
-          <span class="badge text-white px-2 py-0.5 rounded text-[9px] font-bold"
-                [ngClass]="unit?.isVerified ? 'bg-success' : 'bg-danger'">
-            {{ unit?.isVerified ? 'Yes' : 'No' }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 6: Marketing Information (figma image 2 top left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Marketing Information</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Unit Details</span>
-          <span class="font-bold text-gray-800">-</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Marketing Title</span>
-          <span class="font-bold text-gray-800">-</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Marketing Description</span>
-          <span class="font-bold text-gray-800">-</span>
-        </div>
-      </div>
-      <!-- Image Box -->
-      <div class="border border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center text-center mt-2 bg-gray-50/50">
-        <i class="ri-image-line text-2xl text-gray-600 mb-1.5"></i>
-        <span class="text-xs font-bold text-gray-700 block">No photos or images</span>
-        <span class="text-[10px] text-gray-600 block mt-0.5 leading-normal">Photos and featured images will appear here when uploaded</span>
-      </div>
-    </div>
-
-    <!-- Card 7: Amenities (figma image 2 bottom left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Amenities</h5>
-      <div class="flex flex-wrap gap-1.5 pt-1">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Kids Play Area</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> BBQ Deck</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Concierge</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Covered Parking</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> High-Speed Wi-Fi</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Swimming Pool</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> Fully Equipped Gym</span>
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"><i class="ri-checkbox-circle-fill"></i> 24/7 Security</span>
-      </div>
-    </div>
-
-    <!-- Card 8: Custom Fields (figma image 3 left) -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden p-4 flex flex-col gap-2.5">
-      <h5 class="text-xs font-bold text-gray-800 m-0 border-b pb-2">Custom Fields</h5>
-      <div class="flex flex-col gap-2 text-xs">
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Unit Electricity No</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Unit Gas Number</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Under renovation</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Under dispute (legal case)</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Permit Number / Trakheesi Number</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Unit Municipality</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Parking No</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1 border-b border-gray-50">
-          <span class="text-gray-600 font-medium">Monthly Rent</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-        <div class="flex flex-col py-1">
-          <span class="text-gray-600 font-medium">Flat No</span>
-          <span class="font-bold text-gray-800 text-[11px] mt-0.5">No value set</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right Side: Navigation Tabs, Overview Lease Tables & Analytics Charts -->
-  <div class="col-span-12 lg:col-span-8 flex flex-col gap-3">
-    <!-- horizontal tabs row -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2">
-      <button *ngFor="let t of tabs" (click)="activeTab = t.key"
-        [class]="activeTab === t.key ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
-        class="px-4 py-2 text-xs rounded-md border-b-2 transition-all whitespace-nowrap">
-        {{t.label | translate}}
-      </button>
-    </div>
-
-    <!-- Active Tab Box Container -->
-    <div class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
-      <!-- 📋 OVERVIEW TAB CONTENT -->
-      <div *ngIf="activeTab === 'overview'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
-          <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Overview</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Lease and tenant agreement listings associated with this unit.</p>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.common.lblID' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.id || unit?.code || '-' }}</span>
           </div>
-          <!-- Search Leases bar -->
-          <div class="flex items-center gap-2 w-full md:w-auto">
-            <div class="input-group w-full md:w-56">
-              <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search lease name...">
-              <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-                <i class="ri-search-line text-xs"></i>
-              </button>
-            </div>
-            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
-              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-            </button>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit No:</span>
+            <span class="ov-kv__value">{{ unitNo }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.common.lblName' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.name || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property Name:</span>
+            <span class="ov-kv__value">{{ unit?.property || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Beds:</span>
+            <span class="ov-kv__value">{{ unit?.beds || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Baths:</span>
+            <span class="ov-kv__value">{{ unit?.baths || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Parking:</span>
+            <span class="ov-kv__value">{{ parkingDisplay }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.common.lblStatus' | translate }}:</span>
+            <span class="ov-flag">{{ unit?.status || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.property.lblSize' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.area || '-' }}</span>
           </div>
         </div>
+        <div class="border-t border-defaultborder mt-5"></div>
+        <button type="button" (click)="toggleMoreDetails()" class="ov-link !text-[13px] font-semibold inline-flex items-center justify-center border-0 bg-transparent p-0 w-full mt-5">
+          {{ 'web.property.lblViewMoreDetails' | translate }}
+          <i class="ri-arrow-down-s-line ms-1" [class.rotate-180]="showMoreDetails"></i>
+        </button>
+        <div *ngIf="showMoreDetails" class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created By:</span>
+            <span class="ov-kv__value">{{ unit?.createdBy || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Floor:</span>
+            <span class="ov-kv__value">{{ unit?.floor || '-' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Auto Assign:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.autoAssign">{{ unit?.autoAssign ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Furnished:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.furnished">{{ unit?.furnished ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Smoking:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.smoking">{{ unit?.smoking ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">For Sale:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.saleStatus">{{ unit?.saleStatus ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Under Dispute:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.underDispute">{{ unit?.underDispute ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Electricity No:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasElectricity">{{ unit?.hasElectricity ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Gas No:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasGas">{{ unit?.hasGas ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property Address:</span>
+            <span class="ov-kv__value">{{ unit?.propertyAddress || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.property.lblCreated' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.createdDate || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.property.lblLastUpdate' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.lastUpdate || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblFinancialInfo' | translate }}</h5>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblMarketRent' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.marketRent || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblDeposit' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.deposit || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblRentType' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.rentType || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblRentPerSqft' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.rentPerSqft || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblTotalServiceCharges' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.totalServiceCharges || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblServiceCharges' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.serviceCharges || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Sale Price:</span>
+            <span class="ov-kv__value">{{ unit?.salePrice || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Threshold Value:</span>
+            <span class="ov-kv__value">{{ unit?.thresholdValue || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.Unit.lblManagementFee' | translate }}:</span>
+            <span class="ov-kv__value">{{ unit?.managementFee || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Fee Type:</span>
+            <span class="ov-kv__value">{{ unit?.managementFeeType || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">{{ 'web.Property.lblServiceRequest' | translate }}</h5>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Service Disabled:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.serviceDisabled">{{ unit?.serviceDisabled ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Alert Message:</span>
+            <span class="ov-kv__value">{{ unit?.alertMessage || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Permit Information</h5>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Trakessi Number:</span>
+            <span class="ov-kv__value">{{ unit?.trakessiNumber || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">RERA Number:</span>
+            <span class="ov-kv__value">{{ unit?.reraNumber || '-' }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Permit Verified:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.isVerified">{{ unit?.isVerified ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="flex items-center justify-between px-5">
+          <h5 class="ov-card-title m-0">Marketing Information</h5>
+          <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
+            <i class="ri-more-2-fill text-[18px]"></i>
+          </button>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit Details:</span>
+            <span class="ov-kv__value">{{ unit?.unitDetailsText || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Marketing Title:</span>
+            <span class="ov-kv__value">{{ unit?.marketingTitle || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Marketing Description:</span>
+            <span class="ov-kv__value">{{ unit?.marketingDescription || '-' }}</span>
+          </div>
+          <div class="flex flex-col items-center justify-center gap-1.5 rounded bg-bodybg px-[15px] py-5 text-center">
+            <i class="ri-image-line text-[30px] text-textmuted"></i>
+            <span class="text-[14px] font-semibold text-textmuted">No photos or images</span>
+            <span class="text-[12px] text-textmuted">Photos and featured images will appear here when uploaded</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Amenities</h5>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-wrap gap-2.5 px-5 pt-4">
+          <span *ngFor="let amenity of displayAmenities" class="ov-amenity-chip">
+            <i class="ri-check-line text-[16px]"></i>
+            {{ amenity }}
+          </span>
+        </div>
+      </div>
+
+      <div class="ov-card overflow-hidden py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Custom Fields</h5>
+        </div>
+        <div class="border-t border-defaultborder mt-[18px]"></div>
+        <div class="flex flex-col gap-4 px-5 mt-5">
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Unit Electricity No:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Unit Gas Number:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Under renovation:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Under dispute (legal case):</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Permit Number / Trakheesi Number:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Unit Municipality:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Parking No:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Monthly Rent:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">Flat No:</span>
+            <span class="ov-kv-empty">No value set</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #unitTabToolbar>
+    <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 py-0 mb-4 flex-col sm:flex-row items-stretch sm:items-center">
+      <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+        <i class="ri-search-line ov-search__icon"></i>
+        <input [(ngModel)]="tabSearchQuery" type="text" class="ov-input ov-search__input" placeholder="Search">
+      </div>
+      <div class="ov-toolbar__btns">
+        <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
+          [attr.data-tooltip]="'web.common.lblFilter' | translate">
+          <i class="ri-equalizer-line text-[18px]"></i>
+          Filter
+        </button>
+        <div class="relative">
+          <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown()"
+            [attr.data-tooltip]="'web.common.lblColumns' | translate">
+            <i class="ri-layout-column-line text-[18px]"></i>
+            Column
+          </button>
+          <div *ngIf="isColumnDropdownOpen"
+            class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+            <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+              <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
+              Select All
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+              <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
+              ID
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+              <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
+              Name
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+              <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
+              Status
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+              <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
+              Action
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+<!-- 📋 OVERVIEW TAB CONTENT -->
+      <ng-template #overview>
+      <div class="flex flex-col gap-5">
+        <div>
+          <h4 class="ov-card-title m-0">Unit Overview</h4>
+          <p class="ov-card-sub m-0 mt-1">Lease and tenant agreement listings associated with this unit.</p>
+        </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
         <!-- Leases Table -->
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="ov-table min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Case</th>
@@ -400,212 +504,162 @@
           </table>
         </div>
 
-        <!-- Paginator summary info -->
-        <div class="flex items-center justify-between text-xs text-gray-600 border-t border-gray-100 pt-3">
-          <div class="flex items-center gap-2">
-            <span>Show</span>
-            <select class="form-select w-16 !text-xs !py-1">
-              <option value="10">10</option>
-              <option value="25">25</option>
-            </select>
-          </div>
-          <div>Showing 1 to 2 of 2 records</div>
-        </div>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="leases.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
 
-        <!-- 📊 Charts Block & Financial Summaries -->
-        <div class="grid grid-cols-12 gap-3 mt-2 pt-4 border-t border-gray-100">
-          <!-- Monthly Performance Chart (figma image 1 top right) -->
-          <div class="col-span-12 lg:col-span-8 p-4 rounded-xl border border-gray-100 bg-white flex flex-col gap-3">
-            <div class="flex justify-between items-center border-b pb-2">
-              <span class="text-xs font-bold text-gray-700">Monthly Performance</span>
-              <i class="ri-bar-chart-fill text-gray-600"></i>
-            </div>
-            <!-- Bar Chart Representation -->
-            <div class="h-32 flex items-end justify-between gap-2.5 pt-4">
-              <!-- Jan -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-1/5" title="Jan: 4M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jan</span>
-              </div>
-              <!-- Feb -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-2/5" title="Feb: 8M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Feb</span>
-              </div>
-              <!-- Mar -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-3/5" title="Mar: 12M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Mar</span>
-              </div>
-              <!-- Apr -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-2/6" title="Apr: 6.5M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Apr</span>
-              </div>
-              <!-- May -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-2/5" title="May: 8M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">May</span>
-              </div>
-              <!-- Jun -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-5/6" title="Jun: 16.5M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jun</span>
-              </div>
-              <!-- Jul -->
-              <div class="flex-grow flex flex-col items-center gap-1.5 h-full justify-end">
-                <div class="bg-primary rounded-t w-3.5 h-full" title="Jul: 20M"></div>
-                <span class="text-[9px] text-gray-600 font-semibold uppercase">Jul</span>
-              </div>
-            </div>
-          </div>
+        <div class="ov-unit-analytics">
+          <h4 class="ov-unit-analytics__title">Analytics</h4>
 
-          <!-- Unit Expense & Performance Cards (figma image 1 right) -->
-          <div class="col-span-12 lg:col-span-4 flex flex-col gap-3 justify-between">
-            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
-              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Expense</span>
-              <h5 class="text-sm font-black text-danger mt-1.5 mb-0 leading-none">AED 0.00</h5>
-            </div>
-            <div class="p-3.5 border border-gray-100 rounded-xl bg-white flex flex-col justify-between shadow-sm">
-              <span class="text-[10px] font-bold tracking-wider text-gray-600 uppercase">Unit Performance</span>
-              <h5 class="text-sm font-black text-primary mt-1.5 mb-0 leading-none">AED 2,000.00</h5>
-            </div>
-          </div>
-
-          <!-- Financial Summary Section (figma image 1 middle right) -->
-          <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-3 mt-1">
-            <!-- Big Cash Balance Card -->
-            <div class="md:col-span-7 p-4 text-white rounded-xl flex flex-col justify-between shadow-md" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);">
-              <div>
-                <span class="text-[9px] uppercase font-bold tracking-widest text-indigo-200">Cash Balance</span>
-                <h3 class="text-xl font-black text-white m-0 mt-1">AED 2,000.00</h3>
+          <section class="ov-unit-analytics__card">
+            <header class="ov-unit-analytics__head">
+              <h5 class="ov-card-title m-0">Landlord Rent Collection</h5>
+              <p class="ov-card-sub m-0">Total rent received and 12-month trend for each landlord</p>
+            </header>
+            <div class="ov-unit-analytics__body">
+              <div class="ov-unit-stat-row ov-unit-stat-row--end">
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">Total Rent Received</span>
+                    <div class="ov-unit-stat__value">AED 2.5 K</div>
+                    <div class="ov-unit-stat__meta">{{ unit?.landlord || 'Orville Real Estate' }}</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
               </div>
-              <div class="grid grid-cols-2 gap-4 border-t border-indigo-800/60 pt-3 mt-4">
-                <div>
-                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Total Income</span>
-                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+              <div class="ov-unit-chart ov-unit-chart--rent">
+                <div class="ov-unit-chart__yaxis">
+                  <span *ngFor="let tick of chartTicks">{{ tick }}</span>
                 </div>
-                <div>
-                  <span class="text-[8px] uppercase tracking-wider text-indigo-300 block">Wallet Deposit</span>
-                  <span class="font-extrabold text-xs">AED 2,000.00</span>
+                <div class="ov-unit-chart__plot">
+                  <div class="ov-unit-chart__grid" aria-hidden="true">
+                    <span *ngFor="let tick of chartTicks"></span>
+                  </div>
+                  <div class="ov-unit-chart__bars">
+                    <div *ngFor="let bar of monthBars" class="ov-unit-chart__col">
+                      <span class="ov-unit-chart__bar" [class.is-empty]="bar.empty" [style.height.px]="bar.h"></span>
+                      <span class="ov-unit-chart__lbl">{{ bar.m }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </section>
 
-            <!-- Side Rent/deposit details card -->
-            <div class="md:col-span-5 p-4 rounded-xl border border-gray-100 bg-white flex flex-col justify-between shadow-sm text-xs">
-              <h6 class="font-bold text-gray-800 m-0 border-b pb-2 mb-2">Monthly Revenue & Expenses</h6>
-              <div class="flex justify-between items-center py-1">
-                <span class="text-gray-600">Total Income</span>
-                <span class="font-bold text-success">AED 2,000.00</span>
+          <section class="ov-unit-analytics__card">
+            <header class="ov-unit-analytics__head">
+              <h5 class="ov-card-title m-0">Monthly Revenue &amp; Expenses</h5>
+              <p class="ov-card-sub m-0">Income vs expenses comparison for the last 12 months</p>
+            </header>
+            <div class="ov-unit-analytics__body">
+              <div class="ov-unit-stat-row">
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">Total Revenue</span>
+                    <div class="ov-unit-stat__value">AED 5,000.00</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">Total Expenses</span>
+                    <div class="ov-unit-stat__value">AED 0.00</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">Net Profit</span>
+                    <div class="ov-unit-stat__value">AED 5,000.00</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
               </div>
-              <div class="flex justify-between items-center py-1">
-                <span class="text-gray-600">Total Expenses</span>
-                <span class="font-bold text-danger">AED 0.00</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1 pt-1 font-bold">
-                <span class="text-gray-800">Net Profit</span>
-                <span class="text-primary">AED 2,000.00</span>
+              <div class="ov-unit-chart ov-unit-chart--rev">
+                <div class="ov-unit-chart__yaxis">
+                  <span *ngFor="let tick of chartTicks">{{ tick }}</span>
+                </div>
+                <div class="ov-unit-chart__plot">
+                  <div class="ov-unit-chart__grid" aria-hidden="true">
+                    <span *ngFor="let tick of chartTicks"></span>
+                  </div>
+                  <div class="ov-unit-chart__bars">
+                    <div *ngFor="let bar of monthBars" class="ov-unit-chart__col">
+                      <span class="ov-unit-chart__bar" [class.is-empty]="bar.empty" [style.height.px]="bar.h"></span>
+                      <span class="ov-unit-chart__lbl">{{ bar.m }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
+
+          <section class="ov-unit-analytics__card ov-unit-fin">
+            <header class="ov-unit-analytics__head">
+              <h5 class="ov-card-title m-0">Financial Summary</h5>
+            </header>
+            <div class="ov-unit-fin__grid">
+              <article class="ov-unit-cash">
+                <img class="ov-unit-cash__glow" src="assets/images/unit-detail/cash-glow.svg" alt="" width="123" height="123">
+                <div class="ov-unit-cash__top">
+                  <span class="ov-unit-cash__label">Cash Balance</span>
+                  <span class="ov-unit-cash__value">AED 2,000.00</span>
+                </div>
+                <div class="ov-unit-cash__row">
+                  <div class="ov-unit-cash__cell">
+                    <span class="ov-unit-cash__label">Total Income</span>
+                    <span class="ov-unit-cash__sub">AED 2,000.00</span>
+                  </div>
+                  <div class="ov-unit-cash__cell">
+                    <span class="ov-unit-cash__label">Wallet Deposit</span>
+                    <span class="ov-unit-cash__sub">AED 2,000.00</span>
+                  </div>
+                </div>
+              </article>
+              <div class="ov-unit-fin__tiles">
+                <article class="ov-unit-tile">
+                  <span class="ov-unit-tile__label">Unit Expense</span>
+                  <span class="ov-unit-tile__value">AED 0.00</span>
+                </article>
+                <article class="ov-unit-tile">
+                  <span class="ov-unit-tile__label">Landlord Distribution</span>
+                  <span class="ov-unit-tile__value">AED 0.00</span>
+                </article>
+                <article class="ov-unit-tile ov-unit-tile--wide">
+                  <span class="ov-unit-tile__label">Unit Performance</span>
+                  <span class="ov-unit-tile__value">AED 2,000.00</span>
+                </article>
+              </div>
+            </div>
+          </section>
         </div>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 FINANCIALS TAB CONTENT -->
-      <div *ngIf="activeTab === 'financials'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+      <ng-template #financialsTpl>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Financials</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track invoices and payments associated with this unit.</p>
+            <h4 class="ov-card-title m-0">Unit Financials</h4>
+            <p class="ov-card-sub m-0 mt-1">Manage and track invoices and payments associated with this unit.</p>
           </div>
-          <button type="button" (click)="showAddInvoiceModal = true" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Invoice'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" (click)="showAddInvoiceModal = true" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Invoice'">
+            <i class="ri-add-line text-[18px]"></i>
+            Add Invoice
           </button>
         </div>
 
-        <!-- Controls row -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
-              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-            </button>
-            <div class="relative inline-block">
-                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
-                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-                </button>
-                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
-                        <span class="font-bold text-xs text-gray-700">Column</span>
-                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">ID</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Name</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Type</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Internal Status</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Tags</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Leases</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Contracts</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupancy Rate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Action</span>
-                        </label>
-                    </div>
-                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
-                    </div>
-                </div>
-            </div>
-
-
-          </div>
-        </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
         <!-- Financials Table -->
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="table ov-table whitespace-nowrap min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
@@ -701,112 +755,46 @@
         </div>
 
         <!-- Pagination -->
-        <mat-paginator *ngIf="!loading" [length]="financials.length || 0" [pageSize]="50"
-            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
-        </mat-paginator>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="financials.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 INVENTORY TAB CONTENT -->
-      <div *ngIf="activeTab === 'inventory'" class="flex flex-col gap-3"> 
+      <ng-template #inventoryTpl>
+      <div class="flex flex-col gap-3"> 
  
         <app-inventoryitem-table [selectedTab]="selectedTab"></app-inventoryitem-table>
        
+      
       </div>
+    </ng-template>
 
       <!-- 📋 WORK ORDERS TAB CONTENT -->
-      <div *ngIf="activeTab === 'workorders'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+      <ng-template #workordersTpl>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Work Orders</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track maintenance work orders associated with this unit.</p>
+            <h4 class="ov-card-title m-0">Work Orders</h4>
+            <p class="ov-card-sub m-0 mt-1">Manage and track maintenance work orders associated with this unit.</p>
           </div>
-          <button type="button" [routerLink]="['/facility/work-orders/create']" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Work Order'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" [routerLink]="['/facility/work-orders/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Work Order'">
+            <i class="ri-add-line text-[18px]"></i>
+            Add Work Order
           </button>
         </div>
 
-        <!-- Controls row -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
-              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-            </button>
-            <div class="relative inline-block">
-                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
-                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-                </button>
-                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
-                        <span class="font-bold text-xs text-gray-700">Column</span>
-                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">ID</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Name</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Type</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Internal Status</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Tags</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Leases</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Contracts</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupancy Rate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Action</span>
-                        </label>
-                    </div>
-                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
-                    </div>
-                </div>
-            </div>
-
-
-          </div>
-        </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
         <!-- Work Orders Table -->
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="table ov-table whitespace-nowrap min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Title</th>
@@ -869,108 +857,43 @@
         </div>
 
         <!-- Pagination -->
-        <mat-paginator *ngIf="!loading" [length]="workOrders.length || 0" [pageSize]="50"
-            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
-        </mat-paginator>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="workOrders.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 ATTACHMENTS TAB CONTENT -->
-      <div *ngIf="activeTab === 'attachments'" class="flex flex-col gap-3"> 
+      <ng-template #attachmentsTpl>
+      <div class="flex flex-col gap-3"> 
          <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 LEGAL CASES TAB CONTENT -->
-      <div *ngIf="activeTab === 'legal'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+      <ng-template #legalTpl>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Legal Cases</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Track and view litigation files for this unit.</p>
+            <h4 class="ov-card-title m-0">Legal Cases</h4>
+            <p class="ov-card-sub m-0 mt-1">Track and view litigation files for this unit.</p>
           </div>
-          <button type="button" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Legal Case'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Legal Case'">
+            <i class="ri-add-line text-[18px]"></i>
+            Add Legal Case
           </button>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
-              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-            </button>
-            <div class="relative inline-block">
-                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
-                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-                </button>
-                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
-                        <span class="font-bold text-xs text-gray-700">Column</span>
-                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">ID</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Name</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Type</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Internal Status</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Tags</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Leases</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Contracts</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupancy Rate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Action</span>
-                        </label>
-                    </div>
-                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
-                    </div>
-                </div>
-            </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
-
-          </div>
-        </div>
-
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="table ov-table whitespace-nowrap min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
@@ -1014,113 +937,51 @@
         </div>
 
         <!-- Pagination -->
-        <mat-paginator *ngIf="!loading" [length]="legalCases.length || 0" [pageSize]="50"
-            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
-        </mat-paginator>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="legalCases.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 PARKINGS TAB CONTENT -->
-      <div *ngIf="activeTab === 'parkings'" class="flex flex-col gap-3">
+      <ng-template #parkingsTpl>
+      <div class="flex flex-col gap-3">
         <app-parkings-table [selectedTab]="selectedTab"></app-parkings-table>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 NOTES TAB CONTENT -->
-      <div *ngIf="activeTab === 'notes'" class="flex flex-col gap-3">
+      <ng-template #notesTpl>
+      <div class="flex flex-col gap-3">
         <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 BROADCASTS TAB CONTENT -->
-      <div *ngIf="activeTab === 'broadcasts'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+      <ng-template #broadcastsTpl>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Broadcasts</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage communication broadcasts sent to unit tenants.</p>
+            <h4 class="ov-card-title m-0">Broadcasts</h4>
+            <p class="ov-card-sub m-0 mt-1">Manage communication broadcasts sent to unit tenants.</p>
           </div>
-          <button type="button" [routerLink]="['/broadcasts/create']" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Broadcasts'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" [routerLink]="['/broadcasts/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Broadcasts'">
+            <i class="ri-add-line text-[18px]"></i>
+            Add Broadcasts
           </button>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button type="button" (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblFilter' | translate">
-              <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
-            </button>
-            <div class="relative inline-block">
-                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
-                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-                </button>
-                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
-                        <span class="font-bold text-xs text-gray-700">Column</span>
-                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">ID</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Name</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Type</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Internal Status</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Tags</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Leases</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Contracts</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupancy Rate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Action</span>
-                        </label>
-                    </div>
-                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
-                    </div>
-                </div>
-            </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
-
-          </div>
-        </div>
-
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="table ov-table whitespace-nowrap min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
@@ -1180,100 +1041,35 @@
         </div>
 
         <!-- Pagination -->
-        <mat-paginator *ngIf="!loading" [length]="broadcasts.length || 0" [pageSize]="50"
-            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
-        </mat-paginator>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="broadcasts.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
+      
       </div>
+    </ng-template>
 
       <!-- 📋 INSPECTIONS TAB CONTENT -->
-      <div *ngIf="activeTab === 'inspections'" class="flex flex-col gap-3">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3">
+      <ng-template #inspectionsTpl>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="text-xs font-bold text-gray-800 m-0">Unit Inspection</h4>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Manage and track property inspections for this unit.</p>
+            <h4 class="ov-card-title m-0">Unit Inspection</h4>
+            <p class="ov-card-sub m-0 mt-1">Manage and track property inspections for this unit.</p>
           </div>
-          <button type="button" class="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center hover:bg-primary-hover transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Add Inspection'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Inspection'">
+            <i class="ri-add-line text-[18px]"></i>
+            Add Inspection
           </button>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mt-1">
-          <div class="input-group w-full md:w-64">
-            <input type="text" class="form-control form-control-sm !text-xs" placeholder="Search...">
-            <button type="button" class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-              <i class="ri-search-line text-xs"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <div class="relative inline-block">
-                <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.common.lblColumns' | translate">
-                  <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
-                </button>
-                <div *ngIf="isColumnDropdownOpen" class="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-100 p-2 text-start">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
-                        <span class="font-bold text-xs text-gray-700">Column</span>
-                        <i class="ri-close-line cursor-pointer text-gray-400 hover:text-gray-700" (click)="isColumnDropdownOpen = false"></i>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto flex flex-col gap-1.5 p-1">
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-800 font-semibold">Select All</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">ID</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Name</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Type</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Internal Status</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Tags</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Leases</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Contracts</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupied / Total Units</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Occupancy Rate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer m-0 p-1 hover:bg-gray-50 rounded">
-                            <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded border-gray-300" checked>
-                            <span class="text-xs text-gray-700">Action</span>
-                        </label>
-                    </div>
-                    <div class="flex justify-between gap-4 pt-3 mt-1 border-t border-gray-100">
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Clear</span>
-                        <span class="text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer" (click)="isColumnDropdownOpen = false">Close</span>
-                    </div>
-                </div>
-            </div>
+        <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
-
-          </div>
-        </div>
-
-        <div class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-          <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-            <thead class="bg-info/10">
+        <div class="table-responsive table-vertical-scroll w-full">
+          <table class="table ov-table whitespace-nowrap min-w-full">
+            <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Inspection ID</th>
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Company Id</th>
@@ -1327,13 +1123,17 @@
         </div>
 
         <!-- Pagination -->
-        <mat-paginator *ngIf="!loading" [length]="inspections.length || 0" [pageSize]="50"
-            [pageIndex]="0" [pageSizeOptions]="[50]" showFirstLastButtons>
-        </mat-paginator>
+        <app-ov-paginator *ngIf="!loading"
+            [totalRecords]="inspections.length || 0"
+            [pageSize]="50"
+            [pageIndex]="0"
+            [pageSizeOptions]="[50]">
+        </app-ov-paginator>
+      
       </div>
-    </div>
-  </div>
-</div>
+    </ng-template>
+
+</app-detail-page-layout>
 
 <!-- Add New Invoice Modal -->
 <app-reusable-modal
@@ -1414,53 +1214,38 @@
   (apply)="toggleDrawer(false)" 
   (clear)="toggleDrawer(false)">
   
-  <div class="flex flex-col gap-4 text-[11px]">
-    <!-- Filter by Tags -->
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-        <i class="ri-price-tag-3-line text-gray-400"></i>
-      </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Tags">
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col">
+      <label class="ov-label">Filter by Tags</label>
+      <input type="text" class="ov-input" placeholder="Filter by Tags">
     </div>
-    <!-- Filter by Area (sqft) -->
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-        <i class="ri-ruler-line text-gray-400"></i>
-      </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Area (sqft)">
+    <div class="flex flex-col">
+      <label class="ov-label">Filter by Area (sqft)</label>
+      <input type="text" class="ov-input" placeholder="Filter by Area (sqft)">
     </div>
-    <!-- Filter by ID -->
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-        <i class="ri-search-line text-gray-400"></i>
-      </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by ID">
+    <div class="flex flex-col">
+      <label class="ov-label">Filter by ID</label>
+      <input type="text" class="ov-input" placeholder="Filter by ID">
     </div>
-    <!-- Filter by Reference no -->
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-        <i class="ri-search-line text-gray-400"></i>
-      </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Reference no">
+    <div class="flex flex-col">
+      <label class="ov-label">Filter by Reference no</label>
+      <input type="text" class="ov-input" placeholder="Filter by Reference no">
     </div>
-    <!-- Off Plan Status -->
-    <div>
-      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md w-full bg-gray-50 border-gray-200">
+    <div class="flex flex-col">
+      <label class="ov-label">Off Plan Status</label>
+      <select class="ov-input">
         <option value="">Off Plan Status</option>
         <option>Yes</option>
         <option>No</option>
       </select>
     </div>
-    <!-- Filter by Landlord -->
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-        <i class="ri-user-line text-gray-400"></i>
-      </div>
-      <input type="text" class="form-control form-control-sm !text-[11px] ps-8 rounded-md bg-gray-50 border-gray-200" placeholder="Filter by Landlord">
+    <div class="flex flex-col">
+      <label class="ov-label">Filter by Landlord</label>
+      <input type="text" class="ov-input" placeholder="Filter by Landlord">
     </div>
-    <!-- Internal Status -->
-    <div>
-      <select class="form-select form-select-sm !text-[11px] text-gray-500 rounded-md w-full bg-gray-50 border-gray-200">
+    <div class="flex flex-col">
+      <label class="ov-label">Internal Status</label>
+      <select class="ov-input">
         <option value="">Internal Status</option>
         <option>Active</option>
         <option>Inactive</option>

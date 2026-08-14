@@ -8,7 +8,7 @@ exports.locale = {
             "contacts": {
                 "lblNewTenant": "New Tenant",
                 "lblAllContacts": "All Contacts",
-                "lblViewEveryContact": "View every contact across your organization",
+                "lblViewEveryContact": "View every contact across your organisation",
                 "lblSearchByName": "Search by name, email and phone",
                 "lblFilter": "Filter",
                 "lblColumn": "Column",
@@ -217,7 +217,7 @@ exports.locale = {
                 "lblPortfolioAvg": "Portfolio average",
                 "lblRooms": "Rooms",
                 "lblOf": "of",
-                "lblUnitsOccupied": "units occupied",
+                "lblUnitsOccupied": "units are occupied",
                 "lblManageUnits": "Manage Units",
                 "lblViewProperty": "View Property",
                 "lblInformation": "Information",
@@ -298,7 +298,7 @@ exports.locale = {
                 "lblAmount": "Amount",
                 "lblAddPayment": "Add Payment",
                 "lblAmenities": "Amenities",
-                "lblCustomFields": "Custom Fields",
+                "lblCustomFields": "Custom fields",
                 "lblAdditionalFieldsSpecificToProperty": "Additional fields specific to this property",
                 "lblMakaniNo": "Makani No",
 
@@ -320,9 +320,9 @@ exports.locale = {
                 "lblPurchaseValuePlaceholder": "0.00",
                 "lblPurchaseValueHelpText": "This will be used in generating executive reports.",
 
-                "lblServiceRequest": "Service Request",
+                "lblServiceRequest": "Service requests",
                 "lblServiceRequestsEnabled": "Service requests enabled",
-                "lblServiceRequestDescription": "Tenants can submit maintenance and service requests for this property",
+                "lblServiceRequestDescription": "Tenants can submit maintenance and service requests for this property.",
 
                 "lblProTip": "Pro Tip",
                 "lblProTipDescription": "Make sure to fill in the latitude and longitude for accurate location mapping. Property type determines the lease templates available.",

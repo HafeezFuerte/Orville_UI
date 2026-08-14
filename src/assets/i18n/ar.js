@@ -8,7 +8,7 @@ exports.locale = {
             "contacts": {
                 "lblNewTenant": "New Tenant",
                 "lblAllContacts": "All Contacts",
-                "lblViewEveryContact": "View every contact across your organization",
+                "lblViewEveryContact": "View every contact across your organisation",
                 "lblSearchByName": "Search by name, email and phone",
                 "lblFilter": "Filter",
                 "lblColumn": "Column",
@@ -285,7 +285,7 @@ exports.locale = {
                 "lblPortfolioAvg": "Portfolio average",
                 "lblRooms": "Rooms",
                 "lblOf": "of",
-                "lblUnitsOccupied": "units occupied",
+                "lblUnitsOccupied": "units are occupied",
                 "lblManageUnits": "Manage Units",
                 "lblViewProperty": "View Property",
                 "lblInformation": "معلومات",

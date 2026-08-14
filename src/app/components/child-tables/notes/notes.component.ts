@@ -1,7 +1,8 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
@@ -18,7 +19,7 @@ import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/
 @Component({
   selector: 'app-notes-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, NotesPopupComponent, TranslateModule, MatPaginatorModule, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, DeleteConfirmationComponent, RouterModule, ReusableModalComponent, NotesPopupComponent, TranslateModule, FilterDrawerComponent, OvPaginatorComponent],
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss']
 })

@@ -69,11 +69,29 @@ export class SupportTechnicianDetailComponent implements OnInit {
 
   showActionDropdown = false;
 
-  // Dropdown options
-  actionOptions = [
-    { label: 'Edit Technician', icon: 'ri-edit-line' },
-    { label: 'Block Technician', icon: 'ri-prohibit-line' }
+  // Dropdown options (Figma support-technician-detail Action menu)
+  actionOptions: {
+    label: string;
+    icon: string;
+    asset?: string;
+    danger?: boolean;
+    dangerIcon?: boolean;
+  }[] = [
+    { label: 'Edit Technician', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+    { label: 'Block Technician', icon: 'ri-forbid-line', dangerIcon: true }
   ];
+
+  get hasDangerAction(): boolean {
+    return this.actionOptions.some((o: any) => o.danger);
+  }
+
+  onTechnicianAction(label: string): void {
+    this.showActionDropdown = false;
+    if (label === 'Edit Technician') {
+      window.location.href = '/contacts/support-technicians/edit-support-technician/' + this.technicianId;
+      return;
+    }
+  }
 
   // Technician details mock
   technician = {

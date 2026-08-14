@@ -1,198 +1,202 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/vendors" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
-    </button>
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a routerLink="/contacts/vendors" class="ov-back" title="Back to Vendors">
+      <i class="ri-arrow-left-line text-[24px]"></i>
+    </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Vendor Details
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Contacts</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="hover:text-primary cursor-pointer">Vendor</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      <h3 class="ov-page-title">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name || 'Vendor Details' }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/vendors">Contacts</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/vendors">Vendors</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    
-    <div class="flex items-center gap-2 ml-4">
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">
-        <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
-        Active
-      </span>
-      
-      <!-- Dropdown button and menu wrapper -->
-      <div class="relative">
-        <button (click)="showActionDropdown = !showActionDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
-          <i class="ri-more-2-fill text-sm"></i>
-        </button>
-        <!-- Dropdown menu -->
-        <div *ngIf="showActionDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-          <button *ngFor="let option of actionOptions" (click)="$event.stopPropagation();
-            showActionDropdown = false;
-            option.label === 'Add Attachment' ? showSubscriptionsModal = true : null"
-            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
-            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
-            <span>{{ option.label }}</span>
-          </button>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="ov-grid-card__status">
+      <span class="ov-grid-card__status-dot"></span>
+      Active
+    </span>
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionDropdown = !showActionDropdown"
+        [attr.aria-expanded]="showActionDropdown">
+        Action
+        <i class="ri-arrow-down-s-line text-[16px]"></i>
+      </button>
+      <div *ngIf="showActionDropdown" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="!option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item"
+              [class.ov-action-menu__item--danger-icon]="option.dangerIcon"
+              (click)="$event.stopPropagation(); onVendorAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
+        <div class="ov-action-menu__footer" *ngIf="hasDangerAction">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item ov-action-menu__item--danger"
+              (click)="$event.stopPropagation(); onVendorAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
-
-      <button [routerLink]="['/contacts/vendors/edit-vendor', vendorId]" 
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-        [attr.data-tooltip]="'Edit Vendor'">
-        <i class="ri-edit-line text-sm"></i>
-      </button>
     </div>
+    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/contacts/vendors/edit-vendor', vendorId]">
+      Edit Vendor
+    </button>
   </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
-  
-  <!-- LEFT COLUMN (Sticky Sidebar) -->
-  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
-    <div class="sticky-sidebar flex flex-col gap-y-2">
-      
+<div class="ov-detail-layout pb-20">
+  <div class="ov-detail-layout__left flex flex-col gap-3">
+
       <!-- Vendor Name Header Box -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col gap-2 !mb-2">
-        <h4 class="text-lg font-black text-gray-800 m-0">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name || 'Loading...' }}</h4>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ vendorData?.email_address || vendorData?.email || vendor.email || '' }}</p>
-        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
-          <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'web.contacts.lblViewActivity' | translate">
-            <i class="ri-history-line text-sm"></i>
-          </button>
-          <button (click)="showSubscriptionsModal = true" 
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Email Sub (3/30)'">
-            <i class="ri-mail-settings-line text-sm"></i>
-          </button>
+      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
+        <div>
+          <h4 class="ov-card-title">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name || 'Loading...' }}</h4>
+          <p class="ov-card-sub mt-1 break-all">{{ vendorData?.email_address || vendorData?.email || vendor.email || '' }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]">{{ 'web.contacts.lblViewActivity' | translate }}</button>
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]" (click)="showSubscriptionsModal = true">Email Sub (3/30)</button>
         </div>
       </div>
 
       <!-- Company Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Company Information</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Company Information</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium">Name:</span>
-            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.name }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Name:</span>
+            <span class="ov-kv__value">{{ vendor.name }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium">TRN:</span>
-            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.trn }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">TRN:</span>
+            <span class="ov-kv__value">{{ vendor.trn }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium">Trade License:</span>
-            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.tradeLicense }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Trade License:</span>
+            <span class="ov-kv__value">{{ vendor.tradeLicense }}</span>
           </div>
         </div>
       </div>
 
       <!-- Login Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Login Information</h6>
-          <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20">Not Verified</span>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Login Information</h6>
+          <span class="ov-detail-chip ov-detail-chip--danger">Not Verified</span>
         </div>
-        <div class="box-body p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium">Email:</span>
-            <span class="text-gray-800 font-semibold col-span-2 break-all">{{ vendor.email }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value">{{ vendor.email }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium">Username:</span>
-            <span class="text-gray-800 font-semibold col-span-2">{{ vendor.username }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Username:</span>
+            <span class="ov-kv__value">{{ vendor.username }}</span>
           </div>
-          <button class="w-full py-1.5 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">Verify Email</button>
+          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 mt-1 text-[12px]">Verify Email</button>
         </div>
       </div>
 
       <!-- Personal Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Personal Details</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Personal Details</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium">ID:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ vendor.id }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ vendor.id }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium">Full Name:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.fullName }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Full Name:</span>
+            <span class="ov-kv__value">{{ vendor.personal.fullName }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium">Email:</span>
-            <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ vendor.personal.email }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value ov-link">{{ vendor.personal.email }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium">Phone:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.phone }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__value">{{ vendor.personal.phone }}</span>
           </div>
-          
+
           <div class="text-center my-1">
-            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails" class="text-primary font-bold text-[10px] flex items-center justify-center gap-1">
+            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails" class="ov-link text-[12px] font-semibold">
               {{ showPersonalDetails ? 'View less details' : 'View more details' }}
               <i [class]="showPersonalDetails ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
             </a>
           </div>
-          
-          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2 animate-fade-in">
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Address 1:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.address1 }}</span>
+
+          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2.5 animate-fade-in">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Address 1:</span>
+              <span class="ov-kv__value">{{ vendor.personal.address1 }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Address 2:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.address2 }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Address 2:</span>
+              <span class="ov-kv__value">{{ vendor.personal.address2 }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Country:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.country }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Country:</span>
+              <span class="ov-kv__value">{{ vendor.personal.country }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">State:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.state }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">State:</span>
+              <span class="ov-kv__value">{{ vendor.personal.state }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">City:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.city }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">City:</span>
+              <span class="ov-kv__value">{{ vendor.personal.city }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Postcode:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.postcode }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Postcode:</span>
+              <span class="ov-kv__value">{{ vendor.personal.postcode }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Created:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.created }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Created:</span>
+              <span class="ov-kv__value">{{ vendor.personal.created }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Last Updated:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ vendor.personal.lastUpdated }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Last Updated:</span>
+              <span class="ov-kv__value">{{ vendor.personal.lastUpdated }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium">Can Create WO:</span>
-              <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Can Create WO:</span>
+              <span class="ov-detail-chip ov-detail-chip--danger">No</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Assigned Categories -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assigned Categories</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Assigned Categories</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-2 text-xs">
-          <div *ngFor="let cat of categories" class="flex justify-between items-center py-1 border-b border-gray-50 last:border-0">
-            <span class="text-gray-600 font-medium">{{ cat.name }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div *ngFor="let cat of categories" class="flex justify-between items-center gap-3 py-1 border-b border-defaultborder last:border-0">
+            <span class="text-[13px] text-defaulttextcolor">{{ cat.name }}</span>
             <div class="custom-toggle-switch">
               <input type="checkbox" [id]="cat.name" [(ngModel)]="cat.active" class="hidden">
               <label [for]="cat.name" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="cat.active">
@@ -202,29 +206,22 @@
           </div>
         </div>
       </div>
-      
-    </div>
+
   </div>
 
-  <!-- RIGHT COLUMN (Tabs & Content) -->
-  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
-    
-    <!-- Tab Navigation inside White Box -->
-    <div class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
-      <button *ngFor="let tab of tabs" 
-        (click)="setTab(tab)"
-        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
-        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
-        {{tab}}
-      </button>
+  <div class="ov-detail-layout__right flex flex-col gap-3">
+
+    <div class="ov-detail-tabs">
+      <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
+        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
     <!-- TAB: Overview -->
-    <div *ngIf="activeTab === 'Overview'" class="flex flex-col gap-y-2 animate-fade-in">
+    <div *ngIf="activeTab === 'Overview'" class="box ov-card flex flex-col gap-3 overflow-hidden p-5 animate-fade-in">
       
       <!-- Maintenance Summary -->
-      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm">
-        <h5 class="text-xs font-bold text-gray-800 mb-1">Maintenance Summary</h5>
+      <div class="flex flex-col gap-3">
+        <h5 class="ov-card-title m-0">Maintenance Summary</h5>
         <p class="text-[10px] text-gray-500 mb-3">Important maintenance values are grouped first, so the user can understand of vendor activity quickly.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -269,8 +266,8 @@
       </div>
 
       <!-- Quotation Activity -->
-      <div class="box rounded-xl bg-white border border-gray-200 p-4 shadow-sm">
-        <h5 class="text-xs font-bold text-gray-800 mb-3">Quotation Activity</h5>
+      <div class="flex flex-col gap-3 mt-2">
+        <h5 class="ov-card-title m-0">Quotation Activity</h5>
         <div class="grid grid-cols-3 gap-3">
           <div class="bg-gray-50 rounded-lg p-3 text-center shadow-sm">
             <span class="text-[9px] text-gray-500 font-bold uppercase block">Quotation Rejected by Manager</span>
@@ -290,17 +287,19 @@
     </div>
 
     <!-- TAB: Unit -->
-    <div *ngIf="activeTab === 'Unit'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Unit'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Units</h6>
         <div class="flex gap-2">
-          <button (click)="toggleDrawer(true)" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
-            <i class="ri-filter-3-line text-sm"></i>
+          <button (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar" [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+            <i class="ri-equalizer-line text-[18px]"></i>
+            Filter
           </button>
           
           <div class="relative">
-            <button (click)="showUnitColumnDropdown = !showUnitColumnDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-              <i class="ri-layout-column-line text-sm"></i>
+            <button (click)="showUnitColumnDropdown = !showUnitColumnDropdown" class="ov-btn ov-btn-toolbar" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+              <i class="ri-layout-column-line text-[18px]"></i>
+              Column
             </button>
             
             <div *ngIf="showUnitColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
@@ -339,7 +338,7 @@
     </div>
 
     <!-- TAB: Work Orders -->
-    <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Work Orders'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Work Orders</h6>
         <button [routerLink]="['/facility/work-orders/create']"
@@ -364,7 +363,7 @@
     </div>
 
     <!-- TAB: Financials -->
-    <div *ngIf="activeTab === 'Financials'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Financials'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex items-center gap-2 border-b border-gray-100 pb-2 mb-3">
         <button *ngFor="let sub of financialSubTabs" (click)="setFinancialSubTab(sub)"
           class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all border-0"
@@ -378,8 +377,9 @@
         <div class="flex justify-between items-center mb-3">
           <h6 class="font-semibold text-gray-700 text-xs m-0">Bills</h6>
           <div class="relative">
-            <button (click)="showBillColumnDropdown = !showBillColumnDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-              <i class="ri-layout-column-line"></i>
+            <button (click)="showBillColumnDropdown = !showBillColumnDropdown" class="ov-btn ov-btn-toolbar" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+              <i class="ri-layout-column-line text-[18px]"></i>
+              Column
             </button>
             
             <div *ngIf="showBillColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
@@ -416,8 +416,9 @@
         <div class="flex justify-between items-center mb-3">
           <h6 class="font-semibold text-gray-700 text-xs m-0">Purchase Orders</h6>
           <div class="relative">
-            <button (click)="showPoColumnDropdown = !showPoColumnDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-              <i class="ri-layout-column-line"></i>
+            <button (click)="showPoColumnDropdown = !showPoColumnDropdown" class="ov-btn ov-btn-toolbar" [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+              <i class="ri-layout-column-line text-[18px]"></i>
+              Column
             </button>
             
             <div *ngIf="showPoColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2">
@@ -451,12 +452,12 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Quotations -->
-    <div *ngIf="activeTab === 'Quotations'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Quotations'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Quotations</h6>
         <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
@@ -491,12 +492,12 @@
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
       <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: Users -->
-    <div *ngIf="activeTab === 'Users'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Users'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Users</h6>
         <button (click)="showAddUserModal = true"
@@ -521,7 +522,7 @@
     </div>
 
     <!-- TAB: Technicians -->
-    <div *ngIf="activeTab === 'Technicians'" class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Technicians'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Technicians</h6>
         <button (click)="showAddTechnicianModal = true"

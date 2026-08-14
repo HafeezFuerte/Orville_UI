@@ -19,6 +19,7 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { CommonAreaComponent } from '../../../child-tables/commonarea/commonarea.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
@@ -96,7 +97,8 @@ export class PropertyDetailComponent implements OnInit {
     private fb: FormBuilder,
     private commonService: CommonService,
     private toastr: ToastrService,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private sanitizer: DomSanitizer) {
 
   }
   ngOnInit(): void {
@@ -119,8 +121,76 @@ export class PropertyDetailComponent implements OnInit {
   }
 
   get occupancyPct(): number {
-    const total = Number(this.property?.total_units) || 0;
-    const occupied = Number(this.property?.occupied_units) || 0;
+    return this.pct(this.occupiedUnits, this.totalUnits);
+  }
+
+  get roomsOccupancyPct(): number {
+    return this.pct(this.occupiedRooms, this.totalRooms);
+  }
+
+  get occupiedUnits(): number {
+    return Number(this.property?.occupied_units) || 0;
+  }
+
+  get totalUnits(): number {
+    return Number(this.property?.total_units) || 0;
+  }
+
+  get occupiedRooms(): number {
+    const raw = this.property?.occupied_rooms ?? this.property?.occupied_room;
+    if (raw != null && raw !== '') {
+      return Number(raw) || 0;
+    }
+    return this.occupiedUnits;
+  }
+
+  get totalRooms(): number {
+    const raw = this.property?.total_rooms ?? this.property?.total_room;
+    if (raw != null && raw !== '') {
+      return Number(raw) || 0;
+    }
+    return this.totalUnits;
+  }
+
+  get tagChips(): string[] {
+    const raw = this.property?.tags;
+    if (Array.isArray(raw)) {
+      return raw.map((t: unknown) => String(t ?? '').trim()).filter(Boolean);
+    }
+    if (typeof raw === 'string' && raw.trim()) {
+      return raw.split(/[,/|]/).map((t) => t.trim()).filter(Boolean);
+    }
+    return [];
+  }
+
+  get tagsDisplay(): string {
+    if (this.tagChips.length) {
+      return this.tagChips.join(', ');
+    }
+    return 'no tag assigned';
+  }
+
+  get sizeDisplay(): string {
+    const size = this.property?.size_sqft;
+    if (size == null || size === '') {
+      return '-';
+    }
+    const text = String(size);
+    return /sq\.?\s*ft|sqft/i.test(text) ? text : `${text} sqft`;
+  }
+
+  get mapEmbedUrl(): SafeResourceUrl | null {
+    const lat = Number(this.property?.lat);
+    const lon = Number(this.property?.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) {
+      return null;
+    }
+    const d = 0.008;
+    const src = `https://www.openstreetmap.org/export/embed.html?bbox=${lon - d},${lat - d},${lon + d},${lat + d}&layer=mapnik&marker=${lat},${lon}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(src);
+  }
+
+  private pct(occupied: number, total: number): number {
     if (total <= 0) return 0;
     return Math.round((occupied / total) * 1000) / 10;
   }
@@ -154,9 +224,12 @@ export class PropertyDetailComponent implements OnInit {
   }
   private bindPropertyData(data: any): void {
 
+    const prop = data.property?.[0] || {};
     this.property = {
-      ...data.property[0],
-      amenities: data.amenities
+      ...prop,
+      amenities: data.amenities,
+      occupied_rooms: prop.occupied_rooms ?? data.occupied_rooms,
+      total_rooms: prop.total_rooms ?? data.total_rooms
     };
     this.unitsData = data.units_info;
     this.roomsData = data.rooms_info;
@@ -227,6 +300,18 @@ export class PropertyDetailComponent implements OnInit {
         popupType: 'common-area'
       },
       {
+        key: 'broadcasts',
+        label: 'web.common.lblBroadcasts',
+        layout: 'table',
+        columns: this.broadCastsColumns,
+        data: this.broadCastsData,
+        totalRecords: this.broadCastsData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Broadcasts',
+        redirect_addurl: '/broadcasts/create'
+      },
+      {
         key: 'attachments',
         label: 'web.common.lblAttachments',
         layout: 'content',
@@ -239,18 +324,6 @@ export class PropertyDetailComponent implements OnInit {
         addButtonText: 'Attachments',
         form: this.attachmentsForm,
         popupType: 'attachment'
-      },
-      {
-        key: 'broadcasts',
-        label: 'web.common.lblBroadcasts',
-        layout: 'table',
-        columns: this.broadCastsColumns,
-        data: this.broadCastsData,
-        totalRecords: this.broadCastsData?.length || 0,
-        loading: this.loading,
-        hasActions: true,
-        addButtonText: 'Broadcasts',
-        redirect_addurl: '/broadcasts/create'
       },
       {
         key: 'notes',
@@ -307,6 +380,26 @@ export class PropertyDetailComponent implements OnInit {
   }
   handleEditNotification(selectedObject: any) {
 
+  }
+
+  onActionAddAttachment(): void {
+    this.showActionMenu = false;
+    this.activeTab = 'attachments';
+    setTimeout(() => this.detailLayout?.openModal(), 0);
+  }
+
+  onActionAddNotes(): void {
+    this.showActionMenu = false;
+    this.activeTab = 'notes';
+    setTimeout(() => this.detailLayout?.openModal(), 0);
+  }
+
+  onActionViewActivity(): void {
+    this.showActionMenu = false;
+  }
+
+  onActionArchive(): void {
+    this.showActionMenu = false;
   }
 
 }

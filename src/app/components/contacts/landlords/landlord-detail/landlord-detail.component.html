@@ -1,425 +1,364 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/landlords" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
-    </button>
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a routerLink="/contacts/landlords" class="ov-back" title="Back to Landlords">
+      <i class="ri-arrow-left-line text-[24px]"></i>
+    </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ 'web.contacts.lblLandlordDetails' | translate }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Contacts</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="hover:text-primary cursor-pointer">Landlord</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      <h3 class="ov-page-title">{{ landlordData?.landlord || landlordData?.name || landlord.name || ('web.contacts.lblLandlordDetails' | translate) }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/landlords">Contacts</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/landlords">Landlords</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-
-    <div class="flex items-center gap-2 ml-4">
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">
-        <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
-        Active
-      </span>
-
-      <!-- Dropdown button and menu wrapper -->
-      <div class="relative">
-        <button (click)="showActionDropdown = !showActionDropdown"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
-          <i class="ri-more-2-fill text-sm"></i>
-        </button>
-        <!-- Dropdown menu -->
-        <div *ngIf="showActionDropdown"
-          class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-          <button *ngFor="let option of actionOptions" (click)="$event.stopPropagation();
-            showActionDropdown = false;
-            option.label === 'Inflow' ? showInflowModal = true :
-            option.label === 'Outflow' ? showOutflowModal = true :
-            option.label === 'Landlord Contribution' ? showContributionModal = true :
-            option.label === 'Landlord Distribution' ? showDistributionModal = true :
-            option.label === 'Add Notes' ? showAddNoteModal = true :
-            option.label === 'Add Attachment' ? showAddAttachmentModal = true :
-            option.label === 'Add User' ? showAddUserModal = true :
-            option.label === 'Add Emergency Contact' ? showAddEmergencyContactModal = true : null"
-            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
-            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
-            <span>{{ option.label }}</span>
-          </button>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="ov-grid-card__status">
+      <span class="ov-grid-card__status-dot"></span>
+      Active
+    </span>
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionDropdown = !showActionDropdown"
+        [attr.aria-expanded]="showActionDropdown">
+        Action
+        <i class="ri-arrow-down-s-line text-[16px]"></i>
+      </button>
+      <div *ngIf="showActionDropdown" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="!option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item"
+              [class.ov-action-menu__item--danger-icon]="option.dangerIcon"
+              (click)="$event.stopPropagation(); onLandlordAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
+        <div class="ov-action-menu__footer" *ngIf="hasDangerAction">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item ov-action-menu__item--danger"
+              (click)="$event.stopPropagation(); onLandlordAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
-
-      <button [routerLink]="['/contacts/landlords/edit-landlord', landlordId]"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-        [attr.data-tooltip]="'web.contacts.lblEditLandlord' | translate">
-        <i class="ri-edit-line text-sm"></i>
-      </button>
     </div>
+    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/contacts/landlords/edit-landlord', landlordId]">
+      {{ 'web.contacts.lblEditLandlord' | translate }}
+    </button>
   </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
-
-  <!-- LEFT COLUMN (Sticky Sidebar) -->
-  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
-    <div class="sticky-sidebar flex flex-col gap-y-2">
+<div class="ov-detail-layout pb-20">
+  <div class="ov-detail-layout__left flex flex-col gap-3">
 
       <!-- Landlord Name Header Box -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col gap-2 !mb-2">
-        <h4 class="text-lg font-black text-gray-800 m-0">{{ landlordData?.landlord || landlordData?.name || landlord.name || 'Loading...' }}</h4>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ landlordData?.email_address || landlordData?.email || landlord.email || '' }}</p>
-        <div class="flex gap-2 mt-2 text-[10px] font-semibold">
-          <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'web.contacts.lblViewActivity' | translate">
-            <i class="ri-history-line text-sm"></i>
-          </button>
-          <button (click)="showSubscriptionsModal = true"
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Email Sub (3/30)'">
-            <i class="ri-mail-settings-line text-sm"></i>
-          </button>
+      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
+        <div>
+          <h4 class="ov-card-title">{{ landlordData?.landlord || landlordData?.name || landlord.name || 'Loading...' }}</h4>
+          <p class="ov-card-sub mt-1 break-all">{{ landlordData?.email_address || landlordData?.email || landlord.email || '' }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]">{{ 'web.contacts.lblViewActivity' | translate }}</button>
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]" (click)="showSubscriptionsModal = true">Email Sub (3/30)</button>
         </div>
       </div>
 
       <!-- Login Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLoginInformation' | translate }}</h6>
-          <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20">Not
-            Verified</span>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblLoginInformation' | translate }}</h6>
+          <span class="ov-detail-chip ov-detail-chip--danger">Not Verified</span>
         </div>
-        <div class="box-body p-4 flex flex-col gap-2">
-          <div class="flex flex-col gap-2 text-xs">
-            <div class="grid grid-cols-3 gap-2">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
-              <span class="text-gray-800 font-semibold col-span-2 break-all">{{ landlord.email }}</span>
-            </div>
-            <div class="grid grid-cols-3 gap-2">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblUsername' | translate }}:</span>
-              <span class="text-gray-800 font-semibold col-span-2">{{ landlord.username }}</span>
-            </div>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblEmail' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.email }}</span>
           </div>
-          <button
-            class="w-full py-1.5 text-xs rounded-md border border-gray-200 bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-colors mt-2">{{
-            'web.contacts.lblVerifyEmail' | translate }}</button>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblUsername' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.username }}</span>
+          </div>
+          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 mt-1 text-[12px]">{{ 'web.contacts.lblVerifyEmail' | translate }}</button>
         </div>
       </div>
 
       <!-- Personal Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblPersonalDetails' | translate }}</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblPersonalDetails' | translate }}</h6>
         </div>
-        <div class="p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblID' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.id }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblID' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.personal.id }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblName' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.name }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblName' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.personal.name }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
-            <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ landlord.personal.email
-              }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblEmail' | translate }}:</span>
+            <span class="ov-kv__value ov-link">{{ landlord.personal.email }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblPhoneNumber' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.phone }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblPhoneNumber' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.personal.phone }}</span>
           </div>
 
           <div class="text-center my-1">
             <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails"
-              class="text-primary font-bold text-[10px] flex items-center justify-center gap-1">
+              class="ov-link text-[12px] font-semibold">
               {{ showPersonalDetails ? 'View less details' : 'View more details' }}
               <i [class]="showPersonalDetails ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
             </a>
           </div>
 
-          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2 animate-fade-in">
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblDateOfBirth' | translate }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.dob }}</span>
+          <div *ngIf="showPersonalDetails" class="flex flex-col gap-2.5 animate-fade-in">
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblDateOfBirth' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.dob }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">Marital Status:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.maritalStatus }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Marital Status:</span>
+              <span class="ov-kv__value">{{ landlord.personal.maritalStatus }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblNationality' | translate }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.nationality }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblNationality' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.nationality }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAddressLine1' | translate
-                }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.address1 }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblAddressLine1' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.address1 }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAddressLine2' | translate
-                }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.address2 }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblAddressLine2' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.address2 }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblCountry' | translate }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.country }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblCountry' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.country }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblStateProvince' | translate
-                }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.state }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblStateProvince' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.state }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblCity' | translate }}:</span>
-              <span class="text-gray-800 font-bold col-span-2">{{ landlord.personal.city }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.contacts.lblCity' | translate }}:</span>
+              <span class="ov-kv__value">{{ landlord.personal.city }}</span>
             </div>
-            <div class="grid grid-cols-3 gap-2 py-0.5">
-              <span class="text-gray-500 font-medium col-span-1">Profile Verified:</span>
-              <span
-                class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Profile Verified:</span>
+              <span class="ov-detail-chip ov-detail-chip--danger">No</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Wallet Configuration -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="px-4 py-3 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblWalletConfiguration' | translate }}</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblWalletConfiguration' | translate }}</h6>
         </div>
-        <div class="p-4 flex flex-col gap-2.5 text-xs">
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-2">{{ 'web.contacts.lblOpeningBalance' | translate
-              }}:</span>
-            <span class="text-gray-800 font-bold col-span-1 text-end">AED {{ landlord.wallet.openingBalance }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblOpeningBalance' | translate }}:</span>
+            <span class="ov-kv__value">AED {{ landlord.wallet.openingBalance }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-2">{{ 'web.contacts.lblOpeningBalanceDate' | translate
-              }}:</span>
-            <span class="text-gray-800 font-bold col-span-1 text-end">{{ landlord.wallet.openingBalanceDate }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblOpeningBalanceDate' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.wallet.openingBalanceDate }}</span>
           </div>
 
-          <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1">
-            <span class="text-gray-600 font-medium">Negative Balance Allowed</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder mt-1">
+            <span class="text-[13px] text-defaulttextcolor">Negative Balance Allowed</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed"
-                class="hidden">
-              <label for="negBalance"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.wallet.negativeBalanceAllowed">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.wallet.negativeBalanceAllowed"></span>
+              <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed" class="hidden">
+              <label for="negBalance" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.negativeBalanceAllowed">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.negativeBalanceAllowed"></span>
               </label>
             </div>
           </div>
 
-          <div class="flex justify-between items-center py-1 border-t border-gray-50 mt-1">
-            <span class="text-gray-600 font-medium">Hold Wallet Money</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
+            <span class="text-[13px] text-defaulttextcolor">Hold Wallet Money</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney"
-                class="hidden">
-              <label for="holdWalletMoneyToggle"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.wallet.holdWalletMoney">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.wallet.holdWalletMoney"></span>
+              <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney" class="hidden">
+              <label for="holdWalletMoneyToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.holdWalletMoney">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.holdWalletMoney"></span>
               </label>
             </div>
           </div>
 
-          <div class="flex justify-between items-center py-1 border-t border-gray-50">
-            <span class="text-gray-600 font-medium">{{ 'web.contacts.lblIncludeSecurityDeposit' | translate }}</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblIncludeSecurityDeposit' | translate }}</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeDeposit" [(ngModel)]="landlord.wallet.includeSecurityDeposit"
-                class="hidden">
-              <label for="includeDeposit"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.wallet.includeSecurityDeposit">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.wallet.includeSecurityDeposit"></span>
+              <input type="checkbox" id="includeDeposit" [(ngModel)]="landlord.wallet.includeSecurityDeposit" class="hidden">
+              <label for="includeDeposit" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeSecurityDeposit">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeSecurityDeposit"></span>
               </label>
             </div>
           </div>
 
-          <div class="flex justify-between items-center py-1 border-t border-gray-50">
-            <span class="text-gray-600 font-medium">Include Security Deposit (Non-Leasee)</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
+            <span class="text-[13px] text-defaulttextcolor">Include Security Deposit (Non-Leasee)</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeDepositNonLeasee"
-                [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee" class="hidden">
-              <label for="includeDepositNonLeasee"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.wallet.includeSecurityDepositNonLeasee">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.wallet.includeSecurityDepositNonLeasee"></span>
+              <input type="checkbox" id="includeDepositNonLeasee" [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee" class="hidden">
+              <label for="includeDepositNonLeasee" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeSecurityDepositNonLeasee">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeSecurityDepositNonLeasee"></span>
               </label>
             </div>
           </div>
 
-          <div class="flex justify-between items-center py-1 border-t border-gray-50">
-            <span class="text-gray-600 font-medium">Include Contribution in Wallet Deposit</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
+            <span class="text-[13px] text-defaulttextcolor">Include Contribution in Wallet Deposit</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeContributionWallet"
-                [(ngModel)]="landlord.wallet.includeContributionWalletDeposit" class="hidden">
-              <label for="includeContributionWallet"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.wallet.includeContributionWalletDeposit">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.wallet.includeContributionWalletDeposit"></span>
+              <input type="checkbox" id="includeContributionWallet" [(ngModel)]="landlord.wallet.includeContributionWalletDeposit" class="hidden">
+              <label for="includeContributionWallet" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeContributionWalletDeposit">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeContributionWalletDeposit"></span>
               </label>
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 py-0.5 border-t border-gray-50 pt-2">
-            <span class="text-gray-500 font-medium col-span-2">Money Held By:</span>
-            <span class="text-gray-800 font-bold col-span-1 text-end">{{ landlord.wallet.moneyHeldBy }}</span>
+          <div class="ov-kv border-t border-defaultborder pt-2.5">
+            <span class="ov-kv__label">Money Held By:</span>
+            <span class="ov-kv__value">{{ landlord.wallet.moneyHeldBy }}</span>
           </div>
         </div>
       </div>
 
       <!-- Banking Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="px-4 py-3 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblBankingDetails' | translate }}</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblBankingDetails' | translate }}</h6>
         </div>
-        <div class="p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblBankName' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.name }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblBankName' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.bank.name }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblBankAddress' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.address }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblBankAddress' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.bank.address }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblIban' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2 break-all">{{ landlord.bank.iban }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblIban' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.bank.iban }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblSwift' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.swift }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblSwift' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.bank.swift }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblAccountNumber' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.accountNo }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblAccountNumber' | translate }}:</span>
+            <span class="ov-kv__value">{{ landlord.bank.accountNo }}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 py-0.5">
-            <span class="text-gray-500 font-medium col-span-1">Sort Code:</span>
-            <span class="text-gray-800 font-bold col-span-2">{{ landlord.bank.sortCode }}</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Sort Code:</span>
+            <span class="ov-kv__value">{{ landlord.bank.sortCode }}</span>
           </div>
         </div>
       </div>
 
       <!-- Signature -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="px-4 py-3 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblSignature' | translate }}</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblSignature' | translate }}</h6>
         </div>
-        <div class="p-4 flex flex-col gap-2 text-xs">
-          <div class="flex justify-between items-center py-1">
-            <span class="text-gray-600 font-medium">{{ 'web.contacts.lblAutoSign' | translate }}</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="flex justify-between items-center gap-3 py-1">
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblAutoSign' | translate }}</span>
             <div class="custom-toggle-switch">
               <input type="checkbox" id="autoSignToggle" [(ngModel)]="landlord.signature.autoSign" class="hidden">
-              <label for="autoSignToggle"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.signature.autoSign">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.signature.autoSign"></span>
+              <label for="autoSignToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.signature.autoSign">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.signature.autoSign"></span>
               </label>
             </div>
           </div>
-          <div class="flex justify-between items-center py-1 border-t border-gray-50 pt-2">
-            <span class="text-gray-600 font-medium">Signature Attached</span>
+          <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder pt-2">
+            <span class="text-[13px] text-defaulttextcolor">Signature Attached</span>
             <div class="custom-toggle-switch">
-              <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached"
-                class="hidden">
-              <label for="sigAttachedToggle"
-                class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300"
-                [class.bg-primary]="landlord.signature.signatureAttached">
-                <span
-                  class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"
-                  [class.translate-x-3.5]="landlord.signature.signatureAttached"></span>
+              <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached" class="hidden">
+              <label for="sigAttachedToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.signature.signatureAttached">
+                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.signature.signatureAttached"></span>
               </label>
             </div>
           </div>
 
-          <div
-            class="border border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center gap-2 mt-2 bg-gray-50/50 text-center">
-            <i class="ri-image-line text-2xl text-gray-400"></i>
-            <span class="text-[10px] text-gray-500 font-medium">No signature uploaded</span>
-            <span class="text-[8px] text-gray-400">Signature image will appear here when uploaded</span>
+          <div class="border border-dashed border-defaultborder rounded-lg p-5 flex flex-col items-center justify-center gap-2 mt-1 text-center">
+            <i class="ri-image-line text-2xl text-textmuted"></i>
+            <span class="text-[12px] text-textmuted font-medium">No signature uploaded</span>
+            <span class="text-[11px] text-textmuted">Signature image will appear here when uploaded</span>
           </div>
         </div>
       </div>
 
       <!-- Emergency Contact -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Emergency Contact</h6>
-          <button (click)="showAddEmergencyContactModal = true"
-            class="w-6 h-6 rounded bg-[#1f2b45] text-white flex items-center justify-center text-xs hover:bg-[#131b2e] border-0">+</button>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Emergency Contact</h6>
+          <button type="button" (click)="showAddEmergencyContactModal = true"
+            class="ov-icon-btn !h-7 !w-7 !rounded-md bg-primary text-white border-0" aria-label="Add emergency contact">
+            <i class="ri-add-line text-[16px]"></i>
+          </button>
         </div>
-        <div class="p-4 flex flex-col gap-2 text-xs">
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblEmail' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">zaidrahman&#64;gmail.com</span>
+        <div class="flex flex-col gap-2.5 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblEmail' | translate }}:</span>
+            <span class="ov-kv__value">zaidrahman&#64;gmail.com</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">{{ 'web.contacts.lblName' | translate }}:</span>
-            <span class="text-gray-800 font-bold col-span-2">Zaid Rahman</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">{{ 'web.contacts.lblName' | translate }}:</span>
+            <span class="ov-kv__value">Zaid Rahman</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">Relation:</span>
-            <span class="text-gray-800 font-bold col-span-2">Brother</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Relation:</span>
+            <span class="ov-kv__value">Brother</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">Phone:</span>
-            <span class="text-gray-800 font-bold col-span-2">05690 253 25</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__value">05690 253 25</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <span class="text-gray-500 font-medium col-span-1">Work Phone:</span>
-            <span class="text-gray-800 font-bold col-span-2">05682 605 52</span>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Work Phone:</span>
+            <span class="ov-kv__value">05682 605 52</span>
           </div>
         </div>
       </div>
 
       <!-- Custom Fields -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Custom Fields</h6>
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Custom Fields</h6>
         </div>
-        <div class="p-5 flex flex-col items-center justify-center gap-2 bg-gray-50/30 text-center">
-          <i class="ri-settings-4-line text-2xl text-gray-400 animate-spin-slow"></i>
-          <span class="text-[10px] text-gray-500 font-medium">No custom fields configured yet</span>
-          <span class="text-[8px] text-gray-400">Custom fields will appear here when configured</span>
-        </div>
+        <div class="ov-kv-empty px-5 py-6 text-center">No custom fields configured yet. Custom fields will appear here when configured.</div>
       </div>
 
-    </div>
   </div>
 
-  <!-- RIGHT COLUMN (Tabs & Content) -->
-  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
+  <div class="ov-detail-layout__right flex flex-col gap-3">
 
-    <!-- Tab Navigation inside White Box -->
-    <div
-      class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
-      <button *ngFor="let tab of tabs" (click)="setTab(tab)"
-        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
-        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
-        {{tab}}
-      </button>
+    <div class="ov-detail-tabs">
+      <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
+        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
     <!-- TAB: Wallet -->
-    <div *ngIf="activeTab === 'Wallet'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-5 flex flex-col gap-4 animate-fade-in">
+    <div *ngIf="activeTab === 'Wallet'" class="box ov-card flex flex-col gap-4 overflow-hidden p-5 animate-fade-in">
       
       <!-- Warning Alert -->
       <div
@@ -496,9 +435,10 @@
               <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50 border-gray-200" placeholder="Search...">
             </div>
             <button
-              class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+              class="ov-btn ov-btn-toolbar"
               [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-              <i class="ri-layout-column-line"></i>
+              <i class="ri-layout-column-line text-[18px]"></i>
+              Column
             </button>
           </div>
         </div>
@@ -517,8 +457,7 @@
     </div>
 
     <!-- TAB: Units -->
-    <div *ngIf="activeTab === 'Units'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+    <div *ngIf="activeTab === 'Units'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUnits' | translate }}</h6>
         <div class="flex gap-2">
@@ -586,8 +525,7 @@
     </div>
 
     <!-- TAB: Due Payment -->
-    <div *ngIf="activeTab === 'Due Payment'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+    <div *ngIf="activeTab === 'Due Payment'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordDuePayments' | translate }}</h6>
         <div class="flex gap-2">
@@ -624,8 +562,7 @@
     </div>
 
     <!-- TAB: Agreement -->
-    <div *ngIf="activeTab === 'Agreement'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4">
+    <div *ngIf="activeTab === 'Agreement'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordAgreement' | translate }}</h6>
         <div class="flex gap-2">
@@ -658,9 +595,8 @@
     </div>
 
     <!-- TAB: Chat -->
-    <div *ngIf="activeTab === 'Chat'" class="flex flex-col gap-y-2 animate-fade-in">
-      <div
-        class="grid grid-cols-12 gap-3 box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden p-4 min-h-[450px]">
+    <div *ngIf="activeTab === 'Chat'" class="box ov-card overflow-hidden p-4 animate-fade-in">
+      <div class="grid grid-cols-12 gap-3 min-h-[450px]">
 
         <!-- Left Side: Messages list (4 cols) -->
         <div class="col-span-12 md:col-span-4 border-r border-gray-100 pr-3 flex flex-col gap-3">
@@ -733,18 +669,17 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: User -->
-    <div *ngIf="activeTab === 'User'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'User'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUsers' | translate }}</h6>
         <button (click)="showAddUserModal = true"
@@ -772,8 +707,7 @@
     </div>
 
     <!-- TAB: Emergency Contact -->
-    <div *ngIf="activeTab === 'Emergency Contact'"
-      class="flex flex-col gap-y-2 animate-fade-in box rounded-xl bg-white border border-gray-200 shadow-sm p-4">
+    <div *ngIf="activeTab === 'Emergency Contact'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}</h6>
         <button (click)="showAddEmergencyContactModal = true"

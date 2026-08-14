@@ -46,21 +46,21 @@
     </div>
   </div>
 
-  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 py-0 pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
       <label class="sr-only" for="parking-search">Search by Property, Parking No or Unit</label>
       <i class="ri-search-line ov-search__icon"></i>
       <input id="parking-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
         (keyup.enter)="onSearch()" placeholder="Search by Property, Parking No or Unit">
     </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-ghost !w-[100px]"
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[18px]"></i>
+        <i class="ri-equalizer-line text-[18px]"></i>
         Filter
       </button>
       <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-ghost !w-[100px]"
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <i class="ri-layout-column-line text-[18px]"></i>
           Column
@@ -179,17 +179,19 @@
     </div>
     <div class="ov-page__nav">
       <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
-      <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-        <i class="ri-arrow-left-s-line text-[16px]"></i>
-      </button>
-      <ng-container *ngFor="let item of pagerItems">
-        <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-        <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-          [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
-      </ng-container>
-      <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
-        <i class="ri-arrow-right-s-line text-[16px]"></i>
-      </button>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <i class="ri-arrow-left-s-line text-[16px]"></i>
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <i class="ri-arrow-right-s-line text-[16px]"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>
