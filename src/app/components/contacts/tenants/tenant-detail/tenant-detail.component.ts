@@ -26,10 +26,12 @@ export class TenantDetailComponent implements OnInit {
   notesForm!: FormGroup;
   attachmentsForm!: FormGroup;
 
-  get selectedTab(): any {
-    if (this.activeTab === 'Notes') {
-      return {
-        key: 'notes',
+  tabsList: any[] = [];
+
+  initializeTabs() {
+    this.tabsList = [
+      {
+        key: 'Notes',
         label: 'Notes',
         entity: 'tenant',
         entity_id: this.tenantId,
@@ -40,11 +42,9 @@ export class TenantDetailComponent implements OnInit {
         addButtonText: 'Notes',
         form: this.notesForm,
         popupType: 'notes'
-      };
-    }
-    if (this.activeTab === 'Attachments') {
-      return {
-        key: 'attachments',
+      },
+      {
+        key: 'Attachments',
         label: 'Attachments',
         entity: 'tenant',
         entity_id: this.tenantId,
@@ -55,9 +55,12 @@ export class TenantDetailComponent implements OnInit {
         addButtonText: 'Attachments',
         form: this.attachmentsForm,
         popupType: 'attachment'
-      };
-    }
-    return null;
+      }
+    ];
+  }
+
+  get selectedTab(): any {
+    return this.tabsList.find(t => t.key === this.activeTab);
   }
 
   ngOnInit() {
@@ -79,6 +82,7 @@ export class TenantDetailComponent implements OnInit {
       propertyAttachment: [''],
       code: ['']
     });
+    this.initializeTabs();
     this.route.params.subscribe(params => {
       this.tenantId = params['id'];
       if (this.tenantId) {
@@ -110,6 +114,7 @@ export class TenantDetailComponent implements OnInit {
           if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
           
           console.log('Tenant Details Loaded:', this.tenantData);
+          this.initializeTabs();
         }
       },
       error: (err) => {

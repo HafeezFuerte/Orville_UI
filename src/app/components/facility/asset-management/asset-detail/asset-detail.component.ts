@@ -55,10 +55,12 @@ export class AssetDetailComponent implements OnInit {
   tabs: string[] = ['Overview', 'Parts', 'Work Orders', 'Attachments'];
   attachmentsForm: any = {};
 
-  get selectedTab(): any {
-    if (this.activeTab === 'Attachments') {
-      return {
-        key: 'attachments',
+  tabsList: any[] = [];
+
+  initializeTabs() {
+    this.tabsList = [
+      {
+        key: 'Attachments',
         label: 'Attachments',
         entity: 'asset',
         entity_id: this.assetId,
@@ -69,9 +71,12 @@ export class AssetDetailComponent implements OnInit {
         addButtonText: 'Attachments',
         form: this.attachmentsForm,
         popupType: 'attachment'
-      };
-    }
-    return null;
+      }
+    ];
+  }
+
+  get selectedTab(): any {
+    return this.tabsList.find(t => t.key === this.activeTab);
   }
 
   assetData = {
@@ -158,6 +163,7 @@ export class AssetDetailComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.initializeTabs();
     this.assetId = this.route.snapshot.paramMap.get('id') || '';
     if (this.assetId) {
       this.assetData.id = this.assetId;
@@ -247,6 +253,7 @@ export class AssetDetailComponent implements OnInit {
               file_path: d.file_path || d.files || ''
             }));
           }
+          this.initializeTabs();
         }
       },
       error: (err: any) => console.error("Error loading asset details:", err)

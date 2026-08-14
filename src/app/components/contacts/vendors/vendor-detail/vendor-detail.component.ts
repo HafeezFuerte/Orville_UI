@@ -26,10 +26,12 @@ export class VendorDetailComponent implements OnInit {
   notesForm: any = {};
   attachmentsForm: any = {};
 
-  get selectedTab(): any {
-    if (this.activeTab === 'Notes') {
-      return {
-        key: 'notes',
+  tabsList: any[] = [];
+
+  initializeTabs() {
+    this.tabsList = [
+      {
+        key: 'Notes',
         label: 'Notes',
         entity: 'vendor',
         entity_id: this.vendorId,
@@ -40,11 +42,9 @@ export class VendorDetailComponent implements OnInit {
         addButtonText: 'Notes',
         form: this.notesForm,
         popupType: 'notes'
-      };
-    }
-    if (this.activeTab === 'Attachments') {
-      return {
-        key: 'attachments',
+      },
+      {
+        key: 'Attachments',
         label: 'Attachments',
         entity: 'vendor',
         entity_id: this.vendorId,
@@ -55,12 +55,16 @@ export class VendorDetailComponent implements OnInit {
         addButtonText: 'Attachments',
         form: this.attachmentsForm,
         popupType: 'attachment'
-      };
-    }
-    return null;
+      }
+    ];
+  }
+
+  get selectedTab(): any {
+    return this.tabsList.find(t => t.key === this.activeTab);
   }
 
   ngOnInit() {
+    this.initializeTabs();
     this.route.params.subscribe(params => {
       this.vendorId = params['id'];
       if (this.vendorId) {
@@ -99,6 +103,7 @@ export class VendorDetailComponent implements OnInit {
           if (res.objResult.note) this.noteData = res.objResult.note;
           
           console.log('Vendor Details Loaded:', this.vendorData);
+          this.initializeTabs();
         }
       },
       error: (err) => {

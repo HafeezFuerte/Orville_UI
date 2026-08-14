@@ -27,11 +27,24 @@ export class WorkOrderDetailComponent implements OnInit {
   tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Attachments'];
   notesForm: any = {};
   attachmentsForm: any = {};
+  tabsList: any[] = [];
 
-  get selectedTab(): any {
-    if (this.activeTab === 'Notes') {
-      return {
-        key: 'notes',
+  initializeTabs() {
+    this.tabsList = [
+      {
+        key: 'Overview',
+        label: 'Overview',
+        layout: 'content',
+        data: []
+      },
+      {
+        key: 'Messages',
+        label: 'Messages',
+        layout: 'content',
+        data: []
+      },
+      {
+        key: 'Notes',
         label: 'Notes',
         entity: 'workorder',
         entity_id: this.workOrderId,
@@ -42,11 +55,15 @@ export class WorkOrderDetailComponent implements OnInit {
         addButtonText: 'Notes',
         form: this.notesForm,
         popupType: 'notes'
-      };
-    }
-    if (this.activeTab === 'Attachments') {
-      return {
-        key: 'attachments',
+      },
+      {
+        key: 'Quotations',
+        label: 'Quotations',
+        layout: 'table',
+        data: []
+      },
+      {
+        key: 'Attachments',
         label: 'Attachments',
         entity: 'workorder',
         entity_id: this.workOrderId,
@@ -57,9 +74,12 @@ export class WorkOrderDetailComponent implements OnInit {
         addButtonText: 'Attachments',
         form: this.attachmentsForm,
         popupType: 'attachment'
-      };
-    }
-    return null;
+      }
+    ];
+  }
+
+  get selectedTab(): any {
+    return this.tabsList.find(t => t.key === this.activeTab);
   }
 
   showAddCostModal = false;
@@ -76,35 +96,32 @@ export class WorkOrderDetailComponent implements OnInit {
 
   // Mock Data
   workOrderDetails = {
-    id: '327856',
-    title: 'Ac not working',
-    priority: 'High',
-    category: 'Air Conditioner',
+    id: '-',
+    title: '-',
+    priority: '-',
+    category: '-',
     subcategory: '-',
     signatures: '-',
-    resolvedDate: '07-07-2024',
-    createdDate: '04-06-2024',
-    lastUpdated: '04-06-2024',
-    closingStatus: 'Closed',
+    resolvedDate: '-',
+    createdDate: '-',
+    lastUpdated: '-',
+    closingStatus: '-',
     tenantRejectReason: '-',
-    tenantRejected: 'No',
-    waitingSLA: 'Hold to SLA'
+    tenantRejected: '-',
+    waitingSLA: '-',
+    description: '-'
   };
 
   personnel = {
-    activeTenant: 'James T. Hind',
-    raisedBy: 'Zaid Rahman',
-    responsiblePerson: 'Sanul Hameed',
-    technician: 'Kaif Mohammed',
-    vendor: 'Rahman Mohammad',
-    landlord: 'Orville Real Estate'
+    activeTenant: '-',
+    raisedBy: '-',
+    responsiblePerson: '-',
+    technician: '-',
+    vendor: '-',
+    landlord: '-'
   };
 
-  costs = [
-    { detail: 'HVAC Filter Replacement', category: 'Materials', cost: '$45.00' },
-    { detail: '24/07 - 2 Hours', category: 'Labor', cost: '$150.00' },
-    { detail: 'refrigerant recharge', category: 'Items', cost: '$85.00' }
-  ];
+  costs: any[] = [];
 
   costColumns = [
     { key: 'detail', label: 'Detail', visible: true },
@@ -113,11 +130,7 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'action', label: 'Actions', visible: true, useTemplate: true }
   ];
 
-  timeTracks = [
-    { technician: 'John Martinez', date: '06/15/2024', time: '9:30 AM', duration: '2h 30m' },
-    { technician: 'Sarah Jenkins', date: '06/16/2024', time: '11:45 AM', duration: '1h 15m' },
-    { technician: 'Robert Chen', date: '06/16/2024', time: '2:00 PM', duration: '3h 00m' }
-  ];
+  timeTracks: any[] = [];
 
   timeTrackColumns = [
     { key: 'technician', label: 'Technician', visible: true, useTemplate: true },
@@ -126,13 +139,7 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'duration', label: 'Duration', visible: true }
   ];
 
-  invoices = [
-    { id: '1817939', status: 'Unpaid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
-    { id: '1817940', status: 'Paid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
-    { id: '1817941', status: 'Draft', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
-    { id: '1817942', status: 'Unpaid', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' },
-    { id: '1817943', status: 'Overdue', to: 'Atif Shahzad', unit: '103-PR-1D', invoiceNumber: 'INV-36-00367223', chequeNo: '67223' }
-  ];
+  invoices: any[] = [];
 
   invoiceColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -169,12 +176,7 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
-  notes = [
-    { code: '51655', subject: 'Move-in condition', description: 'Tenant reported minor paint marks near the living room window. Schedule touch up...', status: 'Portal', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
-    { code: '51656', subject: 'Rent reminder', description: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first we...', status: 'Portal', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
-    { code: '51657', subject: 'Plumbing follow up', description: 'Kitchen sink drainage issue resolved. Vendor confirmed replacement part is required bef...', status: 'Office', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' },
-    { code: '51658', subject: 'Inspection scheduled', description: 'Quarterly property inspection booked. Tenant has acknowledged the proposed visit window.', status: 'Phone', uploaded_date: '2024-01-12T00:00:00', created_by: 'Admin (System)' }
-  ];
+  notes: any[] = [];
 
   noteColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -189,10 +191,7 @@ export class WorkOrderDetailComponent implements OnInit {
 
   ];
 
-  quotations = [
-    { id: 'AFT-1001', status: 'Pending', vendorName: 'ProFix Services', quotationTitle: 'Kitchen plumbing repair', quotationNumber: 'QTN-2024-0001', totalPrice: 'AED 2,550.00', deliveryDate: '10-02-2024' },
-    { id: 'AFT-1002', status: 'Approved', vendorName: 'Bright Volt LLC', quotationTitle: 'Annual electrical inspection', quotationNumber: 'QTN-2024-0002', totalPrice: 'AED 3,250.00', deliveryDate: '15-02-2024' }
-  ];
+  quotations: any[] = [];
 
   quotationColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -212,10 +211,7 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
-  attachments = [
-    { code: 'ATT-1001', document_type_name: 'Inspection Report', doc_no: 'DOC-1001', document_status_name: 'Active', issue_date: '2024-01-10T00:00:00', expiry_date: '2025-01-10T00:00:00', file_path: 'Inspection_Report.pdf' },
-    { code: 'ATT-1002', document_type_name: 'Maintenance Report', doc_no: 'DOC-1002', document_status_name: 'Verified', issue_date: '2024-01-12T00:00:00', expiry_date: '2025-01-12T00:00:00', file_path: 'Maintenance_Report.pdf' }
-  ];
+  attachments: any[] = [];
 
   attachmentColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -234,44 +230,12 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'Action', label: 'Action', visible: true, useTemplate: true }
   ];
 
-  messages = [
-    {
-      sender: 'Mohammed Zaid',
-      role: 'Tenant',
-      avatar: 'MZ',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
-      time: '10:45',
-      isMe: false
-    },
-    {
-      sender: 'Me',
-      role: 'Admin',
-      avatar: 'ME',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
-      time: '10:45',
-      isMe: true
-    },
-    {
-      sender: 'Mohammed Zaid',
-      role: 'Tenant',
-      avatar: 'MZ',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
-      time: '10:45',
-      isMe: false
-    },
-    {
-      sender: 'Me',
-      role: 'Admin',
-      avatar: 'ME',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.',
-      time: '10:45',
-      isMe: true
-    }
-  ];
+  messages: any[] = [];
 
   newMessage: string = '';
 
   ngOnInit() {
+    this.initializeTabs();
     this.route.params.subscribe(params => {
       this.workOrderId = params['id'];
       if (this.workOrderId) {
@@ -312,7 +276,8 @@ export class WorkOrderDetailComponent implements OnInit {
               closingStatus: data.status || '-',
               tenantRejectReason: data.tenantRejectReason || '-',
               tenantRejected: data.tenantRejected || 'No',
-              waitingSLA: data.waitingSLA || 'Hold to SLA'
+              waitingSLA: data.waitingSLA || 'Hold to SLA',
+              description: data.desc || data.description || data.workOrder || data.title || '-'
             };
             this.personnel = {
               activeTenant: data.tenant || '-',
@@ -345,6 +310,56 @@ export class WorkOrderDetailComponent implements OnInit {
                 file_path: d.file_path || d.files || ''
               }));
             }
+
+            // Map Costs if returned by API
+            const costList = res.objResult.costs || res.objResult.cost || res.objResult.cost_dtls;
+            if (Array.isArray(costList) && costList.length > 0) {
+              this.costs = costList.map((c: any) => ({
+                detail: c.detail || c.description || '-',
+                category: c.category || c.costCategory || '-',
+                cost: c.cost || c.amount || '-'
+              }));
+            }
+
+            // Map Time Tracks if returned by API
+            const timeList = res.objResult.timeTracks || res.objResult.time_tracking;
+            if (Array.isArray(timeList) && timeList.length > 0) {
+              this.timeTracks = timeList.map((t: any) => ({
+                technician: t.technician || t.technician_name || '-',
+                date: t.date || t.created_date || '-',
+                time: t.time || '-',
+                duration: t.duration || '-'
+              }));
+            }
+
+            // Map Invoices if returned by API
+            const invoiceList = res.objResult.invoices || res.objResult.invoice;
+            if (Array.isArray(invoiceList) && invoiceList.length > 0) {
+              this.invoices = invoiceList.map((inv: any) => ({
+                id: inv.id || inv.code || '-',
+                status: inv.status || inv.invoiceStatus || '-',
+                to: inv.to || inv.tenant_name || '-',
+                unit: inv.unit || inv.unit_name || '-',
+                invoiceNumber: inv.invoiceNumber || inv.invoice_no || '-',
+                chequeNo: inv.chequeNo || inv.cheque_no || '-'
+              }));
+            }
+
+            // Map Quotations if returned by API
+            const quotationList = res.objResult.quotations || res.objResult.quotation || res.objResult.table2 || res.objResult.table3 || res.objResult.table4;
+            if (Array.isArray(quotationList) && quotationList.length > 0) {
+              this.quotations = quotationList.map((q: any) => ({
+                id: q.id || q.code || '-',
+                status: q.status || '-',
+                vendorName: q.vendorName || q.vendor_name || '-',
+                quotationTitle: q.quotationTitle || q.title || '-',
+                quotationNumber: q.quotationNumber || q.quote_no || '-',
+                totalPrice: q.totalPrice || q.total_price || '-',
+                deliveryDate: q.deliveryDate || q.delivery_date || '-'
+              }));
+            }
+
+            this.initializeTabs();
           }
         }
       },
