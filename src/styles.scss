@@ -449,6 +449,20 @@ body:has(.ov-filter-drawer__panel) [data-tooltip]:hover::after {
   visibility: hidden !important;
 }
 
+// Hide tooltip while a sibling dropdown/menu is open (Action kebab, Column checklist, etc.)
+// Cursor often stays on the trigger after click, so :hover would otherwise keep the tip visible.
+.relative:has(> .absolute) > [data-tooltip]::before,
+.relative:has(> .absolute) > [data-tooltip]::after,
+.inline-flex:has(> .absolute) > [data-tooltip]::before,
+.inline-flex:has(> .absolute) > [data-tooltip]::after,
+.relative:has(> .absolute) > [data-tooltip]:hover::before,
+.relative:has(> .absolute) > [data-tooltip]:hover::after,
+.inline-flex:has(> .absolute) > [data-tooltip]:hover::before,
+.inline-flex:has(> .absolute) > [data-tooltip]:hover::after {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 // Page-header Create / Add CTAs sit under the sticky app header.
 // Only those flip below — detail Add CTAs stay above so they don't
 // collide with the Filter/Column toolbar under them.

@@ -25,9 +25,10 @@ export class MyInsightsComponent implements OnInit {
   };
 
   // Sparkline Chart Options
-  public sparklineBarOptions: any = {};
   public sparklineLineOptions: any = {};
   public sparklineRoomsOptions: any = {};
+  /** Figma 753:15559 — gold pill bars (same heights as lease YTD) */
+  public propertyYtdBars = [35, 68, 88, 31, 61, 30, 0, 0, 0, 0, 0, 0];
 
   // Donut Chart Options
   public occupancyRadialOptions: any = {};
@@ -64,12 +65,55 @@ export class MyInsightsComponent implements OnInit {
   public woTotalResolvedOptions: any = {};
   public woResolveRateOptions: any = {};
   public unitHealthOptions: any = {};
+  /** Figma 787:18360 — pill bars (value / 40) */
+  public woResolveRateBars = [
+    { value: 15 },
+    { value: 15 },
+    { value: 29 },
+    { value: 40 },
+    { value: 13 },
+    { value: 26 },
+    { value: 13 }
+  ];
+  public woResolveRateMax = 40;
+  public woResolveRateTicks = [40, 30, 20, 10, 0];
+  /** Figma 796:3582 — same pill pattern as resolve rate */
+  public newTicketsBars = [
+    { value: 15 },
+    { value: 15 },
+    { value: 29 },
+    { value: 40 },
+    { value: 13 },
+    { value: 26 },
+    { value: 13 }
+  ];
+  public newTicketsMax = 40;
+  public newTicketsTicks = [40, 30, 20, 10, 0];
+  /** Figma 796:3690 — purple pills, max 50 */
+  public unitsPublishedBars = [
+    { value: 14 },
+    { value: 14 },
+    { value: 26 },
+    { value: 37 },
+    { value: 12 },
+    { value: 24 },
+    { value: 12 }
+  ];
+  public unitsPublishedMax = 50;
+  public unitsPublishedTicks = [50, 40, 30, 20, 10, 0];
+  public ticketSourceLegend: { label: string; count: string; color: string; icon: string }[] = [];
+  /** Figma 787:18426 — pill bars (value / 100 for track fill %) */
+  public unitHealthBars = [
+    { label: '305-PR-7', value: 37 },
+    { label: '306-PR-9', value: 84 },
+    { label: '414-PR-5', value: 72 },
+    { label: '507-PR-3', value: 25 },
+    { label: '604-PR-16', value: 39 }
+  ];
   public woPriorityOptions: any = {};
   public deptTicketOptions: any = {};
   public deptGroups: { label: string; color: string; meta: string; width: string }[] = [];
   public statusLegend: { label: string; color: string }[] = [];
-  public newTicketsOptions: any = {};
-  public unitsPublishedOptions: any = {};
   public countryRows: { name: string; count: number; width: string }[] = [
     { name: 'Indonesia', count: 703, width: '46%' },
     { name: 'Bangladesh', count: 350, width: '27%' },
@@ -99,39 +143,46 @@ export class MyInsightsComponent implements OnInit {
       slate: '#94a3b8'
     };
 
-    // 1. Sparklines for Top Cards
-    this.sparklineBarOptions = {
-      series: [{ name: 'Properties', data: [12, 14, 18, 10, 15, 12, 8, 10, 12, 14, 16, 18] }],
-      chart: { type: 'bar', height: 128, sparkline: { enabled: true }, fontFamily: defaultFont },
-      plotOptions: { bar: { columnWidth: '55%', borderRadius: 8, colors: { backgroundBarColors: [c.accentLight], backgroundBarRadius: 8 } } },
-      colors: [c.accent]
-    };
-
+    // 1. Highlight sparklines — Figma 753:15714
     this.sparklineLineOptions = {
-      series: [{ name: 'Units', data: [10, 20, 15, 30, 25, 40, 35, 50] }],
-      chart: { type: 'line', height: 128, sparkline: { enabled: true }, fontFamily: defaultFont },
+      series: [{ name: 'Units', data: [10, 20, 15, 30, 25, 40, 35, 50, 12, 10, 8, 6] }],
+      chart: { type: 'line', height: 128, sparkline: { enabled: true }, fontFamily: defaultFont, toolbar: { show: false } },
       stroke: { curve: 'smooth', width: 2 },
-      colors: [c.accent]
+      colors: [c.accent],
+      grid: { show: false },
+      tooltip: { enabled: false }
     };
 
     this.sparklineRoomsOptions = {
-      series: [{ name: 'Rooms', data: [10, 25, 15, 30, 25, 50, 35, 45] }],
-      chart: { type: 'line', height: 128, sparkline: { enabled: true }, fontFamily: defaultFont },
+      series: [{ name: 'Rooms', data: [10, 25, 15, 30, 25, 50, 35, 45, 14, 12, 9, 7] }],
+      chart: { type: 'line', height: 128, sparkline: { enabled: true }, fontFamily: defaultFont, toolbar: { show: false } },
       stroke: { curve: 'smooth', width: 2 },
-      colors: [c.info]
+      colors: [c.info],
+      grid: { show: false },
+      tooltip: { enabled: false }
     };
 
     // 2. Radial Charts for Occupancy & Vacant
     this.occupancyRadialOptions = {
       series: [77.9],
-      chart: { type: 'radialBar', height: 130, width: 130, fontFamily: defaultFont },
+      chart: { type: 'radialBar', height: 130, width: 130, sparkline: { enabled: true }, fontFamily: defaultFont },
       plotOptions: {
         radialBar: {
+          startAngle: -90,
+          endAngle: 270,
           hollow: { size: '68%' },
-          track: { background: c.track, strokeWidth: '100%' },
+          track: { background: '#EEEEF5', strokeWidth: '100%' },
           dataLabels: {
             name: { show: false },
-            value: { show: true, fontSize: '18px', fontWeight: 800, fontFamily: defaultFont, color: c.text, offsetY: 6 }
+            value: {
+              show: true,
+              fontSize: '18px',
+              fontWeight: 900,
+              fontFamily: defaultFont,
+              color: c.text,
+              offsetY: 6,
+              formatter: (val: number) => `${val}%`
+            }
           }
         }
       },
@@ -141,14 +192,24 @@ export class MyInsightsComponent implements OnInit {
 
     this.vacantRadialOptions = {
       series: [21],
-      chart: { type: 'radialBar', height: 130, width: 130, fontFamily: defaultFont },
+      chart: { type: 'radialBar', height: 130, width: 130, sparkline: { enabled: true }, fontFamily: defaultFont },
       plotOptions: {
         radialBar: {
+          startAngle: -90,
+          endAngle: 270,
           hollow: { size: '68%' },
-          track: { background: c.track, strokeWidth: '100%' },
+          track: { background: '#EEEEF5', strokeWidth: '100%' },
           dataLabels: {
             name: { show: false },
-            value: { show: true, fontSize: '18px', fontWeight: 800, fontFamily: defaultFont, color: c.text, offsetY: 6 }
+            value: {
+              show: true,
+              fontSize: '18px',
+              fontWeight: 900,
+              fontFamily: defaultFont,
+              color: c.text,
+              offsetY: 6,
+              formatter: (val: number) => `${val}%`
+            }
           }
         }
       },
@@ -156,10 +217,25 @@ export class MyInsightsComponent implements OnInit {
       stroke: { lineCap: 'round' }
     };
 
-    // 3. Properties, Units, Rooms Donuts
-    this.propertiesDonutOptions = this.createDonut([17, 0, 2], [c.primary, c.slate, c.info], ['Residential', 'Commercial', 'Mixed-use'], { label: 'All properties', value: '19' });
-    this.unitsDonutOptions = this.createDonut([985, 756, 758, 456], [c.primary, c.info, c.accent, c.success], ['1 BHK', '2 BHK', '3 BHK', 'Studio'], { label: 'All units', value: '2955' });
-    this.roomsDonutOptions = this.createDonut([985, 756, 758, 456], [c.primary, c.info, c.accent, c.success], ['1 BHK', '2 BHK', '3 BHK', 'Studio'], { label: 'All rooms', value: '2955' });
+    // 3. Properties, Units, Rooms Donuts — Figma 753:15715
+    this.propertiesDonutOptions = this.createDonut(
+      [17, 0, 2],
+      [c.primary, '#A5B4FC', '#3E6FA8'],
+      ['Residential', 'Commercial', 'Mixed-use'],
+      { label: 'All properties', value: '19' }
+    );
+    this.unitsDonutOptions = this.createDonut(
+      [985, 756, 758, 456],
+      ['#5347CE', '#887CFD', '#3B82F6', '#14B8A6'],
+      ['1 BHK', '2 BHK', '3 BHK', 'Studio'],
+      { label: 'All units', value: '2955' }
+    );
+    this.roomsDonutOptions = this.createDonut(
+      [985, 756, 758, 456],
+      ['#5347CE', '#887CFD', '#3B82F6', '#14B8A6'],
+      ['1 BHK', '2 BHK', '3 BHK', 'Studio'],
+      { label: 'All rooms', value: '2955' }
+    );
 
     // 4. Contact Status Analytics
     this.contactStatusDonutOptions = this.createDonut([5164, 3], [c.success, c.warning], ['Active', 'Inactive'], 'none');
@@ -238,112 +314,119 @@ export class MyInsightsComponent implements OnInit {
     this.woNewOrderOptions = this.createLineSparkline([10, 15, 10, 20, 15, 25, 20, 30], c.info);
     this.woTotalResolvedOptions = this.createBarSparkline([5, 8, 12, 10, 15, 18, 20, 22, 25, 28, 30, 35], '#5347ce', '#EEEEF5');
 
-    // 9. Work Order Donut Charts
+    // 9. Work Order Donut Charts — Figma 784:18273 palette
+    const wo = {
+      purple: '#5347CE',
+      teal: '#16CBC7',
+      yellow: '#FACC15',
+      navy: '#1E40AF',
+      blue: '#2563EB',
+      lilac: '#887CFD'
+    };
     this.workOrderRequestsOptions = this.withDonutNumberOnTop(
-      this.createDonut([800, 300, 157], [c.primary, c.success, c.warning], ['Open', 'Closed', 'Other'], { label: 'Total Requests', value: '1,257' })
+      this.createDonut([800, 300, 157], [wo.purple, wo.teal, wo.yellow], ['Open', 'Closed', 'Other'], { label: 'Total Requests', value: '1,257' })
     );
     this.workOrderStatusOptions = this.withDonutNumberOnTop(
-      this.createDonut([500, 365], [c.info, c.primary], ['New', 'Resolved'], { label: 'Work Orders', value: '865' })
+      this.createDonut([500, 365], [wo.navy, wo.blue], ['New', 'Resolved'], { label: 'Work Orders', value: '865' })
     );
     this.workOrderDistOptions = this.withDonutNumberOnTop(
-      this.createDonut([300, 200, 150, 100, 65, 50], [c.info, '#6B8FBF', '#9BB3D1', c.warning, c.primary, c.success], ['Electrical', 'Doors & Locks', 'Plumbing', 'Air Conditioner', 'Cleaning Issues', 'Joinery'], { label: 'Work Orders', value: '865' }),
+      this.createDonut(
+        [300, 200, 150, 100, 65, 50],
+        [wo.navy, wo.blue, wo.lilac, wo.yellow, wo.purple, wo.teal],
+        ['Electrical', 'Doors & Locks', 'Plumbing', 'Air Conditioner', 'Cleaning Issues', 'Joinery'],
+        { label: 'Work Orders', value: '865' }
+      ),
       267
     );
 
-    // 10. Resolve Rate & Unit Health
-    this.woResolveRateOptions = {
-      series: [{ name: 'Work Orders', data: [15, 15, 28, 38, 12, 25, 11] }],
-      chart: { type: 'bar', height: 220, toolbar: { show: false }, fontFamily: defaultFont },
-      plotOptions: { bar: { borderRadius: 8, columnWidth: '22%', colors: { backgroundBarColors: ['#EEEEF5'], backgroundBarRadius: 8 } } },
-      dataLabels: { enabled: false },
-      legend: { show: false },
-      grid: { strokeDashArray: 4, borderColor: '#E4E4EC', xaxis: { lines: { show: false } } },
-      xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], labels: { show: false }, axisBorder: { show: false }, axisTicks: { show: false } },
-      yaxis: { min: 0, max: 40, tickAmount: 4, labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 600 } } },
-      colors: [c.info]
-    };
+    // 10. Resolve Rate & Unit Health — custom CSS pills (Figma 787:18360 / 787:18426)
+    this.woResolveRateOptions = {};
+    this.unitHealthOptions = {};
 
-    this.unitHealthOptions = {
-      series: [{ name: 'Work Orders', data: [50, 45, 40, 35, 30] }],
-      chart: { type: 'bar', height: 220, toolbar: { show: false }, fontFamily: defaultFont },
-      plotOptions: { bar: { borderRadius: 8, columnWidth: '40%', colors: { backgroundBarColors: ['#EEEEF5'], backgroundBarRadius: 8 } } },
-      dataLabels: { enabled: false },
-      legend: { show: false },
-      grid: { show: false },
-      xaxis: {
-        categories: ['305-PR-7', '306-PR-9', '414-PR-5', '507-PR-3', '604-PR-16'],
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '11px', fontWeight: 600 } }
-      },
-      yaxis: { show: false },
-      colors: [c.primary]
-    };
-
-    // 11. Work Orders Priority & Tickets
+    // 11. Work Orders Priority — Figma 792:18723 (stack: dark bottom → light top)
     this.woPriorityOptions = {
       series: [
-        { name: 'Low', data: [18, 22, 28, 20, 35, 24, 18, 30, 22, 40, 38, 36] },
-        { name: 'Medium', data: [22, 18, 30, 24, 28, 20, 22, 26, 18, 22, 24, 20] },
-        { name: 'High', data: [30, 28, 22, 26, 20, 32, 28, 24, 30, 22, 20, 24] },
-        { name: 'Critical', data: [8, 10, 6, 8, 12, 8, 10, 6, 8, 10, 8, 10] }
+        { name: 'High', data: [28, 19, 19, 28, 25, 19, 21, 39, 21, 25, 25, 25] },
+        { name: 'Medium', data: [28, 12, 19, 28, 25, 19, 21, 39, 21, 25, 25, 25] },
+        { name: 'Critical', data: [24, 20, 29, 24, 22, 19, 16, 24, 16, 22, 22, 22] },
+        { name: 'Low', data: [11, 22, 28, 11, 28, 27, 20, 13, 20, 28, 17, 8] }
       ],
-      chart: { type: 'bar', height: 215, stacked: true, toolbar: { show: false }, fontFamily: defaultFont },
-      plotOptions: { bar: { columnWidth: '28%', borderRadius: 2 } },
+      chart: { type: 'bar', height: 248, stacked: true, toolbar: { show: false }, fontFamily: defaultFont },
+      plotOptions: { bar: { columnWidth: '18%', borderRadius: 0, borderRadiusApplication: 'around' } },
       xaxis: {
         categories: ['Jan 25', 'Feb 25', 'Mar 25', 'Apr 25', 'May 25', 'Jun 25', 'Jul 25', 'Aug 25', 'Sep 25', 'Oct 25', 'Nov 25', 'Dec 25'],
-        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '12px' } },
+        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 500 }, rotate: 0, hideOverlappingLabels: false },
         axisBorder: { show: false },
         axisTicks: { show: false }
       },
-      yaxis: { min: 0, max: 100, tickAmount: 4, labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 600 } } },
-      grid: { strokeDashArray: 4, borderColor: '#E4E4EC', xaxis: { lines: { show: false } } },
-      colors: ['#9BB3D1', c.info, c.primary, '#1E3A5F'],
+      yaxis: {
+        min: 0,
+        max: 100,
+        tickAmount: 4,
+        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 600 } }
+      },
+      grid: { strokeDashArray: 4, borderColor: '#E4E4EC', xaxis: { lines: { show: false } }, padding: { left: 8, right: 4 } },
+      colors: ['#2563EB', '#316EF3', '#4F84F9', '#87ACFF'],
       dataLabels: { enabled: false },
-      legend: { show: false }
+      legend: { show: false },
+      tooltip: { shared: true, intersect: false }
     };
 
     this.statusLegend = [
-      { label: 'open', color: c.primary },
-      { label: 'resolved', color: c.info },
-      { label: 'closed', color: '#5347ce' },
-      { label: 'new', color: '#9BB3D1' }
+      { label: 'open', color: '#1E40AF' },
+      { label: 'resolved', color: '#2563EB' },
+      { label: 'closed', color: '#5347CE' },
+      { label: 'new', color: '#887CFD' }
     ];
     this.statusWiseTicketsOptions = this.withDonutNumberOnTop(
-      this.createDonut([2212, 80, 1368, 27], this.statusLegend.map((item) => item.color), this.statusLegend.map((item) => item.label), { label: 'Tickets', value: '3,687' })
+      this.createDonut(
+        [2212, 80, 1368, 27],
+        this.statusLegend.map((item) => item.color),
+        this.statusLegend.map((item) => item.label),
+        { label: 'Tickets', value: '3,687' }
+      ),
+      275
     );
 
+    // Figma 792:18600 — teal / blue / indigo; "Total Ticket" above value
     this.deptGroups = [
-      { label: 'Accounting Group', color: c.success, meta: '12 · 21%', width: '85%' },
-      { label: 'Facility Group', color: c.info, meta: '28 · 49%', width: '54%' },
-      { label: 'Lease Group', color: c.primary, meta: '17 · 30%', width: '33%' }
+      { label: 'Accounting Group', color: '#14B8A6', meta: '12 · 21%', width: '21%' },
+      { label: 'Facility Group', color: '#3B82F6', meta: '28 · 49%', width: '49%' },
+      { label: 'Lease Group', color: '#6366F1', meta: '17 · 30%', width: '30%' }
     ];
-    this.deptTicketOptions = this.withDonutNumberOnTop(
-      this.createDonut([12, 28, 17], this.deptGroups.map((item) => item.color), this.deptGroups.map((item) => item.label), { label: 'Total Ticket', value: '58' }),
+    this.deptTicketOptions = this.withDonutCaptionOnTop(
+      this.createDonut(
+        [12, 28, 17],
+        this.deptGroups.map((item) => item.color),
+        this.deptGroups.map((item) => item.label),
+        { label: 'Total Ticket', value: '58' }
+      ),
       282
     );
 
-    this.newTicketsOptions = this.createAxisBar([18, 12, 22, 28, 38, 16, 24], c.info, 40, 220);
-
+    // Figma 796:3744 — New Tickets / Ticket Sources / Units Published
+    this.ticketSourceLegend = [
+      { label: 'Manual', count: '1,209 tickets', color: '#2563EB', icon: 'assets/images/insights/src-manual.svg' },
+      { label: 'Email', count: '367 tickets', color: '#5087FF', icon: 'assets/images/insights/src-email.svg' },
+      { label: 'Contact form', count: '4 tickets', color: '#74A0FF', icon: 'assets/images/insights/src-form.svg' }
+    ];
     this.ticketSourcesOptions = {
       series: [77, 23, 2],
-      chart: { type: 'radialBar', height: 230, width: 230, fontFamily: defaultFont, sparkline: { enabled: true } },
+      chart: { type: 'radialBar', height: 264, width: 264, fontFamily: defaultFont, sparkline: { enabled: true } },
       plotOptions: {
         radialBar: {
-          startAngle: -10,
-          endAngle: 350,
-          hollow: { size: '18%' },
-          track: { background: '#EEEEF5', strokeWidth: '100%' },
+          startAngle: -90,
+          endAngle: 270,
+          hollow: { size: '22%' },
+          track: { background: '#EEEEF5', strokeWidth: '100%', margin: 6 },
           dataLabels: { name: { show: false }, value: { show: false }, total: { show: false } }
         }
       },
       stroke: { lineCap: 'round' },
       dataLabels: { enabled: false },
       legend: { show: false },
-      colors: [c.primary, c.info, '#9BB3D1']
+      colors: this.ticketSourceLegend.map((item) => item.color)
     };
-
-    this.unitsPublishedOptions = this.createAxisBar([22, 18, 8, 42, 28, 36, 20], c.primary, 50, 280);
 
     this.unitStatsOccupancyOptions = this.withDonutNumberOnTop(
       this.createDonut([82, 12, 6], [c.primary, c.info, '#A78BFA'], ['Occupied', 'Vacant', 'Sold'], {
@@ -455,42 +538,6 @@ export class MyInsightsComponent implements OnInit {
     };
   }
 
-  private createAxisBar(data: number[], color: string, max: number, height: number) {
-    const defaultFont = "'Hanken Grotesk', sans-serif";
-    return {
-      series: [{ name: 'Data', data }],
-      chart: { type: 'bar', height, toolbar: { show: false }, fontFamily: defaultFont },
-      plotOptions: {
-        bar: {
-          columnWidth: '18%',
-          borderRadius: 8,
-          colors: { backgroundBarColors: ['#EEEEF5'], backgroundBarRadius: 8 }
-        }
-      },
-      dataLabels: { enabled: false },
-      legend: { show: false },
-      grid: {
-        borderColor: '#E4E4EC',
-        strokeDashArray: 4,
-        xaxis: { lines: { show: false } },
-        padding: { top: 0, right: 8, bottom: 0, left: 4 }
-      },
-      xaxis: {
-        labels: { show: false },
-        axisBorder: { show: false },
-        axisTicks: { show: false }
-      },
-      yaxis: {
-        min: 0,
-        max,
-        tickAmount: max / 10,
-        labels: { style: { colors: '#6B6B7D', fontSize: '12px', fontFamily: defaultFont } }
-      },
-      colors: [color],
-      tooltip: { y: { title: { formatter: () => '' } } }
-    };
-  }
-
   private withDonutNumberOnTop(opts: any, size = 275) {
     opts.chart = { ...opts.chart, height: size, width: size };
     const labels = opts.plotOptions.pie.donut.labels;
@@ -502,6 +549,26 @@ export class MyInsightsComponent implements OnInit {
     labels.total.color = '#252536';
     labels.total.formatter = () => caption;
     labels.value = { ...labels.value, show: false, fontSize: '14px', fontWeight: 400, color: '#6B6B7D', offsetY: 8 };
+    return opts;
+  }
+
+  /** Caption above large value — Figma Department Ticket donut */
+  private withDonutCaptionOnTop(opts: any, size = 282) {
+    opts.chart = { ...opts.chart, height: size, width: size };
+    const labels = opts.plotOptions.pie.donut.labels;
+    labels.total.fontSize = '14px';
+    labels.total.fontWeight = 600;
+    labels.total.color = '#6B6B7D';
+    labels.value = {
+      ...labels.value,
+      show: true,
+      fontSize: '24px',
+      fontWeight: 800,
+      fontFamily: "'Hanken Grotesk', sans-serif",
+      color: '#252536',
+      offsetY: 4
+    };
+    labels.name = { ...labels.name, show: false };
     return opts;
   }
 

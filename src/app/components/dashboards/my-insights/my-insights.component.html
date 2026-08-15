@@ -29,8 +29,11 @@
         <p class="orville-hl__sub">New properties per month (calendar year)</p>
       </div>
       <div class="orville-hl__chart">
-        <apx-chart [series]="sparklineBarOptions.series" [chart]="sparklineBarOptions.chart"
-          [colors]="sparklineBarOptions.colors" [plotOptions]="sparklineBarOptions.plotOptions"></apx-chart>
+        <div class="orville-hl__bars orville-hl__bars--accent">
+          <div class="orville-hl__bar-track" *ngFor="let h of propertyYtdBars">
+            <span class="orville-hl__bar-fill" [style.height.%]="h"></span>
+          </div>
+        </div>
       </div>
     </article>
 
@@ -43,9 +46,10 @@
         <h4 class="orville-hl__name">Units Created</h4>
         <p class="orville-hl__sub">Units created per month (calendar year)</p>
       </div>
-      <div class="orville-hl__chart">
+      <div class="orville-hl__chart orville-hl__chart--line">
         <apx-chart [series]="sparklineLineOptions.series" [chart]="sparklineLineOptions.chart"
-          [colors]="sparklineLineOptions.colors" [stroke]="sparklineLineOptions.stroke"></apx-chart>
+          [colors]="sparklineLineOptions.colors" [stroke]="sparklineLineOptions.stroke"
+          [tooltip]="sparklineLineOptions.tooltip" [grid]="sparklineLineOptions.grid"></apx-chart>
       </div>
     </article>
 
@@ -58,9 +62,10 @@
         <h4 class="orville-hl__name">Rooms Created</h4>
         <p class="orville-hl__sub">Rooms created per month (calendar year)</p>
       </div>
-      <div class="orville-hl__chart">
+      <div class="orville-hl__chart orville-hl__chart--line">
         <apx-chart [series]="sparklineRoomsOptions.series" [chart]="sparklineRoomsOptions.chart"
-          [colors]="sparklineRoomsOptions.colors" [stroke]="sparklineRoomsOptions.stroke"></apx-chart>
+          [colors]="sparklineRoomsOptions.colors" [stroke]="sparklineRoomsOptions.stroke"
+          [tooltip]="sparklineRoomsOptions.tooltip" [grid]="sparklineRoomsOptions.grid"></apx-chart>
       </div>
     </article>
 
@@ -135,19 +140,19 @@
         </div>
         <div class="orville-legend">
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#26264F"></span> 1 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#5347CE"></span> 1 BHK</div>
             <span class="orville-legend__val">985</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#3E6FA8"></span> 2 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#887CFD"></span> 2 BHK</div>
             <span class="orville-legend__val">756</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#BD9759"></span> 3 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#3B82F6"></span> 3 BHK</div>
             <span class="orville-legend__val">758</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#27865B"></span> Studio</div>
+            <div><span class="orville-legend__dot" style="background:#14B8A6"></span> Studio</div>
             <span class="orville-legend__val">456</span>
           </div>
         </div>
@@ -170,19 +175,19 @@
         </div>
         <div class="orville-legend">
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#26264F"></span> 1 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#5347CE"></span> 1 BHK</div>
             <span class="orville-legend__val">985</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#3E6FA8"></span> 2 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#887CFD"></span> 2 BHK</div>
             <span class="orville-legend__val">756</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#BD9759"></span> 3 BHK</div>
+            <div><span class="orville-legend__dot" style="background:#3B82F6"></span> 3 BHK</div>
             <span class="orville-legend__val">758</span>
           </div>
           <div class="orville-legend__row">
-            <div><span class="orville-legend__dot" style="background:#27865B"></span> Studio</div>
+            <div><span class="orville-legend__dot" style="background:#14B8A6"></span> Studio</div>
             <span class="orville-legend__val">456</span>
           </div>
         </div>
@@ -513,9 +518,9 @@
           [dataLabels]="workOrderRequestsOptions.dataLabels" [legend]="workOrderRequestsOptions.legend"></apx-chart>
       </div>
       <div class="orville-chip-legend">
-        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Open</span>
-        <span><i class="orville-chip-legend__dot" style="background:#27865B"></i>Closed</span>
-        <span><i class="orville-chip-legend__dot" style="background:#D08A28"></i>Other</span>
+        <span><i class="orville-chip-legend__dot" style="background:#5347CE"></i>Open</span>
+        <span><i class="orville-chip-legend__dot" style="background:#16CBC7"></i>Closed</span>
+        <span><i class="orville-chip-legend__dot" style="background:#FACC15"></i>Other</span>
       </div>
     </article>
 
@@ -533,8 +538,8 @@
           [dataLabels]="workOrderStatusOptions.dataLabels" [legend]="workOrderStatusOptions.legend"></apx-chart>
       </div>
       <div class="orville-chip-legend">
-        <span><i class="orville-chip-legend__dot" style="background:#3E6FA8"></i>New</span>
-        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Resolved</span>
+        <span><i class="orville-chip-legend__dot" style="background:#1E40AF"></i>New</span>
+        <span><i class="orville-chip-legend__dot" style="background:#2563EB"></i>Resolved</span>
       </div>
     </article>
 
@@ -552,18 +557,18 @@
           [dataLabels]="workOrderDistOptions.dataLabels" [legend]="workOrderDistOptions.legend"></apx-chart>
       </div>
       <div class="orville-chip-legend orville-chip-legend--grid">
-        <span><i class="orville-chip-legend__dot" style="background:#3E6FA8"></i>Electrical</span>
-        <span><i class="orville-chip-legend__dot" style="background:#6B8FBF"></i>Doors &amp; Locks</span>
-        <span><i class="orville-chip-legend__dot" style="background:#9BB3D1"></i>Plumbing</span>
-        <span><i class="orville-chip-legend__dot" style="background:#D08A28"></i>Air Conditioner</span>
-        <span><i class="orville-chip-legend__dot" style="background:#26264F"></i>Cleaning Issues</span>
-        <span><i class="orville-chip-legend__dot" style="background:#27865B"></i>Joinery</span>
+        <span><i class="orville-chip-legend__dot" style="background:#1E40AF"></i>Electrical</span>
+        <span><i class="orville-chip-legend__dot" style="background:#2563EB"></i>Doors &amp; Locks</span>
+        <span><i class="orville-chip-legend__dot" style="background:#887CFD"></i>Plumbing</span>
+        <span><i class="orville-chip-legend__dot" style="background:#FACC15"></i>Air Conditioner</span>
+        <span><i class="orville-chip-legend__dot" style="background:#5347CE"></i>Cleaning Issues</span>
+        <span><i class="orville-chip-legend__dot" style="background:#16CBC7"></i>Joinery</span>
       </div>
     </article>
   </div>
 
   <div class="orville-insights__row orville-insights__row--3">
-    <article class="orville-insights-card orville-insights-card--flush">
+    <article class="orville-insights-card orville-insights-card--flush orville-wo-metric">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Work Order Resolve Rate</h4>
@@ -574,16 +579,27 @@
         <div class="orville-landlords-sum__val">85</div>
         <div class="orville-landlords-sum__sub">Total work orders · Past 7 days</div>
       </div>
-      <div class="orville-wo-bar">
-        <apx-chart [series]="woResolveRateOptions.series" [chart]="woResolveRateOptions.chart"
-          [colors]="woResolveRateOptions.colors" [plotOptions]="woResolveRateOptions.plotOptions"
-          [dataLabels]="woResolveRateOptions.dataLabels" [legend]="woResolveRateOptions.legend"
-          [grid]="woResolveRateOptions.grid" [xaxis]="woResolveRateOptions.xaxis"
-          [yaxis]="woResolveRateOptions.yaxis"></apx-chart>
+      <div class="orville-pill-chart orville-pill-chart--resolve">
+        <div class="orville-pill-chart__yaxis" aria-hidden="true">
+          <span *ngFor="let tick of woResolveRateTicks">{{ tick }}</span>
+        </div>
+        <div class="orville-pill-chart__plot">
+          <div class="orville-pill-chart__grid" aria-hidden="true">
+            <i *ngFor="let tick of woResolveRateTicks"></i>
+          </div>
+          <div class="orville-pill-chart__cols">
+            <div class="orville-pill-chart__col" *ngFor="let bar of woResolveRateBars">
+              <div class="orville-pill-chart__track orville-pill-chart__track--thin">
+                <span class="orville-pill-chart__fill orville-pill-chart__fill--blue"
+                  [style.height.%]="(bar.value / woResolveRateMax) * 100"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </article>
 
-    <article class="orville-insights-card">
+    <article class="orville-insights-card orville-po-card">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Purchase Order Highlights</h4>
@@ -610,7 +626,7 @@
       </div>
     </article>
 
-    <article class="orville-insights-card orville-insights-card--flush">
+    <article class="orville-insights-card orville-insights-card--flush orville-wo-metric">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Unit Health Monitor</h4>
@@ -621,12 +637,16 @@
         <div class="orville-landlords-sum__val">85</div>
         <div class="orville-landlords-sum__sub">Total work orders · Past 7 days</div>
       </div>
-      <div class="orville-wo-bar">
-        <apx-chart [series]="unitHealthOptions.series" [chart]="unitHealthOptions.chart"
-          [colors]="unitHealthOptions.colors" [plotOptions]="unitHealthOptions.plotOptions"
-          [dataLabels]="unitHealthOptions.dataLabels" [legend]="unitHealthOptions.legend"
-          [grid]="unitHealthOptions.grid" [xaxis]="unitHealthOptions.xaxis"
-          [yaxis]="unitHealthOptions.yaxis"></apx-chart>
+      <div class="orville-pill-chart orville-pill-chart--units">
+        <div class="orville-pill-chart__cols">
+          <div class="orville-pill-chart__col" *ngFor="let bar of unitHealthBars">
+            <div class="orville-pill-chart__track orville-pill-chart__track--wide">
+              <span class="orville-pill-chart__fill orville-pill-chart__fill--primary"
+                [style.height.%]="bar.value"></span>
+            </div>
+            <span class="orville-pill-chart__label">{{ bar.label }}</span>
+          </div>
+        </div>
       </div>
     </article>
   </div>
@@ -642,47 +662,57 @@
       <div class="orville-priority__dist">
         <div class="orville-priority__kicker">
           <h5 class="orville-priority__h">Distribution</h5>
-          <p class="orville-insights-card__sub">Month-wise stacked count breakdown.</p>
+          <p class="orville-priority__sub">Month-wise stacked count breakdown.</p>
         </div>
-        <apx-chart [series]="woPriorityOptions.series" [chart]="woPriorityOptions.chart"
-          [colors]="woPriorityOptions.colors" [plotOptions]="woPriorityOptions.plotOptions"
-          [dataLabels]="woPriorityOptions.dataLabels" [legend]="woPriorityOptions.legend"
-          [grid]="woPriorityOptions.grid" [xaxis]="woPriorityOptions.xaxis"
-          [yaxis]="woPriorityOptions.yaxis"></apx-chart>
+        <div class="orville-priority__chart">
+          <apx-chart [series]="woPriorityOptions.series" [chart]="woPriorityOptions.chart"
+            [colors]="woPriorityOptions.colors" [plotOptions]="woPriorityOptions.plotOptions"
+            [dataLabels]="woPriorityOptions.dataLabels" [legend]="woPriorityOptions.legend"
+            [grid]="woPriorityOptions.grid" [xaxis]="woPriorityOptions.xaxis"
+            [yaxis]="woPriorityOptions.yaxis"></apx-chart>
+        </div>
       </div>
       <div class="orville-priority__report">
         <div class="orville-priority__kicker">
           <h5 class="orville-priority__h">Report</h5>
-          <p class="orville-insights-card__sub">Current mix — 40.8% of total</p>
+          <p class="orville-priority__sub">Current mix — 40.8% of total</p>
         </div>
         <div class="orville-priority__tiles">
           <div class="orville-priority__tile">
-            <div>
-              <div class="orville-priority__tile-label">Low</div>
+            <div class="orville-priority__tile-text">
+              <span class="orville-priority__badge">Low</span>
               <div class="orville-priority__tile-val">15.4%</div>
             </div>
-            <span class="orville-priority__icon"><i class="ri-arrow-down-line"></i></span>
+            <span class="orville-priority__icon orville-priority__icon--low" aria-hidden="true">
+              <img src="assets/images/insights/priority-arrow-down.svg" alt="" width="24" height="24" />
+            </span>
           </div>
           <div class="orville-priority__tile">
-            <div>
-              <div class="orville-priority__tile-label">Medium</div>
+            <div class="orville-priority__tile-text">
+              <span class="orville-priority__badge">Medium</span>
               <div class="orville-priority__tile-val">3.2%</div>
             </div>
-            <span class="orville-priority__icon"><i class="ri-subtract-line"></i></span>
+            <span class="orville-priority__icon orville-priority__icon--medium" aria-hidden="true">
+              <img src="assets/images/insights/priority-equal.svg" alt="" width="24" height="24" />
+            </span>
           </div>
           <div class="orville-priority__tile">
-            <div>
-              <div class="orville-priority__tile-label">High</div>
+            <div class="orville-priority__tile-text">
+              <span class="orville-priority__badge">High</span>
               <div class="orville-priority__tile-val">22.2%</div>
             </div>
-            <span class="orville-priority__icon"><i class="ri-arrow-up-line"></i></span>
+            <span class="orville-priority__icon orville-priority__icon--high" aria-hidden="true">
+              <img src="assets/images/insights/priority-arrow-up.svg" alt="" width="24" height="24" />
+            </span>
           </div>
           <div class="orville-priority__tile">
-            <div>
-              <div class="orville-priority__tile-label">Critical</div>
+            <div class="orville-priority__tile-text">
+              <span class="orville-priority__badge">Critical</span>
               <div class="orville-priority__tile-val">0%</div>
             </div>
-            <span class="orville-priority__icon"><i class="ri-error-warning-line"></i></span>
+            <span class="orville-priority__icon orville-priority__icon--critical" aria-hidden="true">
+              <img src="assets/images/insights/priority-alert.svg" alt="" width="24" height="24" />
+            </span>
           </div>
         </div>
       </div>
@@ -690,7 +720,7 @@
   </article>
 
   <div class="orville-insights__row orville-insights__row--2">
-    <article class="orville-insights-card orville-insights-card--flush">
+    <article class="orville-insights-card orville-dept-card">
       <div class="orville-insights-card__head">
         <h4 class="orville-insights-card__title">Department Ticket Assignments</h4>
       </div>
@@ -713,8 +743,8 @@
             <span class="orville-dept__dot" [style.background]="g.color"></span>
             <div class="orville-dept__meta">
               <div class="orville-dept__row-top">
-                <span>{{ g.label }}</span>
-                <span>{{ g.meta }}</span>
+                <span class="orville-dept__name">{{ g.label }}</span>
+                <span class="orville-dept__meta-val">{{ g.meta }}</span>
               </div>
               <div class="orville-dept__track">
                 <span class="orville-dept__fill" [style.width]="g.width" [style.background]="g.color"></span>
@@ -725,7 +755,7 @@
       </div>
     </article>
 
-    <article class="orville-insights-card">
+    <article class="orville-insights-card orville-status-card">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Status Wise Tickets Graph</h4>
@@ -746,18 +776,22 @@
         </div>
         <div class="orville-status__tiles">
           <div class="orville-status__tile">
-            <div>
-              <div class="orville-status__tile-label">open</div>
+            <div class="orville-status__tile-text">
+              <span class="orville-status__badge">open</span>
               <div class="orville-status__tile-val">60%</div>
             </div>
-            <span class="orville-contact-tile__icon"><i class="ri-flag-2-fill"></i></span>
+            <span class="orville-status__icon" aria-hidden="true">
+              <img src="assets/images/insights/pennant.svg" alt="" width="24" height="24" />
+            </span>
           </div>
           <div class="orville-status__tile">
-            <div>
-              <div class="orville-status__tile-label">closed</div>
+            <div class="orville-status__tile-text">
+              <span class="orville-status__badge">closed</span>
               <div class="orville-status__tile-val">37.1%</div>
             </div>
-            <span class="orville-contact-tile__icon"><i class="ri-flag-off-fill"></i></span>
+            <span class="orville-status__icon" aria-hidden="true">
+              <img src="assets/images/insights/pennant-off.svg" alt="" width="24" height="24" />
+            </span>
           </div>
         </div>
       </div>
@@ -765,7 +799,7 @@
   </div>
 
   <div class="orville-insights__row orville-insights__row--3">
-    <article class="orville-insights-card orville-insights-card--flush">
+    <article class="orville-insights-card orville-insights-card--flush orville-wo-metric">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">New Tickets</h4>
@@ -776,16 +810,27 @@
         <div class="orville-landlords-sum__val">215</div>
         <div class="orville-landlords-sum__sub">Total new tickets · Past 7 days</div>
       </div>
-      <div class="orville-axis-chart">
-        <apx-chart [series]="newTicketsOptions.series" [chart]="newTicketsOptions.chart"
-          [colors]="newTicketsOptions.colors" [plotOptions]="newTicketsOptions.plotOptions"
-          [dataLabels]="newTicketsOptions.dataLabels" [legend]="newTicketsOptions.legend"
-          [grid]="newTicketsOptions.grid" [xaxis]="newTicketsOptions.xaxis"
-          [yaxis]="newTicketsOptions.yaxis"></apx-chart>
+      <div class="orville-pill-chart orville-pill-chart--resolve">
+        <div class="orville-pill-chart__yaxis" aria-hidden="true">
+          <span *ngFor="let tick of newTicketsTicks">{{ tick }}</span>
+        </div>
+        <div class="orville-pill-chart__plot">
+          <div class="orville-pill-chart__grid" aria-hidden="true">
+            <i *ngFor="let tick of newTicketsTicks"></i>
+          </div>
+          <div class="orville-pill-chart__cols">
+            <div class="orville-pill-chart__col" *ngFor="let bar of newTicketsBars">
+              <div class="orville-pill-chart__track orville-pill-chart__track--thin">
+                <span class="orville-pill-chart__fill orville-pill-chart__fill--blue"
+                  [style.height.%]="(bar.value / newTicketsMax) * 100"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </article>
 
-    <article class="orville-insights-card orville-insights-card--flush flex flex-col">
+    <article class="orville-insights-card orville-insights-card--flush orville-src-card">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Ticket Sources</h4>
@@ -800,44 +845,41 @@
             [stroke]="ticketSourcesOptions.stroke"></apx-chart>
         </div>
         <div class="orville-src__legend">
-          <div class="orville-src__pill">
-            <span class="orville-legend__dot" style="background:#26264F"></span>
-            <div>
-              <div class="orville-src__name">Manual</div>
-              <div class="orville-src__count">1,209 tickets</div>
-            </div>
-          </div>
-          <div class="orville-src__pill">
-            <span class="orville-legend__dot" style="background:#3E6FA8"></span>
-            <div>
-              <div class="orville-src__name">Email</div>
-              <div class="orville-src__count">367 tickets</div>
-            </div>
-          </div>
-          <div class="orville-src__pill">
-            <span class="orville-legend__dot" style="background:#9BB3D1"></span>
-            <div>
-              <div class="orville-src__name">Contact form</div>
-              <div class="orville-src__count">4 tickets</div>
+          <div class="orville-src__pill" *ngFor="let item of ticketSourceLegend">
+            <img class="orville-src__dot" [src]="item.icon" [alt]="''" width="12" height="12" />
+            <div class="orville-src__pill-text">
+              <span class="orville-src__badge">{{ item.label }}</span>
+              <div class="orville-src__count">{{ item.count }}</div>
             </div>
           </div>
         </div>
       </div>
     </article>
 
-    <article class="orville-insights-card orville-insights-card--flush">
+    <article class="orville-insights-card orville-insights-card--flush orville-wo-metric">
       <div class="orville-insights-card__head">
         <div>
           <h4 class="orville-insights-card__title">Units Published By Month</h4>
           <p class="orville-insights-card__sub">Newly published units by month with count hover details.</p>
         </div>
       </div>
-      <div class="orville-axis-chart">
-        <apx-chart [series]="unitsPublishedOptions.series" [chart]="unitsPublishedOptions.chart"
-          [colors]="unitsPublishedOptions.colors" [plotOptions]="unitsPublishedOptions.plotOptions"
-          [dataLabels]="unitsPublishedOptions.dataLabels" [legend]="unitsPublishedOptions.legend"
-          [grid]="unitsPublishedOptions.grid" [xaxis]="unitsPublishedOptions.xaxis"
-          [yaxis]="unitsPublishedOptions.yaxis"></apx-chart>
+      <div class="orville-pill-chart orville-pill-chart--units-pub">
+        <div class="orville-pill-chart__yaxis" aria-hidden="true">
+          <span *ngFor="let tick of unitsPublishedTicks">{{ tick }}</span>
+        </div>
+        <div class="orville-pill-chart__plot">
+          <div class="orville-pill-chart__grid" aria-hidden="true">
+            <i *ngFor="let tick of unitsPublishedTicks"></i>
+          </div>
+          <div class="orville-pill-chart__cols">
+            <div class="orville-pill-chart__col" *ngFor="let bar of unitsPublishedBars">
+              <div class="orville-pill-chart__track orville-pill-chart__track--thin">
+                <span class="orville-pill-chart__fill orville-pill-chart__fill--purple"
+                  [style.height.%]="(bar.value / unitsPublishedMax) * 100"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </article>
   </div>
