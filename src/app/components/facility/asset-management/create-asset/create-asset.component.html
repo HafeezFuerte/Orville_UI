@@ -1,291 +1,289 @@
-<!-- Create Asset Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
-    </button>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ editId ? 'Edit Asset' : 'New Asset' }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Facility</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Assets</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ editId ? 'Edit Asset' : 'Create New Asset' }}</li>
-      </ol>
+<!-- New / Edit Asset — Figma 2218:64523 -->
+<div class="ov-form ov-add-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Assets">
+        <i class="ri-arrow-left-line text-[24px]"></i>
+      </button>
+      <div>
+        <h3 class="ov-page-title">{{ editId ? 'Edit Asset' : 'New Asset' }}</h3>
+        <p class="ov-page-sub">
+          Facility / Asset /
+          <span class="ov-page-sub__current">{{ editId ? 'Edit Asset' : 'New Asset' }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveAsset()">
+        {{ editId ? 'Save Asset' : 'Create Asset' }}
+      </button>
     </div>
   </div>
-</div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-2 pb-16">
-  
-  <!-- Left Side: Main Form -->
-  <div class="xl:col-span-8">
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0 p-8 flex flex-col gap-8">
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main flex flex-col gap-4">
 
-      <!-- Asset Information -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Asset Information</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Primary details of the asset.</p>
-
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Asset Name <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="assetName" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Model <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="assetModel" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Asset Information</h6>
+          <p class="ov-card-sub">Primary details of the asset.</p>
         </div>
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Asset category <span class="text-danger">*</span></label>
-            <ng-select #catSelect [items]="assetCategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssetCategory" (change)="onCategoryChange()" placeholder="Select" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Asset subcategory</label>
-            <ng-select #subcatSelect [items]="assetSubcategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssetSubcategory" placeholder="Select" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="subcatSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Common Area <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="commonAreaLeft" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Brand / Manufacturer</label>
-            <input type="text" [(ngModel)]="brandManufacturer" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Capacity</label>
-            <input type="text" [(ngModel)]="capacity" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Units</label>
-            <input type="text" [(ngModel)]="selectedUnit" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-        </div>
-        <div class="grid grid-cols-1 gap-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Location <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="location" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Asset Name <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="assetName" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Model <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="assetModel" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Asset category <span class="text-danger">*</span></label>
+              <ng-select #catSelect [items]="assetCategories" bindLabel="name" bindValue="id"
+                [(ngModel)]="selectedAssetCategory" (change)="onCategoryChange()" placeholder="Select"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Asset subcategory</label>
+              <ng-select #subcatSelect [items]="assetSubcategories" bindLabel="name" bindValue="id"
+                [(ngModel)]="selectedAssetSubcategory" placeholder="Select" class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="subcatSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Common Area <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="commonAreaLeft" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Brand / Manufacturer</label>
+              <input type="text" [(ngModel)]="brandManufacturer" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Capacity</label>
+              <input type="text" [(ngModel)]="capacity" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Units</label>
+              <input type="text" [(ngModel)]="selectedUnit" placeholder="Enter" class="ov-input" />
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Location <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="location" placeholder="Enter" class="ov-input" />
+            </div>
           </div>
         </div>
       </div>
 
-      <hr class="border-gray-100 m-0">
-
-      <!-- Property Information -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property Information</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Link asset with your portfolio items.</p>
-
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Property</label>
-            <ng-select #propSelect [items]="properties" bindLabel="name" bindValue="code" [(ngModel)]="selectedProperty" (change)="onPropertyChange()" placeholder="Select Property" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Unit</label>
-            <ng-select #unitSelect [items]="propertyUnits" bindLabel="name" bindValue="code" [(ngModel)]="selectedPropertyUnit" placeholder="Select Unit" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Property Information</h6>
+          <p class="ov-card-sub">Link asset with your portfolio items.</p>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Common Area</label>
-            <ng-select #caSelect [items]="commonAreas" [(ngModel)]="selectedCommonAreaRight" placeholder="Select" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="caSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-        </div>
-      </div>
-
-      <hr class="border-gray-100 m-0">
-
-      <!-- Description -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Description</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Provide additional notes or specifications.</p>
-        <textarea [(ngModel)]="description" rows="4" placeholder="Enter Description..." class="w-full px-3 py-2.5 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none"></textarea>
-      </div>
-
-      <hr class="border-gray-100 m-0">
-
-      <!-- Purchase Details -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Purchase Details</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Financial and warranty details.</p>
-
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Price <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="price" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Maintenance Subcategory</label>
-            <ng-select #maintSubcatSelect [items]="maintenanceSubcategories" bindLabel="name" bindValue="id" [(ngModel)]="selectedMaintenanceSubcategory" placeholder="Select Unit" class="ng-select-sm">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="maintSubcatSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="relative">
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Expiry Date</label>
-            <i class="ri-calendar-line absolute right-3 top-[28px] text-gray-400 pointer-events-none"></i>
-            <input type="text" [(ngModel)]="expiryDate" placeholder="MM/DD/YYYY" class="w-full pl-3 pr-8 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Total Warranty</label>
-            <input type="text" [(ngModel)]="totalWarranty" placeholder="Enter" class="form-control w-full !rounded-md text-xs py-2" />
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Property</label>
+              <ng-select #propSelect [items]="properties" bindLabel="name" bindValue="code"
+                [(ngModel)]="selectedProperty" (change)="onPropertyChange()" placeholder="Select Property"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Unit</label>
+              <ng-select #unitSelect [items]="propertyUnits" bindLabel="name" bindValue="code"
+                [(ngModel)]="selectedPropertyUnit" placeholder="Select Unit" class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Common Area</label>
+              <ng-select #caSelect [items]="commonAreas" [(ngModel)]="selectedCommonAreaRight" placeholder="Select"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="caSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
           </div>
         </div>
       </div>
 
-      <hr class="border-gray-100 m-0">
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Description</h6>
+          <p class="ov-card-sub">Provide additional notes or specifications.</p>
+        </div>
+        <div class="ov-card__body">
+          <textarea [(ngModel)]="description" rows="4" placeholder="Enter Description..."
+            class="ov-input !h-auto min-h-[100px] resize-none"></textarea>
+        </div>
+      </div>
 
-      <!-- Attachments -->
-      <div>
-        <div class="flex items-center justify-between mb-5">
-          <div>
-            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Attachments</h6>
-            <p class="text-[11px] text-gray-400 mt-1 mb-0">Upload documents or images associated with this asset.</p>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Purchase Details</h6>
+          <p class="ov-card-sub">Financial and warranty details.</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Price <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="price" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Maintenance Subcategory</label>
+              <ng-select #maintSubcatSelect [items]="maintenanceSubcategories" bindLabel="name" bindValue="id"
+                [(ngModel)]="selectedMaintenanceSubcategory" placeholder="Select" class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="maintSubcatSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Expiry Date</label>
+              <input type="text" [(ngModel)]="expiryDate" placeholder="MM/DD/YYYY" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Total Warranty</label>
+              <input type="text" [(ngModel)]="totalWarranty" placeholder="Enter" class="ov-input" />
+            </div>
           </div>
-          <button class="px-3 py-1.5 text-[10px] font-semibold rounded bg-[#c59e5e] text-white hover:bg-[#b08b50] transition-colors border-0 flex items-center gap-1" (click)="attachmentInput.click()">
-            <i class="ri-add-line"></i> Add Attachment
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h6 class="ov-card-title">Attachments</h6>
+            <p class="ov-card-sub">Upload documents or images associated with this asset.</p>
+          </div>
+          <button type="button" class="asset-gold-btn" (click)="attachmentInput.click()">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="14" height="14" class="asset-ico asset-ico--on-gold" />
+            Add Attachment
           </button>
           <input #attachmentInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
         </div>
-
-        <div class="border border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors mb-4" (click)="attachmentInput.click()">
-          <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
-            <i class="ri-file-3-line text-gray-400 text-lg"></i>
-          </div>
-          <p class="text-xs font-bold text-gray-800 mb-1">Add file</p>
-          <p class="text-[10px] text-gray-400 mb-3">Drag and drop or browse</p>
-          <button class="px-4 py-1.5 text-[11px] font-semibold rounded bg-[#c59e5e] text-white hover:bg-[#b08b50] transition-colors border-0">Upload</button>
-        </div>
-
-        <!-- File List -->
-        <div *ngIf="attachments.length > 0" class="flex flex-col gap-2">
-          <div *ngFor="let file of attachments; let i = index" class="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
-            <div class="flex items-center gap-3">
-              <i class="ri-file-pdf-line text-xl text-gray-400"></i>
-              <div>
-                <p class="text-xs font-bold text-gray-800 m-0">{{ file.name }}</p>
-                <p class="text-[10px] text-gray-400 m-0">{{ file.size }} • <span class="text-primary cursor-pointer hover:underline">Download</span></p>
-              </div>
+        <div class="ov-card__body">
+          <div class="asset-dropzone" (click)="attachmentInput.click()">
+            <div class="asset-dropzone__icon">
+              <i class="ri-file-3-line text-[20px] text-textmuted"></i>
             </div>
-            <button class="text-[10px] font-semibold text-gray-500 hover:text-danger bg-transparent border-0 transition-colors" (click)="removeFile(i)">View</button>
+            <p class="m-0 text-[14px] font-semibold text-defaulttextcolor">Add file</p>
+            <p class="m-0 text-[12px] text-textmuted">Drag and drop here or browse</p>
+            <button type="button" class="asset-gold-btn mt-2" (click)="$event.stopPropagation(); attachmentInput.click()">Upload</button>
+          </div>
+
+          <div *ngIf="attachments.length > 0" class="flex flex-col gap-2 mt-4">
+            <div *ngFor="let file of attachments; let i = index" class="asset-file-row">
+              <div class="flex items-center gap-3 min-w-0">
+                <i class="ri-file-pdf-line text-[20px] text-textmuted"></i>
+                <div class="min-w-0">
+                  <p class="m-0 text-[13px] font-semibold text-defaulttextcolor truncate">{{ file.name }}</p>
+                  <p class="m-0 text-[11px] text-textmuted">{{ file.size }}</p>
+                </div>
+              </div>
+              <button type="button" class="ov-btn ov-btn-ghost !h-8 !text-[12px]" (click)="removeFile(i)">View</button>
+            </div>
           </div>
         </div>
       </div>
 
+      <div class="flex flex-wrap items-center justify-end gap-3 pt-2 pb-6">
+        <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveAsset()">
+          {{ editId ? 'Save Asset' : 'Create Asset' }}
+        </button>
+      </div>
     </div>
+
+    <aside class="ov-add-layout__aside flex flex-col gap-4">
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Barcode Details</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="asset-seg">
+            <button type="button" class="asset-seg__btn" [class.is-on]="barcodeType === 'Custom'"
+              (click)="barcodeType = 'Custom'">Custom</button>
+            <button type="button" class="asset-seg__btn" [class.is-on]="barcodeType === 'Auto'"
+              (click)="barcodeType = 'Auto'">Auto Generated</button>
+          </div>
+          <input type="text" [(ngModel)]="barcodeValue" placeholder="Enter" class="ov-input"
+            [disabled]="barcodeType === 'Auto'" />
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Add Parts to your inventory Asset</h6>
+        </div>
+        <div class="ov-card__body">
+          <p class="ov-kv-empty m-0 text-center py-4">No parts added yet</p>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Assignment</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div>
+            <label class="ov-label">Assign To Worker</label>
+            <ng-select #workerSelect [items]="assignWorkers" bindLabel="name" bindValue="id"
+              [(ngModel)]="selectedAssignWorker" placeholder="Select" class="ov-select w-full">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-defaultborder">
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                    (input)="workerSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Assign To Vendor</label>
+            <ng-select #vendorSelect [items]="assignVendors" bindLabel="name" bindValue="id"
+              [(ngModel)]="selectedAssignVendor" placeholder="Select" class="ov-select w-full">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-defaultborder">
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                    (input)="vendorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
-
-  <!-- Right Side: Barcode Details & Assignment -->
-  <div class="xl:col-span-4 flex flex-col gap-2">
-
-    <!-- Barcode Details -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Barcode Details</h6>
-      </div>
-      <div class="box-body p-4 flex flex-col gap-4">
-        <div class="flex bg-gray-100 p-1 rounded-lg">
-          <button class="flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all border-0" 
-            [ngClass]="barcodeType === 'Custom' ? 'bg-[#1f2b45] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-200 bg-transparent'" 
-            (click)="barcodeType = 'Custom'">Custom</button>
-          <button class="flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all border-0" 
-            [ngClass]="barcodeType === 'Auto' ? 'bg-[#1f2b45] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-200 bg-transparent'" 
-            (click)="barcodeType = 'Auto'">Auto Generated</button>
-        </div>
-        <input type="text" [(ngModel)]="barcodeValue" placeholder="Enter" class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all" [disabled]="barcodeType === 'Auto'" />
-      </div>
-    </div>
-
-    <!-- Add Parts -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Add Parts to your inventory Asset</h6>
-      </div>
-      <div class="box-body p-4">
-        <p class="text-[11px] text-gray-400 m-0 text-center py-4">No parts added yet</p>
-      </div>
-    </div>
-
-    <!-- Assignment -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assignment</h6>
-      </div>
-      <div class="box-body p-4 flex flex-col gap-4">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Assign To Worker</label>
-          <ng-select #workerSelect [items]="assignWorkers" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssignWorker" placeholder="Select" class="ng-select-sm">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="workerSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Assign To Vendor</label>
-          <ng-select #vendorSelect [items]="assignVendors" bindLabel="name" bindValue="id" [(ngModel)]="selectedAssignVendor" placeholder="Select" class="ng-select-sm">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="vendorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-<!-- Floating actions footer -->
-<div class="fixed bottom-5 right-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl">
-  <button type="button" (click)="goBack()" class="px-6 py-2 text-xs font-semibold rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
-  <button type="button" (click)="saveAsset()" class="px-6 py-2 text-xs font-semibold rounded-full bg-primary hover:bg-primary-hover text-white transition-all shadow-md active:scale-95">{{ editId ? 'Save Asset' : 'Create Asset' }}</button>
 </div>

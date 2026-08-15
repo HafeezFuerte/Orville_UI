@@ -735,40 +735,60 @@
   position: relative;
   overflow: hidden;
   margin: 0;
-  padding: 24px 25px;
+  padding: 24px 25px 28px;
+  min-height: 243px;
   border-radius: 16px;
   color: #fff;
-  background: rgb(var(--primary));
+  /* Figma 796:3838 — decorative meter chrome (navy → blue), not switcher primary fill */
+  background:
+    radial-gradient(
+      140% 200% at 55% 42%,
+      #3b82f6 0%,
+      #366bcc 22%,
+      #3154a3 48%,
+      #2b3d79 74%,
+      #26264f 100%
+    );
 }
 
 .orville-happiness__blob {
   position: absolute;
-  border-radius: 999px;
   pointer-events: none;
+  display: block;
+  max-width: none;
 }
 
 .orville-happiness__blob--a {
-  right: -20px;
-  bottom: -70px;
+  right: -4%;
+  bottom: -28%;
   width: 154px;
   height: 154px;
-  background: rgba(39, 134, 91, 0.35);
+  mix-blend-mode: hard-light;
 }
 
 .orville-happiness__blob--b {
-  right: -80px;
-  bottom: 20px;
+  right: -6%;
+  bottom: -8%;
   width: 154px;
   height: 154px;
-  background: rgba(208, 138, 40, 0.28);
+  mix-blend-mode: hard-light;
 }
 
 .orville-happiness__blob--c {
-  right: -180px;
-  top: -120px;
+  right: -12%;
+  top: -55%;
   width: 260px;
   height: 260px;
-  background: rgba(62, 111, 168, 0.28);
+  mix-blend-mode: soft-light;
+  transform: rotate(105deg);
+}
+
+.orville-happiness__blob--d {
+  right: 1%;
+  bottom: -6%;
+  width: 67px;
+  height: 67px;
+  mix-blend-mode: hard-light;
 }
 
 .orville-happiness__head {
@@ -785,8 +805,10 @@
 .orville-happiness__title {
   margin: 0;
   font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.32px;
+  font-weight: 600;
+  letter-spacing: 0.48px;
+  line-height: normal;
+  color: #fff;
 }
 
 .orville-happiness__meta {
@@ -794,11 +816,16 @@
   align-items: center;
   gap: 10px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.32px;
+  color: #fff;
 }
 
-.orville-happiness__meta i {
-  font-size: 24px;
+.orville-happiness__meta-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .orville-happiness__face {
@@ -813,12 +840,16 @@
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 35px;
+  gap: 16px;
+  width: 100%;
+  max-width: 1303px;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   .orville-happiness__grid {
     grid-template-columns: 1fr 1fr 1fr;
+    gap: 35px;
   }
 }
 
@@ -826,34 +857,67 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   min-height: 97px;
   padding: 10px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 8px;
-  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 16px;
+  background: rgba(55, 113, 216, 0.22);
+}
+
+.orville-happiness__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
 }
 
 .orville-happiness__label {
   font-size: 14px;
-  font-weight: 500;
-  opacity: 0.9;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+  color: #fff;
 }
 
 .orville-happiness__pct {
-  margin-top: 4px;
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: 0.32px;
+  letter-spacing: 0.48px;
+  line-height: normal;
+  color: #fff;
 }
 
 .orville-happiness__chip {
   display: inline-flex;
-  margin-top: 8px;
-  padding: 2px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  margin-top: 0;
+  padding: 2px 6px;
+  border-radius: 25px;
+  border: 1px solid rgba(159, 185, 255, 0.3);
+  background: #2e4c9c;
   font-size: 12px;
   font-weight: 500;
+  letter-spacing: 0.24px;
+  color: #eeeef5;
+  white-space: nowrap;
+}
+
+.orville-happiness__chip--happy {
+  background: #2e4c9c;
+  border-color: rgba(159, 185, 255, 0.3);
+}
+
+.orville-happiness__chip--neutral {
+  background: #4281ee;
+  border-color: rgba(142, 183, 255, 0.3);
+}
+
+.orville-happiness__chip--unhappy {
+  background: #3654a4;
+  border-color: rgba(159, 187, 255, 0.3);
 }
 
 .orville-wo-donut {
@@ -1509,7 +1573,10 @@ apx-chart {
 }
 
 .orville-axis-chart--rent {
-  padding: 8px 24px 0;
+  width: 100%;
+  max-width: 1281px;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .orville-src {
@@ -1574,13 +1641,39 @@ apx-chart {
   color: rgb(var(--text-muted));
 }
 
+.orville-unit-stats__sub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  color: rgb(var(--text-muted));
+}
+
 .orville-unit-body {
-  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 20px 0;
+}
+
+.orville-unit-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .orville-unit-row {
+    grid-template-columns: minmax(0, 513fr) minmax(0, 1038fr);
+  }
 }
 
 .orville-unit-panel {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   padding: 20px;
   border: 1px solid rgb(var(--default-border));
   border-radius: 16px;
@@ -1588,21 +1681,169 @@ apx-chart {
   min-width: 0;
 }
 
+.orville-unit-panel--chart {
+  align-items: center;
+  background: rgb(var(--default-background));
+}
+
 .orville-unit-panel--flush {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   padding: 0;
   overflow: hidden;
+  background: var(--ins-card);
+}
+
+/* Equal-height panels only inside Unit Stats rows */
+.orville-unit-row > .orville-unit-panel--flush {
+  height: 100%;
+}
+
+.orville-unit-panel__head {
+  width: 100%;
+}
+
+.orville-unit-panel__head .orville-insights-card__title {
+  margin: 0;
+}
+
+.orville-unit-panel__sub {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: normal;
+  color: rgb(var(--text-muted));
 }
 
 .orville-unit-panel__title {
   margin: 0;
+  display: flex;
+  align-items: center;
+  min-height: 60px;
   padding: 20px;
+  border-bottom: 1px solid rgb(var(--default-border));
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.32px;
+  color: rgb(var(--default-text-color));
+}
+
+.orville-unit-stats .orville-stat {
+  align-items: center;
+  gap: 25px;
+  height: 100%;
+  padding: 20px;
+}
+
+.orville-unit-stats .orville-stat--tint {
+  background: rgb(var(--default-background));
+}
+
+.orville-unit-stats .orville-stat__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: rgb(var(--default-background));
+  color: inherit;
+  font-size: inherit;
+}
+
+.orville-unit-stats .orville-stat__icon--track {
+  background: var(--ins-track);
+}
+
+.orville-unit-stats .orville-stat__icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.orville-unit-stats .orville-stat__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.orville-unit-stats .orville-stat__label {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.14px;
+  color: rgb(var(--default-text-color));
+}
+
+.orville-unit-stats .orville-stat__value {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.2px;
+}
+
+.orville-unit-stats .orville-stat__hint {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 0.13px;
+}
+
+.orville-unit-stats .orville-stat-grid--lined {
+  flex: 1;
+  border-top: 0;
+}
+
+.orville-unit-stats .orville-stat-grid--rental .orville-stat:nth-last-child(-n + 2),
+.orville-unit-stats .orville-stat-grid--market .orville-stat:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.orville-unit-stats .orville-stat-grid--rental,
+.orville-unit-stats .orville-stat-grid--market {
+  display: grid;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .orville-unit-stats .orville-stat-grid--rental {
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+
+  .orville-unit-stats .orville-stat-grid--market {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.orville-unit-panel--flush .orville-stat-grid {
+  flex: 1;
+}
+
+.orville-chip-legend--unit {
+  gap: 19px;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.orville-chip-legend--unit .orville-chip-legend__dot {
+  width: 12px;
+  height: 12px;
+  margin-right: 0;
+}
+
+.orville-chip-legend--types {
+  gap: 16px;
 }
 
 .orville-rent {
-  padding: 8px 20px 20px;
+  padding: 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .orville-rent__kpis {
@@ -1610,7 +1851,8 @@ apx-chart {
   grid-template-columns: 1fr;
   gap: 20px;
   max-width: 1222px;
-  margin: 0 auto 28px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 @media (min-width: 992px) {
@@ -1621,34 +1863,69 @@ apx-chart {
 
 .orville-rent__kpi {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  gap: 12px;
   min-height: 112px;
   padding: 16px;
   border: 1px solid rgb(var(--default-border));
-  border-radius: 12px;
+  border-radius: 16px;
+  background: #fff;
 }
 
-.orville-rent__kpi .orville-income-tile__badge {
+.orville-rent__badge {
+  background: #f8f8fb;
   color: #3e6fa8;
 }
 
 .orville-rent__kpi-val {
-  margin-top: 8px;
+  margin-top: 4px;
   font-size: 26px;
   font-weight: 800;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.52px;
+  line-height: normal;
   color: rgb(var(--default-text-color));
 }
 
+.orville-rent__kpi-sub {
+  margin-top: 0;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.28px;
+  color: rgb(var(--text-muted));
+}
+
 .orville-rent__kpi-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 60px;
   height: 60px;
-  color: #bd9759;
-  font-size: 36px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.orville-rent__legend-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  background: #604ae3;
+  vertical-align: middle;
+}
+
+.orville-rent .orville-chip-legend {
+  gap: 12px;
+  font-weight: 600;
+}
+
+.orville-rent .orville-chip-legend__item {
+  align-items: center;
+  gap: 12px;
+  line-height: 1;
 }
 
 .orville-date-chip {
@@ -1667,18 +1944,165 @@ apx-chart {
   cursor: pointer;
 }
 
+.orville-lease-section {
+  padding: 20px;
+}
+
+.orville-lease-section__row {
+  margin: 0;
+}
+
+.orville-lease-section__stats {
+  gap: 20px;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.orville-lease-section__stats .orville-unit-panel--flush {
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.orville-lease-donut {
+  gap: 35px;
+  align-self: stretch;
+  justify-content: flex-start;
+}
+
+.orville-lease-donut__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.orville-lease-donut__head .orville-unit-panel__sub {
+  margin-top: 6px;
+}
+
+.orville-date-chip--lease {
+  height: auto;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(var(--text-muted));
+  gap: 3px;
+}
+
+.orville-lease-section .orville-stat {
+  align-items: center;
+  gap: 25px;
+  height: 100%;
+  padding: 20px;
+}
+
+.orville-lease-section .orville-stat--tint {
+  background: rgb(var(--default-background));
+}
+
+.orville-lease-section .orville-stat__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: rgb(var(--default-background));
+}
+
+.orville-lease-section .orville-stat__icon--track {
+  background: var(--ins-track);
+}
+
+.orville-lease-section .orville-stat__icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.orville-lease-section .orville-stat__icon-flip {
+  transform: rotate(180deg);
+}
+
+.orville-lease-section .orville-stat__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.orville-lease-section .orville-stat__label {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.14px;
+  color: rgb(var(--default-text-color));
+}
+
+.orville-lease-section .orville-stat__value {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.orville-lease-section .orville-stat__hint {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.13px;
+}
+
+.orville-lease-section .orville-stat-grid--lined {
+  border-top: 0;
+}
+
+.orville-lease-section .orville-stat-grid--lease-active .orville-stat:nth-last-child(-n + 2),
+.orville-lease-section .orville-stat-grid--lease-renewal .orville-stat {
+  border-bottom: 0;
+}
+
+.orville-lease-section .orville-stat-grid--lease-active {
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .orville-lease-section .orville-stat-grid--lease-active {
+    grid-template-rows: repeat(3, auto);
+  }
+
+  .orville-lease-section .orville-stat-grid--lease-renewal {
+    grid-template-rows: auto;
+  }
+}
+
 .orville-lease-legend {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px 16px;
-  padding: 8px 20px 8px;
+  gap: 16px;
+  width: 100%;
+  max-width: 355px;
+  margin: 0 auto;
+  padding: 0;
   font-size: 14px;
   font-weight: 500;
+  line-height: 20px;
+  color: rgb(var(--default-text-color));
+}
+
+.orville-lease-legend .orville-chip-legend__dot {
+  width: 12px;
+  height: 12px;
+  margin-right: 0;
 }
 
 @media (min-width: 576px) {
   .orville-lease-legend {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: max-content max-content;
+    justify-content: center;
+    column-gap: 16px;
   }
 }
 
@@ -1701,18 +2125,21 @@ apx-chart {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  padding: 12px;
+  padding: 12px 8px;
 }
 
 .orville-country__svg {
-    width: 100%;
+  display: block;
+  width: 100%;
   height: auto;
+  max-width: 864px;
   max-height: 376px;
+  object-fit: contain;
 }
 
 .orville-country__side {
   border: 1px solid rgb(var(--default-border));
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -1757,14 +2184,14 @@ apx-chart {
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--ins-track);
+  background: #f3f2f7;
 }
 
 .orville-country__fill {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: #3e6fa8;
+  background: #3b82f6;
 }
 
 .orville-country__count {

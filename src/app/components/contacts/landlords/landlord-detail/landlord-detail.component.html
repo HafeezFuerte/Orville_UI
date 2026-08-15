@@ -4,23 +4,11 @@
       <i class="ri-arrow-left-line text-[24px]"></i>
     </a>
     <div>
-      <h3 class="ov-page-title">{{ landlordData?.landlord || landlordData?.name || landlord.name || ('web.contacts.lblLandlordDetails' | translate) }}</h3>
-      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']">Home</a></li>
-        <li class="px-2">/</li>
-        <li><a routerLink="/contacts/landlords">Contacts</a></li>
-        <li class="px-2">/</li>
-        <li><a routerLink="/contacts/landlords">Landlords</a></li>
-        <li class="px-2">/</li>
-        <li class="font-semibold text-defaulttextcolor">Details</li>
-      </ol>
+      <h3 class="ov-page-title">{{ 'web.contacts.lblLandlordDetails' | translate }}</h3>
+      <p class="ov-page-sub mt-1">Contacts / Landlord / Details</p>
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <span class="ov-grid-card__status">
-      <span class="ov-grid-card__status-dot"></span>
-      Active
-    </span>
     <div class="relative">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionDropdown = !showActionDropdown"
         [attr.aria-expanded]="showActionDropdown">
@@ -186,51 +174,41 @@
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder mt-1">
             <span class="text-[13px] text-defaulttextcolor">Negative Balance Allowed</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed" class="hidden">
-              <label for="negBalance" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.negativeBalanceAllowed">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.negativeBalanceAllowed"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed">
+              <label for="negBalance" class="label-primary"></label>
             </div>
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
             <span class="text-[13px] text-defaulttextcolor">Hold Wallet Money</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney" class="hidden">
-              <label for="holdWalletMoneyToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.holdWalletMoney">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.holdWalletMoney"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney">
+              <label for="holdWalletMoneyToggle" class="label-primary"></label>
             </div>
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
             <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblIncludeSecurityDeposit' | translate }}</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeDeposit" [(ngModel)]="landlord.wallet.includeSecurityDeposit" class="hidden">
-              <label for="includeDeposit" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeSecurityDeposit">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeSecurityDeposit"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="includeDeposit" [(ngModel)]="landlord.wallet.includeSecurityDeposit">
+              <label for="includeDeposit" class="label-primary"></label>
             </div>
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
             <span class="text-[13px] text-defaulttextcolor">Include Security Deposit (Non-Leasee)</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeDepositNonLeasee" [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee" class="hidden">
-              <label for="includeDepositNonLeasee" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeSecurityDepositNonLeasee">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeSecurityDepositNonLeasee"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="includeDepositNonLeasee" [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee">
+              <label for="includeDepositNonLeasee" class="label-primary"></label>
             </div>
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
             <span class="text-[13px] text-defaulttextcolor">Include Contribution in Wallet Deposit</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="includeContributionWallet" [(ngModel)]="landlord.wallet.includeContributionWalletDeposit" class="hidden">
-              <label for="includeContributionWallet" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.wallet.includeContributionWalletDeposit">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.wallet.includeContributionWalletDeposit"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="includeContributionWallet" [(ngModel)]="landlord.wallet.includeContributionWalletDeposit">
+              <label for="includeContributionWallet" class="label-primary"></label>
             </div>
           </div>
 
@@ -282,20 +260,16 @@
         <div class="flex flex-col gap-2.5 px-5 py-4">
           <div class="flex justify-between items-center gap-3 py-1">
             <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblAutoSign' | translate }}</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="autoSignToggle" [(ngModel)]="landlord.signature.autoSign" class="hidden">
-              <label for="autoSignToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.signature.autoSign">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.signature.autoSign"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="autoSignToggle" [(ngModel)]="landlord.signature.autoSign">
+              <label for="autoSignToggle" class="label-primary"></label>
             </div>
           </div>
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder pt-2">
             <span class="text-[13px] text-defaulttextcolor">Signature Attached</span>
-            <div class="custom-toggle-switch">
-              <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached" class="hidden">
-              <label for="sigAttachedToggle" class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="landlord.signature.signatureAttached">
-                <span class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-3.5]="landlord.signature.signatureAttached"></span>
-              </label>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached">
+              <label for="sigAttachedToggle" class="label-primary"></label>
             </div>
           </div>
 
@@ -358,97 +332,104 @@
     </div>
 
     <!-- TAB: Wallet -->
-    <div *ngIf="activeTab === 'Wallet'" class="box ov-card flex flex-col gap-4 overflow-hidden p-5 animate-fade-in">
-      
-      <!-- Warning Alert -->
-      <div
-        class="flex items-center justify-between p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning-800 text-[11px] font-semibold">
-        <div class="flex items-center gap-2">
-          <i class="ri-error-warning-line text-sm"></i>
-          <span>Important: All amount are grouped first, so the user can understand the portfolio position
-            quickly.</span>
-        </div>
-        <span class="px-2 py-0.5 rounded bg-warning text-white text-[9px] font-bold uppercase">Portfolio status
-          Active</span>
-      </div>
+    <div *ngIf="activeTab === 'Wallet'" class="box ov-card flex flex-col gap-5 overflow-hidden p-5 animate-fade-in">
+      <h4 class="ov-card-title m-0">Landlord Overview</h4>
 
-      <!-- Financial Summary Main Cards (Blue gradient) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <!-- Cash Balance -->
-        <div class="rounded-xl overflow-hidden shadow-sm p-4 relative"
-          style="background: linear-gradient(135deg, #1f224f 0%, #171836 100%);">
-          <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Cash Balance</span>
-          <div class="text-lg font-black text-white mt-1">AED 46,507,891.47</div>
-          <div class="mt-4 border-t border-white/10 pt-2 flex flex-col gap-1.5 text-[9px] text-gray-400">
-            <div class="flex justify-between">
-              <span>Portfolio Total Income:</span>
-              <span class="font-bold text-white">AED 46,533,471.47</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Wallet Deposit:</span>
-              <span class="font-bold text-white">AED 46,507,891.47</span>
+      <!-- Financial Summary (Figma 1467:56820) -->
+      <section class="ov-finance-summary" aria-label="Financial Summary">
+        <div class="ov-finance-summary__head">
+          <div class="ov-finance-summary__head-text">
+            <h5 class="ov-finance-summary__title">Financial Summary</h5>
+            <p class="ov-finance-summary__sub">
+              Important values are grouped first, so the user can understand the portfolio position quickly.
+            </p>
+          </div>
+          <div class="ov-finance-summary__status" aria-label="Portfolio status Active">
+            <span class="ov-finance-summary__status-dot" aria-hidden="true"></span>
+            <div>
+              <span class="ov-finance-summary__status-label">Portfolio status</span>
+              <span class="ov-finance-summary__status-value">Active</span>
             </div>
           </div>
         </div>
 
-        <!-- Expense and Fees Grid -->
-        <div class="col-span-2 grid grid-cols-2 gap-2">
-          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
-            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblPortfolioExpense' | translate
-              }}</span>
-            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+        <div class="ov-finance-summary__body">
+          <div class="ov-finance-summary__row">
+            <article class="ov-finance-summary__cash">
+              <img class="ov-finance-summary__blob" src="assets/images/contacts/finance-blob.svg" alt="" aria-hidden="true" />
+              <div>
+                <span class="ov-finance-summary__cash-label">Cash Balance</span>
+                <p class="ov-finance-summary__cash-value">AED 46,507,891.47</p>
+              </div>
+              <div class="ov-finance-summary__cash-metrics">
+                <div class="ov-finance-summary__cash-metric">
+                  <span class="ov-finance-summary__cash-metric-label">Portfolio Total Income</span>
+                  <span class="ov-finance-summary__cash-metric-value">AED 46,533,471.47</span>
+                </div>
+                <div class="ov-finance-summary__cash-metric">
+                  <span class="ov-finance-summary__cash-metric-label">Wallet Deposit</span>
+                  <span class="ov-finance-summary__cash-metric-value">AED 46,507,891.47</span>
+                </div>
+              </div>
+            </article>
+
+            <div class="ov-finance-summary__tiles">
+              <article class="ov-finance-summary__tile">
+                <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblPortfolioExpense' | translate }}</span>
+                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+              </article>
+              <article class="ov-finance-summary__tile">
+                <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblManagementFee' | translate }}</span>
+                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+              </article>
+              <article class="ov-finance-summary__tile">
+                <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblLandlordContribution' | translate }}</span>
+                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+              </article>
+              <article class="ov-finance-summary__tile">
+                <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblLandlordDistribution' | translate }}</span>
+                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+              </article>
+            </div>
           </div>
-          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
-            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblManagementFee' | translate
-              }}</span>
-            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
-          </div>
-          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
-            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblLandlordContribution' |
-              translate }}</span>
-            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
-          </div>
-          <div class="box rounded-xl bg-white border border-gray-200 p-3 shadow-sm flex flex-col justify-between !mb-0">
-            <span class="text-[9px] text-gray-500 font-bold uppercase">{{ 'web.contacts.lblLandlordDistribution' |
-              translate }}</span>
-            <span class="text-sm font-black text-gray-800 block mt-2">AED 0.00</span>
+
+          <h6 class="ov-finance-summary__other-title">{{ 'web.contacts.lblOtherAmounts' | translate }}</h6>
+          <div class="ov-finance-summary__other">
+            <article class="ov-finance-summary__tile">
+              <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblPortfolioPerformance' | translate }}</span>
+              <span class="ov-finance-summary__tile-value">AED 46,533,471.47</span>
+            </article>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Other Amounts -->
-      <div class="bg-gray-50 rounded-lg p-3 flex justify-between items-center border border-gray-100">
-        <span class="text-xs text-gray-600 font-medium">{{ 'web.contacts.lblPortfolioPerformance' | translate
-          }}</span>
-        <span class="text-sm font-black text-gray-800">AED 46,533,471.47</span>
-      </div>
-
-      <!-- Transaction Ledger Table -->
-      <div class="flex flex-col gap-3 mt-2">
-        <div class="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-gray-100">
-          <h6 class="font-bold text-gray-800 text-sm m-0">{{ 'web.contacts.lblTransactionLedger' | translate }}</h6>
-          <div class="flex gap-2">
-            <div class="input-group input-group-sm w-48 relative">
-              <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                <i class="ri-search-line text-gray-400 text-xs"></i>
-              </span>
-              <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50 border-gray-200" placeholder="Search...">
-            </div>
-            <button
-              class="ov-btn ov-btn-toolbar"
+      <!-- Transaction Ledger -->
+      <div class="flex flex-col gap-4">
+        <h5 class="ov-card-title m-0">{{ 'web.contacts.lblTransactionLedger' | translate }}</h5>
+        <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+          <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+            <label class="sr-only" for="landlord-ledger-search">Search transaction ledger</label>
+            <i class="ri-search-line ov-search__icon"></i>
+            <input id="landlord-ledger-search" type="text" class="ov-input ov-search__input" placeholder="Search" />
+          </div>
+          <div class="ov-toolbar__btns">
+            <button type="button" class="ov-btn ov-btn-toolbar"
               [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
               <i class="ri-layout-column-line text-[18px]"></i>
-              Column
+              Columns
             </button>
           </div>
         </div>
 
-        <app-shared-table [columns]="transactionColumns" [data]="transactionData" [loading]="false"
-          [hasActions]="false">
+        <app-shared-table
+          [columns]="transactionColumns"
+          [data]="transactionData"
+          [loading]="false"
+          [hasActions]="false"
+          [totalRecords]="transactionData.length">
           <ng-template #colTemplate let-row="row" let-col="col">
             <ng-container *ngIf="col.key === 'paymentVia'">
-              <span *ngIf="row.paymentVia === 'Cash'"
-                class="badge rounded bg-primary/10 text-primary font-bold px-2 py-0.5 text-[10px] uppercase">Cash</span>
+              <span *ngIf="row.paymentVia === 'Cash'" class="ov-status ov-status--soft">Cash</span>
               <span *ngIf="row.paymentVia !== 'Cash'">{{ row.paymentVia }}</span>
             </ng-container>
           </ng-template>
@@ -457,108 +438,120 @@
     </div>
 
     <!-- TAB: Units -->
-    <div *ngIf="activeTab === 'Units'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
-      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUnits' | translate }}</h6>
-        <div class="flex gap-2">
-          <div class="input-group input-group-sm w-48 relative">
-            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-              <i class="ri-search-line text-gray-400 text-xs"></i>
-            </span>
-            <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
-              placeholder="Search units...">
-          </div>
-          <button
-            class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
-            <i class="ri-filter-3-line"></i> Filter
+    <div *ngIf="activeTab === 'Units'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+      <h4 class="ov-card-title m-0">{{ 'web.contacts.lblLandlordUnits' | translate }}</h4>
+
+      <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+        <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+          <label class="sr-only" for="landlord-units-search">Search units</label>
+          <i class="ri-search-line ov-search__icon"></i>
+          <input id="landlord-units-search" type="text" class="ov-input ov-search__input" placeholder="Search" />
+        </div>
+        <div class="ov-toolbar__btns">
+          <button type="button" class="ov-btn ov-btn-toolbar"
+            [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+            <i class="ri-equalizer-line text-[18px]"></i>
+            Filter
           </button>
-          <button
-            class="px-2.5 py-1 text-xs border border-gray-200 rounded-md bg-white hover:bg-gray-50 flex items-center gap-1 font-bold text-gray-600">
-            <i class="ri-layout-column-line"></i> {{ 'web.contacts.lblColumn' | translate }}
+          <button type="button" class="ov-btn ov-btn-toolbar"
+            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+            <i class="ri-layout-column-line text-[18px]"></i>
+            Column
           </button>
         </div>
       </div>
 
-      <app-shared-table [columns]="unitColumns" [data]="unitData" [loading]="false" [hasActions]="false">
+      <app-shared-table
+        [columns]="unitColumns"
+        [data]="unitData"
+        [loading]="false"
+        [hasActions]="false"
+        [totalRecords]="unitData.length">
         <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="ov-link font-semibold cursor-pointer">{{ row.id || row.code || '-' }}</span>
+          </ng-container>
           <ng-container *ngIf="col.key === 'status'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-              [ngClass]="row.status === 'Occupied' ? 'bg-primary/10 text-primary' : 'bg-danger/10 text-danger'">{{
-              row.status }}</span>
+            <span class="ov-status"
+              [class.ov-status--active]="row.status === 'Occupied' || row.status === 'Active'"
+              [class.ov-status--blocked]="row.status === 'Vacant' || row.status === 'Inactive'">
+              {{ row.status || '-' }}
+            </span>
           </ng-container>
           <ng-container *ngIf="col.key === 'published'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-              [ngClass]="row.published === 'Yes' ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-600'">{{
-              row.published }}</span>
+            <span class="ov-status"
+              [class.ov-status--active]="row.published === 'Yes' || row.published === true"
+              [class.ov-status--muted]="row.published !== 'Yes' && row.published !== true">
+              {{ row.published || '-' }}
+            </span>
           </ng-container>
           <ng-container *ngIf="col.key === 'forSale'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-              [ngClass]="row.forSale === 'Yes' ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-600'">{{
-              row.forSale }}</span>
+            <span class="ov-status"
+              [class.ov-status--active]="row.forSale === 'Yes' || row.forSale === true"
+              [class.ov-status--muted]="row.forSale !== 'Yes' && row.forSale !== true">
+              {{ row.forSale || '-' }}
+            </span>
           </ng-container>
           <ng-container *ngIf="col.key === 'action'">
-            <div class="flex items-center gap-1.5 justify-center">
-              <button
-                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
-                title="View Tenant">
-                <i class="ri-eye-line text-xs"></i>
-              </button>
-              <button
-                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
-                title="Edit Tenant">
-                <i class="ri-pencil-line text-xs"></i>
-              </button>
-              <button
-                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
-                title="View Leases">
-                <i class="ri-article-line text-xs"></i>
-              </button>
-              <button
-                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-500 border-0 bg-transparent"
-                title="Edit Leases">
-                <i class="ri-edit-2-line text-xs"></i>
-              </button>
-            </div>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" data-tooltip="Action" aria-label="Action">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
           </ng-container>
         </ng-template>
       </app-shared-table>
     </div>
 
     <!-- TAB: Due Payment -->
-    <div *ngIf="activeTab === 'Due Payment'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
-      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordDuePayments' | translate }}</h6>
-        <div class="flex gap-2">
-          <div class="input-group input-group-sm w-48 relative">
-            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-              <i class="ri-search-line text-gray-400 text-xs"></i>
-            </span>
-            <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
-              placeholder="Search payments...">
-          </div>
+    <!-- TAB: Due Payment -->
+    <div *ngIf="activeTab === 'Due Payment'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+      <h4 class="ov-card-title m-0">{{ 'web.contacts.lblLandlordDuePayments' | translate }}</h4>
+
+      <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+        <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+          <label class="sr-only" for="landlord-due-search">Search due payments</label>
+          <i class="ri-search-line ov-search__icon"></i>
+          <input id="landlord-due-search" type="text" class="ov-input ov-search__input" placeholder="Search" />
+        </div>
+        <div class="ov-toolbar__btns">
+          <button type="button" class="ov-btn ov-btn-toolbar"
+            [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+            <i class="ri-equalizer-line text-[18px]"></i>
+            Filter
+          </button>
+          <button type="button" class="ov-btn ov-btn-toolbar"
+            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+            <i class="ri-layout-column-line text-[18px]"></i>
+            Column
+          </button>
         </div>
       </div>
 
-      <div class="overflow-x-auto w-full">
-        <app-shared-table [columns]="duePaymentColumns" [data]="duePaymentData" [loading]="false" [hasActions]="false">
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container *ngIf="col.key === 'id'">
-              <span class="text-gray-800 font-bold">{{ row.id }}</span>
-            </ng-container>
-            <ng-container *ngIf="col.key === 'status'">
-              <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-                [ngClass]="row.status === 'Paid' ? 'bg-primary/10 text-primary' : row.status === 'Draft' ? 'bg-gray-100 text-gray-600' : row.status === 'Overdue' ? 'bg-danger text-white' : 'bg-danger/10 text-danger'">{{
-                row.status }}</span>
-            </ng-container>
-            <ng-container *ngIf="col.key === 'action'">
-              <button
-                class="w-5 h-5 rounded-md hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 border-0 bg-transparent">
-                <i class="ri-more-fill"></i>
-              </button>
-            </ng-container>
-          </ng-template>
-        </app-shared-table>
-      </div>
+      <app-shared-table
+        [columns]="duePaymentColumns"
+        [data]="duePaymentData"
+        [loading]="false"
+        [hasActions]="false"
+        [totalRecords]="duePaymentData.length">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container *ngIf="col.key === 'id'">
+            <span class="ov-link font-semibold cursor-pointer">{{ row.id || '-' }}</span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'status'">
+            <span class="ov-status"
+              [class.ov-status--active]="row.status === 'Paid'"
+              [class.ov-status--muted]="row.status === 'Draft'"
+              [class.ov-status--blocked]="row.status === 'Overdue'"
+              [class.ov-status--warning]="row.status === 'Pending' || row.status === 'Partial'">
+              {{ row.status || '-' }}
+            </span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'action'">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" data-tooltip="Action" aria-label="Action">
+              <i class="ri-more-2-fill text-[18px]"></i>
+            </button>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
     </div>
 
     <!-- TAB: Agreement -->
@@ -682,10 +675,11 @@
     <div *ngIf="activeTab === 'User'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUsers' | translate }}</h6>
-        <button (click)="showAddUserModal = true"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Add User'">
-          <i class="ri-add-line text-sm"></i>
+        <button type="button" (click)="showAddUserModal = true"
+          class="ov-btn ov-btn-primary !h-9"
+          [attr.data-tooltip]="'Add User'" aria-label="Add user">
+          <i class="ri-add-line text-[18px]"></i>
+          Add User
         </button>
       </div>
 
@@ -710,10 +704,11 @@
     <div *ngIf="activeTab === 'Emergency Contact'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}</h6>
-        <button (click)="showAddEmergencyContactModal = true"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Add Emergency Contact'">
-          <i class="ri-add-line text-sm"></i>
+        <button type="button" (click)="showAddEmergencyContactModal = true"
+          class="ov-btn ov-btn-primary !h-9"
+          [attr.data-tooltip]="'Add Emergency Contact'" aria-label="Add emergency contact">
+          <i class="ri-add-line text-[18px]"></i>
+          Add Emergency Contact
         </button>
       </div>
 
@@ -743,94 +738,71 @@
 </div>
 
 <!-- Email Subscriptions Modal Overlay -->
-<div *ngIf="showSubscriptionsModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[420px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showSubscriptionsModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal ov-modal--sm">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Email Subscriptions</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Choose which automated email notifications should be sent.</p>
+        <h4 class="ov-modal__title">Email Subscriptions</h4>
+        <p class="ov-modal__sub">Choose which automated email notifications should be sent.</p>
       </div>
-      <button (click)="showSubscriptionsModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showSubscriptionsModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
 
-    <div class="p-5 flex flex-col gap-4 overflow-y-auto max-h-[400px]">
-      <div class="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-success/20">
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3 p-3 rounded-lg border border-defaultborder">
         <div class="flex-grow min-w-0 pr-3">
-          <span class="text-xs font-bold text-gray-800 block">Global Email Settings Allowed?</span>
-          <span class="text-[9px] text-gray-500 mt-0.5 block leading-tight">Email functionality is enabled. Emails will
-            be sent only for active subscriptions. <a href="javascript:void(0)" class="text-primary font-bold">View
-              Settings</a></span>
+          <span class="text-[14px] font-semibold text-defaulttextcolor block">Global Email Settings Allowed?</span>
+          <span class="ov-modal__hint mt-1 block leading-tight">Email functionality is enabled. Emails will be sent only for active subscriptions. <a href="javascript:void(0)" class="ov-link font-semibold">View Settings</a></span>
         </div>
-        <span class="px-2.5 py-1 rounded bg-success text-white text-[9px] font-bold uppercase">Yes</span>
+        <span class="ov-detail-chip">Yes</span>
       </div>
 
-      <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 border-b pb-1.5">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+      <div class="ov-modal__check-list">
+        <label class="ov-modal__check">
+          <input type="checkbox" [checked]="allSubscriptionsSelected" (change)="toggleAllSubscriptions($event)">
           <span>Select All</span>
         </label>
-        <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-600">All</span>
-      </div>
-
-      <div class="flex flex-col gap-2.5">
-        <div *ngFor="let sub of subscriptions" class="flex justify-between items-center py-1">
-          <label class="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-gray-700 min-w-0 flex-grow">
-            <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed"
-              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-            <span class="truncate">{{ sub.name }}</span>
-          </label>
-          <button class="px-2.5 py-1 text-[9px] rounded font-bold border flex items-center gap-1 transition-all"
-            [ngClass]="sub.subscribed ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'">
-            <i class="ri-check-line" *ngIf="sub.subscribed"></i> Subscribe
-          </button>
-        </div>
+        <label *ngFor="let sub of subscriptions" class="ov-modal__check">
+          <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed">
+          <span>{{ sub.name }}</span>
+        </label>
       </div>
     </div>
 
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showSubscriptionsModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Clear</button>
-      <button (click)="showSubscriptionsModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Close</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-ghost">Clear</button>
+      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-primary">Close</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 1: Inflow Popup -->
-<div *ngIf="showInflowModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showInflowModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Inflow Record</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual inflow transaction to the landlord wallet.</p>
+        <h4 class="ov-modal__title">Inflow Record</h4>
+        <p class="ov-modal__sub">Register a manual inflow transaction to the landlord wallet.</p>
       </div>
-      <button (click)="showInflowModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showInflowModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Amount (AED)</label>
-        <input type="number"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white focus:border-primary transition-all"
-          placeholder="Enter amount">
+        <label class="ov-label">Amount (AED)</label>
+        <input type="number" class="ov-input" placeholder="Enter amount">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Date</label>
+          <input type="date" class="ov-input">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Payment Method</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Payment Method</label>
+          <select class="ov-input">
             <option>Bank Transfer</option>
             <option>Cash</option>
             <option>Cheque</option>
@@ -838,61 +810,49 @@
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Account Category</label>
-        <select
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        <label class="ov-label">Account Category</label>
+        <select class="ov-input">
           <option>Rent Account</option>
           <option>Maintenance Fund</option>
         </select>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Description</label>
-        <textarea rows="3"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter transaction reference details..."></textarea>
+        <label class="ov-label">Description</label>
+        <textarea rows="3" class="ov-input" placeholder="Enter transaction reference details..."></textarea>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showInflowModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showInflowModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showInflowModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showInflowModal = false" class="ov-btn ov-btn-primary">Submit</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 2: Outflow Popup -->
-<div *ngIf="showOutflowModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showOutflowModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Outflow Record</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual outflow transaction from the landlord wallet.
-        </p>
+        <h4 class="ov-modal__title">Outflow Record</h4>
+        <p class="ov-modal__sub">Register a manual outflow transaction from the landlord wallet.</p>
       </div>
-      <button (click)="showOutflowModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showOutflowModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Amount (AED)</label>
-        <input type="number"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter amount">
+        <label class="ov-label">Amount (AED)</label>
+        <input type="number" class="ov-input" placeholder="Enter amount">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Date</label>
+          <input type="date" class="ov-input">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Payment Method</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Payment Method</label>
+          <select class="ov-input">
             <option>Bank Transfer</option>
             <option>Cash</option>
             <option>Cheque</option>
@@ -900,243 +860,190 @@
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Expense Account</label>
-        <select
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+        <label class="ov-label">Expense Account</label>
+        <select class="ov-input">
           <option>Management Fee</option>
           <option>Tax / VAT</option>
           <option>Maintenance Expenses</option>
         </select>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Description</label>
-        <textarea rows="3"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter transaction reference details..."></textarea>
+        <label class="ov-label">Description</label>
+        <textarea rows="3" class="ov-input" placeholder="Enter transaction reference details..."></textarea>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showOutflowModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showOutflowModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showOutflowModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showOutflowModal = false" class="ov-btn ov-btn-primary">Submit</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 3: Landlord Contribution Popup -->
-<div *ngIf="showContributionModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showContributionModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Landlord Contribution</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a manual contribution to build reserves.</p>
+        <h4 class="ov-modal__title">Landlord Contribution</h4>
+        <p class="ov-modal__sub">Register a manual contribution to build reserves.</p>
       </div>
-      <button (click)="showContributionModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showContributionModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Contribution Amount
-          (AED)</label>
-        <input type="number"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter amount">
+        <label class="ov-label">Contribution Amount (AED)</label>
+        <input type="number" class="ov-input" placeholder="Enter amount">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Date</label>
+          <input type="date" class="ov-input">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Paid By</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Paid By</label>
+          <select class="ov-input">
             <option>Landlord</option>
             <option>Third Party Representative</option>
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Property</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Property</label>
+          <select class="ov-input">
             <option>Marina Heights</option>
             <option>Green Heights</option>
           </select>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Unit</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Unit</label>
+          <select class="ov-input">
             <option>103-PR-10</option>
             <option>306-PR-2</option>
           </select>
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Purpose
-          Description</label>
-        <textarea rows="3"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter details about contribution purpose (e.g. major repairs)..."></textarea>
+        <label class="ov-label">Purpose Description</label>
+        <textarea rows="3" class="ov-input" placeholder="Enter details about contribution purpose (e.g. major repairs)..."></textarea>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showContributionModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showContributionModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Submit</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showContributionModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showContributionModal = false" class="ov-btn ov-btn-primary">Submit</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 4: Landlord Distribution Popup -->
-<div *ngIf="showDistributionModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showDistributionModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Landlord Distribution</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Distribute wallet cash balance back to the landlord bank
-          account.</p>
+        <h4 class="ov-modal__title">Landlord Distribution</h4>
+        <p class="ov-modal__sub">Distribute wallet cash balance back to the landlord bank account.</p>
       </div>
-      <button (click)="showDistributionModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showDistributionModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Distribution Amount
-          (AED)</label>
-        <input type="number"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter amount to distribute">
+        <label class="ov-label">Distribution Amount (AED)</label>
+        <input type="number" class="ov-input" placeholder="Enter amount to distribute">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Date</label>
+          <input type="date" class="ov-input">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Reference
-            Number</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="REF-8927">
+          <label class="ov-label">Reference Number</label>
+          <input type="text" class="ov-input" placeholder="REF-8927">
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Target Landlord Bank
-          Account</label>
-        <input type="text" readonly
-          class="form-control text-xs w-full bg-gray-100 border-gray-200 rounded-md py-2 px-3 text-gray-600"
-          [value]="landlord.bank.name + ' - ' + landlord.bank.iban">
+        <label class="ov-label">Target Landlord Bank Account</label>
+        <input type="text" readonly class="ov-input" [value]="landlord.bank.name + ' - ' + landlord.bank.iban">
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Remarks</label>
-        <textarea rows="3"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter distribution remarks..."></textarea>
+        <label class="ov-label">Remarks</label>
+        <textarea rows="3" class="ov-input" placeholder="Enter distribution remarks..."></textarea>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showDistributionModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showDistributionModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Process
-        Distribution</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showDistributionModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showDistributionModal = false" class="ov-btn ov-btn-primary">Process Distribution</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 5: Add Notes Popup -->
-<div *ngIf="showAddNoteModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showAddNoteModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Add Note</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Append a manual note block to this landlord account profile.</p>
+        <h4 class="ov-modal__title">Add Note</h4>
+        <p class="ov-modal__sub">Append a manual note block to this landlord account profile.</p>
       </div>
-      <button (click)="showAddNoteModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showAddNoteModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Subject</label>
-        <input type="text"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter note subject">
+        <label class="ov-label">Subject</label>
+        <input type="text" class="ov-input" placeholder="Enter note subject">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Via</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Via</label>
+          <select class="ov-input">
             <option>Portal</option>
             <option>Email</option>
             <option>SMS</option>
           </select>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Note Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Note Date</label>
+          <input type="date" class="ov-input">
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Content Details</label>
-        <textarea rows="4"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="Enter main note content details..."></textarea>
+        <label class="ov-label">Content Details</label>
+        <textarea rows="4" class="ov-input" placeholder="Enter main note content details..."></textarea>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Reference File
-          (Optional)</label>
-        <input type="file"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-1.5 px-3 focus:bg-white transition-all">
+        <label class="ov-label">Reference File (Optional)</label>
+        <input type="file" class="ov-input">
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showAddNoteModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showAddNoteModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
-        Note</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showAddNoteModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showAddNoteModal = false" class="ov-btn ov-btn-primary">Add Note</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 6: Add Attachment Popup -->
-<div *ngIf="showAddAttachmentModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showAddAttachmentModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Add Attachment</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Upload compliance documents for verification audits.</p>
+        <h4 class="ov-modal__title">Add Attachment</h4>
+        <p class="ov-modal__sub">Upload compliance documents for verification audits.</p>
       </div>
-      <button (click)="showAddAttachmentModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showAddAttachmentModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5">
-      <div class="grid grid-cols-2 gap-3">
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">File Type</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">File Type</label>
+          <select class="ov-input">
             <option>Passport Copy</option>
             <option>Trade License</option>
             <option>Property Title Deed</option>
@@ -1144,92 +1051,76 @@
           </select>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Doc ID</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="e.g. DOC-1234">
+          <label class="ov-label">Doc ID</label>
+          <input type="text" class="ov-input" placeholder="e.g. DOC-1234">
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Issue Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Issue Date</label>
+          <input type="date" class="ov-input">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Expiry Date</label>
-          <input type="date"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Expiry Date</label>
+          <input type="date" class="ov-input">
         </div>
       </div>
-      <div class="flex flex-col gap-1 py-1">
-        <span class="text-[10px] font-bold text-gray-600">Permissions</span>
-        <div class="flex gap-4 text-xs mt-1">
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" class="form-checkbox text-primary rounded"> Share Landlord
+      <div>
+        <label class="ov-label">Permissions</label>
+        <div class="ov-modal__check-list mt-1">
+          <label class="ov-modal__check">
+            <input type="checkbox">
+            <span>Share Landlord</span>
           </label>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" class="form-checkbox text-primary rounded"> Share Tenants
+          <label class="ov-modal__check">
+            <input type="checkbox">
+            <span>Share Tenants</span>
           </label>
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Choose Document
-          File</label>
-        <input type="file"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-1.5 px-3 focus:bg-white transition-all">
+        <label class="ov-label">Choose Document File</label>
+        <input type="file" class="ov-input">
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showAddAttachmentModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showAddAttachmentModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Upload
-        File</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showAddAttachmentModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showAddAttachmentModal = false" class="ov-btn ov-btn-primary">Upload File</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 7: Add User Popup -->
-<div *ngIf="showAddUserModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showAddUserModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Add User Contact</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a secondary contact/owner to this landlord account.</p>
+        <h4 class="ov-modal__title">Add User Contact</h4>
+        <p class="ov-modal__sub">Register a secondary contact/owner to this landlord account.</p>
       </div>
-      <button (click)="showAddUserModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showAddUserModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5 overflow-y-auto max-h-[400px]">
-      <div class="grid grid-cols-2 gap-3">
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">First Name</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="Enter first name">
+          <label class="ov-label">First Name</label>
+          <input type="text" class="ov-input" placeholder="Enter first name">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Last Name</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="Enter last name">
+          <label class="ov-label">Last Name</label>
+          <input type="text" class="ov-input" placeholder="Enter last name">
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">User Name</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="Enter username">
+          <label class="ov-label">User Name</label>
+          <input type="text" class="ov-input" placeholder="Enter username">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Role Type</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Role Type</label>
+          <select class="ov-input">
             <option>Owner</option>
             <option>Landlord Representative</option>
             <option>Agent</option>
@@ -1237,111 +1128,81 @@
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Email Address</label>
-        <input type="email"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="e.g. contact@domain.com">
+        <label class="ov-label">Email Address</label>
+        <input type="email" class="ov-input" placeholder="e.g. contact@domain.com">
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Phone Number</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="e.g. 0528613568">
+          <label class="ov-label">Phone Number</label>
+          <input type="text" class="ov-input" placeholder="e.g. 0528613568">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Status</label>
-          <select
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all">
+          <label class="ov-label">Status</label>
+          <select class="ov-input">
             <option>Active</option>
             <option>Inactive</option>
           </select>
         </div>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showAddUserModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showAddUserModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
-        User</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showAddUserModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showAddUserModal = false" class="ov-btn ov-btn-primary">Add User</button>
     </div>
   </div>
 </div>
 
 <!-- Modal 8: Add Emergency Contact Popup -->
-<div *ngIf="showAddEmergencyContactModal"
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-  <div
-    class="bg-white rounded-xl shadow-xl w-full max-w-[480px] overflow-hidden border border-gray-200 animate-fade-in flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+<div *ngIf="showAddEmergencyContactModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
       <div>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Add Emergency Contact</h4>
-        <p class="text-[10px] text-gray-500 m-0 mt-0.5">Register a backup emergency contact for emergency
-          communications.</p>
+        <h4 class="ov-modal__title">Add Emergency Contact</h4>
+        <p class="ov-modal__sub">Register a backup emergency contact for emergency communications.</p>
       </div>
-      <button (click)="showAddEmergencyContactModal = false"
-        class="w-6 h-6 rounded-md bg-gray-50 text-gray-400 hover:text-gray-600 flex items-center justify-center border-0">
-        <i class="ri-close-line"></i>
+      <button type="button" (click)="showAddEmergencyContactModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    <div class="p-5 flex flex-col gap-3.5 overflow-y-auto max-h-[400px]">
-      <div class="grid grid-cols-2 gap-3">
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Full Name</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="Zaid Rehman">
+          <label class="ov-label">Full Name</label>
+          <input type="text" class="ov-input" placeholder="Zaid Rehman">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Relationship</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="Brother">
+          <label class="ov-label">Relationship</label>
+          <input type="text" class="ov-input" placeholder="Brother">
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Personal Phone</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="0528613568">
+          <label class="ov-label">Personal Phone</label>
+          <input type="text" class="ov-input" placeholder="0528613568">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Work Phone</label>
-          <input type="text"
-            class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-            placeholder="05698 253 25">
+          <label class="ov-label">Work Phone</label>
+          <input type="text" class="ov-input" placeholder="05698 253 25">
         </div>
       </div>
       <div>
-        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Email Address</label>
-        <input type="email"
-          class="form-control text-xs w-full bg-gray-50 border-gray-200 rounded-md py-2 px-3 focus:bg-white transition-all"
-          placeholder="zaidrahman&#64;gmail.com">
+        <label class="ov-label">Email Address</label>
+        <input type="email" class="ov-input" placeholder="zaidrahman&#64;gmail.com">
       </div>
-      <div class="flex justify-between items-center py-2 border-t border-gray-100 mt-1">
+      <div class="flex justify-between items-center gap-3 py-2 border-t border-defaultborder mt-1">
         <div class="flex-grow min-w-0 pr-3">
-          <span class="text-xs font-bold text-gray-800 block">Include in Automated Emails</span>
-          <span class="text-[9px] text-gray-500 block leading-tight">Allow emergency contact to receive copy of tenant
-            lease alerts.</span>
+          <span class="text-[14px] font-semibold text-defaulttextcolor block">Include in Automated Emails</span>
+          <span class="ov-modal__hint mt-1 block leading-tight">Allow emergency contact to receive copy of tenant lease alerts.</span>
         </div>
-        <div class="custom-toggle-switch">
-          <input type="checkbox" id="includeInEmailToggle" class="hidden">
-          <label for="includeInEmailToggle"
-            class="toggle-label block w-8 h-4.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300">
-            <span
-              class="dot absolute left-0.5 top-0.5 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300"></span>
-          </label>
+        <div class="custom-toggle-switch shrink-0">
+          <input type="checkbox" id="includeInEmailToggle">
+          <label for="includeInEmailToggle" class="label-primary"></label>
         </div>
       </div>
     </div>
-    <div class="px-5 py-4 border-t border-gray-100 flex gap-2 justify-end bg-gray-50/50">
-      <button (click)="showAddEmergencyContactModal = false"
-        class="px-4 py-1.5 text-xs rounded-md border border-gray-200 bg-white text-gray-700 font-bold hover:bg-gray-50">Cancel</button>
-      <button (click)="showAddEmergencyContactModal = false"
-        class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover font-bold">Add
-        Contact</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showAddEmergencyContactModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showAddEmergencyContactModal = false" class="ov-btn ov-btn-primary">Add Contact</button>
     </div>
   </div>
 </div>

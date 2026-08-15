@@ -347,37 +347,127 @@ header .form-control,
 }
 }
 
-// Custom CSS Tooltips
+// Custom CSS Tooltips — Figma 603:5147 (file 1g39MBBoUM6amWZrONRap2)
+// primary brand #26264F, white 14px Regular, 8px radius, bottom caret
 [data-tooltip] {
   position: relative;
   cursor: pointer;
+  z-index: 1;
 
   &::before {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: 125%;
+    bottom: calc(100% + 10px);
     left: 50%;
-    transform: translateX(-50%) scale(0.9);
-    background: #1f2937;
+    transform: translateX(-50%) scale(0.96);
+    background: rgb(var(--primary));
     color: #ffffff;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 600;
+    padding: 5px 20px;
+    border-radius: 8px;
+    font-family: var(--default-font-family, 'Hanken Grotesk', sans-serif);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.28px;
+    line-height: normal;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
     z-index: 1060;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
   }
 
-  &:hover::before {
+  // Caret — Figma diamond rotated -45° under the bubble
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: rgb(var(--primary));
+    transform: translateX(-50%) rotate(45deg) scale(0.96);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 1061;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  }
+
+  // Keep fully hidden unless a fine pointer is hovering
+  &:not(:hover)::before,
+  &:not(:hover)::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  // Lift the hovered control (and its tooltip) above following siblings (Filter/Column, etc.)
+  [data-tooltip]:hover {
+    z-index: 1100;
+  }
+
+  [data-tooltip]:hover::before {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) scale(1);
   }
+
+  [data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) rotate(45deg) scale(1);
+  }
+
+  // When Add sits in a header row above a toolbar, lift that whole row so
+  // a bottom-placed tooltip is not painted under Filter/Column.
+  .page-header:has([data-tooltip]:hover),
+  .ov-card > .flex:has([data-tooltip]:hover),
+  .box > .flex:has([data-tooltip]:hover),
+  .flex:has(> [data-tooltip]:hover),
+  .flex:has(> .ov-btn-primary[data-tooltip]:hover),
+  .ov-toolbar:has([data-tooltip]:hover) {
+    position: relative;
+    z-index: 1100;
+  }
+}
+
+// Filter drawer sits above hover tooltips (1100). Otherwise clicking Filter
+// while the cursor stays put keeps :hover + tooltip painted over the drawer.
+body:has(.ov-filter-drawer__panel) [data-tooltip]:hover,
+body:has(.ov-filter-drawer__panel) .ov-toolbar:has([data-tooltip]:hover),
+body:has(.ov-filter-drawer__panel) .page-header:has([data-tooltip]:hover),
+body:has(.ov-filter-drawer__panel) .box > .flex:has([data-tooltip]:hover) {
+  z-index: auto;
+}
+
+body:has(.ov-filter-drawer__panel) [data-tooltip]:hover::before,
+body:has(.ov-filter-drawer__panel) [data-tooltip]:hover::after {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+// Page-header Create / Add CTAs sit under the sticky app header.
+// Only those flip below — detail Add CTAs stay above so they don't
+// collide with the Filter/Column toolbar under them.
+.page-header {
+  overflow: visible !important;
+  position: relative;
+  z-index: 40;
+}
+
+.page-header [data-tooltip]::before,
+[data-tooltip][data-tooltip-placement='bottom']::before {
+  bottom: auto !important;
+  top: calc(100% + 10px) !important;
+}
+
+.page-header [data-tooltip]::after,
+[data-tooltip][data-tooltip-placement='bottom']::after {
+  bottom: auto !important;
+  top: calc(100% + 6px) !important;
 }
 
 // Sliding Filter Drawer
@@ -389,7 +479,7 @@ header .form-control,
   height: 100vh;
   background: #ffffff;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
-  z-index: 1050;
+  z-index: 1201;
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;

@@ -1,93 +1,87 @@
-<form [formGroup]="form" class="space-y-5">
-    <div class="grid grid-cols-2 gap-4">
+<form [formGroup]="form" class="flex flex-col gap-4">
+    <div class="ov-fields ov-fields--2">
         <div>
-        <label class="ti-form-label">
-            {{ 'web.portfolio.popups.parking.lblProperty' | translate }} <span class="text-danger">*</span>
-        </label>
-        <select class="form-control w-full !rounded-md" (change)="getUnits()" formControlName="property_code">
-            <option value="" disabled>
-                {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
-            </option>
-            <option *ngFor="let pname of propertyList" [value]="pname.code">
-                {{ pname.code + '-' + pname.name }}
-            </option>
-        </select>
-    </div>
+            <label class="ov-label">
+                {{ 'web.portfolio.popups.parking.lblProperty' | translate }} <span class="text-danger">*</span>
+            </label>
+            <select class="ov-input" (change)="getUnits()" formControlName="property_code">
+                <option value="" disabled>
+                    {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
+                </option>
+                <option *ngFor="let pname of propertyList" [value]="pname.code">
+                    {{ pname.code + '-' + pname.name }}
+                </option>
+            </select>
+        </div>
         <div>
-            <label class="ti-form-label">
+            <label class="ov-label">
                 {{ 'web.portfolio.popups.parking.lblUnit' | translate }} <span class="text-danger">*</span>
             </label>
-            <select class="form-control w-full !rounded-md" (change)="getRooms()"  formControlName="unit_code">
+            <select class="ov-input" (change)="getRooms()" formControlName="unit_code">
                 <option value="" disabled>
                     {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
                 </option>
                 <option *ngFor="let uc of unitsList" [value]="uc.code">
-                    {{ uc.unit_code + ' - '+ uc.unit_no  }}
+                    {{ uc.unit_code + ' - '+ uc.unit_no }}
                 </option>
-            </select> 
+            </select>
         </div>
-      
     </div>
-    <div class="grid grid-cols-2 gap-4">
+    <div class="ov-fields ov-fields--2">
         <div>
-            <label class="ti-form-label">
-                {{ 'web.portfolio.popups.parking.lblRoom' | translate }} 
+            <label class="ov-label">
+                {{ 'web.portfolio.popups.parking.lblRoom' | translate }}
             </label>
-            <select class="form-control w-full !rounded-md"  formControlName="room_code">
+            <select class="ov-input" formControlName="room_code">
                 <option value="" disabled>
                     {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
                 </option>
                 <option *ngFor="let uc of roomsList" [value]="uc.code">
-                    {{ uc.room_code + ' - '+ uc.room_no  }}
+                    {{ uc.room_code + ' - '+ uc.room_no }}
                 </option>
-            </select> 
+            </select>
         </div>
         <div>
-        <label class="ti-form-label">
-            {{ 'web.portfolio.popups.parking.lblRecurringCycle' | translate }}
-        </label>
-        <select class="form-control w-full !rounded-md" formControlName="recurring_cycle">
-            <option value="" disabled>
-                {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
-            </option>
-            <option *ngFor="let recycle of recurringCycle" [value]="recycle.id">
-                {{ recycle.name }}
-            </option>
-        </select>
-    </div>
-    </div>
-    <div  class="grid grid-cols-2 gap-4">
-        <div>
-        <label class="ti-form-label">
-            {{ 'web.portfolio.popups.parking.lblParkingno' | translate }} <span class="text-danger">*</span>
-        </label>
-        <input type="text" class="ti-form-input" formControlName="parking_no"
-            placeholder="{{ 'web.portfolio.popups.notes.lblEnter' | translate }}">
+            <label class="ov-label">
+                {{ 'web.portfolio.popups.parking.lblRecurringCycle' | translate }}
+            </label>
+            <select class="ov-input" formControlName="recurring_cycle">
+                <option value="" disabled>
+                    {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
+                </option>
+                <option *ngFor="let recycle of recurringCycle" [value]="recycle.id">
+                    {{ recycle.name }}
+                </option>
+            </select>
         </div>
-            <div>
-                <label class="ti-form-label">
-                    {{ 'web.portfolio.popups.parking.lblParkingType' | translate }}
-                </label>
-                <select class="form-control w-full !rounded-md" formControlName="parking_type">
-                    <option value="" disabled>
-                        {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
-                    </option>
-                    <option *ngFor="let ptype of parkingTypeList" [value]="ptype.id">
-                        {{ ptype.name }}
-                    </option>
-                </select>
-                
-            </div>
     </div>
-
-   
-    
+    <div class="ov-fields ov-fields--2">
+        <div>
+            <label class="ov-label">
+                {{ 'web.portfolio.popups.parking.lblParkingno' | translate }} <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="ov-input" formControlName="parking_no"
+                placeholder="{{ 'web.portfolio.popups.notes.lblEnter' | translate }}">
+        </div>
+        <div>
+            <label class="ov-label">
+                {{ 'web.portfolio.popups.parking.lblParkingType' | translate }}
+            </label>
+            <select class="ov-input" formControlName="parking_type">
+                <option value="" disabled>
+                    {{ 'web.portfolio.popups.parking.lblSelect' | translate }}
+                </option>
+                <option *ngFor="let ptype of parkingTypeList" [value]="ptype.id">
+                    {{ ptype.name }}
+                </option>
+            </select>
+        </div>
+    </div>
     <div>
-        
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.parking.lblRemarks' | translate }}
         </label>
-        <textarea class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]" formControlName="remarks"
-        placeholder="{{ 'web.portfolio.popups.parking.lblRemarks' | translate }}" ></textarea>
-      </div>
+        <textarea class="ov-input !h-auto min-h-[100px]" formControlName="remarks"
+            placeholder="{{ 'web.portfolio.popups.parking.lblRemarks' | translate }}"></textarea>
+    </div>
 </form>

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { PropertiesService } from '../../services/properties.service';
@@ -28,6 +28,11 @@ export interface Room {
   unit: string;
   location: string;
   landlord: string;
+  landlordCode?: string;
+  landlordEmail?: string;
+  landlordPhone?: string;
+  landlordTypeBadge?: string;
+  landlordType?: string;
   tags: string;
   roomType: string;
   managementFee: string;
@@ -83,6 +88,7 @@ export class RoomDetailComponent implements OnInit {
   activeTab: string = 'overview';
   showMoreDetails: boolean = true;
   showActionMenu = false;
+  showLandlordPopover = false;
   showAddInvoiceModal: boolean = false;
   showAddInventoryModal: boolean = false;
   tabSearchQuery = '';
@@ -157,7 +163,13 @@ export class RoomDetailComponent implements OnInit {
   inventoryItemExpiry: string = '';
   inventoryFiles: File[] = [];
 
-  constructor(private route: ActivatedRoute,  private commonService: CommonService, private propertiesService: PropertiesService, private portfolioService: PortfolioService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private commonService: CommonService,
+    private propertiesService: PropertiesService,
+    private portfolioService: PortfolioService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
@@ -216,7 +228,7 @@ export class RoomDetailComponent implements OnInit {
               property_code: detail.property_code || 'Marina Height Towers', 
               unit: detail.unitcode + ' - ' + detail.unit_no || 'Marina Height Towers',
               location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
-              landlord: detail.landlord_codes || detail.landlord || this.unit?.landlord || 'Orville Real Estate',
+              ...this.mapLandlordFields(detail),
               tags: detail.tags || this.unit?.tags || 'Premium',
               roomType: detail.room_type_name || detail.room_type || this.unit?.roomType || 'Apartment',
               managementFee: detail.management_fee ? this.currentUser?.currencyCode+` ${detail.management_fee}` : this.unit?.managementFee || 'AED 600',
@@ -418,6 +430,80 @@ export class RoomDetailComponent implements OnInit {
 
   get landlordCount(): number {
     return this.unit?.landlord ? 1 : 0;
+  }
+
+  private mapLandlordFields(detail: any): Pick<
+    Room,
+    'landlord' | 'landlordCode' | 'landlordEmail' | 'landlordPhone' | 'landlordTypeBadge' | 'landlordType'
+  > {
+    const codesRaw = detail?.landlord_code ?? detail?.landlord_codes ?? '';
+    const codeParts = String(codesRaw)
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter(Boolean);
+    const firstCode = codeParts[0] || '';
+    const looksLikeId = !!firstCode && !/\s/.test(firstCode) && /^[A-Za-z0-9_-]+$/.test(firstCode);
+
+    const landlordName =
+      detail?.landlord_name ||
+      detail?.landlord_nm ||
+      detail?.landlord ||
+      (!looksLikeId && firstCode ? firstCode : '') ||
+      this.unit?.landlord ||
+      'Orville Real Estate';
+
+    const landlordCode =
+      detail?.landlord_code ||
+      (looksLikeId ? firstCode : '') ||
+      detail?.landlord_id ||
+      this.unit?.landlordCode ||
+      '';
+
+    return {
+      landlord: landlordName,
+      landlordCode: landlordCode ? String(landlordCode) : '',
+      landlordEmail: detail?.landlord_email || detail?.email || this.unit?.landlordEmail || '-',
+      landlordPhone: detail?.landlord_phone || detail?.phone || detail?.mobile || this.unit?.landlordPhone || '-',
+      landlordTypeBadge:
+        detail?.landlord_type_nm ||
+        detail?.contact_type_nm ||
+        detail?.landlord_category ||
+        this.unit?.landlordTypeBadge ||
+        'Individual',
+      landlordType:
+        detail?.landlord_type_name ||
+        detail?.landlord_type ||
+        this.unit?.landlordType ||
+        'Individual Landlord'
+    };
+  }
+
+  toggleLandlordPopover(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showLandlordPopover = !this.showLandlordPopover;
+  }
+
+  viewLandlordDetail(event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.showLandlordPopover = false;
+    const code = this.unit?.landlordCode;
+    if (code) {
+      this.router.navigate(['/contacts/landlords', code]);
+    } else {
+      this.router.navigate(['/contacts/landlords']);
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showLandlordPopover = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.showLandlordPopover = false;
   }
 
   get parkingDisplay(): string {

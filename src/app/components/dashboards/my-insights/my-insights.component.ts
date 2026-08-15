@@ -46,6 +46,7 @@ export class MyInsightsComponent implements OnInit {
   public workOrderDistOptions: any = {};
   public statusWiseTicketsOptions: any = {};
   public unitStatsOccupancyOptions: any = {};
+  public unitStatsFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   public ticketSourcesOptions: any = {};
   public unitTypesDonutOptions: any = {};
   public annualRentOptions: any = {};
@@ -362,15 +363,32 @@ export class MyInsightsComponent implements OnInit {
       275
     );
 
+    // Figma 470:2987 — purple data years + light future placeholders; per-point fill avoids
+    // Apex distributed-bar radius distortion (lopsided / incomplete circle tops).
+    const rentYears = ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+    const rentValues = [3.4, 4.4, 12.9, 7.8, 6.9, 28.5, 40.7, 43.7, 43.7, 43.7, 43.7];
     this.annualRentOptions = {
-      series: [{ name: 'Recognized rent revenue', data: [2, 4, 12, 7, 6, 28.5, 40, 45, 45, 45, 45] }],
-      chart: { type: 'bar', height: 330, toolbar: { show: false }, fontFamily: defaultFont },
+      series: [{
+        name: 'Recognized rent revenue',
+        data: rentValues.map((value, i) => ({
+          x: rentYears[i],
+          y: value,
+          fillColor: i < 7 ? '#604AE3' : '#F8F8FB'
+        }))
+      }],
+      chart: {
+        type: 'bar',
+        height: 360,
+        toolbar: { show: false },
+        fontFamily: defaultFont,
+        animations: { enabled: false }
+      },
       plotOptions: {
         bar: {
-          columnWidth: '22%',
-          borderRadius: 20,
+          columnWidth: '20px',
+          borderRadius: 10,
           borderRadiusApplication: 'around',
-          distributed: true
+          distributed: false
         }
       },
       dataLabels: { enabled: false },
@@ -379,25 +397,36 @@ export class MyInsightsComponent implements OnInit {
         borderColor: '#E4E4EC',
         strokeDashArray: 4,
         xaxis: { lines: { show: false } },
-        padding: { top: 0, right: 8, bottom: 0, left: 8 }
+        yaxis: { lines: { show: true } },
+        padding: { top: 8, right: 12, bottom: 0, left: 4 }
       },
       xaxis: {
-        categories: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+        type: 'category',
+        categories: rentYears,
         axisBorder: { show: false },
         axisTicks: { show: false },
-        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '12px' } }
+        labels: {
+          style: {
+            fontFamily: defaultFont,
+            colors: Array(11).fill(c.muted),
+            fontSize: '14px',
+            fontWeight: 600
+          }
+        }
       },
       yaxis: {
         min: 0,
         max: 50,
         tickAmount: 5,
         labels: {
-          style: { fontFamily: defaultFont, colors: c.muted, fontSize: '12px' },
+          style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 600 },
           formatter: (val: number) => (val === 0 ? '0' : `${val} M`)
         }
       },
-      colors: [c.primary, c.primary, c.primary, c.primary, c.primary, c.primary, c.primary, '#EEEEF5', '#EEEEF5', '#EEEEF5', '#EEEEF5'],
-      stroke: { colors: ['transparent'], width: 0 }
+      colors: ['#604AE3'],
+      fill: { opacity: 1, type: 'solid' },
+      stroke: { show: false, width: 0 },
+      tooltip: { theme: 'light' }
     };
 
     this.leaseStatusDonutOptions = this.createDonut(

@@ -1,161 +1,120 @@
-<!-- Asset List Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Assets
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Facility</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Assets</li>
-      </ol>
-    </div>
+<!-- Assets List — Figma 3081:85148 -->
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+  <div>
+    <h3 class="ov-page-title">Assets</h3>
+    <p class="ov-page-sub">Manage and view all Assets</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-      [attr.data-tooltip]="'Report'">
-      <i class="ri-bar-chart-2-fill text-sm"></i>
-    </button>
-    <button type="button" (click)="navigateToCreate()"
-      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
-      [attr.data-tooltip]="'Add Asset'">
-      <i class="ri-add-line text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" data-tooltip="Create Assets">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="asset-ico asset-ico--on-primary" />
+      Create Assets
     </button>
   </div>
 </div>
 
-
-<!-- Main card -->
-<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-  
-  <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-    <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assets list</h6>
-    <div class="flex items-center gap-3">
-      <div class="input-group w-56">
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearch()"
-          placeholder="Search..."
-          class="form-control !text-[11px] !py-1.5 bg-gray-50 border-gray-200"
-        />
-        <button type="button" (click)="onSearch()"
-          class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-          <i class="ri-search-line"></i>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="asset-search">Search</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input id="asset-search" type="text" class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleDrawer(true)"
+        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
+          data-tooltip="Columns">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
         </button>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- Filter Button -->
-        <button type="button" (click)="toggleDrawer(true)"
-          class="ov-btn ov-btn-toolbar"
-          [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-          <i class="ri-equalizer-line text-[18px]"></i>
-          Filter
-        </button>
-
-        <!-- Column Button with dropdown overlay -->
-        <div class="relative">
-          <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-            class="ov-btn ov-btn-toolbar"
-            [attr.data-tooltip]="'Columns'">
-            <i class="ri-layout-column-line text-[18px]"></i>
-            Column
-          </button>
-
-          <!-- Column toggling checklist dropdown overlay -->
-          <div *ngIf="showColumnDropdown"
-            class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
-            <label
-              class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
-              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
-                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              Select All
-            </label>
-            <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-              <label *ngFor="let col of tableColumns"
-                class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
-                  class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-                {{ col.label }}
-              </label>
-            </div>
-          </div>
+        <div *ngIf="showColumnDropdown"
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label
+            class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            Select All
+          </label>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Table -->
-  <app-shared-table 
-    [columns]="visibleColumns" 
-    [data]="assetData" 
-    [hasActions]="true" 
-    [totalRecords]="totalRecords" 
-    [pageSize]="pageSize"
-    [pageIndex]="pageNo"
-    (pageChange)="onSharedTablePageChange($event)"
-    (notify_edit_action)="handleEditAction($event)">
-    <ng-template #colTemplate let-row="row" let-col="col">
-      <ng-container [ngSwitch]="col.key">
-        
-        <!-- ID Column -->
-        <ng-container *ngSwitchCase="'id'">
-          <span (click)="navigateToDetail(row.code)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+  <div class="px-5 pb-5 pt-5">
+    <app-shared-table
+      [columns]="visibleColumns"
+      [data]="assetData"
+      [hasActions]="false"
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)">
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+          <ng-container *ngSwitchCase="'id'">
+            <a href="javascript:void(0)" (click)="navigateToDetail(row.code)" class="ov-link font-semibold">{{ row.id }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'category'">
+            <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'category') || '-' }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'property'">
+            <a href="javascript:void(0)" class="ov-link font-semibold">{{ getArabicLookupName(row, 'property') || '-' }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'status'">
+            <span class="asset-status" [class.asset-status--down]="row.status === 'Down'">
+              {{ row.status || '-' }}
+            </span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'action'">
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(rowActionKey(row), $event)" data-tooltip="Action" aria-label="Action">
+                <img src="assets/images/assets/dots-vertical.svg" alt="" width="20" height="20" class="asset-ico" />
+              </button>
+              <div *ngIf="openActionCode === rowActionKey(row)"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="navigateToDetail(row.code || row.id); openActionCode = null">View</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="handleEditAction(row); openActionCode = null">Edit</button>
+              </div>
+            </div>
+          </ng-container>
         </ng-container>
-
-        <!-- Category Column -->
-        <ng-container *ngSwitchCase="'category'">
-          <span>{{ getArabicLookupName(row, 'category') }}</span>
-        </ng-container>
-
-        <!-- Property Column -->
-        <ng-container *ngSwitchCase="'property'">
-          <span>{{ getArabicLookupName(row, 'property') }}</span>
-        </ng-container>
-
-        <!-- Status Column -->
-        <ng-container *ngSwitchCase="'status'">
-          <span *ngIf="row.status === 'Operational'" class="px-2.5 py-1 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Operational</span>
-          <span *ngIf="row.status === 'Down'" class="px-2.5 py-1 rounded bg-danger text-[10px] font-bold text-white shadow-sm">Down</span>
-        </ng-container>
-
-        <!-- Action Column -->
-        <ng-container *ngSwitchCase="'action'">
-          <div class="flex gap-1">
-            <button (click)="handleEditAction(row)" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-              <i class="ri-edit-line text-xs"></i>
-            </button>
-            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-              <i class="ri-delete-bin-line text-xs"></i>
-            </button>
-          </div>
-        </ng-container>
-
-      </ng-container>
-    </ng-template>
-  </app-shared-table>
+      </ng-template>
+    </app-shared-table>
+  </div>
 </div>
 
-<!-- Sliding Filter Drawer -->
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="onSearch()" (clear)="clearFilters()">
-  <div class="flex flex-col gap-4 text-[11px]">
-    <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Name</label>
-      <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200"
-        [(ngModel)]="filterName" placeholder="Enter name">
+  <div class="flex flex-col gap-4 text-[13px]">
+    <div>
+      <label class="ov-label">Filter by Name</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterName" placeholder="Enter name">
     </div>
-    <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Category</label>
-      <ng-select [(ngModel)]="filterCategory" [items]="assetCategories" bindLabel="name" bindValue="id" [searchable]="true" [clearable]="true"
-        placeholder="Select Category" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    <div>
+      <label class="ov-label">Filter by Category</label>
+      <ng-select [(ngModel)]="filterCategory" [items]="assetCategories" bindLabel="name" bindValue="id"
+        [searchable]="true" [clearable]="true" placeholder="Select Category" class="ov-select w-full"
+        appendTo="body"></ng-select>
     </div>
-    <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Status</label>
+    <div>
+      <label class="ov-label">Filter by Status</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        placeholder="Select Status" class="ov-select w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

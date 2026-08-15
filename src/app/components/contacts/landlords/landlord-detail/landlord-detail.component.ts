@@ -185,6 +185,15 @@ export class LandlordDetailComponent implements OnInit {
     { name: 'Invoice Cleared', subscribed: false }
   ];
 
+  get allSubscriptionsSelected(): boolean {
+    return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);
+  }
+
+  toggleAllSubscriptions(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.subscriptions.forEach(s => (s.subscribed = checked));
+  }
+
   // Landlord profile configurations & details
   landlord = {
     id: 31658,

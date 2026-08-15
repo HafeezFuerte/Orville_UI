@@ -167,6 +167,19 @@ export class VendorDetailComponent implements OnInit {
     return this.actionOptions.some((o: any) => o.danger);
   }
 
+  get vendorStatusLabel(): string {
+    return this.vendorData?.status || this.vendorData?.vendor_status || 'Active';
+  }
+
+  get isActiveVendor(): boolean {
+    return (this.vendorStatusLabel || '').toLowerCase() === 'active';
+  }
+
+  get isBlockedVendor(): boolean {
+    const value = (this.vendorStatusLabel || '').toLowerCase();
+    return value === 'blocked' || value === 'inactive';
+  }
+
   onVendorAction(label: string): void {
     this.showActionDropdown = false;
     if (label === 'Edit Vendor') {
@@ -184,6 +197,15 @@ export class VendorDetailComponent implements OnInit {
     { name: 'Contract Ending', subscribed: true },
     { name: 'Contract Send For Signature', subscribed: true }
   ];
+
+  get allSubscriptionsSelected(): boolean {
+    return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);
+  }
+
+  toggleAllSubscriptions(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.subscriptions.forEach(s => (s.subscribed = checked));
+  }
 
   // Vendor profiles
   vendor = {

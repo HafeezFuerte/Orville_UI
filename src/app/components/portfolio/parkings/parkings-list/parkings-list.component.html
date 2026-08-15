@@ -5,11 +5,11 @@
     <p class="sr-only">Manage your property inventory — create, organize, and track all parkings across your portfolio with precision.</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+    <button type="button" class="ov-btn ov-btn-ghost">
       <i class="ri-download-2-line text-[18px]"></i>
       Export
     </button>
-    <button type="button" (click)="toggleAddModal(true)" class="ov-btn ov-btn-primary" data-tooltip="Add Parking">
+    <button type="button" (click)="toggleAddModal(true)" class="ov-btn ov-btn-primary">
       <i class="ri-add-line text-[18px]"></i>
       Add Parking
     </button>
@@ -196,19 +196,18 @@
   </div>
 </div>
 
-<div *ngIf="showAddModal"
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300">
-  <div
-    class="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform transition-all border border-defaultborder flex flex-col mx-4 max-h-[85vh] animate-fade-in">
-    <div class="px-6 py-4 border-b border-defaultborder flex justify-between items-center bg-bodybg">
-      <h6 class="text-sm font-bold text-defaulttextcolor m-0">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
-      <button type="button" (click)="toggleAddModal(false)"
-        class="text-textmuted hover:text-defaulttextcolor bg-light hover:bg-black/5 transition-all p-1.5 rounded-full flex items-center justify-center border-0">
-        <i class="ri-close-line text-lg leading-none"></i>
+<div *ngIf="showAddModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
+      <div>
+        <h6 class="ov-modal__title">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
+      </div>
+      <button type="button" (click)="toggleAddModal(false)" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
 
-    <div class="p-6 flex flex-col gap-4 text-[11px] overflow-y-auto custom-scrollbar">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
         <label class="ov-label">Property <span class="text-danger">*</span></label>
         <ng-select [items]="propertiesList" bindValue="code" placeholder="Search property"
@@ -236,7 +235,7 @@
         </ng-select>
       </div>
 
-      <div class="grid grid-cols-2 gap-3.5">
+      <div class="ov-fields ov-fields--2">
         <div>
           <label class="ov-label">Parking No. <span class="text-danger">*</span></label>
           <input type="text" class="ov-input" placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
@@ -265,14 +264,12 @@
 
       <div>
         <label class="ov-label">Remarks</label>
-        <textarea class="ov-input" rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
+        <textarea class="ov-input !h-auto min-h-[80px]" rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
       </div>
     </div>
 
-    <div class="px-6 py-4 border-t border-defaultborder bg-bodybg flex justify-end gap-2">
-      <button type="button" (click)="toggleAddModal(false)" class="ov-btn ov-btn-ghost">
-        Close
-      </button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="toggleAddModal(false)" class="ov-btn ov-btn-ghost">Close</button>
       <button type="button" (click)="saveParking()" class="ov-btn ov-btn-primary">
         {{ isEditMode ? 'Update' : 'Save' }}
       </button>

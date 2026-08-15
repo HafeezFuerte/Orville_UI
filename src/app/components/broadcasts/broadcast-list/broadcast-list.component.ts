@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -36,28 +36,22 @@ export class BroadcastListComponent implements OnInit {
 
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
-  showFilterPanel: boolean = false;
   showFilterDrawer: boolean = false;
   isLoading: boolean = false;
-
-  toggleDrawer(show: boolean) {
-    this.showFilterDrawer = show;
-  }
+  openActionCode: string | null = null;
 
   pageNo = 0;
   pageSize = 20;
   totalRecords = 0;
 
-  branches = ['Main Branch', 'Branch A'];
-  buildings = ['All Buildings', 'Building 1', 'Building 2'];
-
+  /** Figma 2574:68703 — ID, Subject, Preview, Status, Broadcast Type, Sendable, Scheduled, Date, Created At, Updated At, Action */
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
     { key: 'subject', label: 'Subject', visible: true },
     { key: 'preview', label: 'Preview', visible: true, useTemplate: true },
     { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'type', label: 'Broadcast Type', visible: true },
-    { key: 'contact', label: 'Send To', visible: true },
+    { key: 'type', label: 'Broadcast Type', visible: true, useTemplate: true },
+    { key: 'contact', label: 'Sendable', visible: true, useTemplate: true },
     { key: 'scheduled', label: 'Scheduled', visible: true, useTemplate: true },
     { key: 'scheduled_date', label: 'Date', visible: true },
     { key: 'created_date', label: 'Created At', visible: true },
@@ -71,8 +65,69 @@ export class BroadcastListComponent implements OnInit {
     return this.tableColumns.filter(c => c.visible);
   }
 
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showColumnDropdown = false;
+    this.openActionCode = null;
+  }
+
+  toggleDrawer(show: boolean) {
+    this.showFilterDrawer = show;
+  }
+
+  toggleRowAction(code: string | undefined, event?: Event): void {
+    event?.stopPropagation();
+    if (!code) {
+      return;
+    }
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  rowActionKey(row: any): string {
+    return String(row?.code ?? row?.id ?? '');
+  }
+
   getArabicLookupName(row: any, key: string): string {
-    return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+    return row[localStorage.getItem('selectedLang') === 'EN' ? key : key + '_ar'] || row[key] || '';
+  }
+
+  statusLabel(row: any): string {
+    return this.getArabicLookupName(row, 'status_text') || row?.status_text || row?.status || '-';
+  }
+
+  isPublished(row: any): boolean {
+    const label = String(this.statusLabel(row)).toLowerCase();
+    if (label.includes('draft')) {
+      return false;
+    }
+    if (label.includes('publish')) {
+      return true;
+    }
+    // Legacy numeric status from earlier list styling
+    return row?.status === 108;
+  }
+
+  typeLabel(row: any): string {
+    return this.getArabicLookupName(row, 'type')
+      || row?.type
+      || row?.broadcast_type_text
+      || row?.broadcast_type
+      || '-';
+  }
+
+  /** Figma “Sendable” — API may expose contact / send_to_type / sendable */
+  sendableLabel(row: any): string {
+    return this.getArabicLookupName(row, 'contact')
+      || row?.contact
+      || row?.sendable
+      || row?.send_to_type
+      || row?.send_to
+      || row?.sendTo
+      || '-';
   }
 
   ngOnInit() {
@@ -85,16 +140,16 @@ export class BroadcastListComponent implements OnInit {
     const payload = {
       userid: currentUser?.userId || 1,
       company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      source: "web",
+      clientId: currentUser?.clientId || '74BB6922',
+      source: 'web',
       languageid: 1,
       page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery,
       pagecount: this.pageSize,
-      filter_by: "",
-      filter_list: "",
-      featureid: "BROADCASTS"
+      filter_by: '',
+      filter_list: '',
+      featureid: 'BROADCASTS'
     };
 
     this.portfolioService.getMastersByPaging(payload).subscribe({
@@ -107,7 +162,7 @@ export class BroadcastListComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        console.error("Error loading broadcasts:", err);
+        console.error('Error loading broadcasts:', err);
       }
     });
   }
@@ -122,7 +177,7 @@ export class BroadcastListComponent implements OnInit {
     this.pageNo = 0;
     this.loadData();
   }
- 
+
   navigateToDetail(id: string) {
     this.router.navigate(['/broadcasts', id]);
   }
@@ -135,16 +190,15 @@ export class BroadcastListComponent implements OnInit {
     this.router.navigate(['/broadcasts/create'], { queryParams: { editId: id } });
   }
 
-  get allColumnsSelected(): boolean {
-    return this.tableColumns.every(c => c.visible !== false);
-  }
-
   toggleAllColumns(event: any): void {
     const checked = event.target.checked;
     this.tableColumns.forEach(c => c.visible = checked);
   }
 
-  toggleColumn(col: any) {
-    col.visible = !col.visible;
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find(c => c.key === key);
+    if (col) {
+      col.visible = !col.visible;
+    }
   }
 }

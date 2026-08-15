@@ -1,753 +1,514 @@
-<!-- Work Order Detail Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-2">
-    <a (click)="goBack()" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
-      <i class="ri-arrow-left-line text-lg"></i>
-    </a>
+<!-- Work Order Detail — Figma 2941:95582 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Work Orders" aria-label="Back">
+      <i class="ri-arrow-left-line text-[24px]"></i>
+    </button>
     <div>
-      <h3 class="!text-defaulttextcolor text-[1.125rem]! font-semibold m-0">Work Order details</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Facility</span>
-        <span>/</span>
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Work Orders</span>
-        <span>/ </span>
-        <span class="text-gray-600">Work Order details</span>
-      </div>
+      <h3 class="ov-page-title">Work Order details</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a href="javascript:void(0)" (click)="goBack()">Facility</a></li>
+        <li class="px-2">/</li>
+        <li><a href="javascript:void(0)" (click)="goBack()">Work Order</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Work Order Details</li>
+      </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button (click)="navigateToEdit()" type="button"
-      class="relative z-50 w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-      [attr.data-tooltip]="'Edit Work Order'">
-      <i class="ri-edit-line text-sm"></i>
+  <div class="wo-action relative">
+    <button type="button" class="wo-action__btn"
+      [class.is-open]="showActionMenu"
+      (click)="$event.stopPropagation(); showActionMenu = !showActionMenu"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="showActionMenu">
+      <span>Action</span>
+      <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="14" height="14" class="wo-ico"
+        [class.wo-ico--flip]="showActionMenu" />
     </button>
+    <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+      <div class="ov-action-menu__list">
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('edit')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+          </span>
+          <span>Edit Work order</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('invoice')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/file-invoice.svg" alt="" width="14" height="14">
+          </span>
+          <span>Add Invoice</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('feedback')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/message.svg" alt="" width="14" height="14">
+          </span>
+          <span>Request Feedback</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('report')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
+          </span>
+          <span>Download Report</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('email')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/mail.svg" alt="" width="14" height="14">
+          </span>
+          <span>Send Email</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onWorkOrderAction('activity')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+          </span>
+          <span>View activity</span>
+        </button>
+      </div>
+      <div class="ov-action-menu__footer">
+        <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger"
+          (click)="onWorkOrderAction('archive')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
+          </span>
+          <span>Archive</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-2">
-
-  <!-- LEFT: Information Sidebar -->
-  <div class="xl:col-span-3 flex flex-col gap-2">
-
-    <!-- Header Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 !mb-0">
-      <div class="flex items-start justify-between mb-4">
-        <div>
-          <h4 class="text-sm font-bold text-gray-800 m-0 mb-1">{{ workOrderDetails.title }}</h4>
-          <p class="text-[11px] text-gray-500 m-0">Order: #{{ workOrderDetails.id }}</p>
+<div class="ov-detail-layout">
+  <!-- LEFT SIDEBAR -->
+  <aside class="ov-detail-layout__left flex flex-col gap-4">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h4 class="ov-card-title !text-[16px]">{{ workOrderDetails.title }}</h4>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Order #{{ workOrderDetails.id }}</p>
         </div>
-        <div class="flex items-center gap-1.5">
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold border" 
-                [ngClass]="{
-                  'bg-danger/10 text-danger border-danger/20': workOrderDetails.priority === 'High', 
-                  'bg-warning/10 text-warning border-warning/20': workOrderDetails.priority === 'Medium',
-                  'bg-success/10 text-success border-success/20': workOrderDetails.priority === 'Low'
-                }">{{ workOrderDetails.priority }}</span>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#1f2b45] text-white">{{ workOrderDetails.closingStatus }}</span>
+        <div class="flex flex-shrink-0 items-center gap-2.5">
+          <span [ngClass]="priorityBadgeClass(workOrderDetails.priority)">{{ workOrderDetails.priority }}</span>
+          <span class="wo-badge wo-badge--dark">{{ workOrderDetails.closingStatus }}</span>
         </div>
       </div>
-      <div class="flex items-center justify-end gap-1.5 mt-2">
-        <button type="button"
-          class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'View Activity'">
-          <i class="ri-history-line text-[13px]"></i>
+      <div class="flex gap-5">
+        <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
+          View Activity
         </button>
-        <button (click)="navigateToEdit()" type="button"
-          class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Edit Work Order'">
-          <i class="ri-edit-line text-[13px]"></i>
+        <button type="button" (click)="navigateToEdit()"
+          class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor">
+          Edit Work Order
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" class="wo-ico" />
         </button>
       </div>
-    </div>
 
-    <!-- Information -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden !mb-0">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Information</h5>
-      </div>
-      <div class="p-5 flex flex-col gap-2">
-        <div class="relative">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Status</label>
-          <div (click)="showStatusDropdown = !showStatusDropdown"
-            class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-between cursor-pointer focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full" 
-                    [ngClass]="{
-                      'bg-[#1f2b45]': workOrderDetails.closingStatus === 'Open' || workOrderDetails.closingStatus === 'New', 
-                      'bg-warning': workOrderDetails.closingStatus === 'In Progress', 
-                      'bg-orange-400': workOrderDetails.closingStatus === 'On Hold', 
-                      'bg-success': workOrderDetails.closingStatus === 'Resolved' || workOrderDetails.closingStatus === 'Completed' || workOrderDetails.closingStatus === 'Closed'
-                    }"></span>
-              <span class="text-gray-700 font-medium">{{ workOrderDetails.closingStatus }}</span>
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title m-0">Information</h5>
+
+      <div class="ov-card py-5">
+        <div class="px-5 flex flex-col gap-5">
+          <div class="relative">
+            <label class="ov-label">Status</label>
+            <button type="button" class="wo-status-select" (click)="$event.stopPropagation(); showStatusDropdown = !showStatusDropdown">
+              <span class="flex items-center gap-3 min-w-0">
+                <img src="assets/images/work-order-detail/check-circle.svg" alt="" width="18" height="18" class="wo-ico" />
+                <span class="truncate text-[14px] font-medium text-defaulttextcolor">{{ workOrderDetails.closingStatus }}</span>
+              </span>
+              <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="18" height="18" class="wo-ico" />
+            </button>
+            <div *ngIf="showStatusDropdown" class="wo-status-menu" (click)="$event.stopPropagation()">
+              <button type="button" class="wo-status-menu__item" *ngFor="let s of statusOptions"
+                (click)="selectStatus(s)">{{ s }}</button>
             </div>
-            <i class="ri-arrow-down-s-line text-gray-400"></i>
           </div>
-          <!-- Dropdown menu - progress -->
-          <div *ngIf="showStatusDropdown"
-            class="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100 py-1">
-            <div
-              class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-50">
-              Dropdown menu - progress</div>
-
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#1f2b45]"></span> Open
-            </div>
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-warning"></span> In Progress
-            </div>
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span> On Hold
-            </div>
-            <div
-              class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700 bg-gray-50/50">
-              <span class="w-2.5 h-2.5 rounded-full bg-success"></span> Resolved <i
-                class="ri-check-line ml-auto text-success text-sm"></i>
-            </div>
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-danger"></span> Rejected
-            </div>
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-info"></span> Escalated
-            </div>
-            <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-50 cursor-pointer text-xs text-gray-700">
-              <span class="w-2.5 h-2.5 rounded-full bg-gray-500"></span> Re-Opened
-            </div>
+          <div>
+            <label class="ov-label">Resolved Note</label>
+            <textarea rows="3" placeholder="Enter" class="ov-input wo-textarea"></textarea>
           </div>
         </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Resolved Note</label>
-          <textarea rows="3" placeholder="Enter"
-            class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-gray-700 resize-none"></textarea>
+      </div>
+
+      <div class="ov-card py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Work Order Details</h5>
+        </div>
+        <div class="border-t border-defaultborder my-5"></div>
+        <div class="px-5 flex flex-col gap-3">
+          <div class="wo-kv"><span class="wo-kv__label">ID:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.id }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Title:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.title }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Status:</span><span class="wo-badge wo-badge--dark">{{ workOrderDetails.closingStatus }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Priority:</span><span [ngClass]="priorityBadgeClass(workOrderDetails.priority)">{{ workOrderDetails.priority }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Category:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.category }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Subcategory:</span><span class="wo-kv__value">{{ workOrderDetails.subcategory || '-' }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Signature:</span><span class="wo-kv__value">{{ workOrderDetails.signatures || '-' }}</span></div>
+        </div>
+        <div class="border-t border-defaultborder my-5"></div>
+        <button type="button" class="wo-more-btn" (click)="toggleMoreDetails()">
+          View more details
+          <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="16" height="16"
+            class="wo-ico" [class.wo-ico--flip]="showMoreDetails" />
+        </button>
+        <div class="px-5 flex flex-col gap-3 mt-4" *ngIf="showMoreDetails">
+          <div class="wo-kv"><span class="wo-kv__label">Details:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.description }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Due Date:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Resolved Date:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.resolvedDate }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Created:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.createdDate }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Last Updated:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.lastUpdated }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Estimated Duration:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Recurring Schedule:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Recurring Interval:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Closing Status:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.closingStatus }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Escalated:</span><span class="ov-flag ov-flag--no">No</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Tenant Rejected:</span><span class="ov-flag ov-flag--no">{{ workOrderDetails.tenantRejected }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Tenant Rejection Note:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Asset:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Available Date:</span><span class="wo-kv__value">-</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">Visiting Slot:</span><span class="wo-kv__value wo-kv__value--strong">9AM to 10AM</span></div>
+        </div>
+      </div>
+
+      <div class="ov-card p-6 flex flex-col gap-3.5">
+        <div class="flex items-center gap-2.5">
+          <img src="assets/images/work-order-detail/users.svg" alt="" width="20" height="20" class="wo-ico" />
+          <h5 class="ov-card-title m-0 !font-bold">Personnel</h5>
+        </div>
+        <div class="border-t border-defaultborder"></div>
+        <div class="flex flex-col gap-3 text-[14px] text-textmuted leading-[1.4]">
+          <p class="m-0">Active tenant: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('tenant')">{{ personnel.activeTenant }}</a></p>
+          <p class="m-0">Raised By: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('raisedBy')">{{ personnel.raisedBy }}</a></p>
+          <p class="m-0">Responsible Person(s): <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.responsiblePerson }}</a></p>
+          <p class="m-0">Support Technician: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.technician }}</a></p>
+          <p class="m-0">Vendor: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.vendor }}</a></p>
+          <p class="m-0">Vendor Technician: <span class="text-defaulttextcolor">{{ personnel.vendorTechnician }}</span></p>
+          <p class="m-0">Landlord: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.landlord }}</a></p>
+        </div>
+      </div>
+
+      <div class="ov-card py-5">
+        <div class="px-5">
+          <h5 class="ov-card-title m-0">Custom Fields</h5>
+        </div>
+        <div class="border-t border-defaultborder my-5"></div>
+        <div class="px-5">
+          <p class="ov-kv-empty m-0">No value set</p>
         </div>
       </div>
     </div>
+  </aside>
 
-    <!-- Work Order Details -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden !mb-0">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Work Order Details</h5>
+  <!-- RIGHT CONTENT -->
+  <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="ov-detail-tabs">
+        <button type="button" *ngFor="let tab of tabs" (click)="setActiveTab(tab)"
+          class="ov-detail-tabs__btn" [class.is-active]="activeTab === tab">
+          {{ tab }}
+        </button>
       </div>
-      <div class="p-5">
-        <div class="flex flex-col gap-[2px] text-[11px]">
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">ID:</span>
-            <span class="text-gray-800 font-bold">{{ workOrderDetails.id }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Title:</span>
-            <span class="text-gray-800 font-bold">{{ workOrderDetails.title }}</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Status:</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Open</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Priority:</span>
-            <span class="text-danger font-bold">{{ workOrderDetails.priority }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Category:</span>
-            <span class="text-gray-800">{{ workOrderDetails.category }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Subcategory:</span>
-            <span class="text-gray-800">{{ workOrderDetails.subcategory }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Signatures:</span>
-            <span class="text-gray-800">{{ workOrderDetails.signatures }}</span>
-          </div>
 
-          <div class="text-center my-2">
-            <button
-              class="text-[10px] font-bold text-primary hover:underline bg-transparent border-0 flex items-center gap-1 mx-auto">
-              View more details <i class="ri-arrow-down-s-line"></i>
+      <!-- OVERVIEW -->
+      <div class="p-0" *ngIf="activeTab === 'Overview'">
+        <section class="wo-section">
+          <h5 class="wo-section__title">Attachments</h5>
+          <div class="wo-media-cols">
+            <div class="wo-media-col">
+              <h6 class="wo-media-col__head">Before Images</h6>
+              <p class="wo-media-col__sub">Photos ({{ beforeImages.length }})</p>
+              <div class="wo-thumb" *ngFor="let img of beforeImages">
+                <img [src]="img.url" [alt]="img.name" class="wo-thumb__img" />
+                <div class="wo-thumb__meta">
+                  <span class="flex items-center gap-1.5">
+                    <img src="assets/images/work-order-detail/image-file.svg" alt="" width="14" height="14" />
+                    {{ img.name }}
+                  </span>
+                  <button type="button" class="border-0 bg-transparent p-0" aria-label="Delete">
+                    <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
+                  </button>
+                </div>
+              </div>
+              <div class="wo-empty" *ngIf="!beforeImages.length">
+                <img src="assets/images/work-order-detail/camera.svg" alt="" width="22" height="22" />
+                <p class="wo-empty__title">No before images</p>
+                <p class="wo-empty__sub">Before images will appear here when uploaded</p>
+              </div>
+            </div>
+
+            <div class="wo-media-col">
+              <h6 class="wo-media-col__head">After Images</h6>
+              <div class="wo-empty" *ngIf="!afterImages.length">
+                <img src="assets/images/work-order-detail/camera.svg" alt="" width="22" height="22" />
+                <p class="wo-empty__title">No after images</p>
+                <p class="wo-empty__sub">After images will appear here when uploaded</p>
+              </div>
+              <div class="wo-thumb" *ngFor="let img of afterImages">
+                <img [src]="img.url" [alt]="img.name" class="wo-thumb__img" />
+                <div class="wo-thumb__meta">
+                  <span class="flex items-center gap-1.5">
+                    <img src="assets/images/work-order-detail/image-file.svg" alt="" width="14" height="14" />
+                    {{ img.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="wo-media-col">
+              <h6 class="wo-media-col__head">Videos</h6>
+              <div class="wo-empty wo-empty--dashed" *ngIf="!videos.length">
+                <img src="assets/images/work-order-detail/video.svg" alt="" width="22" height="22" />
+                <p class="wo-empty__title">No videos</p>
+                <p class="wo-empty__sub">Videos will appear here when uploaded</p>
+              </div>
+              <div class="wo-thumb" *ngFor="let v of videos">
+                <div class="wo-thumb__img wo-thumb__img--video">{{ v.name }}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="wo-section">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h5 class="wo-section__title !mb-0">Costs</h5>
+            <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px]" (click)="openAddCostModal()">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico" />
+              Add Additional Cost
             </button>
           </div>
-
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Details:</span>
-            <span class="text-gray-800">{{ workOrderDetails.description }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Due Date:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Resolved Date:</span>
-            <span class="text-gray-800">{{ workOrderDetails.resolvedDate }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Created:</span>
-            <span class="text-gray-800">{{ workOrderDetails.createdDate }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Last Updated:</span>
-            <span class="text-gray-800">{{ workOrderDetails.lastUpdated }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Estimated Duration:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Recurring Schedule:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Recurring Interval:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Closing Status:</span>
-            <span class="text-gray-800 font-bold">{{ workOrderDetails.closingStatus }}</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Escalated:</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">No</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Tenant Rejected:</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">{{
-              workOrderDetails.tenantRejected }}</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Tenant Rejection Note:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Asset:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2">
-            <span class="text-gray-500 w-28 shrink-0">Available Date:</span>
-            <span class="text-gray-800">-</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Visiting Slot:</span>
-            <span class="text-gray-800 font-bold">9AM to 10AM</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Personnel -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden !mb-0">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Personnel</h5>
-      </div>
-      <div class="p-5">
-        <div class="flex flex-col gap-[2px] text-[11px]">
-          <!-- Active Tenant -->
-          <div class="flex gap-2 items-center relative">
-            <span class="text-gray-500 w-28 shrink-0">Active Tenant:</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer"
-              (click)="togglePersonnelPopup('tenant')">{{ personnel.activeTenant }}</span>
-
-            <!-- Tenant Details Popup -->
-            <div *ngIf="activePersonnelPopup === 'tenant'"
-              class="absolute z-50 left-full ml-2 top-[-20px] w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-              <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-white">
-                <h5 class="text-xs font-bold text-gray-800 m-0">Tenant Details</h5>
-                <button
-                  class="text-[10px] text-gray-400 hover:text-gray-600 font-semibold bg-transparent border-0 flex items-center gap-1 cursor-pointer">View
-                  <i class="ri-arrow-right-line"></i></button>
-              </div>
-              <div class="p-4 flex flex-col gap-3 text-[11px] bg-white">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-8 h-8 rounded-full bg-success/10 text-success flex items-center justify-center font-bold">
-                    JH</div>
-                  <div>
-                    <div class="font-bold text-gray-800">James T. Heal</div>
-                    <div class="text-gray-400 text-[9px]">Individual</div>
-                  </div>
-                </div>
-                <div class="flex flex-col gap-1.5 mt-1">
-                  <div class="flex items-start gap-2">
-                    <i class="ri-mail-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Email</div>
-                      <div class="text-gray-700 font-medium">james_T_Heal&#64;gmail.com</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-phone-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Phone</div>
-                      <div class="text-gray-700 font-medium">+971 0005445</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-user-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Tenant Type</div>
-                      <div class="text-gray-700 font-medium">Individual Tenant</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-map-pin-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Location</div>
-                      <div class="text-gray-700 font-medium">Dubai Marina, Tower A, Dubai</div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  class="w-full mt-2 py-1.5 rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1">Edit
-                  Tenant <i class="ri-arrow-right-line"></i></button>
-              </div>
+          <div class="wo-cost-table">
+            <div class="wo-cost-table__head">
+              <span class="flex-1">Detail</span>
+              <span class="w-[240px] max-w-[30%]">Category</span>
+              <span class="w-[180px] max-w-[22%]">Cost</span>
+              <span class="w-[100px] text-end">Actions</span>
             </div>
-          </div>
-
-          <!-- Raised By -->
-          <div class="flex gap-2 items-center relative">
-            <span class="text-gray-500 w-28 shrink-0">Raised By:</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer"
-              (click)="togglePersonnelPopup('raisedBy')">{{ personnel.raisedBy }}</span>
-
-            <!-- Contact Details Popup -->
-            <div *ngIf="activePersonnelPopup === 'raisedBy'"
-              class="absolute z-50 left-full ml-2 top-[-20px] w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-              <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-white">
-                <h5 class="text-xs font-bold text-gray-800 m-0">Contact details</h5>
-                <button
-                  class="text-[10px] text-gray-400 hover:text-gray-600 font-semibold bg-transparent border-0 flex items-center gap-1 cursor-pointer">View
-                  <i class="ri-arrow-right-line"></i></button>
-              </div>
-              <div class="p-4 flex flex-col gap-3 text-[11px] bg-white">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-8 h-8 rounded-full bg-warning/10 text-warning flex items-center justify-center font-bold">
-                    ZR</div>
-                  <div>
-                    <div class="font-bold text-gray-800">Zaid Rahman</div>
-                    <div class="text-gray-400 text-[9px]">Individual</div>
-                  </div>
-                </div>
-                <div class="flex flex-col gap-1.5 mt-1">
-                  <div class="flex items-start gap-2">
-                    <i class="ri-mail-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Email</div>
-                      <div class="text-gray-700 font-medium">zaid_r&#64;gmail.com</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-phone-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Phone</div>
-                      <div class="text-gray-700 font-medium">+971 0005445</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-user-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Tenant Type</div>
-                      <div class="text-gray-700 font-medium">Individual Tenant</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <i class="ri-map-pin-line text-gray-400 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="text-gray-400 text-[10px]">Location</div>
-                      <div class="text-gray-700 font-medium">Dubai Marina, Tower A, Dubai</div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  class="w-full mt-2 py-1.5 rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1">Edit
-                  <i class="ri-arrow-right-line"></i></button>
-              </div>
+            <div class="wo-cost-table__row" *ngFor="let row of costs">
+              <span class="flex-1 font-medium text-defaulttextcolor text-[14px]">{{ row.detail }}</span>
+              <span class="w-[240px] max-w-[30%]"><span class="wo-cat">{{ row.category }}</span></span>
+              <span class="w-[180px] max-w-[22%] font-semibold text-[14px] text-defaulttextcolor">{{ row.cost }}</span>
+              <span class="w-[100px] flex justify-end gap-2">
+                <button type="button" class="wo-icon-sq" aria-label="Edit">
+                  <img src="assets/images/work-order-detail/pencil.svg" alt="" width="16" height="16" />
+                </button>
+                <button type="button" class="wo-icon-sq wo-icon-sq--danger" aria-label="Delete">
+                  <img src="assets/images/work-order-detail/trash.svg" alt="" width="16" height="16" />
+                </button>
+              </span>
             </div>
+            <p class="text-[13px] text-textmuted m-0 py-4" *ngIf="!costs.length">No costs added yet.</p>
           </div>
+        </section>
 
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Responsible Person(s):</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.responsiblePerson
-              }}</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Support Technician:</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.technician }}</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Vendor:</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.vendor }}</span>
-          </div>
-          <div class="flex gap-2 items-center">
-            <span class="text-gray-500 w-28 shrink-0">Landlord:</span>
-            <span class="text-primary font-semibold hover:underline cursor-pointer">{{ personnel.landlord }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Custom Fields -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden !mb-0">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Custom Fields</h5>
-      </div>
-      <div class="p-5">
-        <p class="text-xs text-gray-400 italic m-0">No custom fields defined</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT: Main Content Tabs -->
-  <div class="xl:col-span-9 flex flex-col gap-2">
-    <!-- Tabs Header -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2 !mb-0">
-      <button *ngFor="let tab of tabs" (click)="activeTab = tab"
-        [class]="activeTab === tab ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
-        class="px-4 py-2 text-xs rounded-md border border-gray-200 transition-all whitespace-nowrap">
-        {{ tab }}
-      </button>
-    </div>
-
-    <!-- OVERVIEW TAB -->
-    <div *ngIf="activeTab === 'Overview'"
-      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4 !mb-0">
-      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h5 class="text-sm font-bold text-gray-800 m-0">Overview</h5>
-      </div>
-      <div class="p-6 flex flex-col gap-2">
-
-        <!-- Attachments -->
-        <div class="flex flex-col gap-2 !mb-0">
-          <h5 class="text-sm font-bold text-gray-800 m-0">Attachments</h5>
-          <div class="grid grid-cols-3 gap-2">
-            <!-- Before Images -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
-              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
-                <p class="text-[11px] font-bold text-gray-700 m-0">Before Images</p>
-              </div>
-              <div class="p-4 flex flex-col items-center justify-center min-h-[166px]">
-                <div
-                  class="w-full h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 relative group cursor-pointer">
-                  <div class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-400">
-                    <i class="ri-image-2-line text-3xl"></i>
-                    <!-- Placeholder image text -->
-                    <span
-                      class="absolute bottom-2 left-2 text-[10px] font-bold text-gray-500 bg-white/80 px-1 rounded">24.5
-                      °C</span>
-                  </div>
-                  <div
-                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <i class="ri-eye-line text-white text-xl"></i>
-                  </div>
-                </div>
-                <p class="text-[10px] text-gray-500 mt-2 flex items-center gap-1 self-start"><i
-                    class="ri-image-line"></i> image.jpg</p>
-              </div>
-            </div>
-            <!-- After Images -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
-              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
-                <p class="text-[11px] font-bold text-gray-700 m-0">After Images</p>
-              </div>
-              <div class="p-4 flex items-center justify-center min-h-[166px]">
-                <div class="text-center text-gray-400">
-                  <i class="ri-image-line text-2xl mb-1 block text-gray-300"></i>
-                  <p class="text-[10px] m-0 font-medium">No after images</p>
-                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">After images will appear here when uploaded</p>
-                </div>
-              </div>
-            </div>
-            <!-- Videos -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
-              <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
-                <p class="text-[11px] font-bold text-gray-700 m-0">Videos</p>
-              </div>
-              <div class="p-4 flex items-center justify-center min-h-[166px]">
-                <div class="text-center text-gray-400">
-                  <i class="ri-video-line text-2xl mb-1 block text-gray-300"></i>
-                  <p class="text-[10px] m-0 font-medium">No videos</p>
-                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">Videos will appear here when uploaded</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Costs -->
-        <div class="flex flex-col gap-[2px] !mb-2">
-          <div class="flex items-center justify-between mb-2">
-            <h5 class="text-sm font-bold text-gray-800 m-0">Costs</h5>
-            <button (click)="openAddCostModal()"
-              class="px-3 py-1.5 text-[10px] rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
-              <i class="ri-add-line"></i> Add Additional Cost
-            </button>
-          </div>
-          <app-shared-table [columns]="costColumns" [data]="costs" [hasActions]="true" [totalRecords]="costs.length"
-            [pageSize]="10">
-            <ng-template #colTemplate let-row="row" let-col="col">
-              <ng-container [ngSwitch]="col.key">
-                <ng-container *ngSwitchCase="'action'">
-                  <div class="flex items-center justify-center gap-2">
-                    <button class="text-gray-400 hover:text-primary transition-colors bg-transparent border-0"><i
-                        class="ri-pencil-line"></i></button>
-                    <button class="text-gray-400 hover:text-danger transition-colors bg-transparent border-0"><i
-                        class="ri-delete-bin-line"></i></button>
-                  </div>
-                </ng-container>
-              </ng-container>
-            </ng-template>
-          </app-shared-table>
-        </div>
-
-        <!-- Vendor Technician Time Track -->
-        <div class="flex flex-col gap-[2px] !mb-2">
-          <h5 class="text-sm font-bold text-gray-800 m-0 mb-2">Vendor Technician Time Track</h5>
-          <app-shared-table [columns]="timeTrackColumns" [data]="timeTracks" [hasActions]="false"
-            [totalRecords]="timeTracks.length" [pageSize]="10">
-            <ng-template #colTemplate let-row="row" let-col="col">
-              <ng-container [ngSwitch]="col.key">
-                <ng-container *ngSwitchCase="'technician'">
+        <section class="wo-section">
+          <h5 class="wo-section__title">Vendor Technician Time Track</h5>
+          <div class="overflow-x-auto">
+            <app-shared-table [columns]="timeTrackColumns" [data]="timeTracks" [hasActions]="false"
+              [totalRecords]="timeTracks.length" [pageSize]="10">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container *ngIf="col.key === 'technician'">
                   <div class="flex items-center gap-2">
-                    <div
-                      class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold">
-                      {{ row.technician.charAt(0) }}</div>
-                    <span class="text-xs text-gray-700 font-medium">{{ row.technician }}</span>
+                    <span class="wo-avatar">{{ initials(row.technician) }}</span>
+                    <span class="text-[14px] font-medium text-defaulttextcolor">{{ row.technician }}</span>
                   </div>
                 </ng-container>
-              </ng-container>
-            </ng-template>
-          </app-shared-table>
-        </div>
+              </ng-template>
+            </app-shared-table>
+          </div>
+        </section>
 
-        <!-- Invoices -->
-        <div class="flex flex-col gap-[2px] !mb-2">
-          <h5 class="text-sm font-bold text-gray-800 m-0 mb-2">Invoices</h5>
-          <app-shared-table [columns]="invoiceColumns" [data]="invoices" [hasActions]="false"
-            [totalRecords]="invoices.length" [pageSize]="10">
+        <section class="wo-section !border-b-0">
+          <h5 class="wo-section__title">Invoices</h5>
+          <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
+            <div class="ov-search flex-1 max-w-[320px]">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input type="text" class="ov-input ov-search__input" placeholder="Search">
+            </div>
+            <div class="ov-toolbar__btns">
+              <button type="button" class="ov-btn ov-btn-toolbar">
+                <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+                Filter
+              </button>
+              <button type="button" class="ov-btn ov-btn-toolbar">
+                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+                Column
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <app-shared-table [columns]="invoiceColumns" [data]="invoices" [hasActions]="false"
+              [totalRecords]="invoices.length" [pageSize]="10">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <ng-container *ngSwitchCase="'id'">
+                    <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'status'">
+                    <span class="wo-badge" [ngClass]="{
+                      'wo-badge--danger': row.status === 'Unpaid' || row.status === 'Overdue',
+                      'wo-badge--dark': row.status === 'Paid',
+                      'wo-badge--soft': row.status === 'Draft'
+                    }">{{ row.status }}</span>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
+          </div>
+        </section>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="p-5" *ngIf="activeTab === 'Messages'">
+        <div class="wo-messages">
+          <aside class="wo-messages__list">
+            <div class="wo-messages__list-head">
+              <h5 class="ov-card-title m-0">Messages</h5>
+            </div>
+            <button type="button" class="wo-messages__item is-active">
+              <span class="wo-avatar wo-avatar--lg">MZ</span>
+              <span class="min-w-0 flex-1 text-start">
+                <span class="flex items-center justify-between gap-2">
+                  <span class="text-[13px] font-semibold text-defaulttextcolor">Mohammed Zaid</span>
+                  <span class="text-[10px] text-textmuted">09:58</span>
+                </span>
+                <span class="block text-[12px] text-textmuted line-clamp-2 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+              </span>
+            </button>
+          </aside>
+          <div class="wo-messages__thread">
+            <div class="wo-messages__thread-head">
+              <div>
+                <h5 class="ov-card-title m-0">Zaid Rahman</h5>
+                <span class="text-[12px] text-textmuted">Tenant</span>
+              </div>
+              <span class="wo-badge wo-badge--success">Active</span>
+            </div>
+            <div class="wo-messages__body">
+              <div class="text-center">
+                <span class="wo-day-chip">Today</span>
+              </div>
+              <div *ngFor="let msg of messages" class="flex flex-col w-full"
+                [class.items-end]="msg.isMe" [class.items-start]="!msg.isMe">
+                <div class="flex items-end gap-3 max-w-[80%]" [class.flex-row-reverse]="msg.isMe">
+                  <span class="wo-avatar" [class.wo-avatar--me]="msg.isMe">{{ msg.avatar }}</span>
+                  <div class="flex flex-col" [class.items-end]="msg.isMe">
+                    <div class="flex items-center gap-2 mb-1 px-1 text-[11px]">
+                      <span class="font-semibold text-defaulttextcolor" *ngIf="!msg.isMe">{{ msg.sender }}</span>
+                      <span class="text-textmuted">{{ msg.time }}</span>
+                    </div>
+                    <div class="wo-bubble" [class.wo-bubble--me]="msg.isMe">{{ msg.text }}</div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-[13px] text-textmuted text-center m-0" *ngIf="!messages.length">No messages yet.</p>
+            </div>
+            <div class="wo-messages__composer">
+              <button type="button" class="wo-composer-attach" aria-label="Attach">
+                <i class="ri-attachment-2 text-[18px]"></i>
+              </button>
+              <input type="text" [(ngModel)]="newMessage" (keydown.enter)="sendMessage()"
+                placeholder="Write a message..." class="wo-composer-input" />
+              <button type="button" (click)="sendMessage()" class="wo-composer-send" aria-label="Send">
+                <i class="ri-send-plane-fill text-[14px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="p-5" *ngIf="activeTab === 'Notes'">
+        <h5 class="ov-card-title mb-4">Notes</h5>
+        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
+      </div>
+
+      <!-- QUOTATIONS -->
+      <div class="p-5" *ngIf="activeTab === 'Quotations'">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h5 class="ov-card-title m-0">Quotations</h5>
+          <button type="button" class="ov-btn ov-btn-primary !h-9" data-tooltip="Request Quotation">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico wo-ico--on-primary" />
+            Request Quotation
+          </button>
+        </div>
+        <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
+          <div class="ov-search flex-1 max-w-[280px]">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+            <input type="text" class="ov-input ov-search__input" placeholder="Search...">
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <app-shared-table [columns]="quotationColumns" [data]="quotations" [hasActions]="false"
+            [totalRecords]="quotations.length" [pageSize]="10">
             <ng-template #colTemplate let-row="row" let-col="col">
               <ng-container [ngSwitch]="col.key">
                 <ng-container *ngSwitchCase="'id'">
-                  <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
                 </ng-container>
                 <ng-container *ngSwitchCase="'status'">
-                  <span *ngIf="row.status === 'Unpaid'"
-                    class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">Unpaid</span>
-                  <span *ngIf="row.status === 'Paid'"
-                    class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Paid</span>
-                  <span *ngIf="row.status === 'Draft'"
-                    class="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-200 text-gray-700">Draft</span>
-                  <span *ngIf="row.status === 'Overdue'"
-                    class="px-2 py-0.5 rounded text-[9px] font-bold bg-warning/10 text-warning">Overdue</span>
+                  <span class="wo-badge" [ngClass]="{
+                    'wo-badge--soft': row.status === 'Pending',
+                    'wo-badge--dark': row.status === 'Approved',
+                    'wo-badge--danger': row.status === 'Rejected'
+                  }">{{ row.status }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'action'">
+                  <a href="javascript:void(0)" class="ov-link text-[12px] font-semibold">View Activity</a>
                 </ng-container>
               </ng-container>
             </ng-template>
           </app-shared-table>
         </div>
-
-      </div>
-    </div>
-
-    <!-- MESSAGES TAB -->
-    <div *ngIf="activeTab === 'Messages'" class="flex gap-2  pb-4 h-[600px]">
-
-      <!-- Left Pane (Chat List) -->
-      <div
-        class="w-[300px] shrink-0 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100 bg-white">
-          <h5 class="text-sm font-bold text-gray-800 m-0">Messages</h5>
-        </div>
-        <div class="flex-1 overflow-y-auto bg-white">
-          <!-- Chat Item -->
-          <div
-            class="p-4 border-b border-gray-50 flex items-start gap-3 hover:bg-gray-50/50 cursor-pointer bg-gray-50/30">
-            <div
-              class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center font-bold text-sm shrink-0 text-[#c59e5e]">
-              MZ</div>
-            <div class="flex-1 overflow-hidden">
-              <div class="flex items-center justify-between mb-1">
-                <h6 class="text-xs font-bold text-gray-800 m-0">Mohammed Zaid</h6>
-                <span class="text-[10px] text-gray-400">09:58</span>
-              </div>
-              <p class="text-[10px] text-gray-500 m-0 line-clamp-2 leading-relaxed">Lorem ipsum dolor sit amet,
-                consectetur adipiscing elit. Nullam interdum finibus mi vel bibendum.</p>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- Right Pane (Active Chat) -->
-      <div class="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <div class="flex flex-col">
-            <h5 class="text-sm font-bold text-gray-800 m-0 mb-1">Zaid Rahman</h5>
-            <span class="text-[10px] text-gray-500">Tenant</span>
-          </div>
-          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold text-success bg-success/10">
-            <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
-            Active
-          </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-          <div class="text-center">
-            <span
-              class="px-3 py-1 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-semibold text-gray-500">Today</span>
-          </div>
-
-          <div *ngFor="let msg of messages" class="flex flex-col w-full" [class.items-end]="msg.isMe"
-            [class.items-start]="!msg.isMe">
-
-            <div class="flex items-end gap-3 max-w-[80%]" [class.flex-row-reverse]="msg.isMe">
-              <!-- Avatar -->
-              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm"
-                [class.bg-white]="!msg.isMe" [class.border]="!msg.isMe" [class.border-gray-200]="!msg.isMe"
-                [class.text-[#c59e5e]]="!msg.isMe" [class.bg-[#c59e5e]]="msg.isMe" [class.text-white]="msg.isMe">
-                <span class="text-[10px] font-bold">{{ msg.avatar }}</span>
-              </div>
-
-              <!-- Message Bubble -->
-              <div class="flex flex-col" [class.items-end]="msg.isMe">
-                <div class="flex items-center gap-2 mb-1 px-1">
-                  <span class="text-[11px] font-bold text-gray-800" *ngIf="!msg.isMe">{{ msg.sender }}</span>
-                  <span class="text-[9px] text-gray-400" *ngIf="!msg.isMe">&bull; {{ msg.time }}</span>
-                  <span class="text-[9px] text-gray-400" *ngIf="msg.isMe">You &bull; {{ msg.time }}</span>
-                </div>
-                <div class="p-4 rounded-xl shadow-sm text-[11px] leading-relaxed" [class.bg-white]="!msg.isMe"
-                  [class.border]="!msg.isMe" [class.border-gray-100]="!msg.isMe" [class.text-gray-700]="!msg.isMe"
-                  [class.rounded-bl-none]="!msg.isMe" [class.bg-[#1f2b45]]="msg.isMe" [class.text-white]="msg.isMe"
-                  [class.rounded-br-none]="msg.isMe">
-                  {{ msg.text }}
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="p-4 border-t border-gray-100 bg-white">
-          <div
-            class="relative flex items-center bg-white border border-gray-200 rounded-lg pr-2 overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all shadow-sm">
-            <button
-              class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 bg-transparent border-0"><i
-                class="ri-attachment-2 text-lg"></i></button>
-            <input type="text" [(ngModel)]="newMessage" (keydown.enter)="sendMessage()" placeholder="Write a message..."
-              class="flex-1 py-3 px-2 text-xs bg-transparent border-0 focus:outline-none" />
-            <button (click)="sendMessage()"
-              class="w-8 h-8 rounded bg-[#1f2b45] text-white flex items-center justify-center hover:bg-[#131b2e] transition-colors border-0">
-              <i class="ri-send-plane-fill text-sm"></i>
-            </button>
-          </div>
-        </div>
-
+      <!-- ATTACHMENTS -->
+      <div class="p-5" *ngIf="activeTab === 'Attachments'">
+        <h5 class="ov-card-title mb-4">Attachments</h5>
+        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
       </div>
     </div>
-
-    <!-- NOTES TAB -->
-    <div *ngIf="activeTab === 'Notes'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in !mb-0">
-      <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
-    </div>
-
-    <!-- QUOTATIONS TAB -->
-    <div *ngIf="activeTab === 'Quotations'"
-      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col pt-2 pb-4">
-      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h5 class="text-sm font-bold text-gray-800 m-0">Quotations</h5>
-      </div>
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="relative w-64">
-            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" placeholder="Search..."
-              class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
-          </div>
-          <button type="button"
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Request Quotation'">
-            <i class="ri-add-line text-[1rem]"></i>
-          </button>
-        </div>
-        <app-shared-table [columns]="quotationColumns" [data]="quotations" [hasActions]="false"
-          [totalRecords]="quotations.length" [pageSize]="10">
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'id'">
-                <span class="text-xs text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="'status'">
-                <span *ngIf="row.status === 'Pending'"
-                  class="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-100 text-gray-700">Pending</span>
-                <span *ngIf="row.status === 'Approved'"
-                  class="px-2 py-0.5 rounded text-[9px] font-bold bg-primary text-white">Approved</span>
-                <span *ngIf="row.status === 'Rejected'"
-                  class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger">Rejected</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="'action'">
-                <span class="text-[10px] text-primary font-bold hover:underline cursor-pointer whitespace-nowrap">View
-                  Activity</span>
-              </ng-container>
-            </ng-container>
-          </ng-template>
-        </app-shared-table>
-      </div>
-    </div>
-
-    <!-- ATTACHMENTS TAB -->
-    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in !mb-0">
-      <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
-    </div>
-
   </div>
-
 </div>
 
 <!-- Modal: Add Additional Cost -->
-<div *ngIf="showAddCostModal"
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="bg-white rounded-xl shadow-xl w-[450px] overflow-hidden border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <h4 class="text-sm font-bold text-gray-800 m-0">Add Additional Cost</h4>
-      <button (click)="closeAddCostModal()" class="text-gray-400 hover:text-gray-700 bg-transparent border-0"><i
-          class="ri-close-line text-lg"></i></button>
-    </div>
-    <div class="p-6 flex flex-col gap-2">
+<div *ngIf="showAddCostModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal ov-modal--sm">
+    <div class="ov-modal__header">
       <div>
-        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cost Description <span
-            class="text-danger">*</span></label>
-        <input type="text" [(ngModel)]="costDescription" placeholder="Enter"
-          class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20" />
+        <h4 class="ov-modal__title">Add Additional Cost</h4>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <button type="button" (click)="closeAddCostModal()" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
+      </button>
+    </div>
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div>
+        <label class="ov-label">Cost Description <span class="text-danger">*</span></label>
+        <input type="text" [(ngModel)]="costDescription" placeholder="Enter" class="ov-input" />
+      </div>
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Category <span
-              class="text-danger">*</span></label>
-          <select [(ngModel)]="costCategory"
-            class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20">
+          <label class="ov-label">Category <span class="text-danger">*</span></label>
+          <select [(ngModel)]="costCategory" class="ov-input">
             <option value="" disabled selected>Select Category</option>
             <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cost <span
-              class="text-danger">*</span></label>
-          <input type="number" [(ngModel)]="costAmount" placeholder="0.00"
-            class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20" />
+          <label class="ov-label">Cost <span class="text-danger">*</span></label>
+          <input type="number" [(ngModel)]="costAmount" placeholder="0.00" class="ov-input" />
         </div>
       </div>
       <div>
-        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Date</label>
-        <input type="date" [(ngModel)]="costDate"
-          class="w-full px-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-gray-500" />
-        <p class="text-[9px] text-gray-400 mt-1 mb-0">Leaving this empty sets the cost to the date of the Work Order.
-        </p>
+        <label class="ov-label">Date</label>
+        <input type="date" [(ngModel)]="costDate" class="ov-input" />
+        <span class="ov-modal__hint">Leaving this empty sets the cost to the date of the Work Order.</span>
       </div>
-      <label class="flex items-center gap-2 cursor-pointer mt-2">
-        <input type="checkbox" [(ngModel)]="includeInTotal"
-          class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary/30" />
-        <span class="text-[11px] font-medium text-gray-700">Include this cost to the total cost</span>
+      <label class="ov-modal__check">
+        <input type="checkbox" [(ngModel)]="includeInTotal" />
+        <span>Include this cost to the total cost</span>
       </label>
     </div>
-    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/50">
-      <button (click)="closeAddCostModal()"
-        class="px-5 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 transition-colors border-0 bg-transparent">Cancel</button>
-      <button (click)="saveCost()"
-        class="px-5 py-2 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">Save</button>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="closeAddCostModal()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="saveCost()" class="ov-btn ov-btn-primary">Save</button>
     </div>
   </div>
 </div>

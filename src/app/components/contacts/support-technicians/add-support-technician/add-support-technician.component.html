@@ -202,10 +202,8 @@
             <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Auto assign tasks</p>
           </div>
           <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="assignment" [(ngModel)]="assignment" class="hidden">
-            <label for="assignment" class="toggle-label block w-10 h-5.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="assignment">
-              <span class="dot absolute left-1 top-1 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-4.5]="assignment"></span>
-            </label>
+            <input type="checkbox" id="assignment" [(ngModel)]="assignment">
+            <label for="assignment" class="label-primary"></label>
           </div>
         </div>
 
@@ -215,10 +213,8 @@
             <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Check if qualifies for maintenance jobs</p>
           </div>
           <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="qualifies" [(ngModel)]="qualifies" class="hidden">
-            <label for="qualifies" class="toggle-label block w-10 h-5.5 rounded-full bg-gray-200 cursor-pointer relative transition-colors duration-300" [class.bg-primary]="qualifies">
-              <span class="dot absolute left-1 top-1 bg-white w-3.5 h-3.5 rounded-full transition-transform duration-300" [class.translate-x-4.5]="qualifies"></span>
-            </label>
+            <input type="checkbox" id="qualifies" [(ngModel)]="qualifies">
+            <label for="qualifies" class="label-primary"></label>
           </div>
         </div>
       </div>
@@ -257,67 +253,63 @@
 </div>
 
 <!-- Modal: Add Document -->
-<div *ngIf="isAddDocModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-  <div class="bg-white rounded-xl shadow-lg w-[450px] max-w-[95%] overflow-hidden flex flex-col">
-    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Add document</h6>
-      <button class="text-gray-400 hover:text-gray-700 transition-colors" (click)="toggleDocModal(false)">
-        <i class="ri-close-line text-lg"></i>
+<div *ngIf="isAddDocModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal ov-modal--sm">
+    <div class="ov-modal__header">
+      <div>
+        <h6 class="ov-modal__title">Add document</h6>
+      </div>
+      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleDocModal(false)" aria-label="Close">
+        <i class="ri-close-line text-[18px]"></i>
       </button>
     </div>
-    
-    <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-      <div class="bg-primary/5 border border-primary/20 rounded-md p-3 text-[10px] text-primary mb-2 flex gap-2 items-start">
-        <i class="ri-information-line mt-0.5 text-sm"></i>
+
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-[13px] text-primary">
+        <i class="ri-information-line mt-0.5 text-[16px]"></i>
         <span>Select document type, enter details and upload the document to attach it to the profile.</span>
       </div>
 
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Document Type <span class="text-danger">*</span></label>
-        <ng-select [items]="docTypes" appendTo="body" placeholder="Search Document Type" class="ng-select-sm w-full"></ng-select>
-        <span class="text-[9px] text-gray-500 mt-1 block">Please enter mapping in the field below to automatically map the document</span>
+        <label class="ov-label">Document Type <span class="text-danger">*</span></label>
+        <ng-select [items]="docTypes" appendTo="body" placeholder="Search Document Type" class="ov-select w-full"></ng-select>
+        <span class="ov-modal__hint">Please enter mapping in the field below to automatically map the document</span>
       </div>
 
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Document number</label>
-        <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" placeholder="Enter">
+        <label class="ov-label">Document number</label>
+        <input type="text" class="ov-input" placeholder="Enter">
       </div>
 
-      <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Issue Date</label>
-          <div class="input-group relative">
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
-            <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><i class="ri-calendar-2-line text-gray-500"></i></button>
-          </div>
+          <label class="ov-label">Issue Date</label>
+          <input type="text" class="ov-input" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
         </div>
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Expiry Date</label>
-          <div class="input-group relative">
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
-            <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><i class="ri-calendar-2-line text-gray-500"></i></button>
-          </div>
+          <label class="ov-label">Expiry Date</label>
+          <input type="text" class="ov-input" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
         </div>
       </div>
 
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Visible for verify</label>
-        <ng-select [items]="['None', 'Tenant', 'Landlord']" appendTo="body" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+        <label class="ov-label">Visible for verify</label>
+        <ng-select [items]="['None', 'Tenant', 'Landlord']" appendTo="body" placeholder="Select" class="ov-select w-full"></ng-select>
       </div>
 
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Note Add / Attach <span class="text-danger">*</span></label>
-        <div class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer mt-1">
-          <div class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
+        <label class="ov-label">Note Add / Attach <span class="text-danger">*</span></label>
+        <div class="mt-1 flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-defaultborder bg-bodybg p-6 hover:bg-light transition-colors">
+          <div class="flex h-10 w-10 items-center justify-center rounded-md border border-defaultborder bg-white text-textmuted shadow-sm">
             <i class="ri-upload-cloud-2-line text-lg"></i>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="px-5 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-      <button class="px-5 py-2 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors font-bold shadow-sm" (click)="toggleDocModal(false)">Cancel</button>
-      <button class="px-5 py-2 text-xs rounded-md bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-colors font-bold shadow-sm border-0" (click)="toggleDocModal(false)">Save</button>
+
+    <div class="ov-modal__footer">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleDocModal(false)">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="toggleDocModal(false)">Save</button>
     </div>
   </div>
 </div>

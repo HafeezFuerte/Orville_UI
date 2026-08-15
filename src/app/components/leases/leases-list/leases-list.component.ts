@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 
-export interface Lease {   
+export interface Lease {
   id: string;
   code: string;
   leaseName: string;
@@ -34,8 +34,9 @@ export class LeasesListComponent implements OnInit {
   isLoading: boolean = false;
   activeStatusFilter: string = 'All';
   isDrawerOpen: boolean = false;
+  showColumnDropdown = false;
+  openActionId: string | null = null;
 
-  // Filter Drawer fields
   filterTenant: string = '';
   filterProperty: string = '';
   filterStatus: string | null = null;
@@ -44,6 +45,7 @@ export class LeasesListComponent implements OnInit {
   pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
+  totalPages = 0;
 
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -54,10 +56,10 @@ export class LeasesListComponent implements OnInit {
     { key: 'property', label: 'Property', visible: true },
     { key: 'status', label: 'Status', visible: true, useTemplate: true },
     { key: 'rent', label: 'Rent (AED)', visible: true, useTemplate: true },
-    { key: 'startDate', label: 'Start Date', visible: true }
+    { key: 'startDate', label: 'Start Date', visible: true },
+    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
-  // Metrics
   metrics = {
     revenue: 'AED 4.3 M',
     totalLeases: 24183,
@@ -66,7 +68,6 @@ export class LeasesListComponent implements OnInit {
     expiringLeases: 420
   };
 
-  // Mock Data
   allLeases: Lease[] = [
     { id: '31650', code: 'LSE-31650', leaseName: 'Lease - 31650 - Marina Heights Towers', tenant: 'James T. Hirai', legalCase: 'No', unit: 'Apartment 205-PR-4', property: 'Marina Heights Tower', status: 'Draft', rent: 24000.00, startDate: '07-01-2026' },
     { id: '31651', code: 'LSE-31651', leaseName: 'Lease - 31651 - Marina Heights Towers', tenant: 'Myo Thet', legalCase: 'No', unit: 'Apartment 205-PR-4', property: 'Marina Heights Tower', status: 'Active', rent: 24000.00, startDate: '07-01-2026' },
@@ -79,6 +80,7 @@ export class LeasesListComponent implements OnInit {
   ];
 
   filteredLeases: Lease[] = [];
+  paginatedLeases: Lease[] = [];
 
   ngOnInit() {
     this.applyFilters();
@@ -86,23 +88,18 @@ export class LeasesListComponent implements OnInit {
 
   applyFilters() {
     this.filteredLeases = this.allLeases.filter(lease => {
-      // Status Filter
       if (this.activeStatusFilter !== 'All' && lease.status !== this.activeStatusFilter) {
         return false;
       }
-      // Drawer Tenant Filter
       if (this.filterTenant && !lease.tenant.toLowerCase().includes(this.filterTenant.toLowerCase())) {
         return false;
       }
-      // Drawer Property Filter
       if (this.filterProperty && !lease.property.toLowerCase().includes(this.filterProperty.toLowerCase())) {
         return false;
       }
-      // Drawer Status Filter
       if (this.filterStatus && lease.status !== this.filterStatus) {
         return false;
       }
-      // Search Filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         return (
@@ -116,10 +113,21 @@ export class LeasesListComponent implements OnInit {
       return true;
     });
     this.totalRecords = this.filteredLeases.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
+    if (this.pageNo >= this.totalPages) {
+      this.pageNo = Math.max(0, this.totalPages - 1);
+    }
+    this.updatePaginatedLeases();
+  }
+
+  private updatePaginatedLeases(): void {
+    const start = this.pageNo * this.pageSize;
+    this.paginatedLeases = this.filteredLeases.slice(start, start + this.pageSize);
   }
 
   setStatusFilter(status: string) {
     this.activeStatusFilter = status;
+    this.pageNo = 0;
     this.applyFilters();
   }
 
@@ -133,6 +141,7 @@ export class LeasesListComponent implements OnInit {
     this.filterProperty = '';
     this.filterStatus = null;
     this.searchQuery = '';
+    this.pageNo = 0;
     this.applyFilters();
   }
 
@@ -143,9 +152,93 @@ export class LeasesListComponent implements OnInit {
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.applyFilters();
   }
 
   get visibleColumns() {
-    return this.tableColumns.filter(c => c.visible);
+    return this.tableColumns.filter(c => c.visible !== false);
+  }
+
+  get allColumnsSelected(): boolean {
+    return this.tableColumns.every(c => c.visible !== false);
+  }
+
+  toggleColumn(colKey: string): void {
+    const col = this.tableColumns.find(c => c.key === colKey);
+    if (col) {
+      col.visible = !col.visible;
+    }
+  }
+
+  toggleAllColumns(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.tableColumns.forEach(c => (c.visible = checked));
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionId = null;
+    this.showColumnDropdown = false;
+  }
+
+  toggleColumnDropdown(event: Event): void {
+    event.stopPropagation();
+    this.openActionId = null;
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleRowAction(id: string, event: Event): void {
+    event.stopPropagation();
+    this.showColumnDropdown = false;
+    this.openActionId = this.openActionId === id ? null : id;
+  }
+
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    return this.pageNo * this.pageSize + 1;
+  }
+
+  get endRecord(): number {
+    const end = (this.pageNo + 1) * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
+  onPageSizeChange(): void {
+    this.pageNo = 0;
+    this.applyFilters();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.updatePaginatedLeases();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < (this.totalPages || 1)) {
+      this.pageNo++;
+      this.updatePaginatedLeases();
+    }
+  }
+
+  goToPage(page: number): void {
+    const target = page - 1;
+    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
+      this.pageNo = target;
+      this.updatePaginatedLeases();
+    }
   }
 }

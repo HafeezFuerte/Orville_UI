@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -52,7 +52,7 @@ export class WorkOrderListComponent implements OnInit {
   private toastr =inject(ToastrService);
   currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
-  viewMode: 'list' | 'grid' = 'list';
+  viewMode: 'list' | 'grid' | 'board' = 'list';
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
   isLoading: boolean = false;
@@ -60,6 +60,21 @@ export class WorkOrderListComponent implements OnInit {
   activeTab: string = 'All';
   tabs:any[] =[];
   //tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
+  /** Figma kanban column order (2946:97655) */
+  kanbanColumns: string[] = [
+    'New',
+    'Open',
+    'In Progress',
+    'On Hold',
+    'Resolved',
+    'Rejected',
+    'Accepted',
+    'Vendor Rejected',
+    'Tenant Rejected',
+    'Escalated',
+    'Re-opened'
+  ];
+  openKanbanStatusCode: string | null = null;
   metrics = {
     total: 2955,
     new: 605,
@@ -74,7 +89,7 @@ export class WorkOrderListComponent implements OnInit {
 //(localStorage.getItem("selectedLang")=="EN" ? 'status_nm' : 'status_nm_ar')
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'title', label: 'Title', visible: true },
+    { key: 'title', label: 'Work order', visible: true },
     { key: 'property', label: 'Property', visible: true, useTemplate: true },
     { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
     { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
@@ -83,13 +98,15 @@ export class WorkOrderListComponent implements OnInit {
     { key: 'maintenance_name', label: 'Category', visible: true },
     { key: 'responsiblePerson', label: 'Responsible person(s)', visible: true, useTemplate: true },
     { key: 'technician_name', label: 'Technician', visible: true, useTemplate: true },
-    { key: 'modified_date', label: 'Last update', visible: true },
-    { key: 'created_date', label: 'Created at', visible: true },
-    { key: 'created_by_name', label: 'Created by', visible: true },
+    { key: 'modified_date', label: 'Last Update', visible: true },
+    { key: 'created_date', label: 'Created At', visible: true },
+    { key: 'created_by_name', label: 'Created By', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
   workOrderData: WorkOrder[] = [];
+  openActionCode: string | null = null;
+
   loadMetrics() {
     const payload = {
       typeId: 39,
@@ -119,6 +136,128 @@ export class WorkOrderListComponent implements OnInit {
     });
   }
   showColumnDropdown: boolean = false;
+
+  toggleRowAction(code: string | undefined, event?: Event): void {
+    event?.stopPropagation();
+    if (!code) {
+      return;
+    }
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionCode = null;
+    this.openKanbanStatusCode = null;
+    this.showColumnDropdown = false;
+  }
+
+  priorityClass(priority?: string): string {
+    const value = (priority || '').toLowerCase();
+    if (value === 'high') {
+      return 'ov-status--blocked';
+    }
+    if (value === 'medium') {
+      return 'ov-status--warning';
+    }
+    if (value === 'low') {
+      return 'ov-status--active';
+    }
+    return 'ov-status--soft';
+  }
+
+  kanbanPriorityClass(priority?: string): string {
+    const value = (priority || '').toLowerCase();
+    if (value === 'emergency' || value === 'critical' || value === 'urgent') {
+      return 'wo-kanban-card__priority--emergency';
+    }
+    if (value === 'high') {
+      return 'wo-kanban-card__priority--high';
+    }
+    if (value === 'medium') {
+      return 'wo-kanban-card__priority--medium';
+    }
+    if (value === 'low') {
+      return 'wo-kanban-card__priority--low';
+    }
+    return 'wo-kanban-card__priority--soft';
+  }
+
+  private normalizeStatus(value?: string): string {
+    return (value || '').trim().toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
+  }
+
+  private rowStatusLabel(row: any): string {
+    return (
+      this.getArabicLookupName(row, 'status_nm') ||
+      row?.status_nm ||
+      row?.status ||
+      ''
+    );
+  }
+
+  matchKanbanColumn(row: any): string | null {
+    const label = this.normalizeStatus(this.rowStatusLabel(row));
+    if (!label) {
+      return null;
+    }
+    const found = this.kanbanColumns.find((col) => this.normalizeStatus(col) === label);
+    return found || null;
+  }
+
+  cardsForColumn(column: string): any[] {
+    return (this.workOrderData || []).filter((row) => this.matchKanbanColumn(row) === column);
+  }
+
+  columnCount(column: string): number {
+    return this.cardsForColumn(column).length;
+  }
+
+  assigneeName(row: any): string {
+    return (
+      row?.responsiblePerson ||
+      row?.responsible_person ||
+      row?.responsible_user ||
+      row?.responsible_persons ||
+      row?.responsible_user_name ||
+      row?.technician_name ||
+      row?.technician ||
+      '-'
+    );
+  }
+
+  assigneeInitials(row: any): string {
+    const name = this.assigneeName(row);
+    if (!name || name === '-') {
+      return '--';
+    }
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  cardLocation(row: any): string {
+    const property = row?.property || '';
+    const category = row?.maintenance_name || row?.category || '';
+    if (property && category) {
+      return `${property} · ${category}`;
+    }
+    return property || category || '-';
+  }
+
+  cardDate(row: any): string {
+    return row?.due_date || row?.dueDate || row?.modified_date || row?.created_date || row?.lastUpdate || row?.createdAt || '-';
+  }
+
+  toggleKanbanStatus(code: string | undefined, event?: Event): void {
+    event?.stopPropagation();
+    if (!code) {
+      return;
+    }
+    this.openKanbanStatusCode = this.openKanbanStatusCode === code ? null : code;
+  }
 
   toggleColumn(key: string): void {
     const col = this.tableColumns.find(c => c.key === key);
@@ -246,8 +385,21 @@ export class WorkOrderListComponent implements OnInit {
     this.router.navigate(['/facility/work-orders', id]);
   }
 
-  setViewMode(mode: 'list' | 'grid'): void {
+  setViewMode(mode: 'list' | 'grid' | 'board'): void {
+    const prev = this.viewMode;
     this.viewMode = mode;
+    if (mode === 'board' && prev !== 'board') {
+      // Load all statuses so columns can group client-side
+      if (this.activeTab !== 'All') {
+        this.activeTab = 'All';
+        this.pageNo = 0;
+      }
+      // Board needs a wider page of cards across statuses
+      if (this.pageSize < 50) {
+        this.pageSize = 50;
+      }
+      this.loadData();
+    }
   }
 
   get startRecord(): number {

@@ -843,186 +843,230 @@
   </div>
 
   <section class="orville-happiness">
-    <span class="orville-happiness__blob orville-happiness__blob--a"></span>
-    <span class="orville-happiness__blob orville-happiness__blob--b"></span>
-    <span class="orville-happiness__blob orville-happiness__blob--c"></span>
+    <img class="orville-happiness__blob orville-happiness__blob--a" src="assets/images/insights/happiness-blob-a.svg" alt="" width="154" height="154">
+    <img class="orville-happiness__blob orville-happiness__blob--b" src="assets/images/insights/happiness-blob-b.svg" alt="" width="154" height="154">
+    <img class="orville-happiness__blob orville-happiness__blob--c" src="assets/images/insights/happiness-blob-c.svg" alt="" width="300" height="300">
+    <img class="orville-happiness__blob orville-happiness__blob--d" src="assets/images/insights/happiness-blob-d.svg" alt="" width="67" height="67">
     <div class="orville-happiness__head">
       <h4 class="orville-happiness__title">Happiness Meter</h4>
       <div class="orville-happiness__meta">
-        <i class="ri-user-6-line"></i>
+        <img class="orville-happiness__meta-icon" src="assets/images/insights/user-hexagon.svg" alt="" width="24" height="24">
         <span>Total Participants: 17</span>
       </div>
     </div>
     <div class="orville-happiness__grid">
       <div class="orville-happiness__tile">
-        <div>
+        <div class="orville-happiness__copy">
           <div class="orville-happiness__label">Happy</div>
           <div class="orville-happiness__pct">52.94%</div>
-          <div class="orville-happiness__chip">9 tenants</div>
+          <div class="orville-happiness__chip orville-happiness__chip--happy">9 tenants</div>
         </div>
         <img class="orville-happiness__face" src="assets/images/insights/happy.svg" alt="" width="68" height="68">
       </div>
       <div class="orville-happiness__tile">
-        <div>
+        <div class="orville-happiness__copy">
           <div class="orville-happiness__label">Neutral</div>
           <div class="orville-happiness__pct">5.88%</div>
-          <div class="orville-happiness__chip">1 tenant</div>
+          <div class="orville-happiness__chip orville-happiness__chip--neutral">1 tenant</div>
         </div>
         <img class="orville-happiness__face" src="assets/images/insights/neutral.svg" alt="" width="68" height="68">
       </div>
       <div class="orville-happiness__tile">
-        <div>
+        <div class="orville-happiness__copy">
           <div class="orville-happiness__label">Unhappy</div>
           <div class="orville-happiness__pct">29.41%</div>
-          <div class="orville-happiness__chip">5 tenants</div>
+          <div class="orville-happiness__chip orville-happiness__chip--unhappy">5 tenants</div>
         </div>
         <img class="orville-happiness__face" src="assets/images/insights/unhappy.svg" alt="" width="68" height="68">
       </div>
     </div>
   </section>
 
-  <section class="orville-insights-card orville-insights-card--flush">
+  <section class="orville-insights-card orville-insights-card--flush orville-unit-stats">
     <div class="orville-insights-card__head">
       <div>
         <h2 class="orville-insights-card__title">Unit Stats</h2>
-        <p class="orville-insights-card__sub">2,955 units across your portfolio</p>
+        <p class="orville-unit-stats__sub">2,955 units across your portfolio</p>
       </div>
-      <div class="orville-seg">
-        <button type="button" class="orville-seg__btn is-active">All</button>
-        <button type="button" class="orville-seg__btn">Residential</button>
-        <button type="button" class="orville-seg__btn">Commercial</button>
+      <div class="orville-seg" role="tablist" aria-label="Unit type filter">
+        <button type="button" class="orville-seg__btn" [class.is-active]="unitStatsFilter === 'All'"
+          (click)="unitStatsFilter = 'All'">All</button>
+        <button type="button" class="orville-seg__btn" [class.is-active]="unitStatsFilter === 'Residential'"
+          (click)="unitStatsFilter = 'Residential'">Residential</button>
+        <button type="button" class="orville-seg__btn" [class.is-active]="unitStatsFilter === 'Commercial'"
+          (click)="unitStatsFilter = 'Commercial'">Commercial</button>
       </div>
     </div>
+
     <div class="orville-unit-body">
-      <div class="orville-insights__row orville-insights__row--unit">
-        <div class="orville-stack">
-          <article class="orville-unit-panel">
+      <div class="orville-unit-row">
+        <article class="orville-unit-panel orville-unit-panel--chart">
+          <div class="orville-unit-panel__head">
             <h4 class="orville-insights-card__title">Occupancy</h4>
-            <p class="orville-insights-card__sub">All units</p>
-            <div class="orville-wo-donut__chart">
-              <apx-chart [series]="unitStatsOccupancyOptions.series" [chart]="unitStatsOccupancyOptions.chart"
-                [dataLabels]="unitStatsOccupancyOptions.dataLabels" [labels]="unitStatsOccupancyOptions.labels"
-                [colors]="unitStatsOccupancyOptions.colors" [legend]="unitStatsOccupancyOptions.legend"
-                [plotOptions]="unitStatsOccupancyOptions.plotOptions"></apx-chart>
+            <p class="orville-unit-panel__sub">All units</p>
+          </div>
+          <div class="orville-wo-donut__chart">
+            <apx-chart [series]="unitStatsOccupancyOptions.series" [chart]="unitStatsOccupancyOptions.chart"
+              [dataLabels]="unitStatsOccupancyOptions.dataLabels" [labels]="unitStatsOccupancyOptions.labels"
+              [colors]="unitStatsOccupancyOptions.colors" [legend]="unitStatsOccupancyOptions.legend"
+              [plotOptions]="unitStatsOccupancyOptions.plotOptions"></apx-chart>
+          </div>
+          <div class="orville-chip-legend orville-chip-legend--unit">
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#26264F"></span>Occupied
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#3E6FA8"></span>Vacant
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#A78BFA"></span>Sold
+            </span>
+          </div>
+        </article>
+
+        <article class="orville-unit-panel orville-unit-panel--flush">
+          <h4 class="orville-unit-panel__title">Rental Stats for All Units</h4>
+          <div class="orville-stat-grid orville-stat-grid--lined orville-stat-grid--rental">
+            <div class="orville-stat orville-stat--tint">
+              <div class="orville-stat__icon orville-stat__icon--track">
+                <img src="assets/images/insights/unit-stats/database.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Rental Values for All Units</div>
+                <div class="orville-stat__value">AED 46,092,131.00</div>
+                <div class="orville-stat__hint">Sum of all paid & unpaid rental income invoices</div>
+              </div>
             </div>
-            <div class="orville-chip-legend">
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#26264F"></span> Occupied</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3E6FA8"></span> Vacant</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#A78BFA"></span> Sold</span>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/calendar-time.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Total annual values</div>
+                <div class="orville-stat__value">AED 71,154,694.10</div>
+                <div class="orville-stat__hint">Annual rent value for all currently active leases</div>
+              </div>
             </div>
-          </article>
-          <article class="orville-unit-panel">
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/trending-up-down.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Rent Income for All Units</div>
+                <div class="orville-stat__value">AED 40,916,886.00</div>
+                <div class="orville-stat__hint">Sum of all paid rental income invoices</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/clock-exclamation.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Rent Due for All Units</div>
+                <div class="orville-stat__value">AED 5,001,820.53</div>
+                <div class="orville-stat__hint">Sum of all unpaid rental income invoices due till today</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/clock.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Upcoming rent for All Units</div>
+                <div class="orville-stat__value">AED 5,925.00</div>
+                <div class="orville-stat__hint">Sum of all unpaid rental income invoices starting from tomorrow</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/receipt.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Total expense value</div>
+                <div class="orville-stat__value">AED 0.00</div>
+                <div class="orville-stat__hint">Sum of all paid expenses till today</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="orville-unit-row">
+        <article class="orville-unit-panel orville-unit-panel--chart">
+          <div class="orville-unit-panel__head">
             <h4 class="orville-insights-card__title">Unit Types</h4>
-            <p class="orville-insights-card__sub">Distribution by category</p>
-            <div class="orville-wo-donut__chart">
-              <apx-chart [series]="unitTypesDonutOptions.series" [chart]="unitTypesDonutOptions.chart"
-                [dataLabels]="unitTypesDonutOptions.dataLabels" [labels]="unitTypesDonutOptions.labels"
-                [colors]="unitTypesDonutOptions.colors" [legend]="unitTypesDonutOptions.legend"
-                [plotOptions]="unitTypesDonutOptions.plotOptions"></apx-chart>
-            </div>
-            <div class="orville-chip-legend">
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#6366F1"></span> 1-BHK</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#14B8A6"></span> 2-BHK</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#FACC15"></span> 3-BHK</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3B82F6"></span> Apartment</span>
-              <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#F97316"></span> Full Floor</span>
-            </div>
-          </article>
-        </div>
+            <p class="orville-unit-panel__sub">Distribution by category</p>
+          </div>
+          <div class="orville-wo-donut__chart">
+            <apx-chart [series]="unitTypesDonutOptions.series" [chart]="unitTypesDonutOptions.chart"
+              [dataLabels]="unitTypesDonutOptions.dataLabels" [labels]="unitTypesDonutOptions.labels"
+              [colors]="unitTypesDonutOptions.colors" [legend]="unitTypesDonutOptions.legend"
+              [plotOptions]="unitTypesDonutOptions.plotOptions"></apx-chart>
+          </div>
+          <div class="orville-chip-legend orville-chip-legend--unit orville-chip-legend--types">
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#6366F1"></span>1-BHK
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#14B8A6"></span>2-BHK
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#FACC15"></span>3-BHK
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#3B82F6"></span>Apartment
+            </span>
+            <span class="orville-chip-legend__item">
+              <span class="orville-chip-legend__dot" style="background:#F97316"></span>Full Floor
+            </span>
+          </div>
+        </article>
 
-        <div class="orville-stack">
-          <article class="orville-unit-panel orville-unit-panel--flush">
-            <h4 class="orville-unit-panel__title">Rental Stats for All Units</h4>
-            <div class="orville-stat-grid orville-stat-grid--lined">
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-database-2-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Rental Values for All Units</div>
-                  <div class="orville-stat__value">AED 46,092,131.00</div>
-                  <div class="orville-stat__hint">Sum of all paid & unpaid rental income invoices</div>
-                </div>
+        <article class="orville-unit-panel orville-unit-panel--flush">
+          <h4 class="orville-unit-panel__title">Market Values for All Units</h4>
+          <div class="orville-stat-grid orville-stat-grid--lined orville-stat-grid--market">
+            <div class="orville-stat orville-stat--tint">
+              <div class="orville-stat__icon orville-stat__icon--track">
+                <img src="assets/images/insights/unit-stats/buildings.svg" alt="" width="24" height="24">
               </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-calendar-schedule-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Total annual values</div>
-                  <div class="orville-stat__value">AED 71,154,694.10</div>
-                  <div class="orville-stat__hint">Annual rent value for all currently active leases</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Rent Income for All Units</div>
-                  <div class="orville-stat__value">AED 40,916,886.00</div>
-                  <div class="orville-stat__hint">Sum of all paid rental income invoices</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-time-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Rent Due for All Units</div>
-                  <div class="orville-stat__value">AED 5,001,820.53</div>
-                  <div class="orville-stat__hint">Sum of all unpaid rental income invoices due till today</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-calendar-todo-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Upcoming rent for All Units</div>
-                  <div class="orville-stat__value">AED 5,925.00</div>
-                  <div class="orville-stat__hint">Sum of all unpaid rental income invoices starting from tomorrow</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-receipt-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Total expense value</div>
-                  <div class="orville-stat__value">AED 0.00</div>
-                  <div class="orville-stat__hint">Sum of all paid expenses till today</div>
-                </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Total Market Value</div>
+                <div class="orville-stat__value">AED 46,092,131.00</div>
+                <div class="orville-stat__hint">Estimated market value of all units</div>
               </div>
             </div>
-          </article>
-
-          <article class="orville-unit-panel orville-unit-panel--flush">
-            <h4 class="orville-unit-panel__title">Market Values for All Units</h4>
-            <div class="orville-stat-grid orville-stat-grid--lined">
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-building-4-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Total Market Value</div>
-                  <div class="orville-stat__value">AED 46,092,131.00</div>
-                  <div class="orville-stat__hint">Estimated market value of all units</div>
-                </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/buildings-2.svg" alt="" width="24" height="24">
               </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-home-gear-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Total Market Rent Value</div>
-                  <div class="orville-stat__value">AED 71,154,694.10</div>
-                  <div class="orville-stat__hint">Estimated annual market rent across all units</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-layout-masonry-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Rentable Area</div>
-                  <div class="orville-stat__value">40,916.89 Sqft</div>
-                  <div class="orville-stat__hint">Total rentable area across all units</div>
-                </div>
-              </div>
-              <div class="orville-stat">
-                <div class="orville-stat__icon"><i class="ri-pie-chart-2-line"></i></div>
-                <div>
-                  <div class="orville-stat__label">Avg. Market Rent Per (Sqft.)</div>
-                  <div class="orville-stat__value">AED 122.50</div>
-                  <div class="orville-stat__hint">Average market rent per square foot</div>
-                </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Total Market Rent Value</div>
+                <div class="orville-stat__value">AED 71,154,694.10</div>
+                <div class="orville-stat__hint">Estimated annual market rent across all units</div>
               </div>
             </div>
-          </article>
-        </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/trending-up-down.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Rentable Area</div>
+                <div class="orville-stat__value">40,916.89 Sqft</div>
+                <div class="orville-stat__hint">Total rentable area across all units</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/unit-stats/ruler.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Avg. Market Rent Per (Sqft.)</div>
+                <div class="orville-stat__value">AED 122.50</div>
+                <div class="orville-stat__hint">Average market rent per square foot</div>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -1038,27 +1082,27 @@
       <div class="orville-rent__kpis">
         <div class="orville-rent__kpi">
           <div>
-            <span class="orville-income-tile__badge">Peak Year</span>
+            <span class="orville-income-tile__badge orville-rent__badge">Peak Year</span>
             <div class="orville-rent__kpi-val">2026</div>
-            <div class="orville-insights-card__sub">Highest recognized</div>
+            <div class="orville-rent__kpi-sub">Highest recognized</div>
           </div>
-          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
+          <img class="orville-rent__kpi-icon" src="assets/images/insights/chart-infographic.svg" alt="" width="60" height="60">
         </div>
         <div class="orville-rent__kpi">
           <div>
-            <span class="orville-income-tile__badge">Peak Revenue</span>
+            <span class="orville-income-tile__badge orville-rent__badge">Peak Revenue</span>
             <div class="orville-rent__kpi-val">AED 28.5M</div>
-            <div class="orville-insights-card__sub">In 2026</div>
+            <div class="orville-rent__kpi-sub">In 2026</div>
           </div>
-          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
+          <img class="orville-rent__kpi-icon" src="assets/images/insights/chart-infographic.svg" alt="" width="60" height="60">
         </div>
         <div class="orville-rent__kpi">
           <div>
-            <span class="orville-income-tile__badge">Total (2025–26)</span>
+            <span class="orville-income-tile__badge orville-rent__badge">Total (2025–26)</span>
             <div class="orville-rent__kpi-val">AED 46M</div>
-            <div class="orville-insights-card__sub">Combined peak years</div>
+            <div class="orville-rent__kpi-sub">Combined peak years</div>
           </div>
-          <span class="orville-rent__kpi-icon"><i class="ri-bar-chart-grouped-line"></i></span>
+          <img class="orville-rent__kpi-icon" src="assets/images/insights/chart-infographic.svg" alt="" width="60" height="60">
         </div>
       </div>
       <div class="orville-axis-chart orville-axis-chart--rent">
@@ -1066,118 +1110,153 @@
           [plotOptions]="annualRentOptions.plotOptions" [xaxis]="annualRentOptions.xaxis"
           [yaxis]="annualRentOptions.yaxis" [grid]="annualRentOptions.grid"
           [colors]="annualRentOptions.colors" [dataLabels]="annualRentOptions.dataLabels"
-          [legend]="annualRentOptions.legend" [stroke]="annualRentOptions.stroke"></apx-chart>
+          [legend]="annualRentOptions.legend" [stroke]="annualRentOptions.stroke"
+          [tooltip]="annualRentOptions.tooltip"></apx-chart>
       </div>
       <div class="orville-chip-legend">
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#26264F"></span> Recognized rent revenue (AED)</span>
+        <span class="orville-chip-legend__item">
+          <span class="orville-legend__dot orville-rent__legend-dot"></span>
+          Recognized rent revenue (AED)
+        </span>
       </div>
     </div>
   </section>
 
-  <div class="orville-insights__row orville-insights__row--unit">
-    <article class="orville-insights-card orville-insights-card--flush">
-      <div class="orville-insights-card__head">
-        <div>
-          <h4 class="orville-insights-card__title">Lease Status by Month</h4>
-          <p class="orville-insights-card__sub">Distribution by category</p>
+  <section class="orville-insights-card orville-lease-section">
+    <div class="orville-unit-row orville-lease-section__row">
+      <article class="orville-unit-panel orville-unit-panel--chart orville-lease-donut">
+        <div class="orville-lease-donut__head">
+          <div>
+            <h4 class="orville-insights-card__title">Lease Status by Month</h4>
+            <p class="orville-unit-panel__sub">Distribution by category</p>
+          </div>
+          <button type="button" class="orville-date-chip orville-date-chip--lease">
+            June 2026
+            <i class="ri-arrow-down-s-line text-[16px]"></i>
+          </button>
         </div>
-        <button type="button" class="orville-date-chip">
-          June 2026
-          <i class="ri-arrow-down-s-line"></i>
-        </button>
-      </div>
-      <div class="orville-wo-donut__chart">
-        <apx-chart [series]="leaseStatusDonutOptions.series" [chart]="leaseStatusDonutOptions.chart"
-          [labels]="leaseStatusDonutOptions.labels" [colors]="leaseStatusDonutOptions.colors"
-          [plotOptions]="leaseStatusDonutOptions.plotOptions" [dataLabels]="leaseStatusDonutOptions.dataLabels"
-          [legend]="leaseStatusDonutOptions.legend"></apx-chart>
-      </div>
-      <div class="orville-lease-legend">
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#14B8A6"></span> Renewing Leases</span>
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#FACC15"></span> Not Renewing Leases</span>
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#6366F1"></span> Contacted Leases</span>
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#F97316"></span> No Response Leases</span>
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#3B82F6"></span> Renewal Notice Served Leases</span>
-        <span class="orville-chip-legend__item"><span class="orville-legend__dot" style="background:#A855F7"></span> Ending Leases</span>
-      </div>
-    </article>
+        <div class="orville-wo-donut__chart">
+          <apx-chart [series]="leaseStatusDonutOptions.series" [chart]="leaseStatusDonutOptions.chart"
+            [labels]="leaseStatusDonutOptions.labels" [colors]="leaseStatusDonutOptions.colors"
+            [plotOptions]="leaseStatusDonutOptions.plotOptions" [dataLabels]="leaseStatusDonutOptions.dataLabels"
+            [legend]="leaseStatusDonutOptions.legend"></apx-chart>
+        </div>
+        <div class="orville-lease-legend">
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#14B8A6"></span>Renewing Leases
+          </span>
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#FACC15"></span>Not Renewing Leases
+          </span>
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#6366F1"></span>Contacted Leases
+          </span>
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#F97316"></span>No Response Leases
+          </span>
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#3B82F6"></span>Renewal Notice Served Leases
+          </span>
+          <span class="orville-chip-legend__item">
+            <span class="orville-chip-legend__dot" style="background:#A855F7"></span>Ending Leases
+          </span>
+        </div>
+      </article>
 
-    <div class="orville-stack">
-      <article class="orville-unit-panel orville-unit-panel--flush">
-        <h4 class="orville-unit-panel__title">Active Lease Stats</h4>
-        <div class="orville-stat-grid orville-stat-grid--lined">
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-building-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Total Active Leases Value</div>
-              <div class="orville-stat__value">AED 5,181,852.00</div>
+      <div class="orville-stack orville-lease-section__stats">
+        <article class="orville-unit-panel orville-unit-panel--flush">
+          <h4 class="orville-unit-panel__title">Active Lease Stats</h4>
+          <div class="orville-stat-grid orville-stat-grid--lined orville-stat-grid--lease-active">
+            <div class="orville-stat orville-stat--tint">
+              <div class="orville-stat__icon orville-stat__icon--track">
+                <img src="assets/images/insights/lease-stats/buildings.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Total Active Leases Value</div>
+                <div class="orville-stat__value">AED 5,181,852.00</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/lease-stats/stopwatch.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Average Lease Duration</div>
+                <div class="orville-stat__value">27 Days</div>
+                <div class="orville-stat__hint">Indicates the average length of leases across all units. This can help in understanding tenant stability and forecasting future vacancies.</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/lease-stats/calendar-time.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Average Vacancy Duration</div>
+                <div class="orville-stat__value">11.00 Days</div>
+                <div class="orville-stat__hint">The average time it takes to fill a vacant unit. This stat is crucial for understanding the efficiency of your leasing process.</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/lease-stats/trending-up-down.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Delinquency Rate</div>
+                <div class="orville-stat__value">15.06%</div>
+                <div class="orville-stat__hint">The percentage of tenants who are late on their rent payments. This is an important financial health indicator.</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img class="orville-stat__icon-flip" src="assets/images/insights/lease-stats/trending-up-down.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Outstanding on Rent (%)</div>
+                <div class="orville-stat__value">3.24%</div>
+                <div class="orville-stat__hint">The percentage of outstanding rent and security deposit in the total rent and security deposit as of today.</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/lease-stats/circle-percentage.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Rent Collection Rate</div>
+                <div class="orville-stat__value">5.40%</div>
+                <div class="orville-stat__hint">The % of Rent that is collected on time This efficiency and timeliness of rent collection.</div>
+              </div>
             </div>
           </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-timer-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Average Lease Duration</div>
-              <div class="orville-stat__value">27 Days</div>
-              <div class="orville-stat__hint">Indicates the average length of leases across all units. This can help in understanding tenant stability and forecasting future vacancies.</div>
+        </article>
+
+        <article class="orville-unit-panel orville-unit-panel--flush">
+          <h4 class="orville-unit-panel__title">Renewal Stats</h4>
+          <div class="orville-stat-grid orville-stat-grid--lined orville-stat-grid--lease-renewal">
+            <div class="orville-stat orville-stat--tint">
+              <div class="orville-stat__icon orville-stat__icon--track">
+                <img src="assets/images/insights/lease-stats/refresh.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Renewals Rate</div>
+                <div class="orville-stat__value">81.12%</div>
+                <div class="orville-stat__hint">The % of tenants who choose to renew their leases instead of vacating the property</div>
+              </div>
+            </div>
+            <div class="orville-stat">
+              <div class="orville-stat__icon">
+                <img src="assets/images/insights/lease-stats/trending-up-down.svg" alt="" width="24" height="24">
+              </div>
+              <div class="orville-stat__copy">
+                <div class="orville-stat__label">Tenant Turnover Rate (%)</div>
+                <div class="orville-stat__value">45.83%</div>
+                <div class="orville-stat__hint">The rate at which tenants leave and new ones come in It's crucial for understanding the frequency of tenant changes.</div>
+              </div>
             </div>
           </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-calendar-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Average Vacancy Duration</div>
-              <div class="orville-stat__value">11.00 Days</div>
-              <div class="orville-stat__hint">The average time it takes to fill a vacant unit.</div>
-            </div>
-          </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Delinquency Rate</div>
-              <div class="orville-stat__value">15.06%</div>
-              <div class="orville-stat__hint">The percentage of tenants who are late on their rent payments.</div>
-            </div>
-          </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-arrow-left-down-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Outstanding on Rent (%)</div>
-              <div class="orville-stat__value">3.24%</div>
-              <div class="orville-stat__hint">The percentage of outstanding rent and security deposit.</div>
-            </div>
-          </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-percent-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Rent Collection Rate</div>
-              <div class="orville-stat__value">5.40%</div>
-              <div class="orville-stat__hint">The % of Rent that is collected on time This efficiency and timeliness of rent collection.</div>
-            </div>
-          </div>
-        </div>
-      </article>
-      <article class="orville-unit-panel orville-unit-panel--flush">
-        <h4 class="orville-unit-panel__title">Renewal Stats</h4>
-        <div class="orville-stat-grid orville-stat-grid--lined">
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-refresh-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Renewals Rate</div>
-              <div class="orville-stat__value">81.12%</div>
-              <div class="orville-stat__hint">The % of tenants who choose to renew their leases instead of vacating the property</div>
-            </div>
-          </div>
-          <div class="orville-stat">
-            <div class="orville-stat__icon"><i class="ri-line-chart-line"></i></div>
-            <div>
-              <div class="orville-stat__label">Tenant Turnover Rate (%)</div>
-              <div class="orville-stat__value">45.83%</div>
-              <div class="orville-stat__hint">The rate at which tenants leave and new ones come in It's crucial for understanding the frequency of tenant changes.</div>
-            </div>
-          </div>
-        </div>
-      </article>
+        </article>
+      </div>
     </div>
-  </div>
+  </section>
 
   <article class="orville-insights-card orville-insights-card--flush">
     <div class="orville-insights-card__head">
@@ -1189,34 +1268,15 @@
       </div>
     </div>
     <div class="orville-country">
-      <div class="orville-country__map" aria-hidden="true">
-        <svg viewBox="0 0 860 376" xmlns="http://www.w3.org/2000/svg" class="orville-country__svg">
-          <g fill="#E4E4EC">
-            <path d="M152 18h182l18 42-24 60H128l-20-48 44-54z"/>
-            <path d="M53 26h210l22 48-40 94H72L40 88z"/>
-            <path d="M268 282l38 12 12 82-48 6-36-70z"/>
-            <path d="M264 270l30 8 8 96-36 8-28-78z"/>
-            <path d="M773 227h37l8 23-22 8z"/>
-            <path d="M663 205h111l12 32-96 12z"/>
-            <path d="M503 223h26l8 30-22 8z"/>
-            <path d="M554 92h41l8 24-28 8z"/>
-            <path d="M532 65h87l12 40-78 8z"/>
-          </g>
-          <g fill="#3E6FA8">
-            <path d="M152 18c48-8 120 4 168 28l14 34-28 52H136l-24-42 40-72z"/>
-            <path d="M88 32c62 4 140 18 188 56l8 38-48 72H96L56 92z"/>
-            <path d="M460 154l38 8 18 36-24 42-42-12-16-38z"/>
-            <path d="M514 186l24 4 12 34-22 12-24-18z"/>
-            <path d="M532 66c28 2 64 8 82 22l6 18-64 12-28-18z"/>
-            <path d="M554 94l36 6 8 16-28 10z"/>
-            <path d="M593 120l66 18 12 48-48 18-42-28z"/>
-            <path d="M664 206c36 0 84 8 108 22l8 22-96 12-28-18z"/>
-            <path d="M773 228l36 6 6 16-22 8z"/>
-            <path d="M268 282l36 10 10 72-42 10-32-62z"/>
-            <path d="M411 98l48 8 22 42-28 28-46-12z"/>
-            <path d="M391 184l18 4 8 14-16 8z"/>
-          </g>
-        </svg>
+      <!-- World map SVG (Figma 504:2498). Replace with interactive paths later for country mapping. -->
+      <div class="orville-country__map" role="img" aria-label="World map">
+        <img
+          class="orville-country__svg"
+          src="assets/images/insights/world-map.svg"
+          alt=""
+          width="864"
+          height="376"
+        >
       </div>
       <aside class="orville-country__side">
         <h4 class="orville-insights-card__title">Tenant by Country</h4>

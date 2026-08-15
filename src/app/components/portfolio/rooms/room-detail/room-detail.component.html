@@ -60,7 +60,7 @@
 <app-detail-page-layout class="col-span-12" [tabs]="tabs" [(activeTab)]="activeTab">
 
   <ng-template #leftPanel>
-    <div class="box ov-card overflow-hidden p-5 flex flex-col gap-4">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4">
       <div class="flex flex-col gap-3.5">
         <div>
           <h4 class="ov-card-title">{{ unit?.name || 'Apartment 209' }}</h4>
@@ -94,12 +94,61 @@
       <div class="border-t border-defaultborder"></div>
       <h5 class="ov-card-title m-0">{{ 'web.property.lblInformation' | translate }}</h5>
 
-      <div class="ov-card overflow-hidden py-5">
+      <div class="ov-card py-5 ov-contact-popover-anchor">
         <div class="px-5">
           <h5 class="ov-card-title m-0">Landlord ({{ landlordCount }})</h5>
         </div>
         <div class="px-5 mt-5">
-          <a class="ov-link !text-[14px] font-bold" [routerLink]="['/contacts/landlords']">{{ unit?.landlord || '-' }}</a>
+          <a
+            href="javascript:void(0)"
+            class="ov-link !text-[14px] font-bold"
+            (click)="toggleLandlordPopover($event)">{{ unit?.landlord || '-' }}</a>
+        </div>
+
+        <div
+          *ngIf="showLandlordPopover"
+          class="ov-contact-popover"
+          role="dialog"
+          aria-label="Contact Details"
+          (click)="$event.stopPropagation()">
+          <div class="ov-contact-popover__header">
+            <span class="ov-contact-popover__icon" aria-hidden="true">
+              <i class="ri-user-line"></i>
+            </span>
+            <h5 class="ov-contact-popover__title">Contact Details</h5>
+            <button type="button" class="ov-contact-popover__view" (click)="viewLandlordDetail($event)">
+              View <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+          <div class="ov-contact-popover__body">
+            <div>
+              <h4 class="ov-contact-popover__name">{{ unit?.landlord || '-' }}</h4>
+              <span class="ov-contact-popover__badge">{{ unit?.landlordTypeBadge || 'Individual' }}</span>
+            </div>
+            <div class="ov-contact-popover__rows">
+              <div class="ov-contact-popover__row">
+                <span class="ov-contact-popover__row-icon" aria-hidden="true"><i class="ri-mail-line"></i></span>
+                <div class="ov-contact-popover__row-text">
+                  <span class="ov-contact-popover__label">Email</span>
+                  <span class="ov-contact-popover__value">{{ unit?.landlordEmail || '-' }}</span>
+                </div>
+              </div>
+              <div class="ov-contact-popover__row">
+                <span class="ov-contact-popover__row-icon" aria-hidden="true"><i class="ri-phone-line"></i></span>
+                <div class="ov-contact-popover__row-text">
+                  <span class="ov-contact-popover__label">Phone</span>
+                  <span class="ov-contact-popover__value">{{ unit?.landlordPhone || '-' }}</span>
+                </div>
+              </div>
+              <div class="ov-contact-popover__row">
+                <span class="ov-contact-popover__row-icon" aria-hidden="true"><i class="ri-user-line"></i></span>
+                <div class="ov-contact-popover__row-text">
+                  <span class="ov-contact-popover__label">Landlord Type</span>
+                  <span class="ov-contact-popover__value">{{ unit?.landlordType || '-' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

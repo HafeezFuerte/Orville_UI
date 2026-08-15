@@ -1,69 +1,57 @@
 
-<form [formGroup]="form" class="space-y-5">
-
-    <div class="grid grid-cols-2 gap-4">
-    <div>
-        <label class="ti-form-label">
-            Item Name <span class="text-danger">*</span>
-        </label>
-        <input
-            type="text"
-            class="ti-form-input"
-            formControlName="itemName"
-            placeholder="Enter Item name">
-
-        <p class="text-[11px] text-gray-400 mt-1">
-            Enter Item name
-        </p>
+<form [formGroup]="form" class="flex flex-col gap-4">
+    <div class="ov-fields ov-fields--2">
+        <div>
+            <label class="ov-label">
+                Item Name <span class="text-danger">*</span>
+            </label>
+            <input
+                type="text"
+                class="ov-input"
+                formControlName="itemName"
+                placeholder="Enter Item name">
+            <span class="ov-modal__hint">Enter Item name</span>
+        </div>
+        <div>
+            <label class="ov-label">
+                Item Location<span class="text-danger">*</span>
+            </label>
+            <input
+                type="text"
+                class="ov-input"
+                formControlName="location"
+                placeholder="Item Location">
+        </div>
     </div>
-
-    
-    <div>
-        <label class="ti-form-label">
-            Item Location<span class="text-danger">*</span>
-        </label>
-
-        <input
-            type="text"
-            class="ti-form-input"
-            formControlName="location"
-            placeholder="Item Location">
+    <div class="ov-fields ov-fields--2">
+        <div>
+            <label class="ov-label">
+                Item Quantity<span class="text-danger">*</span>
+            </label>
+            <input
+                type="text"
+                class="ov-input"
+                formControlName="qty"
+                placeholder="Item qty">
+        </div>
+        <div>
+            <label class="ov-label">
+                Expiry<span class="text-danger">*</span>
+            </label>
+            <input
+                type="date"
+                class="ov-input"
+                formControlName="expiryDate">
+        </div>
     </div>
-</div>
-<div class="grid grid-cols-2 gap-4">
-    <div>
-        <label class="ti-form-label">
-            Item Quantity<span class="text-danger">*</span>
-        </label>
-
-        <input
-            type="text"
-            class="ti-form-input"
-            formControlName="qty"
-            placeholder="Item qty">
-    </div>
-    <div>
-        <label class="ti-form-label">
-            Expiry<span class="text-danger">*</span>
-        </label>
-
-        <input
-            type="date"
-            class="ti-form-input"
-            formControlName="expiryDate"
-            placeholder="Item qty">
-    </div>
-</div>
-    <div class="box-body">
-
-        <app-file-upload
-            [accept]="'image/*'"
-            [multiple]="false"
-            [browseText]="'Click'"
-            
-            (filesChanged)="onFilesSelected($event)"
-            >
-        </app-file-upload>
-
+    <div class="rounded-xl border border-defaultborder overflow-hidden">
+        <div class="p-4">
+            <app-file-upload
+                [accept]="'image/*'"
+                [multiple]="false"
+                [browseText]="'Click'"
+                (filesChanged)="onFilesSelected($event)">
+            </app-file-upload>
+        </div>
     </div>
 </form>

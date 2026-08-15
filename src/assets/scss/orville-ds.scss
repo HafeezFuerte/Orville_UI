@@ -226,6 +226,9 @@ textarea.ov-input {
 
 .ov-input-addon {
   display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
   height: 40px;
   overflow: hidden;
   border: 1px solid rgb(var(--default-border));
@@ -236,20 +239,114 @@ textarea.ov-input {
 .ov-input-addon__prefix {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 64px;
   padding: 0 12px;
   border-inline-end: 1px solid rgb(var(--default-border));
   background: rgb(var(--light));
   color: rgb(var(--text-muted));
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .ov-input-addon .ov-input {
-  border: 0;
-  border-radius: 0;
+  flex: 1 1 auto;
+  min-width: 0 !important;
+  width: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   min-height: 38px;
   height: 38px;
+}
+
+.ov-input-addon:focus-within {
+  border-color: rgb(var(--primary));
+  box-shadow: 0 0 0 1px rgb(var(--primary));
+}
+
+/* Phone dial-code + number — Figma prefix/input combo (modals & forms) */
+.ov-phone {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 0.5rem;
+  background: rgb(var(--default-background));
+}
+
+.ov-phone__code {
+  flex: 0 0 auto;
+  width: auto !important;
+  max-width: 7.5rem;
+  min-width: 5.75rem;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0 10px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  border-inline-end: 1px solid rgb(var(--default-border)) !important;
+  background: rgb(var(--light)) !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+}
+
+.ov-phone .ov-input,
+.ov-phone__input {
+  flex: 1 1 auto;
+  min-width: 0 !important;
+  width: auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding-inline: 14px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.ov-phone:focus-within {
+  border-color: rgb(var(--primary));
+  box-shadow: 0 0 0 1px rgb(var(--primary));
+}
+
+.dark .ov-phone,
+.dark .ov-input-addon {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .ov-phone__code,
+.dark .ov-input-addon__prefix {
+  background: rgb(255 255 255 / 0.06);
+  border-inline-end-color: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.7);
+}
+
+/* Legacy modal phone rows: prevent ov-input width:100% from blowing out the grid */
+.ov-modal .flex:has(> select.ov-input) > select.ov-input,
+.ov-fields .flex:has(> select.ov-input) > select.ov-input {
+  flex: 0 0 auto;
+  width: auto !important;
+  max-width: 7.5rem;
+}
+
+.ov-modal .flex:has(> select.ov-input) > input.ov-input,
+.ov-fields .flex:has(> select.ov-input) > input.ov-input {
+  flex: 1 1 auto;
+  min-width: 0 !important;
+  width: auto !important;
 }
 
 .ov-card__head {
@@ -1100,6 +1197,10 @@ textarea.ov-input {
   color: rgb(var(--default-text-color));
 }
 
+.ov-status--warning {
+  background: rgb(var(--warning));
+}
+
 /* Contact list avatar (Figma 1302:14670) */
 .ov-avatar {
   display: inline-flex;
@@ -1137,6 +1238,201 @@ textarea.ov-input {
   font-weight: 500;
   letter-spacing: 0.02em;
   color: rgb(var(--text-muted));
+}
+
+/* Modal / dialog chrome — Figma form tokens (Add Property / Add Vendor) */
+.ov-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(15 23 42 / 0.5);
+}
+
+.ov-modal {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  box-shadow: 0 20px 40px rgb(37 37 54 / 0.12);
+}
+
+.ov-modal--sm {
+  max-width: 420px;
+}
+
+.ov-modal--lg {
+  max-width: 640px;
+}
+
+.dark .ov-modal {
+  background: rgb(var(--body-bg));
+}
+
+.ov-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-modal__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 29px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-modal__sub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 20px 28px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ov-modal__body .ov-fields {
+  width: 100%;
+  min-width: 0;
+}
+
+.ov-modal__body .ov-label {
+  margin-bottom: 8px;
+}
+
+.ov-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 28px 28px;
+  border-top: 1px solid rgb(var(--default-border));
+  background: #fff;
+}
+
+.dark .ov-modal__footer {
+  background: rgb(var(--body-bg));
+}
+
+.ov-modal__check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+}
+
+.ov-modal__check input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: rgb(var(--primary));
+}
+
+.ov-modal__check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Share / preference rows (Add Attachments) */
+.ov-modal__share {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ov-modal__share + .ov-modal__share {
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.ov-modal__share-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ov-modal__share-title {
+  display: block;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-modal__share .ov-modal__hint {
+  margin-top: 4px;
+}
+
+.ov-modal__share input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: rgb(var(--primary));
+  cursor: pointer;
+}
+
+.ov-modal__hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-modal__upload {
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.ov-modal__upload-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-modal__upload-head .ov-modal__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.ov-modal__upload-body {
+  padding: 16px;
 }
 
 @media (max-width: 767px) {
@@ -1229,6 +1525,9 @@ textarea.ov-input {
   .ov-detail-layout__left {
     width: 452px;
     flex-shrink: 0;
+    overflow: visible;
+    /* Do NOT set z-index here — it creates a stacking context that paints
+       above modals opened inside the right panel (fixed backdrop trapped). */
   }
 
   .ov-detail-layout__right {
@@ -1290,6 +1589,116 @@ textarea.ov-input {
   font-weight: 700;
   color: rgb(var(--default-text-color));
   min-width: 0;
+}
+
+/* Detail overview hero + metric tiles (Property/contact detail chrome) */
+.ov-detail-hero {
+  display: flex;
+  min-height: 148px;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 12px;
+  padding: 16px;
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+.ov-detail-hero__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.ov-detail-hero__value {
+  display: block;
+  margin-top: 4px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.ov-detail-hero__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  font-size: 11px;
+  line-height: 1.3;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.ov-detail-hero__meta strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ov-detail-metric {
+  display: flex;
+  min-height: 76px;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 12px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  padding: 12px 14px;
+}
+
+.dark .ov-detail-metric {
+  background: rgb(var(--body-bg));
+}
+
+.ov-detail-metric__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+}
+
+.ov-detail-metric__value {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-detail-soft {
+  border-radius: 8px;
+  border: 1px solid rgb(var(--default-border));
+  background: rgb(var(--default-background));
+  padding: 12px;
+  text-align: center;
+}
+
+.ov-detail-soft__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+}
+
+.ov-detail-soft__value {
+  display: block;
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: rgb(var(--default-text-color));
 }
 
 .ov-kv-empty {
@@ -1820,4 +2229,551 @@ textarea.ov-input {
   font-weight: 600;
   letter-spacing: 0.28px;
   color: rgb(var(--default-text-color));
+}
+
+/*
+ * Hybrid toggles wrongly nest a .dot span inside .custom-toggle-switch.
+ * Ynex also paints ::before/::after on that label, so both knobs render
+ * (navy thumb hanging off a gray track). Prefer empty label-primary markup;
+ * until migrated, suppress the pseudo knobs when a .dot is present.
+ */
+.custom-toggle-switch > label:has(.dot) {
+  height: auto !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.custom-toggle-switch > label:has(.dot)::before,
+.custom-toggle-switch > label:has(.dot)::after {
+  content: none !important;
+  display: none !important;
+}
+
+.custom-toggle-switch > label:has(.dot) .dot {
+  box-shadow: 0 1px 2px rgba(37, 37, 54, 0.18);
+}
+
+/* Tenant Statement Summary — navy hero card (Figma financial summary / #26264F) */
+.ov-statement-summary {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgb(var(--primary));
+  color: #fff;
+  padding: 24px;
+}
+
+.ov-statement-summary__blob {
+  position: absolute;
+  top: -61px;
+  inset-inline-end: 0;
+  width: 123px;
+  height: 123px;
+  pointer-events: none;
+}
+
+.ov-statement-summary__eyebrow {
+  position: relative;
+  display: block;
+  margin: 0 0 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(238, 238, 245, 0.9);
+}
+
+.ov-statement-summary__label {
+  position: relative;
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #eeeef5;
+}
+
+.ov-statement-summary__value {
+  position: relative;
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.ov-statement-summary__hint {
+  position: relative;
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgba(238, 238, 245, 0.72);
+}
+
+.ov-statement-summary__metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(107, 107, 125, 0.55);
+}
+
+.ov-statement-summary__metric-label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #eeeef5;
+}
+
+.ov-statement-summary__metric-value {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.ov-statement-summary__metric-hint {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgba(238, 238, 245, 0.65);
+}
+
+@media (max-width: 767.98px) {
+  .ov-statement-summary {
+    padding: 20px;
+  }
+
+  .ov-statement-summary__metrics {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .ov-statement-summary__value {
+    font-size: 22px;
+  }
+}
+
+/* Financial Summary — landlord / lease wallet hero (Figma 1467:56820) */
+.ov-finance-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.ov-finance-summary__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-finance-summary__head-text {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ov-finance-summary__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-finance-summary__sub {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: rgb(var(--text-muted));
+}
+
+.ov-finance-summary__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ov-finance-summary__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d08a28;
+  flex-shrink: 0;
+}
+
+.ov-finance-summary__status-label {
+  display: block;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgb(var(--text-muted));
+}
+
+.ov-finance-summary__status-value {
+  display: block;
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-finance-summary__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 20px;
+}
+
+.ov-finance-summary__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ov-finance-summary__cash {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 25px;
+  min-height: 200px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgb(var(--primary));
+  overflow: hidden;
+}
+
+.ov-finance-summary__blob {
+  position: absolute;
+  top: -61px;
+  inset-inline-end: 0;
+  width: 123px;
+  height: 123px;
+  pointer-events: none;
+}
+
+.ov-finance-summary__cash-label {
+  position: relative;
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #eeeef5;
+}
+
+.ov-finance-summary__cash-value {
+  position: relative;
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.ov-finance-summary__cash-metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ov-finance-summary__cash-metric {
+  padding: 16px 10px 0;
+  border-top: 1px solid rgba(107, 107, 125, 0.55);
+}
+
+.ov-finance-summary__cash-metric-label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #eeeef5;
+}
+
+.ov-finance-summary__cash-metric-value {
+  display: block;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.ov-finance-summary__tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+  min-height: 200px;
+}
+
+.ov-finance-summary__tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 92px;
+  padding: 20px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: #fff;
+}
+
+.ov-finance-summary__tile-label {
+  display: block;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: rgb(var(--text-muted));
+}
+
+.ov-finance-summary__tile-value {
+  display: block;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-finance-summary__other-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-finance-summary__other {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ov-finance-summary__other .ov-finance-summary__tile {
+  width: 100%;
+  max-width: 265px;
+}
+
+@media (max-width: 991.98px) {
+  .ov-finance-summary__row {
+    grid-template-columns: 1fr;
+  }
+
+  .ov-finance-summary__tiles {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .ov-finance-summary__cash-metrics,
+  .ov-finance-summary__tiles {
+    grid-template-columns: 1fr;
+  }
+
+  .ov-finance-summary__cash-value {
+    font-size: 22px;
+  }
+
+  .ov-finance-summary__other .ov-finance-summary__tile {
+    max-width: none;
+  }
+}
+
+/* Contact Details click popover (Unit / Room Information → Landlord) */
+.ov-contact-popover-anchor {
+  position: relative;
+}
+
+.ov-contact-popover {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 12px);
+  z-index: 1060;
+  width: 280px;
+  background: #fff;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(37, 37, 54, 0.12);
+  overflow: hidden;
+}
+
+.dark .ov-contact-popover {
+  background: rgb(var(--custom-white));
+}
+
+.ov-contact-popover__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-contact-popover__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(189, 151, 89, 0.16);
+  color: #bd9759;
+  flex-shrink: 0;
+}
+
+.ov-contact-popover__icon i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ov-contact-popover__title {
+  margin: 0;
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-contact-popover__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: #2563eb;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ov-contact-popover__view:hover {
+  text-decoration: underline;
+}
+
+.ov-contact-popover__view:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.ov-contact-popover__body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ov-contact-popover__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-contact-popover__badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  background: rgba(39, 134, 91, 0.12);
+  color: #27865b;
+}
+
+.ov-contact-popover__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ov-contact-popover__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ov-contact-popover__row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  color: rgb(var(--text-muted));
+  flex-shrink: 0;
+}
+
+.ov-contact-popover__row-icon i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ov-contact-popover__row-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ov-contact-popover__label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgb(var(--text-muted));
+}
+
+.ov-contact-popover__value {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+  word-break: break-word;
+}
+
+@media (max-width: 991.98px) {
+  .ov-contact-popover {
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    width: auto;
+  }
 }

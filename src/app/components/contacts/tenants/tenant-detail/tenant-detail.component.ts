@@ -185,6 +185,15 @@ export class TenantDetailComponent implements OnInit {
     { name: 'Welcome to Tenant agreement', subscribed: false }
   ];
 
+  get allSubscriptionsSelected(): boolean {
+    return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);
+  }
+
+  toggleAllSubscriptions(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.subscriptions.forEach(s => (s.subscribed = checked));
+  }
+
   // --- TAB 1: STATEMENT ACTIVITY ---
   statementColumns = [
     { key: 'invoiceId', label: 'web.contacts.lblInvoiceID', visible: true, useTemplate: true },
@@ -265,10 +274,10 @@ export class TenantDetailComponent implements OnInit {
     { key: 'role', label: 'web.contacts.lblRole', visible: true },
     { key: 'type', label: 'web.contacts.lblType', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'Timezone', label: 'web.contacts.lblTimezone', visible: true, useTemplate: true },
-    { key: 'Country', label: 'web.contacts.lblCountry', visible: true, useTemplate: true },
-    { key: 'Default', label: 'web.contacts.lblDefault', visible: true, useTemplate: true },
-    { key: 'Created', label: 'web.contacts.lblCreated', visible: true, useTemplate: true },
+    { key: 'Timezone', label: 'web.contacts.lblTimezone', visible: true },
+    { key: 'Country', label: 'web.contacts.lblCountry', visible: true },
+    { key: 'Default', label: 'web.contacts.lblDefault', visible: true },
+    { key: 'Created', label: 'web.contacts.lblCreated', visible: true },
     { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true }
   ];
 
