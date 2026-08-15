@@ -43,7 +43,7 @@
                         <ng-template #checkLink>
                             <ng-container *ngIf="col.isLink; else defaultData">
                                 <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick(row,col )">
-                                    {{ row[col.key]!=null ? 'View File': 'N/A' }}
+                                    {{ getCellValue(row,col)!=null ? 'View File': 'N/A' }}
                                 </span>
                             </ng-container>
                         </ng-template>
@@ -54,37 +54,34 @@
                                 *ngIf="col.isHtml; else editLink"
                                 [ngClass]="{'font-semibold': col.key === 'name'}">
 
-                                {{ stripHtml(row[col.key]) }}
+                                {{ stripHtml(getCellValue(row,col)) }}
 
                             </span>
                             <ng-template #editLink>
                                 
                                 <span  *ngIf="col.is_editCol; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
                                 >
-                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
-                                <a *ngIf="col.is_editCol && col.redirect_url !=null" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{row[col.key]}}</a>
+                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  (click)="edit_action(row,'edit')">{{getCellValue(row,col)}}</a>
+                                <a *ngIf="col.is_editCol && col.redirect_url !=null" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{getCellValue(row,col)}}</a>
                                 </span>
-                                <!-- <span  *ngIf="col.is_editCol && col.redirect_url==null; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
-                                (click)="edit_action(row,'edit')">
-                                {{row[col.key]}}</span> -->
                             </ng-template>
                             <ng-template #statusCol>
                                 <span *ngIf="col.is_status; else currencyCol" class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [ngClass]="row.class_name">
-                                    {{row[col.key]}}
+                                    {{getCellValue(row,col)}}
                                   </span>
                             </ng-template>
                             <ng-template #currencyCol>
                                 <span *ngIf="col.is_include_currency; else normalText" [ngClass]="{'font-semibold': col.key === 'name'}">
-                                    {{getValueWithCurrency(row[col.key])}}
+                                    {{getValueWithCurrency(getCellValue(row,col))}}
                                   </span>
                             </ng-template>
 
                             <ng-template #normalText>
                                 <span *ngIf="!col.key.includes('date')" [ngClass]="{'font-semibold': col.key === 'name'}">
-                                    {{ row[col.key] || '-' }}
+                                    {{ getCellValue(row,col) || '-' }}
                                 </span>
                                 <span *ngIf="col.key.includes('date')">
-                                    {{ row[col.key]!=null ? row[col.key].split('T')[0] : '-' }}
+                                    {{ getCellValue(row,col)!=null ? getCellValue(row,col).split('T')[0] : '-' }}
                                 </span> 
                             </ng-template>
                         </ng-template>

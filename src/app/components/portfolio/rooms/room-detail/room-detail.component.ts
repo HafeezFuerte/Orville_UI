@@ -216,7 +216,25 @@ export class RoomDetailComponent implements OnInit {
           this.legalCases = response.objResult.legal_cases;
           this.parkings = response.objResult.parking;
           this.inspections = response.objResult.inspections;
-          this.workOrders = response.objResult.workorders;
+          const woList = response.objResult.workorders || [];
+          this.workOrders = woList.map((wo: any) => ({
+            id: wo.id,
+            code: wo.code || '',
+            title: wo.title || '',
+            status: wo.status_nm || wo.status || 'Open',
+            closingStatus: wo.closingStatus || wo.closing_status || 'Pending',
+            internalStatus: wo.internalStatus || wo.internal_status || 'Assigned',
+            dueDate: wo.due_date || wo.dueDate || '',
+            priority: wo.priority || '',
+            property: wo.property || '',
+            vendor: wo.vendor_name || wo.vendor || '',
+            user: wo.user_name || wo.user || '',
+            tags: wo.tags || '',
+            maintenanceCategory: wo.maintenance_name || wo.maintenance_category || wo.maintenanceCategory || '',
+            responsiblePersons: wo.responsible_persons || wo.responsiblePersons || '',
+            updatedAt: wo.modified_date || wo.updated_at || wo.updatedAt || '',
+            createdAt: wo.created_date || wo.created_at || wo.createdAt || ''
+          }));
           this.initModeData(); 
         
         }

@@ -7,6 +7,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-asset',
@@ -71,14 +72,11 @@ export class CreateAssetComponent implements OnInit {
   expiryDate: string = '';
   totalWarranty: string = '';
 
-  attachments: any[] = [
-    { name: 'Asset.pdf', size: '1.4 MB' },
-    { name: 'Note.pdf', size: '1.1 MB' }
-  ];
+  attachments: any[] = [];
 
   ngOnInit() {
     this.loadLookup(26, 'assetCategories', 'lookup_name');
-    this.loadLookup(31, 'maintenanceSubcategories', 'lookup_name');
+    this.loadMaintenanceSubcategories();
     this.loadWorkers();
     this.loadVendors();
     
@@ -230,15 +228,6 @@ export class CreateAssetComponent implements OnInit {
     const formData = new FormData();
     formData.append('reqObject', JSON.stringify(requestJson));
 
-    // Append files
-    if (this.attachments && this.attachments.length > 0) {
-      this.attachments.forEach((file: any) => {
-        if (file instanceof File) {
-          formData.append('file_paths', file);
-        }
-      });
-    }
-
     console.log("=== Debugging save_update_assets Payload ===");
     console.log("reqObject:", JSON.stringify(requestJson, null, 2));
     console.log("============================================");
@@ -246,8 +235,32 @@ export class CreateAssetComponent implements OnInit {
     this.portfolioService.saveAsset(formData).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-          this.toastr.success(res.message || "Asset saved successfully");
-          this.goBack();
+          const assetCode = res.objResult?.code || res.objResult?.id || this.editId || "";
+          
+          // Upload attachments
+          const uploadTasks: Observable<any>[] = [];
+          this.attachments.forEach(file => {
+            if (file instanceof File) {
+              uploadTasks.push(this.uploadFile(file, assetCode));
+            }
+          });
+
+          if (uploadTasks.length > 0) {
+            forkJoin(uploadTasks).subscribe({
+              next: () => {
+                this.toastr.success("Asset and all attachments saved successfully");
+                this.goBack();
+              },
+              error: (err) => {
+                console.error("Error uploading asset files:", err);
+                this.toastr.warning("Asset saved, but some files failed to upload");
+                this.goBack();
+              }
+            });
+          } else {
+            this.toastr.success(res.message || "Asset saved successfully");
+            this.goBack();
+          }
         } else {
           this.toastr.error(res.message || "Failed to save asset");
         }
@@ -362,26 +375,27 @@ export class CreateAssetComponent implements OnInit {
   }
 
   loadWorkers() {
-    this.portfolioService.getMastersByPaging({
-      userid: 1,
-      company_id: 1,
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 19,
+      typeid: 19,
+      filterId: 0,
+      filterText: 's',
+      filterText1: '',
+      userId: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
       clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'SUPPORT_TECHNICIANS'
-    }).subscribe({
+      companyId: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
+      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1
+    };
+
+    this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          const list = res.objResult.support_technicians || res.objResult.table || res.objResult;
+          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
             this.assignWorkers = list.map((item: any) => ({
-              id: item.id || item.code,
-              name: item.name || item.technician_name || item.code
+              id: item.id || item.Id || item.user_code || item.code || '',
+              name: item.column1 || item.name || item.Name || item.lookup_name || item.full_name || item.user_name || item.technician_name || item.code || '-'
             }));
           }
         }
@@ -430,6 +444,76 @@ export class CreateAssetComponent implements OnInit {
 
   removeFile(index: number) {
     this.attachments.splice(index, 1);
+  }
+
+  viewFile(file: any) {
+    if (file instanceof File) {
+      const url = URL.createObjectURL(file);
+      window.open(url, '_blank');
+    } else if (file.file_path || file.url) {
+      window.open(file.file_path || file.url, '_blank');
+    }
+  }
+
+  uploadFile(file: File, assetCode: string): Observable<any> {
+    const request = {
+      ...this.commonService.commonPayload(),
+      code: '',
+      entity_id: assetCode,
+      entity: 'asset',
+      document_type: 28, // Document / Attachment type
+      document_no: 'DOC-' + Math.floor(Math.random() * 1000000),
+      issue_date: new Date().toISOString().substring(0, 10),
+      expiry_date: new Date(Date.now() + 365*24*60*60*1000).toISOString().substring(0, 10),
+      issuing_authority: 'System',
+      share_with_tenants: true,
+      share_with_landlords: true
+    };
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(request));
+    formData.append('file_path', file);
+    return this.portfolioService.saveAttachment(formData);
+  }
+
+  loadMaintenanceSubcategories() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 30, // Maintenance Categories lookup
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          const categories = res.objResult.table;
+          const observables: Observable<any>[] = categories.map((cat: any) =>
+            this.portfolioService.getMasterByType({
+              typeId: 2,
+              filterId: 31, // Maintenance Subcategories lookup
+              filterText: String(cat.id),
+              filterText1: ''
+            })
+          );
+
+          forkJoin(observables).subscribe({
+            next: (responses: any) => {
+              let allSubcats: any[] = [];
+              const responseArray = Array.isArray(responses) ? responses : [responses];
+              responseArray.forEach(subRes => {
+                if (subRes && subRes.statusCode == 200 && subRes.objResult && subRes.objResult.table) {
+                  allSubcats = allSubcats.concat(subRes.objResult.table);
+                }
+              });
+              this.maintenanceSubcategories = allSubcats.map((item: any) => ({
+                id: item.id,
+                name: item.lookup_name || item.name || ''
+              }));
+            },
+            error: (err) => console.error('Error loading subcategories via forkJoin:', err)
+          });
+        }
+      },
+      error: (err) => console.error('Error loading maintenance categories:', err)
+    });
   }
 }
 // Force compile 2

@@ -197,21 +197,22 @@ export class TabsComponent implements OnInit {
           const woList = response.objResult.workOrders || response.objResult.workorders || response.objResult.table4 || [];
           if (Array.isArray(woList) && woList.length > 0) {
             this.workOrders = woList.map((wo: any) => ({
-              id: wo.id || 'WO-1001',
-              title: wo.title || 'Repair Water Leak',
-              status: wo.status || 'Open',
-              closingStatus: wo.closing_status || wo.closingStatus || 'Pending',
-              internalStatus: wo.internal_status || wo.internalStatus || 'Assigned',
-              dueDate: wo.due_date || wo.dueDate || '15-07-2026',
-              priority: wo.priority || 'High',
-              property: wo.property || 'Sunrise Apartments',
-              vendor: wo.vendor || 'ABC Plumbing',
-              user: wo.user || 'John Smith',
-              tags: wo.tags || 'Plumbing, Emergency',
-              maintenanceCategory: wo.maintenance_category || wo.maintenanceCategory || 'Plumbing',
-              responsiblePersons: wo.responsible_persons || wo.responsiblePersons || 'Michael Brown',
-              updatedAt: wo.updated_at || wo.updatedAt || '10-07-2026 09:15 AM',
-              createdAt: wo.created_at || wo.createdAt || '09-07-2026 10:00 AM'
+              id: wo.id,
+              code: wo.code || '',
+              title: wo.title || '',
+              status: wo.status_nm || wo.status || 'Open',
+              closingStatus: wo.closingStatus || wo.closing_status || 'Pending',
+              internalStatus: wo.internalStatus || wo.internal_status || 'Assigned',
+              dueDate: wo.due_date || wo.dueDate || '',
+              priority: wo.priority || '',
+              property: wo.property || '',
+              vendor: wo.vendor_name || wo.vendor || '',
+              user: wo.user_name || wo.user || '',
+              tags: wo.tags || '',
+              maintenanceCategory: wo.maintenance_name || wo.maintenance_category || wo.maintenanceCategory || '',
+              responsiblePersons: wo.responsible_persons || wo.responsiblePersons || '',
+              updatedAt: wo.modified_date || wo.updated_at || wo.updatedAt || '',
+              createdAt: wo.created_date || wo.created_at || wo.createdAt || ''
             }));
           }
 

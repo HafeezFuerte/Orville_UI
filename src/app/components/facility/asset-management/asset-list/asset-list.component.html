@@ -87,54 +87,56 @@
   </div>
 
   <!-- Table -->
-  <app-shared-table 
-    [columns]="visibleColumns" 
-    [data]="assetData" 
-    [hasActions]="true" 
-    [totalRecords]="totalRecords" 
-    [pageSize]="pageSize"
-    [pageIndex]="pageNo"
-    (pageChange)="onSharedTablePageChange($event)"
-    (notify_edit_action)="handleEditAction($event)">
-    <ng-template #colTemplate let-row="row" let-col="col">
-      <ng-container [ngSwitch]="col.key">
-        
-        <!-- ID Column -->
-        <ng-container *ngSwitchCase="'id'">
-          <span (click)="navigateToDetail(row.code)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.id }}</span>
+  <div class="p-4">
+    <app-shared-table 
+      [columns]="visibleColumns" 
+      [data]="assetData" 
+      [hasActions]="true" 
+      [totalRecords]="totalRecords" 
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)"
+      (notify_edit_action)="handleEditAction($event)">
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+          
+          <!-- ID Column -->
+          <ng-container *ngSwitchCase="'id'">
+            <span (click)="navigateToDetail(row.code)" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.code || row.id }}</span>
+          </ng-container>
+  
+          <!-- Category Column -->
+          <ng-container *ngSwitchCase="'category'">
+            <span>{{ getArabicLookupName(row, 'category') }}</span>
+          </ng-container>
+  
+          <!-- Property Column -->
+          <ng-container *ngSwitchCase="'property'">
+            <span>{{ getArabicLookupName(row, 'property') }}</span>
+          </ng-container>
+  
+          <!-- Status Column -->
+          <ng-container *ngSwitchCase="'status'">
+            <span *ngIf="row.status === 'Operational'" class="px-2.5 py-1 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Operational</span>
+            <span *ngIf="row.status === 'Down'" class="px-2.5 py-1 rounded bg-danger text-[10px] font-bold text-white shadow-sm">Down</span>
+          </ng-container>
+  
+          <!-- Action Column -->
+          <ng-container *ngSwitchCase="'action'">
+            <div class="flex gap-1">
+              <button (click)="handleEditAction(row)" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+                <i class="ri-edit-line text-xs"></i>
+              </button>
+              <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+                <i class="ri-delete-bin-line text-xs"></i>
+              </button>
+            </div>
+          </ng-container>
+  
         </ng-container>
-
-        <!-- Category Column -->
-        <ng-container *ngSwitchCase="'category'">
-          <span>{{ getArabicLookupName(row, 'category') }}</span>
-        </ng-container>
-
-        <!-- Property Column -->
-        <ng-container *ngSwitchCase="'property'">
-          <span>{{ getArabicLookupName(row, 'property') }}</span>
-        </ng-container>
-
-        <!-- Status Column -->
-        <ng-container *ngSwitchCase="'status'">
-          <span *ngIf="row.status === 'Operational'" class="px-2.5 py-1 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Operational</span>
-          <span *ngIf="row.status === 'Down'" class="px-2.5 py-1 rounded bg-danger text-[10px] font-bold text-white shadow-sm">Down</span>
-        </ng-container>
-
-        <!-- Action Column -->
-        <ng-container *ngSwitchCase="'action'">
-          <div class="flex gap-1">
-            <button (click)="handleEditAction(row)" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-              <i class="ri-edit-line text-xs"></i>
-            </button>
-            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-              <i class="ri-delete-bin-line text-xs"></i>
-            </button>
-          </div>
-        </ng-container>
-
-      </ng-container>
-    </ng-template>
-  </app-shared-table>
+      </ng-template>
+    </app-shared-table>
+  </div>
 </div>
 
 <!-- Sliding Filter Drawer -->

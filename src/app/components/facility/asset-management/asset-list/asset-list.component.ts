@@ -150,7 +150,10 @@ export class AssetListComponent implements OnInit {
             ...item,
             assetName: item.asset_name || item.assetName || '',
             Vendor: item.vendor || item.Vendor || '',
-            PurchaseDate: item.purchase_date || item.PurchaseDate || ''
+            PurchaseDate: item.purchase_date || item.PurchaseDate || '',
+            location: item.location || item.Location || item.address || item.address1 || '-',
+            price: item.price || item.Price || '-',
+            status: item.status_name || item.status_nm || (item.status == 1 || item.status === '1' || item.status === 'Operational' || item.status === 'Active' || item.is_active === true ? 'Operational' : 'Down')
           })).sort((a: any, b: any) => a.id - b.id);
           this.totalRecords = res.objResult.total_records || (res.objResult.rows_info && res.objResult.rows_info[0]?.totalrecords) || this.assetData.length;
         }

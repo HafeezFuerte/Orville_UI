@@ -417,53 +417,82 @@
           <h5 class="text-sm font-bold text-gray-800 m-0">Attachments</h5>
           <div class="grid grid-cols-3 gap-2">
             <!-- Before Images -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden flex flex-col">
               <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
                 <p class="text-[11px] font-bold text-gray-700 m-0">Before Images</p>
               </div>
-              <div class="p-4 flex flex-col items-center justify-center min-h-[166px]">
-                <div
-                  class="w-full h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 relative group cursor-pointer">
-                  <div class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-400">
-                    <i class="ri-image-2-line text-3xl"></i>
-                    <!-- Placeholder image text -->
-                    <span
-                      class="absolute bottom-2 left-2 text-[10px] font-bold text-gray-500 bg-white/80 px-1 rounded">24.5
-                      °C</span>
+              <div class="p-4 flex-1 flex flex-col justify-center min-h-[166px]">
+                <ng-container *ngIf="beforeImages.length > 0; else noBefore">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div *ngFor="let img of beforeImages" (click)="openImage(img.file_path)"
+                      class="relative h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 group cursor-pointer">
+                      <img [src]="getFileUrl(img.file_path)" class="w-full h-full object-cover">
+                      <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="ri-eye-line text-white text-lg"></i>
+                      </div>
+                    </div>
                   </div>
-                  <div
-                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <i class="ri-eye-line text-white text-xl"></i>
+                </ng-container>
+                <ng-template #noBefore>
+                  <div class="text-center text-gray-400 py-4">
+                    <i class="ri-image-line text-2xl mb-1 block text-gray-300"></i>
+                    <p class="text-[10px] m-0 font-medium">No before images</p>
+                    <p class="text-[9px] m-0 mt-0.5 text-gray-300">Before images will appear here when uploaded</p>
                   </div>
-                </div>
-                <p class="text-[10px] text-gray-500 mt-2 flex items-center gap-1 self-start"><i
-                    class="ri-image-line"></i> image.jpg</p>
+                </ng-template>
               </div>
             </div>
+
             <!-- After Images -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden flex flex-col">
               <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
                 <p class="text-[11px] font-bold text-gray-700 m-0">After Images</p>
               </div>
-              <div class="p-4 flex items-center justify-center min-h-[166px]">
-                <div class="text-center text-gray-400">
-                  <i class="ri-image-line text-2xl mb-1 block text-gray-300"></i>
-                  <p class="text-[10px] m-0 font-medium">No after images</p>
-                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">After images will appear here when uploaded</p>
-                </div>
+              <div class="p-4 flex-1 flex flex-col justify-center min-h-[166px]">
+                <ng-container *ngIf="afterImages.length > 0; else noAfter">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div *ngFor="let img of afterImages" (click)="openImage(img.file_path)"
+                      class="relative h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 group cursor-pointer">
+                      <img [src]="getFileUrl(img.file_path)" class="w-full h-full object-cover">
+                      <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="ri-eye-line text-white text-lg"></i>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #noAfter>
+                  <div class="text-center text-gray-400 py-4">
+                    <i class="ri-image-line text-2xl mb-1 block text-gray-300"></i>
+                    <p class="text-[10px] m-0 font-medium">No after images</p>
+                    <p class="text-[9px] m-0 mt-0.5 text-gray-300">After images will appear here when uploaded</p>
+                  </div>
+                </ng-template>
               </div>
             </div>
+
             <!-- Videos -->
-            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-lg border border-gray-100 overflow-hidden flex flex-col">
               <div class="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
                 <p class="text-[11px] font-bold text-gray-700 m-0">Videos</p>
               </div>
-              <div class="p-4 flex items-center justify-center min-h-[166px]">
-                <div class="text-center text-gray-400">
-                  <i class="ri-video-line text-2xl mb-1 block text-gray-300"></i>
-                  <p class="text-[10px] m-0 font-medium">No videos</p>
-                  <p class="text-[9px] m-0 mt-0.5 text-gray-300">Videos will appear here when uploaded</p>
-                </div>
+              <div class="p-4 flex-1 flex flex-col justify-center min-h-[166px]">
+                <ng-container *ngIf="videos.length > 0; else noVideos">
+                  <div class="flex flex-col gap-2">
+                    <div *ngFor="let vid of videos" (click)="openImage(vid.file_path)"
+                      class="flex items-center gap-2 p-2 border border-gray-100 rounded-lg bg-gray-50 hover:bg-gray-100/70 transition-all cursor-pointer">
+                      <i class="ri-film-line text-primary text-lg"></i>
+                      <span class="text-[10px] text-gray-700 truncate flex-1 font-medium">{{ vid.file_path.split('/').pop() }}</span>
+                      <i class="ri-eye-line text-gray-400"></i>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #noVideos>
+                  <div class="text-center text-gray-400 py-4">
+                    <i class="ri-video-line text-2xl mb-1 block text-gray-300"></i>
+                    <p class="text-[10px] m-0 font-medium">No videos</p>
+                    <p class="text-[9px] m-0 mt-0.5 text-gray-300">Videos will appear here when uploaded</p>
+                  </div>
+                </ng-template>
               </div>
             </div>
           </div>

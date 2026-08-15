@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
@@ -23,6 +24,7 @@ export class CreateWorkOrderComponent implements OnInit {
   private commonService = inject(CommonService);
   private propertiesService = inject(PropertiesService);
   private toastr = inject(ToastrService);
+  private sanitizer = inject(DomSanitizer);
 
   editId: string | null = null;
 
@@ -284,12 +286,18 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   uploadFile(file: File, documentType: string, workOrderCode: string): Observable<any> {
+    let docTypeInt = 28; // Default to Document (28)
+    if (documentType === 'Before Image') docTypeInt = 30;
+    else if (documentType === 'After Image') docTypeInt = 29;
+    else if (documentType === 'Video') docTypeInt = 27; // Photo
+    else if (documentType === 'Attachment') docTypeInt = 28; // Document
+
     const request = {
-      ...this.commonService.commonPayload,
+      ...this.commonService.commonPayload(),
       code: '',
       entity_id: workOrderCode,
       entity: 'workorder',
-      document_type: documentType,
+      document_type: docTypeInt,
       document_no: 'DOC-' + Math.floor(Math.random() * 1000000),
       issue_date: new Date().toISOString().substring(0, 10),
       expiry_date: new Date(Date.now() + 365*24*60*60*1000).toISOString().substring(0, 10),
@@ -301,6 +309,10 @@ export class CreateWorkOrderComponent implements OnInit {
     formData.append('reqObject', JSON.stringify(request));
     formData.append('file_path', file);
     return this.portfolioService.saveAttachment(formData);
+  }
+
+  getFileObjectURL(file: File): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
   }
 
   addTag(event: Event) {

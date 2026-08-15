@@ -81,7 +81,11 @@ export class AddSupportTechnicianComponent implements OnInit {
     category: null as string | null
   };
 
-  selectedCountry: any = null;
+  selectedNationality: any = null;
+
+  get selectedCountryObj() {
+    return this.countries.find(c => c.id === Number(this.technicianData.country_id)) || null;
+  }
 
   countryMetadata: { [key: string]: { code: string; dialCode: string } } = {
     'afghanistan': { code: 'af', dialCode: '+93' },
@@ -345,27 +349,21 @@ export class AddSupportTechnicianComponent implements OnInit {
     });
   }
 
-  onCountryChange(country: any) {
+  onCountryChange() {
     this.technicianData.stateid = null;
     this.technicianData.city = null;
     this.states = [];
     this.cities = [];
-    if (country && country.id) {
-      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
-      this.technicianData.country_id = country.id;
-    } else {
-      this.technicianData.country_id = null;
+    if (this.technicianData.country_id) {
+      this.loadLookup(1001, 'states', 'state_name', this.technicianData.country_id.toString());
     }
   }
 
-  onStateChange(state: any) {
+  onStateChange() {
     this.technicianData.city = null;
     this.cities = [];
-    if (state && state.id) {
-      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
-      this.technicianData.stateid = state.id;
-    } else {
-      this.technicianData.stateid = null;
+    if (this.technicianData.stateid) {
+      this.loadLookup(1002, 'cities', 'city_name', this.technicianData.stateid.toString());
     }
   }
 
@@ -382,8 +380,17 @@ export class AddSupportTechnicianComponent implements OnInit {
             id: c.id,
             name: c.country_name
           }));
-          const lookup = this.technicianData.country_id || 'United Arab Emirates';
-          this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
+          
+          if (!this.technicianData.country_id) {
+            const defaultCountry = this.countries.find(c => c.name === 'United Arab Emirates');
+            if (defaultCountry) {
+              this.technicianData.country_id = defaultCountry.id;
+              this.onCountryChange();
+            }
+          }
+
+          const natLookup = this.technicianData.nationality || 'United Arab Emirates';
+          this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
         }
       },
       error: (err) => {
@@ -441,19 +448,16 @@ export class AddSupportTechnicianComponent implements OnInit {
           this.assignment = tech.auto_assign_assignment || false;
           this.qualifies = tech.allow_create_work_order || false;
 
-          const lookup = this.technicianData.country_id || 'United Arab Emirates';
-          this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
-
-          if (this.selectedCountry && this.selectedCountry.id) {
-            this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
-              this.technicianData.stateid = tech.stateid || null;
+          if (this.technicianData.country_id) {
+            this.loadLookup(1001, 'states', 'state_name', this.technicianData.country_id.toString(), () => {
               if (this.technicianData.stateid) {
-                this.loadLookup(1002, 'cities', 'city_name', this.technicianData.stateid.toString(), () => {
-                  this.technicianData.city = tech.city || null;
-                });
+                this.loadLookup(1002, 'cities', 'city_name', this.technicianData.stateid.toString());
               }
             });
           }
+
+          const natLookup = this.technicianData.nationality || 'United Arab Emirates';
+          this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
         }
       },
       error: (err) => {
@@ -507,7 +511,7 @@ export class AddSupportTechnicianComponent implements OnInit {
       mobile_no: this.technicianData.mobile_no || '',
       phone: this.technicianData.mobile_no || '',
       phone_number: this.technicianData.mobile_no || '',
-      country_id: Number(this.selectedCountry?.id) || 0,
+      country_id: Number(this.technicianData.country_id) || 0,
       role_id: 0, // default
       department: Number(this.technicianData.technician_type) || 0,
       display_all_tenants: false,

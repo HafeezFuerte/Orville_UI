@@ -46,9 +46,12 @@ export class AddTenantComponent implements OnInit {
   states: any[] = [];
   daysOfMonth = Array.from({length: 31}, (_, i) => i + 1);
 
-  selectedCountry: any = null;
   selectedNationality: any = null;
   existingTenants: any[] = [];
+
+  get selectedCountryObj() {
+    return this.countries.find(c => c.id === Number(this.tenantData.country_id)) || null;
+  }
 
   countryMetadata: { [key: string]: { code: string; dialCode: string } } = {
     'afghanistan': { code: 'af', dialCode: '+93' },
@@ -379,27 +382,21 @@ export class AddTenantComponent implements OnInit {
     });
   }
 
-  onCountryChange(country: any) {
+  onCountryChange() {
     this.tenantData.stateid = null;
     this.tenantData.city = null;
     this.states = [];
     this.cities = [];
-    if (country && country.id) {
-      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
-      this.tenantData.country_id = country.id;
-    } else {
-      this.tenantData.country_id = null;
+    if (this.tenantData.country_id) {
+      this.loadLookup(1001, 'states', 'state_name', this.tenantData.country_id.toString());
     }
   }
 
-  onStateChange(state: any) {
+  onStateChange() {
     this.tenantData.city = null;
     this.cities = [];
-    if (state && state.id) {
-      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
-      this.tenantData.stateid = state.id;
-    } else {
-      this.tenantData.stateid = null;
+    if (this.tenantData.stateid) {
+      this.loadLookup(1002, 'cities', 'city_name', this.tenantData.stateid.toString());
     }
   }
 
@@ -416,8 +413,14 @@ export class AddTenantComponent implements OnInit {
             id: c.id,
             name: c.country_name
           }));
-          const lookup = this.tenantData.country_id || 'United Arab Emirates';
-          this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
+          
+          if (!this.tenantData.country_id) {
+            const defaultCountry = this.countries.find(c => c.name === 'United Arab Emirates');
+            if (defaultCountry) {
+              this.tenantData.country_id = defaultCountry.id;
+              this.onCountryChange();
+            }
+          }
 
           const natLookup = this.tenantData.nationality || 'United Arab Emirates';
           this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
@@ -492,22 +495,16 @@ export class AddTenantComponent implements OnInit {
           this.disableListing = tenant.disabled_property_listing || false;
         }
 
-        const lookup = this.tenantData.country_id || 'United Arab Emirates';
-        this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
-
-        const natLookup = this.tenantData.nationality || 'United Arab Emirates';
-        this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
-
-        if (this.selectedCountry && this.selectedCountry.id) {
-          this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
-            this.tenantData.stateid = tenant.stateid || null;
+        if (this.tenantData.country_id) {
+          this.loadLookup(1001, 'states', 'state_name', this.tenantData.country_id.toString(), () => {
             if (this.tenantData.stateid) {
-              this.loadLookup(1002, 'cities', 'city_name', this.tenantData.stateid.toString(), () => {
-                this.tenantData.city = tenant.city || null;
-              });
+              this.loadLookup(1002, 'cities', 'city_name', this.tenantData.stateid.toString());
             }
           });
         }
+
+        const natLookup = this.tenantData.nationality || 'United Arab Emirates';
+        this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
       },
       error: (err) => {
         console.error('Error loading tenant details:', err);
@@ -576,7 +573,7 @@ export class AddTenantComponent implements OnInit {
       address1: this.tenantData.address1 || '',
       address2: this.tenantData.address2 || '',
       nationality: Number(this.selectedNationality?.id) || 0,
-      country_id: Number(this.selectedCountry?.id) || 0,
+      country_id: Number(this.tenantData.country_id) || 0,
       stateid: Number(this.tenantData.stateid) || 0,
       city: Number(this.tenantData.city) || 0,
       zipcode: this.tenantData.zipcode || '',

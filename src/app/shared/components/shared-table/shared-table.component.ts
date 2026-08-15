@@ -95,6 +95,12 @@ export class SharedTableComponent {
   getredirection_column(row:any,col:any){
     return row[col.edit_col];
   }
+  getCellValue(row: any, col: any): any {
+    if (col.key === 'id') {
+      return row.code || row.id || '-';
+    }
+    return row[col.key];
+  }
   stripHtml(html: string): string {
   if (!html) {
     return '-';

@@ -8,6 +8,8 @@ import { CommonService } from '../../../../services/common.service';
 
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component'; 
+import { environment } from '../../../../../environments/environment';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 
 @Component({
   selector: 'app-work-order-detail',
@@ -21,6 +23,7 @@ export class WorkOrderDetailComponent implements OnInit {
   private router = inject(Router);
   private propertiesService = inject(PropertiesService);
   private commonService = inject(CommonService);
+  private commonTabsService = inject(Common_TabsService);
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
@@ -28,6 +31,10 @@ export class WorkOrderDetailComponent implements OnInit {
   notesForm: any = {};
   attachmentsForm: any = {};
   tabsList: any[] = [];
+  
+  beforeImages: any[] = [];
+  afterImages: any[] = [];
+  videos: any[] = [];
 
   initializeTabs() {
     this.tabsList = [
@@ -287,7 +294,7 @@ export class WorkOrderDetailComponent implements OnInit {
               vendor: data.vendor || '-',
               landlord: data.landlord || '-'
             };
-            const noteList = res.objResult.note || res.objResult.notes || res.objResult.note_dtls;
+            const noteList = res.objResult.table1 || res.objResult.note || res.objResult.notes || res.objResult.note_dtls;
             if (Array.isArray(noteList) && noteList.length > 0) {
               this.notes = noteList.map((n: any) => ({
                 code: n.code || n.id,
@@ -298,10 +305,11 @@ export class WorkOrderDetailComponent implements OnInit {
                 created_by: n.created_by || n.createdBy || ''
               }));
             }
-            const docList = res.objResult.documents || res.objResult.document || res.objResult.attachments;
+            const docList = res.objResult.table2 || res.objResult.documents || res.objResult.document || res.objResult.attachments;
             if (Array.isArray(docList) && docList.length > 0) {
               this.attachments = docList.map((d: any) => ({
                 code: d.code || d.id,
+                document_type: d.document_type || d.documentType,
                 document_type_name: d.document_type_name || d.fileType || '',
                 doc_no: d.doc_no || d.docId || '',
                 document_status_name: d.document_status_name || d.documentStatus || '',
@@ -309,6 +317,11 @@ export class WorkOrderDetailComponent implements OnInit {
                 expiry_date: d.expiry_date || d.expiryDate || '',
                 file_path: d.file_path || d.files || ''
               }));
+
+              // Filter images/videos
+              this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
+              this.afterImages = this.attachments.filter(d => d.document_type == 29 || d.document_type_name === 'After Image');
+              this.videos = this.attachments.filter(d => d.document_type == 27 || d.document_type_name === 'Photo');
             }
 
             // Map Costs if returned by API
@@ -360,12 +373,49 @@ export class WorkOrderDetailComponent implements OnInit {
             }
 
             this.initializeTabs();
+            
+            // Query attachments using the resolved work order ID/code
+            const resolvedId = data.id || data.code || this.workOrderId;
+            this.loadAttachments(resolvedId);
           }
         }
       },
       error: (err) => {
         console.error("Error loading work order details:", err);
       }
+    });
+  }
+
+  loadAttachments(resolvedId: string) {
+    this.commonTabsService.getMasterByType({
+      typeId: 34,
+      filterId: 0,
+      filterText: 'workorder',
+      filterText1: resolvedId
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.statusCode == 200 && res.objResult && res.objResult.table) {
+          const docList = res.objResult.table;
+          if (Array.isArray(docList) && docList.length > 0) {
+            this.attachments = docList.map((d: any) => ({
+              code: d.code || d.id,
+              document_type: d.document_type || d.documentType,
+              document_type_name: d.document_type_name || d.fileType || '',
+              doc_no: d.doc_no || d.docId || '',
+              document_status_name: d.document_status_name || d.documentStatus || '',
+              issue_date: d.issue_date || d.issueDate || '',
+              expiry_date: d.expiry_date || d.expiryDate || '',
+              file_path: d.file_path || d.files || ''
+            }));
+
+            // Filter images/videos using loose type checks
+            this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
+            this.afterImages = this.attachments.filter(d => d.document_type == 29 || d.document_type_name === 'After Image');
+            this.videos = this.attachments.filter(d => d.document_type == 27 || d.document_type_name === 'Photo');
+          }
+        }
+      },
+      error: (err) => console.error("Error loading attachments for work order:", err)
     });
   }
 
@@ -419,6 +469,20 @@ export class WorkOrderDetailComponent implements OnInit {
         isMe: true
       });
       this.newMessage = '';
+    }
+  }
+
+  getFileUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    return environment.apiurl + path;
+  }
+
+  openImage(path: string) {
+    if (path) {
+      window.open(this.getFileUrl(path), '_blank');
     }
   }
 }

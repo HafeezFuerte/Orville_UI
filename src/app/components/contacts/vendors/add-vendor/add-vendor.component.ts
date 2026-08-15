@@ -56,7 +56,11 @@ export class AddVendorComponent implements OnInit {
   // Modal State
   isAddDocModalOpen = false;
 
-  selectedCountry: any = null;
+  selectedNationality: any = null;
+
+  get selectedCountryObj() {
+    return this.countries.find(c => c.id === Number(this.vendorData.country_id)) || null;
+  }
 
   countryMetadata: { [key: string]: { code: string; dialCode: string } } = {
     'afghanistan': { code: 'af', dialCode: '+93' },
@@ -246,8 +250,6 @@ export class AddVendorComponent implements OnInit {
     'zimbabwe': { code: 'zw', dialCode: '+263' }
   };
 
-  selectedNationality: any = null;
-
   getFlagCode(countryName: any): string {
     if (!countryName) return 'ae';
     const nameStr = typeof countryName === 'object' ? countryName.name : String(countryName);
@@ -346,27 +348,21 @@ export class AddVendorComponent implements OnInit {
     });
   }
 
-  onCountryChange(country: any) {
+  onCountryChange() {
     this.vendorData.stateid = null;
     this.vendorData.city = null;
     this.states = [];
     this.cities = [];
-    if (country && country.id) {
-      this.loadLookup(1001, 'states', 'state_name', country.id.toString());
-      this.vendorData.country_id = country.id;
-    } else {
-      this.vendorData.country_id = null;
+    if (this.vendorData.country_id) {
+      this.loadLookup(1001, 'states', 'state_name', this.vendorData.country_id.toString());
     }
   }
 
-  onStateChange(state: any) {
+  onStateChange() {
     this.vendorData.city = null;
     this.cities = [];
-    if (state && state.id) {
-      this.loadLookup(1002, 'cities', 'city_name', state.id.toString());
-      this.vendorData.stateid = state.id;
-    } else {
-      this.vendorData.stateid = null;
+    if (this.vendorData.stateid) {
+      this.loadLookup(1002, 'cities', 'city_name', this.vendorData.stateid.toString());
     }
   }
 
@@ -383,8 +379,14 @@ export class AddVendorComponent implements OnInit {
             id: c.id,
             name: c.country_name
           }));
-          const lookup = this.vendorData.country_id || 'United Arab Emirates';
-          this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
+          
+          if (!this.vendorData.country_id) {
+            const defaultCountry = this.countries.find(c => c.name === 'United Arab Emirates');
+            if (defaultCountry) {
+              this.vendorData.country_id = defaultCountry.id;
+              this.onCountryChange();
+            }
+          }
 
           const natLookup = this.vendorData.nationality || 'United Arab Emirates';
           this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
@@ -445,22 +447,16 @@ export class AddVendorComponent implements OnInit {
           this.assignment = vendor.auto_assign_assignment || false;
           this.qualifies = vendor.allow_create_work_order || false;
 
-          const lookup = this.vendorData.country_id || 'United Arab Emirates';
-          this.selectedCountry = this.countries.find(c => c.id === Number(lookup) || c.name === String(lookup)) || null;
-
-          const natLookup = this.vendorData.nationality || 'United Arab Emirates';
-          this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
-
-          if (this.selectedCountry && this.selectedCountry.id) {
-            this.loadLookup(1001, 'states', 'state_name', this.selectedCountry.id.toString(), () => {
-              this.vendorData.stateid = vendor.stateid || null;
+          if (this.vendorData.country_id) {
+            this.loadLookup(1001, 'states', 'state_name', this.vendorData.country_id.toString(), () => {
               if (this.vendorData.stateid) {
-                this.loadLookup(1002, 'cities', 'city_name', this.vendorData.stateid.toString(), () => {
-                  this.vendorData.city = vendor.city || null;
-                });
+                this.loadLookup(1002, 'cities', 'city_name', this.vendorData.stateid.toString());
               }
             });
           }
+
+          const natLookup = this.vendorData.nationality || 'United Arab Emirates';
+          this.selectedNationality = this.countries.find(c => c.id === Number(natLookup) || c.name === String(natLookup)) || null;
         }
       },
       error: (err) => {
@@ -507,7 +503,7 @@ export class AddVendorComponent implements OnInit {
       address1: this.vendorData.address1 || '',
       address2: this.vendorData.address2 || '',
       nationality: Number(this.selectedNationality?.id) || 0,
-      country_id: Number(this.selectedCountry?.id) || 0,
+      country_id: Number(this.vendorData.country_id) || 0,
       stateid: Number(this.vendorData.stateid) || 0,
       city: Number(this.vendorData.city) || 0,
       tax_registration_no: this.vendorData.tax_registration_no || '',
