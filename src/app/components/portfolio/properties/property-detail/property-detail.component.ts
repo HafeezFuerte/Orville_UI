@@ -19,10 +19,11 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { CommonAreaComponent } from '../../../child-tables/commonarea/commonarea.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
+import {BroadcastsTableComponent}from '../../../child-tables/broadcasts/broadcasts.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, BroadcastsTableComponent,ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -62,19 +63,8 @@ export class PropertyDetailComponent implements OnInit {
     { key: 'company_name', label: 'web.property.lblCompany' },
     { key: 'active_lease', label: 'web.property.lblActiveLease' }
   ];
-  broadCastsColumns: any[] = [
-    { key: 'code', label: 'web.common.lblID', is_editCol: true },
-    { key: 'subject', label: 'web.property.lblSubject' },
-    { key: 'preview', label: 'web.property.lblPreview' },
-    { key: 'status', label: 'web.common.lblStatus' },
-    { key: 'broadcast_type_nm', label: 'web.property.lblBroadcastType' },
-    { key: 'send_to', label: 'web.property.lblSendable' },
-    { key: 'is_scheduled', label: 'web.property.lblScheduled' },
-    { key: 'scheduled_date', label: 'web.common.lblDate' }
-
-  ];
-
-
+  broadCastsColumns: any[] = [];
+ 
 
   assetsColumns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true },
@@ -234,7 +224,7 @@ export class PropertyDetailComponent implements OnInit {
       {
         key: 'broadcasts',
         label: 'web.common.lblBroadcasts',
-        layout: 'table',
+        layout: 'content',
         columns: this.broadCastsColumns,
         data: this.broadCastsData,
         totalRecords: this.broadCastsData?.length || 0,

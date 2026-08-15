@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule,formatDate  } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router,ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -24,18 +24,20 @@ interface Occupant {
   styleUrl: './create-lease.component.scss'
 })
 export class CreateLeaseComponent implements OnInit {
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private commontab_service=inject(Common_TabsService);
   private lease_service=inject(LeasesService);
    private commonService=inject(CommonService);
+   leaseId: string = '';
+   leaseInfo: any = {}; 
   currentUser: AuthPayload | null = null;
   attachedFiles:any=[];
   attachedFile:any='';
   addpaymentbloc:any= {    includetax:false,    isSecurityDeposit:0,rentAmount:0,    attachedFile:null,    dueDate:null,memo:'',
     moneyHeldBy:null,    recurrenceCycle:null,cheque_no:'',cheque_date:'',bank:'',held_by:null,  taxProfile:null,  account:null,  paymentMethod:null,invno:''}
-  showAddPayment:boolean=false;
-  leaseCode: string = '';
+  showAddPayment:boolean=false; 
   lease_id:number=0;
   isLoading:boolean=false;
   // Form Fields
@@ -98,15 +100,102 @@ export class CreateLeaseComponent implements OnInit {
   editingOccupantIndex: number | null = null;
 
   ngOnInit() { 
+    this.route.paramMap.subscribe(params => {
+      this.leaseId = params.get('code') ?? '';
+    });
+   
     this.currentUser = this.commonService.getCurrentUser();
     this.additionalbloc.created_by = this.currentUser?.userName || 'Admin';
     this.additionalbloc.user_id = this.currentUser?.userId || '1';
     this.loadLookup(45,0, '', '');  //get all masters 
     this.loadLookup(11,0, 'propertiesList', '');
     this.resetForm();
-  //   this.paymentSchedules.push({"Amount":8333.5,"AdvAmt":8333.5,"AccountId":40,"Account":"Rent Income","DueDate":"2026-08-10",
-  // "Recurrence":"Fixed","PaymentType":"Cheque","isEdited":1,"row_no":1});
+    setTimeout(() => {
+      this.getLeaseDetails();
+    }, 500);
+    
   }
+  getLeaseDetails() {
+    this.commontab_service.getMasterByType({
+      typeId: 48,
+      filterId: 0,
+      filterText: this.leaseId,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+            this.leaseInfo=res.objResult.table[0];  
+            if(this.leaseInfo){ 
+              this.selectedPropertyObj=this.returnSelectedObject(this.propertiesList,'property_code','code') ||this.leaseInfo?.property_code;
+              this.selectedProperty=this.selectedPropertyObj.code;
+              this.lease_id=this.leaseInfo.id;
+              this.selectedUnit = null;
+              this.selectedUnitObj = null; 
+              this.occupants=JSON.parse(this.leaseInfo.occupants_dtls) || [];
+              this.roomsList=this.unitsList=this.allroomsList=this.allunitsList=[];
+              this.loadLookup(44,0, 'unitsList', this.selectedProperty);  
+              this.selectedTenantObj=this.selectedTenant=this.returnSelectedObject(this.tenantsList,'tenant_code','code') ||this.leaseInfo?.tenant_code;
+              this.selectedTenant=this.selectedTenantObj.code;
+
+              this.selectedAgent=this.returnSelectedObject(this.agentsList,'assigned_collector','code')?.code ||this.leaseInfo?.tenant_code;
+           
+
+              this.startDate=formatDate(this.leaseInfo?.start_date, 'yyyy-MM-dd', 'en-US');
+              this.endDate=formatDate(this.leaseInfo?.end_date, 'yyyy-MM-dd', 'en-US');
+              this.selectedLeaseType= this.returnSelectedObject(this.leaseTypes,'lease_type','id') || this.leaseInfo?.lease_type;
+              this.selectedLeaseCategory=this.returnSelectedObject(this.leaseCategories,'lease_category','id') || this.leaseInfo?.lease_category;
+              this.months=this.leaseInfo?.total_months;
+              this.rentAmount=this.leaseInfo?.rent_amount;
+              this.totalPayments=this.leaseInfo?.total_payments;
+              this.moneyHeldBy=this.returnSelectedObject(this.moneyHeldOptions,'money_held_by','id') || this.leaseInfo?.money_held_by;
+              this.paymentMethod=this.returnSelectedObject(this.paymentMethods,'payment_type','id') ||this.leaseInfo?.payment_type;
+              this.annualRent=this.leaseInfo?.annual_rent;
+              this.monthlyRent=this.leaseInfo?.monthly_rent;
+              this.additionalbloc.no_of_persons=this.leaseInfo?.no_of_persons;
+              this.additionalbloc.user_id=this.leaseInfo?.entered_by;
+              this.additionalbloc.move_in_date=formatDate(this.leaseInfo?.move_in_date, 'yyyy-MM-dd', 'en-US');
+              this.additionalbloc.paying_date=formatDate(this.leaseInfo?.paying_date, 'yyyy-MM-dd', 'en-US');
+              this.additionalbloc.created_by=this.leaseInfo?.createdby;
+              this.isShortTerm=this.leaseInfo?.is_lease_short_term;
+            }
+            if(res.objResult.table1){
+              res.objResult.table1.forEach((element:any,index:number) => {
+                this.paymentSchedules.push({
+                  "Amount":element.amt || 0,
+                  "AdvAmt":element.adv_amt || 0,  
+                  "cheque_no":element.cheque_no,
+                  "cheque_date":formatDate(element.cheque_date, 'yyyy-MM-dd', 'en-US'),
+                  "bank":element.bank,
+                  "held_by":element.held_by,
+                  "AccountCode":element.account_code,
+                  "Account":element.account_name,
+                  "DueDate":formatDate(element.due_date, 'yyyy-MM-dd', 'en-US'),
+                  "Recurrence_id": element.recurring_id,
+                  "Recurrence":element.recurring_cycle,
+                  "PaymentTypeid":element.payment_id,
+                  "PaymentType":element.payment_type,
+                  "TaxProfileId":element.taxprofile_id,
+                  "TaxProfile":element.profile_name,
+                  "Memo":element.memo,
+                  "InvoiceNo":element.invno,
+                  "isEdit":1,
+                  "row_no":index+1});
+              });
+            }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching typeid: 22:`, err);
+      }
+    });
+  }
+  private returnSelectedObject(list:any,filterCol:string,filterID:string) {
+    if(list.length>0)
+    return list.filter((item:any) => item[filterID] == this.leaseInfo[filterCol])[0];
+  }
+
   onSearch(event:string,list:any ) { 
     const searchTerm = event.toLowerCase();  
     if (!searchTerm) {
@@ -118,8 +207,13 @@ export class CreateLeaseComponent implements OnInit {
     }
   }
   showPaymentBlock(flg:number){
+    if(flg==3){
+      this.paymentSchedules=[];
+    }
+    else{
     this.addpaymentbloc.isSecurityDeposit=flg;
     this.showAddPayment=flg==0 ? false : true;
+    }
   }
   onFilesSelected(files: File[]) {
     if (files.length > 0) {
@@ -320,6 +414,12 @@ export class CreateLeaseComponent implements OnInit {
           else{
             (this as any)[targetProperty] = res.objResult.table;
             (this as any)['all'+targetProperty]=(this as any)[targetProperty]; 
+            if(this.leaseInfo?.unit_code)
+              { this.selectedUnit=this.leaseInfo?.unit_code;
+                this.selectedUnitObj=this.returnSelectedObject(this.unitsList,'unit_code','code');
+              }
+           if(this.leaseInfo?.room_code)
+               this.selectedRoom=this.leaseInfo?.room_code;
           }
          
         }
@@ -412,10 +512,9 @@ export class CreateLeaseComponent implements OnInit {
  
       const request = {
         userid: this.currentUser?.userId,
-        code: this.leaseCode || '',
+        code: this.leaseId || '',
         source: 'web',
-        company_id: this.currentUser?.companyId,
-        tenantId: '',
+        company_id: this.currentUser?.companyId, 
         clientId: this.currentUser?.clientId, 
         tenant_code: this.selectedTenantObj?.code,
         property_code: this.selectedPropertyObj.code,
@@ -426,11 +525,11 @@ export class CreateLeaseComponent implements OnInit {
         clsRentInfo: clsRentInfo, 
         clsAddtionalInfo: this.additionalbloc,  
         clsPaymentSchedules: this.paymentSchedules,
+        clsOccupants:this.occupants,
         id: this.lease_id || 0,
    
       }; 
-      const formData = new FormData();
-debugger;
+      const formData = new FormData(); 
     // JSON goes as ONE field
     formData.append('reqObject', JSON.stringify(request));
       this.attachedFiles.forEach((element:any) => {

@@ -49,6 +49,8 @@ export class DetailPageLayoutComponent {
   commonarea!: TemplateRef<any>;
   @ContentChild('parkings')
   parkings!: TemplateRef<any>;
+  @ContentChild('broadcasts')
+  broadcasts!: TemplateRef<any>;
   showModal = false;
   searchQuery: string = '';
   showConfirmModal=false;
@@ -122,7 +124,8 @@ export class DetailPageLayoutComponent {
     this.selectedTab?.key!='attachments' && 
     this.selectedTab?.key!='commonarea'&& 
     this.selectedTab?.key!='parkings' && 
-    this.selectedTab?.key!='rooms'
+    this.selectedTab?.key!='rooms' && 
+    this.selectedTab?.key!='broadcasts'
   }
   changeTab(tab: DetailTab) {
     this.activeTab = tab.key;

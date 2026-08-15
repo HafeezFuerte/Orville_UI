@@ -5,11 +5,13 @@
       <i class="ri-arrow-left-line text-sm"></i>
     </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ 'web.leases.lblNewLease' | translate }}</h3>
+      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">
+        {{ leaseId=='' ? 'web.leases.lblNewLease' : 'Edit Lease' | translate }}</h3>
       <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">{{ 'web.leases.lblLeaseManagement' | translate }}</span>
         <span>/</span>
-        <span class="text-gray-600">{{ 'web.leases.lblNewLease' | translate }}</span>
+        <span *ngIf="leaseId==''" class="text-gray-600">{{ 'web.leases.lblNewLease' | translate }}</span>
+        <span *ngIf="leaseId!=''" class="text-gray-600">{{ leaseInfo?.active_lease }}</span>
       </div>
     </div>
   </div>
@@ -218,13 +220,16 @@
         Select from the different options below to set the payment schedule of the lease. You can set a recurring payment schedule or a one time schedule.
       </p>
   </div>
-    <div class="flex justify-end mt-4">
+    <div class="flex justify-end  gap-3">
       <button type="button" (click)="showPaymentBlock(1)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
       Add Payment
       </button>
       <button type="button" (click)="showPaymentBlock(2)" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
         Add Security Deposit
         </button>
+        <button type="button" *ngIf="paymentSchedules.length>0" (click)="showPaymentBlock(3)" class="px-4 py-1.5 text-xs rounded-md bg-danger text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+          Delete Schedules
+          </button>
     </div>
      <!-- Add Payment | Security Deposit -->
      <div *ngIf="showAddPayment" class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
@@ -575,6 +580,6 @@
     <i class="ri-close-line"></i> {{ 'web.contacts.lblCancel' | translate }}
   </button>
   <button type="button" (click)="saveLease()" [attr.data-tooltip]="'web.leases.lblAddLease' | translate" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
-    <i class="ri-save-line"></i> {{ 'web.leases.lblAddLease' | translate }}
+    <i class="ri-save-line"></i> {{ leaseId=='' ? 'web.leases.lblAddLease' : 'Update Lease' | translate }} 
   </button>
 </div>

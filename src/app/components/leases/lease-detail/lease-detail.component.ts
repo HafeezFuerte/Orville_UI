@@ -14,11 +14,11 @@ import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { UnitsTableComponent } from '../../child-tables/units/units-table.component';
 import {WorkordersTableComponent} from '../../child-tables/workorders/workorders.component';
- 
+ import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule,WorkordersTableComponent, TranslateModule,UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
+  imports: [CommonModule, FormsModule, RouterModule,WorkordersTableComponent,BroadcastsTableComponent, TranslateModule,UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })
@@ -263,16 +263,14 @@ export class LeaseDetailComponent implements OnInit {
       {
         key: 'Notices',
         label: 'Notices',
-        layout: 'table', 
+        layout: 'content', 
         data: this.noticesData,
         totalRecords: this.noticesData?.length || 0,
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Broadcasts',
         redirect_addurl: '/broadcasts/create'
-      },
-
-      { key: 'Notices', label: 'Notices', layout: 'content' },
+      }, 
       {
         key: 'attachments',
         label: 'web.common.lblAttachments',
@@ -302,53 +300,7 @@ export class LeaseDetailComponent implements OnInit {
         form: this.Form,
         popupType: 'notes'
       },
-      { key: 'Inspections', label: 'Inspections', layout: 'content' }
-   
-      // {
-      //   key: 'overview',
-      //   label: 'web.common.lblOverview',
-      //   layout: 'content'
-      // },
-
-      
-
-      // {
-      //   key: 'rooms',
-      //   label: 'web.common.lblRooms',
-      //   layout: 'content',
-      //   data: this.roomsData,
-      //   totalRecords: this.roomsData?.length || 0,
-      //   loading: this.loading,
-      //   hasActions: true,
-      //   addButtonText: 'Room'
-      // },
-
-         
-      // {
-      //   key: 'broadcasts',
-      //   label: 'web.common.lblBroadcasts',
-      //   layout: 'table',
-      //   columns: this.broadCastsColumns,
-      //   data: this.broadCastsData,
-      //   totalRecords: this.broadCastsData?.length || 0,
-      //   loading: this.loading,
-      //   hasActions: true,
-      //   addButtonText: 'Broadcasts',
-      //   redirect_addurl: '/broadcasts/create'
-      // },
-      
-      // {
-      //   key: 'parkings',
-      //   label: 'web.common.lblParkings',
-      //   layout: 'content',
-      //   data: this.parkingData,
-      //   entity_id: this.propertyCode,
-      //   totalRecords: this.parkingData?.length || 0,
-      //   loading: this.loading,
-      //   hasActions: true,
-      //   addButtonText: 'Parking'
-      // },
-       
+      { key: 'Inspections', label: 'Inspections', layout: 'content' } 
 
     ];
 

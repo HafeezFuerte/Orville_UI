@@ -12,6 +12,11 @@ export const leasesRoutingModule: Routes = [
       import('./create-lease/create-lease.component').then((m) => m.CreateLeaseComponent),
   },
   {
+    path: 'edit-lease/:code',
+    loadComponent: () =>
+    import('./create-lease/create-lease.component').then((m) => m.CreateLeaseComponent),
+  },
+  {
     path: ':id',
     loadComponent: () =>
       import('./lease-detail/lease-detail.component').then((m) => m.LeaseDetailComponent),

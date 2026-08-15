@@ -11,39 +11,29 @@ import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
-  selector: 'app-workorders-table',
+  selector: 'app-broadcasts-table',
   standalone: true,
   imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule, FilterDrawerComponent],
-  templateUrl: './workorders.component.html',
-  styleUrls: ['./workorders.component.scss']
+  templateUrl: './broadcasts.component.html',
+  styleUrls: ['./broadcasts.component.scss']
 })
-export class WorkordersTableComponent {
+export class BroadcastsTableComponent {
   /** Array of column definitions: { key: string, label: string, isLink?: boolean, useTemplate?: boolean, width?: string, headerClass?: string, cellClass?: string } */
    columns:any = [];
      @Input() selectedTab: any = [];
      searchQuery: string = '';
   /** The data to display in the table */
   @Input() data: any[] = [];
-  workorderColumns: any[] = [
-    { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/facility/work-orders",edit_col:"code",
+  broadcastsColumns: any[] = [  
+    { key: 'code', label: 'web.common.lblID',is_editCol:true,redirect_url:"/broadcasts",edit_col:"code",
     useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false},
-    { key: 'title', label: 'Title', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: ''},
-    { key: 'status_nm', label: 'Status', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'closing_status', label: 'Closing Status', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'internal_status', label: 'Internal Status', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'due_date', label: 'Due Date',is_editCol:false,redirect_url:null,edit_col:null },
-    { key: 'priority', label: 'Priority', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'property', label: 'Property', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'vendor', label: 'Vendor',is_include_currency:true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', 
-     is_status: false, isLink: false, redirect_url: '' },
-    { key: 'createdby', label: 'Created By',is_status:true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false,  isLink: false, redirect_url: '' }, 
-    { key: 'tags', label: 'Tags', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'maintenance_name', label: 'Maintenance Category' },
-    { key: 'responsible_person', label: 'Responsible Person',is_include_currency:true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '',  is_status: false, isLink: false, redirect_url: '' },
-    { key: 'modified_date', label: 'Updated At',is_include_currency:true },
-    { key: 'created_date', label: 'Created At', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-      
-  ];
+    { key: 'subject', label: 'web.property.lblSubject', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: ''},
+    { key: 'preview', label: 'web.property.lblPreview', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'status', label: 'web.common.lblStatus', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'broadcast_type_nm', label: 'web.property.lblBroadcastType', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'send_to', label: 'web.property.lblSendable',is_editCol:false,redirect_url:null,edit_col:null },
+    { key: 'scheduled_date', label: 'web.property.lblScheduled', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    ];
    
 
   /** Loading state indicator */
@@ -124,16 +114,16 @@ export class WorkordersTableComponent {
     return this.columns.every((c: any) => c.visible !== false);
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {  
     this.currentUser = this.commonService.getCurrentUser(); 
-    this.columns=this.workorderColumns;
+    this.data = this.selectedTab?.data;
+    this.columns=this.broadcastsColumns;
   } 
   search_with_keyword() {
     let result =this.selectedTab?.data;
     if(this.searchQuery){
       result = this.selectedTab?.data.filter((p: any) =>
-      p.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      p.status_nm.toLowerCase().includes(this.searchQuery.toLowerCase())
+      p.subject.toLowerCase().includes(this.searchQuery.toLowerCase())  
     ); 
     }
     this.data=result;

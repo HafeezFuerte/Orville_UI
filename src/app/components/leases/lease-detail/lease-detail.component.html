@@ -61,10 +61,10 @@
           </div>
 
           <div class="flex gap-2">
-            <button type="button" [attr.data-tooltip]="'View Activity'" class="w-1/2 py-2 text-[11px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
+            <button type="button" [routerLink]="['/leases/edit-lease', leaseId]" [attr.data-tooltip]="'View Activity'" class="w-1/2 py-2 text-[11px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
               <i class="ri-eye-line text-xs"></i> View Activity
             </button>
-            <button type="button" [attr.data-tooltip]="'Edit Lease'" class="w-1/2 py-2 text-[11px] rounded bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
+            <button type="button" [routerLink]="['/leases/edit-lease', leaseId]" [attr.data-tooltip]="'Edit Lease'" class="w-1/2 py-2 text-[11px] rounded bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
               <i class="ri-edit-line text-xs"></i> Edit Lease &rarr;
             </button>
           </div>
@@ -509,7 +509,8 @@
 
         <!-- 6. NOTICES TAB -->
         <div *ngIf="activeTab === 'Notices'" class="flex flex-col gap-4 animate-fade-in">
-          
+            <!-- Broadcasts TAB -->
+            <app-broadcasts-table [selectedTab]="selectedTab"></app-broadcasts-table> 
         </div>
 
         <!-- 7. LEGAL TAB -->
@@ -595,7 +596,7 @@
     <ng-template #notes>
       <app-notes-table [selectedTab]="selectedTab" ></app-notes-table>
     </ng-template>
-
+    
     <!-- PROJECTED ATTACHMENTS SLOT -->
     <ng-template #attachments>
       <app-attachments-table [selectedTab]="selectedTab" ></app-attachments-table>
