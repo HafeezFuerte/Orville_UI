@@ -299,7 +299,7 @@ exports.locale = {
                 "lblOccupiedTotalUnits": "Occupied/ Total Units",
                 "lblOccupancyRate": "Occupancy Rate",
                 "lblAction": "Action",
-
+                "lblUpdateProperty": "Update Property",
                 "lblNewProperty": "New Property",
                 "lblPortfolio": "Portfolio",
                 "lblProperty": "Property",

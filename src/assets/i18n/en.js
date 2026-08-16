@@ -241,6 +241,7 @@ exports.locale = {
                 "lblCategory": "Category",
                 "lblSize": "Size",
                 "lblPropertyValue": "Property Value",
+                "lblUpdateProperty": "Update Property",
                 "lblNewProperty": "New Property",
                 "lblPortfolio": "Portfolio",
                 "lblProperty": "Property",
