@@ -1,0 +1,225 @@
+<div class="container-fluid py-4">
+  <div class="grid grid-cols-12 gap-4">
+
+    <!-- ═══════════════════════════════════════════
+         LEFT: Category Sidebar
+    ════════════════════════════════════════════ -->
+    <div class="col-span-12 lg:col-span-3">
+      <div class="box rounded-md bg-white dark:bg-bodybg2 shadow-sm border border-gray-100 dark:border-white/10 overflow-hidden">
+
+        <!-- Sidebar Header -->
+        <div class="px-4 py-3 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+          <h6 class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-0">
+            Master Categories
+          </h6>
+        </div>
+
+        <!-- Skeleton loader -->
+        <div *ngIf="categories.length === 0" class="p-3 space-y-1.5">
+          <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"
+            class="h-8 rounded-md bg-gray-100 dark:bg-white/5 animate-pulse"></div>
+        </div>
+
+        <!-- Category List -->
+        <div class="overflow-y-auto max-h-[calc(100vh-220px)]">
+          <ul class="list-none p-2 m-0 space-y-0.5">
+            <li *ngFor="let cat of categories">
+              <button type="button" (click)="selectCategory(cat)"
+                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-left border-0 transition-all duration-150 text-[12px] font-medium cursor-pointer"
+                [ngClass]="selectedCategoryId === cat.id
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 bg-transparent'">
+
+                <span class="truncate">{{ cat.lookup_name }}</span>
+
+                <span class="shrink-0 text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none"
+                  [ngClass]="selectedCategoryId === cat.id
+                    ? 'bg-white/20 text-white'
+                    : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400'">
+                  {{ cat.records }}
+                </span>
+
+              </button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         RIGHT: Table / Form Panel
+    ════════════════════════════════════════════ -->
+    <div class="col-span-12 lg:col-span-9">
+      <div class="box rounded-md bg-white dark:bg-bodybg2 shadow-sm border border-gray-100 dark:border-white/10 p-4">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-white/10 pb-3 mb-0">
+          <div class="flex items-center gap-2">
+            <span class="w-1 h-5 rounded-full bg-primary inline-block"></span>
+            <h6 class="font-bold text-gray-800 dark:text-gray-100 mb-0 text-[13px]">
+              {{ showForm ? 'Add ' + (getActiveCategory()?.lookup_name || '') : (getActiveCategory()?.lookup_name || 'Select a Category') }}
+            </h6>
+            <span *ngIf="!showForm && getActiveCategory()"
+              class="text-[10px] font-semibold bg-primary/10 text-primary rounded-full px-2 py-0.5">
+              {{ getActiveCategory()?.records }} records
+            </span>
+          </div>
+
+          <!-- Add button (table view) -->
+          <button *ngIf="!showForm && selectedCategoryId" type="button" (click)="openAddForm()"
+            class="flex items-center gap-1.5 ti-btn ti-btn-primary !py-1 !px-3 !text-[0.75rem] font-semibold">
+            <i class="ri-add-line text-sm"></i> Add New
+          </button>
+
+          <!-- Back button (form view) -->
+          <button *ngIf="showForm" type="button" (click)="closeForm()"
+            class="flex items-center gap-1.5 ti-btn ti-btn-light !py-1 !px-3 !text-[0.75rem] font-semibold">
+            <i class="ri-arrow-left-s-line text-sm"></i> Back
+          </button>
+        </div>
+
+        <!-- Empty state when no category selected -->
+        <div *ngIf="!selectedCategoryId && !showForm" class="flex flex-col items-center justify-center py-20 text-gray-400">
+          <i class="ri-list-settings-line text-5xl mb-3 opacity-30"></i>
+          <p class="text-[12px] font-medium">Select a category from the left panel</p>
+        </div>
+
+        <!-- TABLE VIEW -->
+        <ng-container *ngIf="!showForm && selectedCategoryId">
+          <app-shared-table [columns]="tableColumns" [data]="categoryItems" [loading]="loadingItems"
+            [totalRecords]="categoryItems.length" [pageSizeOptions]="[10, 25, 50, 100]"
+            [pageSize]="pageSize" [pageIndex]="pageIndex" [hasActions]="true">
+
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container *ngIf="col.key === 'is_active'">
+                <div class="flex items-center gap-2">
+                  <button type="button" (click)="toggleStatus(row)"
+                    [class]="row.is_active ? 'bg-primary' : 'bg-gray-200 dark:bg-white/10'"
+                    class="relative inline-flex h-4 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none">
+                    <span [class]="row.is_active ? 'translate-x-4' : 'translate-x-0'"
+                      class="pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out">
+                    </span>
+                  </button>
+                  <span [class]="row.is_active ? 'text-success font-semibold' : 'text-gray-400'" class="text-[10px]">
+                    {{ row.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </ng-container>
+            </ng-template>
+
+          </app-shared-table>
+        </ng-container>
+
+        <!-- FORM VIEW -->
+        <ng-container *ngIf="showForm">
+          <form [formGroup]="masterForm" (ngSubmit)="onSubmitMaster()" class="py-4">
+            <div class="grid grid-cols-12 gap-4">
+
+              <!-- Code -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Code <span class="text-danger">*</span>
+                </label>
+                <input type="text" formControlName="code" placeholder="Enter code"
+                  class="form-control form-control-sm !text-[11px]">
+                <p *ngIf="masterForm.get('code')?.invalid && masterForm.get('code')?.touched"
+                  class="text-danger text-[10px] mt-1 mb-0">Code is required.</p>
+              </div>
+
+              <!-- Name -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" formControlName="name" placeholder="Enter name"
+                  class="form-control form-control-sm !text-[11px]">
+                <p *ngIf="masterForm.get('name')?.invalid && masterForm.get('name')?.touched"
+                  class="text-danger text-[10px] mt-1 mb-0">Name is required.</p>
+              </div>
+
+              <!-- Arabic Name -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Arabic Name
+                </label>
+                <input type="text" formControlName="arabic_name" placeholder="الاسم بالعربي" dir="rtl"
+                  class="form-control form-control-sm !text-[11px]">
+              </div>
+
+              <!-- Display Order -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Display Order
+                </label>
+                <input type="number" formControlName="display_order" placeholder="0"
+                  class="form-control form-control-sm !text-[11px]">
+              </div>
+
+              <!-- Class Name -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Class Name
+                </label>
+                <input type="text" formControlName="class_name" placeholder="e.g. badge bg-success"
+                  class="form-control form-control-sm !text-[11px]">
+              </div>
+
+              <!-- Dependency -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Dependency
+                </label>
+                <ng-select [items]="categoryItems" bindLabel="name" bindValue="id"
+                  formControlName="dependency_id" placeholder="Select Dependency">
+                </ng-select>
+              </div>
+
+              <!-- Description -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Description
+                </label>
+                <textarea formControlName="description" rows="3" placeholder="Enter description"
+                  class="form-control form-control-sm !text-[11px]"></textarea>
+              </div>
+
+              <!-- Is Active Toggle -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">Active</label>
+                <div class="flex items-center justify-between h-[calc(100%-1.5rem)] py-2.5 px-3 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                  <span class="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                    {{ masterForm.get('is_Active')?.value ? 'Active' : 'Inactive' }}
+                  </span>
+                  <button type="button"
+                    (click)="masterForm.get('is_Active')?.setValue(!masterForm.get('is_Active')?.value)"
+                    [class]="masterForm.get('is_Active')?.value ? 'bg-primary' : 'bg-gray-200 dark:bg-white/10'"
+                    class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none">
+                    <span [class]="masterForm.get('is_Active')?.value ? 'translate-x-5' : 'translate-x-0'"
+                      class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out">
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Form Footer -->
+            <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-white/10">
+              <button type="button" (click)="closeForm()"
+                class="ti-btn ti-btn-light !py-1 !px-4 !text-[0.75rem] font-semibold">
+                Cancel
+              </button>
+              <button type="submit" [disabled]="masterForm.invalid"
+                class="ti-btn ti-btn-primary !py-1 !px-4 !text-[0.75rem] font-semibold">
+                Save
+              </button>
+            </div>
+          </form>
+        </ng-container>
+
+      </div>
+    </div>
+
+  </div>
+</div>

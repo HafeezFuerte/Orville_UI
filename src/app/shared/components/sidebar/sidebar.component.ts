@@ -42,6 +42,8 @@ interface Module {
 
 export class SidebarComponent {
   localStorage: any;
+  originalMenuItems: any[] = [];
+  isSettingsMode = false;
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -254,6 +256,18 @@ export class SidebarComponent {
           }
         }
 
+        // Add Settings menu item at the end
+        this.menuItems.push({
+          title: 'Settings',
+          type: 'link',
+          path: '/settings/company-details',
+          icon: 'bx-cog',
+          active: false,
+          selected: false
+        });
+
+        this.originalMenuItems = [...this.menuItems];
+
         this.ParentActive();
 
         this.router.events.subscribe((event) => {
@@ -312,9 +326,73 @@ export class SidebarComponent {
   };
 
 
+  switchToSettingsMenu() {
+    this.isSettingsMode = true;
+    this.menuItems = [
+      {
+        title: 'Back to Main Menu',
+        type: 'link',
+        path: '/insights',
+        icon: 'bx-arrow-back',
+        active: false,
+        selected: false
+      },
+      {
+        title: 'Company details',
+        type: 'link',
+        path: '/settings/company-details',
+        icon: 'bx-buildings',
+        active: false,
+        selected: false
+      },
+      {
+        title: 'Company shifts',
+        type: 'link',
+        path: '/settings/company-shifts',
+        icon: 'bx-time-five',
+        active: false,
+        selected: false
+      },
+      {
+        title: 'Regional settings',
+        type: 'link',
+        path: '/settings/regional-settings',
+        icon: 'bx-globe',
+        active: false,
+        selected: false
+      },
+      {
+        title: 'Masters',
+        type: 'link',
+        path: '/settings/masters',
+        icon: 'bx-cog',
+        active: false,
+        selected: false
+      }
+    ];
+  }
+
+  restoreMainMenu() {
+    this.isSettingsMode = false;
+    this.menuItems = [...this.originalMenuItems];
+  }
 
   //Active Nav State
   setNavActive(item: any) {
+    if (item.title === 'Settings') {
+      this.switchToSettingsMenu();
+      const firstItem = this.menuItems.find(m => m.title === 'Company details');
+      if (firstItem) {
+        firstItem.active = true;
+        firstItem.selected = true;
+      }
+      return;
+    }
+    if (item.title === 'Back to Main Menu') {
+      this.restoreMainMenu();
+      return;
+    }
+
     const isHorizontal = document.documentElement.getAttribute('data-nav-layout') === 'horizontal';
 
     // 1. Full Reset of all items to inactive/unselected
@@ -441,6 +519,18 @@ export class SidebarComponent {
   // }
   ParentActive() {
     const currentUrl = this.router.url;
+
+    // Auto-switch menu based on URL
+    if (currentUrl.startsWith('/settings/')) {
+      if (!this.isSettingsMode) {
+        this.switchToSettingsMenu();
+      }
+    } else {
+      if (this.isSettingsMode) {
+        this.restoreMainMenu();
+      }
+    }
+
     const isHorizontal = document.documentElement.getAttribute('data-nav-layout') === 'horizontal';
 
     // 1. Reset all active states first
