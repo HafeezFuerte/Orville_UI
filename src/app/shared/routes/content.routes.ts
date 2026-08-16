@@ -29,6 +29,27 @@ export const content: Routes = [
     loadChildren: () =>
       import('../../components/leases/leases.routes').then((m) => m.leasesRoutingModule),
   },
+  {
+    path: 'settings',
+    children: [
+      {
+        path: 'company-details',
+        loadComponent: () => import('../../components/settings/company-details/company-details.component').then(m => m.CompanyDetailsComponent)
+      },
+      {
+        path: 'company-shifts',
+        loadComponent: () => import('../../components/settings/company-shifts/company-shifts.component').then(m => m.CompanyShiftsComponent)
+      },
+      {
+        path: 'regional-settings',
+        loadComponent: () => import('../../components/settings/regional-settings/regional-settings.component').then(m => m.RegionalSettingsComponent)
+      },
+      {
+        path: 'masters',
+        loadComponent: () => import('../../components/settings/masters/masters.component').then(m => m.MastersComponent)
+      }
+    ]
+  }
 ];
 
 @NgModule({

@@ -1,0 +1,80 @@
+<div class="container-fluid py-4">
+  <div class="d-md-flex d-block align-items-center justify-content-between mb-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Company Shifts</h1>
+  </div>
+
+  <form [formGroup]="companyShiftsForm" (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-12 gap-6">
+      
+      <!-- Full Width Panel (No gap on the right side) -->
+      <div class="col-span-12">
+        
+        <div class="box">
+          <div class="box-header">
+            <div>
+              <h6 class="box-title mb-1">Company Shifts</h6>
+              <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">
+                Configure shift start and end times for operational days.
+              </p>
+            </div>
+          </div>
+
+          <div class="box-body">
+            
+            <!-- Select All -->
+            <div class="mb-4 pb-4 border-b border-dashed border-gray-200">
+              <div class="flex items-center">
+                <input class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5 cursor-pointer" type="checkbox" id="select-all-days" formControlName="selectAll">
+                <label class="ms-3 text-xs font-semibold text-gray-700 cursor-pointer" for="select-all-days">
+                  Select All
+                </label>
+              </div>
+            </div>
+
+            <!-- Shifts Form Array -->
+            <div formArrayName="shifts" class="space-y-6">
+              <div *ngFor="let shift of shiftsFormArray.controls; let i = index" [formGroupName]="i" 
+                   class="pb-4 border-b border-dashed border-gray-100 last:border-b-0 last:pb-0">
+                
+                <div class="grid grid-cols-12 gap-4 items-center">
+                  <!-- Checkbox & Day Name -->
+                  <div class="col-span-12 md:col-span-4">
+                    <div class="flex items-center">
+                      <input class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5 cursor-pointer" type="checkbox" [id]="'day-' + i" formControlName="enabled" (change)="toggleDay(i)">
+                      <label class="ms-3 text-xs font-semibold text-gray-700 cursor-pointer" [for]="'day-' + i">
+                        {{ daysOfWeek[i] }}
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Start time / End time -->
+                  <div class="col-span-12 md:col-span-8">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="form-label text-default mb-1 fs-11">Start time</label>
+                        <input type="time" class="form-control w-full !rounded-md" formControlName="startTime">
+                      </div>
+                      <div>
+                        <label class="form-label text-default mb-1 fs-11">End time</label>
+                        <input type="time" class="form-control w-full !rounded-md" formControlName="endTime">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Box Footer containing Action Buttons -->
+          <div class="box-footer flex justify-end gap-2 border-t border-gray-200 p-4">
+            <button type="button" class="ti-btn ti-btn-light !py-1 !px-4 !text-[0.75rem] font-semibold">Cancel</button>
+            <button type="submit" class="ti-btn ti-btn-primary !py-1 !px-4 !text-[0.75rem] font-semibold" [disabled]="companyShiftsForm.invalid">Save Shifts</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>
