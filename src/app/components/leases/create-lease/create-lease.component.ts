@@ -34,9 +34,9 @@ export class CreateLeaseComponent implements OnInit {
    leaseInfo: any = {}; 
   currentUser: AuthPayload | null = null;
   attachedFiles:any=[];
-  attachedFile:any='';
-  addpaymentbloc:any= {    includetax:false,    isSecurityDeposit:0,rentAmount:0,    attachedFile:null,    dueDate:null,memo:'',
-    moneyHeldBy:null,    recurrenceCycle:null,cheque_no:'',cheque_date:'',bank:'',held_by:null,  taxProfile:null,  account:null,  paymentMethod:null,invno:''}
+  attachedFile:any=''; 
+  addpaymentbloc:any= {    includetax:false,    isSecurityDeposit:0,Amount:0, AdvAmt:0,   attachedFile:null,    DueDate:null,Memo:'',
+  money_held_by_id:null,    Recurrence_id:null,cheque_no:'',cheque_date:'',bank:'',held_by:null,  TaxProfileId:null,  AccountCode:null,  PaymentTypeid:null,InvoiceNo:''}
   showAddPayment:boolean=false; 
   lease_id:number=0;
   isLoading:boolean=false;
@@ -111,6 +111,7 @@ export class CreateLeaseComponent implements OnInit {
     this.loadLookup(11,0, 'propertiesList', '');
     this.resetForm();
     setTimeout(() => {
+      if(this.leaseId!='')
       this.getLeaseDetails();
     }, 500);
     
@@ -127,7 +128,7 @@ export class CreateLeaseComponent implements OnInit {
             this.leaseInfo=res.objResult.table[0];  
             if(this.leaseInfo){ 
               this.selectedPropertyObj=this.returnSelectedObject(this.propertiesList,'property_code','code') ||this.leaseInfo?.property_code;
-              this.selectedProperty=this.selectedPropertyObj.code;
+              this.selectedProperty=this.leaseInfo?.property_code;
               this.lease_id=this.leaseInfo.id;
               this.selectedUnit = null;
               this.selectedUnitObj = null; 
@@ -135,10 +136,8 @@ export class CreateLeaseComponent implements OnInit {
               this.roomsList=this.unitsList=this.allroomsList=this.allunitsList=[];
               this.loadLookup(44,0, 'unitsList', this.selectedProperty);  
               this.selectedTenantObj=this.selectedTenant=this.returnSelectedObject(this.tenantsList,'tenant_code','code') ||this.leaseInfo?.tenant_code;
-              this.selectedTenant=this.selectedTenantObj.code;
-
-              this.selectedAgent=this.returnSelectedObject(this.agentsList,'assigned_collector','code')?.code ||this.leaseInfo?.tenant_code;
-           
+              this.selectedTenant=this.leaseInfo?.tenant_code; 
+              this.selectedAgent= this.leaseInfo?.assigned_collector; 
 
               this.startDate=formatDate(this.leaseInfo?.start_date, 'yyyy-MM-dd', 'en-US');
               this.endDate=formatDate(this.leaseInfo?.end_date, 'yyyy-MM-dd', 'en-US');
@@ -147,8 +146,8 @@ export class CreateLeaseComponent implements OnInit {
               this.months=this.leaseInfo?.total_months;
               this.rentAmount=this.leaseInfo?.rent_amount;
               this.totalPayments=this.leaseInfo?.total_payments;
-              this.moneyHeldBy=this.returnSelectedObject(this.moneyHeldOptions,'money_held_by','id') || this.leaseInfo?.money_held_by;
-              this.paymentMethod=this.returnSelectedObject(this.paymentMethods,'payment_type','id') ||this.leaseInfo?.payment_type;
+              this.moneyHeldBy= this.leaseInfo?.money_held_by;
+              this.paymentMethod= this.leaseInfo?.payment_type;
               this.annualRent=this.leaseInfo?.annual_rent;
               this.monthlyRent=this.leaseInfo?.monthly_rent;
               this.additionalbloc.no_of_persons=this.leaseInfo?.no_of_persons;
@@ -164,8 +163,9 @@ export class CreateLeaseComponent implements OnInit {
                   "Amount":element.amt || 0,
                   "AdvAmt":element.adv_amt || 0,  
                   "cheque_no":element.cheque_no,
+                  "isSecurityDeposit":element.isSecurityDeposit,
                   "cheque_date":formatDate(element.cheque_date, 'yyyy-MM-dd', 'en-US'),
-                  "bank":element.bank,
+                  "bank":element.bank_name,
                   "held_by":element.held_by,
                   "AccountCode":element.account_code,
                   "Account":element.account_name,
@@ -175,6 +175,7 @@ export class CreateLeaseComponent implements OnInit {
                   "PaymentTypeid":element.payment_id,
                   "PaymentType":element.payment_type,
                   "TaxProfileId":element.taxprofile_id,
+                  "money_held_by_id":element.money_held_by,
                   "TaxProfile":element.profile_name,
                   "Memo":element.memo,
                   "InvoiceNo":element.invno,
@@ -212,7 +213,7 @@ export class CreateLeaseComponent implements OnInit {
     }
     else{
     this.addpaymentbloc.isSecurityDeposit=flg;
-    this.showAddPayment=flg==0 ? false : true;
+    this.showAddPayment=flg==2 ? false : true;
     }
   }
   onFilesSelected(files: File[]) {
@@ -223,10 +224,10 @@ export class CreateLeaseComponent implements OnInit {
     }
   }
   savePayments(){
-    if(this.addpaymentbloc.rentAmount==null || this.addpaymentbloc.rentAmount==0){
+    if(this.addpaymentbloc.Amount==null || this.addpaymentbloc.Amount==0){
       this.toastr.error("Invalid   amount");
     }
-    else  if(this.addpaymentbloc.dueDate==null || this.addpaymentbloc.dueDate==''){
+    else  if(this.addpaymentbloc.DueDate==null || this.addpaymentbloc.DueDate==''){
       this.toastr.error("Invalid   due Date");
     }
     // else  if(this.addpaymentbloc.account==null || this.addpaymentbloc.account==''){
@@ -235,23 +236,37 @@ export class CreateLeaseComponent implements OnInit {
     else{
       
       this.paymentSchedules.push({
-        "Amount":Number(this.addpaymentbloc.rentAmount.toFixed(2)),
+        "Amount":Number(this.addpaymentbloc.Amount.toFixed(2)),
         "AdvAmt":0,  
         "cheque_no":this.addpaymentbloc.cheque_no,
         "cheque_date":this.addpaymentbloc.cheque_date,
         "bank":this.addpaymentbloc.bank,
         "held_by":this.addpaymentbloc.held_by?.id,
-        "AccountCode":this.addpaymentbloc.isSecurityDeposit==2 ?'F4F69': this.addpaymentbloc.account?.id,
-        "Account":this.addpaymentbloc.isSecurityDeposit==2 ?'Security Deposit':this.addpaymentbloc.account?.name,
-        "DueDate":this.addpaymentbloc.dueDate,
-        "Recurrence_id":this.addpaymentbloc.isSecurityDeposit==2 ?'90':this.addpaymentbloc.recurrenceCycle?.id,
-        "Recurrence":this.addpaymentbloc.isSecurityDeposit==2 ?'Fixed':this.addpaymentbloc.recurrenceCycle?.name,
-        "PaymentTypeid":this.addpaymentbloc.paymentMethod?.id,
-        "PaymentType":this.addpaymentbloc.paymentMethod?.name,
-        "TaxProfileId":this.addpaymentbloc.taxProfile?.id,
-        "TaxProfile":this.addpaymentbloc.taxProfile?.name,
-        "Memo":this.addpaymentbloc.memo,
-        "InvoiceNo":this.addpaymentbloc.invno,
+        "AccountCode":this.addpaymentbloc.isSecurityDeposit==1 ?'F4F69': this.addpaymentbloc.AccountCode,
+        "Account":this.addpaymentbloc.isSecurityDeposit==1 ?'Security Deposit':this.coaList.filter((item:any)=>{
+          return item.id==this.addpaymentbloc.AccountCode
+        })[0]?.name,
+        "DueDate":this.addpaymentbloc.DueDate,
+        "Recurrence_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.addpaymentbloc.Recurrence_id?.id,
+        "Recurrence":this.addpaymentbloc.isSecurityDeposit==1 ?'Fixed':this.recurringList.filter((item:any)=>{
+          return item.id==this.addpaymentbloc.Recurrence_id
+        })[0]?.name,
+        "money_held_by_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.addpaymentbloc.money_held_by_id ,
+        "money_held_by":this.addpaymentbloc.isSecurityDeposit==1 ?'Fixed': 
+        this.moneyHeldOptions.filter((item:any)=>{
+          return item.id==this.addpaymentbloc.money_held_by_id
+        })[0]?.name ,
+        "PaymentTypeid":this.addpaymentbloc.PaymentTypeid,
+        "PaymentType": 
+        this.paymentMethods.filter((item:any)=>{
+          return item.id==this.addpaymentbloc.PaymentTypeid
+        })[0]?.name,
+        "TaxProfileId":this.addpaymentbloc.TaxProfileId,
+        "TaxProfile":    this.taxProfilesList.filter((item:any)=>{
+          return item.id==this.addpaymentbloc.TaxProfileId
+        })[0]?.name,
+        "Memo":this.addpaymentbloc.Memo,
+        "InvoiceNo":this.addpaymentbloc.InvoiceNo,
         "isEdit":0,
         "row_no":this.paymentSchedules.length+1});
         if(this.attachedFile)
@@ -383,8 +398,30 @@ export class CreateLeaseComponent implements OnInit {
     this.editingOccupantIndex = null;
     this.showOccupantsModal = true;
   }
-  edit_action(row:any,action:string){
-
+  edit_action(row:any,action:string){ 
+    if(action=="edit"){ 
+        this.addpaymentbloc=row;
+      this.showAddPayment=true;
+      
+    }
+    else if(action=="delete"){
+      let _remlist=this.paymentSchedules.filter((item:any)=>{
+        return item.row_no!=row.row_no
+      });
+      if(_remlist){
+        this.paymentSchedules=_remlist;
+        const total = this.paymentSchedules.reduce(
+          (sum, item) => item.isSecurityDeposit === 0
+          ? sum + Number(item.Amount || 0)
+          : sum,
+          0
+        );
+        this.rentAmount=this.annualRent= total;
+        this.totalPayments=this.paymentSchedules.filter((item:any)=>{
+          return item.isSecurityDeposit==0
+        })?.length
+      }
+    }
   }
   closeOccupantsModal() {
     this.showOccupantsModal = false;
@@ -505,8 +542,8 @@ export class CreateLeaseComponent implements OnInit {
       let clsRentInfo :any={};
       clsRentInfo.rent_amount=this.rentAmount || 0;
       clsRentInfo.total_payments=this.totalPayments || 0;
-      clsRentInfo.money_held_by=this.moneyHeldBy.id || 0;
-      clsRentInfo.payment_type=this.paymentMethod.id || 0;
+      clsRentInfo.money_held_by=this.moneyHeldBy || 0;
+      clsRentInfo.payment_type=this.paymentMethod || 0;
       clsRentInfo.annual_rent=this.annualRent || 0;
       clsRentInfo.monthly_rent=this.monthlyRent || 0;
  
@@ -520,7 +557,7 @@ export class CreateLeaseComponent implements OnInit {
         property_code: this.selectedPropertyObj.code,
         unit_code: this.selectedUnitObj.code,
         room_code: this.selectedRoom?.code || '',
-        rent_collector:this.selectedAgent?.code ||'',
+        rent_collector:this.selectedAgent ||'',
         clsLeaseInfo: clsLeaseInfo,
         clsRentInfo: clsRentInfo, 
         clsAddtionalInfo: this.additionalbloc,  

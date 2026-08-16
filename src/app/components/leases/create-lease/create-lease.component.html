@@ -6,7 +6,7 @@
     </a>
     <div>
       <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">
-        {{ leaseId=='' ? 'web.leases.lblNewLease' : 'Edit Lease' | translate }}</h3>
+        {{ leaseId=='' ? ('web.leases.lblNewLease'| translate ) : ('web.leases.lblEditLease'| translate )  }}</h3>
       <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">{{ 'web.leases.lblLeaseManagement' | translate }}</span>
         <span>/</span>
@@ -115,12 +115,11 @@
         <ng-select #tenantSelect [(ngModel)]="selectedAgent" 
         [items]="agentsList"  
         bindValue="code"   [searchable]="true"
-        [clearable]="true"
-        (change)="onChangeSelect($event,'selectedAgent')"
+        [clearable]="true" 
          placeholder="{{ 'web.leases.lblAgentAssignment' | translate }}" class="ng-select-sm w-full">
          <ng-template ng-header-tmp>
           <div class="p-1.5 border-b border-gray-100">
-            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'tenants')" (click)="$event.stopPropagation()">
+            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'agentsList')" (click)="$event.stopPropagation()">
           </div>
         </ng-template>
         <ng-template ng-label-tmp let-item="item">
@@ -139,11 +138,11 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseType' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseType"    (change)="onChangeSelect($event,'selectedLeaseType')"  placeholder="Lease Type"  bindLabel="name"   [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="selectedLeaseType"      (change)="onChangeSelect($event,'selectedLeaseType')"  placeholder="Lease Type"  bindLabel="name"   [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseCategory" (change)="onChangeSelect($event,'selectedLeaseCategory')"  placeholder="Lease Category"  bindLabel="name" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="selectedLeaseCategory"   (change)="onChangeSelect($event,'selectedLeaseCategory')"  placeholder="Lease Category"  bindLabel="name" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
       
       </div>
@@ -184,11 +183,11 @@
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
-          <ng-select [(ngModel)]="moneyHeldBy" (change)="onChangeSelect($event,'moneyHeldBy')" placeholder="Money Held"   bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="moneyHeldBy"  bindValue="id"   placeholder="Money Held"   bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
-          <ng-select [(ngModel)]="paymentMethod" (change)="onChangeSelect($event,'paymentMethod')" placeholder="Payment Type"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="paymentMethod"  bindValue="id"   placeholder="Payment Type"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAnnualRent' | translate }}</label>
@@ -221,10 +220,10 @@
       </p>
   </div>
     <div class="flex justify-end  gap-3">
-      <button type="button" (click)="showPaymentBlock(1)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      <button type="button" (click)="showPaymentBlock(0)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
       Add Payment
       </button>
-      <button type="button" (click)="showPaymentBlock(2)" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+      <button type="button" (click)="showPaymentBlock(1)" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
         Add Security Deposit
         </button>
         <button type="button" *ngIf="paymentSchedules.length>0" (click)="showPaymentBlock(3)" class="px-4 py-1.5 text-xs rounded-md bg-danger text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
@@ -248,43 +247,43 @@
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Amount*</label>
           <div class="input-group">
             <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
-            <input type="number" [(ngModel)]="addpaymentbloc.rentAmount"   class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+            <input type="number" [(ngModel)]="addpaymentbloc.Amount"   class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
           </div>
         </div> 
         <div >
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Due On*</label>
-          <input type="date" [(ngModel)]="addpaymentbloc.dueDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+          <input type="date" [(ngModel)]="addpaymentbloc.DueDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
         </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Account*</label>
-          <ng-select [(ngModel)]="addpaymentbloc.account" (change)="onChangeSelect_2($event,'account')" placeholder="Account"  bindLabel="name" [items]="coaList"  class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.AccountCode" bindValue="id"  placeholder="Account"  bindLabel="name" [items]="coaList"  class="ng-select-sm w-full"></ng-select>
         </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Memo</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.memo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" placeholder="If left blank,will show 'rent'" />
+          <input type="text" [(ngModel)]="addpaymentbloc.Memo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" placeholder="If left blank,will show 'rent'" />
         </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Recurrence Cycle<em>*</em></label>
-          <ng-select [(ngModel)]="addpaymentbloc.recurrenceCycle"    (change)="onChangeSelect_2($event,'recurrenceCycle')"  placeholder="Recurrence Cycle"  bindLabel="name"   [items]="recurringList"   class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.Recurrence_id"  bindValue="id"    placeholder="Recurrence Cycle"  bindLabel="name"    [items]="recurringList"   class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Tax Profile</label>
-          <ng-select [(ngModel)]="addpaymentbloc.taxProfile"    (change)="onChangeSelect_2($event,'taxProfile')"  placeholder="Tax Profile" bindLabel="name"   [items]="taxProfilesList"  class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.TaxProfileId"    bindValue="id" placeholder="Tax Profile" bindLabel="name"   [items]="taxProfilesList"  class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
-          <ng-select [(ngModel)]="addpaymentbloc.moneyHeldBy" (change)="onChangeSelect_2($event,'moneyHeldBy')"    bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.money_held_by_id"  bindValue="id"    bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
-          <ng-select [(ngModel)]="addpaymentbloc.paymentMethod" (change)="onChangeSelect_2($event,'paymentMethod')"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.PaymentTypeid"    bindValue="id"  bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==1">
+        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Invoice Number</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.invno" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"  />
+          <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"  />
         </div> 
       </div>
-      <div *ngIf="addpaymentbloc.paymentMethod?.id==169" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-4"> 
+      <div *ngIf="addpaymentbloc.PaymentTypeid==169" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-4"> 
         <div class="grid-cols-3">
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cheque No</label>
           <input type="text" [(ngModel)]="addpaymentbloc.cheque_no"    class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
@@ -299,10 +298,10 @@
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Held By</label>
-          <ng-select [(ngModel)]="addpaymentbloc.held_by" (change)="onChangeSelect_2($event,'held_by')" placeholder="Held By"  bindLabel="name" [items]="heldByList"  class="ng-select-sm w-full"></ng-select>
+          <ng-select [(ngModel)]="addpaymentbloc.held_by" bindValue="id"  placeholder="Held By"  bindLabel="name" [items]="heldByList"  class="ng-select-sm w-full"></ng-select>
         </div>
       </div>
-      <div class="box-body md:grid-cols-1" *ngIf="addpaymentbloc.isSecurityDeposit==1">
+      <div class="box-body md:grid-cols-1" *ngIf="addpaymentbloc.isSecurityDeposit==0">
 
         <app-file-upload
             [accept]="'image/*'" 
@@ -314,7 +313,7 @@
         </app-file-upload>
 
     </div>
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-4 gap-3">
         <button type="button" (click)="savePayments()" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
           Save
         </button>
@@ -327,8 +326,8 @@
       <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
         <thead class="bg-info/10">
           <tr class="border-b border-defaultborder">
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount {{currentUser?.currencyCode}} </th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Advance  {{currentUser?.currencyCode}} </th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount ({{currentUser?.currencyCode}}) </th>
+            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Advance  ({{currentUser?.currencyCode}}) </th>
             <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
             <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
             <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Recurrence</th>
@@ -346,7 +345,7 @@
             </td>
           </tr>
           <tr *ngFor="let wo of paymentSchedules" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
-            <td class="py-3 px-4 font-bold text-primary text-xs">{{wo.Amount}}</td>
+            <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{wo.Amount}}</td>
             <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.AdvAmt}}</td> 
             <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.Account}}</td> 
             <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.DueDate}}</td>
@@ -580,6 +579,6 @@
     <i class="ri-close-line"></i> {{ 'web.contacts.lblCancel' | translate }}
   </button>
   <button type="button" (click)="saveLease()" [attr.data-tooltip]="'web.leases.lblAddLease' | translate" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
-    <i class="ri-save-line"></i> {{ leaseId=='' ? 'web.leases.lblAddLease' : 'Update Lease' | translate }} 
+    <i class="ri-save-line"></i>   {{ leaseId=='' ? ('web.leases.lblSaveLease'| translate ) :  ('web.leases.lblUpdateLease'| translate )}}
   </button>
 </div>
