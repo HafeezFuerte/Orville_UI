@@ -32,7 +32,9 @@ export class WorkOrderDetailComponent implements OnInit {
   attachmentsForm: any = {};
   tabsList: any[] = [];
   
-  beforeImages: any[] = [];
+  beforeImages: any[] = [
+    { name: 'image.jpg', url: 'assets/images/work-order-detail/before-sample.jpg' }
+  ];
   afterImages: any[] = [];
   videos: any[] = [];
 
@@ -131,12 +133,6 @@ export class WorkOrderDetailComponent implements OnInit {
     vendorTechnician: 'Not Assigned',
     landlord: '-'
   };
-
-  beforeImages: { name: string; url: string }[] = [
-    { name: 'image.jpg', url: 'assets/images/work-order-detail/before-sample.jpg' }
-  ];
-  afterImages: { name: string; url: string }[] = [];
-  videos: { name: string; url: string }[] = [];
 
   costs: any[] = [];
 

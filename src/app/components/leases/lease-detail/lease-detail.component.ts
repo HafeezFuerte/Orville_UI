@@ -144,6 +144,44 @@ export class LeaseDetailComponent implements OnInit {
     { key: 'userId', label: 'web.leases.lblUserId', visible: true },
     { key: 'createdAt', label: 'web.leases.lblCreated', visible: true }
   ];
+
+  unitsColumns = [
+    { key: 'floorNumber', label: 'web.contacts.lblFloorNumber', visible: true },
+    { key: 'managementFee', label: 'web.Unit.lblManagementFee', visible: true },
+    { key: 'status', label: 'web.Unit.lblStatus', visible: true, useTemplate: true },
+    { key: 'internalStatus', label: 'web.contacts.lblInternalStatus', visible: true },
+    { key: 'size', label: 'web.contacts.lblSize', visible: true },
+    { key: 'marketRent', label: 'web.contacts.lblMarketRent', visible: true },
+    { key: 'deposit', label: 'web.Unit.lblDeposit', visible: true },
+    { key: 'published', label: 'web.contacts.lblPublished', visible: true },
+    { key: 'forSale', label: 'web.contacts.lblForSale', visible: true }
+  ];
+
+  workOrdersColumns = [
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'title', label: 'Title', visible: true },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'closingStatus', label: 'Closing Status', visible: true, useTemplate: true },
+    { key: 'internalStatus', label: 'Internal Status', visible: true },
+    { key: 'dueDate', label: 'Due Date', visible: true },
+    { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
+    { key: 'property', label: 'web.leases.lblProperty', visible: true },
+    { key: 'vendor', label: 'web.contacts.lblVendor', visible: true },
+    { key: 'user', label: 'web.contacts.lblUser', visible: true }
+  ];
+
+  noticesColumns = [
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'subject', label: 'web.property.lblSubject', visible: true },
+    { key: 'preview', label: 'web.property.lblPreview', visible: true, useTemplate: true },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'broadcastType', label: 'web.property.lblBroadcastType', visible: true },
+    { key: 'sendable', label: 'web.property.lblSendable', visible: true },
+    { key: 'scheduled', label: 'web.property.lblScheduled', visible: true },
+    { key: 'date', label: 'web.common.lblDate', visible: true },
+    { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'updatedAt', label: 'web.contacts.lblUpdatedAt', visible: true }
+  ];
  
 
    

@@ -127,6 +127,7 @@ export class DetailPageLayoutComponent {
     if (!this.activeTab && this.tabs.length) {
       this.activeTab = this.tabs[0].key;
     }
+  }
   checkCommonTab() {
     return this.selectedTab?.key!='units' && 
     this.selectedTab?.key!='notes' && 
