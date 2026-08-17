@@ -43,12 +43,23 @@
             <span class="orville-reports__dot" [ngClass]="categoryClass(report.category)"></span>
             <span>{{ report.badge }}</span>
           </div>
-          <img
+          <button
+            type="button"
             class="orville-reports__bookmark"
-            src="assets/images/reports/bookmark.svg"
-            alt=""
-            width="14"
-            height="14">
+            [class.is-on]="isBookmarked(report.id)"
+            [attr.aria-pressed]="isBookmarked(report.id)"
+            [attr.aria-label]="isBookmarked(report.id) ? 'Remove bookmark' : 'Add bookmark'"
+            (click)="toggleBookmark(report)">
+            <span class="orville-reports__bookmark-icon">
+              <img
+                [src]="isBookmarked(report.id)
+                  ? 'assets/images/reports/bookmark.svg'
+                  : 'assets/images/reports/bookmark-off.svg'"
+                alt=""
+                width="14"
+                height="14">
+            </span>
+          </button>
         </div>
         <div class="orville-reports__card-body">
           <h5 class="orville-reports__card-title">{{ report.title }}</h5>

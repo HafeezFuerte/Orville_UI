@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MyInsightsComponent } from './my-insights/my-insights.component';
 import { ReportsComponent } from '../reports/reports.component';
+import { DocumentCenterComponent } from '../document-center/document-center.component';
+import { DocumentDetailComponent } from '../document-center/document-detail.component';
+import { DownloadCenterComponent } from '../download-center/download-center.component';
+import { DownloadDetailComponent } from '../download-center/download-detail.component';
 import { PropertiesListComponent } from '../portfolio/properties/properties-list/properties-list.component';
 import { AddPropertyComponent } from '../portfolio/properties/create-new-property/add-property.component';
 import { UnitsListComponent } from '../portfolio/units/units-list/units-list.component';
@@ -22,6 +26,10 @@ export const admin: Routes = [
 ]},
 { path: 'insights', component: MyInsightsComponent },
 { path: 'reports', component: ReportsComponent },
+{ path: 'documents', component: DocumentCenterComponent },
+{ path: 'documents/:id', component: DocumentDetailComponent },
+{ path: 'downloads', component: DownloadCenterComponent },
+{ path: 'downloads/:id', component: DownloadDetailComponent },
 { path: 'properties', component: PropertiesListComponent },
 { path: 'properties/:code', component: PropertyDetailComponent },
 { path: 'units', component: UnitsListComponent },

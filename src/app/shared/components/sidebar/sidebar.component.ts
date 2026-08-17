@@ -42,6 +42,7 @@ interface Module {
 
 export class SidebarComponent {
   localStorage: any;
+  createOverlayOpen = false;
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -142,7 +143,7 @@ export class SidebarComponent {
           
           this.menuItems = singleGroup.pages?.map((page: PageMenu) => {
             const normalizedName = page.menuName.trim();
-            const path = this.urlNameMap[normalizedName] || this.urlMap[page.url] || '';
+            const path = this.resolveMenuPath(normalizedName, singleModule.moduleName, page.url);
 
             return {
               title: page.menuName,
@@ -158,17 +159,7 @@ export class SidebarComponent {
           this.menuItems = modules.map((module: Module) => {
             if (module.pages?.length === 0 || module.menuGroup?.[0]?.pages?.length === 0) {
               const normalizedName = module.moduleName.trim();
-              let path = this.urlNameMap[normalizedName];
-              if (!path) {
-                const lowerName = normalizedName.toLowerCase();
-                const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
-                if (matchingKey) {
-                  path = this.urlNameMap[matchingKey];
-                }
-              }
-              if (!path) {
-                path = this.urlMap[module.url] || module.url;
-              }
+              const path = this.resolveMenuPath(normalizedName, undefined, module.url);
 
               return {
                 title: module.moduleName,
@@ -191,17 +182,7 @@ export class SidebarComponent {
                 icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
                 children: group.pages?.map((page: PageMenu) => {
                   const normalizedName = page.menuName.trim();
-                  let path = this.urlNameMap[normalizedName];
-                  if (!path) {
-                    const lowerName = normalizedName.toLowerCase();
-                    const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
-                    if (matchingKey) {
-                      path = this.urlNameMap[matchingKey];
-                    }
-                  }
-                  if (!path) {
-                    path = this.urlMap[page.url];
-                  }
+                  const path = this.resolveMenuPath(normalizedName, module.moduleName, page.url);
                   return {
                     title: page.menuName,
                     type: 'link',
@@ -222,18 +203,7 @@ export class SidebarComponent {
               icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
               children: module.pages?.map((page: PageMenu) => {
                 const normalizedName = page.menuName.trim();
-                let path = this.urlNameMap[normalizedName]; 
-                if (!path) {
-                  const lowerName = normalizedName.toLowerCase();
-                  const matchingKey = Object.keys(this.urlNameMap).find(k => k.toLowerCase() === lowerName);
-                  if (matchingKey) {
-                    path = this.urlNameMap[matchingKey];
-                  }
-                }
-
-                if (!path) {
-                  path = this.urlMap[page.url];
-                }
+                const path = this.resolveMenuPath(normalizedName, module.moduleName, page.url);
 
                 return {
                   title: page.menuName,
@@ -309,7 +279,61 @@ export class SidebarComponent {
     'Broadcasts': '/broadcasts',
     'Work Orders': '/facility/work-orders',
     'Assets': '/facility/assets',
+    'Insights': '/insights',
+    'Reports': '/reports',
+    'Documents': '/documents',
+    'Document Center': '/documents',
+    'Download': '/downloads',
+    'Downloads': '/downloads',
+    'Download Center': '/downloads',
   };
+
+  private isAccountingParent(parentTitle?: string): boolean {
+    if (!parentTitle) {
+      return false;
+    }
+    const name = parentTitle.trim().toLowerCase();
+    return name === 'ams' || name.includes('account');
+  }
+
+  private isReportMenu(menuName: string): boolean {
+    const name = (menuName || '').trim().toLowerCase();
+    return name === 'report' || name === 'reports';
+  }
+
+  private isReportsRoute(path?: string): boolean {
+    if (!path) {
+      return false;
+    }
+    const normalized = path.trim().toLowerCase().replace(/\/+$/, '');
+    return normalized === '/reports' || normalized === 'reports';
+  }
+
+  /** Accounting reports are a different product from Rental Reports at /reports. */
+  private resolveMenuPath(menuName: string, parentTitle?: string, fallbackUrl?: string): string {
+    const normalizedName = (menuName || '').trim();
+    if (this.isAccountingParent(parentTitle) && this.isReportMenu(normalizedName)) {
+      return '';
+    }
+
+    let path = this.urlNameMap[normalizedName];
+    if (!path) {
+      const lowerName = normalizedName.toLowerCase();
+      const matchingKey = Object.keys(this.urlNameMap).find((key) => key.toLowerCase() === lowerName);
+      if (matchingKey) {
+        path = this.urlNameMap[matchingKey];
+      }
+    }
+    if (!path && fallbackUrl) {
+      path = this.urlMap[fallbackUrl] || fallbackUrl;
+    }
+
+    if (this.isAccountingParent(parentTitle) && this.isReportsRoute(path)) {
+      return '';
+    }
+
+    return path || '';
+  }
 
   private figmaIconMap: { [key: string]: string } = {
     'my day': './assets/images/nav/my-day.svg',
@@ -343,7 +367,10 @@ export class SidebarComponent {
     'inspections': './assets/images/nav/inspections.svg',
     'reports': './assets/images/nav/reports.svg',
     'documents': './assets/images/nav/documents.svg',
+    'document center': './assets/images/nav/documents.svg',
     'download': './assets/images/nav/download.svg',
+    'downloads': './assets/images/nav/download.svg',
+    'download center': './assets/images/nav/download.svg',
     'setting': './assets/images/nav/settings.svg',
     'settings': './assets/images/nav/settings.svg',
   };

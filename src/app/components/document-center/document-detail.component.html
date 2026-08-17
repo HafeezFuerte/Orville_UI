@@ -1,0 +1,117 @@
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between" *ngIf="doc">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Document Center" aria-label="Back">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <h3 class="ov-page-title m-0">{{ doc.type }}</h3>
+        <span [class]="statusChip(doc.status)">{{ doc.status }}</span>
+      </div>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a href="javascript:void(0)" (click)="goToList()">Document Center</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">{{ doc.id }}</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2" *ngIf="canReview && !confirmReject">
+    <button type="button" class="ov-btn orville-doc__reject" (click)="askReject()">Reject</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="approve()">Approve</button>
+  </div>
+  <div class="flex flex-wrap items-center gap-2" *ngIf="canReview && confirmReject">
+    <span class="orville-doc__confirm-copy">Reject this document?</span>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="cancelReject()">Cancel</button>
+    <button type="button" class="ov-btn orville-doc__reject-solid" (click)="reject()">Confirm reject</button>
+  </div>
+</div>
+
+<div class="orville-doc__banner orville-doc__banner--pending mb-4" *ngIf="doc && canReview && !confirmReject">
+  This document is waiting for review. Approve to accept the file, or reject if it is incorrect or expired.
+</div>
+<div class="orville-doc__banner orville-doc__banner--success mb-4" *ngIf="doc && doc.status === 'Approved'">
+  This document has been approved.
+</div>
+<div class="orville-doc__banner orville-doc__banner--danger mb-4" *ngIf="doc && doc.status === 'Rejected'">
+  This document has been rejected.
+</div>
+
+<div class="ov-detail-layout mb-5" *ngIf="doc">
+  <div class="ov-detail-layout__left">
+    <div class="ov-card orville-doc__card" [ngClass]="'orville-doc__card--' + doc.status.toLowerCase()">
+      <div class="ov-card__head">
+        <h5 class="ov-card-title m-0">Overview</h5>
+        <p class="ov-card-sub">Document information and who it belongs to</p>
+      </div>
+      <div class="ov-card__body orville-doc__rows">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Document ID:</span>
+          <span class="ov-kv__value">{{ doc.id }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Document type:</span>
+          <span class="ov-kv__value">{{ doc.type }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Attachment for:</span>
+          <span class="ov-kv__value">
+            <span class="orville-doc__entity">{{ doc.attachmentOf }}</span>
+            {{ doc.name }}
+          </span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Status:</span>
+          <span class="ov-kv__value">
+            <span [class]="statusChip(doc.status)">{{ doc.status }}</span>
+          </span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Issue Date:</span>
+          <span class="ov-kv__value" [class.ov-kv-empty]="!doc.issueDate">{{ doc.issueDate || '—' }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Expiry Date:</span>
+          <span class="ov-kv__value">
+            <span *ngIf="!doc.expiryDate" class="ov-outline-chip ov-outline-chip--danger">No Expiry Date</span>
+            <span *ngIf="doc.expiryDate">{{ doc.expiryDate }}</span>
+          </span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Shared With:</span>
+          <span class="ov-kv__value">{{ doc.sharedWith || 'None' }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Uploaded By:</span>
+          <span class="ov-kv__value">{{ doc.uploadedBy }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout__right">
+    <div class="ov-card orville-doc__card" [ngClass]="'orville-doc__card--' + doc.status.toLowerCase()">
+      <div class="ov-card__head">
+        <h5 class="ov-card-title m-0">Files</h5>
+        <p class="ov-card-sub">Uploaded file attached to this document</p>
+      </div>
+      <div class="orville-doc__file-wrap">
+        <div class="orville-doc__file">
+          <span class="orville-doc__file-ico" [class.is-image]="isImage" aria-hidden="true">
+            <img [src]="isImage ? 'assets/images/documents/file-image.svg' : 'assets/images/documents/file-doc.svg'"
+              alt="" width="20" height="20" />
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="orville-doc__file-name">{{ doc.fileName }}</span>
+            <span class="orville-doc__file-size">{{ doc.fileSize }}</span>
+          </span>
+          <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-[12px]">View</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ov-card mb-5 px-8 py-10 text-center" *ngIf="!doc">
+  <p class="m-0 text-[14px] text-textmuted">Document not found.</p>
+  <button type="button" class="ov-btn ov-btn-primary mt-4" (click)="goToList()">Back to Document Center</button>
+</div>

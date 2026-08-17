@@ -45,6 +45,9 @@ export class ReportsComponent {
     { id: 'misc', label: 'Misc' }
   ];
 
+  private readonly bookmarkStorageKey = 'orville.reports.bookmarks';
+  public bookmarkedIds: string[] = [];
+
   /** Figma 3386:152154 — visible cards only */
   public reports: ReportItem[] = [
     {
@@ -213,8 +216,41 @@ export class ReportsComponent {
       .filter((group) => group.items.length > 0);
   }
 
+  constructor() {
+    this.bookmarkedIds = this.readBookmarks();
+  }
+
   public setTab(tab: ReportTab): void {
     this.activeTab = tab;
+  }
+
+  public isBookmarked(id: string): boolean {
+    return this.bookmarkedIds.includes(id);
+  }
+
+  public toggleBookmark(report: ReportItem): void {
+    this.bookmarkedIds = this.isBookmarked(report.id)
+      ? this.bookmarkedIds.filter((id) => id !== report.id)
+      : [...this.bookmarkedIds, report.id];
+    this.persistBookmarks();
+  }
+
+  private readBookmarks(): string[] {
+    try {
+      const raw = localStorage.getItem(this.bookmarkStorageKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter((id) => typeof id === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private persistBookmarks(): void {
+    try {
+      localStorage.setItem(this.bookmarkStorageKey, JSON.stringify(this.bookmarkedIds));
+    } catch {
+      /* ignore quota / private-mode failures */
+    }
   }
 
   public categoryClass(category: ReportCategory): string {
