@@ -1,11 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import {
-  DownloadJob,
-  downloadStatusChip,
-  findDownloadJob
-} from './download-center.data';
+import { DownloadJob, findDownloadJob } from './download-center.data';
 
 @Component({
   selector: 'app-download-detail',
@@ -70,10 +66,6 @@ export class DownloadDetailComponent implements OnInit {
       return this.job?.failReason || 'Generation failed. This report is not available to download.';
     }
     return 'Your report is still being prepared. You can download it once generation is complete.';
-  }
-
-  public statusChip(status: string): string {
-    return downloadStatusChip(status);
   }
 
   public download(): void {

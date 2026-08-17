@@ -1,22 +1,24 @@
 <div class="orville-dl-detail" *ngIf="job">
-  <button type="button" class="orville-dl-detail__back" (click)="goBack()">
-    <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    Back to Download Center
-  </button>
-
-  <div class="orville-dl-detail__header">
-    <div class="min-w-0 flex-1">
-      <h3 class="ov-page-title orville-dl-detail__title">{{ job.document }}</h3>
-      <p class="ov-page-sub mt-1 mb-0">Issued by {{ job.generatedBy }} at {{ job.requestedAt }}</p>
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex min-w-0 items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Download Center" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div class="min-w-0">
+        <h3 class="ov-page-title m-0 orville-dl-detail__title">{{ job.document }}</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a href="javascript:void(0)" (click)="goToList()">Download Center</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">{{ job.jobId }}</li>
+        </ol>
+      </div>
     </div>
-    <button
-      type="button"
-      class="ov-btn ov-btn-primary"
-      *ngIf="isReady"
-      (click)="download()">
-      <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="orville-dl-detail__dl-ico" />
-      Download
-    </button>
+    <div class="flex flex-wrap items-center gap-2" *ngIf="isReady">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="download()">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="orville-dl-detail__dl-ico" />
+        Download
+      </button>
+    </div>
   </div>
 
   <div class="orville-dl-detail__layout">
@@ -60,12 +62,12 @@
             <dd>{{ job.type }}</dd>
           </div>
           <div class="orville-dl-detail__row">
-            <dt>Status</dt>
-            <dd><span [class]="statusChip(job.status)">{{ job.status }}</span></dd>
-          </div>
-          <div class="orville-dl-detail__row">
             <dt>Job Reference</dt>
             <dd>{{ jobReference }}</dd>
+          </div>
+          <div class="orville-dl-detail__row">
+            <dt>Issued At</dt>
+            <dd>{{ job.requestedAt }}</dd>
           </div>
           <div class="orville-dl-detail__row">
             <dt>File Size</dt>
