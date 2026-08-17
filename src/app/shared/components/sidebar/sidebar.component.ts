@@ -12,6 +12,7 @@ interface PageMenu {
   menuID: number;
   menuName: string;
   parent_id:number;
+  menu_icon: string;
   url: string;
   ModuleId: number;
   IsActive: boolean;
