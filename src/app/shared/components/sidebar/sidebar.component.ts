@@ -43,8 +43,9 @@ interface Module {
 
 export class SidebarComponent {
   originalMenuItems: any[] = [];
-  isSettingsMode = false;
   createOverlayOpen = false;
+  settingsMenuItems: Menu[] = [];
+  isSettingsMode = false;
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -217,6 +218,27 @@ export class SidebarComponent {
               }) || [], 
             };
           });
+
+          // 🟢 Extract Settings module and children if loaded from DB
+          const settingsModule = modules.find(m => m.moduleName.trim() === 'Settings');
+          if (settingsModule) {
+            // Find settings pages
+            const pages = settingsModule.pages || settingsModule.menuGroup?.[0]?.pages || [];
+            this.settingsMenuItems = pages.map((page: PageMenu) => {
+              const normalizedName = page.menuName.trim();
+              let path = this.urlNameMap[normalizedName] || this.urlMap[page.url] || page.url || '';
+              return {
+                title: page.menuName,
+                type: 'link',
+                path: path,
+                icon: page.menu_icon || 'bx-circle',
+                active: false,
+                selected: false
+              };
+            });
+            // Filter out 'Settings' from main menu list
+            this.menuItems = this.menuItems.filter(m => m.title !== 'Settings');
+          }
 
           // 🟢 Reorder: Move 'Employee Portal' to the top (only for multi-level)
           const portalIndex = this.menuItems.findIndex(m => m.title === 'Employee Portal');
@@ -418,38 +440,7 @@ export class SidebarComponent {
         active: false,
         selected: false
       },
-      {
-        title: 'Company details',
-        type: 'link',
-        path: '/settings/company-details',
-        icon: 'bx-buildings',
-        active: false,
-        selected: false
-      },
-      {
-        title: 'Company shifts',
-        type: 'link',
-        path: '/settings/company-shifts',
-        icon: 'bx-time-five',
-        active: false,
-        selected: false
-      },
-      {
-        title: 'Regional settings',
-        type: 'link',
-        path: '/settings/regional-settings',
-        icon: 'bx-globe',
-        active: false,
-        selected: false
-      },
-      {
-        title: 'Masters',
-        type: 'link',
-        path: '/settings/masters',
-        icon: 'bx-cog',
-        active: false,
-        selected: false
-      }
+      ...this.settingsMenuItems
     ];
   }
 

@@ -21,7 +21,7 @@
         </div>
 
         <!-- Category List -->
-        <div class="overflow-y-auto max-h-[calc(100vh-220px)]">
+        <div class="overflow-y-auto max-h-[calc(100vh-220px)] custom-scrollbar">
           <ul class="list-none p-2 m-0 space-y-0.5">
             <li *ngFor="let cat of categories">
               <button type="button" (click)="selectCategory(cat)"
@@ -165,29 +165,40 @@
                   class="form-control form-control-sm !text-[11px]">
               </div>
 
-              <!-- Dependency -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
-                  Dependency
-                </label>
-                <ng-select [items]="categoryItems" bindLabel="name" bindValue="id"
-                  formControlName="dependency_id" placeholder="Select Dependency">
-                </ng-select>
-              </div>
-
               <!-- Description -->
               <div class="col-span-12 md:col-span-6">
                 <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
                   Description
                 </label>
-                <textarea formControlName="description" rows="3" placeholder="Enter description"
+                <textarea formControlName="description" rows="1" placeholder="Enter description"
                   class="form-control form-control-sm !text-[11px]"></textarea>
+              </div>
+
+              <!-- Dependency Type (Category list) -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Dependency Type
+                </label>
+                <ng-select [items]="categories" bindLabel="lookup_name" bindValue="id"
+                  formControlName="dependency_type_id" placeholder="Select Dependency Type"
+                  (change)="onDependencyTypeChange($event?.id)">
+                </ng-select>
+              </div>
+
+              <!-- Dependency (Filtered items) -->
+              <div class="col-span-12 md:col-span-6">
+                <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">
+                  Dependency Item
+                </label>
+                <ng-select [items]="dependencyItems" bindLabel="name" bindValue="id"
+                  [loading]="loadingDependencyItems" formControlName="dependency_id" placeholder="Select Dependency Item">
+                </ng-select>
               </div>
 
               <!-- Is Active Toggle -->
               <div class="col-span-12 md:col-span-6">
                 <label class="form-label text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1 block">Active</label>
-                <div class="flex items-center justify-between h-[calc(100%-1.5rem)] py-2.5 px-3 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                <div class="flex items-center justify-between py-2 px-3 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
                   <span class="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
                     {{ masterForm.get('is_Active')?.value ? 'Active' : 'Inactive' }}
                   </span>

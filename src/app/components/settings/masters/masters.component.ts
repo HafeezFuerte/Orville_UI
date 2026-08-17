@@ -49,7 +49,25 @@ interface LookupItem {
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedTableComponent, NgSelectModule],
   templateUrl: './masters.component.html',
-  styleUrls: []
+  styles: [
+    `
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      display: block !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15) !important;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25) !important;
+    }
+    `
+  ]
 })
 export class MastersComponent implements OnInit {
 
@@ -67,6 +85,10 @@ export class MastersComponent implements OnInit {
   // Table data
   categoryItems: LookupItem[] = [];
   loadingItems: boolean = false;
+
+  // Dependency filtering data
+  dependencyItems: LookupItem[] = [];
+  loadingDependencyItems: boolean = false;
 
   // Pagination
   pageIndex: number = 0;
@@ -93,7 +115,8 @@ export class MastersComponent implements OnInit {
     company_id: [1],
     display_order: [0],
     user_id: [1],
-    dependency_id: [null],
+    dependency_type_id: [null], // Holds chosen Lookup Category ID
+    dependency_id: [null],      // Holds actual item ID filtered by lookup category
     class_name: [''],
     clientid: ['74BB6922']
   });
@@ -168,11 +191,11 @@ export class MastersComponent implements OnInit {
         if (res?.statusCode === '200' && res?.objResult?.table) {
           this.categoryItems = res.objResult.table.map((item: any) => ({
             id: item.id,
-            code: item.code || '',
-            name: item.name || '',
-            arabic_name: item.arabic_name || '',
-            description: item.description || '',
-            is_active: item.is_active ?? true,
+            code: item.code || item.account_code || item.country_code || item.state_code || item.city_code || '-',
+            name: item.name || item.country_name || item.state_name || item.city_name || item.account_name || item.profile_name || '',
+            arabic_name: item.arabic_name || item.state_name_ar || item.city_name_ar || '',
+            description: item.description || item.account_desc || '',
+            is_active: item.is_active ?? item.isActive ?? true,
             display_order: item.display_order ?? 0,
             class_name: item.class_name || '',
             dependency_id: item.dependency_id ?? null
@@ -182,6 +205,49 @@ export class MastersComponent implements OnInit {
       error: (err) => {
         this.loadingItems = false;
         this.toastr.error('Failed to load items', 'Error');
+        console.error(err);
+      }
+    });
+  }
+
+  // ── Step 3: Load items for the selected dependency lookup type ──
+  onDependencyTypeChange(lookupTypeId: number | null): void {
+    this.masterForm.get('dependency_id')?.setValue(null);
+    this.dependencyItems = [];
+    if (!lookupTypeId) return;
+
+    this.loadingDependencyItems = true;
+    const user = this.commonService.getCurrentUser();
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const payload = {
+      typeId: 2,
+      filterId: lookupTypeId,
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1
+    };
+
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.loadingDependencyItems = false;
+        if (res?.statusCode === '200' && res?.objResult?.table) {
+          this.dependencyItems = res.objResult.table.map((item: any) => ({
+            id: item.id,
+            code: item.code || item.account_code || item.country_code || item.state_code || item.city_code || '-',
+            name: item.name || item.country_name || item.state_name || item.city_name || item.account_name || item.profile_name || '',
+            arabic_name: item.arabic_name || item.state_name_ar || item.city_name_ar || '',
+            description: item.description || item.account_desc || '',
+            is_active: item.is_active ?? item.isActive ?? true,
+            display_order: item.display_order ?? 0,
+            class_name: item.class_name || '',
+            dependency_id: item.dependency_id ?? null
+          }));
+        }
+      },
+      error: (err) => {
+        this.loadingDependencyItems = false;
         console.error(err);
       }
     });
@@ -199,6 +265,7 @@ export class MastersComponent implements OnInit {
   // ── Form open / close ──────────────────────────────────────────────────────
   openAddForm(): void {
     const user = this.commonService.getCurrentUser();
+    this.dependencyItems = [];
     this.masterForm.reset({
       id: 0,
       lookup_TypeId: this.selectedCategoryId || 0,
@@ -210,6 +277,7 @@ export class MastersComponent implements OnInit {
       company_id: user?.companyId || 1,
       display_order: 0,
       user_id: user?.userId || 1,
+      dependency_type_id: null,
       dependency_id: null,
       class_name: '',
       clientid: user?.clientId || '74BB6922'
