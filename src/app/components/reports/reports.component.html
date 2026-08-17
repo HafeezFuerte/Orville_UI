@@ -1,0 +1,143 @@
+<div class="orville-reports">
+  <header class="page-header !py-4">
+    <h3 class="ov-page-title">Rental Reports</h3>
+    <p class="ov-page-sub">Find, run, and manage reports across your property operations.</p>
+  </header>
+
+  <div class="orville-reports__tabs">
+    <div class="orville-reports__tab-list" role="tablist" aria-label="Report categories">
+      <button
+        type="button"
+        *ngFor="let tab of tabs"
+        class="orville-reports__tab"
+        [class.is-active]="activeTab === tab.id"
+        role="tab"
+        [attr.aria-selected]="activeTab === tab.id"
+        (click)="setTab(tab.id)">
+        {{ tab.label }}
+      </button>
+    </div>
+    <p class="orville-reports__count">
+      <strong>{{ filteredReports.length }}</strong>
+      <span>reports available</span>
+    </p>
+  </div>
+
+  <div class="ov-search orville-reports__search">
+    <label class="sr-only" for="reports-search">Search</label>
+    <img src="assets/images/reports/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+    <input
+      id="reports-search"
+      type="text"
+      class="ov-input ov-search__input"
+      placeholder="Search"
+      [(ngModel)]="searchQuery">
+  </div>
+
+  <section class="orville-reports__section" *ngFor="let section of sections">
+    <h4 class="orville-reports__section-title">{{ section.title }}</h4>
+    <div class="orville-reports__grid">
+      <article class="orville-reports__card" *ngFor="let report of section.items">
+        <div class="orville-reports__card-top">
+          <div class="orville-reports__badge">
+            <span class="orville-reports__dot" [ngClass]="categoryClass(report.category)"></span>
+            <span>{{ report.badge }}</span>
+          </div>
+          <img
+            class="orville-reports__bookmark"
+            src="assets/images/reports/bookmark.svg"
+            alt=""
+            width="14"
+            height="14">
+        </div>
+        <div class="orville-reports__card-body">
+          <h5 class="orville-reports__card-title">{{ report.title }}</h5>
+          <p class="orville-reports__card-desc">{{ report.description }}</p>
+        </div>
+        <div class="orville-reports__card-foot">
+          <button type="button" class="orville-reports__gen" (click)="openGenerate(report)">Generate Report</button>
+          <button type="button" class="orville-reports__more" aria-label="More actions">
+            <img src="assets/images/common/dots-vertical.svg" alt="" width="16" height="16" />
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>
+
+<div
+  *ngIf="filterOpen"
+  class="orville-gen__backdrop"
+  (click)="closeGenerate()">
+</div>
+
+<aside
+  *ngIf="filterOpen"
+  class="orville-gen"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="generateTitle">
+  <div class="orville-gen__body">
+    <div class="orville-gen__head">
+      <h4 class="orville-gen__title">{{ generateTitle }}</h4>
+      <button type="button" class="orville-gen__x" (click)="closeGenerate()" aria-label="Close">
+        <img src="assets/images/reports/close-plus.svg" alt="" width="20" height="20">
+      </button>
+    </div>
+
+    <div class="orville-gen__fields">
+      <div class="orville-gen__dates">
+        <label class="orville-gen__label">
+          Start Date
+          <span class="orville-gen__control">
+            <img src="assets/images/reports/calendar.svg" alt="" width="14" height="14">
+            <input type="date" [(ngModel)]="startDate" aria-label="Start Date">
+            <span *ngIf="!startDate" class="orville-gen__ph">Select start date</span>
+            <span *ngIf="startDate" class="orville-gen__val">{{ startDate }}</span>
+          </span>
+        </label>
+        <label class="orville-gen__label">
+          End Date
+          <span class="orville-gen__control">
+            <img src="assets/images/reports/calendar.svg" alt="" width="14" height="14">
+            <input type="date" [(ngModel)]="endDate" aria-label="End Date">
+            <span *ngIf="!endDate" class="orville-gen__ph">Select end date</span>
+            <span *ngIf="endDate" class="orville-gen__val">{{ endDate }}</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="orville-gen__block">
+        <p class="orville-gen__label-text">Select Format:</p>
+        <div class="orville-gen__radios" role="radiogroup" aria-label="Select Format">
+          <label class="orville-gen__radio" *ngFor="let format of formats">
+            <input type="radio" name="report-format" [value]="format" [(ngModel)]="reportFormat">
+            <img
+              [src]="reportFormat === format ? 'assets/images/reports/radio-on.svg' : 'assets/images/reports/radio-off.svg'"
+              alt=""
+              width="18"
+              height="18">
+            <span [class.is-on]="reportFormat === format">{{ format }}</span>
+          </label>
+        </div>
+      </div>
+
+      <label class="orville-gen__label">
+        Property Type Filter:
+        <span class="orville-gen__control orville-gen__control--select">
+          <select class="orville-gen__select" [(ngModel)]="propertyType" [class.is-empty]="!propertyType">
+            <option [ngValue]="null">Select property type</option>
+            <option *ngFor="let type of propertyTypes" [ngValue]="type">{{ type }}</option>
+          </select>
+          <img src="assets/images/reports/chevron-down.svg" alt="" width="14" height="14">
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <div class="orville-gen__foot">
+    <button type="button" class="orville-gen__foot-btn" (click)="clearGenerate()">Clear</button>
+    <span class="orville-gen__foot-rule" aria-hidden="true"></span>
+    <button type="button" class="orville-gen__foot-btn" (click)="closeGenerate()">Close</button>
+  </div>
+</aside>
