@@ -18,6 +18,7 @@ import { LandingLayoutComponent } from './layouts/landing-layout/landing-layout.
 import { NgxColorsModule } from 'ngx-colors';
 import { TranslateModule } from "@ngx-translate/core";
 import { NgSelectModule } from '@ng-select/ng-select';
+import { CreateOverlayComponent } from './components/create-overlay/create-overlay.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
         FormsModule,
         ReactiveFormsModule,
         ColorPickerModule,
-        NgSelectModule
+        NgSelectModule,
+        CreateOverlayComponent
         // NgxColorsModule
     ],
     exports: [

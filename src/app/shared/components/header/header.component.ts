@@ -47,6 +47,7 @@ export class HeaderComponent {
   ) {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     this.selectedLanguage = this.languages.find(l => l.code === savedLang) || this.languages[0];
+    this.isDarkTheme = localStorage.getItem('ynex-theme-mode') === 'dark';
   }
   loadLookup(typeId:number,filterId: number, targetProperty: string, nameField: string) {
     this.commontabservice.getMasterByType({
@@ -82,6 +83,7 @@ export class HeaderComponent {
   isFullScreen = false;
   fullScreenIconVisible = true;
   exitFullScreenIconVisible = false;
+  isDarkTheme = false;
 
   toggleFullScreen() {
     this.isFullScreen = !this.isFullScreen;
@@ -101,18 +103,24 @@ export class HeaderComponent {
     localStorage.setItem('ynex-menu-mode', type2);
     const htmlElement = this.elementRef.nativeElement.ownerDocument.documentElement;
 
+    this.isDarkTheme = type === 'dark';
+
     if (type == 'dark') {
       const darkbtn = document.querySelector(
         '#switcher-dark-theme'
       ) as HTMLInputElement;
-      darkbtn.checked = true;
+      if (darkbtn) {
+        darkbtn.checked = true;
+      }
       this.renderer.setAttribute(htmlElement, 'data-menu-style', 'dark');
 
     } else {
       const lightbtn = document.querySelector(
         '#switcher-light-theme'
       ) as HTMLInputElement;
-      lightbtn.checked = true;
+      if (lightbtn) {
+        lightbtn.checked = true;
+      }
       this.renderer.setAttribute(htmlElement, 'data-menu-style', 'light');
 
     }
@@ -185,6 +193,8 @@ export class HeaderComponent {
     this.navServices.items.subscribe((menuItems) => {
       this.items = menuItems;
     });
+    this.isDarkTheme = htmlElement.classList.contains('dark')
+      || localStorage.getItem('ynex-theme-mode') === 'dark';
 
   }
 

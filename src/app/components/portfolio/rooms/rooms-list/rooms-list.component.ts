@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -108,8 +108,11 @@ export class RoomsListComponent implements OnInit {
     { key: 'roomType', label: 'Room Type', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'room_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'room_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
+
+  openActionCode: string | number | null = null;
 
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
@@ -208,7 +211,7 @@ export class RoomsListComponent implements OnInit {
     
   }
 
-  loadRooms(): void {
+  loadRooms(append = false): void {
     var filterList=[];
      
     if (this.selectedCategory) {
@@ -243,7 +246,8 @@ export class RoomsListComponent implements OnInit {
     this.propertiesService.getUnits(payload).subscribe({
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedUnits=response.objResult.rooms  
+          const nextBatch = response.objResult.rooms || [];
+          this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...nextBatch] : nextBatch;
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -267,6 +271,26 @@ export class RoomsListComponent implements OnInit {
     {
       //this.deleteUnit(36, ev.code,'');
     }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionCode = null;
+  }
+
+  toggleRowAction(code: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  viewRoom(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/rooms/' + code;
+  }
+
+  editRoom(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/edit-room/' + code;
   }
    
   filterAndPaginate(): void {
@@ -343,10 +367,29 @@ export class RoomsListComponent implements OnInit {
 
   setViewMode(mode: 'list' | 'grid'): void {
     this.viewMode = mode;
+    this.showColumnDropdown = false;
+    this.openActionCode = null;
+    this.pageNo = 0;
+    this.loadRooms();
+  }
+
+  get canLoadMore(): boolean {
+    return this.displayPage < (this.totalPages || 1);
+  }
+
+  loadMore(): void {
+    if (!this.canLoadMore) return;
+    this.pageNo++;
+    this.loadRooms(true);
+  }
+
+  isActiveGridStatus(status: string | null | undefined): boolean {
+    const value = (status || '').toLowerCase();
+    return !value || value === 'active' || value.includes('active');
   }
 
   toggleViewMode(): void {
-    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+    this.setViewMode(this.viewMode === 'list' ? 'grid' : 'list');
   }
 
   toggleDrawer(open: boolean): void {
@@ -395,17 +438,25 @@ export class RoomsListComponent implements OnInit {
       this.userChangedPageSize = true;
     this.loadRooms();
   } 
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
   get startRecord(): number {
     if (this.totalRecords === 0) return 0;
-    if(this.pageNo==0)
-          this.pageNo=1;
-    return (this.pageNo-1) * this.pageSize+1;
+    return (this.displayPage - 1) * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    if(this.pageNo==0)
-    this.pageNo=1;
-    const end = this.pageNo * this.pageSize;
+    const end = this.displayPage * this.pageSize;
     return end > this.totalRecords ? this.totalRecords : end;
   }
 
@@ -420,14 +471,14 @@ export class RoomsListComponent implements OnInit {
   }
 
   previousPage(): void {
-    if (this.pageNo > 1) {
+    if (this.pageNo > 0) {
       this.pageNo--;
       this.loadRooms();
     }
   }
 
   nextPage(): void {
-    if (this.pageNo < this.totalPages) {
+    if (this.displayPage < this.totalPages) {
       this.pageNo++;
       this.loadRooms();
     }

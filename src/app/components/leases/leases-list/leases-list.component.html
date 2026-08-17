@@ -1,192 +1,202 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3
-      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
-      {{ 'web.leases.lblLeaseManagement' | translate }}</h3>
-    <p class="text-xs text-gray-500 mt-0.5">{{ 'web.leases.lblManageLeases' | translate }} ({{ metrics.totalLeases }}
-      total)</p>
+    <h3 class="ov-page-title">{{ 'web.leases.lblLeaseManagement' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.leases.lblManageLeases' | translate }} ({{ metrics.totalLeases }} total)</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost"
       [attr.data-tooltip]="'web.leases.lblExport' | translate">
-      <i class="ri-download-2-line text-sm"></i>
+      <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+      {{ 'web.leases.lblExport' | translate }}
     </button>
-    <button type="button" (click)="navigateToCreate()"
-      class="w-8 h-8 rounded-md bg-primary text-white border-0 flex items-center justify-center transition-all duration-200 hover:bg-primary-hover shadow-sm"
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()"
       [attr.data-tooltip]="'web.leases.lblAddLease' | translate">
-      <i class="ri-add-line text-sm"></i>
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+      {{ 'web.leases.lblAddLease' | translate }}
     </button>
   </div>
 </div>
 
-<!-- 📊 Metrics Row -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
-  <!-- Revenue Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">REVENUE</span>
-      <i class="ri-money-dollar-circle-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{ metrics.revenue }}</h5>
-      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">Total rent value</span>
-    </div>
+<div class="ov-kpi-row leases-kpi-row mb-5">
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">REVENUE</span>
+    <div class="ov-kpi__val">{{ metrics.revenue }}</div>
+    <div class="ov-kpi__sub">Total rent value</div>
   </div>
-
-  <!-- Total Leases Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">TOTAL LEASES</span>
-      <i class="ri-article-line text-md text-info bg-info/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-info leading-none m-0">{{ metrics.totalLeases }}</h5>
-      <span class="text-[10px] text-info font-normal mt-1.5 block">Signed agreements</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">TOTAL LEASES</span>
+    <div class="ov-kpi__val">{{ metrics.totalLeases }}</div>
+    <div class="ov-kpi__sub">Signed agreements</div>
   </div>
-
-  <!-- Active Leases Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">ACTIVE LEASES</span>
-      <i class="ri-checkbox-circle-line text-md text-success bg-success/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-success leading-none m-0">{{ metrics.activeLeases }}</h5>
-      <span class="text-[10px] text-success font-medium mt-1.5 block">Live occupancy</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">ACTIVE LEASES</span>
+    <div class="ov-kpi__val">{{ metrics.activeLeases }}</div>
+    <div class="ov-kpi__sub">Live occupancy</div>
   </div>
-
-  <!-- Draft Leases Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">DRAFT LEASES</span>
-      <i class="ri-file-warning-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-warning leading-none m-0">{{ metrics.draftLeases }}</h5>
-      <span class="text-[10px] text-warning font-normal mt-1.5 block">Pending signature</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">DRAFT LEASES</span>
+    <div class="ov-kpi__val">{{ metrics.draftLeases }}</div>
+    <div class="ov-kpi__sub">Pending signature</div>
   </div>
-
-  <!-- Expiring Leases Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">EXPIRING LEASES</span>
-      <i class="ri-time-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-danger leading-none m-0">{{ metrics.expiringLeases }}</h5>
-      <span class="text-[10px] text-danger font-normal mt-1.5 block">Within 30 days</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">EXPIRING LEASES</span>
+    <div class="ov-kpi__val">{{ metrics.expiringLeases }}</div>
+    <div class="ov-kpi__sub">Within 30 days</div>
   </div>
 </div>
 
-<!-- Main card -->
-<div class="box bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
-
-  <!-- Header with Title on Left, Status Tabs on Right -->
-  <div
-    class="flex items-center gap-6 px-4 pt-3 border-b border-gray-100 overflow-x-auto">
-    <h6 class="box-title font-semibold text-gray-800 text-sm mb-0">{{ 'web.leases.lblLeasesList' | translate }}</h6>
-    <button *ngFor="let tab of tabs" 
-    (click)="onTabChange(tab)"
-    [class.text-primary]="activeStatusFilter === tab.id"
-    [class.border-primary]="activeStatusFilter === tab.id"
-    [class.text-gray-500]="activeStatusFilter !== tab.id"
-    [class.border-transparent]="activeStatusFilter !== tab.id"
-    class="text-[11px] font-semibold pb-3 border-b-2 hover:text-primary transition-colors whitespace-nowrap">
-    {{ tab.name }}
-  </button> 
-  </div>
-
-  <!-- Secondary Bar: Search Input on Left, Filter & Column Buttons on Right -->
-  <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center  gap-3 bg-gray-50/30">
-    <div class="input-group w-62">
-      <input type="text" [(ngModel)]="searchQuery"   placeholder="Search leases..."
-        class="form-control !text-[11px] !py-1.5 bg-white border-gray-200" />
-      <button type="button" (click)="onSearch()"
-        class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-        <i class="ri-search-line"></i>
-      </button>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">
+        {{ 'web.leases.lblLeasesList' | translate }}
+      </h5>
     </div>
-
-    <div class="flex items-center gap-2">
-      <button type="button" (click)="isDrawerOpen = true" [attr.data-tooltip]="'web.contacts.lblFilter' | translate"
-        class="px-2 py-1.5 text-[11px] rounded bg-white border border-gray-200 text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center gap-1.5 shadow-sm font-semibold">
-        <i class="ri-filter-3-line"></i>
-      </button>
-      <button type="button" [attr.data-tooltip]="'web.contacts.lblColumn' | translate"
-        class="px-2 py-1.5 text-[11px] rounded bg-white border border-gray-200 text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center gap-1.5 shadow-sm font-semibold">
-        <i class="ri-layout-grid-line"></i>
-      </button>
+    <div class="ov-seg ov-seg--solid">
+      <button type="button" (click)="setStatusFilter('All')" class="ov-seg__btn"
+        [class.is-active]="activeStatusFilter === 'All'">All</button>
+      <button type="button" (click)="setStatusFilter('Active')" class="ov-seg__btn"
+        [class.is-active]="activeStatusFilter === 'Active'">Active</button>
+      <button type="button" (click)="setStatusFilter('Draft')" class="ov-seg__btn"
+        [class.is-active]="activeStatusFilter === 'Draft'">Draft</button>
+      <button type="button" (click)="setStatusFilter('Completed')" class="ov-seg__btn"
+        [class.is-active]="activeStatusFilter === 'Completed'">Completed</button>
+      <button type="button" (click)="setStatusFilter('Pending Approvals')" class="ov-seg__btn"
+        [class.is-active]="activeStatusFilter === 'Pending Approvals'">Pending</button>
     </div>
   </div>
 
-  <!-- Table with Padding Wrapper -->
-  <div class="p-6">
-    <app-shared-table [columns]="visibleColumns" [data]="allLeases" [hasActions]="true"
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="lease-search">Search leases</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input id="lease-search" type="text" class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+        placeholder="Search leases..." />
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar"
+        [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar"
+          [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
+        </button>
+        <div *ngIf="showColumnDropdown"
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label
+            class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ 'web.contacts.lblSelectAll' | translate }}
+          </label>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-5 pb-0 pt-5">
+    <app-shared-table [columns]="visibleColumns" [data]="paginatedLeases" [loading]="isLoading"
+      [hasActions]="false" [showPaginator]="false"
       [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
       (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
 
-          <!-- ID Column -->
           <ng-container *ngSwitchCase="'id'">
-            <a [routerLink]="['/leases', row.lease_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.lease_code }}</a>
-          </ng-container>
-          <ng-container *ngSwitchCase="'active_lease'">
-            <a [routerLink]="['/leases', row.lease_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.active_lease }}</a>
+            <a [routerLink]="['/leases', row.id]" class="ov-link font-semibold">{{ row.id }}</a>
           </ng-container>
 
-          <!-- Status Column -->
-          <ng-container *ngSwitchCase="'status_nm'">
-            <span  class="px-2 py-0.5 rounded  text-[10px] font-bold text-white shadow-sm" [ngClass]="row.class_name">{{getArabicLookupName(row,'status_nm')}} </span>
-          
+          <ng-container *ngSwitchCase="'status'">
+            <span class="ov-status"
+              [class.ov-status--active]="row.status === 'Active'"
+              [class.ov-status--muted]="row.status === 'Draft'"
+              [class.ov-status--soft]="row.status === 'Completed'"
+              [class.ov-status--warning]="row.status === 'Pending Approvals'">
+              {{ row.status === 'Pending Approvals' ? 'Pending' : row.status }}
+            </span>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'tenant'">
-            <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.tenant }}</a>
+          <ng-container *ngSwitchCase="'rent'">
+            <span class="text-[14px] font-semibold text-defaulttextcolor">AED {{ row.rent | number:'1.2-2' }}</span>
           </ng-container>
-          <ng-container *ngSwitchCase="'property'">
-            <a [routerLink]="['/properties', row.property_code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.property }}</a>
-          </ng-container>
-          <ng-container *ngSwitchCase="'unit_code'">
-            <a [routerLink]="['/units', row.unitcode]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.unit_code }}</a>
-          </ng-container>
-          <!-- Rent Column -->
-          <ng-container *ngSwitchCase="'rent_amount'">
-            <span class="font-bold text-gray-700"> {{row.rent_amount | number:'1.2-2' }}</span>
+
+          <ng-container *ngSwitchCase="'action'">
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionId === row.id"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
+                  [routerLink]="['/leases', row.id]"
+                  (click)="openActionId = null">View</a>
+              </div>
+            </div>
           </ng-container>
 
         </ng-container>
       </ng-template>
     </app-shared-table>
   </div>
+
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </div>
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    </div>
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Sliding Filter Drawer -->
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="onSearch()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tenant</label>
-      <input type="text" class="form-control form-control-sm !text-[11px] bg-white border-gray-200"
-        [(ngModel)]="filterTenant" placeholder="Enter Tenant name">
+      <label class="ov-label mb-1.5">Filter by Tenant</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterTenant" placeholder="Enter Tenant name">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Property</label>
-      <input type="text" class="form-control form-control-sm !text-[11px] bg-white border-gray-200"
-        [(ngModel)]="filterProperty" placeholder="Enter Property name">
+      <label class="ov-label mb-1.5">Filter by Property</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterProperty" placeholder="Enter Property name">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Status</label>
+      <label class="ov-label mb-1.5">Filter by Status</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
         placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>

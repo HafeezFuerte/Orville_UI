@@ -1,0 +1,50 @@
+<div
+  *ngIf="open"
+  class="ov-create-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="ov-create-overlay-title">
+  <div class="ov-create-overlay__backdrop" (click)="close()"></div>
+
+  <div class="ov-create-overlay__stack" (click)="$event.stopPropagation()">
+    <button type="button" class="ov-create-overlay__close" (click)="close()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
+    </button>
+
+    <div class="ov-create-overlay__card">
+      <div class="ov-create-overlay__header">
+        <p id="ov-create-overlay-title" class="ov-create-overlay__title">What would you like to create?</p>
+      </div>
+      <div class="ov-create-overlay__search-row">
+        <div class="ov-search ov-create-overlay__search">
+          <img src="assets/images/create/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+          <input
+            #searchInput
+            type="text"
+            class="ov-input ov-search__input"
+            placeholder="Search..."
+            [(ngModel)]="query"
+            autocomplete="off">
+        </div>
+      </div>
+
+      <div class="ov-create-overlay__list">
+        <section *ngFor="let category of filteredCategories" class="ov-create-overlay__section">
+          <p class="ov-create-overlay__heading">{{ category.title }}</p>
+          <div class="ov-create-overlay__items">
+            <button
+              type="button"
+              class="ov-create-overlay__row"
+              *ngFor="let item of category.items"
+              (click)="onItemClick(item)">
+              <span class="ov-create-overlay__icon">
+                <img [src]="item.icon" alt="" width="20" height="20">
+              </span>
+              <span class="ov-create-overlay__label">{{ item.label }}</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

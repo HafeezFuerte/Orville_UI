@@ -1,364 +1,308 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex">
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3
-      class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold">
-      Parkings</h3>
-    <p>Manage your property inventory — create, organize, and track all units across your portfolio with precision.</p>
+    <h3 class="ov-page-title">Parkings</h3>
+    <p class="ov-page-sub">{{ metrics.total || 0 }} parkings under management</p>
+    <p class="sr-only">Manage your property inventory — create, organize, and track all parkings across your portfolio with precision.</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
-      [attr.data-tooltip]="'Export'">
-      <i class="ri-download-2-line text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost">
+      <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+      Export
     </button>
-    <button type="button" (click)="toggleAddModal(true)"
-      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
-      [attr.data-tooltip]="'Add Parking'">
-      <i class="ri-add-line text-sm"></i>
+    <button type="button" (click)="toggleAddModal(true)" class="ov-btn ov-btn-primary">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+      Add Parking
     </button>
   </div>
 </div>
 
-<!-- 📊 Metrics Row -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
-  <!-- Total Parking Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Total Parking</span>
-      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.total}}</h5>
-      <span class="text-[10px] text-gray-600 font-normal mt-1.5 block">Portfolio Bays</span>
-    </div>
+<div class="ov-kpi-row mb-5">
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Total Parking</span>
+    <div class="ov-kpi__val">{{ metrics.total }}</div>
+    <div class="ov-kpi__sub">Portfolio Bays</div>
   </div>
-
-  <!-- Available Parking Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Available Parking</span>
-      <i class="ri-checkbox-blank-circle-line text-md text-success bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.available}}</h5>
-      <span class="text-[10px] text-success font-medium mt-1.5 block">Available for lease</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Available Parking</span>
+    <div class="ov-kpi__val">{{ metrics.available }}</div>
+    <div class="ov-kpi__sub">Available for lease</div>
   </div>
-
-  <!-- Occupied Parking Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Occupied Parking</span>
-      <i class="ri-checkbox-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.occupied}}</h5>
-      <span class="text-[10px] text-danger font-medium mt-1.5 block">Active tenant contracts</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Occupied Parking</span>
+    <div class="ov-kpi__val">{{ metrics.occupied }}</div>
+    <div class="ov-kpi__sub">Active tenant contracts</div>
   </div>
-
-  <!-- Reserved Parking Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Reserved Parkings</span>
-      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.reserved}}</h5>
-      <span class="text-[10px] text-warning font-normal mt-1.5 block">Blocked / Guest allocation</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Reserved Parkings</span>
+    <div class="ov-kpi__val">{{ metrics.reserved }}</div>
+    <div class="ov-kpi__sub">Blocked / Guest allocation</div>
   </div>
 </div>
 
-<!-- 🔍 Search & Filters Bar -->
-<div class="box mb-2 rounded-md overflow-visible bg-white shadow-sm border border-gray-100">
-  <div class="box-header !py-2.5 !px-4 border-b bg-gray-50/50 flex justify-between items-center w-full">
-    <h5 class="box-title text-xs font-bold text-gray-700 m-0">Parking List</h5>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Parking List</h5>
+    </div>
+  </div>
 
-    <!-- Filter & Column Buttons -->
-    <div class="flex items-center gap-2">
-      <!-- Filter Button -->
-      <button type="button" (click)="toggleDrawer(true)"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="parking-search">Search by Property, Parking No or Unit</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input id="parking-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()" placeholder="Search by Property, Parking No or Unit">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
       </button>
-
-      <!-- Column Button with dropdown overlay -->
       <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Columns'">
-          <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
+          [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
         </button>
-
-        <!-- Column toggling checklist dropdown overlay -->
         <div *ngIf="showColumnDropdown"
-          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
-          <label
-            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
-              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-            Select All
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ 'web.contacts.lblSelectAll' | translate }}
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            <label *ngFor="let col of tableColumns"
-              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
-                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              {{ col.label }}
-            </label>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
+        </div>
+      </div>
+      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" title="Reset Filters">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <div class="px-5 pb-0 pt-5" *ngIf="viewMode === 'list'">
+    <app-shared-table [columns]="visibleColumns" [data]="paginatedParkings" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="false" [showPaginator]="false">
+
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container *ngIf="col.key === 'id'">
+          <a class="ov-link" (click)="editParking(row)">{{row.code}}</a>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'parkingNo'">
+          <span class="font-semibold text-defaulttextcolor">{{row.parking_no}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'property'">
+          <div class="flex flex-col">
+            <a class="ov-link" [routerLink]="['/properties', row.property_code]">{{row.property}}</a>
+            <span class="flex items-center gap-1 text-[12px] text-textmuted font-normal">
+              <img src="assets/images/work-orders/map-pin.svg" alt="" width="14" height="14" />
+              {{row.address_1}}
+            </span>
           </div>
-        </div>
-      </div>
-    </div>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'unit'">
+          <a class="ov-link" [routerLink]="['/units', row.unit_code]">{{row.unit}}</a>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'parking_status_nm'">
+          <span class="badge" [ngClass]="row.class_name">{{getArabicLookupName(row,'parking_status_nm')}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'type'">
+          <span class="badge" [ngClass]="row.type_class">
+            {{getArabicLookupName(row,'parking_type_nm')}}
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'fee'">
+          <span class="font-medium text-defaulttextcolor">{{row.fee}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'cycle'">
+          <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30" [ngClass]="row.cycle_class">
+            {{getArabicLookupName(row,'recurring_cycle_nm')}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'remarks'">
+          <span class="text-textmuted">{{row.remarks}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'created_date'">
+          <span>{{row.created_date | date:'MMM d yyyy'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'modified_date'">
+          <span>{{row.modified_date | date:'MMM d yyyy'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'action'">
+          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+              (click)="toggleRowAction(row.code, $event)">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+            </button>
+            <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="viewParking(row)">View</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="editParking(row); openActionCode = null">Edit</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">Delete</button>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+
+    </app-shared-table>
   </div>
 
-
-  <div class="box-body !p-4">
-    <div class="grid grid-cols-12 gap-3 items-end">
-      <!-- Text Search (Sized Down) -->
-      <div class="col-span-12 md:col-span-3 text-[11px]">
-        <div class="input-group">
-          <input type="text" class="form-control form-control-sm !text-[11px] !py-1.5" [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()" placeholder="Search by Property, Parking No or Unit">
-          <button type="button" (click)="onSearch()"
-            class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-            <i class="ri-search-line"></i>
-          </button>
-        </div>
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+        </select>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-
-      <!-- Clear Filters Button (Sized Down) -->
-      <div class="col-span-12 md:col-span-1 text-end">
-        <button type="button" (click)="clearFilters()"
-          class="w-full ti-btn ti-btn-light !py-1.5 !px-3 !m-0 rounded-md shadow-sm border text-[11px] font-semibold"
-          title="Reset Filters">
-          Clear
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    </div>
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 📋 LIST VIEW (TABLE) -->
-<div class="box rounded-md overflow-hidden bg-white shadow-sm border border-gray-100 p-4 animate-fade-in"
-  *ngIf="viewMode === 'list'">
-  <app-shared-table [columns]="visibleColumns" [data]="paginatedParkings" [loading]="false"
-    [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
-    (pageChange)="onSharedTablePageChange($event)" (notify_edit_action)="handleEditAction($event)" [hasActions]="true">
-
-    <!-- Custom Column Templates -->
-    <ng-template #colTemplate let-row="row" let-col="col">
-      <ng-container *ngIf="col.key === 'id'">
-        <span (click)="editParking(row)" class="font-bold text-primary cursor-pointer hover:underline animate-pulse">{{row.code}}</span>
-      </ng-container>
-      
-      <ng-container *ngIf="col.key === 'parkingNo'">
-        <span class="font-semibold text-gray-800">{{row.parking_no}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'property'">
-        
-        <div class="flex flex-col">
-          <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/properties', row.property_code]">{{row.property}}</span>
-          <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
-        </div>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'unit'">
-        <span class="font-semibold text-primary cursor-pointer hover:underline" [routerLink]="['/units', row.unit_code]">{{row.unit}}</span>
-      </ng-container>
-      <ng-container *ngIf="col.key === 'parking_status_nm'">
-        <span  class="badge" [ngClass]="row.class_name">{{getArabicLookupName(row,'parking_status_nm')}} </span>
-      </ng-container>
-      <ng-container *ngIf="col.key === 'type'">
-        <span class="badge" [ngClass]="row.type_class">
-          {{getArabicLookupName(row,'parking_type_nm')}} 
-        </span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'fee'">
-        <span class="font-bold text-gray-700">{{row.fee}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'cycle'">
-        <span class="badge bg-slate-50 text-slate-600 border border-slate-200/30"
-        [ngClass]="row.cycle_class" >
-        {{getArabicLookupName(row,'recurring_cycle_nm')}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'remarks'">
-        <span class="text-gray-600">{{row.remarks}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'created_date'">
-        <span>{{row.created_date | date:'MMM d yyyy'}}</span>
-      </ng-container>
-
-      <ng-container *ngIf="col.key === 'modified_date'">
-        <span>{{row.modified_date | date:'MMM d yyyy'}}</span>
-      </ng-container>
-    </ng-template>
-
-    <!-- Actions Template -->
-    <ng-template #actionTemplate let-row="row">
-      <div class="flex gap-1">
-        <button (click)="editParking(row)"
-          class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
-          [attr.data-tooltip]="'Edit'">
-          <i class="ri-edit-line text-xs"></i>
-        </button>
-        <button
-          class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
-          [attr.data-tooltip]="'Delete'">
-          <i class="ri-delete-bin-line text-xs"></i>
-        </button>
+<div *ngIf="showAddModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal">
+    <div class="ov-modal__header">
+      <div>
+        <h6 class="ov-modal__title">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
       </div>
-    </ng-template>
-
-  </app-shared-table>
-</div>
-
-<!-- Classy Popup Modal (Masaar UI Custom Style) -->
-<div *ngIf="showAddModal"
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300">
-  <div
-    class="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform transition-all border border-gray-100 flex flex-col mx-4 max-h-[85vh] animate-fade-in">
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <h6 class="text-sm font-bold text-gray-800 m-0">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
-      <button type="button" (click)="toggleAddModal(false)"
-        class="text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 transition-all p-1.5 rounded-full flex items-center justify-center">
-        <i class="ri-close-line text-lg leading-none"></i>
+      <button type="button" (click)="toggleAddModal(false)" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
     </div>
 
-    <!-- Body (Scrollable) -->
-    <div class="p-6 flex flex-col gap-4 text-[11px] overflow-y-auto custom-scrollbar">
-      <!-- Property -->
+    <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Property <span
-            class="text-danger">*</span></label>
-        <ng-select [items]="propertiesList"   bindValue="code" placeholder="Search property"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
+        <label class="ov-label">Property <span class="text-danger">*</span></label>
+        <ng-select [items]="propertiesList" bindValue="code" placeholder="Search property"
+          class="ov-select w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
           [searchable]="true" (change)="onPropertyChange($event)">
           <ng-template ng-label-tmp let-item="item">
             {{ item.code }} - {{ item.name }}
-        </ng-template>
-        <ng-template ng-option-tmp let-item="item">
-          {{ item.code }} - {{ item.name }}
-      </ng-template>
-      
-      </ng-select>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.code }} - {{ item.name }}
+          </ng-template>
+        </ng-select>
       </div>
 
-      <!-- Unit -->
       <div>
-        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Unit <span
-            class="text-danger">*</span></label>
-        <ng-select [items]="unitsList"   bindValue="code" placeholder="Search unit"
-          class="ng-select-sm w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true">
+        <label class="ov-label">Unit <span class="text-danger">*</span></label>
+        <ng-select [items]="unitsList" bindValue="code" placeholder="Search unit"
+          class="ov-select w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true">
           <ng-template ng-label-tmp let-item="item">
             {{ item.code }} - {{ item.unit_no }}
-        </ng-template>
-        <ng-template ng-option-tmp let-item="item">
-          {{ item.code }} - {{ item.unit_no }}
-      </ng-template>
-    </ng-select>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.code }} - {{ item.unit_no }}
+          </ng-template>
+        </ng-select>
       </div>
 
-      <!-- Row: Parking No & Parking Type -->
-      <div class="grid grid-cols-2 gap-3.5">
+      <div class="ov-fields ov-fields--2">
         <div>
-          <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Parking No. <span
-              class="text-danger">*</span></label>
-          <input type="text"
-            class="form-control form-control-sm !text-[11px] py-1.5 px-3 border-slate-200 rounded-md focus:border-primary focus:ring-1 focus:ring-primary/20"
-            placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
+          <label class="ov-label">Parking No. <span class="text-danger">*</span></label>
+          <input type="text" class="ov-input" placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
         </div>
         <div>
-          <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Parking Type <span
-              class="text-danger">*</span></label>
+          <label class="ov-label">Parking Type <span class="text-danger">*</span></label>
           <ng-select [items]="ParkingTypeList" bindLabel="name" bindValue="id"
-            placeholder="Select type" class="ng-select-sm w-full" appendTo="body"
+            placeholder="Select type" class="ov-select w-full" appendTo="body"
             [(ngModel)]="parkingForm.parking_type" [searchable]="true"></ng-select>
         </div>
       </div>
 
-      <!-- Recurring Cycle -->
       <div>
-        <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Recurring Cycle</label>
+        <label class="ov-label">Recurring Cycle</label>
         <ng-select [items]="RecurringCycleList"
-          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ng-select-sm w-full" appendTo="body"
+          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ov-select w-full" appendTo="body"
           [(ngModel)]="parkingForm.recurring_cycle" [searchable]="true"></ng-select>
       </div>
- <!-- Status -->
- <div>
-  <label class="form-label font-bold text-gray-500 mb-1.5 block tracking-wider text-[9px]">Status</label>
-  <ng-select [items]="StatusList"
-    bindLabel="name" bindValue="id" placeholder="Select cycle" class="ng-select-sm w-full" appendTo="body"
-    [(ngModel)]="parkingForm.status" [searchable]="true"></ng-select>
-</div>
 
-      <!-- Remarks -->
       <div>
-        <label class="form-label font-bold text-gray-500 mb-1.5 block  tracking-wider text-[9px]">Remarks</label>
-        <textarea
-          class="form-control form-control-sm !text-[11px] border-slate-200 rounded-md focus:border-primary focus:ring-1 focus:ring-primary/20"
-          rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
+        <label class="ov-label">Status</label>
+        <ng-select [items]="StatusList"
+          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ov-select w-full" appendTo="body"
+          [(ngModel)]="parkingForm.status" [searchable]="true"></ng-select>
+      </div>
+
+      <div>
+        <label class="ov-label">Remarks</label>
+        <textarea class="ov-input !h-auto min-h-[80px]" rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-2">
-      <button type="button" (click)="toggleAddModal(false)"
-        class="ti-btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold py-1.5 px-4 rounded-md transition-all shadow-sm">
-        Close
-      </button>
-      <button type="button" (click)="saveParking()"
-        class="ti-btn bg-primary text-white hover:bg-primary-hover text-xs font-semibold py-1.5 px-4 rounded-md transition-all shadow-sm flex items-center gap-1.5">
+    <div class="ov-modal__footer">
+      <button type="button" (click)="toggleAddModal(false)" class="ov-btn ov-btn-ghost">Close</button>
+      <button type="button" (click)="saveParking()" class="ov-btn ov-btn-primary">
         {{ isEditMode ? 'Update' : 'Save' }}
       </button>
     </div>
   </div>
 </div>
 
-<!-- 🚪 SLIDING FILTER DRAWER -->
-<app-filter-drawer 
-  [(isOpen)]="isDrawerOpen" 
-  (apply)="onSearch()" 
+<app-filter-drawer
+  [(isOpen)]="isDrawerOpen"
+  (apply)="onSearch()"
   (clear)="clearFilters()">
-  
-  <div class="flex flex-col gap-4 text-[11px]">
-    <!-- Property Filter -->
+
+  <div class="flex flex-col gap-4">
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Property</label>
+      <label class="ov-label">Property</label>
       <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
-        class="ng-select-sm w-full" appendTo="body"></ng-select>
+        class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
-    <!-- Status Filter -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Status</label>
+      <label class="ov-label">Status</label>
       <ng-select [(ngModel)]="selectedStatus" [items]="StatusList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
-        class="ng-select-sm w-full" appendTo="body"></ng-select>
+        class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
-    <!-- Type Filter -->
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Parking Type</label>
+      <label class="ov-label">Parking Type</label>
       <ng-select [(ngModel)]="selectedType" [items]="ParkingTypeList" [searchable]="true" [clearable]="true"
         (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Types"
-        class="ng-select-sm w-full" appendTo="body"></ng-select>
+        class="ov-select w-full" appendTo="body"></ng-select>
     </div>
   </div>
-  
+
 </app-filter-drawer>

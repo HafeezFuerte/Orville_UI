@@ -1,321 +1,251 @@
-<!-- Broadcast Detail Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-2">
-    <a (click)="goBack()" class="text-gray-500 hover:text-primary transition-colors cursor-pointer mr-2">
-      <i class="ri-arrow-left-line text-lg"></i>
-    </a>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.125rem]! font-semibold m-0">Broadcast
-        Details</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Broadcasts</span>
-        <span>/</span>
-        <span class="text-gray-600">Details</span>
+<!-- Broadcast Details — Figma 2585:69600 (desktop) / 2588:77400 (mobile) -->
+<div class="bc-detail">
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Broadcasts" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Broadcast Details</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a href="javascript:void(0)" (click)="goBack()">Broadcasts</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">Details</li>
+        </ol>
       </div>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="sendNow()">Send Now</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="editBroadcast()">Edit Broadcast</button>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button (click)="sendNow()"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm "
-      [attr.data-tooltip]="'Send Now'">
-      <i class="ri-send-plane-line text-sm"></i>
-    </button>
-    <button (click)="editBroadcast()"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#1f2b45] hover:text-white hover:border-[#1f2b45] transition-all duration-200 shadow-sm "
-      [attr.data-tooltip]="'Edit Broadcast'">
-      <i class="ri-edit-line text-sm"></i>
-    </button>
-  </div>
-</div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 ">
-
-  <!-- LEFT: Info Panel -->
-  <div class="xl:col-span-5 flex flex-col !mr-2">
-
-    <!-- Broadcast header card -->
-    <div class="box rounded-xl bg-white border border-gray-200 shadow-sm p-5 !mb-2">
-      <div class="flex items-start justify-between mb-3">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <i class="ri-mail-send-fill text-primary text-lg"></i>
-            <h5 class="text-sm font-bold text-gray-800 m-0">Broadcast - {{ broadcastData.subject }}</h5>
-            <button (click)="editBroadcast()"
-              class="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm "
-              [attr.data-tooltip]="'Edit'">
-              <i class="ri-edit-line text-xs"></i>
-            </button>
+  <div class="ov-detail-layout">
+    <!-- Left panel — single card (Figma) -->
+    <aside class="ov-detail-layout__left">
+      <div class="bc-side ov-card">
+        <div class="bc-side__hero">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h5 class="bc-side__title">
+                Broadcast - {{ broadcastData.subject || 'Lease Agreement' }}
+              </h5>
+              <p class="bc-side__recipient">
+                Recipient: {{ broadcastData.sendTo || 'Deal' }}
+              </p>
+            </div>
+            <span class="ov-status ov-status--soft shrink-0">{{ broadcastData.status || 'Draft' }}</span>
           </div>
-          <p class="text-[11px] text-gray-400">Recipient Name</p>
+          <button type="button" class="bc-side__activity">View Activity</button>
         </div>
-        <div>
-          <button
-            class="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm "
-            [attr.data-tooltip]="'View Activity'">
-            <i class="ri-history-line text-xs"></i>
-          </button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Information -->
-    <div class="box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden !mb-2">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Information</h5>
-      </div>
-      <div class="p-5">
-        <p class="text-xs font-semibold text-gray-700 mb-3">Broadcast Details</p>
-        <div class="flex flex-col gap-2.5">
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">ID:</span>
-            <span class="col-span-3 text-xs text-gray-800 font-bold">{{ broadcastData.id }}</span>
+        <div class="bc-side__divider"></div>
+
+        <div class="bc-side__section">
+          <h6 class="bc-side__section-label">Information</h6>
+
+          <div class="bc-side__block">
+            <h6 class="bc-side__block-title">Broadcast Details</h6>
+            <div class="bc-kv">
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Id:</span>
+                <span class="bc-kv__value">{{ broadcastData.id || '31658' }}</span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Subject:</span>
+                <span class="bc-kv__value">{{ broadcastData.subject || 'Lease Agreement' }}</span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Status:</span>
+                <span class="bc-kv__value">
+                  <span class="ov-status ov-status--soft">{{ broadcastData.status || 'Draft' }}</span>
+                </span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Type:</span>
+                <span class="bc-kv__value">{{ broadcastData.type || broadcastData.sendTo || 'Deal' }}</span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Schedule:</span>
+                <span class="bc-kv__value">
+                  <span class="bc-pill" [class.bc-pill--yes]="broadcastData.scheduled !== false"
+                    [class.bc-pill--no]="broadcastData.scheduled === false">
+                    {{ broadcastData.scheduled === false ? 'No' : 'Yes' }}
+                  </span>
+                </span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Created at:</span>
+                <span class="bc-kv__value">{{ broadcastData.createdAt || '06-05-2026' }}</span>
+              </div>
+              <div class="bc-kv__row">
+                <span class="bc-kv__label">Last Updated:</span>
+                <span class="bc-kv__value">{{ broadcastData.lastUpdated || '06-05-2026' }}</span>
+              </div>
+            </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Subject:</span>
-            <span class="col-span-3 text-xs text-gray-800 font-semibold">{{ broadcastData.subject }}</span>
-          </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Status:</span>
-            <span class="col-span-3">
-              <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-success/10 text-success">{{ broadcastData.status
-                }}</span>
-            </span>
-          </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Type:</span>
-            <span class="col-span-3 text-xs text-gray-800">{{ broadcastData.type }}</span>
-          </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Schedule:</span>
-            <span class="col-span-3">
-              <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-info/10 text-info"
-                *ngIf="broadcastData.scheduled">Yes</span>
-              <span *ngIf="!broadcastData.scheduled" class="text-gray-400 text-xs">No</span>
-            </span>
-          </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1 border-b border-gray-50">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Created at:</span>
-            <span class="col-span-3 text-xs text-gray-800">{{ broadcastData.createdAt }}</span>
-          </div>
-          <div class="grid grid-cols-5 gap-2 items-center py-1">
-            <span class="col-span-2 text-[11px] text-gray-500 font-medium">Last Updated:</span>
-            <span class="col-span-3 text-xs text-gray-800">{{ broadcastData.lastUpdated }}</span>
+
+          <div class="bc-side__block">
+            <h6 class="bc-side__block-title">Schedule &amp; Delivery</h6>
+            <p class="bc-side__time">
+              <span>Time:</span>
+              {{ broadcastData.scheduleTime || '12:34 (GMT+04:00) Abu Dhabi' }}
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </aside>
 
-    <!-- Schedule & Delivery -->
-    <div class="box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">Schedule &amp; Delivery</h5>
-      </div>
-      <div class="p-5">
-        <div class="flex items-center gap-2 text-xs text-gray-700">
-          <i class="ri-time-line text-primary text-sm"></i>
-          <span class="font-medium">Time:</span>
-          <span class="text-gray-600">{{ broadcastData.scheduleTime }}</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT: Template Preview Panel -->
-  <div class="xl:col-span-7 flex flex-col ">
-    <div class="box rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-      <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-        <div>
-          <h5 class="text-sm font-bold text-gray-800 m-0">Broadcast template</h5>
-          <p class="text-[11px] text-gray-400 mt-0.5">This is the exact content rendered by the tenant.</p>
-        </div>
-        <!-- Desktop/Mobile toggle -->
-        <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-          <button (click)="setPreviewMode('desktop')" [class.bg-white]="previewMode === 'desktop'"
-            [class.shadow-sm]="previewMode === 'desktop'" [class.text-primary]="previewMode === 'desktop'"
-            [class.text-gray-400]="previewMode !== 'desktop'"
-            class="px-3 py-1 text-[11px] font-semibold rounded-md transition-all flex items-center gap-1.5">
-            <i class="ri-computer-line text-sm"></i> Desktop
-          </button>
-          <button (click)="setPreviewMode('mobile')" [class.bg-white]="previewMode === 'mobile'"
-            [class.shadow-sm]="previewMode === 'mobile'" [class.text-primary]="previewMode === 'mobile'"
-            [class.text-gray-400]="previewMode !== 'mobile'"
-            class="px-3 py-1 text-[11px] font-semibold rounded-md transition-all flex items-center gap-1.5">
-            <i class="ri-smartphone-line text-sm"></i> Mobile
-          </button>
-        </div>
+    <!-- Right panel -->
+    <div class="ov-detail-layout__right flex flex-col gap-4">
+      <div>
+        <h6 class="bc-template-title">Broadcast template</h6>
+        <p class="bc-template-sub">This is the exact content received by the tenant.</p>
       </div>
 
-      <!-- Desktop Preview -->
-      <div *ngIf="previewMode === 'desktop'" class="p-6 bg-gray-50/50 flex-1 overflow-auto">
-        <div class="max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <!-- Email header with logo -->
-          <div class="flex items-center justify-center py-6 bg-[#1f2b45]">
-            <span class="text-white font-bold text-xl tracking-widest">ORVILLE</span>
+      <div class="ov-card overflow-hidden flex flex-col">
+        <div class="bc-preview-head">
+          <div>
+            <p class="bc-preview-head__title">Tenancy Contract</p>
+            <p class="bc-preview-head__sub">Email preview · Template variables highlighted</p>
           </div>
-          <!-- Email body -->
-          <div class="p-8">
-            <h2 class="text-lg font-bold text-gray-800 mb-1 text-center">Tenancy Contract</h2>
-            <p class="text-[11px] text-gray-400 text-center mb-6">Employee has submitted a Tenancy - highlighted</p>
+          <div class="bc-view-toggle" role="group" aria-label="Preview mode">
+            <button type="button" class="bc-view-toggle__btn"
+              [class.is-active]="previewMode === 'desktop'"
+              (click)="setPreviewMode('desktop')">Desktop</button>
+            <button type="button" class="bc-view-toggle__btn"
+              [class.is-active]="previewMode === 'mobile'"
+              (click)="setPreviewMode('mobile')">Mobile</button>
+          </div>
+        </div>
 
-            <!-- Owner Info -->
-            <div class="grid grid-cols-2 gap-6 mb-6">
+        <!-- Desktop -->
+        <div *ngIf="previewMode === 'desktop'" class="bc-preview-body">
+          <div class="bc-mail">
+            <div class="bc-mail__logo">
+              <img src="assets/images/nav/logo-emblem.svg" alt="" width="40" height="40" />
+              <div class="bc-mail__logo-text">
+                <img src="assets/images/nav/logo-orville.svg" alt="ORVILLE" height="14" />
+                <img src="assets/images/nav/logo-real-estate.svg" alt="REAL ESTATE" height="10" />
+              </div>
+            </div>
+            <h2 class="bc-mail__h">Tenancy Contract</h2>
+            <p class="bc-mail__date-row">
+              <span>Date:</span>
+              <em class="bc-token">{{ broadcastData.createdAt || '06-05-2026' }}</em>
+            </p>
+
+            <div class="bc-mail__grid">
               <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Owner / Lessor Information
-                </p>
-                <div class="flex flex-col gap-1">
-                  <div class="flex gap-1 text-[11px]">
-                    <span class="text-gray-500 w-28 shrink-0">Owner's Name:</span>
-                    <span class="text-gray-700 font-semibold">LANDLORD FULL NAME</span>
-                  </div>
-                  <div class="flex gap-1 text-[11px]">
-                    <span class="text-gray-500 w-28 shrink-0">Lessor's Name:</span>
-                    <span class="text-gray-700 font-semibold">LANDLORD FULL NAME</span>
-                  </div>
-                </div>
+                <p class="bc-mail__sec">Owner / Lessor Information:</p>
+                <p class="bc-mail__line"><span>Owner's Name:</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
+                <p class="bc-mail__line"><span>Lessor's Name:</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Tenant Information</p>
-                <div class="flex flex-col gap-1">
-                  <div class="flex gap-1 text-[11px]">
-                    <span class="text-gray-500 w-28 shrink-0">Tenant's Name:</span>
-                    <span class="text-gray-700 font-semibold">{{ broadcastData.recipientName }}</span>
-                  </div>
-                  <div class="flex gap-1 text-[11px]">
-                    <span class="text-gray-500 w-28 shrink-0">Tenant's Email:</span>
-                    <span class="text-gray-700 font-semibold">{{ broadcastData.recipientEmail }}</span>
-                  </div>
-                  <div class="flex gap-1 text-[11px]">
-                    <span class="text-gray-500 w-28 shrink-0">Tenant's Phone:</span>
-                    <span class="text-gray-700 font-semibold">{{ broadcastData.recipientPhone }}</span>
-                  </div>
-                </div>
+                <p class="bc-mail__sec">Tenant Information:</p>
+                <p class="bc-mail__line"><span>Tenant's Name:</span>
+                  <em class="bc-token">{{ broadcastData.recipientName || 'TENANT FULL NAME' }}</em></p>
+                <p class="bc-mail__line"><span>Tenant's Email:</span>
+                  <em class="bc-token">{{ broadcastData.recipientEmail || 'TENANT EMAIL' }}</em></p>
+                <p class="bc-mail__line"><span>Tenant's Phone:</span>
+                  <em class="bc-token">{{ broadcastData.recipientPhone || 'TENANT PHONE WITH COUNTRY CODE' }}</em></p>
               </div>
             </div>
 
-            <!-- Property Info -->
-            <div class="mb-6">
-              <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Property Information</p>
-              <div class="grid grid-cols-2 gap-1 text-[11px]">
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-24 shrink-0">Building No:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.property }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-24 shrink-0">Property No:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.propertyNo }}</span>
-                </div>
-                <div class="col-span-2 flex gap-1 mt-1">
-                  <span class="text-gray-500 w-24 shrink-0">Location:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.location }}</span>
-                </div>
-              </div>
-            </div>
+            <p class="bc-mail__sec">Property Information:</p>
+            <p class="bc-mail__line"><span>Building Name:</span>
+              <em class="bc-token">{{ broadcastData.property || 'PROPERTY' }}</em></p>
+            <p class="bc-mail__line"><span>Property No:</span>
+              <em class="bc-token">{{ broadcastData.propertyNo || 'UNIT NO.' }}</em></p>
+            <p class="bc-mail__line"><span>Location:</span>
+              <em class="bc-token">{{ broadcastData.location || 'PROPERTY FULL ADDRESS' }}</em></p>
 
-            <!-- Contract Info -->
-            <div>
-              <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Co-Usual Information</p>
-              <div class="flex flex-col gap-1 text-[11px]">
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Contract Period:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.contractPeriod }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Move-In Date:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.moveInDate }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Contract Value:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.contractValue }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Rent:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.rent }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Security Deposit:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.securityDeposit }}</span>
-                </div>
-                <div class="flex gap-1">
-                  <span class="text-gray-500 w-32 shrink-0">Mode of Payment:</span>
-                  <span class="text-gray-700 font-semibold">{{ broadcastData.modeOfPayment }}</span>
-                </div>
-              </div>
-            </div>
+            <p class="bc-mail__sec">Contract Information:</p>
+            <p class="bc-mail__line"><span>Contract Period:</span>
+              <em class="bc-token">DD-MM-YYYY</em>
+              <em class="bc-token">DD-MM-YYYY</em>
+            </p>
+            <p class="bc-mail__line"><span>Move-in Date:</span> <em class="bc-token">DD-MM-YYYY</em></p>
+            <p class="bc-mail__line"><span>Contract Value:</span> <em class="bc-token">CONTRACT VALUE</em></p>
+            <p class="bc-mail__line"><span>Rent:</span>
+              <em class="bc-token">LEASE RENT</em>
+              <em class="bc-token">LEASE RENT IN WORDS</em>
+            </p>
+            <p class="bc-mail__line"><span>Security Deposit:</span> <em class="bc-token">SECURITY DEPOSIT</em></p>
+            <p class="bc-mail__line"><span>Mode of Payment:</span> <em class="bc-token">MODE OF PAYMENT</em></p>
 
-            <!-- Signature area -->
-            <div class="mt-8 pt-6 border-t border-dashed border-gray-200">
-              <p class="text-[11px] text-gray-500 mb-1">Tenant Signature:</p>
-              <div
-                class="h-12 w-40 border border-dashed border-gray-300 rounded flex items-center justify-center text-[10px] text-gray-300 italic">
-                {{ broadcastData.tenantSignature }}
-              </div>
+            <div class="bc-mail__sign">
+              <p class="bc-mail__line m-0 mb-2"><span>Tenant Signature:</span></p>
+              <div class="bc-token bc-token--block">TENANT SIGNATURE</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Mobile Preview -->
-      <div *ngIf="previewMode === 'mobile'" class="p-8 bg-gray-50/50 flex-1 flex justify-center overflow-auto">
-        <!-- Phone frame -->
-        <div class="w-[280px] bg-[#1a1a2e] rounded-[36px] p-2 shadow-2xl border-4 border-[#2d2d4e]">
-          <div class="bg-white rounded-[28px] overflow-hidden flex flex-col" style="height: 560px;">
-            <!-- Phone status bar -->
-            <div class="bg-[#1f2b45] px-4 pt-2 pb-1 flex items-center justify-between">
-              <span class="text-white text-[9px] font-medium">9:41</span>
-              <span class="text-white text-[9px]">● ● ●</span>
-            </div>
-            <!-- Message header inside phone -->
-            <div class="bg-[#1f2b45] px-4 py-2 flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full bg-primary/30 flex items-center justify-center">
-                <span class="text-[10px] text-white font-bold">OR</span>
+        <!-- Mobile -->
+        <div *ngIf="previewMode === 'mobile'" class="bc-preview-body bc-preview-body--mobile">
+          <div class="bc-phone-wrap">
+            <div class="bc-phone">
+              <div class="bc-phone__top">
+                <span class="bc-phone__icon" aria-hidden="true"><i class="ri-arrow-left-s-line"></i></span>
+                <span class="bc-phone__title">{{ broadcastData.subject || 'Lease Agreement' }}</span>
+                <span class="bc-phone__icon" aria-hidden="true"><i class="ri-more-2-fill"></i></span>
               </div>
-              <div>
-                <p class="text-white text-[11px] font-bold m-0 leading-tight">{{ broadcastData.subject }}</p>
-                <p class="text-gray-300 text-[9px] m-0 leading-tight">Broadcast Message</p>
-              </div>
-              <span class="ml-auto text-gray-300 text-[9px]">06-06-2026</span>
-            </div>
-            <!-- Scrollable message body -->
-            <div class="flex-1 overflow-y-auto p-4 bg-white">
-              <div class="bg-gray-50 rounded-xl p-3 mb-3 border border-gray-100">
-                <p class="text-[11px] font-bold text-gray-700 mb-2">{{ broadcastData.subject }}</p>
-                <p class="text-[10px] text-gray-500 mb-3">Broadcast Message</p>
-                <!-- Tenant info -->
-                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Tenant Marked as:</p>
-                <div class="bg-white rounded-lg p-2 border border-gray-100 mb-2">
-                  <p class="text-[10px] text-gray-700 font-semibold m-0">Tenant Name</p>
-                  <p class="text-[9px] text-gray-400 m-0">{{ broadcastData.recipientName }}</p>
-                </div>
-                <div class="bg-white rounded-lg p-2 border border-gray-100 mb-2">
-                  <p class="text-[10px] text-gray-700 font-semibold m-0">Tenant Email</p>
-                  <p class="text-[9px] text-gray-400 m-0">{{ broadcastData.recipientEmail }}</p>
-                </div>
-                <div class="bg-white rounded-lg p-2 border border-gray-100 mb-2">
-                  <p class="text-[10px] text-gray-700 font-semibold m-0">Tenant's Phone</p>
-                  <p class="text-[9px] text-gray-400 m-0">{{ broadcastData.recipientPhone }}</p>
-                </div>
-                <!-- Property details -->
-                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1 mt-2">Property Details</p>
-                <div class="bg-white rounded-lg p-2 border border-gray-100 mb-2">
-                  <p class="text-[9px] font-semibold text-gray-500 m-0">Building Name</p>
-                  <p class="text-[10px] text-gray-700 font-bold m-0">{{ broadcastData.property }}</p>
-                </div>
-                <div class="bg-white rounded-lg p-2 border border-gray-100 mb-2">
-                  <p class="text-[9px] font-semibold text-gray-500 m-0">Property No</p>
-                  <p class="text-[10px] text-gray-700 font-bold m-0">{{ broadcastData.propertyNo }}</p>
-                </div>
-                <div class="bg-white rounded-lg p-2 border border-gray-100">
-                  <p class="text-[9px] font-semibold text-gray-500 m-0">Full Address</p>
-                  <p class="text-[10px] text-gray-700 font-bold m-0">{{ broadcastData.location }}</p>
+              <div class="bc-phone__scroll">
+                <div class="bc-phone__card">
+                  <div class="bc-phone__head">
+                    <div class="bc-phone__avatar">
+                      <img src="assets/images/nav/logo-emblem.svg" alt="" width="22" height="22" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="bc-phone__name">{{ broadcastData.subject || 'Lease Agreement' }}</p>
+                      <p class="bc-phone__meta">Broadcast Message</p>
+                    </div>
+                    <span class="bc-phone__date">{{ broadcastData.createdAt || '06-05-2026' }}</span>
+                  </div>
+
+                  <div class="bc-phone__section">
+                    <div class="bc-phone__section-head">
+                      <p class="bc-phone__section-title">Tenant Information</p>
+                      <span class="bc-phone__badge">Tenant</span>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Tenant's Name</span>
+                      <em class="bc-token">{{ broadcastData.recipientName || 'TENANT FULL NAME' }}</em>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Tenant's Email</span>
+                      <em class="bc-token">{{ broadcastData.recipientEmail || 'TENANT EMAIL' }}</em>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Tenant's Phone</span>
+                      <em class="bc-token">{{ broadcastData.recipientPhone || 'TENANT PHONE WITH COUNTRY CODE' }}</em>
+                    </div>
+                  </div>
+
+                  <div class="bc-phone__section">
+                    <div class="bc-phone__section-head">
+                      <p class="bc-phone__section-title">Property Details</p>
+                      <span class="bc-phone__badge">Property</span>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Building Name</span>
+                      <em class="bc-token">{{ broadcastData.property || 'PROPERTY' }}</em>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Property No</span>
+                      <em class="bc-token">{{ broadcastData.propertyNo || 'UNIT NO.' }}</em>
+                    </div>
+                    <div class="bc-phone__field">
+                      <span>Location</span>
+                      <em class="bc-token">{{ broadcastData.location || 'PROPERTY FULL ADDRESS' }}</em>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
 </div>

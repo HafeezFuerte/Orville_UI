@@ -1,0 +1,89 @@
+<!-- Download Center — same list chrome as Document Center Figma 3667:93499 -->
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+  <div>
+    <h3 class="ov-page-title">Download Center</h3>
+    <p class="ov-page-sub">View and download generated reports and files</p>
+  </div>
+</div>
+
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Lists</h5>
+  </div>
+
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="download-center-search">Filter items by Report Name</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input
+        id="download-center-search"
+        type="text"
+        class="ov-input ov-search__input"
+        placeholder="Filter items by Report Name"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleDrawer(true)" data-tooltip="Filter">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleTypeDropdown($event)" data-tooltip="Type">
+          <img src="assets/images/work-orders/list-details.svg" alt="" width="18" height="18" />
+          Type
+        </button>
+        <div
+          *ngIf="showTypeDropdown"
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[140px] flex-col gap-1 rounded-lg border border-defaultborder bg-white p-2 shadow-lg dark:bg-bodybg">
+          <button
+            type="button"
+            *ngFor="let type of fileTypes"
+            class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+            [class.font-semibold]="typeFilter === type"
+            (click)="setTypeFilter(type)">
+            {{ type }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-5 pb-5 pt-5">
+    <app-shared-table
+      [columns]="visibleColumns"
+      [data]="pagedJobs"
+      [hasActions]="false"
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChange)="onSharedTablePageChange($event)">
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+          <ng-container *ngSwitchCase="'jobId'">
+            <a [routerLink]="['/downloads', row.jobId]" class="ov-link font-semibold">{{ row.jobId }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'inspectionId'">
+            <span class="text-[14px] text-textmuted">{{ dash(row.inspectionId) }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'type'">
+            <span class="ov-outline-chip ov-outline-chip--muted">{{ row.type }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'unit'">
+            <span class="text-[14px] text-textmuted">{{ dash(row.unit) }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'action'">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="deleteJob(row.jobId)" aria-label="Delete">
+              <span class="orville-dl__trash">
+                <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
+              </span>
+            </button>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+    </app-shared-table>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="showFilterDrawer" (apply)="onSearch()"></app-filter-drawer>

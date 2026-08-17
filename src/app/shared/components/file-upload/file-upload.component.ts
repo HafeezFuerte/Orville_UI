@@ -15,6 +15,7 @@ export class FileUploadComponent {
   @Input() buttonText = 'Upload Image';
   @Input() browseText = 'Browse';
   @Input() dropText = 'Drop your image here or';
+  @Input() buttonClass = 'ti-btn bg-warning text-white btn-wave';
   @Output() filesChanged = new EventEmitter<File[]>();
   selectedFiles: File[] = [];
 

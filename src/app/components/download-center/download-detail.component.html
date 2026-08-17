@@ -1,0 +1,99 @@
+<div class="orville-dl-detail" *ngIf="job">
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex min-w-0 items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Download Center" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div class="min-w-0">
+        <h3 class="ov-page-title m-0 orville-dl-detail__title">{{ job.document }}</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a href="javascript:void(0)" (click)="goToList()">Download Center</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">{{ job.jobId }}</li>
+        </ol>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2" *ngIf="isReady">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="download()">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="orville-dl-detail__dl-ico" />
+        Download
+      </button>
+    </div>
+  </div>
+
+  <div class="orville-dl-detail__layout">
+    <div class="orville-dl-detail__hero" [ngClass]="'orville-dl-detail__hero--' + job.status.toLowerCase()">
+      <span class="orville-dl-detail__mark" aria-hidden="true">
+        <img *ngIf="isReady" src="assets/images/work-order-detail/check-circle.svg" alt="" width="28" height="28" />
+        <img *ngIf="isPending" src="assets/images/action-menu/clock.svg" alt="" width="28" height="28" />
+        <img *ngIf="isRejected" src="assets/images/insights/priority-alert.svg" alt="" width="24" height="24" />
+      </span>
+      <h4 class="orville-dl-detail__hero-title">{{ heroTitle }}</h4>
+      <p class="orville-dl-detail__hero-copy">{{ heroCopy }}</p>
+      <div class="orville-dl-detail__bar" *ngIf="isPending" aria-hidden="true">
+        <span class="orville-dl-detail__bar-fill"></span>
+      </div>
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary mt-1"
+        *ngIf="isReady"
+        (click)="download()">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="orville-dl-detail__dl-ico" />
+        Download {{ job.type }}
+      </button>
+      <button
+        type="button"
+        class="ov-btn ov-btn-ghost mt-1"
+        *ngIf="isRejected"
+        (click)="retry()">
+        Try again
+      </button>
+    </div>
+
+    <aside class="orville-dl-detail__side">
+      <div class="ov-card orville-dl-detail__meta">
+        <div class="orville-dl-detail__meta-head">
+          <img src="assets/images/myday/file-invoice.svg" alt="" width="18" height="18" />
+          Report metadata
+        </div>
+        <dl class="orville-dl-detail__rows">
+          <div class="orville-dl-detail__row">
+            <dt>Format</dt>
+            <dd>{{ job.type }}</dd>
+          </div>
+          <div class="orville-dl-detail__row">
+            <dt>Job Reference</dt>
+            <dd>{{ jobReference }}</dd>
+          </div>
+          <div class="orville-dl-detail__row">
+            <dt>Issued At</dt>
+            <dd>{{ job.requestedAt }}</dd>
+          </div>
+          <div class="orville-dl-detail__row">
+            <dt>File Size</dt>
+            <dd>{{ job.fileSize }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="ov-card orville-dl-detail__meta">
+        <div class="orville-dl-detail__meta-head">
+          <img src="assets/images/work-order-detail/users.svg" alt="" width="18" height="18" />
+          Requested by
+        </div>
+        <div class="orville-dl-detail__person">
+          <span class="orville-dl-detail__avatar" aria-hidden="true">{{ initial }}</span>
+          <span class="min-w-0">
+            <span class="orville-dl-detail__name">{{ job.generatedBy }}</span>
+            <span class="orville-dl-detail__email">{{ job.email }}</span>
+          </span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="ov-card mb-5 px-8 py-10 text-center" *ngIf="!job">
+  <p class="m-0 text-[14px] text-textmuted">Download job not found.</p>
+  <button type="button" class="ov-btn ov-btn-primary mt-4" (click)="goToList()">Back to Download Center</button>
+</div>

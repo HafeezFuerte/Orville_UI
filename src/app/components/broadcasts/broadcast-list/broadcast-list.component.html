@@ -1,139 +1,121 @@
-<!-- Broadcast List Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Broadcasts
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Broadcasts</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">List</li>
-      </ol>
-    </div>
+<!-- Broadcasts List — Figma 2572:66308 -->
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+  <div>
+    <h3 class="ov-page-title">Broadcasts</h3>
+    <p class="ov-page-sub">Manage and view all Broadcasts</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0">
-    <button type="button"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-      [attr.data-tooltip]="'Report'">
-      <i class="ri-bar-chart-2-fill text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+      <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="bc-ico" />
+      Export
     </button>
-    <button type="button" (click)="navigateToCreate()"
-      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
-      [attr.data-tooltip]="'Add Broadcasts'">
-      <i class="ri-add-line text-sm"></i>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" data-tooltip="Add Broadcasts">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="bc-ico bc-ico--on-primary" />
+      Add Broadcasts
     </button>
   </div>
 </div>
 
-<!-- Main card -->
-<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-  <!-- Toolbar -->
-  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-wrap gap-3">
-    <div class="flex items-center gap-4 flex-wrap">
-      <h6 class="box-title font-semibold text-gray-800 text-sm m-0">Broadcasts List</h6>
-      <div class="flex items-center gap-2">
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearch()"
-          placeholder="Search..."
-          class="form-control text-xs w-64 bg-gray-50 border border-gray-200 rounded-md py-1.5 px-3 focus:bg-white focus:border-primary transition-all"
-        />
-        <button type="button" (click)="onSearch()"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Search'">
-          <i class="ri-search-line text-sm"></i>
-        </button>
-      </div>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="broadcast-search">Search</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input id="broadcast-search" type="text" class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
     </div>
-    <div class="flex items-center gap-2">
-      <!-- Filter Button -->
-      <button type="button" (click)="toggleDrawer(true)"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+    <div class="ov-toolbar__btns">
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleDrawer(true)"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
       </button>
-
-      <!-- Column Button with dropdown overlay -->
-      <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Columns'">
-          <i class="ri-layout-column-line text-[0.9rem] align-middle"></i>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
+          data-tooltip="Columns">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
         </button>
-
-        <!-- Column toggling checklist dropdown overlay -->
         <div *ngIf="showColumnDropdown"
-          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
           <label
-            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] border-b pb-1.5 mb-1">
+            class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
-              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              class="h-3.5 w-3.5 rounded text-primary">
             Select All
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            <label *ngFor="let col of tableColumns"
-              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col)"
-                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              {{ col.label }}
-            </label>
-          </div>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
         </div>
       </div>
     </div>
   </div>
- 
-  <!-- Table -->
-  <div class="p-6">
-    <app-shared-table 
-      [columns]="visibleColumns" 
-      [data]="broadcastData" 
+
+  <div class="px-5 pb-5 pt-5">
+    <app-shared-table
+      [columns]="visibleColumns"
+      [data]="broadcastData"
+      [hasActions]="false"
       [totalRecords]="totalRecords"
       [pageSize]="pageSize"
       [pageIndex]="pageNo"
       (pageChange)="onSharedTablePageChange($event)">
-      
-      <ng-template #colTemplate let-row="row"  let-col="col">
+      <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
-          <!-- ID -->
           <ng-container *ngSwitchCase="'id'">
-            <span [routerLink]="['/broadcasts', row.code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.code }}</span>
+            <a href="javascript:void(0)" (click)="navigateToDetail(row.code)" class="ov-link font-semibold">
+              {{ row.code || row.id }}
+            </a>
           </ng-container>
 
-          <!-- Preview -->
           <ng-container *ngSwitchCase="'preview'">
-            <button [routerLink]="['/broadcasts', row.code]" class="px-2.5 py-1 text-[10px] font-semibold rounded bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0">
+            <button type="button" class="bc-preview" (click)="navigateToDetail(row.code)" data-tooltip="Quick View">
+              <img src="assets/images/broadcasts/eye.svg" alt="" width="14" height="14" />
               Quick View
             </button>
           </ng-container>
 
-          <!-- Status -->
           <ng-container *ngSwitchCase="'status'">
-            <span *ngIf="row.status === 108" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">{{getArabicLookupName(row, 'status_text')}}</span>
-            <span *ngIf="row.status === 110" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">{{getArabicLookupName(row, 'status_text')}}</span>
-            <span *ngIf="row.status === 109" class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">{{getArabicLookupName(row, 'status_text')}}</span>
+            <span class="ov-status" [class.ov-status--active]="isPublished(row)"
+              [class.ov-status--soft]="!isPublished(row)">
+              {{ statusLabel(row) }}
+            </span>
           </ng-container>
 
-          <!-- Scheduled -->
+          <ng-container *ngSwitchCase="'type'">
+            {{ typeLabel(row) }}
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'contact'">
+            {{ sendableLabel(row) }}
+          </ng-container>
+
           <ng-container *ngSwitchCase="'scheduled'">
-            <span *ngIf="row.scheduled" class="px-2 py-0.5 rounded text-[10px] font-bold bg-info/10 text-info">Yes</span>
-            <span *ngIf="!row.scheduled" class="text-gray-400">No</span>
+            <span class="ov-status" [class.ov-status--active]="!!row.scheduled"
+              [class.ov-status--soft]="!row.scheduled">
+              {{ row.scheduled ? 'Yes' : 'No' }}
+            </span>
           </ng-container>
 
-          <!-- Action -->
           <ng-container *ngSwitchCase="'action'">
-            <div class="flex items-center gap-1.5">
-              <button (click)="navigateToDetail(row.code)" class="w-7 h-7 rounded flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-all border-0" title="View">
-                <i class="ri-eye-line text-sm"></i>
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(rowActionKey(row), $event)" aria-label="Action">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
-              <button (click)="navigateToEdit(row.code)" class="w-7 h-7 rounded flex items-center justify-center bg-warning/10 text-warning hover:bg-warning/20 transition-all border-0" title="Edit">
-                <i class="ri-edit-line text-sm"></i>
-              </button>
-              <button class="w-7 h-7 rounded flex items-center justify-center bg-danger/10 text-danger hover:bg-danger/20 transition-all border-0" title="Delete">
-                <i class="ri-delete-bin-line text-sm"></i>
-              </button>
+              <div *ngIf="openActionCode === rowActionKey(row)"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="navigateToDetail(row.code || row.id); openActionCode = null">View</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="navigateToEdit(row.code || row.id); openActionCode = null">Edit</button>
+              </div>
             </div>
           </ng-container>
         </ng-container>
@@ -142,4 +124,5 @@
   </div>
 </div>
 
-<app-filter-drawer [isOpen]="showFilterDrawer" (closeDrawer)="toggleDrawer(false)"></app-filter-drawer>
+<app-filter-drawer [(isOpen)]="showFilterDrawer" (apply)="onSearch()">
+</app-filter-drawer>

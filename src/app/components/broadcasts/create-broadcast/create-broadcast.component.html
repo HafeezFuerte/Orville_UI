@@ -1,312 +1,260 @@
-<!-- Create Broadcast Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
-    </button>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ editId ? 'Edit Broadcast' : 'Create Broadcast' }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Broadcasts</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ editId ? 'Edit' : 'Create' }}</li>
-      </ol>
+<!-- Create / Edit Broadcast — Figma 2597:79614 -->
+<div class="ov-form ov-add-form bc-create">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Broadcasts" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <div class="flex flex-wrap items-center gap-2">
+          <h3 class="ov-page-title m-0">{{ editId ? 'Edit Broadcast' : 'Create Broadcast' }}</h3>
+          <span class="ov-status ov-status--soft">Draft</span>
+        </div>
+        <p class="ov-page-sub">
+          <a href="javascript:void(0)" (click)="goBack()">Broadcasts</a>
+          /
+          <span class="ov-page-sub__current">{{ editId ? 'Edit' : 'Create' }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Preview">Preview</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()" data-tooltip="Save Draft">
+        {{ editId ? 'Save Changes' : 'Save Draft' }}
+      </button>
     </div>
   </div>
-</div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 pb-16">
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main flex flex-col gap-4">
 
-  <!-- LEFT: Form -->
-  <div class="xl:col-span-8">
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 p-8 flex flex-col gap-2">
-
-      <!-- 1. Choose Recipients -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Choose recipients</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Select who should receive this broadcast.</p>
-
-        <div class="mb-5">
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Broadcast audience <span
-              class="text-danger">*</span></label>
-          <ng-select #audSelect [items]="audiences" [(ngModel)]="selectedAudience" placeholder="Select"
-            class="ng-select-sm">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="audSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
+      <!-- 1. Choose recipients -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Choose recipients</h6>
+          <p class="ov-card-sub">Select who should receive this broadcast.</p>
         </div>
-
-        <div class="grid grid-cols-3 gap-4 mb-5">
-          <label
-            class="border border-gray-200 rounded-lg p-3.5 flex items-start gap-3 cursor-pointer hover:border-primary transition-colors"
-            [class.border-primary]="allTenants" [ngClass]="{'bg-primary/5': allTenants}">
-            <input type="checkbox" [(ngModel)]="allTenants"
-              class="mt-0.5 rounded text-primary focus:ring-primary/20 border-gray-300">
-            <div>
-              <p class="text-xs font-bold text-gray-800 m-0">All tenants</p>
-              <p class="text-[10px] text-gray-400 m-0 mt-0.5">Send to every tenant record</p>
-            </div>
-          </label>
-          <label
-            class="border border-gray-200 rounded-lg p-3.5 flex items-start gap-3 cursor-pointer hover:border-primary transition-colors"
-            [class.border-primary]="activeTenants" [ngClass]="{'bg-primary/5': activeTenants}">
-            <input type="checkbox" [(ngModel)]="activeTenants"
-              class="mt-0.5 rounded text-primary focus:ring-primary/20 border-gray-300">
-            <div>
-              <p class="text-xs font-bold text-gray-800 m-0">Active tenants</p>
-              <p class="text-[10px] text-gray-400 m-0 mt-0.5">Only tenants with active leases</p>
-            </div>
-          </label>
-          <label
-            class="border border-gray-200 rounded-lg p-3.5 flex items-start gap-3 cursor-pointer hover:border-primary transition-colors"
-            [class.border-primary]="inactiveTenants" [ngClass]="{'bg-primary/5': inactiveTenants}">
-            <input type="checkbox" [(ngModel)]="inactiveTenants"
-              class="mt-0.5 rounded text-primary focus:ring-primary/20 border-gray-300">
-            <div>
-              <p class="text-xs font-bold text-gray-800 m-0">Inactive tenants</p>
-              <p class="text-[10px] text-gray-400 m-0 mt-0.5">Tenants without an active lease</p>
-            </div>
-          </label>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Specific recipients</label>
-          <div class="form-control flex flex-wrap items-center gap-1.5 w-full bg-gray-50 border border-gray-200 rounded-md p-1.5 focus-within:bg-white focus-within:border-primary transition-all">
-            <span *ngFor="let rec of recipientList; let i = index" class="px-2 py-1 bg-gray-100 rounded text-[10px] font-semibold text-gray-600 flex items-center gap-1">
-              {{ rec }} <i (click)="removeRecipient(i); $event.stopPropagation()" class="ri-close-line cursor-pointer hover:text-danger"></i>
-            </span>
-            <input type="text" [(ngModel)]="specificRecipients" (keydown.enter)="addRecipient($event)" [placeholder]="recipientList.length === 0 ? 'Type a name or email and press Enter' : ''"
-              class="bg-transparent border-0 outline-none text-xs flex-grow py-1 px-1 min-w-[200px]" />
-          </div>
-        </div>
-      </div>
-
-      <hr class="border-gray-100 m-0">
-
-      <!-- 2. Schedule -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Schedule</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Choose when the broadcast should be delivered.</p>
-
-        <div class="flex items-center justify-between border border-gray-200 bg-gray-50/50 rounded-lg p-4 mb-5">
+        <div class="ov-card__body flex flex-col gap-5">
           <div>
-            <p class="text-xs font-bold text-gray-800 m-0">Schedule for later</p>
-            <p class="text-[10px] text-gray-400 m-0 mt-1">Turn this on to set a future date and time.</p>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" [(ngModel)]="isScheduled" class="sr-only peer">
-            <div
-              class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#1f2b45]">
-            </div>
-          </label>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Send date <span
-                class="text-danger">*</span></label>
-            <input type="date" [(ngModel)]="scheduleDate"
-              class="form-control w-full px-3 py-2.5 !rounded-md text-xs" [disabled]="!isScheduled" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Send time <span
-                class="text-danger">*</span></label>
-            <input type="time" [(ngModel)]="scheduleTime"
-              class="form-control w-full px-3 py-2.5 !rounded-md text-xs" [disabled]="!isScheduled" />
-          </div>
-        </div>
-      </div>
-
-      <hr class="border-gray-100 m-0">
-
-      <!-- 3. Message setup -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Message setup</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Choose a template and define the broadcast information.</p>
-
-        <div class="mb-4">
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Broadcast template <span
-              class="text-danger">*</span></label>
-          <ng-select #tempSelect [items]="templates" [(ngModel)]="selectedTemplate" placeholder="Select"
-            class="ng-select-sm">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="tempSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Subject <span
-                class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="subjectInput" placeholder="Enter"
-              class="form-control w-full px-3 py-2.5 !rounded-md text-xs" />
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Broadcast type</label>
-            <ng-select #typeSelect [items]="broadcastTypes" bindLabel="name" bindValue="id"
-              [(ngModel)]="selectedBroadcastType" placeholder="Select type" class="ng-select-sm">
+            <label class="ov-label">Broadcast audience <span class="text-danger">*</span></label>
+            <ng-select #audSelect [items]="audiences" [(ngModel)]="selectedAudience" placeholder="Select"
+              class="ov-select w-full">
               <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                    (input)="typeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <div class="p-1.5 border-b border-defaultborder">
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                    (input)="audSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </div>
               </ng-template>
             </ng-select>
           </div>
+
+          <div class="bc-audience-grid">
+            <label class="bc-audience-card" [class.is-on]="allTenants">
+              <input type="checkbox" [(ngModel)]="allTenants" class="bc-audience-card__check">
+              <span class="bc-audience-card__title">All tenants</span>
+              <span class="bc-audience-card__sub">Send to every tenant record</span>
+            </label>
+            <label class="bc-audience-card" [class.is-on]="activeTenants">
+              <input type="checkbox" [(ngModel)]="activeTenants" class="bc-audience-card__check">
+              <span class="bc-audience-card__title">Active tenants</span>
+              <span class="bc-audience-card__sub">Only tenants with active leases</span>
+            </label>
+            <label class="bc-audience-card" [class.is-on]="inactiveTenants">
+              <input type="checkbox" [(ngModel)]="inactiveTenants" class="bc-audience-card__check">
+              <span class="bc-audience-card__title">Inactive tenants</span>
+              <span class="bc-audience-card__sub">Tenants without an active lease</span>
+            </label>
+          </div>
+
+          <div>
+            <label class="ov-label">Specific recipients</label>
+            <div class="bc-chip-input">
+              <span *ngFor="let rec of recipientList; let i = index" class="bc-chip">
+                {{ rec }}
+                <button type="button" class="bc-chip__x" (click)="removeRecipient(i)" aria-label="Remove">
+                  <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+                </button>
+              </span>
+              <input type="text" [(ngModel)]="specificRecipients" (keydown.enter)="addRecipient($event)"
+                [placeholder]="recipientList.length === 0 ? 'Type a name or email and press Enter' : ''"
+                class="bc-chip-input__field" />
+            </div>
+          </div>
         </div>
       </div>
 
-      <hr class="border-gray-100 m-0">
+      <!-- 2. Schedule -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Schedule</h6>
+          <p class="ov-card-sub">Choose when the broadcast should be delivered.</p>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="bc-schedule-toggle">
+            <div>
+              <p class="bc-schedule-toggle__title">Schedule for later</p>
+              <p class="bc-schedule-toggle__sub">Turn this on to set a future date and time.</p>
+            </div>
+            <label class="bc-switch">
+              <input type="checkbox" [(ngModel)]="isScheduled">
+              <span class="bc-switch__track"></span>
+            </label>
+          </div>
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Send date <span class="text-danger">*</span></label>
+              <input type="date" [(ngModel)]="scheduleDate" class="ov-input" [disabled]="!isScheduled" />
+            </div>
+            <div>
+              <label class="ov-label">Send time <span class="text-danger">*</span></label>
+              <input type="time" [(ngModel)]="scheduleTime" class="ov-input" [disabled]="!isScheduled" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Message setup -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Message setup</h6>
+          <p class="ov-card-sub">Choose a template and define the broadcast information.</p>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div>
+            <label class="ov-label">Broadcast template <span class="text-danger">*</span></label>
+            <ng-select #tempSelect [items]="templates" [(ngModel)]="selectedTemplate" placeholder="Select"
+              class="ov-select w-full">
+              <ng-template ng-header-tmp>
+                <div class="p-1.5 border-b border-defaultborder">
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                    (input)="tempSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Subject <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="subjectInput" placeholder="Enter" class="ov-input" />
+            </div>
+            <div>
+              <label class="ov-label">Broadcast type</label>
+              <ng-select #typeSelect [items]="broadcastTypes" bindLabel="name" bindValue="id"
+                [(ngModel)]="selectedBroadcastType" placeholder="Select type" class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="typeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 4. Message details -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Message details</h6>
-        <p class="text-[11px] text-gray-400 mt-1 mb-5">Write the message recipients will receive.</p>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Details</label>
-          <!-- Toolbar -->
-          <div
-            class="flex items-center flex-wrap gap-1 px-3 py-2 border border-gray-200 border-b-0 rounded-t-lg bg-white">
-            <button
-              class="w-6 h-6 rounded text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center">H</button>
-            <button
-              class="w-6 h-6 rounded text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center">Text</button>
-            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-            <button
-              class="w-6 h-6 rounded text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center">B</button>
-            <button
-              class="w-6 h-6 rounded text-xs italic text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center">I</button>
-            <button
-              class="w-6 h-6 rounded text-xs underline text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center">U</button>
-            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-align-left"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-align-center"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-align-right"></i></button>
-            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-list-unordered"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-list-ordered"></i></button>
-            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-link"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-image-line"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-format-clear"></i></button>
-            <button
-              class="w-6 h-6 rounded text-xs text-gray-600 hover:bg-gray-100 transition-all flex items-center justify-center"><i
-                class="ri-code-view"></i></button>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Message details</h6>
+          <p class="ov-card-sub">Write the message recipients will receive.</p>
+        </div>
+        <div class="ov-card__body">
+          <label class="ov-label">Details</label>
+          <div class="bc-editor">
+            <div class="bc-editor__toolbar" aria-hidden="true">
+              <button type="button" class="bc-editor__tool">H</button>
+              <button type="button" class="bc-editor__tool">Text</button>
+              <span class="bc-editor__sep"></span>
+              <button type="button" class="bc-editor__tool font-bold">B</button>
+              <button type="button" class="bc-editor__tool italic">I</button>
+              <button type="button" class="bc-editor__tool underline">U</button>
+              <span class="bc-editor__sep"></span>
+              <button type="button" class="bc-editor__tool"><i class="ri-align-left"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-align-center"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-align-right"></i></button>
+              <span class="bc-editor__sep"></span>
+              <button type="button" class="bc-editor__tool"><i class="ri-list-unordered"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-list-ordered"></i></button>
+              <span class="bc-editor__sep"></span>
+              <button type="button" class="bc-editor__tool"><i class="ri-link"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-image-line"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-format-clear"></i></button>
+              <button type="button" class="bc-editor__tool"><i class="ri-code-view"></i></button>
+            </div>
+            <textarea [(ngModel)]="messageBody" rows="7" placeholder="Write the note content here..."
+              class="bc-editor__body"></textarea>
           </div>
-          <textarea [(ngModel)]="messageBody" rows="6" placeholder="Write the note content here..."
-            class="w-full px-4 py-3 text-xs border border-gray-200 rounded-b-lg bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none leading-relaxed"></textarea>
         </div>
       </div>
-
-      <hr class="border-gray-100 m-0">
 
       <!-- 5. Attachments -->
-      <div>
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5 mb-4">Attachments</h6>
-        <div
-          class="border border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
-          (click)="fileInput.click()">
-          <input #fileInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
-          <p class="text-[11px] text-gray-500 mb-3 font-medium">Drop your image here or Browse</p>
-          <button
-            class="px-5 py-2 text-xs font-semibold rounded-md bg-[#c59e5e] text-white hover:bg-[#b08b50] transition-colors border-0 flex items-center gap-1.5 shadow-sm">
-            <i class="ri-upload-2-line"></i> Upload Image
-          </button>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Attachments</h6>
         </div>
-
+        <div class="ov-card__body">
+          <div class="bc-upload" (click)="fileInput.click()">
+            <input #fileInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
+            <p class="bc-upload__hint">Drop your image here or Browse</p>
+            <button type="button" class="bc-upload__btn" (click)="$event.stopPropagation(); fileInput.click()">
+              <i class="ri-upload-2-line"></i> Upload Image
+            </button>
+          </div>
+        </div>
       </div>
 
+      <div class="flex flex-wrap items-center gap-3 pb-6 pt-1">
+        <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()">Save Preview</button>
+      </div>
     </div>
-  </div>
 
-  <!-- RIGHT: Summary -->
-  <div class="xl:col-span-4">
-    <div class="sticky top-6 flex flex-col gap-4">
-
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Broadcast summary</h6>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600">Draft</span>
+    <aside class="ov-add-layout__aside flex flex-col gap-4">
+      <div class="ov-card">
+        <div class="ov-card__head !flex-row !items-center !justify-between !gap-2">
+          <h6 class="ov-card-title m-0">Broadcast summary</h6>
+          <span class="ov-status ov-status--soft">Draft</span>
         </div>
-
-        <div class="flex flex-col gap-4">
+        <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Broadcasted to</p>
-            <p class="text-xs font-bold text-gray-800 m-0">Tenant</p>
+            <p class="bc-summary__label">Broadcasted to</p>
+            <p class="bc-summary__value">{{ selectedAudience || 'Tenant' }}</p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Recipients</p>
-            <p class="text-xs font-bold text-gray-800 m-0">248 people selected</p>
+            <p class="bc-summary__label">Recipients</p>
+            <p class="bc-summary__value">{{ summaryRecipient }}</p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Schedule</p>
-            <p class="text-xs font-bold text-gray-800 m-0">Select date and time</p>
+            <p class="bc-summary__label">Schedule</p>
+            <p class="bc-summary__value">
+              {{ isScheduled && scheduleDate ? (scheduleDate + (scheduleTime ? ', ' + scheduleTime : '')) : 'Select date and time' }}
+            </p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Template</p>
-            <p class="text-xs font-bold text-gray-800 m-0">Lease Agreement Notice</p>
+            <p class="bc-summary__label">Template</p>
+            <p class="bc-summary__value">{{ selectedTemplate || 'Lease Agreement Notice' }}</p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Broadcast type</p>
-            <p class="text-xs font-bold text-gray-800 m-0">Announcement</p>
+            <p class="bc-summary__label">Broadcast type</p>
+            <p class="bc-summary__value">Announcement</p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Subject</p>
-            <p class="text-xs font-bold text-gray-800 m-0">Default Broadcast</p>
+            <p class="bc-summary__label">Subject</p>
+            <p class="bc-summary__value">{{ subjectInput || 'Default Broadcast' }}</p>
           </div>
           <div>
-            <p class="text-[10px] text-gray-400 font-semibold mb-1">Created at</p>
-            <p class="text-xs font-bold text-gray-800 m-0">13 Jul 2026</p>
+            <p class="bc-summary__label">Created at</p>
+            <p class="bc-summary__value">13 Jul 2026</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-[#131b2e] rounded-xl shadow-sm p-5">
-        <h6 class="text-xs font-bold text-white m-0 mb-1">Estimated delivery</h6>
-        <div class="flex items-baseline gap-2">
-          <span class="text-2xl font-black text-white">245</span>
-        </div>
-        <p class="text-[10px] text-gray-400 m-0">recipients based on current selection</p>
+      <div class="bc-estimate">
+        <p class="bc-estimate__label">Estimated delivery</p>
+        <p class="bc-estimate__num">245</p>
+        <p class="bc-estimate__sub">recipients based on current selection</p>
       </div>
-
-    </div>
+    </aside>
   </div>
-
-</div>
-
-<!-- Fixed Floating Form Actions Bottom Bar -->
-<div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
-    Cancel
-  </button>
-  <button type="button" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95" (click)="saveDraft()">
-    {{ editId ? 'Save Changes' : 'Save Broadcast' }}
-  </button>
 </div>

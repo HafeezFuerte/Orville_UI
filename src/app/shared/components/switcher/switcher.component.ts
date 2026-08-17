@@ -301,7 +301,7 @@ export class SwitcherComponent {
 
   }
 
-  color1 = '#1457e6';
+  color1 = '#26264f';
   color = '#1ae715';
 
   ImageTheme(type: string) {
@@ -322,7 +322,7 @@ export class SwitcherComponent {
     html.removeAttribute('data-menu-position', 'fixed');
     html.removeAttribute('data-header-position', 'fixed');
     html.setAttribute('data-header-styles', 'light');
-    html.setAttribute('data-menu-styles', 'dark');
+    html.setAttribute('data-menu-styles', 'light');
     html.removeAttribute('bg-img', 'dark');
     html.removeAttribute('data-toggled', 'overlay');
     body.removeAttribute('class');

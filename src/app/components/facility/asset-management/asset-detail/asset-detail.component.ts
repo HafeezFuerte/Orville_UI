@@ -52,7 +52,7 @@ export class AssetDetailComponent implements OnInit {
 
   assetId: string = '';
   activeTab: string = 'Overview';
-  tabs: string[] = ['Overview', 'Parts', 'Work Orders', 'Attachments'];
+  tabs: string[] = ['Overview', 'Part', 'Work Orders', 'Financials', 'Attachments'];
   attachmentsForm: any = {};
 
   tabsList: any[] = [];
@@ -83,18 +83,25 @@ export class AssetDetailComponent implements OnInit {
     id: '-',
     name: '-',
     model: '-',
+    manufacturer: '-',
     category: '-',
     subcategory: '-',
     capacity: '-',
     color: '-',
     assetCode: '-',
+    barcode: '-',
+    area: '-',
+    location: '-',
+    description: '-',
     status: '-',
     installationDate: '-',
     warrantyStatus: false,
+    warrantyStatusLabel: '-',
     property: '-',
     unit: '-',
     partsIncluded: '-',
     purchaseDate: '-',
+    created: '-',
     lastUpdated: '-',
     purchaseOrderNo: '-',
     price: '-',
@@ -103,6 +110,7 @@ export class AssetDetailComponent implements OnInit {
     warrantyDuration: '-',
     warrantyStartDate: '-',
     warrantyEndDate: '-',
+    warrantyResponsibility: '-',
     warrantyDaysRemaining: 0
   };
 
@@ -194,26 +202,34 @@ export class AssetDetailComponent implements OnInit {
               id: data.id || data.code || this.assetId,
               name: data.asset_name || data.name || '-',
               model: data.model || '-',
+              manufacturer: data.manufacturer || data.brand || '-',
               category: data.category_name || data.category || data.asset_category || '-',
               subcategory: data.subcategory_name || data.subcategory || data.asset_subcategory || '-',
               capacity: data.capacity || '-',
               color: data.color || '-',
               assetCode: data.barcode || data.asset_code || data.code || '-',
+              barcode: data.barcode || data.asset_code || '-',
+              area: data.area || data.common_area || data.location || '-',
+              location: data.location || data.area || '-',
+              description: data.description || data.desc || '-',
               status: data.status || '-',
               installationDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
               warrantyStatus: data.total_warranty ? true : false,
+              warrantyStatusLabel: data.total_warranty ? 'Covered' : (data.warranty_status || '-'),
               property: data.property_name || data.property_code || data.property || '-',
               unit: data.unit_name || data.unit_code || data.unit || '-',
               partsIncluded: data.parts || '-',
               purchaseDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
+              created: data.created_date || data.createdAt || data.purchase_date || '-',
               lastUpdated: data.last_update || data.updatedAt || data.purchase_date || '-',
               purchaseOrderNo: data.po_no || data.purchase_order || '-',
-              price: data.price || '-',
+              price: data.price ? (`AED ${data.price}`) : '-',
               vendor: data.vendor_name || data.vendor_id || '-',
               warrantyProvider: data.manufacturer || '-',
               warrantyDuration: data.total_warranty || '-',
               warrantyStartDate: data.purchase_date ? data.purchase_date.substring(0, 10) : '-',
               warrantyEndDate: data.expiry_date ? data.expiry_date.substring(0, 10) : '-',
+              warrantyResponsibility: data.warranty_responsibility || '-',
               warrantyDaysRemaining: data.expiry_date ? Math.ceil((new Date(data.expiry_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) : 0
             };
           }

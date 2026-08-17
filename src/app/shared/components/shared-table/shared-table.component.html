@@ -1,6 +1,6 @@
 <div class="table-responsive table-vertical-scroll w-full">
-    <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-        <thead class="bg-info/10">
+    <table class="table ov-table whitespace-nowrap min-w-full">
+        <thead class="ov-table__head">
             <tr class="border-b border-defaultborder">
                 <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of columns" [style.width]="col.width" [style.min-width]="col.width">
                     <ng-container *ngIf="headerTemplate; else defaultHeader">
@@ -42,8 +42,8 @@
                         <!-- Link Rendering -->
                         <ng-template #checkLink>
                             <ng-container *ngIf="col.isLink; else defaultData">
-                                <span class="text-defaulttextcolor underline cursor-pointer font-medium" (click)="linkClick(row,col )">
-                                    {{ getCellValue(row,col)!=null ? 'View File': 'N/A' }}
+                                <span class="ov-link underline" (click)="linkClick(row,col )">
+                                    {{ row[col.key]!=null ? 'View File': 'N/A' }}
                                 </span>
                             </ng-container>
                         </ng-template>
@@ -54,34 +54,37 @@
                                 *ngIf="col.isHtml; else editLink"
                                 [ngClass]="{'font-semibold': col.key === 'name'}">
 
-                                {{ stripHtml(getCellValue(row,col)) }}
+                                {{ stripHtml(row[col.key]) }}
 
                             </span>
                             <ng-template #editLink>
                                 
-                                <span  *ngIf="col.is_editCol; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
+                                <span  *ngIf="col.is_editCol; else statusCol" class="ov-link" 
                                 >
-                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  (click)="edit_action(row,'edit')">{{getCellValue(row,col)}}</a>
-                                <a *ngIf="col.is_editCol && col.redirect_url !=null" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{getCellValue(row,col)}}</a>
+                                <a *ngIf="col.is_editCol && (col.redirect_url =='' || col.redirect_url ==null)"  class="ov-link" (click)="edit_action(row,'edit')">{{row[col.key]}}</a>
+                                <a *ngIf="col.is_editCol && col.redirect_url !=null" class="ov-link" [routerLink]="[col.redirect_url, getredirection_column(row,col)]">{{row[col.key]}}</a>
                                 </span>
+                                <!-- <span  *ngIf="col.is_editCol && col.redirect_url==null; else statusCol" class="font-bold text-primary cursor-pointer hover:underline" 
+                                (click)="edit_action(row,'edit')">
+                                {{row[col.key]}}</span> -->
                             </ng-template>
                             <ng-template #statusCol>
                                 <span *ngIf="col.is_status; else currencyCol" class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [ngClass]="row.class_name">
-                                    {{getCellValue(row,col)}}
+                                    {{row[col.key]}}
                                   </span>
                             </ng-template>
                             <ng-template #currencyCol>
                                 <span *ngIf="col.is_include_currency; else normalText" [ngClass]="{'font-semibold': col.key === 'name'}">
-                                    {{getValueWithCurrency(getCellValue(row,col))}}
+                                    {{getValueWithCurrency(row[col.key])}}
                                   </span>
                             </ng-template>
 
                             <ng-template #normalText>
                                 <span *ngIf="!col.key.includes('date')" [ngClass]="{'font-semibold': col.key === 'name'}">
-                                    {{ getCellValue(row,col) || '-' }}
+                                    {{ row[col.key] || '-' }}
                                 </span>
                                 <span *ngIf="col.key.includes('date')">
-                                    {{ getCellValue(row,col)!=null ? getCellValue(row,col).split('T')[0] : '-' }}
+                                    {{ row[col.key]!=null ? row[col.key].split('T')[0] : '-' }}
                                 </span> 
                             </ng-template>
                         </ng-template>
@@ -89,11 +92,11 @@
                     <!-- Action Column (Injected via ng-template) -->
                     <td *ngIf="hasActions">
                         <div class="flex gap-1">
-                            <button (click)="edit_action(row,'edit')" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-                              <i class="ri-edit-line text-xs"></i>
+                            <button type="button" (click)="edit_action(row,'edit')" class="ov-icon-btn ov-icon-btn--primary" data-tooltip="Edit">
+                              <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                             </button>
-                            <button  (click)="edit_action(row,'delete')" class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-                              <i class="ri-delete-bin-line text-xs"></i>
+                            <button type="button" (click)="edit_action(row,'delete')" class="ov-icon-btn ov-icon-btn--danger" data-tooltip="Delete">
+                              <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
                             </button>
                           </div>
 
@@ -111,7 +114,10 @@
     </div>
 </div>
 
-<!-- Pagination -->
-<mat-paginator *ngIf="!loading" [length]="totalRecords" [pageSize]="pageSize"
-    [pageIndex]="pageIndex" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons (page)="onPageChange($event)">
-</mat-paginator>
+<app-ov-paginator *ngIf="!loading && showPaginator"
+    [totalRecords]="totalRecords"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (pageChange)="onPageChange($event)">
+</app-ov-paginator>

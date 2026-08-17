@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -61,11 +61,31 @@ export class AssetListComponent implements OnInit {
     { key: 'location', label: 'Location', visible: true },
     { key: 'Vendor', label: 'Vendor', visible: true },
     { key: 'PurchaseDate', label: 'Purchase Date', visible: true },
+    { key: 'action', label: 'Action', visible: true, useTemplate: true },
   ];
 
   assetData: Asset[] = [];
 
   showColumnDropdown: boolean = false;
+  openActionCode: string | null = null;
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showColumnDropdown = false;
+    this.openActionCode = null;
+  }
+
+  toggleRowAction(code: string | undefined, event?: Event): void {
+    event?.stopPropagation();
+    if (!code) {
+      return;
+    }
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  rowActionKey(row: any): string {
+    return String(row?.code ?? row?.id ?? '');
+  }
 
   toggleColumn(key: string): void {
     const col = this.tableColumns.find(c => c.key === key);

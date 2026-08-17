@@ -1,6 +1,7 @@
 /* Start Custom Styles */
 .page-header {
-  @apply py-5;
+  @apply py-5 relative overflow-visible;
+  z-index: 40;
 }
 
 .main-content {
@@ -16,7 +17,7 @@ pre {
 }
 
 html {
-  @apply font-inter scroll-smooth text-start;
+  @apply font-hanken scroll-smooth text-start;
 }
 html {
   &[dir="rtl"] {
@@ -24,7 +25,7 @@ html {
   }
 }
 body {
-  @apply scroll-smooth bg-bodybg h-full text-defaulttextcolor dark:text-white m-0 font-inter font-normal text-[0.813rem] relative text-start rtl:dir-rtl;
+  @apply scroll-smooth bg-bodybg h-full text-defaulttextcolor dark:text-white m-0 font-hanken font-normal text-[0.813rem] relative text-start rtl:dir-rtl;
 }
 
 .page {
@@ -225,4 +226,127 @@ select {
   .aspect-h-1 {
     --tw-aspect-h: 1;
   }
+}
+
+/* Orville DS — reusable form, table, and chrome (Figma list pages) */
+.ov-label {
+  @apply block mb-1.5 text-[14px] font-medium tracking-[0.28px] text-defaulttextcolor/80;
+}
+
+.ov-input {
+  @apply block w-full rounded-lg border border-defaultborder bg-white px-3 py-2 text-[14px] font-normal leading-[1.5] text-defaulttextcolor placeholder:text-textmuted;
+  @apply focus:border-primary focus:shadow-none focus:outline-none focus:ring-1 focus:ring-primary;
+  @apply dark:bg-bodybg dark:border-white/10 dark:text-white/80;
+}
+
+.ov-search {
+  @apply relative w-full max-w-[437px];
+}
+
+.ov-search__icon {
+  @apply pointer-events-none absolute start-5 top-1/2 z-[1] -translate-y-1/2 text-[15px] text-textmuted;
+}
+
+.ov-search__input {
+  @apply h-10 rounded-lg border-defaultborder ps-11 pe-4;
+}
+
+.ov-btn {
+  @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border px-4 text-[14px] font-medium transition-colors duration-150;
+}
+
+.ov-btn-ghost {
+  @apply border-defaultborder bg-white text-defaulttextcolor hover:bg-light dark:bg-bodybg dark:border-white/10;
+}
+
+.ov-btn-primary {
+  @apply border-0 bg-primary text-white hover:opacity-90;
+}
+
+.ov-icon-btn {
+  @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-defaultborder bg-white text-textmuted transition-colors duration-150;
+  @apply hover:border-primary hover:bg-primary hover:text-white dark:bg-bodybg dark:border-white/10;
+}
+
+.ov-icon-btn--primary {
+  @apply border-0 bg-primary/10 text-primary hover:bg-primary hover:text-white;
+}
+
+.ov-icon-btn--danger {
+  @apply border-0 bg-danger/10 text-danger hover:bg-danger hover:text-white;
+}
+
+.ov-seg {
+  @apply inline-flex h-9 items-center gap-0.5 rounded-lg bg-light p-0.5 dark:bg-black/20;
+}
+
+.ov-seg__btn {
+  @apply h-full rounded-md border-0 bg-transparent px-3 text-[14px] font-medium text-textmuted transition-colors;
+  @apply hover:text-defaulttextcolor;
+}
+
+.ov-seg__btn.is-active {
+  @apply bg-white font-semibold text-defaulttextcolor shadow-sm dark:bg-bodybg;
+}
+
+.ov-seg--solid .ov-seg__btn.is-active {
+  @apply bg-primary text-white shadow-none;
+}
+
+.ov-icon-btn.is-on {
+  @apply border-primary bg-primary text-white hover:bg-primary hover:text-white hover:opacity-90;
+}
+
+.ov-kpi-row {
+  @apply grid grid-cols-1 gap-4 rounded-2xl border border-defaultborder bg-white p-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-[30px] dark:bg-bodybg dark:border-white/10;
+}
+
+.ov-kpi {
+  @apply flex min-w-0 flex-col items-start gap-1.5;
+}
+
+.ov-kpi__badge {
+  @apply inline-flex items-center rounded-full bg-bodybg px-2.5 py-1 text-[12px] font-medium tracking-[0.24px] text-info dark:bg-white/5;
+}
+
+.ov-kpi__val {
+  @apply text-[34px] font-extrabold leading-[34px] tracking-[0.52px] text-defaulttextcolor;
+}
+
+.ov-kpi__sub {
+  @apply text-[14px] font-normal tracking-[0.28px] text-textmuted;
+}
+
+.ov-back {
+  @apply inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white text-defaulttextcolor transition-colors duration-150;
+  @apply hover:border-primary hover:bg-primary hover:text-white dark:bg-bodybg dark:border-white/10;
+}
+
+.ov-card {
+  @apply rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg dark:border-white/10;
+}
+
+.ov-card-title {
+  @apply m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor;
+}
+
+.ov-card-sub {
+  @apply m-0 mt-1 text-[14px] font-normal leading-[17px] text-textmuted;
+}
+
+.ov-page-title {
+  @apply m-0 text-[24px] font-semibold leading-[31px] text-defaulttextcolor;
+}
+
+.ov-page-sub {
+  @apply m-0 mt-1 text-[14px] font-normal leading-[17px] text-textmuted;
+}
+
+.ov-toolbar {
+  @apply flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-0;
+  min-height: 40px;
+}
+
+.ng-select.ov-select .ng-select-container {
+  @apply min-h-10 rounded-lg border-defaultborder bg-white text-[14px] dark:bg-bodybg dark:border-white/10 #{!important};
 }

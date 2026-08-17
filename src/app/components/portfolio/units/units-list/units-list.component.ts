@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -106,8 +106,11 @@ export class UnitsListComponent implements OnInit {
     { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unit_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'unit_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
+
+  openActionCode: string | number | null = null;
 
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
@@ -206,7 +209,7 @@ export class UnitsListComponent implements OnInit {
     
   }
 
-  loadUnits(): void {
+  loadUnits(append = false): void {
 
     var filterList=[];
      
@@ -241,7 +244,8 @@ export class UnitsListComponent implements OnInit {
     this.propertiesService.getUnits(payload).subscribe({
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedUnits=response.objResult.units  
+          const nextBatch = response.objResult.units || [];
+          this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...nextBatch] : nextBatch;
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -333,10 +337,29 @@ export class UnitsListComponent implements OnInit {
 
   setViewMode(mode: 'list' | 'grid'): void {
     this.viewMode = mode;
+    this.showColumnDropdown = false;
+    this.openActionCode = null;
+    this.pageNo = 0;
+    this.loadUnits();
+  }
+
+  get canLoadMore(): boolean {
+    return this.displayPage < (this.totalPages || 1);
+  }
+
+  loadMore(): void {
+    if (!this.canLoadMore) return;
+    this.pageNo++;
+    this.loadUnits(true);
+  }
+
+  isActiveGridStatus(status: string | null | undefined): boolean {
+    const value = (status || '').toLowerCase();
+    return !value || value === 'active' || value.includes('active');
   }
 
   toggleViewMode(): void {
-    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+    this.setViewMode(this.viewMode === 'list' ? 'grid' : 'list');
   }
 
   toggleDrawer(open: boolean): void {
@@ -380,17 +403,45 @@ export class UnitsListComponent implements OnInit {
     }
   }
 
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionCode = null;
+  }
+
+  toggleRowAction(code: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  viewUnit(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/units/' + code;
+  }
+
+  editUnit(code: string | number): void {
+    this.openActionCode = null;
+    window.location.href = '/edit-unit/' + code;
+  }
+
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
   get startRecord(): number {
     if (this.totalRecords === 0) return 0;
-    if(this.pageNo==0)
-          this.pageNo=1;
-    return (this.pageNo-1) * this.pageSize+1;
+    return (this.displayPage - 1) * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    if(this.pageNo==0)
-    this.pageNo=1;
-    const end = this.pageNo * this.pageSize;
+    const end = this.displayPage * this.pageSize;
     return end > this.totalRecords ? this.totalRecords : end;
   }
 
@@ -405,14 +456,14 @@ export class UnitsListComponent implements OnInit {
   }
 
   previousPage(): void {
-    if (this.pageNo > 1) {
+    if (this.pageNo > 0) {
       this.pageNo--;
       this.loadUnits();
     }
   }
 
   nextPage(): void {
-    if (this.pageNo < this.totalPages) {
+    if (this.displayPage < this.totalPages) {
       this.pageNo++;
       this.loadUnits();
     }

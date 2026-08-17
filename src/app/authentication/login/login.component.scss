@@ -1,19 +1,395 @@
-::ng-deep {
-  .firebase {
-    width: 30px;
-    height: 30px;
+/* Login page chrome — Figma 26:80. Local navy panel only; CTA uses theme primary. */
+
+.orville-login {
+  --login-navy: #26264f;
+  --login-grey: #6c7278;
+  --login-placeholder: #acb5bb;
+  --login-stroke: #edf1f3;
+  --login-link: #375dfb;
+  --login-panel-w: 575px;
+
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: #fff;
+  font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
+  color: #000;
+}
+
+/* ---- Left panel ---- */
+.orville-login__panel {
+  position: relative;
+  display: none;
+  flex: 0 0 var(--login-panel-w);
+  width: var(--login-panel-w);
+  min-height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #a6b0b9;
+}
+
+@media (min-width: 1024px) {
+  .orville-login__panel {
+    display: block;
   }
 }
 
-@keyframes bounceSlow {
-  0%, 100% {
-    transform: translateY(0);
+.orville-login__panel-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(170, 177, 185) 0%,
+    rgb(173, 180, 187) 22%,
+    rgb(171, 178, 185) 44%,
+    rgb(172, 179, 187) 67%,
+    rgb(170, 177, 185) 100%
+  );
+}
+
+.orville-login__illustration-wrap {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(calc(-50% - 12px));
+  width: var(--login-panel-w);
+  height: var(--login-panel-w);
+}
+
+.orville-login__illustration {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.orville-login__panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--login-navy);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ---- Right / form column ---- */
+.orville-login__main {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.5rem 4rem;
+  background: #fff;
+}
+
+.orville-login__form-shell {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 20px 30px;
+  border-radius: 20px;
+  border: 2px solid #fff;
+  background: rgba(255, 255, 255, 0.37);
+}
+
+.orville-login__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.orville-login__brand-emblem {
+  width: 69px;
+  height: 69px;
+  object-fit: contain;
+}
+
+.orville-login__brand-wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 143px;
+}
+
+.orville-login__brand-orville {
+  display: block;
+  width: 143px;
+  height: auto;
+}
+
+.orville-login__brand-tagline {
+  display: block;
+  width: 143px;
+  height: auto;
+}
+
+.orville-login__intro {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.orville-login__title {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 1.2px;
+  color: #000;
+}
+
+.orville-login__subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0.28px;
+  color: #000;
+}
+
+.orville-login__form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.orville-login__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgb(var(--danger) / 0.2);
+  background: rgb(var(--danger) / 0.1);
+  color: rgb(var(--danger));
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.orville-login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.orville-login__label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.24px;
+  color: var(--login-grey);
+}
+
+.orville-login__input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--login-stroke);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(228, 229, 231, 0.24);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.14px;
+  color: #111;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: var(--login-placeholder);
+    opacity: 0.72;
   }
-  50% {
-    transform: translateY(-8px);
+
+  &:focus {
+    border-color: rgb(var(--primary));
+    box-shadow: 0 0 0 2px rgb(var(--primary) / 0.15);
   }
 }
 
-.animate-bounce-slow {
-  animation: bounceSlow 4s ease-in-out infinite;
+.orville-login__input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.orville-login__input--password {
+  padding-right: 42px;
+}
+
+.orville-login__eye {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--login-grey);
+  cursor: pointer;
+
+  img {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  i {
+    font-size: 16px;
+    line-height: 1;
+  }
+}
+
+.orville-login__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
+.orville-login__remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.24px;
+  color: var(--login-grey);
+  cursor: pointer;
+  user-select: none;
+}
+
+.orville-login__checkbox {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid var(--login-stroke);
+  border-radius: 3px;
+  accent-color: rgb(var(--primary));
+  cursor: pointer;
+}
+
+.orville-login__forgot {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.24px;
+  color: var(--login-link);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.orville-login__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 10px 24px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%),
+    linear-gradient(90deg, rgb(var(--primary)) 0%, rgb(var(--primary)) 100%);
+  box-shadow:
+    0 1px 2px 0 rgba(38, 38, 79, 0.48),
+    0 0 0 1px rgb(var(--primary));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, filter 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.orville-login__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: orville-login-spin 0.7s linear infinite;
+}
+
+@keyframes orville-login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orville-login__copyright {
+  margin: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.orville-login__footer {
+  position: absolute;
+  right: 56px;
+  bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+}
+
+.orville-login__footer-link {
+  color: var(--login-link);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.orville-login__footer-sep {
+  color: #d9d9d9;
+}
+
+@media (max-width: 1023px) {
+  .orville-login__footer {
+    position: static;
+    margin-top: 2rem;
+    justify-content: center;
+  }
+
+  .orville-login__form-shell {
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
 }

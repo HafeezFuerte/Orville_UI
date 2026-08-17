@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { PropertiesService } from '../../services/properties.service';
@@ -13,6 +13,8 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
 import { InventoryItemComponent } from '../../../child-tables/inventoryitem/inventoryitem.component';
+import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-layout.component';
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
 export interface Room {
   id: number;
   name: string;
@@ -26,6 +28,11 @@ export interface Room {
   unit: string;
   location: string;
   landlord: string;
+  landlordCode?: string;
+  landlordEmail?: string;
+  landlordPhone?: string;
+  landlordTypeBadge?: string;
+  landlordType?: string;
   tags: string;
   roomType: string;
   managementFee: string;
@@ -53,6 +60,16 @@ export interface Room {
   serviceDisabled?: boolean;
   trakessiNumber?: string;
   reraNumber?: string;
+  createdBy?: string;
+  parkingCount?: string | number;
+  autoAssign?: boolean;
+  hasElectricity?: boolean;
+  hasGas?: boolean;
+  alertMessage?: string;
+  marketingTitle?: string;
+  marketingDescription?: string;
+  unitDetailsText?: string;
+  amenities?: any[];
 }
 
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
@@ -61,7 +78,7 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,InventoryItemComponent,ParkingsComponent,AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, ReusableModalComponent, FilterDrawerComponent],
+  imports: [CommonModule, NotesComponent, InventoryItemComponent, ParkingsComponent, AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent],
   templateUrl: './room-detail.component.html',
   styleUrl: './room-detail.component.scss'
 })
@@ -69,9 +86,37 @@ export class RoomDetailComponent implements OnInit {
   roomId!: string;
   unit: Room | null = null;
   activeTab: string = 'overview';
-  showMoreDetails: boolean = false;
+  showMoreDetails: boolean = true;
+  showActionMenu = false;
+  showLandlordPopover = false;
   showAddInvoiceModal: boolean = false;
   showAddInventoryModal: boolean = false;
+  tabSearchQuery = '';
+  defaultAmenities = [
+    'Kids Play Area',
+    'BBQ Deck',
+    'Concierge',
+    'Covered Parking',
+    'High-Speed Wi-Fi',
+    'Swimming Pool',
+    'Fully Equipped Gym',
+    '24/7 Security'
+  ];
+  chartTicks = ['40 M', '30 M', '20 M', '10 M', '0'];
+  monthBars = [
+    { m: 'Jan', h: 23, empty: false },
+    { m: 'Feb', h: 30, empty: false },
+    { m: 'Mar', h: 88, empty: false },
+    { m: 'Apr', h: 53, empty: false },
+    { m: 'May', h: 47, empty: false },
+    { m: 'Jun', h: 197, empty: false },
+    { m: 'Jul', h: 246, empty: false },
+    { m: 'Aug', h: 269, empty: true },
+    { m: 'Sep', h: 269, empty: true },
+    { m: 'Oct', h: 269, empty: true },
+    { m: 'Nov', h: 269, empty: true },
+    { m: 'Dec', h: 269, empty: true }
+  ];
   commonAreaForm!: FormGroup;
   attachmentsForm!: FormGroup;
   notesForm!: FormGroup;
@@ -108,7 +153,7 @@ export class RoomDetailComponent implements OnInit {
   inspections: any[] = [];
   allUnits: Room[] = [];
   loading:boolean=false;
-  tabs: any[] = [];
+  tabs: DetailTab[] = [];
   mode: 'property' | 'unit' | 'room' | 'parking' = 'unit';
   item: any = null;
   currentUser: AuthPayload | null = null;
@@ -118,7 +163,13 @@ export class RoomDetailComponent implements OnInit {
   inventoryItemExpiry: string = '';
   inventoryFiles: File[] = [];
 
-  constructor(private route: ActivatedRoute,  private commonService: CommonService, private propertiesService: PropertiesService, private portfolioService: PortfolioService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private commonService: CommonService,
+    private propertiesService: PropertiesService,
+    private portfolioService: PortfolioService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
@@ -177,7 +228,7 @@ export class RoomDetailComponent implements OnInit {
               property_code: detail.property_code || 'Marina Height Towers', 
               unit: detail.unitcode + ' - ' + detail.unit_no || 'Marina Height Towers',
               location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
-              landlord: detail.landlord_codes || detail.landlord || this.unit?.landlord || 'Orville Real Estate',
+              ...this.mapLandlordFields(detail),
               tags: detail.tags || this.unit?.tags || 'Premium',
               roomType: detail.room_type_name || detail.room_type || this.unit?.roomType || 'Apartment',
               managementFee: detail.management_fee ? this.currentUser?.currencyCode+` ${detail.management_fee}` : this.unit?.managementFee || 'AED 600',
@@ -204,7 +255,16 @@ export class RoomDetailComponent implements OnInit {
               managementFeeType: detail.management_fee_type || 'Percentage',
               serviceDisabled: detail.disable_maintainence || false,
               trakessiNumber: detail.trakessi_number || '-',
-              reraNumber: detail.rera_number || '-'
+              reraNumber: detail.rera_number || '-',
+              createdBy: detail.created_by || detail.createdBy || '-',
+              autoAssign: !!detail.auto_assign,
+              hasElectricity: !!detail.electricity_no || !!detail.has_electricity,
+              hasGas: !!detail.gas_no || !!detail.has_gas,
+              alertMessage: detail.alert_message || '-',
+              marketingTitle: detail.marketing_title || '-',
+              marketingDescription: detail.marketing_description || '-',
+              unitDetailsText: detail.unit_details || '-',
+              amenities: detail.amenities || []
             };
             this.item = this.unit;
           }
@@ -314,18 +374,16 @@ export class RoomDetailComponent implements OnInit {
         popupType: 'attachment'      
       },
       {
-        key: 'Legal',
+        key: 'legal',
         label: 'web.common.lblLegal',
-        layout: 'content', 
-        entity:"Unit_Rooms",
-        entity_id:this.roomId,
+        layout: 'content',
+        entity: "Unit_Rooms",
+        entity_id: this.roomId,
         data: this.legalCases,
         totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Common Area',
-        form: FormGroup,
-        popupType: 'legal'
+        addButtonText: 'Common Area'
       },
       {
         key: 'parkings',
@@ -333,7 +391,7 @@ export class RoomDetailComponent implements OnInit {
         layout: 'content', 
         data: this.parkings,
         entity:"Unit_Rooms",
-        entity_id:this.unit?.property_code,
+        entity_id: this.unit?.property_code || '',
         filter_code:this.roomId,
         totalRecords: this.parkings?.length || 0,
         loading: this.loading,
@@ -383,9 +441,101 @@ export class RoomDetailComponent implements OnInit {
   get unitNo(): string {
     if (this.unit && this.unit.name) {
       const parts = this.unit.name.split(' ');
-      return parts[1] || '209';
+      return parts[1] || this.unit.name;
     }
     return '209';
+  }
+
+  get landlordCount(): number {
+    return this.unit?.landlord ? 1 : 0;
+  }
+
+  private mapLandlordFields(detail: any): Pick<
+    Room,
+    'landlord' | 'landlordCode' | 'landlordEmail' | 'landlordPhone' | 'landlordTypeBadge' | 'landlordType'
+  > {
+    const codesRaw = detail?.landlord_code ?? detail?.landlord_codes ?? '';
+    const codeParts = String(codesRaw)
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter(Boolean);
+    const firstCode = codeParts[0] || '';
+    const looksLikeId = !!firstCode && !/\s/.test(firstCode) && /^[A-Za-z0-9_-]+$/.test(firstCode);
+
+    const landlordName =
+      detail?.landlord_name ||
+      detail?.landlord_nm ||
+      detail?.landlord ||
+      (!looksLikeId && firstCode ? firstCode : '') ||
+      this.unit?.landlord ||
+      'Orville Real Estate';
+
+    const landlordCode =
+      detail?.landlord_code ||
+      (looksLikeId ? firstCode : '') ||
+      detail?.landlord_id ||
+      this.unit?.landlordCode ||
+      '';
+
+    return {
+      landlord: landlordName,
+      landlordCode: landlordCode ? String(landlordCode) : '',
+      landlordEmail: detail?.landlord_email || detail?.email || this.unit?.landlordEmail || '-',
+      landlordPhone: detail?.landlord_phone || detail?.phone || detail?.mobile || this.unit?.landlordPhone || '-',
+      landlordTypeBadge:
+        detail?.landlord_type_nm ||
+        detail?.contact_type_nm ||
+        detail?.landlord_category ||
+        this.unit?.landlordTypeBadge ||
+        'Individual',
+      landlordType:
+        detail?.landlord_type_name ||
+        detail?.landlord_type ||
+        this.unit?.landlordType ||
+        'Individual Landlord'
+    };
+  }
+
+  toggleLandlordPopover(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showLandlordPopover = !this.showLandlordPopover;
+  }
+
+  viewLandlordDetail(event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.showLandlordPopover = false;
+    const code = this.unit?.landlordCode;
+    if (code) {
+      this.router.navigate(['/contacts/landlords', code]);
+    } else {
+      this.router.navigate(['/contacts/landlords']);
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showLandlordPopover = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.showLandlordPopover = false;
+  }
+
+  get parkingDisplay(): string {
+    if (this.unit?.parkingCount) {
+      return String(this.unit.parkingCount);
+    }
+    return this.parkings?.length ? String(this.parkings.length) : '-';
+  }
+
+  get displayAmenities(): string[] {
+    const fromApi = (this.unit?.amenities || [])
+      .map((item: any) => (typeof item === 'string' ? item : item?.amenity || item?.name || ''))
+      .filter((name: string) => !!name);
+    return fromApi.length ? fromApi : this.defaultAmenities;
   }
 
   toggleMoreDetails(): void {
@@ -394,6 +544,10 @@ export class RoomDetailComponent implements OnInit {
 
   toggleDrawer(state: boolean): void {
     this.isDrawerOpen = state;
+  }
+
+  toggleColumnDropdown(): void {
+    this.isColumnDropdownOpen = !this.isColumnDropdownOpen;
   }
 
   onInventoryFileSelected(event: any) {

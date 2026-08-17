@@ -1,331 +1,325 @@
-<!-- Work Order List Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Work Orders
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Facility</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Work Orders</li>
-      </ol>
-    </div>
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+  <div>
+    <h3 class="ov-page-title">Work Orders</h3>
+    <p class="ov-page-sub">Track, prioritize and assign maintenance requests from one workspace.</p>
+    <p class="sr-only">Facility / Work Orders</p>
   </div>
-  <div class="flex gap-1.5 items-center mt-2 md:mt-0"> 
-    <button type="button"
-      class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-      [attr.data-tooltip]="'Report'">
-      <i class="ri-bar-chart-2-fill text-sm"></i>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+      <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="wo-icon" />
+      Export
     </button>
-    <button type="button" (click)="navigateToCreate()"
-      class="ti-btn bg-primary hover:bg-primary-hover text-white text-xs font-bold w-8 h-8 !px-0 rounded-md flex items-center justify-center shadow-sm"
-      [attr.data-tooltip]="'Add Work Order'">
-      <i class="ri-add-line text-sm"></i>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" data-tooltip="Add Work Order">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="wo-icon" />
+      Add Work Order
     </button>
   </div>
 </div>
 
-<!-- 📊 Metrics Row -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2">
-  <!-- New-->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">New</span>
-      <i class="ri-community-line text-md text-primary bg-primary/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-gray-800 leading-none m-0">{{metrics.new}}</h5>
-      <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 10 this week</span>
-    </div>
+<div class="ov-kpi-row mb-5">
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">New</span>
+    <div class="ov-kpi__val">{{ metrics.new }}</div>
+    <div class="ov-kpi__sub">+6 this week</div>
   </div>
-
-  <!--Open Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Open</span>
-      <i class="ri-checkbox-blank-circle-line text-md text-success bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-success leading-none m-0">{{metrics.open}}</h5>
-      <span class="text-[10px] font-bold text-gray-400">21 due today</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Open</span>
+    <div class="ov-kpi__val">{{ metrics.open }}</div>
+    <div class="ov-kpi__sub">21 due today</div>
   </div>
-
-  <!-- In Progress Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">In Progress</span>
-      <i class="ri-checkbox-circle-line text-md text-danger bg-danger/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-danger leading-none m-0">{{metrics.inprogress}}</h5>
-      <span class="text-[10px] font-bold text-gray-400">12 with vendors</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">In Progress</span>
+    <div class="ov-kpi__val">{{ metrics.inprogress }}</div>
+    <div class="ov-kpi__sub">12 with vendors</div>
   </div>
-
-  <!-- Resolved Card -->
-  <div
-    class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[10px] font-bold tracking-wider text-gray-500">Resolved</span>
-      <i class="ri-tools-line text-md text-warning bg-warning/10 px-2 py-1 rounded-sm"></i>
-    </div>
-    <div>
-      <h5 class="text-lg font-black text-warning leading-none m-0">{{metrics.resolved}}</h5>
-      <span class="text-[10px] font-bold text-success flex items-center gap-0.5"><i class="ri-arrow-up-line"></i> 93% SLA met</span>
-    </div>
+  <div class="ov-kpi">
+    <span class="ov-kpi__badge">Resolved</span>
+    <div class="ov-kpi__val">{{ metrics.resolved }}</div>
+    <div class="ov-kpi__sub">92% SLA met</div>
   </div>
 </div>
- 
 
-<!-- Main card -->
-<div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-  
-  <!-- Tabs -->
-  <div class="flex items-center gap-6 px-4 pt-3 border-b border-gray-100 overflow-x-auto">
-    <div class="flex items-center gap-2 mr-4 pb-3">
-      <span class="text-sm font-bold text-gray-800">WorkOrders List</span>
-      <div class="flex items-center bg-gray-100 rounded p-0.5">
-        <button type="button" (click)="setViewMode('list')" [class]="viewMode === 'list' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400 hover:text-gray-600'" class="w-6 h-6 rounded flex items-center justify-center"><i class="ri-list-check text-xs"></i></button>
-        <button type="button" (click)="setViewMode('grid')" [class]="viewMode === 'grid' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400 hover:text-gray-600'" class="w-6 h-6 rounded flex items-center justify-center"><i class="ri-grid-fill text-xs"></i></button>
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">
+        {{ viewMode === 'board' ? 'Workflow Board' : 'Work Orders List' }}
+      </h5>
+      <div class="wo-view-toggle">
+        <button type="button" (click)="setViewMode('list')" class="wo-view-toggle__btn"
+          [class.is-on]="viewMode === 'list'" data-tooltip="Switch to List" aria-label="List view">
+          <img src="assets/images/work-orders/list-details.svg" alt="" width="20" height="20" class="wo-icon" />
+        </button>
+        <button type="button" (click)="setViewMode('board')" class="wo-view-toggle__btn"
+          [class.is-on]="viewMode === 'board'" data-tooltip="Switch to Board" aria-label="Board view">
+          <img src="assets/images/work-orders/board.svg" alt="" width="20" height="20" class="wo-icon" />
+        </button>
       </div>
     </div>
-    
-    <button *ngFor="let tab of tabs" 
-      (click)="onTabChange(tab)"
-      [class.text-primary]="activeTab === tab.id"
-      [class.border-primary]="activeTab === tab.id"
-      [class.text-gray-500]="activeTab !== tab.id"
-      [class.border-transparent]="activeTab !== tab.id"
-      class="text-[11px] font-semibold pb-3 border-b-2 hover:text-primary transition-colors whitespace-nowrap">
-      {{ tab.name }}
-    </button>
   </div>
 
-  <!-- Toolbar -->
-  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-    <div class="input-group w-56">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearch()"
-        placeholder="Search..."
-        class="form-control !text-[11px] !py-1.5 bg-gray-50 border-gray-200"
-      />
-      <button type="button" (click)="onSearch()"
-        class="input-group-text bg-primary/10 text-primary border-s-0 hover:bg-primary/20 transition-colors">
-        <i class="ri-search-line"></i>
+  <div class="border-b border-defaultborder px-5 py-3 overflow-x-auto" *ngIf="viewMode !== 'board'">
+    <div class="ov-seg ov-seg--solid !w-max max-w-none">
+      <button type="button" *ngFor="let tab of tabs" (click)="onTabChange(tab)" class="ov-seg__btn"
+        [class.is-active]="activeTab === tab.id">
+        {{ tab.name }}
       </button>
     </div>
-    <div class="flex items-center gap-2">
-      <!-- Filter Button -->
-      <button type="button"
-        class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+  </div>
+
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="work-order-search">Search</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon wo-icon" />
+      <input id="work-order-search" type="text" class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
-        <i class="ri-filter-3-line text-[0.9rem] align-middle"></i>
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" class="wo-icon" />
+        Filter
       </button>
-
-      <!-- Column Button with dropdown overlay -->
-      <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-          class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-          [attr.data-tooltip]="'Columns'">
-          <i class="ri-menu-add-line text-[0.9rem] align-middle"></i>
+      <div class="relative" (click)="$event.stopPropagation()" *ngIf="viewMode !== 'board'">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
+          data-tooltip="Columns">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" class="wo-icon" />
+          Column
         </button>
-
-        <!-- Column toggling checklist dropdown overlay -->
         <div *ngIf="showColumnDropdown"
-          class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
           <label
-            class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px]  border-b pb-1.5 mb-1">
+            class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
-              class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+              class="h-3.5 w-3.5 rounded text-primary">
             Select All
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            <label *ngFor="let col of tableColumns"
-              class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-              <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)"
-                class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              {{ col.label }}
-            </label>
-          </div>
+          <label *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+            <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary">
+            {{ col.label }}
+          </label>
         </div>
       </div>
+      <button type="button" *ngIf="viewMode === 'board'" class="ov-btn ov-btn-toolbar" data-tooltip="Columns">
+        <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" class="wo-icon" />
+        Column
+      </button>
     </div>
   </div>
 
-  <!-- Table -->
-  <div *ngIf="viewMode === 'list'">
-    <app-shared-table 
-      [columns]="visibleColumns" 
-      [data]="workOrderData" 
-      [hasActions]="true" 
-      [totalRecords]="totalRecords" 
+  <div class="px-5 pb-0 pt-5" *ngIf="viewMode === 'list'">
+    <app-shared-table
+      [columns]="visibleColumns"
+      [data]="workOrderData"
+      [hasActions]="false"
+      [totalRecords]="totalRecords"
       [pageSize]="pageSize"
       [pageIndex]="pageNo"
-      (pageChange)="onSharedTablePageChange($event)"
-      (notify_edit_action)="handleEditAction($event)">
+      (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
-          
-          <!-- ID Column -->
+
           <ng-container *ngSwitchCase="'id'">
-            <span [routerLink]="['/facility/work-orders', row.code]" class="text-primary font-semibold hover:underline cursor-pointer transition-all">{{ row.code }}</span>
+            <a [routerLink]="['/facility/work-orders', row.code]" class="ov-link font-semibold">{{ row.code }}</a>
           </ng-container>
-           <!-- Property Column -->
+
           <ng-container *ngSwitchCase="'property'">
-            <div class="flex flex-col">
-              <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/properties', row.property_code]">{{row.property}}</span>
-     
-              <span class="text-[10px] text-gray-600 font-semibold">{{row.address_1}}</span>
+            <div class="flex flex-col gap-0.5">
+              <a class="ov-link font-semibold" [routerLink]="['/properties', row.property_code]">{{ row.property }}</a>
+              <span class="text-[12px] text-textmuted" *ngIf="row.address_1">{{ row.address_1 }}</span>
             </div>
           </ng-container>
-            <!-- Unit Column -->
-            <ng-container *ngSwitchCase="'unit'">
-              <div class="flex flex-col">
-                <span class="font-bold text-primary cursor-pointer hover:underline " [routerLink]="['/units', row.unit_code]">{{row.unit}}</span>
-        
-              </div>
-            </ng-container>
-         
+
+          <ng-container *ngSwitchCase="'unit'">
+            <a class="ov-link font-semibold" [routerLink]="['/units', row.unit_code]">{{ row.unit }}</a>
+          </ng-container>
+
           <ng-container *ngSwitchCase="'priority'">
-            <span *ngIf="row.priority === 'High'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-danger/10 text-danger">High</span>
-            <span *ngIf="row.priority === 'Medium'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-warning/10 text-warning">Medium</span>
-            <span *ngIf="row.priority === 'Low'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success">Low</span>
+            <span class="ov-status" [ngClass]="priorityClass(row.priority)">{{ row.priority || '-' }}</span>
           </ng-container>
-  
-          <!-- Status Column -->
+
           <ng-container *ngSwitchCase="'status_nm'">
-            <span   [class]="row.class_name">{{getArabicLookupName(row,'status_nm')}}</span> 
+            <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'status_nm') }}</span>
           </ng-container>
-  
-          <!-- Vendor Column -->
+
           <ng-container *ngSwitchCase="'vendor_name'">
             <span>{{ row.vendor_name || row.vendor || row.vendor_id || '-' }}</span>
           </ng-container>
-  
-          <!-- Responsible Person Column -->
+
           <ng-container *ngSwitchCase="'responsiblePerson'">
             <span>{{ row.responsiblePerson || row.responsible_person || row.responsible_user || row.responsible_persons || row.responsible_user_name || '-' }}</span>
           </ng-container>
-  
-          <!-- Technician Column -->
+
           <ng-container *ngSwitchCase="'technician_name'">
             <span>{{ row.technician_name || row.technician || row.technician_id || '-' }}</span>
           </ng-container>
-  
-        
+
+          <ng-container *ngSwitchCase="'action'">
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(row.code, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionCode === row.code"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="navigateToDetail(row.code); openActionCode = null">View</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="handleEditAction(row); openActionCode = null">Edit</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                  (click)="openActionCode = null">Delete</button>
+              </div>
+            </div>
+          </ng-container>
+
         </ng-container>
       </ng-template>
-        <!-- Action Column -->
-        <ng-template #actionTemplate let-row="row">
-          <div class="flex gap-1">
-            <button (click)="handleEditAction(row)" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
-              <i class="ri-edit-line text-xs"></i>
-            </button>
-            <button class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
-              <i class="ri-delete-bin-line text-xs"></i>
-            </button>
-          </div>
-        </ng-template>
-  
     </app-shared-table>
   </div>
 
-  <!-- Grid View -->
-  <div *ngIf="viewMode === 'grid'" class="p-4 flex flex-col gap-4 animate-fade-in">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-      <!-- Grid Card -->
-      <div class="box bg-white overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 rounded-xl p-4 flex flex-col justify-between gap-3" *ngFor="let row of workOrderData">
-        <!-- Header: ID & Priority -->
-        <div class="flex items-center justify-between">
-          <span [routerLink]="['/facility/work-orders', row.code]" class="text-xs font-bold text-primary hover:underline cursor-pointer transition-colors">
+  <!-- Kanban / Workflow Board (Figma 2946:97655) -->
+  <div *ngIf="viewMode === 'board'" class="wo-kanban px-5 pb-5 pt-5">
+    <div class="wo-kanban__track">
+      <section class="wo-kanban__col" *ngFor="let col of kanbanColumns">
+        <header class="wo-kanban__col-head">
+          <div class="wo-kanban__col-title">
+            <span class="wo-kanban__col-name">{{ col }}</span>
+            <span class="wo-kanban__col-count">{{ columnCount(col) }}</span>
+          </div>
+          <button type="button" class="wo-kanban__col-more" aria-label="Column actions">
+            <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="14" height="14" class="wo-icon" />
+          </button>
+        </header>
+
+        <div class="wo-kanban__stack">
+          <article class="wo-kanban-card" *ngFor="let row of cardsForColumn(col)"
+            (click)="navigateToDetail(row.code)">
+            <div class="wo-kanban-card__top">
+              <a class="wo-kanban-card__id ov-link" [routerLink]="['/facility/work-orders', row.code]"
+                (click)="$event.stopPropagation()">#{{ row.code }}</a>
+              <span class="wo-kanban-card__priority" [ngClass]="kanbanPriorityClass(row.priority)">
+                {{ row.priority || '-' }}
+              </span>
+            </div>
+
+            <h6 class="wo-kanban-card__title">{{ row.title || '-' }}</h6>
+
+            <div class="wo-kanban-card__meta">
+              <img src="assets/images/work-orders/map-pin.svg" alt="" width="12" height="12" class="wo-icon" />
+              <span>{{ cardLocation(row) }}</span>
+            </div>
+            <div class="wo-kanban-card__meta">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="wo-icon" />
+              <span>{{ cardDate(row) }}</span>
+            </div>
+
+            <div class="wo-kanban-card__divider"></div>
+
+            <div class="wo-kanban-card__foot" (click)="$event.stopPropagation()">
+              <div class="wo-kanban-card__assignee">
+                <span class="wo-kanban-card__avatar">{{ assigneeInitials(row) }}</span>
+                <span class="wo-kanban-card__assignee-name">{{ assigneeName(row) }}</span>
+              </div>
+              <div class="relative">
+                <button type="button" class="wo-kanban-card__status"
+                  (click)="toggleKanbanStatus(row.code, $event)">
+                  {{ getArabicLookupName(row, 'status_nm') || col }}
+                  <img src="assets/images/work-orders/chevron-down.svg" alt="" width="12" height="12" class="wo-icon" />
+                </button>
+                <div *ngIf="openKanbanStatusCode === row.code" class="wo-kanban-card__status-menu">
+                  <button type="button" *ngFor="let status of kanbanColumns"
+                    class="wo-kanban-card__status-item"
+                    (click)="openKanbanStatusCode = null">{{ status }}</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div *ngIf="viewMode === 'grid'" class="px-5 pt-5 pb-5 flex flex-col gap-4 animate-fade-in">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <article class="box !mb-0 overflow-hidden border border-defaultborder rounded-2xl p-4 flex flex-col justify-between gap-3 shadow-none"
+        *ngFor="let row of workOrderData">
+        <div class="flex items-center justify-between gap-2">
+          <a [routerLink]="['/facility/work-orders', row.code]" class="ov-link text-[13px] font-semibold">
             #{{ row.code }}
-          </span>
-          <span class="px-2 py-0.5 rounded text-[9px] font-bold"
-            [ngClass]="{
-              'bg-danger/10 text-danger': row.priority === 'High',
-              'bg-warning/10 text-warning': row.priority === 'Medium',
-              'bg-success/10 text-success': row.priority === 'Low'
-            }">
-            {{ row.priority }}
-          </span>
+          </a>
+          <span class="ov-status" [ngClass]="priorityClass(row.priority)">{{ row.priority }}</span>
         </div>
 
-        <!-- Title & Category -->
         <div class="flex flex-col gap-1">
-          <h5 [routerLink]="['/facility/work-orders', row.code]" class="text-xs font-bold text-gray-800 m-0 line-clamp-1 leading-tight hover:text-primary cursor-pointer">{{ row.title }}</h5>
-          <span class="text-[10px] text-gray-500 font-semibold">{{ row.maintenance_name || '-' }}</span>
+          <a [routerLink]="['/facility/work-orders', row.code]"
+            class="text-[14px] font-semibold text-defaulttextcolor m-0 line-clamp-1 leading-tight hover:text-primary">
+            {{ row.title }}
+          </a>
+          <span class="text-[12px] text-textmuted">{{ row.maintenance_name || '-' }}</span>
         </div>
 
-        <!-- Property & Unit info -->
-        <div class="flex flex-col gap-1 border-y border-gray-50/80 py-2">
-          <div class="flex items-center justify-between text-[11px]">
-            <span class="text-gray-500">Property:</span>
-            <span class="font-bold text-gray-800 line-clamp-1 text-right max-w-[150px] hover:underline hover:text-primary cursor-pointer" [routerLink]="['/properties', row.property_code]">{{ row.property }}</span>
+        <div class="flex flex-col gap-1 border-y border-defaultborder py-2">
+          <div class="flex items-center justify-between text-[13px] gap-2">
+            <span class="text-textmuted">Property:</span>
+            <a class="ov-link font-semibold line-clamp-1 text-end max-w-[150px]"
+              [routerLink]="['/properties', row.property_code]">{{ row.property }}</a>
           </div>
-          <div class="flex items-center justify-between text-[11px]">
-            <span class="text-gray-500">Unit:</span>
-            <span class="font-bold text-gray-800 text-right max-w-[150px] hover:underline hover:text-primary cursor-pointer" [routerLink]="['/units', row.unit_code]">{{ row.unit }}</span>
-          </div>
-        </div>
-
-        <!-- People Details -->
-        <div class="flex flex-col gap-1 text-[10px]">
-          <div class="flex justify-between">
-            <span class="text-gray-500">Vendor:</span>
-            <span class="font-medium text-gray-700">{{ row.vendor_name || '-' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Responsible:</span>
-            <span class="font-medium text-gray-700">{{ row.responsiblePerson || row.responsible_person || row.responsible_user || '-' }}</span>
+          <div class="flex items-center justify-between text-[13px] gap-2">
+            <span class="text-textmuted">Unit:</span>
+            <a class="ov-link font-semibold text-end max-w-[150px]"
+              [routerLink]="['/units', row.unit_code]">{{ row.unit }}</a>
           </div>
         </div>
 
-        <!-- Footer Card Actions & Status -->
-        <div class="flex items-center justify-between pt-2 border-t border-gray-100 mt-1">
-          <span [class]="row.class_name" class="text-[9px] font-extrabold uppercase rounded px-2 py-0.5">
-            {{ getArabicLookupName(row,'status_nm') }}
-          </span>
-
-          <div class="flex gap-1">
-            <button (click)="handleEditAction(row)" class="w-6 h-6 rounded bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" [attr.data-tooltip]="'Edit'">
-              <i class="ri-edit-line text-[10px]"></i>
-            </button>
+        <div class="flex flex-col gap-1 text-[12px]">
+          <div class="flex justify-between gap-2">
+            <span class="text-textmuted">Vendor:</span>
+            <span class="font-medium text-defaulttextcolor">{{ row.vendor_name || '-' }}</span>
+          </div>
+          <div class="flex justify-between gap-2">
+            <span class="text-textmuted">Responsible:</span>
+            <span class="font-medium text-defaulttextcolor">{{ row.responsiblePerson || row.responsible_person || row.responsible_user || '-' }}</span>
           </div>
         </div>
-      </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-defaultborder mt-1">
+          <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'status_nm') }}</span>
+          <button type="button" (click)="handleEditAction(row)" class="ov-icon-btn ov-icon-btn--bare"
+            data-tooltip="Edit">
+            <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
+          </button>
+        </div>
+      </article>
     </div>
 
-    <!-- Grid Pagination -->
-    <div class="flex flex-wrap items-center justify-between mt-5 w-full bg-white p-3 rounded-lg border shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3 w-full rounded-xl border border-defaultborder bg-white p-3">
       <div class="flex items-center gap-2">
-        <span class="text-xs text-gray-500 font-medium">Show</span>
-        <select class="form-select w-20 !text-xs !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+        <span class="text-[13px] text-textmuted">Show</span>
+        <select class="form-select w-20 !text-[13px] !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
         </select>
       </div>
-      
-      <div class="text-xs text-gray-500 font-medium">
-        Showing <strong>{{startRecord}}</strong> to <strong>{{endRecord}}</strong> of <strong>{{totalRecords}}</strong> records
+
+      <div class="text-[13px] text-textmuted">
+        Showing <strong class="text-defaulttextcolor">{{ startRecord }}</strong>
+        to <strong class="text-defaulttextcolor">{{ endRecord }}</strong>
+        of <strong class="text-defaulttextcolor">{{ totalRecords }}</strong> records
       </div>
 
       <div class="flex items-center gap-2">
-        <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="previousPage()" [disabled]="pageNo === 0">
-          Previous
-        </button>
-        <button *ngFor="let page of pages" class="ti-btn !py-1 !px-3 !m-0 !text-xs font-semibold"
-          [ngClass]="page === pageNo + 1 ? 'ti-btn-primary' : 'ti-btn-light'" (click)="goToPage(page)">
-          {{page}}
-        </button>
-        <button class="ti-btn ti-btn-light !py-1 !px-2.5 !m-0 !text-xs" (click)="nextPage()" [disabled]="pageNo === totalPages - 1">
-          Next
-        </button>
+        <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 !text-[13px]" (click)="previousPage()"
+          [disabled]="pageNo === 0">Previous</button>
+        <button type="button" *ngFor="let page of pages" class="ov-btn !h-8 !px-3 !text-[13px]"
+          [class.ov-btn-primary]="page === pageNo + 1"
+          [class.ov-btn-ghost]="page !== pageNo + 1"
+          (click)="goToPage(page)">{{ page }}</button>
+        <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 !text-[13px]" (click)="nextPage()"
+          [disabled]="pageNo === totalPages - 1">Next</button>
       </div>
     </div>
   </div>

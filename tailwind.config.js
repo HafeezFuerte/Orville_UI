@@ -29,8 +29,10 @@ module.exports = {
       full: "9999px",
     },
     fontFamily: {
-      inter: ["Inter", "sans-serif"],
-      Montserrat: ["Montserrat","sans-serif"],
+      sans: ["Hanken Grotesk", "sans-serif"],
+      hanken: ["Hanken Grotesk", "sans-serif"],
+      inter: ["Hanken Grotesk", "sans-serif"],
+      Montserrat: ["Hanken Grotesk", "sans-serif"],
     },
     fontSize: {
       defaultsize: '0.813rem',
@@ -68,6 +70,8 @@ module.exports = {
         secondary: "rgb(var(--secondary))",
         success: "rgb(var(--success))",
         info: "rgb(var(--info))",
+        link: "rgb(var(--link))",
+        "link-hover": "rgb(var(--link-hover))",
         warning: "rgb(var(--warning))",
         danger: "rgb(var(--danger))",
         light:"rgb(var(--light))",

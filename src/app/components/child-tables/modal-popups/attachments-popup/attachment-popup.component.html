@@ -1,118 +1,95 @@
 
-<form [formGroup]="form" class="space-y-5">
+<form [formGroup]="form" class="flex flex-col gap-4">
     <div>
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.attachments.lblDocumentType' | translate }}
             <span class="text-danger">*</span>
         </label>
-         <select class="form-control w-full !rounded-md" formControlName="documentType">
-                            <option value="" disabled>
-                                {{ 'web.portfolio.popups.attachments.lblDocumentTypePlaceHolder' | translate }}
-                            </option>
-                            <option *ngFor="let docType of documentTypes" [value]="docType.id">
-                                {{ docType.name }}
-                            </option>
-                        </select>
-        <p class="text-[11px] text-gray-400 mt-1">
+        <select class="ov-input" formControlName="documentType">
+            <option value="" disabled>
+                {{ 'web.portfolio.popups.attachments.lblDocumentTypePlaceHolder' | translate }}
+            </option>
+            <option *ngFor="let docType of documentTypes" [value]="docType.id">
+                {{ docType.name }}
+            </option>
+        </select>
+        <span class="ov-modal__hint">
             {{ 'web.portfolio.popups.attachments.lblDocumentTypeHint' | translate }}
-        </p>
+        </span>
     </div>
     <div>
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.attachments.lblDocumentNumber' | translate }}
         </label>
         <input
             type="text"
-            class="ti-form-input"
+            class="ov-input"
             formControlName="documentNumber"
             placeholder="Enter">
     </div>
-    <div class="grid grid-cols-2 gap-4">
+    <div class="ov-fields ov-fields--2">
         <div>
-            <label class="ti-form-label">
+            <label class="ov-label">
                 {{ 'web.portfolio.popups.attachments.lblIssueDate' | translate }}
             </label>
-            <input
-                type="date"
-                class="ti-form-input" id="issueDate"
-                formControlName="issueDate">
+            <input type="date" class="ov-input" id="issueDate" formControlName="issueDate">
         </div>
         <div>
-            <label class="ti-form-label">
+            <label class="ov-label">
                 {{ 'web.portfolio.popups.attachments.lblExpiryDate' | translate }}
             </label>
-            <input
-                type="date"
-                class="ti-form-input"  id="expiryDate"
-                formControlName="expiryDate">
+            <input type="date" class="ov-input" id="expiryDate" formControlName="expiryDate">
         </div>
     </div>
     <div>
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.attachments.lblIssuingAuthority' | translate }}
         </label>
         <input
             type="text"
-            class="ti-form-input"
+            class="ov-input"
             formControlName="issuingAuthority"
             placeholder="Enter">
     </div>
-    <div class="border rounded-lg p-4 bg-gray-50">
-        <div class="flex justify-between items-center">
-            <div>
-                <h6 class="text-sm font-medium text-gray-700">
+
+    <div class="flex flex-col">
+        <label class="ov-modal__share">
+            <span class="ov-modal__share-copy">
+                <span class="ov-modal__share-title">
                     {{ 'web.portfolio.popups.attachments.lblShareWithTenant' | translate }}
-                </h6>
-                <p class="text-xs text-gray-400 mt-1">
+                </span>
+                <span class="ov-modal__hint">
                     {{ 'web.portfolio.popups.attachments.lblShareWithTenantHint' | translate }}
-                </p>
-            </div>
-            <label class="switch">
-                <input
-                    type="checkbox"
-                    formControlName="shareWithTenant">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-    <div class="border rounded-lg p-4 bg-gray-50">
-        <div class="flex justify-between items-center">
-            <div>
-                <h6 class="text-sm font-medium text-gray-700">
+                </span>
+            </span>
+            <input type="checkbox" formControlName="shareWithTenant">
+        </label>
+        <label class="ov-modal__share">
+            <span class="ov-modal__share-copy">
+                <span class="ov-modal__share-title">
                     {{ 'web.portfolio.popups.attachments.lblShareWithLandlord' | translate }}
-                </h6>
-                <p class="text-xs text-gray-400 mt-1">
+                </span>
+                <span class="ov-modal__hint">
                     {{ 'web.portfolio.popups.attachments.lblShareWithLandlordHint' | translate }}
-                </p>
-            </div>
-            <label class="switch">
-                <input
-                    type="checkbox"
-                    formControlName="shareWithLandlord">
-                <span class="slider"></span>
-            </label>
+                </span>
+            </span>
+            <input type="checkbox" formControlName="shareWithLandlord">
+        </label>
+    </div>
+
+    <div class="ov-modal__upload">
+        <div class="ov-modal__upload-head">
+            <h6 class="ov-modal__title m-0">
+                {{ 'web.portfolio.popups.attachments.lblUploadFile' | translate }}
+            </h6>
+        </div>
+        <div class="ov-modal__upload-body">
+            <app-file-upload
+                [accept]="'image/*'"
+                [multiple]="false"
+                [browseText]="'Click'"
+                (filesChanged)="onFilesSelected($event)">
+            </app-file-upload>
         </div>
     </div>
-    <div class="box">
-
-    <div class="box-header">
-        <h6 class="box-title">
-            {{ 'web.portfolio.popups.attachments.lblUploadFile' | translate }}           
-        </h6>
-    </div>
-
-    <div class="box-body">
-
-        <app-file-upload
-            [accept]="'image/*'"
-            [multiple]="false"
-            [browseText]="'Click'"
-            
-            (filesChanged)="onFilesSelected($event)"
-            >
-        </app-file-upload>
-
-    </div>
-
-</div>
 </form>

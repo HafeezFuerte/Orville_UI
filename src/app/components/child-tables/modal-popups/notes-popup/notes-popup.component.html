@@ -1,67 +1,57 @@
 
-<form [formGroup]="form" class="space-y-5">
+<form [formGroup]="form" class="flex flex-col gap-4">
     <div>
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.notes.lblSubject' | translate }} <span class="text-danger">*</span>
         </label>
         <input
             type="text"
-            class="ti-form-input"
+            class="ov-input"
             formControlName="subject"
             placeholder="{{ 'web.portfolio.popups.notes.lblEnter' | translate }}">
-        <p class="text-[11px] text-gray-400 mt-1">
+        <span class="ov-modal__hint">
             {{ 'web.portfolio.popups.notes.lblSubjectHint' | translate }}
-        </p>
+        </span>
     </div>
     <div>
-        <label class="ti-form-label">
+        <label class="ov-label">
             {{ 'web.portfolio.popups.notes.lblCommChannel' | translate }}
         </label>
-        <select class="form-control w-full !rounded-md" formControlName="commChannelType">
-                            <option value="" disabled>
-                                {{ 'web.portfolio.popups.notes.lblSelectCommChannel' | translate }}
-                            </option>
-                           <option *ngFor="let commChannel of communicationChannels" [value]="commChannel.id">
-                                {{ commChannel.name }}
-                            </option>
-                        </select>
-        <p class="text-[11px] text-gray-400 mt-1">
+        <select class="ov-input" formControlName="commChannelType">
+            <option value="" disabled>
+                {{ 'web.portfolio.popups.notes.lblSelectCommChannel' | translate }}
+            </option>
+            <option *ngFor="let commChannel of communicationChannels" [value]="commChannel.id">
+                {{ commChannel.name }}
+            </option>
+        </select>
+        <span class="ov-modal__hint">
             {{ 'web.portfolio.popups.notes.lblCommChannelHint' | translate }}
-        </p>
+        </span>
     </div>
     <div>
-        <label>{{ 'web.portfolio.popups.notes.lblContent' | translate }}</label>
-        <ngx-editor-menu
-      [editor]="editor"
-      [toolbar]="toolbar">
-    </ngx-editor-menu>
-
-    <ngx-editor
-      [editor]="editor"
-      formControlName="content"
-      placeholder="{{ 'web.portfolio.popups.notes.lblContent' | translate }}">
-    </ngx-editor>
-    </div>
-    
-    <div class="box">
-
-    <div class="box-header">
-        <h6 class="box-title">
-            {{ 'web.portfolio.popups.notes.lblUploadFile' | translate }}           
-        </h6>
+        <label class="ov-label">{{ 'web.portfolio.popups.notes.lblContent' | translate }}</label>
+        <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor
+            [editor]="editor"
+            formControlName="content"
+            placeholder="{{ 'web.portfolio.popups.notes.lblContent' | translate }}">
+        </ngx-editor>
     </div>
 
-    <div class="box-body">
-
-        <app-file-upload
-            [accept]="'image/*'"
-            [multiple]="false"
-            [browseText]="'Click'" 
-            (filesChanged)="onFilesSelected($event)"
-            >
-        </app-file-upload>
-
+    <div class="rounded-xl border border-defaultborder overflow-hidden">
+        <div class="border-b border-defaultborder px-4 py-3">
+            <h6 class="ov-modal__title !text-[14px] !font-semibold !leading-[18px]">
+                {{ 'web.portfolio.popups.notes.lblUploadFile' | translate }}
+            </h6>
+        </div>
+        <div class="p-4">
+            <app-file-upload
+                [accept]="'image/*'"
+                [multiple]="false"
+                [browseText]="'Click'"
+                (filesChanged)="onFilesSelected($event)">
+            </app-file-upload>
+        </div>
     </div>
-
-</div>
 </form>

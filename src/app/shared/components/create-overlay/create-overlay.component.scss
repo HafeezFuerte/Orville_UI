@@ -1,0 +1,190 @@
+.ov-create-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px 24px;
+}
+
+.ov-create-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(37 37 54 / 0.28);
+}
+
+.ov-create-overlay__stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.ov-create-overlay__close {
+  display: inline-flex;
+  height: 32px;
+  width: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgb(37 37 54 / 0.12);
+
+  img {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+}
+
+.ov-create-overlay__card {
+  display: flex;
+  width: 100%;
+  max-height: min(598px, calc(100vh - 96px));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: var(--custom-white, #fff);
+  padding: 20px 0 0;
+}
+
+.ov-create-overlay__header {
+  flex-shrink: 0;
+  padding: 0 20px 12px;
+}
+
+.ov-create-overlay__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-create-overlay__search-row {
+  flex-shrink: 0;
+  padding: 0 20px;
+}
+
+.ov-create-overlay__search {
+  max-width: none;
+}
+
+.ov-create-overlay__list {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.ov-create-overlay__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.ov-create-overlay__heading {
+  margin: 0;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #bfbfc0;
+}
+
+.ov-create-overlay__items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.ov-create-overlay__row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 15px;
+  border: 0;
+  border-bottom: 1px solid rgb(var(--body-bg));
+  background: transparent;
+  padding: 0 0 10px;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover .ov-create-overlay__label {
+    color: rgb(var(--default-text-color));
+  }
+}
+
+.ov-create-overlay__icon {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgb(var(--body-bg));
+  padding: 5px;
+
+  img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+  }
+}
+
+.ov-create-overlay__label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  color: rgb(var(--text-muted));
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .ov-create-overlay {
+    padding: 16px 12px 12px;
+    align-items: stretch;
+  }
+
+  .ov-create-overlay__stack {
+    max-width: none;
+    height: 100%;
+  }
+
+  .ov-create-overlay__card {
+    max-height: none;
+    flex: 1 1 auto;
+  }
+}
+
+:host-context(.dark),
+:host-context([data-theme-mode='dark']) {
+  .ov-create-overlay__close {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .ov-create-overlay__card {
+    background: rgb(var(--custom-white));
+  }
+}

@@ -1,171 +1,185 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/support-technicians" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
-    </button>
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a routerLink="/contacts/support-technicians" class="ov-back" title="Back to Support Technicians">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Support Technician Details
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer">Contacts</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="hover:text-primary cursor-pointer">Support Technician</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      <h3 class="ov-page-title">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Support Technician Details' }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/support-technicians">Contacts</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/support-technicians">Support Technicians</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    
-    <div class="flex items-center gap-2 ml-4">
-      <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-success/10 text-success">Active</span>
-      
-      <!-- Dropdown button and menu wrapper -->
-      <div class="relative">
-        <button (click)="showActionDropdown = !showActionDropdown" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
-          <i class="ri-more-2-fill text-sm"></i>
-        </button>
-        <!-- Dropdown menu -->
-        <div *ngIf="showActionDropdown" class="absolute right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-          <button *ngFor="let option of actionOptions" (click)="showActionDropdown = false"
-            class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded transition-colors text-left w-full border-0 bg-transparent">
-            <i [class]="option.icon + ' text-gray-400 text-sm'"></i>
-            <span>{{ option.label }}</span>
-          </button>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="ov-grid-card__status">
+      <span class="ov-grid-card__status-dot"></span>
+      Active
+    </span>
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionDropdown = !showActionDropdown"
+        [attr.aria-expanded]="showActionDropdown">
+        Action
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </button>
+      <div *ngIf="showActionDropdown" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="!option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item"
+              [class.ov-action-menu__item--danger-icon]="option.dangerIcon"
+              (click)="$event.stopPropagation(); onTechnicianAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
+        <div class="ov-action-menu__footer" *ngIf="hasDangerAction">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item ov-action-menu__item--danger"
+              (click)="$event.stopPropagation(); onTechnicianAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
     </div>
+    <button type="button" class="ov-btn ov-btn-primary"
+      [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]">
+      Edit Technician
+    </button>
   </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20 animate-fade-in">
-  
-  <!-- LEFT COLUMN (Sticky Sidebar) -->
-  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-y-2">
-    <div class="sticky-sidebar flex flex-col gap-y-2">
-      
-      <!-- Sticky Sidebar content in one single box card -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col gap-4 !mb-2">
-        <!-- Technician Name Header -->
-        <div class="border-b border-gray-100 pb-3">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h6>
-          <p class="text-[10px] text-gray-400 m-0 mt-0.5 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
-          <div class="flex gap-2 mt-2 text-[10px] font-semibold">
-            <button [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]" class="px-4 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Edit Profile</button>
-          </div>
+<div class="ov-detail-layout pb-20">
+  <div class="ov-detail-layout__left flex flex-col gap-3">
+
+    <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
+      <div>
+        <h4 class="ov-card-title">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h4>
+        <p class="ov-card-sub mt-1 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]"
+          [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]">Edit Profile</button>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-5 py-3.5">
+        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Basic Information</h6>
+      </div>
+      <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Name:</span>
+          <span class="ov-kv__value">{{ technicianData?.contact_name || technicianData?.name || technician.name }}</span>
         </div>
-
-        <!-- Information -->
-        <div class="flex flex-col gap-3.5 text-xs">
-          <!-- Basic Info -->
-          <div>
-            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Basic Information</span>
-            <div class="flex flex-col gap-2">
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Name:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.contact_name || technicianData?.name || technician.name }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Email:</span>
-                <span class="text-primary font-bold col-span-2 cursor-pointer break-all">{{ technicianData?.email_address || technicianData?.email || technician.email }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Phone:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.mobile || technicianData?.phone_no || technician.phone }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Username:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technicianData?.user_name || technician.username }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Status:</span>
-                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-success/10 text-success border border-success/20 w-fit">Active</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Work Order Info -->
-          <div class="border-t border-gray-100 pt-3">
-            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Work Order Information</span>
-            <div class="flex flex-col gap-2">
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Assigned Job:</span>
-                <span class="text-gray-800 font-semibold col-span-2 break-all">{{ technicianData?.email_id || technician.assignedJob }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Responsible for WO:</span>
-                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-danger/10 text-danger border border-danger/20 w-fit">No</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- System Info -->
-          <div class="border-t border-gray-100 pt-3">
-            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">System Information</span>
-            <div class="flex flex-col gap-2">
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">ID:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technicianId }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Created At:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.system.createdAt }}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <span class="text-gray-500 font-medium">Last Login At:</span>
-                <span class="text-gray-800 font-bold col-span-2">{{ technician.system.lastLoginAt }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Custom Fields -->
-          <div class="border-t border-gray-100 pt-3">
-            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-2">Custom Fields</span>
-            <span class="text-[10px] text-gray-500 block leading-tight">No custom fields configured yet. Custom fields will appear here when configured.</span>
-          </div>
-
+        <div class="ov-kv">
+          <span class="ov-kv__label">Email:</span>
+          <span class="ov-kv__value ov-link">{{ technicianData?.email_address || technicianData?.email || technician.email }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Phone:</span>
+          <span class="ov-kv__value">{{ technicianData?.mobile || technicianData?.phone_no || technician.phone }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Username:</span>
+          <span class="ov-kv__value">{{ technicianData?.user_name || technician.username }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Status:</span>
+          <span class="ov-detail-chip">Active</span>
         </div>
       </div>
-      
     </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-5 py-3.5">
+        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Work Order Information</h6>
+      </div>
+      <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Assigned Job:</span>
+          <span class="ov-kv__value">{{ technicianData?.email_id || technician.assignedJob }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Responsible for WO:</span>
+          <span class="ov-detail-chip ov-detail-chip--danger">No</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-5 py-3.5">
+        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">System Information</h6>
+      </div>
+      <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-kv">
+          <span class="ov-kv__label">ID:</span>
+          <span class="ov-kv__value">{{ technicianId }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Created At:</span>
+          <span class="ov-kv__value">{{ technician.system.createdAt }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Last Login At:</span>
+          <span class="ov-kv__value">{{ technician.system.lastLoginAt }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-5 py-3.5">
+        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Custom Fields</h6>
+      </div>
+      <div class="ov-kv-empty px-5 py-6 text-center">No custom fields configured yet. Custom fields will appear here when configured.</div>
+    </div>
+
   </div>
 
-  <!-- RIGHT COLUMN (Tabs & Content) -->
-  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-y-2">
-    
-    <!-- Tab Navigation inside White Box -->
-    <div class="bg-white border border-gray-200 rounded-xl p-2 flex !flex-row items-center gap-1 overflow-x-auto shadow-sm mb-2 w-full">
-      <button *ngFor="let tab of tabs" 
-        (click)="setTab(tab)"
-        class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap border-0"
-        [ngClass]="activeTab === tab ? 'text-primary bg-primary/10' : 'text-gray-500 bg-transparent hover:text-gray-800 hover:bg-gray-50'">
-        {{tab}}
-      </button>
+  <div class="ov-detail-layout__right flex flex-col gap-3">
+
+    <div class="ov-detail-tabs">
+      <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
+        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
-    <div *ngIf="activeTab === 'Work Orders'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2 p-4">
-      <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Assigned Work Orders</h6>
+    <div *ngIf="activeTab === 'Work Orders'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
+      <div class="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-defaultborder">
+        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Assigned Work Orders</h6>
       </div>
 
-      <div class="p-4 flex justify-between items-center gap-3 border-b border-gray-100 flex-wrap">
+      <div class="flex justify-between items-center gap-3 flex-wrap">
         <div class="flex items-center gap-2">
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Search" 
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search"
             class="form-control text-xs w-64 bg-gray-50 border border-gray-200 rounded-md py-1.5 px-3 focus:bg-white focus:border-primary transition-all">
-          <button class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [attr.data-tooltip]="'Search'">
-            <i class="ri-search-line text-sm"></i>
+          <button type="button" class="ov-btn ov-btn-ghost !h-8 !w-8 !px-0" [attr.data-tooltip]="'Search'">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" />
           </button>
         </div>
-        
+
         <div class="relative">
-          <button (click)="showColumnDropdown = !showColumnDropdown"
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
+          <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+            class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-            <i class="ri-layout-column-line text-sm"></i>
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
           </button>
-          
+
           <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
             <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
               <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">

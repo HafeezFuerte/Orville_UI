@@ -1,7 +1,8 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent,MatPaginator } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
+import { OvPaginatorComponent } from '../ov-paginator/ov-paginator.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../../components/common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
@@ -10,7 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-shared-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, TranslateModule, MatPaginatorModule],
+  imports: [CommonModule,RouterModule, TranslateModule, OvPaginatorComponent],
   templateUrl: './shared-table.component.html',
   styleUrls: ['./shared-table.component.scss']
 })
@@ -48,6 +49,9 @@ export class SharedTableComponent {
 
   /** Flag to show/hide the action column */
   @Input() hasActions: boolean = false;
+
+  /** Hide Material paginator when the parent renders Figma pagination */
+  @Input() showPaginator: boolean = true;
 
   /** Event emitted when pagination changes */
   @Output() pageChange = new EventEmitter<PageEvent>();

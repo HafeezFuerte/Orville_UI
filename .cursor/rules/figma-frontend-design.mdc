@@ -1,0 +1,88 @@
+---
+description: Figma-driven frontend design — check frame first, no visual drift, no backend, preserve labels, protect Ynex theme switcher
+alwaysApply: true
+---
+
+# Orville UI — Figma Frontend Implementation
+
+Apply these rules on every Figma-driven UI change in this Angular (Ynex) project. Follow this rule **strictly** for all future page/section UI work.
+
+## 0. Check Figma first — no visual drift
+
+- **Before changing any UI**, identify and open the corresponding Figma frame for that page/section (via Figma URL/`node-id`, or locate it in file `qBeLDjf5D3MY9UMTz2maON`). Call `get_design_context` on that frame before editing templates/SCSS.
+- Treat Figma as the source of truth for layout, spacing, typography, colors, radii, shadows, icons, and copy.
+- **Do not allow visual design to drift from Figma** — no “close enough,” invented spacing, alternate component chrome, or redesign from memory/screenshot alone when the frame is available.
+- If the target frame/URL is missing or ambiguous, ask the user for the Figma node before changing UI.
+- After edits, re-check the same Figma frame against the delivery checklist (§8) before marking work done.
+
+## 1. Frontend only — never touch backend
+
+- **Allowed:** templates (`.html`), component styles (`.scss` / Tailwind classes), static assets (images, icons, logos), presentation-only TS (e.g. password visibility toggle).
+- **Forbidden:** API services, auth/API contracts, NgRx effects that call APIs, environments, interceptors, route data contracts, backend endpoints, or changing request/response field names.
+- If Figma says “Email” but the control is still `username`, update **visible label/placeholder only**. Keep form control names and API calls unchanged.
+
+## 2. Do not delete or remove previous text labels
+
+- Never strip existing labels, helper text, links, error messages, or button copy just to simplify the UI.
+- Prefer updating label **wording** to match Figma over removing the label.
+- If the screen has text Figma omits (error alert, loading state, copyright, etc.), keep that behavior unless the user explicitly asks to remove it.
+- Do not delete unused translation keys or sibling auth screens unless asked.
+
+## 3. Design changes only — match Figma
+
+- Scope is visual/layout: spacing, colors (via theme defaults — see §5), typography, borders, radii, assets, alignment, responsive structure.
+- Reuse existing component logic; restyle templates/SCSS to match the Figma node.
+- Export Figma assets into `src/assets/`; do not rely on expiring Figma MCP asset URLs in committed code.
+
+## 4. Protect template theme style and theme color
+
+- **Do not rewrite or break** the Ynex theme switcher system:
+  - `src/app/shared/components/switcher/`
+  - `src/assets/scss/switcher/`
+  - theme CSS variables in `src/assets/scss/_variables.scss` / global theme plumbing
+- **Do not hard-override** primary/theme colors in page or component SCSS (e.g. one-off `!important` on `bg-primary`, `--primary`, button fills) in a way that locks the UI to a fixed hex and ignores the active theme.
+- Prefer theme tokens (`primary`, CSS vars, existing utility classes) so light/dark and switcher colors still apply.
+- Page-specific layout chrome that is intentionally fixed in Figma (e.g. login left-panel navy) may use local styles **only for that screen’s non-theme chrome** — not for global primary/theme color.
+
+## 5. Figma header/sidebar colors are the default theme — switcher stays user-changeable
+
+- Default chrome from the Figma library (header + left sidebar):
+  - **primary brand** `#26264F` → `--primary` / `--primary-rgb`
+  - **Main background** `#F8F8FB` → `--body-bg` / `--default-background`
+  - **Primary-text** `#252536` → `--default-text-color`
+  - **Secondary-text** `#6B6B7D` → `--text-muted`
+  - **Border** `#E4E4EC` → default/header/menu borders
+  - Semantic: Success `#27865B`, Error `#C94A4A`, Information `#3E6FA8`, Warning `#D08A28`
+- **Typeface** `Hanken Grotesk` (Regular 400 / Medium 500 / SemiBold 600 / Bold 700) → `--default-font-family` / `font-hanken`. Use it globally; do not revert chrome to Inter or Montserrat.
+- Default layout: **light (white) sidebar** (`data-menu-styles="light"`) and **light (white) header** (`data-header-styles="light"`). Users can still change Menu Colors / Header Colors in the switcher. Primary brand remains `#26264F`.
+- **Accent gold** `#BD9759` is logo/active-nav chrome in Figma — do **not** set it as `--primary` or `--secondary` (keeps the switcher able to retint primary).
+- Keep template **theme style** and **theme color** switcher behavior intact so users can still change them at runtime. Reset must return to these Figma defaults, not the old Ynex purple/dark combo.
+- Do not remove theme presets or disable the switcher when applying Figma defaults.
+
+## 6. Preserve existing responsive behavior
+
+- Current screens already support mobile-responsive design. Do not strip breakpoints, collapse two-column layouts into one on desktop, or break tablet/mobile stacking while restyling.
+- Keep existing header/sidebar responsive patterns (toggle, overlay, hidden-on-mobile chrome).
+
+## 7. New pages, sections, and components must match Figma DS and be responsive
+
+Whenever creating a new page, section, or UI element:
+
+- Follow the Figma design system: colors (theme tokens), spacing, typography, component styles, header behavior, and sidebar patterns.
+- Make it fully responsive across **mobile, tablet, and desktop**.
+- Reuse existing layout/header/sidebar; do not invent a parallel chrome.
+
+## 8. Delivery checklist (mandatory before saying “done”)
+
+Re-open the matching Figma node and verify:
+
+1. Layout matches (panels, header, sidebar, logo, form/content width/alignment).
+2. Colors, radii, shadows, and buttons match — theme defaults from Figma; no broken switcher.
+3. **Every Figma text string** is present and correct (titles, subtitles, labels, links, CTA, footer).
+4. Previous app labels/behaviors that Figma did not replace are still present.
+5. Interactive UI still works (toggles, links, submit, errors/loading).
+6. Layout still works on mobile, tablet, and desktop.
+7. No backend/service/environment files were modified.
+8. Theme switcher still works; no hard-coded overrides of global theme colors.
+
+Only then report the work as complete.

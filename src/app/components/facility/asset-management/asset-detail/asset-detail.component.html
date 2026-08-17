@@ -1,293 +1,215 @@
-<!-- Asset Detail Page -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <i class="ri-arrow-left-line"></i>
+<!-- Asset Detail — Figma 3081:87391 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Assets" aria-label="Back">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </button>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        Assets Details
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Facility</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="hover:text-primary cursor-pointer" (click)="goBack()">Assets</li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">Details</li>
+      <h3 class="ov-page-title">Assets Details</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a href="javascript:void(0)" (click)="goBack()">Facility</a></li>
+        <li class="px-2">/</li>
+        <li><a href="javascript:void(0)" (click)="goBack()">Assets</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Assets Details</li>
       </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <button (click)="navigateToEdit()" type="button"
-      class="relative z-50 w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-      [attr.data-tooltip]="'Edit Asset'">
-      <i class="ri-edit-line text-sm"></i>
-    </button>
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToEdit()">Edit Asset</button>
   </div>
 </div>
 
-
-
-<!-- Navigation Tabs -->
-<!-- Moved to right column -->
-
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-2 pb-16">
-  
-  <!-- LEFT COLUMN (Sticky Sidebar) -->
-  <div class="xl:col-span-4 lg:col-span-5 flex flex-col gap-[2px]">
-    <div class="sticky-sidebar flex flex-col gap-2">
-      
-      <!-- Asset Header Card -->
-      <div class="box bg-white rounded-xl border border-gray-200 shadow-sm p-5 !mb-0">
-        <div class="flex items-start justify-between mb-4">
-          <div>
-            <h4 class="text-sm font-bold text-gray-800 m-0 mb-1">{{ assetData.name }}</h4>
-            <p class="text-[11px] text-gray-500 m-0">Asset #{{ assetData.id }}</p>
-          </div>
-        </div>
-        <div class="flex items-center justify-end gap-1.5 mt-2">
-          <button type="button"
-            class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'View Activity'">
-            <i class="ri-history-line text-[13px]"></i>
-          </button>
-          <button (click)="navigateToEdit()" type="button"
-            class="w-7 h-7 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Edit Asset'">
-            <i class="ri-edit-line text-[13px]"></i>
-          </button>
-        </div>
+<div class="ov-detail-layout">
+  <aside class="ov-detail-layout__left flex flex-col gap-4">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+      <div>
+        <h4 class="ov-card-title">{{ assetData.name }}</h4>
+        <p class="ov-card-sub !text-[13px]">Asset #{{ assetData.id }}</p>
       </div>
-      
-      <!-- Asset Information -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Asset Information</h6>
-        </div>
-        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">ID:</span> <span class="font-bold text-gray-800">{{ assetData.id }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Name:</span> <span class="font-bold text-gray-800">{{ assetData.name }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Model:</span> <span class="font-bold text-gray-800">{{ assetData.model }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Category:</span> <span class="font-bold text-gray-800">{{ assetData.category }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Subcategory:</span> <span class="font-bold text-gray-800">{{ assetData.subcategory }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Capacity:</span> <span class="font-bold text-gray-800">{{ assetData.capacity }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Color:</span> <span class="font-bold text-gray-800">{{ assetData.color }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Asset Code:</span> <span class="font-bold text-gray-800">{{ assetData.assetCode }}</span></div>
-          <div class="flex gap-2 items-center"><span class="text-gray-500 w-28 shrink-0">Status:</span> 
-            <span class="px-2 py-0.5 rounded bg-success/10 text-success text-[10px] font-bold">{{ assetData.status }}</span>
-          </div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Installation Date:</span> <span class="font-bold text-gray-800">{{ assetData.installationDate }}</span></div>
-          <div class="flex gap-2 items-center"><span class="text-gray-500 w-28 shrink-0">Warranty Status:</span> 
-            <span class="px-2 py-0.5 rounded bg-success text-white text-[10px] font-bold" *ngIf="assetData.warrantyStatus">Active</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Property & Unit -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property & Unit</h6>
-        </div>
-        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Property:</span> <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.property }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Unit:</span> <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.unit }}</span></div>
-        </div>
-      </div>
-
-      <!-- Additional Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Additional Details</h6>
-        </div>
-        <div class="box-body p-4 flex flex-col gap-[2px] text-[11px]">
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Status:</span> <span class="font-bold text-gray-800">{{ assetData.status }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Parts Included:</span> <span class="font-bold text-gray-800">{{ assetData.partsIncluded }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Purchase Date:</span> <span class="font-bold text-gray-800">{{ assetData.purchaseDate }}</span></div>
-          <div class="flex gap-2"><span class="text-gray-500 w-28 shrink-0">Last Updated:</span> <span class="font-bold text-gray-800">{{ assetData.lastUpdated }}</span></div>
-        </div>
-      </div>
-
-      <!-- Custom Fields -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0">
-        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Custom Fields</h6>
-          <button class="text-primary hover:text-blue-700 transition-colors bg-transparent border-0"><i class="ri-add-line text-lg"></i></button>
-        </div>
-        <div class="box-body p-4 text-center text-gray-400 text-[11px] italic">
-          No custom fields added.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN (Tab Content) -->
-  <div class="xl:col-span-8 lg:col-span-7 flex flex-col gap-2">
-    
-    <!-- Tabs Header -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2 overflow-x-auto flex gap-2 !mb-0">
-      <button *ngFor="let tab of tabs" 
-        (click)="setTab(tab)"
-        [class]="activeTab === tab ? 'bg-primary/10 text-primary font-bold border-primary' : 'text-gray-600 font-medium hover:text-gray-800 border-transparent'"
-        class="px-4 py-2 text-xs rounded-md border border-gray-200 transition-all whitespace-nowrap">
-        {{ tab }}
+      <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold w-full">
+        View Activity
       </button>
+
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title m-0">Asset Information</h5>
+      <div class="flex flex-col gap-3">
+        <div class="asset-kv"><span class="asset-kv__label">ID:</span><span class="asset-kv__value">{{ assetData.id }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Name:</span><span class="asset-kv__value">{{ assetData.name }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Model:</span><span class="asset-kv__value">{{ assetData.model }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Manufacturer:</span><span class="asset-kv__value">{{ assetData.manufacturer }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Capacity:</span><span class="asset-kv__value">{{ assetData.capacity }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Category:</span><span class="asset-kv__value">{{ assetData.category }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Area:</span><span class="asset-kv__value">{{ assetData.area }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Location:</span><span class="asset-kv__value">{{ assetData.location }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Barcode:</span><span class="asset-kv__value">{{ assetData.barcode }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Description:</span><span class="asset-kv__value">{{ assetData.description }}</span></div>
+      </div>
     </div>
 
-    <!-- OVERVIEW TAB -->
-    <div *ngIf="activeTab === 'Overview'" class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-0 flex flex-col pt-2 pb-4">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Overview</h6>
-      </div>
-      <div class="box-body p-4 flex flex-col gap-2">
-        
-        <!-- Purchase Information -->
-        <div class="flex flex-col gap-[2px] !mb-0">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5 mb-2">Purchase Information</h6>
-          <div class="grid grid-cols-2 gap-y-4 text-[11px]">
-            <div class="flex flex-col gap-1">
-              <span class="text-gray-500">Purchase Order No:</span>
-              <span class="font-bold text-gray-800">{{ assetData.purchaseOrderNo }}</span>
-            </div>
-            <div class="flex flex-col gap-1">
-              <span class="text-gray-500">Price:</span>
-              <span class="font-bold text-gray-800">{{ assetData.price }}</span>
-            </div>
-            <div class="flex flex-col gap-1">
-              <span class="text-gray-500">Vendor:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ assetData.vendor }}</span>
-            </div>
-          </div>
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Property &amp; Unit</h5>
+      <div class="flex flex-col gap-3">
+        <div class="asset-kv">
+          <span class="asset-kv__label">Property:</span>
+          <a href="javascript:void(0)" class="ov-link font-semibold">{{ assetData.property }}</a>
         </div>
-
-      <!-- Warranty Details -->
-      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Warranty Details</h6>
-        </div>
-        <div class="box-body p-4 grid grid-cols-2 gap-y-4 text-xs">
-          <div class="flex flex-col gap-1">
-            <span class="text-gray-500">Warranty Provider:</span>
-            <span class="font-bold text-gray-800">{{ assetData.warrantyProvider }}</span>
-          </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-gray-500">Warranty Duration:</span>
-            <span class="font-bold text-gray-800">{{ assetData.warrantyDuration }}</span>
-          </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-gray-500">Warranty Start Date:</span>
-            <span class="font-bold text-gray-800">{{ assetData.warrantyStartDate }}</span>
-          </div>
-          <div class="flex flex-col gap-1">
-            <span class="text-gray-500">Warranty End Date:</span>
-            <span class="font-bold text-gray-800">{{ assetData.warrantyEndDate }}</span>
-          </div>
-          <div class="flex flex-col gap-1 col-span-2">
-            <span class="text-gray-500">Warranty Days Remaining:</span>
-            <div class="flex items-center gap-2 mt-1">
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div class="bg-primary h-2.5 rounded-full" [style.width.%]="50"></div>
-              </div>
-              <span class="font-bold text-gray-800 whitespace-nowrap">{{ assetData.warrantyDaysRemaining }} Days Remaining</span>
-            </div>
-          </div>
+        <div class="asset-kv">
+          <span class="asset-kv__label">Unit:</span>
+          <a href="javascript:void(0)" class="ov-link font-semibold">{{ assetData.unit }}</a>
         </div>
       </div>
-
     </div>
 
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Additional Details</h5>
+      <div class="flex flex-col gap-3">
+        <div class="asset-kv">
+          <span class="asset-kv__label">Status:</span>
+          <span class="asset-status">{{ assetData.status }}</span>
+        </div>
+        <div class="asset-kv"><span class="asset-kv__label">Parts Included:</span><span class="asset-kv__value">{{ assetData.partsIncluded }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Created:</span><span class="asset-kv__value">{{ assetData.created }}</span></div>
+        <div class="asset-kv"><span class="asset-kv__label">Last Updated:</span><span class="asset-kv__value">{{ assetData.lastUpdated }}</span></div>
+      </div>
     </div>
-    <!-- End Overview Tab -->
 
-    <!-- PARTS TAB -->
-    <div *ngIf="activeTab === 'Part'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-      <div class="box-body p-4">
-        <div class="flex items-center justify-between mb-4">
-          <div class="relative w-64">
-            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+    <div class="ov-card py-5">
+      <div class="px-5">
+        <h5 class="ov-card-title m-0">Custom Fields</h5>
+      </div>
+      <div class="border-t border-defaultborder my-5"></div>
+      <div class="px-5">
+        <p class="ov-kv-empty m-0">No value set</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ov-detail-layout__right min-w-0">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="ov-detail-tabs">
+        <button type="button" *ngFor="let tab of tabs" (click)="setTab(tab)"
+          class="ov-detail-tabs__btn" [class.is-active]="activeTab === tab">
+          {{ tab }}
+        </button>
+      </div>
+
+      <div class="p-5 flex flex-col gap-4" *ngIf="activeTab === 'Overview'">
+        <section class="asset-panel">
+          <h5 class="asset-panel__title">Purchase Information</h5>
+          <div class="asset-panel__grid">
+            <div>
+              <span class="asset-panel__label">Purchase Date</span>
+              <span class="asset-panel__value">{{ assetData.purchaseDate }}</span>
+            </div>
+            <div>
+              <span class="asset-panel__label">Purchase Price</span>
+              <span class="asset-panel__value">{{ assetData.price }}</span>
+            </div>
+            <div>
+              <span class="asset-panel__label">Warranty Start Date</span>
+              <span class="asset-panel__value">{{ assetData.warrantyStartDate }}</span>
+            </div>
           </div>
-          <button type="button"
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Add Part'">
-            <i class="ri-add-line text-[1rem]"></i>
+        </section>
+
+        <section class="asset-panel">
+          <h5 class="asset-panel__title">Warranty Details</h5>
+          <div class="asset-panel__grid">
+            <div>
+              <span class="asset-panel__label">Warranty Status</span>
+              <span class="asset-panel__value">{{ assetData.warrantyStatusLabel }}</span>
+            </div>
+            <div>
+              <span class="asset-panel__label">Warranty Start</span>
+              <span class="asset-panel__value">{{ assetData.warrantyStartDate }}</span>
+            </div>
+            <div>
+              <span class="asset-panel__label">Warranty Exp</span>
+              <span class="asset-panel__value">{{ assetData.warrantyEndDate }}</span>
+            </div>
+            <div>
+              <span class="asset-panel__label">Warranty Responsibility</span>
+              <span class="asset-panel__value">{{ assetData.warrantyResponsibility }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="p-5" *ngIf="activeTab === 'Part'">
+        <div class="ov-toolbar !px-0 !border-0 !h-auto mb-4">
+          <div class="ov-search flex-1 max-w-[280px]">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+            <input type="text" class="ov-input ov-search__input" placeholder="Search...">
+          </div>
+          <button type="button" class="ov-btn ov-btn-primary !h-9" data-tooltip="Add Part">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="asset-ico asset-ico--on-primary" />
+            Add Part
           </button>
         </div>
-        <app-shared-table 
-          [columns]="partColumns" 
-          [data]="parts" 
-          [pageSize]="10">
-          
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'id'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+        <div class="overflow-x-auto">
+          <app-shared-table [columns]="partColumns" [data]="parts" [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container *ngIf="col.key === 'id'">
+                <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
               </ng-container>
-            </ng-container>
-          </ng-template>
-
-        </app-shared-table>
+            </ng-template>
+          </app-shared-table>
+        </div>
       </div>
-    </div>
 
-    <!-- WORK ORDERS TAB -->
-    <div *ngIf="activeTab === 'Work Orders'" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-      <div class="box-body p-4">
-        <div class="flex items-center justify-between mb-4">
-          <div class="relative w-64">
-            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:border-primary transition-all">
+      <div class="p-5" *ngIf="activeTab === 'Work Orders'">
+        <div class="ov-toolbar !px-0 !border-0 !h-auto mb-4">
+          <div class="ov-search flex-1 max-w-[280px]">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+            <input type="text" class="ov-input ov-search__input" placeholder="Search...">
           </div>
-          <button (click)="navigateToAddWorkOrder()" type="button"
-            class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm"
-            [attr.data-tooltip]="'Add Work Order'">
-            <i class="ri-add-line text-[1rem]"></i>
+          <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="navigateToAddWorkOrder()"
+            data-tooltip="Add Work Order">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="asset-ico asset-ico--on-primary" />
+            Add Work Order
           </button>
         </div>
-        <app-shared-table 
-          [columns]="workOrderColumns" 
-          [data]="workOrders" 
-          [pageSize]="10">
-          
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'id'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
+        <div class="overflow-x-auto">
+          <app-shared-table [columns]="workOrderColumns" [data]="workOrders" [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'property'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'unit'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'vendor'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'priority'">
+                  <span class="ov-status"
+                    [ngClass]="{'ov-status--blocked': row.priority === 'High', 'ov-status--warning': row.priority === 'Medium', 'ov-status--active': row.priority === 'Low'}">
+                    {{ row.priority }}
+                  </span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span class="asset-status">{{ row.status }}</span>
+                </ng-container>
               </ng-container>
-              <ng-container *ngSwitchCase="'property'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="'unit'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="'vendor'">
-                <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row[col.key] }}</span>
-              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+      </div>
 
-              <ng-container *ngSwitchCase="'priority'">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
-                      [ngClass]="{'bg-danger/10 text-danger': row.priority === 'High', 'bg-warning/10 text-warning': row.priority === 'Medium', 'bg-success/10 text-success': row.priority === 'Low'}">
-                  {{ row.priority }}
-                </span>
-              </ng-container>
+      <div class="p-5" *ngIf="activeTab === 'Financials'">
+        <h5 class="ov-card-title mb-2">Financials</h5>
+        <p class="ov-card-sub m-0">No financial records for this asset yet.</p>
+      </div>
 
-              <ng-container *ngSwitchCase="'status'">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold" 
-                      [ngClass]="{'bg-[#1f2b45] text-white': row.status === 'Open', 'bg-warning text-white': row.status === 'Pending', 'bg-gray-200 text-gray-600': row.status === 'Closed'}">
-                  {{ row.status }}
-                </span>
-              </ng-container>
-            </ng-container>
-          </ng-template>
-
-        </app-shared-table>
+      <div class="p-5" *ngIf="activeTab === 'Attachments'">
+        <h5 class="ov-card-title mb-4">Attachments</h5>
+        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
       </div>
     </div>
-
-    <!-- ATTACHMENTS TAB -->
-    <div *ngIf="activeTab === 'Attachments'" class="box rounded-xl bg-white border border-gray-100 shadow-sm p-4 flex flex-col gap-3 animate-fade-in !mb-0">
-       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
-    </div>
-
   </div>
 </div>

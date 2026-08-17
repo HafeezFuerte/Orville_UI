@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -86,8 +86,11 @@ export class ParkingsListComponent implements OnInit {
     { key: 'cycle', label: 'Cycle', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'remarks', label: 'Remarks', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'created_date', label: 'Created', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'modified_date', label: 'Updated', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'modified_date', label: 'Updated', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
+
+  openActionCode: string | number | null = null;
 
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
@@ -377,6 +380,71 @@ export class ParkingsListComponent implements OnInit {
     }
   }
 
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openActionCode = null;
+  }
+
+  toggleRowAction(code: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+
+  viewParking(row: any): void {
+    this.openActionCode = null;
+    this.editParking(row);
+  }
+
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    return (this.displayPage - 1) * this.pageSize + 1;
+  }
+
+  get endRecord(): number {
+    const end = this.displayPage * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  onPageSizeChange(event: any): void {
+    this.pageNo = 0;
+    this.userChangedPageSize = true;
+    this.loadParkings();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadParkings();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageNo++;
+      this.loadParkings();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo - 1) {
+      this.pageNo = page - 1;
+      if (this.pageNo < 0) this.pageNo = 0;
+      this.loadParkings();
+    }
+  }
+
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
     if(event.pageIndex>this.pageNo){
       this.pageNo = this.pageNo + 1;
@@ -393,8 +461,7 @@ export class ParkingsListComponent implements OnInit {
     this.userChangedPageSize = true;
     this.loadParkings();
   }
- 
-   
+
   trackByParkingId(index: number, item: Parking): number {
     return item.id;
   }

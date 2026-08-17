@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -99,7 +99,10 @@ export class WorkOrderDetailComponent implements OnInit {
 
   // Popup states
   showStatusDropdown = false;
+  showActionMenu = false;
+  showMoreDetails = true;
   activePersonnelPopup: string | null = null;
+  statusOptions = ['Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Escalated', 'Re-Opened'];
 
   // Mock Data
   workOrderDetails = {
@@ -125,8 +128,15 @@ export class WorkOrderDetailComponent implements OnInit {
     responsiblePerson: '-',
     technician: '-',
     vendor: '-',
+    vendorTechnician: 'Not Assigned',
     landlord: '-'
   };
+
+  beforeImages: { name: string; url: string }[] = [
+    { name: 'image.jpg', url: 'assets/images/work-order-detail/before-sample.jpg' }
+  ];
+  afterImages: { name: string; url: string }[] = [];
+  videos: { name: string; url: string }[] = [];
 
   costs: any[] = [];
 
@@ -292,6 +302,7 @@ export class WorkOrderDetailComponent implements OnInit {
               responsiblePerson: data.responsiblePerson || '-',
               technician: data.technician || '-',
               vendor: data.vendor || '-',
+              vendorTechnician: data.vendorTechnician || data.vendor_technician || 'Not Assigned',
               landlord: data.landlord || '-'
             };
             const noteList = res.objResult.table1 || res.objResult.note || res.objResult.notes || res.objResult.note_dtls;
@@ -419,12 +430,69 @@ export class WorkOrderDetailComponent implements OnInit {
     });
   }
 
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showActionMenu = false;
+    this.showStatusDropdown = false;
+    this.activePersonnelPopup = null;
+  }
+
   navigateToEdit() {
+    this.showActionMenu = false;
     this.router.navigate(['/facility/work-orders/edit', this.workOrderId]);
+  }
+
+  onWorkOrderAction(action: string): void {
+    this.showActionMenu = false;
+    if (action === 'edit') {
+      this.navigateToEdit();
+    }
+    // invoice / feedback / report / email / activity / archive — UI only (no API)
   }
 
   goBack() {
     this.router.navigate(['/facility/work-orders']);
+  }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
+    this.showStatusDropdown = false;
+    this.showActionMenu = false;
+    this.activePersonnelPopup = null;
+  }
+
+  selectStatus(status: string): void {
+    this.workOrderDetails.closingStatus = status;
+    this.showStatusDropdown = false;
+  }
+
+  toggleMoreDetails(): void {
+    this.showMoreDetails = !this.showMoreDetails;
+  }
+
+  priorityBadgeClass(priority?: string): string {
+    const value = (priority || '').toLowerCase();
+    if (value === 'high' || value === 'emergency' || value === 'critical') {
+      return 'wo-badge wo-badge--danger';
+    }
+    if (value === 'medium') {
+      return 'wo-badge wo-badge--warning';
+    }
+    if (value === 'low') {
+      return 'wo-badge wo-badge--success';
+    }
+    return 'wo-badge';
+  }
+
+  initials(name?: string): string {
+    if (!name || name === '-') {
+      return '--';
+    }
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
   openAddCostModal() {

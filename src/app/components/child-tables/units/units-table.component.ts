@@ -1,7 +1,7 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,11 +9,12 @@ import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 
 @Component({
   selector: 'app-shared-units-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule, FilterDrawerComponent],
+  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, FilterDrawerComponent, OvPaginatorComponent],
   templateUrl: './units-table.component.html',
   styleUrls: ['./units-table.component.scss']
 })

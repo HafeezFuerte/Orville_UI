@@ -127,24 +127,50 @@ export class LandlordDetailComponent implements OnInit {
   showAddUserModal = false;
   showAddEmergencyContactModal = false;
 
-  // Landlord action dropdown options
-  actionOptions = [
-    { label: 'Edit Landlord', icon: 'ri-edit-line' },
-    { label: 'Inflow', icon: 'ri-arrow-right-down-line' },
-    { label: 'Outflow', icon: 'ri-arrow-left-up-line' },
-    { label: 'Landlord Contribution', icon: 'ri-coins-line' },
-    { label: 'Landlord Distribution', icon: 'ri-hand-coin-line' },
-    { label: 'Add Notes', icon: 'ri-sticky-note-line' },
-    { label: 'Add Attachment', icon: 'ri-attachment-line' },
+  // Landlord action dropdown options (Figma landlord-detail Action menu)
+  actionOptions: {
+    label: string;
+    icon: string;
+    asset?: string;
+    danger?: boolean;
+    dangerIcon?: boolean;
+  }[] = [
+    { label: 'Edit Landlord', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+    { label: 'Inflow', icon: 'ri-download-line' },
+    { label: 'Outflow', icon: 'ri-upload-line' },
+    { label: 'Landlord Contribution', icon: 'ri-pie-chart-line' },
+    { label: 'Landlord Distribution', icon: 'ri-git-branch-line' },
+    { label: 'Add Notes', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
+    { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
     { label: 'Add User', icon: 'ri-user-add-line' },
     { label: 'Add Emergency Contact', icon: 'ri-phone-line' },
     { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
-    { label: 'Request for Approval', icon: 'ri-checkbox-circle-line' },
-    { label: 'Send Email', icon: 'ri-mail-send-line' },
-    { label: 'View Activity', icon: 'ri-history-line' },
-    { label: 'Block Landlord', icon: 'ri-prohibit-line' },
-    { label: 'Archive', icon: 'ri-archive-line' }
+    { label: 'Request for Approval', icon: 'ri-checkbox-line' },
+    { label: 'Send Email', icon: 'ri-mail-line' },
+    { label: 'View Activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+    { label: 'Block Landlord', icon: 'ri-forbid-line', dangerIcon: true },
+    { label: 'Archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
   ];
+
+  get hasDangerAction(): boolean {
+    return this.actionOptions.some((o: any) => o.danger);
+  }
+
+  onLandlordAction(label: string): void {
+    this.showActionDropdown = false;
+    if (label === 'Edit Landlord') {
+      window.location.href = '/contacts/landlords/edit-landlord/' + this.landlordId;
+      return;
+    }
+    if (label === 'Inflow') this.showInflowModal = true;
+    else if (label === 'Outflow') this.showOutflowModal = true;
+    else if (label === 'Landlord Contribution') this.showContributionModal = true;
+    else if (label === 'Landlord Distribution') this.showDistributionModal = true;
+    else if (label === 'Add Notes') this.showAddNoteModal = true;
+    else if (label === 'Add Attachment') this.showAddAttachmentModal = true;
+    else if (label === 'Add User') this.showAddUserModal = true;
+    else if (label === 'Add Emergency Contact') this.showAddEmergencyContactModal = true;
+  }
 
   // Email subscriptions list
   subscriptions = [
@@ -158,6 +184,15 @@ export class LandlordDetailComponent implements OnInit {
     { name: 'Hold Payment', subscribed: true },
     { name: 'Invoice Cleared', subscribed: false }
   ];
+
+  get allSubscriptionsSelected(): boolean {
+    return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);
+  }
+
+  toggleAllSubscriptions(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.subscriptions.forEach(s => (s.subscribed = checked));
+  }
 
   // Landlord profile configurations & details
   landlord = {

@@ -36,7 +36,6 @@ cities: any = [];
 amenities: any = [];
 accounts: any = [];
 selectedAmenities: number[] = [];
-selectAllAmenities = false;
 propertyCode: string = '';
 is_edit:boolean=false;
 commonData: any = [];
@@ -159,7 +158,7 @@ loadProperty(){
           
             const amenities = res.objResult.amenities || [];
 
-            this.selectedAmenities = amenities.map((item: any) => item.id);
+            this.selectedAmenities = amenities.map((item: any) => Number(item.id));
 
             // Enable the switch if there is at least one amenity
             this.propertyForm.patchValue({
@@ -206,33 +205,34 @@ removePayment(index: number): void {
   }
 }
 
-onAmenityChange(event: Event, id: number): void {
+get allAmenitiesSelected(): boolean {
+  const list = this.amenities || [];
+  return list.length > 0 && list.every((item: { id: number | string }) => this.isAmenitySelected(item.id));
+}
+
+onAmenityChange(event: Event, id: number | string): void {
   const checked = (event.target as HTMLInputElement).checked;
+  const amenityId = Number(id);
 
   if (checked) {
-    if (!this.selectedAmenities.includes(id)) {
-      this.selectedAmenities.push(id);
+    if (!this.isAmenitySelected(amenityId)) {
+      this.selectedAmenities = [...this.selectedAmenities, amenityId];
     }
   } else {
-    this.selectedAmenities = this.selectedAmenities.filter(x => x !== id);
+    this.selectedAmenities = this.selectedAmenities.filter((x) => Number(x) !== amenityId);
   }
-  this.selectAllAmenities =
-    this.selectedAmenities.length === this.amenities.length;
 }
+
 onSelectAllAmenities(event: Event): void {
   const checked = (event.target as HTMLInputElement).checked;
-
-  this.selectAllAmenities = checked;
-
-  if (checked) {
-    this.selectedAmenities = this.amenities.map((x: { id: any; }) => x.id);
-  } else {
-    this.selectedAmenities = [];
-  }
+  this.selectedAmenities = checked
+    ? (this.amenities || []).map((item: { id: unknown }) => Number(item.id))
+    : [];
 }
 
-isAmenitySelected(id: number): boolean {
-  return this.selectedAmenities.includes(id);
+isAmenitySelected(id: number | string): boolean {
+  const amenityId = Number(id);
+  return this.selectedAmenities.some((x) => Number(x) === amenityId);
 }
 showValidationError(message: string): void {
   this.toastr.error(message, 'Validation', {
