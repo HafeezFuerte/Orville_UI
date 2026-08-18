@@ -1,4 +1,4 @@
-<div class="rpt-page" *ngIf="report">
+<div class="flex flex-col gap-4 pb-8" *ngIf="report">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
       <button type="button" class="ov-back" (click)="goBack()" title="Back to reports">
@@ -19,12 +19,12 @@
     </div>
   </div>
 
-  <div class="ov-card rpt-company">
-    <p class="rpt-company__name">{{ report.company }}</p>
+  <div class="ov-card px-5 py-4">
+    <p class="m-0 text-[16px] font-bold leading-[21px] text-defaulttextcolor">{{ report.company }}</p>
   </div>
 
-  <div class="ov-card rpt-filter" *ngIf="!report.hideDateFilter">
-    <div class="rpt-filter__fields">
+  <div class="ov-card flex flex-wrap items-end justify-between gap-4 p-5" *ngIf="!report.hideDateFilter">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-w-0 md:max-w-[576px]">
       <div>
         <label class="ov-label">From date</label>
         <div class="ov-date">
@@ -37,29 +37,29 @@
         <label class="ov-label">End Date</label>
         <div class="ov-date">
           <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-          <input type="text" class="ov-input" name="toDate" [(ngModel)]="toDate"
+          <input type="text" class="ov-input" name="toDate" [(ngModel)]="toDate">
             mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
         </div>
       </div>
     </div>
-    <div class="rpt-filter__actions">
+    <div class="flex shrink-0 items-center gap-2.5">
       <button type="button" class="ov-btn ov-btn-primary" (click)="applyFilter()">Apply Filter</button>
       <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilter()">Cancel</button>
     </div>
   </div>
 
-  <div class="ov-card rpt-filter" *ngIf="report.yearFilter">
-    <div class="rpt-filter__fields">
+  <div class="ov-card flex flex-wrap items-end justify-between gap-4 p-5" *ngIf="report.yearFilter">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-w-0 md:max-w-[576px]">
       <div>
         <label class="ov-label">Financial year</label>
-        <ng-select [(ngModel)]="year" [items]="report.yearOptions || []" [clearable]="false"
+        <ng-select [(ngModel)]="year" [items]="report.yearOptions || []" [clearable]="false">
           name="reportYear" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
     </div>
   </div>
 
-  <div class="rpt-kpis" *ngIf="report.kpis.length" [class.rpt-kpis--4]="report.kpis.length === 4">
-    <div class="ov-card rpt-kpi" *ngFor="let kpi of report.kpis">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4" *ngIf="report.kpis.length" [class.xl:grid-cols-4]="report.kpis.length === 4" [class.md:grid-cols-2]="report.kpis.length === 4">
+    <div class="ov-card flex flex-col items-start gap-1.5 p-5" *ngFor="let kpi of report.kpis">
       <span class="ov-kpi__badge">{{ kpi.label }}</span>
       <div class="ov-kpi__val">{{ kpi.value }}</div>
       <div class="ov-kpi__sub">{{ kpi.sub }}</div>

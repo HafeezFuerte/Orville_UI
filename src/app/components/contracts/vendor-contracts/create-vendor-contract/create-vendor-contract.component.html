@@ -52,13 +52,13 @@
       </div>
 
       <div class="ov-card">
-        <div class="ov-card__head llc-card-head-row">
+        <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
             <h6 class="ov-card-title">Contract Units</h6>
             <p class="ov-card-sub">Select units from the contract properties above.</p>
           </div>
           <div class="llc-menu" (click)="$event.stopPropagation()">
-            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="toggleUnitMenu($event)">Add Unit</button>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleUnitMenu($event)">Add Unit</button>
             <div class="llc-menu__list" *ngIf="unitMenuOpen">
               <button type="button" (click)="addUnit()">Add Unit</button>
               <button type="button" (click)="addAllUnits()">Add All Units</button>
@@ -73,7 +73,7 @@
                 [clearable]="true" placeholder="Select Unit" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
-          <div class="llc-chip-list">
+          <div class="mt-4 flex flex-col gap-2">
             <div class="llc-chip" *ngFor="let unit of selectedUnits">
               <span>{{ unit }}</span>
               <button type="button" class="llc-chip__x" (click)="removeUnit(unit)" aria-label="Remove unit">
@@ -85,13 +85,13 @@
       </div>
 
       <div class="ov-card">
-        <div class="ov-card__head llc-card-head-row">
+        <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
             <h6 class="ov-card-title">Contract Rooms</h6>
             <p class="ov-card-sub">Select rooms from the contract properties above.</p>
           </div>
           <div class="llc-menu" (click)="$event.stopPropagation()">
-            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="toggleRoomMenu($event)">Add Room</button>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleRoomMenu($event)">Add Room</button>
             <div class="llc-menu__list" *ngIf="roomMenuOpen">
               <button type="button" (click)="addRoom()">Add Room</button>
               <button type="button" (click)="addAllRooms()">Add All Rooms</button>
@@ -106,7 +106,7 @@
                 [clearable]="true" placeholder="Select Room" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
-          <div class="llc-chip-list" *ngIf="selectedRooms.length">
+          <div class="mt-4 flex flex-col gap-2" *ngIf="selectedRooms.length">
             <div class="llc-chip" *ngFor="let room of selectedRooms">
               <span>{{ room }}</span>
               <button type="button" class="llc-chip__x" (click)="removeRoom(room)" aria-label="Remove room">
@@ -203,17 +203,17 @@
       </div>
 
       <div class="ov-card">
-        <div class="ov-card__head llc-card-head-row">
+        <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
             <h6 class="ov-card-title">Payment Schedule</h6>
             <p class="ov-card-sub">Select from the options below to set the payment schedule. You can set a recurring schedule or a one-time schedule, or use Generate Schedules above to auto-create from fee settings.</p>
           </div>
-          <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="addPayment()">Add Payment</button>
+          <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="addPayment()">Add Payment</button>
         </div>
         <div class="ov-card__body">
-          <div class="llc-schedules-bar">
+          <div class="flex items-center justify-between gap-3">
             <span class="ov-label !mb-0">Schedules</span>
-            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="clearSchedules()">Delete Schedules</button>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="clearSchedules()">Delete Schedules</button>
           </div>
           <div class="llc-table-wrap">
             <table class="llc-table">
@@ -235,7 +235,7 @@
                   <td>{{ row.recurrence }}</td>
                   <td>{{ row.paymentVia }}</td>
                   <td>
-                    <div class="llc-row-actions">
+                    <div class="flex items-center gap-2">
                       <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit">
                         <img src="assets/images/action-menu/pencil.svg" alt="" width="16" height="16">
                       </button>
@@ -256,11 +256,11 @@
           <h6 class="ov-card-title">Commission Details</h6>
           <p class="ov-card-sub">You can add vendor commission in percentage or fixed from below. You can add agents in specific commission.</p>
         </div>
-        <div class="ov-card__body llc-commission">
+        <div class="ov-card__body flex flex-col gap-4">
           <div class="llc-panel">
             <div class="llc-panel__head">
               <span>Charge from Vendor</span>
-              <button type="button" class="ov-btn ov-btn-ghost llc-head-btn">
+              <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap">
                 View
                 <img src="assets/images/myday/external-link.svg" alt="" width="14" height="14">
               </button>
@@ -307,11 +307,11 @@
                 <p class="llc-panel__meta">Available Balance: <strong>AED 0.00</strong></p>
               </div>
               <div class="llc-panel__actions">
-                <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" disabled>Add Company Commission</button>
-                <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" disabled>Add Agent Commission</button>
+                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>Add Company Commission</button>
+                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>Add Agent Commission</button>
               </div>
             </div>
-            <p class="llc-empty">No agent commissions added yet.</p>
+            <p class="mt-2 mb-0 text-center text-sm text-textmuted">No agent commissions added yet.</p>
           </div>
         </div>
       </div>
@@ -324,7 +324,7 @@
           <div class="ov-fields">
             <div class="ov-fields__full">
               <label class="ov-label">Notes</label>
-              <textarea class="ov-input llc-notes" name="notes" [(ngModel)]="form.notes" placeholder="Note enter here..."></textarea>
+              <textarea class="ov-input min-h-[100px] pt-3 resize-y" name="notes" [(ngModel)]="form.notes" placeholder="Note enter here..."></textarea>
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Attachments</label>
@@ -346,18 +346,18 @@
         <div class="ov-card__head">
           <h6 class="ov-card-title">Contract Summary</h6>
         </div>
-        <div class="ov-card__body llc-summary">
+        <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <p class="llc-summary__label">Status</p>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">Status</p>
             <span class="ov-status ov-status--muted">Draft</span>
           </div>
           <div>
-            <p class="llc-summary__label">Vendor</p>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">Vendor</p>
             <span class="llc-chip llc-chip--summary">{{ form.vendor || '—' }}</span>
           </div>
           <div>
-            <p class="llc-summary__label">Properties</p>
-            <div class="llc-chip-row">
+            <p class="m-0 mb-1 text-[13px] text-textmuted">Properties</p>
+            <div class="flex flex-wrap gap-2">
               <span class="llc-chip llc-chip--summary">
                 Marina Height Tower
                 <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
@@ -369,8 +369,8 @@
             </div>
           </div>
           <div>
-            <p class="llc-summary__label">Units</p>
-            <div class="llc-chip-row">
+            <p class="m-0 mb-1 text-[13px] text-textmuted">Units</p>
+            <div class="flex flex-wrap gap-2">
               <span class="llc-chip llc-chip--summary" *ngFor="let unit of selectedUnits">
                 {{ unit }}
                 <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">

@@ -20,7 +20,8 @@ export interface Menu {
   children2?: Menu[];
   Menusub?: boolean;
   target?: boolean;
-  menutype?: string
+  menutype?: string;
+  exact?: boolean;
 }
 
 @Injectable({
