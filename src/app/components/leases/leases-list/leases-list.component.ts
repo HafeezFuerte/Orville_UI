@@ -91,15 +91,18 @@ export class LeasesListComponent implements OnInit {
   } 
   loadLeases() {
     const filterList: any[] = [];
-    if (this.activeStatusFilter && this.activeStatusFilter!="All") {
-      filterList.push({'key':'P.status','value': this.activeStatusFilter});
+    if (this.activeStatusFilter && this.activeStatusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.activeStatusFilter });
     }
-    // if (this.selectedStatus) {
-    //   filterList.push({ key: 'p.status', value: this.selectedStatus });
-    // }
-    // if (this.selectedType) {
-    //   filterList.push({ key: 'p.parking_type', value: this.selectedType });
-    // }
+    if (this.filterTenant) {
+      filterList.push({ 'key': 'tenant', 'value': this.filterTenant });
+    }
+    if (this.filterProperty) {
+      filterList.push({ 'key': 'property', 'value': this.filterProperty });
+    }
+    if (this.filterStatus) {
+      filterList.push({ 'key': 'P.status', 'value': this.filterStatus });
+    }
 
     const payload = {
       userid: this.currentUser?.userId,
@@ -119,20 +122,29 @@ export class LeasesListComponent implements OnInit {
     this.commontabservice.getCommonGrid(payload).subscribe({
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.allLeases=response.objResult.leases  
-          if(response.objResult.rows_info)
-          {
-            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
-            this.totalPages=response.objResult.rows_info[0].noofpages;
+          this.allLeases = response.objResult.leases || [];
+          this.filteredLeases = this.allLeases;
+          this.paginatedLeases = this.allLeases;
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
           }
-        }
-        else
+        } else {
+          this.allLeases = [];
+          this.filteredLeases = [];
+          this.paginatedLeases = [];
+          this.totalRecords = 0;
+          this.totalPages = 0;
           this.toastr.error("No record[s] found");
-
+        }
       },
       error: (err: any) => {
-        console.error('Error loading parkings:', err);
-        this.applyFilters();
+        console.error('Error loading leases:', err);
+        this.allLeases = [];
+        this.filteredLeases = [];
+        this.paginatedLeases = [];
+        this.totalRecords = 0;
+        this.totalPages = 0;
       }
     });
   }
@@ -344,20 +356,20 @@ export class LeasesListComponent implements OnInit {
 
   onPageSizeChange(): void {
     this.pageNo = 0;
-    this.applyFilters();
+    this.loadLeases();
   }
 
   previousPage(): void {
     if (this.pageNo > 0) {
       this.pageNo--;
-      this.updatePaginatedLeases();
+      this.loadLeases();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < (this.totalPages || 1)) {
       this.pageNo++;
-      this.updatePaginatedLeases();
+      this.loadLeases();
     }
   }
 
@@ -365,7 +377,7 @@ export class LeasesListComponent implements OnInit {
     const target = page - 1;
     if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
       this.pageNo = target;
-      this.updatePaginatedLeases();
+      this.loadLeases();
     }
   }
 }

@@ -114,33 +114,50 @@
         <ng-container [ngSwitch]="col.key">
 
           <ng-container *ngSwitchCase="'id'">
-            <a [routerLink]="['/leases', row.id]" class="ov-link font-semibold">{{ row.id }}</a>
+            <a [routerLink]="['/leases', row.lease_code]" class="ov-link font-semibold">{{ row.lease_code }}</a>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'status'">
+          <ng-container *ngSwitchCase="'active_lease'">
+            <a [routerLink]="['/leases', row.lease_code]" class="ov-link font-semibold">{{ row.active_lease }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'tenant'">
+            <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="ov-link font-semibold">{{ row.tenant }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'property'">
+            <a [routerLink]="['/properties', row.property_code]" class="ov-link font-semibold">{{ row.property }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'unit_code'">
+            <a [routerLink]="['/units', row.unitcode]" class="ov-link font-semibold">{{ row.unit_code }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'status_nm'">
             <span class="ov-status"
-              [class.ov-status--active]="row.status === 'Active'"
-              [class.ov-status--muted]="row.status === 'Draft'"
-              [class.ov-status--soft]="row.status === 'Completed'"
-              [class.ov-status--warning]="row.status === 'Pending Approvals'">
-              {{ row.status === 'Pending Approvals' ? 'Pending' : row.status }}
+              [class.ov-status--active]="row.status_nm === 'Active'"
+              [class.ov-status--muted]="row.status_nm === 'Draft'"
+              [class.ov-status--soft]="row.status_nm === 'Completed'"
+              [class.ov-status--warning]="row.status_nm === 'Pending' || row.status_nm === 'Pending Approvals'"
+              [ngClass]="row.class_name || ''">
+              {{ getArabicLookupName(row, 'status_nm') }}
             </span>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'rent'">
-            <span class="text-[14px] font-semibold text-defaulttextcolor">AED {{ row.rent | number:'1.2-2' }}</span>
+          <ng-container *ngSwitchCase="'rent_amount'">
+            <span class="text-[14px] font-semibold text-defaulttextcolor">AED {{ row.rent_amount | number:'1.2-2' }}</span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'action'">
             <div class="relative inline-flex" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row.lease_code, $event)">
                 <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
-              <div *ngIf="openActionId === row.id"
+              <div *ngIf="openActionId === row.lease_code"
                 class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/leases', row.id]"
+                  [routerLink]="['/leases', row.lease_code]"
                   (click)="openActionId = null">View</a>
               </div>
             </div>

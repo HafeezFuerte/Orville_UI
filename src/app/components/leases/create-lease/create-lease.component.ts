@@ -40,6 +40,7 @@ export class CreateLeaseComponent implements OnInit {
   showAddPayment:boolean=false; 
   lease_id:number=0;
   isLoading:boolean=false;
+  isDetailsMapped:boolean=false;
   // Form Fields
   selectedTenant: any = null;
   selectedProperty: any = null;
@@ -156,6 +157,8 @@ export class CreateLeaseComponent implements OnInit {
               this.additionalbloc.paying_date=formatDate(this.leaseInfo?.paying_date, 'yyyy-MM-dd', 'en-US');
               this.additionalbloc.created_by=this.leaseInfo?.createdby;
               this.isShortTerm=this.leaseInfo?.is_lease_short_term;
+              this.mapSelectedObjects();
+              this.loadLookup(44,0, 'unitsList', this.selectedProperty);
             }
             if(res.objResult.table1){
               res.objResult.table1.forEach((element:any,index:number) => {
@@ -192,6 +195,48 @@ export class CreateLeaseComponent implements OnInit {
       }
     });
   }
+  mapSelectedObjects() {
+    if (this.isDetailsMapped) return;
+    if (!this.leaseInfo) return;
+    
+    if (this.tenantsList?.length > 0 && this.leaseInfo.tenant_code) {
+      this.selectedTenantObj = this.returnSelectedObject(this.tenantsList, 'tenant_code', 'code');
+      this.selectedTenant = this.leaseInfo.tenant_code;
+    }
+    
+    if (this.propertiesList?.length > 0 && this.leaseInfo.property_code) {
+      this.selectedPropertyObj = this.returnSelectedObject(this.propertiesList, 'property_code', 'code');
+      this.selectedProperty = this.leaseInfo.property_code;
+    }
+    
+    if (this.unitsList?.length > 0 && this.leaseInfo.unit_code) {
+      this.selectedUnitObj = this.returnSelectedObject(this.unitsList, 'unit_code', 'code');
+      this.selectedUnit = this.leaseInfo.unit_code;
+    }
+    
+    if (this.roomsList?.length > 0 && this.leaseInfo.room_code) {
+      this.selectedRoom = this.leaseInfo.room_code;
+    }
+    
+    if (this.agentsList?.length > 0 && this.leaseInfo.assigned_collector) {
+      this.selectedAgent = this.leaseInfo.assigned_collector;
+    }
+    
+    if (this.leaseTypes?.length > 0 && this.leaseInfo.lease_type) {
+      this.selectedLeaseType = this.returnSelectedObject(this.leaseTypes, 'lease_type', 'id');
+    }
+    
+    if (this.leaseCategories?.length > 0 && this.leaseInfo.lease_category) {
+      this.selectedLeaseCategory = this.returnSelectedObject(this.leaseCategories, 'lease_category', 'id');
+    }
+
+    if (this.tenantsList?.length > 0 && 
+        this.propertiesList?.length > 0 && 
+        this.unitsList?.length > 0) {
+      this.isDetailsMapped = true;
+    }
+  }
+
   private returnSelectedObject(list:any,filterCol:string,filterID:string) {
     if(list.length>0)
     return list.filter((item:any) => item[filterID] == this.leaseInfo[filterCol])[0];
@@ -451,14 +496,11 @@ export class CreateLeaseComponent implements OnInit {
           else{
             (this as any)[targetProperty] = res.objResult.table;
             (this as any)['all'+targetProperty]=(this as any)[targetProperty]; 
-            if(this.leaseInfo?.unit_code)
-              { this.selectedUnit=this.leaseInfo?.unit_code;
-                this.selectedUnitObj=this.returnSelectedObject(this.unitsList,'unit_code','code');
-              }
-           if(this.leaseInfo?.room_code)
-               this.selectedRoom=this.leaseInfo?.room_code;
           }
-         
+          
+          if (this.leaseId !== '') {
+            this.mapSelectedObjects();
+          }
         }
       },
       error: (err) => {
@@ -533,8 +575,8 @@ export class CreateLeaseComponent implements OnInit {
 
       let clsLeaseInfo:any={};
       clsLeaseInfo.is_lease_short_term=this.isShortTerm;
-      clsLeaseInfo.lease_type=this.selectedLeaseType.id;
-      clsLeaseInfo.lease_category=this.selectedLeaseCategory.id;
+      clsLeaseInfo.lease_type=this.selectedLeaseType?.id || this.selectedLeaseType;
+      clsLeaseInfo.lease_category=this.selectedLeaseCategory?.id || this.selectedLeaseCategory;
       clsLeaseInfo.start_date=this.startDate;
       clsLeaseInfo.end_date=this.endDate;
       clsLeaseInfo.total_months=this.months;
@@ -547,25 +589,42 @@ export class CreateLeaseComponent implements OnInit {
       clsRentInfo.annual_rent=this.annualRent || 0;
       clsRentInfo.monthly_rent=this.monthlyRent || 0;
  
+      const additionalInfo = {
+        ...this.additionalbloc,
+        move_in_date: this.additionalbloc.move_in_date || '1900-01-01',
+        paying_date: this.additionalbloc.paying_date || '1900-01-01',
+        created_date: this.additionalbloc.created_date || '1900-01-01'
+      };
+
+      const getCode = (val: any) => {
+        if (!val) return '';
+        if (typeof val === 'object') {
+          return val.code || val.id || '';
+        }
+        return val;
+      };
+
       const request = {
         userid: this.currentUser?.userId,
         code: this.leaseId || '',
         source: 'web',
         company_id: this.currentUser?.companyId, 
         clientId: this.currentUser?.clientId, 
-        tenant_code: this.selectedTenantObj?.code,
-        property_code: this.selectedPropertyObj.code,
-        unit_code: this.selectedUnitObj.code,
-        room_code: this.selectedRoom?.code || '',
-        rent_collector:this.selectedAgent ||'',
+        tenant_code: getCode(this.selectedTenant) || getCode(this.selectedTenantObj),
+        property_code: getCode(this.selectedProperty) || getCode(this.selectedPropertyObj),
+        unit_code: getCode(this.selectedUnit) || getCode(this.selectedUnitObj),
+        room_code: getCode(this.selectedRoom),
+        rent_collector: getCode(this.selectedAgent),
         clsLeaseInfo: clsLeaseInfo,
         clsRentInfo: clsRentInfo, 
-        clsAddtionalInfo: this.additionalbloc,  
+        clsAddtionalInfo: additionalInfo,  
         clsPaymentSchedules: this.paymentSchedules,
         clsOccupants:this.occupants,
         id: this.lease_id || 0,
    
       }; 
+
+      console.log('Sending Save Lease Request:', request);
       const formData = new FormData(); 
     // JSON goes as ONE field
     formData.append('reqObject', JSON.stringify(request));

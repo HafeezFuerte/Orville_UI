@@ -30,7 +30,8 @@
           [items]="tenantsList"  
           bindValue="code" 
           (change)="onTenantChange($event)"   [searchable]="true"
-          [clearable]="true"
+          [clearable]="leaseId === ''"
+          [readonly]="leaseId !== ''"
            placeholder="{{ 'web.leases.lblTenant' | translate }}" class="ng-select-sm w-full">
            <ng-template ng-header-tmp>
             <div class="p-1.5 border-b border-gray-100">
@@ -51,7 +52,8 @@
             bindValue="code"
             (change)="onPropertyChange($event)" 
             [searchable]="true"
-            [clearable]="true"
+            [clearable]="leaseId === ''"
+            [readonly]="leaseId !== ''"
             placeholder="{{ 'web.leases.lblProperty' | translate }}" 
             class="ng-select-sm w-full">
             <ng-template ng-header-tmp>
@@ -76,7 +78,8 @@
            bindLabel="unit"
           (change)="onUnitChange($event)" 
           [searchable]="true"
-          [clearable]="true"
+          [clearable]="leaseId === ''"
+          [readonly]="leaseId !== ''"
           placeholder="{{ 'web.leases.lblUnit' | translate }}" 
           class="ng-select-sm w-full">
           <ng-template ng-header-tmp>
@@ -575,10 +578,10 @@
 
 <!-- Fixed Floating Form Actions Bottom Bar -->
 <div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" (click)="goBack()" [attr.data-tooltip]="'web.contacts.lblCancel' | translate" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95 flex items-center gap-1.5">
+  <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95 flex items-center gap-1.5">
     <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" /> {{ 'web.contacts.lblCancel' | translate }}
   </button>
-  <button type="button" (click)="saveLease()" [attr.data-tooltip]="'web.leases.lblAddLease' | translate" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
+  <button type="button" (click)="saveLease()" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
     <i class="ri-save-line"></i>   {{ leaseId=='' ? ('web.leases.lblSaveLease'| translate ) :  ('web.leases.lblUpdateLease'| translate )}}
   </button>
 </div>

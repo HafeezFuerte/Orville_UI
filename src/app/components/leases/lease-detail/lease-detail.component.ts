@@ -390,6 +390,10 @@ export class LeaseDetailComponent implements OnInit {
     this.activeTab = tabKey;
   }
 
+  editLease() {
+    this.router.navigate(['/leases/edit-lease', this.leaseId]);
+  }
+
   goBack() {
     this.router.navigate(['/leases']);
   }
