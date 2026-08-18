@@ -66,7 +66,7 @@
                 [ngClass]="{ open: child.active, 'has-sub': child.type === 'sub' }">
                 <!-- child link -->
                 <a *ngIf="child.type === 'link' && child.path" class="side-menu__item orville-sub-item" [routerLink]="child.path"
-                  routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" (click)="setNavActive(child)">
+                  routerLinkActive="active" [routerLinkActiveOptions]="{ exact: child.exact === true }" (click)="setNavActive(child)">
                   <span class="side-menu__label">{{ child.title }}</span>
                 </a>
                 <a *ngIf="child.type === 'link' && !child.path" class="side-menu__item orville-sub-item" href="javascript:void(0)"
@@ -86,7 +86,7 @@
                   [ngStyle]="{ display: child.active ? 'block' : 'none' }">
                   <li *ngFor="let sub of child.children" class="slide" [ngClass]="{ active: sub.selected }">
                     <a *ngIf="sub.type === 'link' && sub.path" class="side-menu__item orville-sub-item" [routerLink]="sub.path"
-                      routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" (click)="setNavActive(sub)">
+                      routerLinkActive="active" [routerLinkActiveOptions]="{ exact: sub.exact === true }" (click)="setNavActive(sub)">
                       <span class="side-menu__label">{{ sub.title }}</span>
                     </a>
                     <a *ngIf="sub.type === 'link' && !sub.path" class="side-menu__item orville-sub-item" href="javascript:void(0)"

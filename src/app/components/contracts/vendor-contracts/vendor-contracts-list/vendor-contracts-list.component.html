@@ -1,0 +1,148 @@
+<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+  <div>
+    <h3 class="ov-page-title">Vendor Contracts</h3>
+    <p class="ov-page-sub">Manage and view vendor contracts</p>
+  </div>
+  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="goToCreate()">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+      Add Vendor Contract
+    </button>
+  </div>
+</div>
+
+<div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none dark:bg-bodybg">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
+    <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Lists</h5>
+    <div class="ov-seg ov-seg--solid">
+      <button type="button" *ngFor="let tab of statusTabs" (click)="setStatusFilter(tab)" class="ov-seg__btn"
+        [class.is-active]="statusFilter === tab">{{ tab }}</button>
+    </div>
+  </div>
+
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+      <label class="sr-only" for="vendor-contract-search">Search by name</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input id="vendor-contract-search" type="text" class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search by name">
+    </div>
+    <div class="ov-toolbar__btns">
+      <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
+        </button>
+        <app-column-menu
+          *ngIf="showColumnDropdown"
+          [columns]="tableColumns"
+          (toggle)="toggleColumn($event)"
+          (toggleAll)="toggleAllColumns($event)"
+          (closed)="showColumnDropdown = false">
+        </app-column-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-5 pb-0 pt-5">
+    <app-shared-table [columns]="visibleColumns" [data]="paginatedRows" [loading]="false"
+      [hasActions]="false" [showPaginator]="false"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageIndex">
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+          <ng-container *ngSwitchCase="'id'">
+            <div class="flex items-center gap-2.5">
+              <span class="ov-avatar">{{ row.initials }}</span>
+              <button type="button" class="ov-link font-semibold" (click)="goToDetail(row.id)">{{ row.id }}</button>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'vendor'">{{ row.vendor }}</ng-container>
+          <ng-container *ngSwitchCase="'name'">{{ row.name }}</ng-container>
+          <ng-container *ngSwitchCase="'properties'">{{ row.properties }}</ng-container>
+          <ng-container *ngSwitchCase="'unitsRooms'">
+            <span class="inline-flex min-w-[28px] items-center justify-center rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-defaulttextcolor">{{ row.unitsRooms }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'status'">
+            <span class="ov-status"
+              [class.ov-status--active]="row.status === 'Active'"
+              [class.ov-status--muted]="row.status === 'Draft'"
+              [class.ov-status--soft]="row.status === 'Completed'"
+              [class.ov-status--warning]="row.status === 'Offered'">{{ row.status }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'value'">
+            <span class="font-semibold">{{ row.value }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'action'">
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionId === row.id"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="goToDetail(row.id); openActionId = null">View</button>
+                <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="goToCreate(); openActionId = null">Edit</button>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+    </app-shared-table>
+  </div>
+
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </div>
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    </div>
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+  <div class="flex flex-col gap-4 text-[11px]">
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Vendor</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterVendor" placeholder="Enter vendor">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Property</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterProperty" placeholder="Enter property">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Status</label>
+      <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
+        placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+  </div>
+</app-filter-drawer>

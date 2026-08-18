@@ -1,0 +1,33 @@
+<div class="ov-col-menu" (click)="$event.stopPropagation()" role="dialog" aria-label="Column">
+  <div class="ov-col-menu__head">
+    <p class="ov-col-menu__title">Column</p>
+    <button type="button" class="ov-col-menu__x" (click)="close()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
+    </button>
+  </div>
+
+  <div class="ov-col-menu__list">
+    <label class="ov-col-menu__item">
+      <input
+        type="checkbox"
+        [checked]="allSelected"
+        (change)="onToggleAll($event)"
+        aria-label="Select all columns">
+      Select All
+    </label>
+    <label class="ov-col-menu__item" *ngFor="let col of columns">
+      <input
+        type="checkbox"
+        [checked]="col.visible !== false"
+        (change)="onToggle(col.key)"
+        [attr.aria-label]="col.label">
+      {{ col.label }}
+    </label>
+  </div>
+
+  <div class="ov-col-menu__foot">
+    <button type="button" class="ov-col-menu__foot-btn" (click)="clear()">Clear</button>
+    <span class="ov-col-menu__foot-rule" aria-hidden="true"></span>
+    <button type="button" class="ov-col-menu__foot-btn" (click)="close()">Close</button>
+  </div>
+</div>

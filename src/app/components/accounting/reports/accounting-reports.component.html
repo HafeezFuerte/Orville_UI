@@ -1,0 +1,36 @@
+<div class="acc-reports">
+  <div class="page-header !py-4">
+    <h3 class="ov-page-title">Accounting Reports</h3>
+    <p class="ov-page-sub">Generate, view and manage financial and rental reports from one place.</p>
+  </div>
+
+  <div class="ov-search acc-reports__search">
+    <label class="sr-only" for="acc-reports-search">Search by name</label>
+    <img src="assets/images/reports/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+    <input
+      id="acc-reports-search"
+      type="text"
+      class="ov-input ov-search__input"
+      placeholder="Search by name"
+      [(ngModel)]="searchQuery">
+  </div>
+
+  <section class="acc-reports__library" aria-labelledby="acc-report-library-title">
+    <h4 class="acc-reports__library-title" id="acc-report-library-title">Report library</h4>
+
+    <div class="acc-reports__grid">
+      <article class="acc-reports-card" *ngFor="let report of filteredReports" [attr.data-tone]="report.tone">
+        <div class="acc-reports-card__well" aria-hidden="true">
+          <span class="acc-reports-card__glyph" [ngStyle]="maskStyle(report.icon)"></span>
+        </div>
+        <h5 class="acc-reports-card__title">{{ report.title }}</h5>
+        <p class="acc-reports-card__desc">{{ report.description }}</p>
+        <div class="acc-reports-card__rule" aria-hidden="true"></div>
+        <a *ngIf="report.hasView" class="acc-reports-card__link" [routerLink]="['/accounting/reports', report.id]">View Report →</a>
+        <button *ngIf="!report.hasView" type="button" class="acc-reports-card__link">View Report →</button>
+      </article>
+    </div>
+
+    <p *ngIf="filteredReports.length === 0" class="acc-reports__empty">No reports match your search.</p>
+  </section>
+</div>

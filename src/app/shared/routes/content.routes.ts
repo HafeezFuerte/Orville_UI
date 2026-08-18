@@ -30,6 +30,26 @@ export const content: Routes = [
       import('../../components/leases/leases.routes').then((m) => m.leasesRoutingModule),
   },
   {
+    path: 'landlord-contracts',
+    loadChildren: () =>
+      import('../../components/contracts/landlord-contracts/landlord-contracts.routes').then((m) => m.landlordContractsRoutes),
+  },
+  {
+    path: 'vendor-contracts',
+    loadChildren: () =>
+      import('../../components/contracts/vendor-contracts/vendor-contracts.routes').then((m) => m.vendorContractsRoutes),
+  },
+  {
+    path: 'accounting',
+    loadChildren: () =>
+      import('../../components/accounting/accounting.routes').then((m) => m.accountingRoutes),
+  },
+  {
+    path: 'commissions',
+    loadChildren: () =>
+      import('../../components/commissions/commissions.routes').then((m) => m.commissionsRoutes),
+  },
+  {
     path: 'settings',
     children: [
       {

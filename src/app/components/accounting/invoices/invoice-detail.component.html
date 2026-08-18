@@ -1,0 +1,330 @@
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Invoices">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Invoice Details</h3>
+      <p class="ov-page-sub mt-1">
+        Accounting / Invoice / <span class="ov-page-sub__current">Details</span>
+      </p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="ov-btn ov-btn-ghost">Accept</button>
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleAction($event)" [attr.aria-expanded]="actionOpen">
+        Action
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </button>
+      <div *ngIf="actionOpen" class="invd-menu" (click)="$event.stopPropagation()">
+        <button type="button">Edit</button>
+        <button type="button">Send reminder</button>
+        <button type="button">Mark as paid</button>
+        <button type="button" (click)="goBack()">Back to list</button>
+      </div>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary">
+      <img src="assets/images/action-menu/printer.svg" alt="" width="18" height="18" />
+      Print
+    </button>
+  </div>
+</div>
+
+<div class="ov-detail-layout pb-16">
+  <aside class="ov-detail-layout__left flex flex-col gap-3">
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="px-4 py-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h4 class="invd-id m-0">Invoice - {{ invoice.id }}</h4>
+          <span class="inv-badge" [ngClass]="statusBadge(invoice.status)">{{ invoice.status }}</span>
+        </div>
+        <p class="invd-type">{{ invoice.type }}</p>
+        <div class="invd-cta">
+          <button type="button" class="ov-btn ov-btn-ghost">View Activity</button>
+          <button type="button" class="ov-btn ov-btn-ghost">Print Invoice</button>
+        </div>
+      </div>
+
+      <div class="border-t border-defaultborder px-4 py-4">
+        <h6 class="invd-block-title">Information</h6>
+        <div class="invd-due" [ngClass]="dueCardClass">
+          <p class="invd-due__label">Due Amount</p>
+          <p class="invd-due__value">{{ invoice.amountDue }}</p>
+          <div class="invd-due__badges">
+            <span class="inv-badge" [ngClass]="statusBadge(invoice.status)">{{ invoice.status }}</span>
+            <span *ngIf="showDeposited" class="inv-badge inv-badge--pending">Deposited</span>
+          </div>
+          <div class="invd-due__rows">
+            <div><span>Subtotal</span><b>{{ invoice.subtotal }}</b></div>
+            <div><span>Tax</span><b>{{ invoice.tax }}</b></div>
+            <div><span>Discount</span><b>{{ invoice.discount }}</b></div>
+            <hr>
+            <div><span>Balance</span><b>{{ invoice.balance }}</b></div>
+            <div><span>Amount Paid</span><b>{{ invoice.amountPaid }}</b></div>
+            <div><span>Amount Due</span><b>{{ invoice.amountDue }}</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-4 py-3">
+        <h6 class="invd-block-title !mb-0">Invoice Information</h6>
+      </div>
+      <div class="flex flex-col gap-3 px-4 py-4">
+        <div class="ov-kv"><span class="ov-kv__label">Invoice ID</span><span class="ov-kv__value">{{ invoice.recordId }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Invoice No</span><span class="ov-kv__value">{{ invoice.invoiceNo }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Tenant</span><a class="ov-link" href="javascript:void(0)">{{ invoice.tenant }}</a></div>
+        <div class="ov-kv"><span class="ov-kv__label">Lease</span><a class="ov-link" href="javascript:void(0)">{{ invoice.lease }}</a></div>
+        <div class="ov-kv"><span class="ov-kv__label">Issue Date</span><span class="ov-kv__value">{{ invoice.issueDate }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Due Date</span><span class="ov-kv__value">{{ invoice.dueDate }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Payment Via</span><span class="ov-kv__value">{{ invoice.paymentVia }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Prepared by</span><span class="ov-kv__value">{{ invoice.preparedBy }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Amount Due</span><span class="ov-kv__value">{{ invoice.amountDue }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Reference No</span><span class="ov-kv__value">{{ invoice.referenceNo }}</span></div>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-4 py-3 flex items-center justify-between gap-2">
+        <h6 class="invd-block-title !mb-0">Quickbooks Status</h6>
+        <button type="button" class="invd-sync">
+          <img src="assets/images/insights/lease-stats/refresh.svg" alt="" width="14" height="14">
+          Sync
+        </button>
+      </div>
+      <div class="flex flex-col gap-3 px-4 py-4">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Status</span>
+          <span class="inv-badge inv-badge--synced">{{ invoice.qbStatus }}</span>
+        </div>
+        <div class="ov-kv"><span class="ov-kv__label">Customer ID</span><span class="ov-kv__value">{{ invoice.customerId }}</span></div>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-4 py-3">
+        <h6 class="invd-block-title !mb-0">Notes</h6>
+      </div>
+      <div class="px-4 py-4">
+        <p class="invd-empty">No invoice note added</p>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-4 py-3">
+        <h6 class="invd-block-title !mb-0">Attachment</h6>
+      </div>
+      <div class="px-4 py-4">
+        <p class="invd-empty">No Attachment</p>
+      </div>
+    </div>
+
+    <div class="box ov-card !mb-0 overflow-hidden">
+      <div class="border-b border-defaultborder px-4 py-3">
+        <h6 class="invd-block-title !mb-0">Custom Fields</h6>
+      </div>
+      <div class="px-4 py-4">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Receipt No:</span>
+          <span class="invd-empty">No value set</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="ov-detail-layout__right flex min-w-0 flex-col gap-6">
+    <section>
+      <h5 class="invd-section-title">Invoice Overview</h5>
+      <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'overview'">
+        <div class="invd-toolbar">
+          <div class="ov-search">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="overviewQuery" placeholder="Search">
+          </div>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('overview', $event)">
+              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+              Column
+            </button>
+            <div *ngIf="openColumnMenu === 'overview'" class="invd-col-menu">
+              <label>
+                <input type="checkbox" [checked]="allSelected(overviewCols)" (change)="toggleAll(overviewCols, $event)">
+                Select All
+              </label>
+              <label *ngFor="let col of overviewCols">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(overviewCols, col.key)">
+                {{ col.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="invd-table-wrap">
+          <table class="invd-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of visible(overviewCols)">{{ col.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredOverview()">
+                <td *ngFor="let col of visible(overviewCols)" [ngSwitch]="col.key">
+                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  <span *ngSwitchCase="'inclusiveTax'" class="inv-badge inv-badge--navy">{{ row.inclusiveTax }}</span>
+                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h5 class="invd-section-title">Cheques</h5>
+      <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'cheques'">
+        <div class="invd-toolbar">
+          <div class="ov-search">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="chequeQuery" placeholder="Search">
+          </div>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('cheques', $event)">
+              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+              Column
+            </button>
+            <div *ngIf="openColumnMenu === 'cheques'" class="invd-col-menu">
+              <label>
+                <input type="checkbox" [checked]="allSelected(chequeCols)" (change)="toggleAll(chequeCols, $event)">
+                Select All
+              </label>
+              <label *ngFor="let col of chequeCols">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(chequeCols, col.key)">
+                {{ col.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="invd-table-wrap">
+          <table class="invd-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of visible(chequeCols)">{{ col.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredCheques()">
+                <td *ngFor="let col of visible(chequeCols)" [ngSwitch]="col.key">
+                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  <a *ngSwitchCase="'attachment'" class="ov-link" href="javascript:void(0)">{{ row.attachment }}</a>
+                  <span *ngSwitchCase="'status'" class="inv-badge inv-badge--hold">{{ row.status }}</span>
+                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h5 class="invd-section-title">Transactions</h5>
+      <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'txns'">
+        <div class="invd-toolbar">
+          <div class="ov-search">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="txnQuery" placeholder="Search">
+          </div>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('txns', $event)">
+              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+              Column
+            </button>
+            <div *ngIf="openColumnMenu === 'txns'" class="invd-col-menu">
+              <label>
+                <input type="checkbox" [checked]="allSelected(txnCols)" (change)="toggleAll(txnCols, $event)">
+                Select All
+              </label>
+              <label *ngFor="let col of txnCols">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(txnCols, col.key)">
+                {{ col.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="invd-table-wrap">
+          <table class="invd-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of visible(txnCols)">{{ col.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredTxns()">
+                <td *ngFor="let col of visible(txnCols)" [ngSwitch]="col.key">
+                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  <span *ngSwitchCase="'qbStatus'" class="inv-badge" [ngClass]="row.qbStatus === 'Synced' ? 'inv-badge--synced' : 'inv-badge--draft'">{{ row.qbStatus }}</span>
+                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h5 class="invd-section-title">Penalties</h5>
+      <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'penalties'">
+        <div class="invd-toolbar">
+          <div class="ov-search">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="penaltyQuery" placeholder="Search">
+          </div>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('penalties', $event)">
+              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+              Column
+            </button>
+            <div *ngIf="openColumnMenu === 'penalties'" class="invd-col-menu">
+              <label>
+                <input type="checkbox" [checked]="allSelected(penaltyCols)" (change)="toggleAll(penaltyCols, $event)">
+                Select All
+              </label>
+              <label *ngFor="let col of penaltyCols">
+                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(penaltyCols, col.key)">
+                {{ col.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="invd-table-wrap">
+          <table class="invd-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of visible(penaltyCols)">{{ col.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredPenalties()">
+                <td *ngFor="let col of visible(penaltyCols)" [ngSwitch]="col.key">
+                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  <div *ngSwitchCase="'action'" class="invd-row-actions">
+                    <button type="button" class="invd-ico invd-ico--edit" aria-label="Edit penalty">
+                      <img src="assets/images/work-order-detail/pencil.svg" alt="" width="14" height="14">
+                    </button>
+                    <button type="button" class="invd-ico invd-ico--del" aria-label="Delete penalty">
+                      <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14">
+                    </button>
+                  </div>
+                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </section>
+</div>

@@ -159,65 +159,7 @@ export class SidebarComponent {
           }) || [];
         } else {
           // 🔵 Standard multi-level logic
-          this.menuItems = modules.map((module: Module) => {
-            if (module.pages?.length === 0 || module.menuGroup?.[0]?.pages?.length === 0) {
-              const normalizedName = module.moduleName.trim();
-              const path = this.resolveMenuPath(normalizedName, undefined, module.url);
-
-              return {
-                title: module.moduleName,
-                type: 'link',
-                path: path || '',
-                icon: 'bx bx-circle',
-                active: false,
-                selected: false,
-              };
-            }
-            
-            // If only one group exists, flatten pages directly as Level 2 children of the module
-            if (module.menuGroup.length === 1) {
-              const group = module.menuGroup[0];
-              return {
-                title: module.moduleName,
-                type: 'sub',
-                selected: false,
-                active: false,
-                icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
-                children: group.pages?.map((page: PageMenu) => {
-                  const normalizedName = page.menuName.trim();
-                  const path = this.resolveMenuPath(normalizedName, module.moduleName, page.url);
-                  return {
-                    title: page.menuName,
-                    type: 'link',
-                    path: path || '',
-                    active: false,
-                    selected: false,
-                  };
-                }) || []
-              };
-            }
-
-            // Otherwise, keep the standard multi-level sub-groups
-            return {
-              title: module.moduleName,
-              type: 'sub',
-              selected: false,
-              active: false,
-              icon: this.moduleIconMap[module.moduleName] || 'bx bx-layer',
-              children: module.pages?.map((page: PageMenu) => {
-                const normalizedName = page.menuName.trim();
-                const path = this.resolveMenuPath(normalizedName, module.moduleName, page.url);
-
-                return {
-                  title: page.menuName,
-                  type: 'link',
-                  path: path || '',
-                  active: false,
-                  selected: false,
-                };
-              }) || [], 
-            };
-          });
+          this.menuItems = modules.map((module: Module) => this.mapModuleToMenu(module));
 
           // 🟢 Extract Settings module and children if loaded from DB
           const settingsModule = modules.find(m => m.moduleName.trim() === 'Settings');
@@ -280,6 +222,122 @@ export class SidebarComponent {
 
 
 
+  private getModulePages(module: Module): PageMenu[] {
+    const groupPages = module.menuGroup?.flatMap((group) => group.pages ?? []) ?? [];
+    if (module.menuGroup?.length === 1 && (module.menuGroup[0].pages?.length ?? 0) > 0) {
+      return module.menuGroup[0].pages;
+    }
+    if ((module.pages?.length ?? 0) > 0) {
+      return module.pages;
+    }
+    return groupPages;
+  }
+
+  private mapPageToChild(page: PageMenu, parentTitle: string) {
+    const normalizedName = page.menuName.trim();
+    const path = this.resolveMenuPath(normalizedName, parentTitle, page.url);
+    return {
+      title: page.menuName,
+      type: 'link',
+      path: path || '',
+      active: false,
+      selected: false,
+    };
+  }
+
+  private isLeaseModule(name: string): boolean {
+    return (name || '').trim().toLowerCase().includes('lease');
+  }
+
+  private mapModuleToMenu(module: Module) {
+    const normalizedName = module.moduleName.trim();
+    const pages = this.getModulePages(module);
+
+    if (pages.length === 0) {
+      if (this.isCommissionsParent(normalizedName)) {
+        return {
+          title: module.moduleName,
+          type: 'sub',
+          selected: false,
+          active: false,
+          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          children: this.withCommissionsAllChild([]),
+        };
+      }
+      const path = this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases';
+      if (this.isLeaseModule(normalizedName)) {
+        return {
+          title: module.moduleName,
+          type: 'sub',
+          selected: false,
+          active: false,
+          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          children: [
+            {
+              title: 'Leases',
+              type: 'link',
+              path,
+              active: false,
+              selected: false,
+            },
+          ],
+        };
+      }
+
+      return {
+        title: module.moduleName,
+        type: 'link',
+        path: this.resolveMenuPath(normalizedName, undefined, module.url) || '',
+        icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+        active: false,
+        selected: false,
+      };
+    }
+
+    let children = pages.map((page) => this.mapPageToChild(page, module.moduleName));
+    if (this.isCommissionsParent(normalizedName)) {
+      children = this.withCommissionsAllChild(children);
+    }
+
+    return {
+      title: module.moduleName,
+      type: 'sub',
+      selected: false,
+      active: false,
+      icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+      children,
+    };
+  }
+
+  private withCommissionsAllChild(_children: any[]): any[] {
+    return [
+      {
+        title: 'All',
+        type: 'link',
+        path: '/commissions',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Tenant Commissions',
+        type: 'link',
+        path: '/commissions/tenant',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Landlord Commissions',
+        type: 'link',
+        path: '/commissions/landlord',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+    ];
+  }
+
   private moduleIconMap: { [key: string]: string } = {
     'HMS': 'bx bx-user-circle',       // Human Resource Management
     'AMS': 'bx bx-wallet',            // Account Management
@@ -297,8 +355,9 @@ export class SidebarComponent {
 
 
   private urlMap: { [key: string]: string } = {
-
-    'leases manaement': '/leases', 
+    'leases manaement': '/leases',
+    'leases management': '/leases',
+    'lease management': '/leases',
   };
 
   private urlNameMap: { [key: string]: string } = {
@@ -310,7 +369,16 @@ export class SidebarComponent {
     'All Contacts': '/contacts/all-contacts',
     'Tenants': '/contacts/tenants',
     'Vendors': '/contacts/vendors',
-    'Landlords': '/contacts/landlords', 
+    'Landlords': '/contacts/landlords',
+    'Leases Management': '/leases',
+    'Lease Management': '/leases',
+    'Leases': '/leases',
+    'Landlord Contracts': '/landlord-contracts',
+    'Landlord Contract': '/landlord-contracts',
+    'Add Contract': '/landlord-contracts/create',
+    'Vendor Contracts': '/vendor-contracts',
+    'Vendor Contract': '/vendor-contracts',
+    'Add Vendor Contract': '/vendor-contracts/create', 
     'Support Technicians': '/contacts/support-technicians',
     'Broadcasts': '/broadcasts',
     'Work Orders': '/facility/work-orders',
@@ -322,6 +390,15 @@ export class SidebarComponent {
     'Download': '/downloads',
     'Downloads': '/downloads',
     'Download Center': '/downloads',
+    'Invoices': '/accounting/invoices',
+    'Invoice': '/accounting/invoices',
+    'Expenses': '/accounting/expenses',
+    'Credit Notes': '/accounting/credit-notes',
+    'Chart of Accounts': '/accounting/chart-of-accounts',
+    'Cheques': '/accounting/cheques',
+    'Commissions': '/commissions',
+    'Tenant Commissions': '/commissions/tenant',
+    'Landlord Commissions': '/commissions/landlord',
   };
 
   private isAccountingParent(parentTitle?: string): boolean {
@@ -330,6 +407,11 @@ export class SidebarComponent {
     }
     const name = parentTitle.trim().toLowerCase();
     return name === 'ams' || name.includes('account');
+  }
+
+  private isCommissionsParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return name === 'commissions' || name === 'commission';
   }
 
   private isReportMenu(menuName: string): boolean {
@@ -349,7 +431,19 @@ export class SidebarComponent {
   private resolveMenuPath(menuName: string, parentTitle?: string, fallbackUrl?: string): string {
     const normalizedName = (menuName || '').trim();
     if (this.isAccountingParent(parentTitle) && this.isReportMenu(normalizedName)) {
-      return '';
+      return '/accounting/reports';
+    }
+    if (this.isCommissionsParent(parentTitle)) {
+      const child = normalizedName.toLowerCase();
+      if (child === 'all' || child === 'commissions') {
+        return '/commissions';
+      }
+      if (child.includes('tenant')) {
+        return '/commissions/tenant';
+      }
+      if (child.includes('landlord')) {
+        return '/commissions/landlord';
+      }
     }
 
     let path = this.urlNameMap[normalizedName];
@@ -365,7 +459,7 @@ export class SidebarComponent {
     }
 
     if (this.isAccountingParent(parentTitle) && this.isReportsRoute(path)) {
-      return '';
+      return '/accounting/reports';
     }
 
     return path || '';
@@ -385,6 +479,7 @@ export class SidebarComponent {
     'landlords': './assets/images/nav/contacts.svg',
     'support technicians': './assets/images/nav/contacts.svg',
     'lease management': './assets/images/nav/lease.svg',
+    'leases management': './assets/images/nav/lease.svg',
     'leases': './assets/images/nav/lease.svg',
     'contracts': './assets/images/nav/contracts.svg',
     'accounting': './assets/images/nav/accounting.svg',

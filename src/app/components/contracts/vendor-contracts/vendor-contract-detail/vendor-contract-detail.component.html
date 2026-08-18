@@ -1,0 +1,432 @@
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Vendor Contracts">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Vendor Contract Details</h3>
+      <p class="ov-page-sub mt-1">
+        Contracts / Vendor Contracts / <span class="ov-page-sub__current">Details</span>
+      </p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="relative">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)">
+        Action
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </button>
+      <div *ngIf="showActionMenu" class="lcd-menu" (click)="$event.stopPropagation()">
+        <button type="button" (click)="goToEdit()">Edit</button>
+        <button type="button" (click)="goBack()">Back to list</button>
+      </div>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary">
+      <img src="assets/images/action-menu/printer.svg" alt="" width="18" height="18" />
+      Print Contract
+    </button>
+  </div>
+</div>
+
+<div class="ov-detail-layout pb-16">
+  <aside class="ov-detail-layout__left">
+    <div class="lcd-side">
+      <h4 class="lcd-side__title">Contract - 7942</h4>
+      <p class="lcd-side__sub">Vendor Agreement</p>
+      <button type="button" class="ov-btn ov-btn-ghost lcd-side__cta">View Activity</button>
+
+      <h5 class="lcd-side__heading">Information</h5>
+
+      <section class="lcd-block">
+        <h6>Contract Information</h6>
+        <div class="lcd-rows">
+          <p><span>Contract ID:</span> <b>{{ contract.id }}</b></p>
+          <p><span>Name:</span> <b>Abdullah Al Shakib</b></p>
+          <p><span>Type:</span> <b>General</b></p>
+          <p><span>Cycle:</span> <b>Fixed</b></p>
+          <p><span>Fee Type:</span> <b>Fix</b></p>
+          <p><span>Renew Status:</span> <b>Renewed</b></p>
+          <p><span>Start Date:</span> <b>{{ contract.startDate }}</b></p>
+          <p><span>End Date:</span> <b>{{ contract.endDate }}</b></p>
+          <p><span>Days Left:</span> <b>250 days</b></p>
+          <p><span>Value:</span> <b>{{ contract.value }}</b></p>
+          <p><span>Payment Via:</span> <b>Cheque</b></p>
+          <p><span>No of Payments:</span> <b>2</b></p>
+          <p class="lcd-rows__stack">
+            <span>Remark:</span>
+            <b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper ante sed tempus semper. Curabitur convallis et eros ac tincidunt.</b>
+          </p>
+        </div>
+      </section>
+
+      <section class="lcd-block">
+        <h6>Associated Party</h6>
+        <div class="lcd-rows">
+          <p><span>Type:</span> <b>Vendor</b></p>
+          <p><span>Name:</span> <b>Orville Real Estate</b></p>
+          <p><span>Email:</span> <b>rental&#64;orvillerealestate.com</b></p>
+          <p><span>Phone:</span> <b>+971 5866 256 32</b></p>
+        </div>
+      </section>
+
+      <section class="lcd-block">
+        <h6>Timeline</h6>
+        <div class="lcd-rows">
+          <p><span>Created At:</span> <b>06-06-2026</b></p>
+          <p><span>Updated At:</span> <b>06-06-2026</b></p>
+        </div>
+      </section>
+
+      <section class="lcd-block">
+        <h6>Financial Snapshot</h6>
+        <div class="lcd-rows">
+          <p><span>Annual Rent:</span> <b>-</b></p>
+          <p><span>Percentage:</span> <b>-</b></p>
+          <p><span>PMA Type:</span> <b>-</b></p>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <section class="ov-detail-layout__right">
+    <div class="ov-card overflow-hidden">
+      <div class="ov-detail-tabs">
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'overview'" (click)="setTab('overview')">Overview</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'signatures'" (click)="setTab('signatures')">Signature Requests</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'financials'" (click)="setTab('financials')">Financials</button>
+      </div>
+
+      <div class="p-5 flex flex-col gap-6" *ngIf="activeTab === 'overview'">
+        <section>
+          <h5 class="lcd-section-title">Contract Properties</h5>
+          <div class="lcd-toolbar">
+            <div class="ov-search">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+              <input type="text" class="ov-input ov-search__input" [(ngModel)]="propertyQuery" placeholder="Search">
+            </div>
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('properties', $event)">
+                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+                Column
+              </button>
+              <div *ngIf="openColumnMenu === 'properties'" class="lcd-col-menu">
+                <label>
+                  <input type="checkbox" [checked]="allPropertyColumnsSelected" (change)="toggleAllColumns(propertyColumns, $event)">
+                  Select All
+                </label>
+                <label *ngFor="let col of propertyColumns">
+                  <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(propertyColumns, col.key)">
+                  {{ col.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="lcd-table-wrap">
+            <table class="lcd-table">
+              <thead>
+                <tr>
+                  <th *ngFor="let col of visiblePropertyColumns">{{ col.label }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of filteredProperties">
+                  <td *ngFor="let col of visiblePropertyColumns" [ngSwitch]="col.key">
+                    <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
+                    <div *ngSwitchCase="'name'" class="lcd-name-cell">
+                      <div class="lcd-name">{{ row.name }}</div>
+                      <div class="lcd-sub">
+                        <img src="assets/images/work-orders/map-pin.svg" alt="" width="14" height="14">
+                        {{ row.location }}
+                      </div>
+                    </div>
+                    <span *ngSwitchCase="'type'" class="ov-type-pill" [class.ov-type-pill--commercial]="row.type === 'Commercial'">{{ row.type }}</span>
+                    <span *ngSwitchCase="'unitsRooms'" class="lcd-badge lcd-badge--gray">{{ row.unitsRooms }}</span>
+                    <ng-container *ngSwitchCase="'internalStatus'">{{ row.internalStatus }}</ng-container>
+                    <ng-container *ngSwitchCase="'tags'">{{ row.tags }}</ng-container>
+                    <ng-container *ngSwitchCase="'activeLeases'">{{ row.activeLeases }}</ng-container>
+                    <ng-container *ngSwitchCase="'contracts'">{{ row.contracts }}</ng-container>
+                    <ng-container *ngSwitchCase="'occupiedTotal'">{{ row.occupiedTotal }}</ng-container>
+                    <div *ngSwitchCase="'occupancyRate'" class="ov-occupancy">
+                      <div class="ov-occupancy__track">
+                        <div class="ov-occupancy__fill" [style.width.%]="row.occupancyRate"></div>
+                      </div>
+                      <span>{{ row.occupancyRate }}%</span>
+                    </div>
+                    <ng-container *ngSwitchDefault>{{ $any(row)[col.key] }}</ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lcd-pager">
+            <span>Show <b>10</b> Showing 1 to {{ filteredProperties.length }} of {{ filteredProperties.length }} records</span>
+            <span>Page 1 of 1</span>
+          </div>
+        </section>
+
+        <section>
+          <h5 class="lcd-section-title">Contract Units</h5>
+          <div class="lcd-toolbar">
+            <div class="ov-search">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+              <input type="text" class="ov-input ov-search__input" [(ngModel)]="unitQuery" placeholder="Search">
+            </div>
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('units', $event)">
+                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+                Column
+              </button>
+              <div *ngIf="openColumnMenu === 'units'" class="lcd-col-menu">
+                <label>
+                  <input type="checkbox" [checked]="allUnitColumnsSelected" (change)="toggleAllColumns(unitColumns, $event)">
+                  Select All
+                </label>
+                <label *ngFor="let col of unitColumns">
+                  <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(unitColumns, col.key)">
+                  {{ col.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="lcd-table-wrap">
+            <table class="lcd-table">
+              <thead>
+                <tr>
+                  <th *ngFor="let col of visibleUnitColumns">{{ col.label }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of filteredUnits">
+                  <td *ngFor="let col of visibleUnitColumns" [ngSwitch]="col.key">
+                    <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
+                    <ng-container *ngSwitchCase="'name'">{{ row.name }}</ng-container>
+                    <span *ngSwitchCase="'category'" class="lcd-badge lcd-badge--gray">{{ row.category }}</span>
+                    <ng-container *ngSwitchCase="'beds'">{{ row.beds }}</ng-container>
+                    <div *ngSwitchCase="'property'" class="lcd-name-cell">
+                      <div class="lcd-name">{{ row.property }}</div>
+                      <div class="lcd-sub">{{ row.propertyLocation }}</div>
+                    </div>
+                    <span *ngSwitchCase="'vendor'" class="lcd-badge lcd-badge--gray">{{ row.vendor }}</span>
+                    <ng-container *ngSwitchCase="'tags'">{{ row.tags }}</ng-container>
+                    <span *ngSwitchCase="'unitType'" class="lcd-badge lcd-badge--gray">{{ row.unitType }}</span>
+                    <ng-container *ngSwitchCase="'floorNumber'">{{ row.floorNumber }}</ng-container>
+                    <ng-container *ngSwitchCase="'managementFee'">{{ row.managementFee }}</ng-container>
+                    <span *ngSwitchCase="'status'" class="ov-status ov-status--active">{{ row.status }}</span>
+                    <ng-container *ngSwitchCase="'internalStatus'">{{ row.internalStatus }}</ng-container>
+                    <ng-container *ngSwitchCase="'size'">{{ row.size }}</ng-container>
+                    <ng-container *ngSwitchCase="'marketRent'">{{ row.marketRent }}</ng-container>
+                    <ng-container *ngSwitchCase="'deposited'">{{ row.deposited }}</ng-container>
+                    <span *ngSwitchCase="'published'" class="lcd-badge lcd-badge--gray">{{ row.published }}</span>
+                    <span *ngSwitchCase="'forSale'" class="lcd-badge lcd-badge--gray">{{ row.forSale }}</span>
+                    <ng-container *ngSwitchDefault>{{ $any(row)[col.key] }}</ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lcd-pager">
+            <span>Show <b>10</b> Showing 1 to {{ filteredUnits.length }} of {{ filteredUnits.length }} records</span>
+            <span>Page 1 of 1</span>
+          </div>
+        </section>
+
+        <section>
+          <h5 class="lcd-section-title">Contract Rooms</h5>
+          <div class="lcd-toolbar">
+            <div class="ov-search">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+              <input type="text" class="ov-input ov-search__input" [(ngModel)]="roomQuery" placeholder="Search">
+            </div>
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('rooms', $event)">
+                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
+                Column
+              </button>
+              <div *ngIf="openColumnMenu === 'rooms'" class="lcd-col-menu">
+                <label>
+                  <input type="checkbox" [checked]="allRoomColumnsSelected" (change)="toggleAllColumns(roomColumns, $event)">
+                  Select All
+                </label>
+                <label *ngFor="let col of roomColumns">
+                  <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(roomColumns, col.key)">
+                  {{ col.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="lcd-table-wrap">
+            <table class="lcd-table">
+              <thead>
+                <tr>
+                  <th *ngFor="let col of visibleRoomColumns">{{ col.label }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of filteredRooms">
+                  <td *ngFor="let col of visibleRoomColumns" [ngSwitch]="col.key">
+                    <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
+                    <ng-container *ngSwitchCase="'name'">{{ row.name }}</ng-container>
+                    <span *ngSwitchCase="'category'" class="lcd-badge lcd-badge--gray">{{ row.category }}</span>
+                    <ng-container *ngSwitchCase="'beds'">{{ row.beds }}</ng-container>
+                    <div *ngSwitchCase="'property'" class="lcd-name-cell">
+                      <div class="lcd-name">{{ row.property }}</div>
+                      <div class="lcd-sub">{{ row.propertyLocation }}</div>
+                    </div>
+                    <span *ngSwitchCase="'vendor'" class="lcd-badge lcd-badge--gray">{{ row.vendor }}</span>
+                    <ng-container *ngSwitchCase="'tags'">{{ row.tags }}</ng-container>
+                    <span *ngSwitchCase="'unitType'" class="lcd-badge lcd-badge--gray">{{ row.unitType }}</span>
+                    <span *ngSwitchCase="'roomType'" class="lcd-badge lcd-badge--gray">{{ row.roomType }}</span>
+                    <ng-container *ngSwitchCase="'floorNumber'">{{ row.floorNumber }}</ng-container>
+                    <ng-container *ngSwitchCase="'managementFee'">{{ row.managementFee }}</ng-container>
+                    <span *ngSwitchCase="'status'" class="ov-status ov-status--active">{{ row.status }}</span>
+                    <ng-container *ngSwitchCase="'internalStatus'">{{ row.internalStatus }}</ng-container>
+                    <ng-container *ngSwitchCase="'size'">{{ row.size }}</ng-container>
+                    <ng-container *ngSwitchCase="'marketRent'">{{ row.marketRent }}</ng-container>
+                    <ng-container *ngSwitchCase="'deposited'">{{ row.deposited }}</ng-container>
+                    <span *ngSwitchCase="'published'" class="lcd-badge lcd-badge--gray">{{ row.published }}</span>
+                    <span *ngSwitchCase="'forSale'" class="lcd-badge lcd-badge--gray">{{ row.forSale }}</span>
+                    <ng-container *ngSwitchDefault>{{ $any(row)[col.key] }}</ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lcd-pager">
+            <span>Show <b>10</b> Showing 1 to {{ filteredRooms.length }} of {{ filteredRooms.length }} records</span>
+            <span>Page 1 of 1</span>
+          </div>
+        </section>
+
+        <section>
+          <h5 class="lcd-section-title">Commissions</h5>
+          <p class="lcd-section-sub">Commission details for this contract</p>
+          <div class="lcd-table-wrap">
+            <table class="lcd-table">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>Type</th>
+                  <th>Percentage</th>
+                  <th>Amount</th>
+                  <th>Fixed Amount</th>
+                  <th>Reserved Amount</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of commissions">
+                  <td>{{ row.from }}</td>
+                  <td>{{ row.type }}</td>
+                  <td>{{ row.percent }}</td>
+                  <td><b>{{ row.amount }}</b></td>
+                  <td>{{ row.fixedAmount }}</td>
+                  <td>{{ row.reservedAmount }}</td>
+                  <td>{{ row.balance }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h5 class="lcd-section-title">Files</h5>
+          <p class="lcd-section-sub">Documents attached to this contract</p>
+          <div class="lcd-toolbar">
+            <div class="ov-search lcd-toolbar__search">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+              <input type="text" class="ov-input ov-search__input" [(ngModel)]="fileQuery" placeholder="Search">
+            </div>
+          </div>
+          <div class="lcd-files">
+            <div class="lcd-file" *ngFor="let doc of documents">
+              <span class="lcd-file__pdf">PDF</span>
+              <div>
+                <strong>{{ doc.name }}</strong>
+                <p>{{ doc.meta }}</p>
+              </div>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="More">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="18" height="18">
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="p-5" *ngIf="activeTab === 'signatures'">
+        <h5 class="lcd-section-title">Signature Requests</h5>
+        <div class="lcd-table-wrap">
+          <table class="lcd-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Document</th>
+                <th>Sent</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of signatures">
+                <td>{{ row.id }}</td>
+                <td><span class="ov-status ov-status--warning">{{ row.status }}</span></td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.document }}</td>
+                <td>{{ row.sent }}</td>
+                <td>{{ row.type }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-5" *ngIf="activeTab === 'financials'">
+        <h5 class="lcd-section-title">Financials</h5>
+        <div class="lcd-table-wrap">
+          <table class="lcd-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Invoice</th>
+                <th>Cheque</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of payments">
+                <td>{{ row.id }}</td>
+                <td><span class="ov-status ov-status--warning">{{ row.status }}</span></td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.invoice }}</td>
+                <td>{{ row.cheque }}</td>
+                <td>{{ row.date }}</td>
+                <td>{{ row.category }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.amount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h5 class="lcd-section-title mt-6">Files</h5>
+        <p class="lcd-section-sub">Documents attached to this contract</p>
+        <div class="lcd-files">
+          <div class="lcd-file" *ngFor="let doc of documents">
+            <span class="lcd-file__pdf">PDF</span>
+            <div>
+              <strong>{{ doc.name }}</strong>
+              <p>{{ doc.meta }}</p>
+            </div>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="More">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="18" height="18">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

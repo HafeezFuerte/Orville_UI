@@ -9,6 +9,12 @@
 .dark {
   --link: 96 165 250;
   --link-hover: 147 197 253;
+  /* Live CSS path (orville-ds) — _variables.scss is not compiled by ng serve */
+  --default-background: 37 39 41;
+  --dark-bg: 37 39 41;
+  --default-border: 55 58 62;
+  --text-muted: 156 156 172;
+  --form-control-bg: 37 39 41;
 }
 
 .ov-sr {
@@ -97,6 +103,24 @@ form.ov-add-form {
   margin-inline: auto;
 }
 
+.ov-add-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
+  max-width: 1188px;
+  margin: 0 auto 32px;
+  padding-top: 10px;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.ov-add-footer .ov-btn {
+  min-width: 72px;
+  padding-inline: 20px;
+  font-weight: 600;
+}
+
 .ov-add-layout__main {
   grid-column: 1;
   display: flex;
@@ -169,11 +193,22 @@ form.ov-add-form {
     opacity: 1;
   }
 
+  &:hover:not(:focus):not(:disabled) {
+    border-color: rgb(var(--text-muted) / 0.55);
+  }
+
   &:focus {
     border-color: rgb(var(--primary));
     outline: none;
-    box-shadow: 0 0 0 1px rgb(var(--primary));
+    box-shadow: 0 0 0 1px rgb(var(--primary) / 0.2);
     background: rgb(var(--default-background));
+  }
+
+  &:disabled,
+  &[disabled] {
+    background: rgb(var(--light));
+    color: rgb(var(--text-muted));
+    cursor: not-allowed;
   }
 }
 
@@ -213,9 +248,13 @@ form.ov-add-form {
 }
 
 .dark .ov-input {
-  background: rgb(var(--body-bg));
-  border-color: rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.8);
+  background: rgb(var(--default-background));
+  border-color: rgb(var(--default-border));
+  color: rgb(var(--default-text-color) / 0.85);
+
+  &::placeholder {
+    color: rgb(var(--text-muted));
+  }
 }
 
 textarea.ov-input {
@@ -233,7 +272,12 @@ textarea.ov-input {
   overflow: hidden;
   border: 1px solid rgb(var(--default-border));
   border-radius: 0.5rem;
-  background: #fff;
+  background: rgb(var(--default-background));
+}
+
+.dark .ov-input-addon {
+  background: rgb(var(--default-background));
+  border-color: rgb(var(--default-border));
 }
 
 .ov-input-addon__prefix {
@@ -241,7 +285,7 @@ textarea.ov-input {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  min-width: 64px;
+  min-width: 52px;
   padding: 0 12px;
   border-inline-end: 1px solid rgb(var(--default-border));
   background: rgb(var(--light));
@@ -260,6 +304,34 @@ textarea.ov-input {
   box-shadow: none !important;
   min-height: 38px;
   height: 38px;
+  padding-inline: 14px !important;
+  background: transparent !important;
+}
+
+/* Date field with leading calendar icon — Figma Contract Duration */
+.ov-date {
+  position: relative;
+  width: 100%;
+}
+
+.ov-date__icon {
+  position: absolute;
+  inset-inline-start: 16px;
+  top: 50%;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  object-fit: contain;
+}
+
+.ov-date .ov-input {
+  padding-inline-start: 44px !important;
+}
+
+.dark .ov-date__icon {
+  filter: invert(1) opacity(0.7);
 }
 
 .ov-input-addon:focus-within {
@@ -717,9 +789,9 @@ img.ov-search__icon {
 }
 
 .ov-kpi__val {
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 800;
-  line-height: 34px;
+  line-height: 32px;
   letter-spacing: 0.52px;
   color: rgb(var(--default-text-color));
 }
@@ -762,6 +834,11 @@ img.ov-search__icon {
   border: 1px solid rgb(var(--default-border));
   background: #fff;
   box-shadow: none;
+}
+
+.dark .ov-card {
+  background: rgb(var(--dark-bg));
+  border-color: rgb(255 255 255 / 0.1);
 }
 
 .ov-card-title {
@@ -858,6 +935,12 @@ img.ov-search__icon {
   background: rgb(var(--default-background)) !important;
   box-shadow: none !important;
   font-size: 14px !important;
+}
+
+.dark .ng-select.ov-select .ng-select-container {
+  background: rgb(var(--default-background)) !important;
+  border-color: rgb(var(--default-border)) !important;
+  color: rgb(var(--default-text-color) / 0.85) !important;
 }
 
 .ng-select.ov-select .ng-arrow-wrapper {
@@ -1033,6 +1116,27 @@ img.ov-search__icon {
 .dark .ov-table thead tr th,
 .dark .main-content .table thead tr th {
   background: rgb(var(--body-bg));
+}
+
+/* Navy --primary is unreadable on dark table cells (Units / Rooms chips, etc.) */
+.dark .main-content td .text-primary:not([class*="btn"]):not(.cursor-pointer) {
+  color: rgb(var(--default-text-color) / 0.88) !important;
+}
+
+/* Light-menu active pill stays #EEEF5 in dark theme — remap to a readable chip */
+html.dark .app-sidebar .slide-menu.child1 .side-menu__item.active,
+html.dark .app-sidebar .slide-menu.child2 .side-menu__item.active,
+html.dark .app-sidebar .slide-menu.child3 .side-menu__item.active,
+html.dark .app-sidebar .slide-menu.child1 .side-menu__item:hover,
+html.dark .app-sidebar .slide-menu.child2 .side-menu__item:hover,
+html.dark .app-sidebar .slide-menu.child3 .side-menu__item:hover {
+  background-color: rgb(255 255 255 / 0.08) !important;
+  color: #fff !important;
+}
+
+html.dark .app-sidebar .slide-menu .side-menu__item.active .side-menu__label,
+html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
+  color: #fff !important;
 }
 
 .mat-mdc-paginator {
@@ -2876,5 +2980,222 @@ img.ov-search__icon {
     right: 0;
     top: calc(100% + 8px);
     width: auto;
+  }
+}
+
+/* Invoice status chips — Figma invoice detail (white fill, colored text + border) */
+.inv-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dark .inv-badge {
+  background: rgb(var(--dark-bg));
+}
+
+.inv-badge--paid {
+  color: rgb(var(--success));
+  border-color: rgb(var(--success) / 0.45);
+}
+
+.inv-badge--draft {
+  color: rgb(var(--text-muted));
+  border-color: rgb(var(--default-border));
+}
+
+.inv-badge--pending,
+.inv-badge--hold {
+  color: rgb(var(--warning));
+  border-color: rgb(var(--warning) / 0.45);
+}
+
+.inv-badge--rejected,
+.inv-badge--unpaid {
+  color: rgb(var(--danger));
+  border-color: rgb(var(--danger) / 0.45);
+}
+
+.inv-badge--synced {
+  color: rgb(var(--success));
+  border-color: rgb(var(--success) / 0.45);
+}
+
+.inv-badge--navy {
+  background: rgb(var(--primary));
+  border-color: rgb(var(--primary));
+  color: #fff;
+}
+
+.dark .inv-badge--navy {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+/* Chart of Accounts — Type / Sub Account chips (filled pills) */
+.coa-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: default;
+  pointer-events: none;
+}
+
+.coa-pill--navy {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+.coa-pill--danger {
+  background: rgb(var(--danger));
+  color: #fff;
+}
+
+.coa-pill--muted {
+  background: rgb(var(--light));
+  color: rgb(var(--default-text-color));
+}
+
+.dark .coa-pill--navy,
+.dark .coa-pill--danger {
+  color: #fff;
+}
+
+.dark .coa-pill--muted {
+  background: rgb(var(--light));
+  color: rgb(var(--default-text-color));
+}
+
+.chq-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.chq-pill--navy {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+.chq-pill--warn {
+  background: rgb(var(--warning));
+  color: #fff;
+}
+
+.chq-pill--danger {
+  background: rgb(var(--danger));
+  color: #fff;
+}
+
+.chq-pill--muted {
+  background: rgb(var(--light));
+  color: rgb(var(--default-text-color));
+}
+
+html.dark .acc-reports-card {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(var(--default-border)) !important;
+  box-shadow: none;
+}
+
+html.dark .acc-reports-card__title {
+  color: rgb(var(--default-text-color)) !important;
+}
+
+html.dark .acc-reports-card__desc {
+  color: rgb(var(--text-muted)) !important;
+}
+
+html.dark .acc-reports-card__rule {
+  background: rgb(var(--default-border)) !important;
+}
+
+html.dark .ov-search-modal__card.ti-modal-content,
+html.dark .ov-create-overlay__card {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(var(--default-border)) !important;
+}
+
+html.dark .ov-search-modal__recent,
+html.dark .ov-search-modal__icon-btn,
+html.dark .ov-search-modal__close,
+html.dark .ov-create-overlay__close {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(var(--default-border));
+}
+
+html.dark .ov-search-modal__chip {
+  background: rgb(var(--light)) !important;
+  color: rgb(var(--default-text-color)) !important;
+}
+
+html.dark .ov-search-modal__footer.ti-modal-footer {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-top-color: rgb(var(--default-border)) !important;
+}
+
+html.dark .ov-create-overlay__icon {
+  background: rgb(var(--light)) !important;
+}
+
+html.dark .ov-col-menu {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(var(--default-border)) !important;
+}
+
+/* Dark mode — project-wide surfaces. New pages must use tokens / these utilities, not raw #fff. */
+.dark {
+  .bg-white {
+    background-color: rgb(var(--dark-bg)) !important;
+  }
+
+  .border-gray-100,
+  .border-gray-200 {
+    border-color: rgb(255 255 255 / 0.1) !important;
+  }
+
+  .text-gray-500,
+  .text-gray-600,
+  .text-gray-700 {
+    color: rgb(var(--text-muted)) !important;
+  }
+
+  .text-gray-800,
+  .text-gray-900 {
+    color: rgb(var(--default-text-color)) !important;
+  }
+
+  .bg-gray-50,
+  .bg-gray-100 {
+    background-color: rgb(255 255 255 / 0.05) !important;
+  }
+
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-gray-100:hover {
+    background-color: rgb(255 255 255 / 0.08) !important;
   }
 }

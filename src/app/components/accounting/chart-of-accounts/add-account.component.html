@@ -1,0 +1,86 @@
+<form class="ov-add-form" (ngSubmit)="saveAccount()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Chart of Accounts">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Account</h3>
+        <p class="ov-page-sub">
+          Accounting / Chart of Account / <span class="ov-page-sub__current">New Account</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Create Account</button>
+    </div>
+  </div>
+
+  <div class="coa-add-body">
+    <div class="ov-card">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Account details</h6>
+        <p class="ov-card-sub">Define the account hierarchy, classification, and identifying details.</p>
+      </div>
+      <div class="ov-card__body">
+        <div class="ov-fields">
+          <div class="coa-add__toggle ov-fields__full">
+            <div>
+              <p class="coa-add__toggle-title">Sub account</p>
+              <p class="coa-add__toggle-sub">This will enable you to add this account as a sub account.</p>
+            </div>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="coa-sub-account" name="isSubAccount" [(ngModel)]="isSubAccount">
+              <label for="coa-sub-account" class="label-primary"></label>
+            </div>
+          </div>
+
+          <div class="ov-fields__full" *ngIf="isSubAccount">
+            <label class="ov-label">Parent account *</label>
+            <ng-select [(ngModel)]="parentAccount" name="parentAccount" [items]="parents" [searchable]="true"
+              [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+          </div>
+
+          <div class="ov-fields ov-fields--2 ov-fields__full">
+            <div>
+              <label class="ov-label">Account *</label>
+              <ng-select [(ngModel)]="account" name="account" [items]="accounts" [searchable]="true"
+                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Account Type *</label>
+              <ng-select [(ngModel)]="accountType" name="accountType" [items]="types"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+
+          <div class="ov-fields__full">
+            <label class="ov-label">Account Name *</label>
+            <input type="text" class="ov-input" name="accountName" [(ngModel)]="accountName" placeholder="Enter">
+          </div>
+
+          <div class="ov-fields__full">
+            <label class="ov-label">Account Number *</label>
+            <input type="text" class="ov-input" name="accountNumber" [(ngModel)]="accountNumber" placeholder="Enter">
+          </div>
+
+          <div class="ov-fields__full">
+            <label class="ov-label">Remote GL Code</label>
+            <input type="text" class="ov-input" name="remoteGlCode" [(ngModel)]="remoteGlCode" placeholder="Enter">
+          </div>
+
+          <div class="ov-fields__full">
+            <label class="ov-label">Description</label>
+            <textarea class="ov-input coa-add__desc" name="description" [(ngModel)]="description" placeholder="Enter"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
+    <button type="submit" class="ov-btn ov-btn-primary">Create Account</button>
+  </div>
+</form>

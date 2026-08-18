@@ -1,0 +1,389 @@
+<form class="ov-add-form" (ngSubmit)="save()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Landlord Contracts">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Contract</h3>
+        <p class="ov-page-sub">
+          Contract / Landlords Contract / <span class="ov-page-sub__current">New Contract</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Save</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Landlords</h6>
+          <p class="ov-card-sub">Select landlord for this contract</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields">
+            <div>
+              <label class="ov-label">Landlords</label>
+              <ng-select [(ngModel)]="form.landlord" name="landlord" [items]="landlords" [searchable]="true"
+                [clearable]="true" placeholder="Select Landlord" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Contract Properties</h6>
+          <p class="ov-card-sub">Select properties for this contract. Only properties linked to this landlord are shown.</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields">
+            <div>
+              <label class="ov-label">Property</label>
+              <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [searchable]="true"
+                [clearable]="true" placeholder="Select Property" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head llc-card-head-row">
+          <div>
+            <h6 class="ov-card-title">Contract Units</h6>
+            <p class="ov-card-sub">Select units from the contract properties above.</p>
+          </div>
+          <div class="llc-menu" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="toggleUnitMenu($event)">Add Unit</button>
+            <div class="llc-menu__list" *ngIf="unitMenuOpen">
+              <button type="button" (click)="addUnit()">Add Unit</button>
+              <button type="button" (click)="addAllUnits()">Add All Units</button>
+            </div>
+          </div>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields">
+            <div>
+              <label class="ov-label">Unit</label>
+              <ng-select [(ngModel)]="pendingUnit" name="pendingUnit" [items]="units" [searchable]="true"
+                [clearable]="true" placeholder="Select Unit" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+          <div class="llc-chip-list">
+            <div class="llc-chip" *ngFor="let unit of selectedUnits">
+              <span>{{ unit }}</span>
+              <button type="button" class="llc-chip__x" (click)="removeUnit(unit)" aria-label="Remove unit">
+                <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head llc-card-head-row">
+          <div>
+            <h6 class="ov-card-title">Contract Rooms</h6>
+            <p class="ov-card-sub">Select rooms from the contract properties above.</p>
+          </div>
+          <div class="llc-menu" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="toggleRoomMenu($event)">Add Room</button>
+            <div class="llc-menu__list" *ngIf="roomMenuOpen">
+              <button type="button" (click)="addRoom()">Add Room</button>
+              <button type="button" (click)="addAllRooms()">Add All Rooms</button>
+            </div>
+          </div>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields">
+            <div>
+              <label class="ov-label">Room</label>
+              <ng-select [(ngModel)]="pendingRoom" name="pendingRoom" [items]="rooms" [searchable]="true"
+                [clearable]="true" placeholder="Select Room" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+          <div class="llc-chip-list" *ngIf="selectedRooms.length">
+            <div class="llc-chip" *ngFor="let room of selectedRooms">
+              <span>{{ room }}</span>
+              <button type="button" class="llc-chip__x" (click)="removeRoom(room)" aria-label="Remove room">
+                <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Contract Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Name</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Contract Cycle</label>
+              <ng-select [(ngModel)]="form.cycle" name="cycle" [items]="cycles" [searchable]="true" [clearable]="true"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Contract Duration</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Start Date</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input" name="startDate" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">End Date</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input" name="endDate" [(ngModel)]="form.endDate" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Payment Schedule</h6>
+          <p class="ov-card-sub">By default, this will create invoices of management fee income.</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">Management Fee Type</label>
+              <ng-select [(ngModel)]="form.feeType" name="feeType" [items]="feeTypes" [searchable]="true"
+                [clearable]="true" placeholder="Select Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Value</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">AED</span>
+                <input type="text" class="ov-input" name="feeValue" [(ngModel)]="form.feeValue" placeholder="0.00">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Number of Payment</label>
+              <input type="text" class="ov-input" name="paymentCount" [(ngModel)]="form.paymentCount" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">PMA Type</label>
+              <ng-select [(ngModel)]="form.pmaType" name="pmaType" [items]="pmaTypes" [searchable]="true"
+                [clearable]="true" placeholder="Select Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Payment Via</label>
+              <ng-select [(ngModel)]="form.paymentVia" name="paymentVia" [items]="paymentViaOptions" [searchable]="true"
+                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Tax Profile</label>
+              <ng-select [(ngModel)]="form.taxProfile" name="taxProfile" [items]="taxProfiles" [searchable]="true"
+                [clearable]="true" placeholder="Select Tax Profile" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head llc-card-head-row">
+          <div>
+            <h6 class="ov-card-title">Payment Schedule</h6>
+            <p class="ov-card-sub">Select from the options below to set the payment schedule. You can set a recurring schedule or a one-time schedule, or use Generate Schedules above to auto-create from fee settings.</p>
+          </div>
+          <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="addPayment()">Add Payment</button>
+        </div>
+        <div class="ov-card__body">
+          <div class="llc-schedules-bar">
+            <span class="ov-label !mb-0">Schedules</span>
+            <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" (click)="clearSchedules()">Delete Schedules</button>
+          </div>
+          <div class="llc-table-wrap">
+            <table class="llc-table">
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Amount</th>
+                  <th>Due</th>
+                  <th>Recurrence</th>
+                  <th>Payment Via</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of schedules; let i = index">
+                  <td>{{ row.account }}</td>
+                  <td>{{ row.amount }}</td>
+                  <td>{{ row.due }}</td>
+                  <td>{{ row.recurrence }}</td>
+                  <td>{{ row.paymentVia }}</td>
+                  <td>
+                    <div class="llc-row-actions">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit">
+                        <img src="assets/images/action-menu/pencil.svg" alt="" width="16" height="16">
+                      </button>
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeSchedule(i)" aria-label="Delete">
+                        <img src="assets/images/work-order-detail/trash.svg" alt="" width="16" height="16">
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Commission Details</h6>
+          <p class="ov-card-sub">You can add landlord commission in percentage or fixed from below. You can add agents in specific commission.</p>
+        </div>
+        <div class="ov-card__body llc-commission">
+          <div class="llc-panel">
+            <div class="llc-panel__head">
+              <span>Charge from Landlord</span>
+              <button type="button" class="ov-btn ov-btn-ghost llc-head-btn">
+                View
+                <img src="assets/images/myday/external-link.svg" alt="" width="14" height="14">
+              </button>
+            </div>
+            <div class="ov-fields ov-fields--3">
+              <div>
+                <label class="ov-label">Number of Payment</label>
+                <input type="text" class="ov-input" name="chargePayments" [(ngModel)]="form.chargePayments" placeholder="Enter">
+              </div>
+              <div>
+                <label class="ov-label">Percentage</label>
+                <div class="ov-input-addon">
+                  <span class="ov-input-addon__prefix">%</span>
+                  <input type="text" class="ov-input" name="chargePercent" [(ngModel)]="form.chargePercent" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="ov-label">Commission</label>
+                <div class="ov-input-addon">
+                  <span class="ov-input-addon__prefix">AED</span>
+                  <input type="text" class="ov-input" name="chargeCommission" [(ngModel)]="form.chargeCommission" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="ov-label">Fixed</label>
+                <div class="ov-input-addon">
+                  <span class="ov-input-addon__prefix">AED</span>
+                  <input type="text" class="ov-input" name="chargeFixed" [(ngModel)]="form.chargeFixed" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="ov-label">Balance</label>
+                <div class="ov-input-addon">
+                  <span class="ov-input-addon__prefix">AED</span>
+                  <input type="text" class="ov-input" name="chargeBalance" [(ngModel)]="form.chargeBalance" placeholder="0.00">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="llc-panel">
+            <div class="llc-panel__head">
+              <div>
+                <span>Landlord Commission Agents</span>
+                <p class="llc-panel__meta">Available Balance: <strong>AED 0.00</strong></p>
+              </div>
+              <div class="llc-panel__actions">
+                <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" disabled>Add Company Commission</button>
+                <button type="button" class="ov-btn ov-btn-ghost llc-head-btn" disabled>Add Agent Commission</button>
+              </div>
+            </div>
+            <p class="llc-empty">No agent commissions added yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Other</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields">
+            <div class="ov-fields__full">
+              <label class="ov-label">Notes</label>
+              <textarea class="ov-input llc-notes" name="notes" [(ngModel)]="form.notes" placeholder="Note enter here..."></textarea>
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Attachments</label>
+              <div class="llc-drop">
+                <p>Drop your image here or Browse</p>
+                <button type="button" class="llc-upload">
+                  <i class="ri ri-upload-2-line" aria-hidden="true"></i>
+                  Upload Image
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="ov-add-layout__aside">
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Contract Summary</h6>
+        </div>
+        <div class="ov-card__body llc-summary">
+          <div>
+            <p class="llc-summary__label">Status</p>
+            <span class="ov-status ov-status--muted">Draft</span>
+          </div>
+          <div>
+            <p class="llc-summary__label">Landlord</p>
+            <span class="llc-chip llc-chip--summary">{{ form.landlord || '—' }}</span>
+          </div>
+          <div>
+            <p class="llc-summary__label">Properties</p>
+            <div class="llc-chip-row">
+              <span class="llc-chip llc-chip--summary">
+                Marina Height Tower
+                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
+              </span>
+              <span class="llc-chip llc-chip--summary">
+                Marina Height..
+                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
+              </span>
+            </div>
+          </div>
+          <div>
+            <p class="llc-summary__label">Units</p>
+            <div class="llc-chip-row">
+              <span class="llc-chip llc-chip--summary" *ngFor="let unit of selectedUnits">
+                {{ unit }}
+                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
+    <button type="submit" class="ov-btn ov-btn-primary">Save</button>
+  </div>
+</form>

@@ -1,0 +1,334 @@
+<div class="rpt-page" *ngIf="report">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to reports">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">{{ report.title }}</h3>
+        <p class="ov-page-sub">
+          Accounting / Report / <span class="ov-page-sub__current">{{ report.crumb }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions" *ngIf="report.showExport">
+      <button type="button" class="ov-btn ov-btn-ghost">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+        Export
+      </button>
+    </div>
+  </div>
+
+  <div class="ov-card rpt-company">
+    <p class="rpt-company__name">{{ report.company }}</p>
+  </div>
+
+  <div class="ov-card rpt-filter" *ngIf="!report.hideDateFilter">
+    <div class="rpt-filter__fields">
+      <div>
+        <label class="ov-label">From date</label>
+        <div class="ov-date">
+          <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+          <input type="text" class="ov-input" name="fromDate" [(ngModel)]="fromDate"
+            mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
+        </div>
+      </div>
+      <div>
+        <label class="ov-label">End Date</label>
+        <div class="ov-date">
+          <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+          <input type="text" class="ov-input" name="toDate" [(ngModel)]="toDate"
+            mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
+        </div>
+      </div>
+    </div>
+    <div class="rpt-filter__actions">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="applyFilter()">Apply Filter</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilter()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="ov-card rpt-filter" *ngIf="report.yearFilter">
+    <div class="rpt-filter__fields">
+      <div>
+        <label class="ov-label">Financial year</label>
+        <ng-select [(ngModel)]="year" [items]="report.yearOptions || []" [clearable]="false"
+          name="reportYear" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+      </div>
+    </div>
+  </div>
+
+  <div class="rpt-kpis" *ngIf="report.kpis.length" [class.rpt-kpis--4]="report.kpis.length === 4">
+    <div class="ov-card rpt-kpi" *ngFor="let kpi of report.kpis">
+      <span class="ov-kpi__badge">{{ kpi.label }}</span>
+      <div class="ov-kpi__val">{{ kpi.value }}</div>
+      <div class="ov-kpi__sub">{{ kpi.sub }}</div>
+    </div>
+  </div>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'statement'">
+    <div class="rpt-stmt__head">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+    </div>
+    <div class="rpt-section" *ngFor="let section of report.sections">
+      <button
+        type="button"
+        class="rpt-section__head"
+        [class.rpt-section__head--btn]="section.collapsible"
+        [disabled]="!section.collapsible"
+        (click)="toggleSection(section)">
+        <span class="rpt-section__title">{{ section.title }}</span>
+        <span class="rpt-section__hint" *ngIf="section.hint">{{ section.hint }}</span>
+        <span class="rpt-section__total" *ngIf="section.total">{{ section.total }}</span>
+        <img
+          *ngIf="section.collapsible"
+          src="assets/images/common/chevron-down.svg"
+          alt=""
+          width="16"
+          height="16"
+          class="rpt-section__chevron"
+          [class.is-open]="section.open">
+      </button>
+      <div class="rpt-section__body" *ngIf="section.open">
+        <div class="rpt-group" *ngFor="let group of section.groups">
+          <div class="rpt-subhead" *ngIf="group.title">{{ group.title }}</div>
+          <div class="rpt-line" *ngFor="let line of group.lines">
+            <span>{{ line.label }}</span>
+            <span [class.is-neg]="line.negative">{{ line.amount }}</span>
+          </div>
+          <p class="rpt-empty" *ngIf="group.empty">{{ group.empty }}</p>
+          <div class="rpt-total" *ngIf="group.totalLabel">
+            <span>{{ group.totalLabel }}</span>
+            <span>{{ group.total }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rpt-net">
+      <span>{{ report.netLabel }}</span>
+      <span>{{ report.netValue }}</span>
+    </div>
+  </section>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'table'">
+    <div class="rpt-stmt__head">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+    </div>
+    <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-4 flex-col sm:flex-row items-stretch sm:items-center">
+      <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+        <label class="sr-only" for="trial-search">Search</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input id="trial-search" type="text" class="ov-input ov-search__input"
+          [(ngModel)]="tableQuery" (keyup.enter)="onSearch()" placeholder="Search">
+      </div>
+      <div class="ov-toolbar__btns">
+        <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
+          <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+          Filter
+        </button>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
+          </button>
+          <app-column-menu
+            *ngIf="showColumnDropdown"
+            [columns]="tableColumns"
+            (toggle)="toggleColumn($event)"
+            (toggleAll)="toggleAllColumns($event)"
+            (closed)="showColumnDropdown = false">
+          </app-column-menu>
+        </div>
+      </div>
+    </div>
+    <div class="rpt-table-wrap">
+      <table class="rpt-table">
+        <thead>
+          <tr>
+            <th *ngFor="let col of visibleTableColumns" [class.is-num]="col.key !== 'account' && col.key !== 'type'">{{ col.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of paginatedRows">
+            <td *ngFor="let col of visibleTableColumns" [class.is-num]="col.key !== 'account' && col.key !== 'type'">
+              <span *ngIf="col.key === 'type'" [ngClass]="typeClass(row.type)">{{ row.type }}</span>
+              <ng-container *ngIf="col.key !== 'type'">{{ $any(row)[col.key] }}</ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ov-page">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'simple'">
+    <div class="rpt-stmt__head" *ngIf="report.statementTitle">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period" *ngIf="periodLabel">For the period {{ periodLabel }}</p>
+    </div>
+    <div class="rpt-simple-head">
+      <span>{{ report.simpleLeftLabel || 'Account' }}</span>
+      <span>{{ report.simpleRightLabel || 'Balance' }}</span>
+    </div>
+    <div class="rpt-line" *ngFor="let row of report.simpleRows">
+      <span>{{ row.account }}</span>
+      <span>{{ row.balance }}</span>
+    </div>
+    <div class="rpt-total">
+      <span>{{ report.simpleTotalLabel }}</span>
+      <span>{{ report.netValue }}</span>
+    </div>
+    <div class="rpt-net">
+      <span>{{ report.netLabel }}</span>
+      <span>{{ report.netValue }}</span>
+    </div>
+  </section>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'grouped'">
+    <div class="rpt-stmt__head">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+    </div>
+    <div class="rpt-ledger" *ngFor="let group of report.ledgerGroups">
+      <button type="button" class="rpt-ledger__head" (click)="toggleLedgerGroup(group)">
+        <span class="rpt-ledger__title">{{ group.title }}</span>
+        <span class="rpt-ledger__meta">{{ group.countLabel }}</span>
+        <span class="rpt-ledger__amt">{{ group.debit }}</span>
+        <span class="rpt-ledger__amt">{{ group.credit }}</span>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="16" height="16"
+          class="rpt-section__chevron" [class.is-open]="group.open">
+      </button>
+      <div class="rpt-table-wrap" *ngIf="group.open">
+        <table class="rpt-table">
+          <thead>
+            <tr>
+              <th>Account name</th>
+              <th class="is-num">Debit</th>
+              <th class="is-num">Credit</th>
+              <th class="is-num">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of group.rows">
+              <td>{{ row.account }}</td>
+              <td class="is-num">{{ row.debit }}</td>
+              <td class="is-num">{{ row.credit }}</td>
+              <td class="is-num">{{ row.balance }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'journal'">
+    <div class="rpt-stmt__head">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+    </div>
+    <div class="rpt-table-wrap">
+      <table class="rpt-table">
+        <thead>
+          <tr>
+            <th>Account name</th>
+            <th>Date</th>
+            <th class="is-num">Credit</th>
+            <th class="is-num">Debit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let block of report.journalBlocks">
+            <tr class="rpt-journal-band">
+              <td colspan="4">{{ block.title }}</td>
+            </tr>
+            <tr *ngFor="let line of block.lines">
+              <td>{{ line.account }}</td>
+              <td>{{ line.date }}</td>
+              <td class="is-num">{{ line.credit }}</td>
+              <td class="is-num">{{ line.debit }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="ov-card rpt-stmt" *ngIf="layout === 'annual'">
+    <div class="rpt-stmt__head">
+      <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
+      <p class="rpt-stmt__period">{{ periodLabel }}</p>
+    </div>
+    <div class="rpt-table-wrap">
+      <table class="rpt-table rpt-annual">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th class="is-num">Total</th>
+            <th class="is-num" *ngFor="let month of report.annualMonths">{{ month }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let section of report.annualSections">
+            <tr class="rpt-annual__cat">
+              <td [attr.colspan]="(report.annualMonths?.length || 0) + 2">{{ section.title }}</td>
+            </tr>
+            <tr *ngFor="let row of section.rows">
+              <td>{{ row.account }}</td>
+              <td class="is-num">{{ row.total }}</td>
+              <td class="is-num" *ngFor="let value of row.months">{{ value }}</td>
+            </tr>
+            <tr class="rpt-annual__total">
+              <td>{{ section.totalLabel }}</td>
+              <td class="is-num" *ngFor="let value of section.totals">{{ value }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<app-filter-drawer *ngIf="layout === 'table'" [(isOpen)]="isDrawerOpen" (apply)="applyTableFilters()" (clear)="clearTableFilters()">
+  <div class="flex flex-col gap-4 text-[11px]">
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Account</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterAccount" placeholder="Enter account">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Type</label>
+      <ng-select [(ngModel)]="filterType" [items]="typeOptions" [clearable]="true"
+        placeholder="Select Type" class="ng-select-sm w-full" appendTo="body"></ng-select>
+    </div>
+  </div>
+</app-filter-drawer>

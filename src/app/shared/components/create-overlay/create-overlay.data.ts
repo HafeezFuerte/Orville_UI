@@ -50,8 +50,17 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Contract',
     items: [
-      { label: 'Landlord Contract', icon: icon('file-invoice.svg') },
-      { label: 'Vendor Contract', icon: icon('file-invoice.svg') }
+      { label: 'Landlord Contract', icon: icon('file-invoice.svg'), route: '/landlord-contracts/create' },
+      { label: 'Vendor Contract', icon: icon('file-invoice.svg'), route: '/vendor-contracts/create' }
+    ]
+  },
+  {
+    title: 'Accounting',
+    items: [
+      { label: 'Invoice', icon: icon('file-invoice.svg'), route: '/accounting/invoices/create' },
+      { label: 'Expense', icon: icon('file-invoice.svg'), route: '/accounting/expenses/create' },
+      { label: 'Credit Note', icon: icon('file-invoice.svg'), route: '/accounting/credit-notes' },
+      { label: 'Account', icon: icon('file-invoice.svg'), route: '/accounting/chart-of-accounts/create' }
     ]
   },
   {

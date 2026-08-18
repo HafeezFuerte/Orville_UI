@@ -1,0 +1,188 @@
+<div class="cn-page">
+  <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+    <div>
+      <h3 class="ov-page-title">Credit Notes</h3>
+      <p class="ov-page-sub">View all the Credit Notes</p>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="openCreateModal()">
+        <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+        Issue Credit Note
+      </button>
+    </div>
+  </div>
+
+  <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none dark:bg-bodybg">
+    <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+      <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+        <label class="sr-only" for="credit-note-search">Search by name</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input
+          id="credit-note-search"
+          type="text"
+          class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Search by name">
+      </div>
+      <div class="ov-toolbar__btns">
+        <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
+          <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+          Filter
+        </button>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
+          </button>
+          <app-column-menu
+            *ngIf="showColumnDropdown"
+            [columns]="tableColumns"
+            (toggle)="toggleColumn($event)"
+            (toggleAll)="toggleAllColumns($event)"
+            (closed)="showColumnDropdown = false">
+          </app-column-menu>
+        </div>
+      </div>
+    </div>
+
+    <div class="cn-table px-5 pb-0 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="paginatedRows"
+        [loading]="false"
+        [hasActions]="false"
+        [showPaginator]="false"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <ng-container *ngSwitchCase="'id'">
+              <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+            </ng-container>
+            <ng-container *ngSwitchCase="'remainingCredit'">
+              <span class="cn-remaining">{{ row.remainingCredit }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'action'">
+              <div class="relative inline-flex" (click)="$event.stopPropagation()">
+                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" aria-label="Row actions">
+                  <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+                </button>
+                <div *ngIf="openActionId === row.id"
+                  class="absolute end-0 z-20 mt-1 min-w-[168px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                  <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                    (click)="openEditModal(row)">Edit Credit note</button>
+                  <button type="button" class="cn-delete-action block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
+                    (click)="deleteCreditNote(row.id)">Delete Credit note</button>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <div class="ov-page">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+  <div class="flex flex-col gap-4 text-[11px]">
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Contact</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterContact" placeholder="Enter contact">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Account</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterAccount" placeholder="Enter account">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label mb-1.5">Filter by Created By</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterCreatedBy" placeholder="Enter name">
+    </div>
+  </div>
+</app-filter-drawer>
+
+<div *ngIf="modalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="credit-note-title">
+  <div class="ov-modal ov-modal--lg">
+    <div class="ov-modal__header">
+      <div>
+        <h6 class="ov-modal__title" id="credit-note-title">{{ modalTitle }}</h6>
+        <p class="ov-modal__sub">{{ modalSub }}</p>
+      </div>
+      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="closeModal()" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
+      </button>
+    </div>
+    <div class="ov-modal__body">
+      <div class="ov-fields ov-fields--2">
+        <div>
+          <label class="ov-label">Tenant *</label>
+          <ng-select [(ngModel)]="draft.tenant" name="cnTenant" [items]="tenants" [searchable]="true"
+            [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Account</label>
+          <ng-select [(ngModel)]="draft.account" name="cnAccount" [items]="accounts" [searchable]="true"
+            [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Amount *</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">AED</span>
+            <input type="number" class="ov-input" name="cnAmount" [(ngModel)]="draft.amount" placeholder="0.00">
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">Note Date</label>
+          <div class="ov-date">
+            <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+            <input type="text" class="ov-input" name="cnNoteDate" [(ngModel)]="draft.noteDate"
+              mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
+          </div>
+          <span class="ov-modal__hint">Leaving this empty will select today's date.</span>
+        </div>
+        <div class="ov-fields__full">
+          <label class="ov-label">Note</label>
+          <textarea class="ov-input cn-note" name="cnNote" [(ngModel)]="draft.note" placeholder="Enter Note.."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="ov-modal__footer">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveCreditNote()">Save</button>
+    </div>
+  </div>
+</div>

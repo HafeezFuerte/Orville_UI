@@ -162,14 +162,15 @@
         background-color: rgb(var(--orville-nav-active-bg)) !important;
         color: rgb(var(--orville-accent)) !important;
         font-size: 12px !important;
-        font-weight: 400 !important;
+        font-weight: 600 !important;
         min-height: 32px;
         height: 32px;
         padding: 0 8px 0 34px !important;
+        box-shadow: inset 3px 0 0 rgb(var(--orville-accent));
 
         .side-menu__label {
           font-size: 12px !important;
-          font-weight: 400 !important;
+          font-weight: 600 !important;
           color: rgb(var(--orville-accent)) !important;
         }
       }
@@ -182,6 +183,7 @@
   }
 }
 
+:host-context(.dark),
 :host-context([data-menu-styles='dark']),
 :host-context([data-menu-styles='color']),
 :host-context([data-menu-styles='gradient']) {
@@ -197,22 +199,37 @@
     }
   }
 
-  ::ng-deep .slide-menu .side-menu__item,
+  ::ng-deep .slide-menu.child1 .side-menu__item,
+  ::ng-deep .slide-menu.child2 .side-menu__item,
+  ::ng-deep .slide-menu.child3 .side-menu__item,
   ::ng-deep .slide-menu .orville-sub-item {
     color: rgb(255 255 255 / 0.72) !important;
+    background: transparent !important;
 
     .side-menu__label {
       color: rgb(255 255 255 / 0.72) !important;
     }
 
-    &.active,
-    &:hover {
+    &:hover:not(.active) {
       color: #fff !important;
       background-color: rgb(255 255 255 / 0.08) !important;
 
       .side-menu__label,
       .side-menu__angle {
         color: #fff !important;
+      }
+    }
+
+    &.active {
+      color: rgb(var(--orville-accent)) !important;
+      background-color: rgb(255 255 255 / 0.08) !important;
+      font-weight: 600 !important;
+      box-shadow: inset 3px 0 0 rgb(var(--orville-accent));
+
+      .side-menu__label,
+      .side-menu__angle {
+        color: rgb(var(--orville-accent)) !important;
+        font-weight: 600 !important;
       }
     }
 
