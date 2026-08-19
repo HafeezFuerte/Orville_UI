@@ -1,0 +1,190 @@
+<form class="ov-add-form" (ngSubmit)="save()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="cancel()" title="Back to Spaces">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Create a new bookable space</h3>
+        <p class="ov-page-sub">Bookings / Spaces / <span class="ov-page-sub__current">Create</span></p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Save Space</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Space information</h6>
+          <p class="ov-card-sub">Give guests the essential information they need before booking.</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Space name *</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Space Location *</label>
+              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Phone Number *</label>
+              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Email</label>
+              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter">
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Description</label>
+              <textarea class="ov-input !h-[100px] resize-none py-3" name="description" [(ngModel)]="form.description" placeholder="Enter"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Location</h6>
+          <p class="ov-card-sub">Link the space to a property and unit for accurate access and reporting.</p>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Property</label>
+              <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [clearable]="true"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Unit</label>
+              <ng-select [(ngModel)]="form.unit" name="unit" [items]="units" [clearable]="true"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head flex items-start justify-between gap-4">
+          <div>
+            <h6 class="ov-card-title">Availability schedule</h6>
+            <p class="ov-card-sub">Choose the booking window, time zone, and recurring weekly hours.</p>
+          </div>
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 whitespace-nowrap" (click)="copyMondayToAll()">
+            Copy Monday to all
+          </button>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2 mb-4">
+            <div>
+              <label class="ov-label">Availability Option</label>
+              <ng-select [(ngModel)]="form.availability" name="availability" [items]="availabilityOptions"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Slot duration</label>
+              <ng-select [(ngModel)]="form.slotDuration" name="slotDuration" [items]="slotOptions" [clearable]="true"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Start Date</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input !pl-[44px]" name="startDate" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">End Date</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input !pl-[44px]" name="endDate" [(ngModel)]="form.endDate" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center" *ngFor="let row of weekDays">
+              <label class="flex min-w-[140px] items-center gap-2 text-sm text-defaulttextcolor">
+                <input type="checkbox" class="size-3.5 rounded-sm border-defaultborder" [(ngModel)]="row.enabled" [name]="'day-' + row.day">
+                {{ row.day }}
+              </label>
+              <div class="ov-date flex-1">
+                <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+                <input type="text" class="ov-input !pl-[44px]" [(ngModel)]="row.start" [name]="row.day + '-start'" placeholder="--:-- --" [disabled]="!row.enabled">
+              </div>
+              <span class="text-sm text-textmuted">to</span>
+              <div class="ov-date flex-1">
+                <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+                <input type="text" class="ov-input !pl-[44px]" [(ngModel)]="row.end" [name]="row.day + '-end'" placeholder="--:-- --" [disabled]="!row.enabled">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Rules</h6>
+          <p class="ov-card-sub">Set expectations clearly and highlight what is included.</p>
+        </div>
+        <div class="ov-card__body">
+          <label class="ov-label">Details</label>
+          <textarea class="ov-input !h-[140px] resize-none py-3" name="rules" [(ngModel)]="form.rules"
+            placeholder="Write the note content here..."></textarea>
+        </div>
+      </section>
+    </div>
+
+    <aside class="ov-add-layout__aside">
+      <section class="ov-card ov-upload">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Images</h6>
+        </div>
+        <div class="ov-card__body">
+          <app-file-upload
+            [accept]="'image/*'"
+            [multiple]="false"
+            [buttonText]="'Upload'"
+            [dropText]="'Drop your image here or'"
+            [browseText]="'Browse'"
+            [buttonClass]="'ov-btn ov-btn-primary'">
+          </app-file-upload>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Payments</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div>
+            <label class="ov-label">Slot Price</label>
+            <input type="text" class="ov-input" name="slotPrice" [(ngModel)]="form.slotPrice" placeholder="Enter">
+          </div>
+          <div class="flex items-center gap-3 rounded-lg bg-light px-2.5 py-4">
+            <button type="button" class="relative h-[30px] w-[57px] shrink-0 rounded-[35px]"
+              [class.bg-primary]="form.enablePayment"
+              [class.bg-light]="!form.enablePayment"
+              (click)="form.enablePayment = !form.enablePayment" [attr.aria-pressed]="form.enablePayment">
+              <span class="absolute top-[3px] size-6 rounded-[35px] bg-white transition-all"
+                [style.left]="form.enablePayment ? '29px' : '4px'"></span>
+            </button>
+            <div>
+              <p class="m-0 text-sm font-medium text-defaulttextcolor">Enable Payment</p>
+              <p class="mb-0 mt-0.5 text-xs text-textmuted">Allow payment for this space</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
+    <button type="submit" class="ov-btn ov-btn-primary">Save Space</button>
+  </div>
+</form>

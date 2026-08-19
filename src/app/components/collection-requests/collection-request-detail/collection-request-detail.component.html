@@ -1,0 +1,103 @@
+<div class="cr-detail pb-16">
+  <div class="flex items-start gap-4 page-header !py-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Collection Requests">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Collection Request Details</h3>
+      <p class="ov-page-sub mt-1">
+        Collection Request / <span class="ov-page-sub__current">Details</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout !mt-0">
+    <aside class="ov-detail-layout__left">
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="flex items-start justify-between gap-3 px-5 pt-5 pb-4">
+          <div class="min-w-0">
+            <p class="m-0 text-base font-bold leading-[21px] text-defaulttextcolor">Collection Request</p>
+            <p class="mt-1.5 mb-0 text-sm font-normal text-textmuted">Collection Request #{{ detail.id }}</p>
+          </div>
+          <span
+            class="inline-flex h-6 min-w-[88px] items-center justify-center rounded-sm px-3.5 text-xs font-bold leading-none text-white"
+            [class.bg-warning]="detail.status === 'Pending'"
+            [class.bg-primary]="detail.status === 'Received'"
+            [class.bg-info]="detail.status === 'Processed'"
+            [class.bg-danger]="detail.status === 'Rejected'">
+            {{ detail.status }}
+          </span>
+        </div>
+
+        <div class="px-5 pb-5">
+          <div class="rounded-xl border border-defaultborder bg-light/35 p-4 dark:bg-bodybg">
+            <h6 class="m-0 mb-4 text-sm font-bold leading-[21px] text-defaulttextcolor">Collection Request Details</h6>
+            <div class="flex flex-col gap-4">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Status:</span>
+                <span
+                  class="inline-flex h-6 min-w-[88px] items-center justify-center rounded-sm px-3.5 text-xs font-bold leading-none text-white"
+                  [class.bg-warning]="detail.status === 'Pending'"
+                  [class.bg-primary]="detail.status === 'Received'"
+                  [class.bg-info]="detail.status === 'Processed'"
+                  [class.bg-danger]="detail.status === 'Rejected'">
+                  {{ detail.status }}
+                </span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Tenant:</span>
+                <span class="ov-kv__value">{{ detail.tenant }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Amount:</span>
+                <span class="ov-kv__value">{{ detail.amount }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Collection Date:</span>
+                <span class="ov-kv__value">{{ detail.collectionDate }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Collector:</span>
+                <span class="ov-kv__value">{{ detail.collector }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Approved By:</span>
+                <span class="ov-kv__value">{{ detail.approvedBy }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="ov-detail-layout__right min-w-0">
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[16px] font-bold leading-[21px] text-defaulttextcolor">Invoice Information</h6>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[13px]">
+            <thead>
+              <tr>
+                <th class="px-5 py-3 text-start whitespace-nowrap font-semibold text-textmuted border-b border-defaultborder">Invoice Id</th>
+                <th class="px-5 py-3 text-start whitespace-nowrap font-semibold text-textmuted border-b border-defaultborder">Property</th>
+                <th class="px-5 py-3 text-start whitespace-nowrap font-semibold text-textmuted border-b border-defaultborder">Unit</th>
+                <th class="px-5 py-3 text-start whitespace-nowrap font-semibold text-textmuted border-b border-defaultborder">Due date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let invoice of detail.invoices">
+                <td class="px-5 py-3 text-start whitespace-nowrap border-b border-defaultborder">
+                  <a class="ov-link" href="javascript:void(0)">{{ invoice.invoiceId }}</a>
+                </td>
+                <td class="px-5 py-3 text-start whitespace-nowrap text-defaulttextcolor border-b border-defaultborder">{{ invoice.property }}</td>
+                <td class="px-5 py-3 text-start whitespace-nowrap text-defaulttextcolor border-b border-defaultborder">{{ invoice.unit }}</td>
+                <td class="px-5 py-3 text-start whitespace-nowrap text-defaulttextcolor border-b border-defaultborder">{{ invoice.dueDate }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

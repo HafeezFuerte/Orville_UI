@@ -11,14 +11,37 @@
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <div class="relative">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)">
+    <div class="ov-action-wrap">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
+        [attr.aria-expanded]="showActionMenu">
         Action
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
-      <div *ngIf="showActionMenu" class="lcd-menu" (click)="$event.stopPropagation()">
-        <button type="button" (click)="goToEdit()">Edit</button>
-        <button type="button" (click)="goBack()">Back to list</button>
+      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+        <div class="ov-action-menu__list">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
+              (click)="onAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="option.icon" [class]="option.icon"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
+        <div class="ov-action-menu__footer">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="option.icon" [class]="option.icon"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
       </div>
     </div>
     <button type="button" class="ov-btn ov-btn-primary">

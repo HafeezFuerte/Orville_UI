@@ -50,6 +50,26 @@ export const content: Routes = [
       import('../../components/commissions/commissions.routes').then((m) => m.commissionsRoutes),
   },
   {
+    path: 'collection-requests',
+    loadChildren: () =>
+      import('../../components/collection-requests/collection-requests.routes').then(
+        (m) => m.collectionRequestsRoutes
+      ),
+  },
+  {
+    path: 'reminders',
+    loadChildren: () =>
+      import('../../components/reminders/reminders.routes').then((m) => m.remindersRoutes),
+  },
+  {
+    path: 'bookings',
+    loadChildren: () =>
+      import('../../components/bookings/bookings.routes').then((m) => m.bookingsRoutes),
+  },
+  { path: 'spaces', redirectTo: '/bookings/spaces', pathMatch: 'full' },
+  { path: 'spaces/new', redirectTo: '/bookings/spaces/new', pathMatch: 'full' },
+  { path: 'spaces/:id', redirectTo: '/bookings/spaces/:id' },
+  {
     path: 'settings',
     children: [
       {

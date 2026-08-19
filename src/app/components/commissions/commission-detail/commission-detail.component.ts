@@ -7,7 +7,7 @@ import {
   CommissionDetail,
   CommissionViewMode,
   getCommissionDetail
-} from './commission-detail.data';
+} from '../commission-detail.data';
 
 @Component({
   selector: 'app-commission-detail',

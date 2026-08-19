@@ -1,0 +1,224 @@
+<div class="cmd-page pb-16">
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Commissions">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Commission Allocations</h3>
+        <p class="ov-page-sub mt-1">
+          Commissions / <span class="ov-page-sub__current">Details</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout">
+    <aside class="ov-detail-layout__left flex flex-col gap-4">
+      <div class="box ov-card !mb-0">
+        <div class="cmd-summary__hero">
+          <div class="min-w-0">
+            <h4 class="cmd-summary__title">{{ detail.heading }}</h4>
+            <p class="cmd-summary__id">Commission #{{ detail.id }}</p>
+          </div>
+          <div class="cmd-chips shrink-0" role="tablist" aria-label="Commission view">
+            <button
+              type="button"
+              class="cmd-chip"
+              [class.is-active]="viewMode === 'Company'"
+              (click)="setViewMode('Company')">
+              Company
+            </button>
+            <button
+              type="button"
+              class="cmd-chip"
+              [class.is-active]="viewMode === 'Percentage'"
+              (click)="setViewMode('Percentage')">
+              Percentage
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[16px] font-bold leading-[21px] text-defaulttextcolor">Commission Details</h6>
+        </div>
+        <div class="flex flex-col gap-4 px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Commission ID:</span>
+            <span class="ov-kv__value">{{ detail.id }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">From:</span>
+            <span class="ov-kv__value">{{ detail.from }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Type:</span>
+            <span class="ov-kv__value">{{ detail.type }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Percentage:</span>
+            <span class="ov-kv__value">{{ detail.percentage }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Total Amount:</span>
+            <span class="ov-kv__value">{{ detail.totalAmount }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Fixed:</span>
+            <span class="ov-kv__value">{{ detail.fixed }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Balance:</span>
+            <span class="ov-kv__value">{{ detail.balance }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <div class="border-b border-defaultborder px-5 py-3.5">
+          <h6 class="m-0 text-[16px] font-bold leading-[21px] text-defaulttextcolor">Commissionable</h6>
+        </div>
+        <div class="px-5 py-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Record:</span>
+            <a class="ov-link" href="javascript:void(0)">{{ detail.commissionable }}</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="ov-detail-layout__right flex min-w-0 flex-col gap-4">
+      <section>
+        <h5 class="cmd-block-title">Company Commissions</h5>
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="px-5 pt-5 pb-3">
+            <div class="ov-search max-w-[280px] max-md:max-w-none">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input
+                type="text"
+                class="ov-input ov-search__input bg-defaultbackground dark:bg-bodybg"
+                [(ngModel)]="companyQuery"
+                (ngModelChange)="onCompanySearch()"
+                placeholder="Search">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="cmd-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>To</th>
+                  <th>Name</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of paged(detail.companyRows, companyQuery, companyPageIndex)">
+                  <td>
+                    <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  </td>
+                  <td>{{ row.to }}</td>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.amount }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ov-page">
+            <div class="ov-page__meta">
+              <span class="ov-page__label">Show</span>
+              <div class="ov-page__size">
+                <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+                  <option [ngValue]="5">5</option>
+                  <option [ngValue]="10">10</option>
+                  <option [ngValue]="25">25</option>
+                </select>
+                <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+              </div>
+              <span>Showing {{ start(detail.companyRows, companyQuery, companyPageIndex) }} to {{ end(detail.companyRows, companyQuery, companyPageIndex) }} of {{ total(detail.companyRows, companyQuery) }} records</span>
+            </div>
+            <div class="ov-page__nav">
+              <span class="ov-page__label">Page {{ companyPageIndex + 1 }} of {{ pages(detail.companyRows, companyQuery) }}</span>
+              <div class="ov-page__btns">
+                <button type="button" class="ov-page__btn" (click)="prevCompany()" [disabled]="companyPageIndex <= 0" aria-label="Previous page">
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+                </button>
+                <button type="button" class="ov-page__btn is-active">{{ companyPageIndex + 1 }}</button>
+                <button type="button" class="ov-page__btn" (click)="nextCompany()" [disabled]="companyPageIndex + 1 >= pages(detail.companyRows, companyQuery)" aria-label="Next page">
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h5 class="cmd-block-title">Agent Commissions</h5>
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="px-5 pt-5 pb-3">
+            <div class="ov-search max-w-[280px] max-md:max-w-none">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input
+                type="text"
+                class="ov-input ov-search__input bg-defaultbackground dark:bg-bodybg"
+                [(ngModel)]="agentQuery"
+                (ngModelChange)="onAgentSearch()"
+                placeholder="Search">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="cmd-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>To</th>
+                  <th>Name</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of paged(detail.agentRows, agentQuery, agentPageIndex)">
+                  <td>
+                    <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+                  </td>
+                  <td>{{ row.to }}</td>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.amount }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ov-page">
+            <div class="ov-page__meta">
+              <span class="ov-page__label">Show</span>
+              <div class="ov-page__size">
+                <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+                  <option [ngValue]="5">5</option>
+                  <option [ngValue]="10">10</option>
+                  <option [ngValue]="25">25</option>
+                </select>
+                <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+              </div>
+              <span>Showing {{ start(detail.agentRows, agentQuery, agentPageIndex) }} to {{ end(detail.agentRows, agentQuery, agentPageIndex) }} of {{ total(detail.agentRows, agentQuery) }} records</span>
+            </div>
+            <div class="ov-page__nav">
+              <span class="ov-page__label">Page {{ agentPageIndex + 1 }} of {{ pages(detail.agentRows, agentQuery) }}</span>
+              <div class="ov-page__btns">
+                <button type="button" class="ov-page__btn" (click)="prevAgent()" [disabled]="agentPageIndex <= 0" aria-label="Previous page">
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+                </button>
+                <button type="button" class="ov-page__btn is-active">{{ agentPageIndex + 1 }}</button>
+                <button type="button" class="ov-page__btn" (click)="nextAgent()" [disabled]="agentPageIndex + 1 >= pages(detail.agentRows, agentQuery)" aria-label="Next page">
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+</div>

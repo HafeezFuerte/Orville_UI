@@ -35,6 +35,12 @@ export class VendorContractDetailComponent implements OnInit {
   activeTab: 'overview' | 'signatures' | 'financials' = 'overview';
   showActionMenu = false;
   openColumnMenu: 'properties' | 'units' | 'rooms' | null = null;
+  actionOptions = [
+    { label: 'Edit Contract', asset: 'assets/images/action-menu/pencil.svg', icon: '', danger: false },
+    { label: 'Activate Contract', asset: '', icon: 'ri-save-line', danger: false },
+    { label: 'Print Contract Pdf', asset: 'assets/images/action-menu/printer.svg', icon: '', danger: false },
+    { label: 'Archive Contract', asset: 'assets/images/action-menu/archive.svg', icon: '', danger: true }
+  ];
   contract: VendorContractRow = VENDOR_CONTRACT_ROWS[0];
 
   properties = CONTRACT_PROPERTIES;
@@ -152,6 +158,13 @@ export class VendorContractDetailComponent implements OnInit {
 
   goToEdit(): void {
     this.router.navigate(['/vendor-contracts/create']);
+  }
+
+  onAction(label: string): void {
+    this.showActionMenu = false;
+    if (label === 'Edit Contract') {
+      this.goToEdit();
+    }
   }
 
   setTab(tab: 'overview' | 'signatures' | 'financials'): void {

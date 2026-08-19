@@ -80,7 +80,8 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Booking',
     items: [
-      { label: 'Space', icon: icon('space.svg') }
+      { label: 'Space', icon: icon('space.svg'), route: '/bookings/spaces/new' },
+      { label: 'Reservation', icon: icon('calendar-event.svg'), route: '/bookings/reservations/new' }
     ]
   },
   {

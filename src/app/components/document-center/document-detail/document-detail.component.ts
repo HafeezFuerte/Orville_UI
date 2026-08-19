@@ -5,7 +5,7 @@ import {
   CenterDocument,
   documentStatusChip,
   findCenterDocument
-} from './document-center.data';
+} from '../document-center.data';
 
 @Component({
   selector: 'app-document-detail',

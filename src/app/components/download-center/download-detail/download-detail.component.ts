@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { DownloadJob, findDownloadJob } from './download-center.data';
+import { DownloadJob, findDownloadJob } from '../download-center.data';
 
 @Component({
   selector: 'app-download-detail',

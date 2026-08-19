@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { SharedTableComponent } from '../../shared/components/shared-table/shared-table.component';
-import { FilterDrawerComponent } from '../../shared/components/filter-drawer/filter-drawer.component';
-import { ColumnMenuComponent } from '../../shared/components/column-menu/column-menu.component';
-import { COMMISSION_ROWS, CommissionKind, CommissionRow } from './commissions.data';
+import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { COMMISSION_ROWS, CommissionKind, CommissionRow } from '../commissions.data';
 
 @Component({
   selector: 'app-commissions',

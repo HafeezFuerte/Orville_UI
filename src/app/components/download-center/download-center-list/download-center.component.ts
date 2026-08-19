@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
-import { SharedTableComponent } from '../../shared/components/shared-table/shared-table.component';
-import { FilterDrawerComponent } from '../../shared/components/filter-drawer/filter-drawer.component';
+import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import {
   DOWNLOAD_CENTER_JOBS,
   DownloadFileType,
   DownloadJob
-} from './download-center.data';
+} from '../download-center.data';
 
-export type { DownloadFileType, DownloadJob } from './download-center.data';
+export type { DownloadFileType, DownloadJob } from '../download-center.data';
 
 @Component({
   selector: 'app-download-center',

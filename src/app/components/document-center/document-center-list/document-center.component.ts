@@ -3,16 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
-import { SharedTableComponent } from '../../shared/components/shared-table/shared-table.component';
-import { FilterDrawerComponent } from '../../shared/components/filter-drawer/filter-drawer.component';
+import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import {
   CenterDocument,
   DOCUMENT_CENTER_ROWS,
   DocumentAttachment,
   documentStatusChip
-} from './document-center.data';
+} from '../document-center.data';
 
-export type { DocumentAttachment, CenterDocument } from './document-center.data';
+export type { DocumentAttachment, CenterDocument } from '../document-center.data';
 
 @Component({
   selector: 'app-document-center',

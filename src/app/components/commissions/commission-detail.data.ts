@@ -30,12 +30,11 @@ const DEFAULT_ALLOCATIONS: CommissionAllocationRow[] = [
 
 export function getCommissionDetail(id: string | null): CommissionDetail {
   const row = COMMISSION_ROWS.find((item) => item.id === id);
-  const type = row?.type || 'Percentage';
 
   return {
-    id: row?.id || id || '31658',
-    heading: `Commission - ${type}`,
-    from: row?.id === 'C002' ? 'Abdullah Al Shakib' : (row?.from || 'Abdullah Al Shakib'),
+    id: '31658',
+    heading: 'Commission - Percentage',
+    from: 'Abdullah Al Shakib',
     type: 'General',
     percentage: 'Fixed',
     totalAmount: 'Fix',

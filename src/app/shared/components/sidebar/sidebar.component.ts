@@ -399,6 +399,16 @@ export class SidebarComponent {
     'Commissions': '/commissions',
     'Tenant Commissions': '/commissions/tenant',
     'Landlord Commissions': '/commissions/landlord',
+    'Collection Request': '/collection-requests',
+    'Collection Requests': '/collection-requests',
+    'Reminders': '/reminders',
+    'Reminder': '/reminders',
+    'Bookings': '/bookings/reservations',
+    'Booking': '/bookings/reservations',
+    'Spaces': '/bookings/spaces',
+    'Space': '/bookings/spaces',
+    'Reservations': '/bookings/reservations',
+    'Reservation': '/bookings/reservations',
   };
 
   private isAccountingParent(parentTitle?: string): boolean {
