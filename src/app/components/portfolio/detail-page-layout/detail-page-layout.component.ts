@@ -128,14 +128,33 @@ export class DetailPageLayoutComponent {
       this.activeTab = this.tabs[0].key;
     }
   }
+  isTabActive(key: string): boolean {
+    const activeKey = this.selectedTab?.key?.toLowerCase().replace(/[\s-_]/g, '') || '';
+    const targetKey = key.toLowerCase().replace(/[\s-_]/g, '');
+    
+    // Alias broadcasts to notices for backward/forward compatibility
+    if ((activeKey === 'broadcasts' || activeKey === 'notices') && (targetKey === 'broadcasts' || targetKey === 'notices')) {
+      return true;
+    }
+    return activeKey === targetKey;
+  }
+
   checkCommonTab() {
-    return this.selectedTab?.key!='units' && 
-    this.selectedTab?.key!='notes' && 
-    this.selectedTab?.key!='attachments' && 
-    this.selectedTab?.key!='commonarea'&& 
-    this.selectedTab?.key!='parkings' && 
-    this.selectedTab?.key!='rooms' && 
-    this.selectedTab?.key!='broadcasts';
+    const key = this.selectedTab?.key?.toLowerCase().replace(/[\s-_]/g, '') || '';
+    return key !== 'units' && 
+           key !== 'notes' && 
+           key !== 'attachments' && 
+           key !== 'edocuments' && 
+           key !== 'commonarea' && 
+           key !== 'parkings' && 
+           key !== 'rooms' && 
+           key !== 'broadcasts' &&
+           key !== 'notices' &&
+           key !== 'financials' &&
+           key !== 'inventory' &&
+           key !== 'workorders' &&
+           key !== 'legal' &&
+           key !== 'inspections';
   }
   changeTab(tab: DetailTab) {
     this.activeTab = tab.key;

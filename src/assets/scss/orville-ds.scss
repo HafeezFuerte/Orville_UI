@@ -2278,6 +2278,33 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
   text-overflow: ellipsis;
 }
 
+.ov-grid-card__name span {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-grid-card__name:hover {
+  text-overflow: clip;
+}
+
+.ov-grid-card__name:hover span {
+  overflow: visible;
+  text-overflow: clip;
+  animation: ov-marquee-scroll 6s linear infinite alternate;
+}
+
+@keyframes ov-marquee-scroll {
+  0%, 15% {
+    transform: translateX(0);
+  }
+  85%, 100% {
+    transform: translateX(-35%);
+  }
+}
+
 .ov-grid-card__addr {
   display: flex;
   align-items: center;
@@ -2713,10 +2740,9 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 }
 
 .ov-finance-summary__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  align-items: stretch;
 }
 
 .ov-finance-summary__cash {
@@ -2725,7 +2751,7 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
   flex-direction: column;
   justify-content: center;
   gap: 25px;
-  min-height: 200px;
+  min-height: 160px;
   padding: 20px;
   border-radius: 16px;
   background: rgb(var(--primary));
@@ -2754,10 +2780,12 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 .ov-finance-summary__cash-value {
   position: relative;
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   line-height: 1.3;
   color: #fff;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .ov-finance-summary__cash-metrics {
@@ -2774,8 +2802,8 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 
 .ov-finance-summary__cash-metric-label {
   display: block;
-  margin: 0 0 8px;
-  font-size: 14px;
+  margin: 0 0 4px;
+  font-size: 12px;
   font-weight: 400;
   color: #eeeef5;
 }
@@ -2783,18 +2811,30 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 .ov-finance-summary__cash-metric-value {
   display: block;
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   line-height: 1.3;
   color: #fff;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .ov-finance-summary__tiles {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 16px;
-  min-height: 200px;
+}
+
+@media (max-width: 1200px) {
+  .ov-finance-summary__tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .ov-finance-summary__tiles {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ov-finance-summary__tile {
