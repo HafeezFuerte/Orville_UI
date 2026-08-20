@@ -1,0 +1,197 @@
+<form class="ov-form" [formGroup]="templateForm" (ngSubmit)="onSubmit()">
+  
+  <!-- Header Page Row -->
+  <div class="ov-add-header page-header !py-4 flex justify-between items-center mb-4">
+    <div class="ov-add-header__start flex items-center gap-3">
+      <a routerLink="/inspections/templates" class="ov-back" title="Back to Templates">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
+      <div>
+        <h3 class="ov-page-title">Create Template</h3>
+        <p class="ov-page-sub">
+          Template / <span class="ov-page-sub__current">New Template</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions flex gap-2">
+      <button type="button" routerLink="/inspections/templates" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Save Template</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body flex flex-col lg:flex-row gap-5 pt-4">
+    
+    <!-- Left form column -->
+    <div class="flex-1 flex flex-col gap-5">
+      
+      <!-- Card: Template Information -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">
+          Template information
+        </h6>
+        <p class="text-[11px] text-textmuted mb-4 mt-0.5">Choose a clear name so the template is easy to find later.</p>
+        
+        <div class="flex flex-col">
+          <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Template name <span class="text-danger">*</span></label>
+          <input type="text" formControlName="templateName" class="ov-input form-control rounded" placeholder="Enter template name">
+          <span class="text-[10px] text-textmuted mt-1">Use a short, specific name that describes the inspection purpose.</span>
+        </div>
+      </div>
+
+      <!-- Card: Inspection Structure nested Form Arrays list -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <div class="flex justify-between items-center border-b border-defaultborder pb-2 mb-3">
+          <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor m-0">
+            Inspection structure
+          </h6>
+          <button type="button" (click)="addArea()" class="ov-btn ov-btn-primary !py-1 px-3 text-xs flex items-center gap-1.5">
+            + Add area
+          </button>
+        </div>
+        <p class="text-[11px] text-textmuted mb-4 mt-0.5">Add areas first, then add the sections inspectors will complete.</p>
+
+        <!-- Dynamic Areas List -->
+        <div formArrayName="areas" class="flex flex-col gap-5">
+          <div *ngFor="let area of areasFormArray.controls; let areaIndex = index" [formGroupName]="areaIndex" 
+            class="border border-defaultborder rounded-xl p-5 bg-white flex flex-col gap-4 relative">
+            
+            <!-- Area Header -->
+            <div class="flex justify-between items-center border-b border-defaultborder pb-3">
+              <div class="flex items-center gap-3">
+                <span class="h-6 w-6 rounded-full bg-[#1b222c] text-white flex items-center justify-center font-bold text-xs">
+                  {{ areaIndex + 1 }}
+                </span>
+                <div>
+                  <h6 class="text-[13px] font-bold text-defaulttextcolor m-0">Area {{ areaIndex + 1 }}</h6>
+                  <span class="text-[10px] text-textmuted">{{ getSectionsArray(areaIndex).length }} section(s)</span>
+                </div>
+              </div>
+              <button type="button" *ngIf="areasFormArray.length > 1" (click)="removeArea(areaIndex)" 
+                class="border-0 bg-transparent text-danger hover:text-red-700 p-1">
+                <i class="ri-delete-bin-line text-[16px]"></i>
+              </button>
+            </div>
+
+            <!-- Area Inputs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="flex flex-col md:col-span-3">
+                <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Area name <span class="text-danger">*</span></label>
+                <input type="text" formControlName="areaName" class="ov-input form-control rounded" placeholder="For example, Bedroom">
+              </div>
+              <div class="flex flex-col">
+                <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Order <span class="text-danger">*</span></label>
+                <input type="number" formControlName="order" class="ov-input form-control rounded text-center">
+              </div>
+            </div>
+
+            <!-- Sections inner Form Array -->
+            <div class="flex flex-col gap-3 mt-3">
+              <span class="text-xs font-bold text-defaulttextcolor">Sections <span class="text-[10px] font-normal text-textmuted">(Items the inspector will assess)</span></span>
+              
+              <div formArrayName="sections" class="flex flex-col gap-2">
+                <div *ngFor="let sec of getSectionsArray(areaIndex).controls; let secIndex = index" [formGroupName]="secIndex" 
+                  class="flex items-center gap-3 border border-defaultborder rounded-lg p-2.5 bg-light/10">
+                  
+                  <div class="text-textmuted cursor-grab">
+                    <i class="ri-drag-move-fill text-[16px]"></i>
+                  </div>
+
+                  <div class="flex-1 flex flex-col">
+                    <label class="ov-label text-[10px] font-semibold text-textmuted mb-0.5">Section name <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="sectionName" class="ov-input form-control rounded !h-8 py-0.5 text-xs" placeholder="For example, Walls">
+                  </div>
+
+                  <div class="w-20 flex flex-col">
+                    <label class="ov-label text-[10px] font-semibold text-textmuted mb-0.5">Order <span class="text-danger">*</span></label>
+                    <input type="number" formControlName="order" class="ov-input form-control rounded text-center !h-8 py-0.5 text-xs">
+                  </div>
+
+                  <button type="button" *ngIf="getSectionsArray(areaIndex).length > 1" (click)="removeSection(areaIndex, secIndex)" 
+                    class="border-0 bg-transparent text-textmuted hover:text-danger p-1 mt-3">
+                    <i class="ri-delete-bin-line text-[15px]"></i>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" (click)="addSection(areaIndex)" class="ov-btn ov-btn-ghost w-full !py-1.5 text-xs mt-2 flex items-center justify-center gap-1.5">
+                + Add another section
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex items-center gap-3 pt-2 mt-2 pb-6">
+        <button type="button" routerLink="/inspections/templates" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="submit" class="ov-btn ov-btn-primary">Save Template</button>
+      </div>
+
+    </div>
+
+    <!-- Right Summary Column -->
+    <div class="w-full lg:w-[320px] flex flex-col gap-4">
+      
+      <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none">
+        <h6 class="ov-card-title text-[14px] font-bold text-defaulttextcolor m-0">Template summary</h6>
+        <div class="border-t border-defaultborder my-3.5"></div>
+        
+        <style>
+          .ov-kv {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+          }
+          .ov-kv__label {
+            color: #8c90a6;
+          }
+          .ov-kv__value {
+            font-weight: 600;
+            color: #1a222c;
+          }
+          .ov-progress-bar {
+            height: 8px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100%;
+          }
+          .ov-progress-bar__fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+          }
+        </style>
+
+        <div class="flex flex-col gap-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Template name</span>
+            <span class="ov-kv__value">{{ templateForm.value.templateName || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Areas</span>
+            <span class="ov-kv__value">{{ totalAreas }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Sections</span>
+            <span class="ov-kv__value">{{ totalSections }}</span>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-2">
+            <div class="flex justify-between items-center text-xs font-semibold">
+              <span class="text-textmuted">Completion</span>
+              <span class="text-primary">{{ completionPercentage }}%</span>
+            </div>
+            <div class="ov-progress-bar">
+              <div class="ov-progress-bar__fill" [style.width.%]="completionPercentage"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</form>

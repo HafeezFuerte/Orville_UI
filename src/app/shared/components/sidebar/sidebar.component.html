@@ -36,25 +36,25 @@
             <a *ngIf="menuItem.type === 'link' && menuItem.path" class="side-menu__item" [routerLink]="menuItem.path"
               routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
               (click)="setNavActive(menuItem); menuOpen()">
-              <span *ngIf="getFigmaIcon(menuItem.title)" class="orville-nav-icon"
-                [style.--orville-icon]="'url(' + getFigmaIcon(menuItem.title) + ')'"></span>
-              <i *ngIf="!getFigmaIcon(menuItem.title) && menuItem.icon" class="side-menu__icon bx {{ menuItem.icon }}"></i>
+              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+                [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
+              <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
             </a>
             <a *ngIf="menuItem.type === 'link' && !menuItem.path" class="side-menu__item" href="javascript:void(0)"
               (click)="$event.preventDefault()">
-              <span *ngIf="getFigmaIcon(menuItem.title)" class="orville-nav-icon"
-                [style.--orville-icon]="'url(' + getFigmaIcon(menuItem.title) + ')'"></span>
-              <i *ngIf="!getFigmaIcon(menuItem.title) && menuItem.icon" class="side-menu__icon bx {{ menuItem.icon }}"></i>
+              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+                [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
+              <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
             </a>
-
+ 
             <!-- submenu -->
             <a *ngIf="menuItem.type === 'sub'" class="side-menu__item orville-parent-item" href="javascript:void(0)"
               (click)="toggleNavActive(menuItem)">
-              <span *ngIf="getFigmaIcon(menuItem.title)" class="orville-nav-icon"
-                [style.--orville-icon]="'url(' + getFigmaIcon(menuItem.title) + ')'"></span>
-              <i *ngIf="!getFigmaIcon(menuItem.title) && menuItem.icon" class="side-menu__icon bx {{ menuItem.icon }}"></i>
+              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+                [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
+              <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
               <i class="fe fe-chevron-right side-menu__angle"></i>
             </a>

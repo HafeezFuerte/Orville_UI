@@ -32,6 +32,8 @@ interface Module {
   childCount:number;
   menuGroup: MenuGroup[];
   pages:PageMenu[];
+  menu_icon?: string;
+  jsonLabel?: string;
 }
 
 
@@ -147,12 +149,12 @@ export class SidebarComponent {
           this.menuItems = singleGroup.pages?.map((page: PageMenu) => {
             const normalizedName = page.menuName.trim();
             const path = this.resolveMenuPath(normalizedName, singleModule.moduleName, page.url);
-
+ 
             return {
               title: page.menuName,
               type: 'link',
               path: path,
-              icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+              icon: page.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
               active: false,
               selected: false,
             };
@@ -161,25 +163,24 @@ export class SidebarComponent {
           // 🔵 Standard multi-level logic
           this.menuItems = modules.map((module: Module) => this.mapModuleToMenu(module));
 
-          // 🟢 Extract Settings module and children if loaded from DB
-          const settingsModule = modules.find(m => m.moduleName.trim() === 'Settings');
-          if (settingsModule) {
-            // Find settings pages
-            const pages = settingsModule.pages || settingsModule.menuGroup?.[0]?.pages || [];
-            this.settingsMenuItems = pages.map((page: PageMenu) => {
-              const normalizedName = page.menuName.trim();
-              let path = this.urlNameMap[normalizedName] || this.urlMap[page.url] || page.url || '';
+          // 🟢 Extract Settings items from separate Level 1 Modules in DB
+          const settingsModules = modules.filter(m => m.jsonLabel?.trim() === 'Settings' || m.moduleName.trim() === 'Settings');
+          if (settingsModules.length > 0) {
+            this.settingsMenuItems = settingsModules.map((mod: Module) => {
+              const normalizedName = mod.moduleName.trim();
+              let path = this.urlNameMap[normalizedName] || this.urlMap[mod.url] || mod.url || '';
               return {
-                title: page.menuName,
+                title: mod.moduleName,
                 type: 'link',
                 path: path,
-                icon: page.menu_icon || 'bx-circle',
+                icon: mod.menu_icon || 'bx-circle',
                 active: false,
                 selected: false
               };
             });
-            // Filter out 'Settings' from main menu list
-            this.menuItems = this.menuItems.filter(m => m.title !== 'Settings');
+            // Filter out settings items from the main menuItems list
+            const settingsNames = settingsModules.map(m => m.moduleName.trim());
+            this.menuItems = this.menuItems.filter(m => m.title !== 'Settings' && !settingsNames.includes(m.title || ''));
           }
 
           // 🟢 Reorder: Move 'Employee Portal' to the top (only for multi-level)
@@ -240,6 +241,7 @@ export class SidebarComponent {
       title: page.menuName,
       type: 'link',
       path: path || '',
+      icon: page.menu_icon || 'bx bx-circle',
       active: false,
       selected: false,
     };
@@ -260,7 +262,7 @@ export class SidebarComponent {
           type: 'sub',
           selected: false,
           active: false,
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
           children: this.withCommissionsAllChild([]),
         };
       }
@@ -271,7 +273,7 @@ export class SidebarComponent {
           type: 'sub',
           selected: false,
           active: false,
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
           children: [
             {
               title: 'Leases',
@@ -288,7 +290,7 @@ export class SidebarComponent {
         title: module.moduleName,
         type: 'link',
         path: this.resolveMenuPath(normalizedName, undefined, module.url) || '',
-        icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+        icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
         active: false,
         selected: false,
       };
@@ -304,7 +306,7 @@ export class SidebarComponent {
       type: 'sub',
       selected: false,
       active: false,
-      icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+      icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
       children,
     };
   }
@@ -348,7 +350,8 @@ export class SidebarComponent {
     'Performance': 'bx bx-line-chart',
     'Masters': 'bx bx-cog',
     'Recruitment': 'bx bx-user-plus',
-    'Mobile Phones': 'bx bx-mobile-alt', 
+    'Mobile Phones': 'bx bx-mobile-alt',
+    'Inspections': 'bx bx-check-shield', 
   };
 
 
@@ -380,6 +383,14 @@ export class SidebarComponent {
     'Vendor Contract': '/vendor-contracts',
     'Add Vendor Contract': '/vendor-contracts/create', 
     'Support Technicians': '/contacts/support-technicians',
+    'Ligitations': '/legal/litigations',
+    'Litigations': '/legal/litigations',
+    'Legal': '/legal/litigations',
+    'Inspections': '/inspections/list',
+    'Inspection List': '/inspections/list',
+    'Templates List': '/inspections/templates',
+    'Template List': '/inspections/templates',
+    'Templates': '/inspections/templates',
     'Broadcasts': '/broadcasts',
     'Work Orders': '/facility/work-orders',
     'Assets': '/facility/assets',
