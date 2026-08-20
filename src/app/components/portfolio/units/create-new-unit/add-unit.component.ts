@@ -521,11 +521,11 @@ export class AddUnitComponent implements OnInit {
     formData.append('reqObject', JSON.stringify(requestBody));
     
     if (this.unitImageFile) {
-      formData.append('unit_image', this.unitImageFile);
+      formData.append('unitimage', this.unitImageFile);
     }
     
     if (this.unitBroucherFile) {
-      formData.append('unit_broucher', this.unitBroucherFile);
+      formData.append('broucher', this.unitBroucherFile);
     }
 
     this.propertiesService.addUnit(formData).subscribe({

@@ -474,11 +474,11 @@ export class AddRoomComponent implements OnInit {
     formData.append('reqObject', JSON.stringify(payload));
     
     if (this.roomImageFile) {
-      formData.append('room_image', this.roomImageFile);
+      formData.append('unitimage', this.roomImageFile);
     }
     
     if (this.roomBroucherFile) {
-      formData.append('room_broucher', this.roomBroucherFile);
+      formData.append('broucher', this.roomBroucherFile);
     }
 
     this.propertiesService.addRoom(formData).subscribe({

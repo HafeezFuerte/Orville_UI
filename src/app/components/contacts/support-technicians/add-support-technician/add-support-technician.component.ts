@@ -539,7 +539,7 @@ export class AddSupportTechnicianComponent implements OnInit {
     const formData = new FormData();
     formData.append('reqObject', JSON.stringify(requestJson));
     if (this.selectedPhotoFile) {
-      formData.append('profileImage_path', this.selectedPhotoFile, this.selectedPhotoFile.name);
+      formData.append('profileImage', this.selectedPhotoFile, this.selectedPhotoFile.name);
     }
 
     this.propertiesService.saveTechnician(formData).subscribe({
