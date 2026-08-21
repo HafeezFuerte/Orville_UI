@@ -443,12 +443,12 @@
           </div>
         </div>
 
-        <!-- 1. TENANT TAB -->
+        <!-- TENANT TAB (overview slot via checkCommonTab) -->
         <div *ngIf="activeTab === 'Tenant'" class="flex flex-col gap-4 animate-fade-in">
           <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
               <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Tenants</h6>
-              <button  [routerLink]="['/contacts/tenants/add-tenant']" type="button"   class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
+              <button [routerLink]="['/contacts/tenants/add-tenant']" type="button" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
                 <i class="ri-add-line text-[11px]"></i> Add Tenant
               </button>
             </div>
@@ -475,36 +475,7 @@
           </div>
         </div>
 
-        <!-- 2. FINANCIALS TAB -->
-        <div *ngIf="activeTab === 'Financials'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Financials</h6>
-              <button (click)="openInvoiceModal()" type="button" [attr.data-tooltip]="'web.leases.lblAddInvoice' | translate" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.leases.lblAddInvoice' | translate }}
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="financialsColumns" [data]="financialsData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span class="px-2 py-0.5 rounded bg-danger/10 text-danger text-[9px] font-bold border border-danger/20">Unpaid - Overdue - Partially Paid</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. CHEQUES TAB -->
+        <!-- CHEQUES TAB (overview slot via checkCommonTab) -->
         <div *ngIf="activeTab === 'Cheques'" class="flex flex-col gap-4 animate-fade-in">
           <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
@@ -542,86 +513,120 @@
           </div>
         </div>
 
-        <!-- 4. WORK ORDERS TAB -->
-        <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-4 animate-fade-in">
-          <app-workorders-table [selectedTab]="selectedTab" [data]="selectedTab?.data || []"></app-workorders-table>
-        </div>
+      </div>
+    </ng-template>
 
-        <!-- 5. E-DOCUMENTS TAB -->
-        <div *ngIf="activeTab === 'E-Documents'" class="flex flex-col gap-4 animate-fade-in">
-          <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
-        </div>
-
-        <!-- 6. NOTICES TAB -->
-        <div *ngIf="activeTab === 'Notices'" class="flex flex-col gap-4 animate-fade-in">
-          <app-broadcasts-table [selectedTab]="selectedTab"></app-broadcasts-table> 
-        </div>
-
-        <!-- 7. LEGAL TAB -->
-        <div *ngIf="activeTab === 'Legal'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Legal Cases</h6>
-              <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'unitBlocked'">
-                      <span *ngIf="row.unitBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.unitBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'tenantBlocked'">
-                      <span *ngIf="row.tenantBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.tenantBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
+    <!-- FINANCIALS -->
+    <ng-template #financialsTpl>
+      <div class="flex flex-col gap-4 animate-fade-in text-xs">
+        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
+          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Financials</h6>
+            <button (click)="openInvoiceModal()" type="button" [attr.data-tooltip]="'web.leases.lblAddInvoice' | translate" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.leases.lblAddInvoice' | translate }}
+            </button>
+          </div>
+          <div class="p-4">
+            <app-shared-table [columns]="financialsColumns" [data]="financialsData" [hasActions]="true">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <ng-container *ngSwitchCase="'id'">
+                    <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
                   </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+                  <ng-container *ngSwitchCase="'status'">
+                    <span class="px-2 py-0.5 rounded bg-danger/10 text-danger text-[9px] font-bold border border-danger/20">Unpaid - Overdue - Partially Paid</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'amount'">
+                    <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
           </div>
         </div>
+      </div>
+    </ng-template>
 
-        <!-- 8. INSPECTIONS TAB -->
-        <div *ngIf="activeTab === 'Inspections'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Inspections</h6>
-              <button (click)="openInspectionModal()" type="button" [attr.data-tooltip]="'Add Inspection'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Inspection
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="inspectionsColumns" [data]="inspectionsData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Completed'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Completed</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'scheduled'">
-                      <span *ngIf="row.scheduled === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.scheduled === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
+    <!-- WORK ORDERS -->
+    <ng-template #workordersTpl>
+      <div class="flex flex-col gap-4 animate-fade-in text-xs">
+        <app-workorders-table [selectedTab]="selectedTab" [data]="selectedTab?.data || []"></app-workorders-table>
+      </div>
+    </ng-template>
+
+    <!-- NOTICES / BROADCASTS -->
+    <ng-template #broadcastsTpl>
+      <div class="flex flex-col gap-4 animate-fade-in text-xs">
+        <app-broadcasts-table [selectedTab]="selectedTab"></app-broadcasts-table>
+      </div>
+    </ng-template>
+
+    <!-- LEGAL -->
+    <ng-template #legalTpl>
+      <div class="flex flex-col gap-4 animate-fade-in text-xs">
+        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
+          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Legal Cases</h6>
+            <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
+            </button>
+          </div>
+          <div class="p-4">
+            <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <ng-container *ngSwitchCase="'unitBlocked'">
+                    <span *ngIf="row.unitBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
+                    <span *ngIf="row.unitBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
                   </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+                  <ng-container *ngSwitchCase="'tenantBlocked'">
+                    <span *ngIf="row.tenantBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
+                    <span *ngIf="row.tenantBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
           </div>
         </div>
+      </div>
+    </ng-template>
 
+    <!-- INSPECTIONS -->
+    <ng-template #inspectionsTpl>
+      <div class="flex flex-col gap-4 animate-fade-in text-xs">
+        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
+          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Inspections</h6>
+            <button (click)="openInspectionModal()" type="button" [attr.data-tooltip]="'Add Inspection'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Inspection
+            </button>
+          </div>
+          <div class="p-4">
+            <app-shared-table [columns]="inspectionsColumns" [data]="inspectionsData" [hasActions]="true">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <ng-container *ngSwitchCase="'id'">
+                    <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'status'">
+                    <span *ngIf="row.status === 'Completed'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Completed</span>
+                    <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'scheduled'">
+                    <span *ngIf="row.scheduled === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
+                    <span *ngIf="row.scheduled === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
+          </div>
+        </div>
       </div>
     </ng-template>
 
     <!-- MULTI-TAB PORTLET CONTENTS (Bound to Projected units slot) -->
     <ng-template #units>
-      <div *ngIf="activeTab === 'units'" class="flex flex-col gap-4 text-xs">
+      <div class="flex flex-col gap-4 text-xs">
         <app-shared-units-table [selectedTab]="selectedTab"   [data]="selectedTab?.data || []"
         [loading]="selectedTab?.loading || false" [totalRecords]="selectedTab?.totalRecords || 0"
         [pageSize]="selectedTab?.pageSize || 50" [pageIndex]="selectedTab?.pageIndex || 0"

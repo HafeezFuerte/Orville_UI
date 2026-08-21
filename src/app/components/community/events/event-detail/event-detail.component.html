@@ -1,0 +1,294 @@
+<div class="pb-16">
+  <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Events">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Event Details</h3>
+        <p class="ov-page-sub mt-1">Community / Events / <span class="ov-page-sub__current">Details</span></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="openPreview()">Preview</button>
+      <div class="ov-action-wrap">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
+          [attr.aria-expanded]="showActionMenu">
+          Action
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </button>
+        <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+          <div class="ov-action-menu__list">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
+                (click)="onAction(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+          <div class="ov-action-menu__footer">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="option.danger" type="button" role="menuitem"
+                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout !mt-0">
+    <aside class="ov-detail-layout__left flex flex-col gap-3">
+      <div class="box ov-card overflow-hidden !mb-0 p-5 flex flex-col gap-3">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="ov-card-title m-0 truncate">{{ detail.name }}</p>
+            <p class="ov-card-sub mt-1 m-0 flex items-center gap-1.5">
+              <img src="assets/images/create/building.svg" alt="" width="14" height="14" class="opacity-60" />
+              Location
+            </p>
+          </div>
+          <span class="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-sm border border-defaultborder px-2.5 text-xs font-semibold text-defaulttextcolor">
+            <span class="size-1.5 rounded-full bg-textmuted"></span>
+            {{ detail.status }}
+          </span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex h-7 items-center gap-1.5 rounded-full border border-defaultborder bg-light px-2.5 text-xs font-medium text-defaulttextcolor">
+            <img src="assets/images/create/building.svg" alt="" width="14" height="14" />
+            {{ detail.property }}
+          </span>
+        </div>
+        <p class="m-0 text-sm text-textmuted">{{ detail.location }}</p>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]">View Activity</button>
+          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]" (click)="goToEdit()">Edit Event</button>
+        </div>
+      </div>
+
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <button type="button"
+          class="flex w-full items-center justify-between border-b border-defaultborder px-5 py-3.5 text-start"
+          (click)="toggleSection('property')">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Information</h6>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14"
+            [class.rotate-180]="openSections['property']" />
+        </button>
+        <div class="px-5 py-4" *ngIf="openSections['property']">
+          <p class="m-0 mb-3 text-sm font-bold text-defaulttextcolor">Property</p>
+          <div class="flex flex-col gap-2.5">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Email:</span>
+              <a class="ov-link" href="mailto:{{ detail.email }}">{{ detail.email }}</a>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__value">{{ detail.phone }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Property:</span>
+              <a class="ov-link" href="javascript:void(0)">{{ detail.property }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <button type="button"
+          class="flex w-full items-center justify-between border-b border-defaultborder px-5 py-3.5 text-start"
+          (click)="toggleSection('information')">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Event Information</h6>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14"
+            [class.rotate-180]="openSections['information']" />
+        </button>
+        <div class="flex flex-col gap-2.5 px-5 py-4" *ngIf="openSections['information']">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Event Name:</span>
+            <span class="ov-kv__value">{{ detail.name }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Event Date:</span>
+            <span class="ov-kv__value">{{ detail.date }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Start Time:</span>
+            <span class="ov-kv__value">{{ detail.startTime }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">End Time:</span>
+            <span class="ov-kv__value">{{ detail.endTime }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Location:</span>
+            <span class="ov-kv__value">{{ detail.location }}</span>
+          </div>
+          <div class="ov-kv items-start">
+            <span class="ov-kv__label">Description:</span>
+            <span class="ov-kv__value">{{ detail.description }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <a class="ov-link" href="mailto:{{ detail.email }}">{{ detail.email }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Status:</span>
+            <span class="inline-flex h-5 items-center rounded-sm bg-light px-1.5 text-xs font-semibold">{{ detail.status }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created:</span>
+            <span class="ov-kv__value">{{ detail.createdAt }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="box ov-card !mb-0 overflow-hidden">
+        <button type="button"
+          class="flex w-full items-center justify-between border-b border-defaultborder px-5 py-3.5 text-start"
+          (click)="toggleSection('settings')">
+          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Event Settings</h6>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14"
+            [class.rotate-180]="openSections['settings']" />
+        </button>
+        <div class="flex flex-col gap-2.5 px-5 py-4" *ngIf="openSections['settings']">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Attendees:</span>
+            <span class="ov-kv__value">{{ detail.attendees }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Max Attendees:</span>
+            <span class="ov-kv__value">{{ detail.maxAttendance }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Sendable to:</span>
+            <span class="ov-kv__value">{{ detail.sendableTo }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created:</span>
+            <span class="ov-kv__value">{{ detail.createdAt }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="ov-detail-layout__right">
+      <div class="box ov-card overflow-visible !mb-0">
+        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
+          <h6 class="ov-card-title m-0">Attendees</h6>
+        </div>
+        <div class="flex flex-col items-center justify-center gap-2 px-5 py-16 text-center">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-light text-textmuted">
+            <img src="assets/images/work-order-detail/users.svg" alt="" width="24" height="24" />
+          </div>
+          <p class="m-0 text-base font-semibold text-defaulttextcolor">No attendees found</p>
+          <p class="m-0 text-sm text-textmuted">No attendees are registered for this event.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Preview — Figma 2782:141636 -->
+  <div *ngIf="showPreview" class="event-preview" role="dialog" aria-modal="true" aria-label="Event preview"
+    (click)="closePreview()">
+    <div class="event-preview__stack" (click)="$event.stopPropagation()">
+      <button type="button" class="event-preview__close" (click)="closePreview()" aria-label="Close preview">
+        <img src="assets/images/event-preview/close-plus.svg" alt="" width="20" height="20" class="event-preview__close-ico" />
+      </button>
+
+      <div class="event-preview__bezel">
+        <div class="event-preview__phone">
+          <header class="event-preview__header">
+            <div class="event-preview__status">
+              <span class="event-preview__time">9:41</span>
+              <div class="event-preview__status-icons">
+                <img src="assets/images/event-preview/ios-signal.svg" alt="" width="17" height="11" />
+                <img src="assets/images/event-preview/ios-wifi.svg" alt="" width="15" height="11" />
+                <img src="assets/images/event-preview/ios-battery.svg" alt="" width="25" height="11" />
+              </div>
+            </div>
+            <div class="event-preview__nav">
+              <button type="button" class="event-preview__nav-btn" aria-label="Back" (click)="closePreview()">
+                <img src="assets/images/event-preview/chevron-left.svg" alt="" width="16" height="16" />
+              </button>
+              <p class="event-preview__nav-title">Event Information</p>
+              <button type="button" class="event-preview__nav-btn" aria-label="More">
+                <img src="assets/images/event-preview/more-horizontal.svg" alt="" width="16" height="16" />
+              </button>
+            </div>
+          </header>
+
+          <div class="event-preview__hero-wrap">
+            <div class="event-preview__hero">
+              <img class="event-preview__hero-img" src="assets/images/event-preview/hero.png" alt="" />
+              <span class="event-preview__pill">{{ previewStatusLabel }}</span>
+            </div>
+          </div>
+
+          <div class="event-preview__scroll">
+            <section class="event-preview__card">
+              <div class="event-preview__row">
+                <p class="event-preview__label">Event Name</p>
+                <p class="event-preview__value">{{ detail.name }}</p>
+              </div>
+              <div class="event-preview__row">
+                <p class="event-preview__label">Event Location</p>
+                <p class="event-preview__value">{{ detail.location }}</p>
+              </div>
+              <div class="event-preview__row">
+                <p class="event-preview__label">Email</p>
+                <p class="event-preview__value">{{ detail.email }}</p>
+              </div>
+              <div class="event-preview__row">
+                <p class="event-preview__label">Phone Number</p>
+                <p class="event-preview__value">{{ detail.phone }}</p>
+              </div>
+              <div class="event-preview__row">
+                <p class="event-preview__label">Event Date</p>
+                <p class="event-preview__value">{{ detail.date }}</p>
+              </div>
+              <div class="event-preview__row">
+                <p class="event-preview__label">Event Time</p>
+                <p class="event-preview__value">{{ eventTimeRange }}</p>
+              </div>
+              <div class="event-preview__row event-preview__row--last">
+                <p class="event-preview__label">Max Attendees</p>
+                <span class="event-preview__attendees">{{ detail.maxAttendance }}</span>
+              </div>
+            </section>
+
+            <section class="event-preview__card">
+              <div class="event-preview__row">
+                <div class="event-preview__label-row">
+                  <img src="assets/images/event-preview/map-pin.svg" alt="" width="14" height="14" />
+                  <p class="event-preview__label mb-0">Address</p>
+                </div>
+                <p class="event-preview__value">{{ detail.location }}</p>
+              </div>
+              <div class="event-preview__row event-preview__row--last">
+                <div class="event-preview__label-row">
+                  <img src="assets/images/event-preview/globe.svg" alt="" width="14" height="14" />
+                  <p class="event-preview__label mb-0">City</p>
+                </div>
+                <p class="event-preview__value">{{ eventCity }}</p>
+              </div>
+            </section>
+          </div>
+
+          <div class="event-preview__cta-wrap">
+            <button type="button" class="event-preview__cta">Join Event</button>
+          </div>
+          <div class="event-preview__home">
+            <span class="event-preview__home-bar"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

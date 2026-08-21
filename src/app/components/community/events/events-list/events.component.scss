@@ -1,0 +1,29 @@
+/* Row action menu sits above pagination — pierce table overflow clip when open */
+.events-table-wrap--menu-open {
+  overflow: visible !important;
+  position: relative;
+  z-index: 30;
+}
+
+:host ::ng-deep .events-table-wrap--menu-open {
+  .table-responsive,
+  .table-vertical-scroll {
+    overflow: visible !important;
+    max-height: none;
+  }
+
+  table thead,
+  table thead tr th {
+    z-index: 1;
+  }
+}
+
+.events-row-menu {
+  z-index: 100;
+}
+
+/* Keep pagination under open row menus */
+:host ::ng-deep .events-table-wrap--menu-open ~ .ov-page {
+  position: relative;
+  z-index: 1;
+}

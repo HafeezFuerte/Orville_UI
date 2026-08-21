@@ -1,0 +1,155 @@
+<form class="ov-add-form" (ngSubmit)="save()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="cancel()" title="Back to Events">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Event</h3>
+        <p class="ov-page-sub">Community / Events / <span class="ov-page-sub__current">New Event</span></p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Create Event</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body event-add-body">
+    <div class="event-add-main mx-auto flex w-full max-w-[1000px] flex-col gap-4">
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Event Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Event Name *</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Location *</label>
+              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" placeholder="Enter">
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Description</label>
+              <textarea class="ov-input !h-[100px] resize-none py-3" name="description"
+                [(ngModel)]="form.description" placeholder="Write the note content here..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Date &amp; Time</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">Event Date *</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="form.eventDate"
+                  placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Start Time</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+                <input type="text" class="ov-input !pl-[44px]" name="startTime" [(ngModel)]="form.startTime"
+                  placeholder="--:-- --">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">End Time</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+                <input type="text" class="ov-input !pl-[44px]" name="endTime" [(ngModel)]="form.endTime"
+                  placeholder="--:-- --">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Contact Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Email</label>
+              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Phone Number</label>
+              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Event Image</h6>
+        </div>
+        <div class="ov-card__body">
+          <label class="ov-label">Attachments</label>
+          <input #imageInput type="file" class="hidden" accept="image/*" (change)="onImageSelected($event)">
+          <div class="event-add-drop" (click)="imageInput.click()">
+            <div class="event-add-drop__lead">
+              <i class="ri-upload-2-line event-add-drop__ico" aria-hidden="true"></i>
+              <p class="event-add-drop__sub mb-0">Drop your image here or Browse</p>
+            </div>
+            <button type="button" class="ov-btn ov-btn-primary shrink-0"
+              (click)="$event.stopPropagation(); imageInput.click()">
+              <i class="ri-upload-2-line me-2" aria-hidden="true"></i>
+              Upload Image
+            </button>
+          </div>
+          <p class="event-add-drop__hint mb-0">
+            No image selected. An image helps attendees quickly recognize the event.
+          </p>
+          <div *ngIf="selectedImageName" class="mt-3 flex items-center justify-between rounded-md border border-defaultborder p-3">
+            <span class="text-sm font-medium text-defaulttextcolor">{{ selectedImageName }}</span>
+            <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-sm" (click)="clearImage()">Remove</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Event Settings</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Max Attendance</label>
+              <input type="text" class="ov-input" name="maxAttendance" [(ngModel)]="form.maxAttendance"
+                placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Sendable to</label>
+              <ng-select [(ngModel)]="form.sendableTo" name="sendableTo" [items]="sendableOptions"
+                [clearable]="true" placeholder="Property" class="ov-select ng-select-sm w-full"
+                appendTo="body"></ng-select>
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Property</label>
+              <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [clearable]="true"
+                placeholder="Select Property" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="ov-add-footer event-add-footer">
+    <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">Cancel</button>
+    <button type="submit" class="ov-btn ov-btn-primary">Create Event</button>
+  </div>
+</form>

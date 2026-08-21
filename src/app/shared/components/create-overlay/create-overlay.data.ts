@@ -32,12 +32,12 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Task and Maintenance',
     items: [
-      { label: 'Request', icon: icon('checkup-list.svg') },
+      { label: 'Request', icon: icon('checkup-list.svg'), route: '/facility/requests' },
       { label: 'Word Order', icon: icon('wrench.svg'), route: '/facility/work-orders/create' },
-      { label: 'Quotation', icon: icon('cash-banknote.svg') },
-      { label: 'Preventive Maintenance', icon: icon('calendar-time.svg') },
+      { label: 'Quotation', icon: icon('cash-banknote.svg'), route: '/facility/quotations/create' },
+      { label: 'Preventive Maintenance', icon: icon('calendar-time.svg'), route: '/facility/preventive-maintenance/create' },
       { label: 'Inventory Assets', icon: icon('inventory-assets.svg'), route: '/facility/assets/create' },
-      { label: 'Inventory Item', icon: icon('inventory-item.svg') },
+      { label: 'Inventory Item', icon: icon('inventory-item.svg'), route: '/facility/inventory/create' },
       { label: 'Purchase Order', icon: icon('purchase-order.svg') }
     ]
   },
@@ -72,9 +72,9 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Community',
     items: [
-      { label: 'Event', icon: icon('calendar-event.svg') },
-      { label: 'Promotion', icon: icon('speakerphone.svg') },
-      { label: 'Rules / Guide', icon: icon('rules-guide.svg') }
+      { label: 'Event', icon: icon('calendar-event.svg'), route: '/community/events/new' },
+      { label: 'Promotion', icon: icon('speakerphone.svg'), route: '/community/promotions/new' },
+      { label: 'Rules / Guide', icon: icon('rules-guide.svg'), route: '/community/rules-guides/new' }
     ]
   },
   {
@@ -93,7 +93,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Helpdesk',
     items: [
-      { label: 'Tickets', icon: icon('tickets.svg') }
+      { label: 'Tickets', icon: icon('tickets.svg'), route: '/facility/tickets/create' }
     ]
   },
   {

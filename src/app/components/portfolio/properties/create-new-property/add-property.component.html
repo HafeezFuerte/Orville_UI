@@ -10,22 +10,15 @@
                 <h3 *ngIf="is_edit" class="ov-page-title">
                     {{ 'web.property.lblEditProperty' | translate }}
                 </h3>
-                <p class="ov-page-sub" *ngIf="!is_edit">
-                    Portfolio / Property / <span class="ov-page-sub__current">New Property</span>
-                </p>
-                <p class="ov-page-sub" *ngIf="is_edit">
-                    Portfolio / Property /
-                    <span class="ov-page-sub__current">{{ property?.name || ('web.property.lblEditProperty' | translate) }}</span>
-                </p>
-                <ol class="ov-sr">
-                    <li>
-                        <a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a>
-                    </li>
-                    <li>
-                        <a [routerLink]="['/properties']">{{ 'web.property.lblProperties' | translate }}</a>
-                    </li>
-                    <li *ngIf="property?.name">{{ property?.name }}</li>
-                    <li *ngIf="!is_edit">{{ 'web.property.lblNewProperty' | translate }}</li>
+                <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+                    <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+                    <li class="px-2">/</li>
+                    <li><a routerLink="/portfolio/properties">{{ 'web.common.lblPortfolio' | translate }}</a></li>
+                    <li class="px-2">/</li>
+                    <li><a routerLink="/portfolio/properties">{{ 'web.property.lblProperties' | translate }}</a></li>
+                    <li class="px-2">/</li>
+                    <li class="font-semibold text-defaulttextcolor" *ngIf="!is_edit">{{ 'web.property.lblNewProperty' | translate }}</li>
+                    <li class="font-semibold text-defaulttextcolor" *ngIf="is_edit">{{ property?.name || ('web.property.lblEditProperty' | translate) }}</li>
                 </ol>
             </div>
         </div>

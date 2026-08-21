@@ -1,0 +1,285 @@
+<!-- Quotation Detail — Figma 3062:83663 + Add Item modal 3062:87544 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Quotations" aria-label="Back">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Quotation Details</h3>
+      <p class="ov-page-sub mt-1">
+        Facility / Quotations /
+        <span class="ov-page-sub__current">Quotation Details</span>
+      </p>
+    </div>
+  </div>
+  <div class="qd-action relative" (click)="$event.stopPropagation()">
+    <button type="button" class="qd-action__btn"
+      [class.is-open]="showActionMenu"
+      (click)="showActionMenu = !showActionMenu">
+      <span>Action</span>
+      <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="14" height="14"
+        [class.qd-action__chevron--open]="showActionMenu" />
+    </button>
+    <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+      <div class="ov-action-menu__list">
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="goEdit(); showActionMenu = false">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+          </span>
+          <span>Edit Quotation</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ov-detail-layout">
+  <aside class="ov-detail-layout__left">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h4 class="ov-card-title !text-[16px]">{{ quotation.title }}</h4>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">{{ quotation.number }}</p>
+        </div>
+        <span [ngClass]="statusClass(quotation.status)">{{ quotation.status }}</span>
+      </div>
+
+      <div class="flex gap-5">
+        <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
+          View Activity
+        </button>
+        <button type="button" (click)="goEdit()"
+          class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5">
+          Edit Quotation
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
+
+      <div class="qd-info-card">
+        <div class="qd-info-card__head">
+          <h6 class="qd-info-card__title">Quotation Information</h6>
+        </div>
+        <div class="qd-info-card__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Quotation ID:</span>
+            <span class="ov-kv__value">{{ quotation.id }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Work Order:</span>
+            <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.workOrderId }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Vendor:</span>
+            <span class="ov-kv__value">{{ quotation.vendor }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Category:</span>
+            <span class="ov-kv__value">{{ quotation.category }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Amount:</span>
+            <span class="ov-kv__value">{{ quotation.amount }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property:</span>
+            <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.property }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit:</span>
+            <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.unit }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Contact:</span>
+            <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.contact }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Date:</span>
+            <span class="ov-kv__value">{{ quotation.date }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Validity:</span>
+            <span class="ov-kv__value">{{ quotation.validity }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created:</span>
+            <span class="ov-kv__value">{{ quotation.created }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="ov-detail-tabs">
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'lineItems'"
+          (click)="setTab('lineItems')">Line Items</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'notes'"
+          (click)="setTab('notes')">Notes</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'attachments'"
+          (click)="setTab('attachments')">Attachments</button>
+      </div>
+
+      <div *ngIf="activeTab === 'lineItems'" class="p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h5 class="ov-card-title m-0 !text-[18px]">Line Items</h5>
+          <button type="button" class="ov-btn ov-btn-primary !h-10" (click)="openAddLineItem()">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            Add Item
+          </button>
+        </div>
+
+        <div class="qd-lines-card">
+          <div class="overflow-x-auto px-5 pt-5">
+            <app-shared-table
+              [columns]="lineColumns"
+              [data]="lineItems"
+              [loading]="false"
+              [hasActions]="false"
+              [showPaginator]="false"
+              [totalRecords]="lineItems.length"
+              [pageSize]="50"
+              [pageIndex]="0">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <span *ngSwitchCase="'title'" class="font-semibold text-defaulttextcolor">{{ row.title }}</span>
+                  <span *ngSwitchCase="'quantity'">{{ row.quantity }}</span>
+                  <span *ngSwitchCase="'amountPerItem'">{{ formatMoney(row.amountPerItem) }}</span>
+                  <span *ngSwitchCase="'totalAmount'" class="font-semibold">{{ formatMoney(row.totalAmount) }}</span>
+                  <span *ngSwitchCase="'category'" class="text-textmuted">{{ row.category }}</span>
+                  <span *ngSwitchCase="'taxProfile'" class="text-textmuted">{{ row.taxProfile }}</span>
+                  <div *ngSwitchCase="'action'" class="flex items-center gap-2">
+                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit line item"
+                      (click)="openEditLineItem(row)">
+                      <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
+                    </button>
+                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Remove line item"
+                      (click)="removeLineItem(row.id)">
+                      <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
+                    </button>
+                  </div>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
+          </div>
+          <div class="qd-lines-footer">
+            <span class="qd-lines-footer__label">Line items total</span>
+            <span class="qd-lines-footer__value">{{ formatMoney(lineItemsTotal) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'notes'" class="p-5">
+        <h5 class="ov-card-title mb-3 !text-[18px]">Notes</h5>
+        <div class="qd-notes-card">
+          <p class="m-0 text-[14px] leading-[20px] text-textmuted">{{ quotation.notes }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'attachments'" class="p-5">
+        <h5 class="ov-card-title mb-3 !text-[18px]">Attachments</h5>
+        <div class="qd-notes-card">
+          <p class="m-0 text-[14px] text-textmuted italic">No attachments uploaded.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Line Item Modal — Figma 3062:87544 -->
+<div *ngIf="showLineItemModal" class="ov-modal-backdrop" role="dialog" aria-modal="true"
+  (click)="closeLineItemModal()">
+  <div class="qt-item-modal-wrap" (click)="$event.stopPropagation()">
+    <button type="button" class="qt-item-modal__close bg-white dark:bg-bodybg" (click)="closeLineItemModal()" aria-label="Close">
+      <img src="assets/images/quotations/close-x.svg" alt="" width="20" height="20" />
+    </button>
+
+    <div class="qt-item-modal bg-white dark:bg-bodybg">
+      <div class="qt-item-modal__head">
+        <h5 class="qt-item-modal__title">
+          {{ editingItem ? 'Edit Vendor Quotation Line Item' : 'Add Vendor Quotation Line Item' }}
+        </h5>
+        <p class="qt-item-modal__sub">
+          {{ editingItem
+            ? 'Modify specifications and parameters for this quotation item'
+            : 'Add specifications and parameters for this quotation item' }}
+        </p>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__fields">
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Title</label>
+          <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.title"
+            placeholder="Enter line item title" />
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Quantity</label>
+          <div class="qt-item-modal__stepper">
+            <span class="qt-item-modal__stepper-value">{{ modal.quantity }}</span>
+            <div class="qt-item-modal__stepper-btns">
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(-1)" aria-label="Decrease">
+                <img src="assets/images/quotations/minus.svg" alt="" />
+              </button>
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(1)" aria-label="Increase">
+                <img src="assets/images/quotations/plus.svg" alt="" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Amount per item</label>
+            <div class="qt-item-modal__money">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.amountPerItem"
+                min="0" step="0.01" placeholder="0" />
+            </div>
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Total amount</label>
+            <div class="qt-item-modal__money qt-item-modal__money--readonly">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="text" class="qt-item-modal__money-input" [value]="modalTotal.toFixed(2)" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Quotation Category</label>
+            <ng-select [items]="options.categories" [(ngModel)]="modal.category"
+              placeholder="Select Quotation Category" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Tax Profile</label>
+            <ng-select [items]="options.taxProfiles" [(ngModel)]="modal.taxProfile"
+              placeholder="Select tax profile" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Description</label>
+          <textarea class="qt-item-modal__textarea" rows="4"
+            [(ngModel)]="modal.description"
+            placeholder="Enter description / notes here..."></textarea>
+        </div>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__footer">
+        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg" (click)="closeLineItemModal()">Cancel</button>
+        <button type="button" class="qt-item-modal__save" (click)="saveLineItem()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

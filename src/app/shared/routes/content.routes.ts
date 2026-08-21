@@ -62,6 +62,11 @@ export const content: Routes = [
       import('../../components/reminders/reminders.routes').then((m) => m.remindersRoutes),
   },
   {
+    path: 'community',
+    loadChildren: () =>
+      import('../../components/community/community.routes').then((m) => m.communityRoutes),
+  },
+  {
     path: 'bookings',
     loadChildren: () =>
       import('../../components/bookings/bookings.routes').then((m) => m.bookingsRoutes),
@@ -69,6 +74,16 @@ export const content: Routes = [
   { path: 'spaces', redirectTo: '/bookings/spaces', pathMatch: 'full' },
   { path: 'spaces/new', redirectTo: '/bookings/spaces/new', pathMatch: 'full' },
   { path: 'spaces/:id', redirectTo: '/bookings/spaces/:id' },
+  {
+    path: 'legal',
+    loadChildren: () =>
+      import('../../components/legal/legal.routes').then((m) => m.legalRoutes),
+  },
+  {
+    path: 'inspections',
+    loadChildren: () =>
+      import('../../components/inspections/inspections.routes').then((m) => m.inspectionsRoutes),
+  },
   {
     path: 'settings',
     children: [

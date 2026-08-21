@@ -1,0 +1,218 @@
+<!-- New Quotation — Figma 3005:83478 -->
+<div class="ov-form ov-add-form qt-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Quotations">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Quotation</h3>
+        <p class="ov-page-sub">
+          Facility / Quotation /
+          <span class="ov-page-sub__current">New Quotation</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Quotation</button>
+    </div>
+  </div>
+
+  <div class="qt-form__body">
+    <!-- Add New Quotation -->
+    <div class="ov-card qt-form__card">
+      <div class="ov-card__head">
+        <div>
+          <h6 class="ov-card-title">Add New Quotation</h6>
+          <p class="qt-form__card-sub">Create a new quotation. Fill in the details below.</p>
+        </div>
+      </div>
+      <div class="ov-card__body">
+        <div class="ov-fields ov-fields--2">
+          <div>
+            <label class="ov-label">Title <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="title" placeholder="Enter quotation title" />
+          </div>
+          <div>
+            <label class="ov-label">Reference</label>
+            <input type="text" class="ov-input" [(ngModel)]="reference" placeholder="Enter Reference No" />
+          </div>
+          <div>
+            <label class="ov-label">Work Order <span class="text-danger">*</span></label>
+            <ng-select [items]="options.workOrders" [(ngModel)]="selectedWorkOrder"
+              placeholder="Select Work Order" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Estimated Completion Date</label>
+            <div class="qt-date">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="qt-date__icon" />
+              <input type="text" class="ov-input qt-date__input" [(ngModel)]="estimatedDate" placeholder="DD/MM/YYYY" />
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Quotation Category</label>
+            <ng-select [items]="options.categories" [(ngModel)]="selectedCategory"
+              placeholder="Select Category" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Add Vendors <span class="text-danger">*</span></label>
+            <ng-select [items]="options.vendors" [(ngModel)]="selectedVendors" [multiple]="true"
+              placeholder="Select" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="ov-card qt-form__card">
+      <div class="ov-card__head qt-form__card-head-row">
+        <h6 class="ov-card-title m-0">Line Items</h6>
+        <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="openAddLineItem()">
+          <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
+          Add Line Item
+        </button>
+      </div>
+      <div class="ov-card__body">
+        <div class="qt-empty-lines" *ngIf="!lineItems.length">
+          No line items added yet. Click "Add Item" to add line items.
+        </div>
+        <div class="qt-lines-table" *ngIf="lineItems.length">
+          <div class="qt-lines-table__row qt-lines-table__row--head">
+            <span>Title</span>
+            <span>Qty</span>
+            <span>Amount</span>
+            <span>Total</span>
+            <span></span>
+          </div>
+          <div class="qt-lines-table__row" *ngFor="let item of lineItems">
+            <span class="font-semibold">{{ item.title }}</span>
+            <span>{{ item.quantity }}</span>
+            <span>{{ formatMoney(item.amountPerItem) }}</span>
+            <span>{{ formatMoney(item.totalAmount) }}</span>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLineItem(item.id)" aria-label="Remove">
+              <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attachment -->
+    <div class="ov-card qt-form__card">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Attachment</h6>
+      </div>
+      <div class="ov-card__body">
+        <div class="qt-dropzone bg-white dark:bg-bodybg" (click)="fileInput.click()">
+          <input #fileInput type="file" multiple class="hidden"
+            accept=".pdf,image/jpeg,image/png,.jpg,.jpeg,.png"
+            (change)="onFileSelected($event)" />
+          <img src="assets/images/rules-guides/upload.svg" alt="" width="35" height="35" class="qt-dropzone__icon" />
+          <p class="qt-dropzone__title">Drag and drop your file here</p>
+          <p class="qt-dropzone__sub">or browse from your device</p>
+          <button type="button" class="qt-browse-btn"
+            (click)="$event.stopPropagation(); fileInput.click()">Browse files</button>
+          <p class="qt-dropzone__hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Quotation</button>
+  </div>
+</div>
+
+<!-- Add Line Item Modal — Figma 3062:87544 -->
+<div *ngIf="showLineItemModal" class="ov-modal-backdrop" role="dialog" aria-modal="true"
+  (click)="closeLineItemModal()">
+  <div class="qt-item-modal-wrap" (click)="$event.stopPropagation()">
+    <button type="button" class="qt-item-modal__close bg-white dark:bg-bodybg" (click)="closeLineItemModal()" aria-label="Close">
+      <img src="assets/images/quotations/close-x.svg" alt="" width="20" height="20" />
+    </button>
+
+    <div class="qt-item-modal bg-white dark:bg-bodybg">
+      <div class="qt-item-modal__head">
+        <h5 class="qt-item-modal__title">Add Vendor Quotation Line Item</h5>
+        <p class="qt-item-modal__sub">Add specifications and parameters for this quotation item</p>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__fields">
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Title</label>
+          <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.title"
+            placeholder="Enter line item title" />
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Quantity</label>
+          <div class="qt-item-modal__stepper">
+            <span class="qt-item-modal__stepper-value">{{ modal.quantity }}</span>
+            <div class="qt-item-modal__stepper-btns">
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(-1)" aria-label="Decrease">
+                <img src="assets/images/quotations/minus.svg" alt="" />
+              </button>
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(1)" aria-label="Increase">
+                <img src="assets/images/quotations/plus.svg" alt="" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Amount per item</label>
+            <div class="qt-item-modal__money">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.amountPerItem"
+                min="0" step="0.01" placeholder="0" />
+            </div>
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Total amount</label>
+            <div class="qt-item-modal__money qt-item-modal__money--readonly">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="text" class="qt-item-modal__money-input" [value]="modalTotal.toFixed(2)" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Quotation Category</label>
+            <ng-select [items]="options.categories" [(ngModel)]="modal.category"
+              placeholder="Select Quotation Category" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Tax Profile</label>
+            <ng-select [items]="options.taxProfiles" [(ngModel)]="modal.taxProfile"
+              placeholder="Select tax profile" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Description</label>
+          <textarea class="qt-item-modal__textarea" rows="4"
+            [(ngModel)]="modal.description"
+            placeholder="Enter description / notes here..."></textarea>
+        </div>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__footer">
+        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg" (click)="closeLineItemModal()">Cancel</button>
+        <button type="button" class="qt-item-modal__save" (click)="saveLineItem()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

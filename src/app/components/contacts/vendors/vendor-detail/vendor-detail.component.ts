@@ -9,6 +9,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -20,7 +21,12 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 export class VendorDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private portfolioService = inject(PortfolioService);
   
+  countries: any[] = [];
+  states: any[] = [];
+  cities: any[] = [];
+
   vendorId: any = null;
   vendorData: any = null;
   notesForm: any = {};
@@ -140,12 +146,84 @@ export class VendorDetailComponent implements OnInit {
 
           console.log('Vendor Details Loaded:', this.vendorData);
           this.initializeTabs();
+          this.loadLocations();
         }
       },
       error: (err) => {
         console.error('Error fetching vendor details:', err);
       }
     });
+  }
+
+  loadLocations() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 1000,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.countries = res.objResult.table;
+          this.resolveLocationNames();
+        }
+      }
+    });
+  }
+
+  resolveLocationNames() {
+    if (!this.vendorData) return;
+
+    // Resolve country
+    const countryId = Number(this.vendorData.country_id || this.vendorData.country);
+    if (countryId) {
+      const country = this.countries.find(c => Number(c.id) === countryId);
+      if (country) {
+        this.vendor.personal.country = country.country_name || country.name || String(countryId);
+      }
+
+      // Load states for this country
+      this.portfolioService.getMasterByType({
+        typeId: 1001,
+        filterId: 0,
+        filterText: countryId.toString(),
+        filterText1: ''
+      }).subscribe({
+        next: (resState: any) => {
+          if (resState.statusCode == 200 && resState.objResult && resState.objResult.table) {
+            this.states = resState.objResult.table;
+            const stateId = Number(this.vendorData.stateid || this.vendorData.state || this.vendorData.state_id);
+            if (stateId) {
+              const state = this.states.find(s => Number(s.id) === stateId);
+              if (state) {
+                this.vendor.personal.state = state.state_name || state.name || String(stateId);
+              }
+
+              // Load cities for this state
+              this.portfolioService.getMasterByType({
+                typeId: 1002,
+                filterId: 0,
+                filterText: stateId.toString(),
+                filterText1: ''
+              }).subscribe({
+                next: (resCity: any) => {
+                  if (resCity.statusCode == 200 && resCity.objResult && resCity.objResult.table) {
+                    this.cities = resCity.objResult.table;
+                    const cityId = Number(this.vendorData.city || this.vendorData.city_id);
+                    if (cityId) {
+                      const city = this.cities.find(ci => Number(ci.id) === cityId);
+                      if (city) {
+                        this.vendor.personal.city = city.city_name || city.name || String(cityId);
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
   }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];

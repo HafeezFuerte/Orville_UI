@@ -32,6 +32,8 @@ interface Module {
   childCount:number;
   menuGroup: MenuGroup[];
   pages:PageMenu[];
+  menu_icon?: string;
+  jsonLabel?: string;
 }
 
 
@@ -147,12 +149,12 @@ export class SidebarComponent {
           this.menuItems = singleGroup.pages?.map((page: PageMenu) => {
             const normalizedName = page.menuName.trim();
             const path = this.resolveMenuPath(normalizedName, singleModule.moduleName, page.url);
-
+ 
             return {
               title: page.menuName,
               type: 'link',
               path: path,
-              icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+              icon: page.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
               active: false,
               selected: false,
             };
@@ -161,25 +163,24 @@ export class SidebarComponent {
           // 🔵 Standard multi-level logic
           this.menuItems = modules.map((module: Module) => this.mapModuleToMenu(module));
 
-          // 🟢 Extract Settings module and children if loaded from DB
-          const settingsModule = modules.find(m => m.moduleName.trim() === 'Settings');
-          if (settingsModule) {
-            // Find settings pages
-            const pages = settingsModule.pages || settingsModule.menuGroup?.[0]?.pages || [];
-            this.settingsMenuItems = pages.map((page: PageMenu) => {
-              const normalizedName = page.menuName.trim();
-              let path = this.urlNameMap[normalizedName] || this.urlMap[page.url] || page.url || '';
+          // 🟢 Extract Settings items from separate Level 1 Modules in DB
+          const settingsModules = modules.filter(m => m.jsonLabel?.trim() === 'Settings' || m.moduleName.trim() === 'Settings');
+          if (settingsModules.length > 0) {
+            this.settingsMenuItems = settingsModules.map((mod: Module) => {
+              const normalizedName = mod.moduleName.trim();
+              let path = this.urlNameMap[normalizedName] || this.urlMap[mod.url] || mod.url || '';
               return {
-                title: page.menuName,
+                title: mod.moduleName,
                 type: 'link',
                 path: path,
-                icon: page.menu_icon || 'bx-circle',
+                icon: mod.menu_icon || 'bx-circle',
                 active: false,
                 selected: false
               };
             });
-            // Filter out 'Settings' from main menu list
-            this.menuItems = this.menuItems.filter(m => m.title !== 'Settings');
+            // Filter out settings items from the main menuItems list
+            const settingsNames = settingsModules.map(m => m.moduleName.trim());
+            this.menuItems = this.menuItems.filter(m => m.title !== 'Settings' && !settingsNames.includes(m.title || ''));
           }
 
           // 🟢 Reorder: Move 'Employee Portal' to the top (only for multi-level)
@@ -188,6 +189,10 @@ export class SidebarComponent {
             const [portalModule] = this.menuItems.splice(portalIndex, 1);
             this.menuItems.unshift(portalModule);
           }
+
+          // Hide Help Desk; move Ticket under Facility; match Figma Facility order
+          this.menuItems = this.moveHelpDeskTicketsUnderFacility(this.menuItems);
+          this.menuItems = this.reorderFacilityChildren(this.menuItems);
         }
 
         // Add Settings menu item at the end
@@ -240,6 +245,7 @@ export class SidebarComponent {
       title: page.menuName,
       type: 'link',
       path: path || '',
+      icon: page.menu_icon || 'bx bx-circle',
       active: false,
       selected: false,
     };
@@ -260,7 +266,7 @@ export class SidebarComponent {
           type: 'sub',
           selected: false,
           active: false,
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
           children: this.withCommissionsAllChild([]),
         };
       }
@@ -271,7 +277,7 @@ export class SidebarComponent {
           type: 'sub',
           selected: false,
           active: false,
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
           children: [
             {
               title: 'Leases',
@@ -288,7 +294,7 @@ export class SidebarComponent {
         title: module.moduleName,
         type: 'link',
         path: this.resolveMenuPath(normalizedName, undefined, module.url) || '',
-        icon: this.moduleIconMap[normalizedName] || 'bx bx-circle',
+        icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
         active: false,
         selected: false,
       };
@@ -304,7 +310,7 @@ export class SidebarComponent {
       type: 'sub',
       selected: false,
       active: false,
-      icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
+      icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
       children,
     };
   }
@@ -348,7 +354,8 @@ export class SidebarComponent {
     'Performance': 'bx bx-line-chart',
     'Masters': 'bx bx-cog',
     'Recruitment': 'bx bx-user-plus',
-    'Mobile Phones': 'bx bx-mobile-alt', 
+    'Mobile Phones': 'bx bx-mobile-alt',
+    'Inspections': 'bx bx-check-shield', 
   };
 
 
@@ -380,8 +387,29 @@ export class SidebarComponent {
     'Vendor Contract': '/vendor-contracts',
     'Add Vendor Contract': '/vendor-contracts/create', 
     'Support Technicians': '/contacts/support-technicians',
+    'Ligitations': '/legal/litigations',
+    'Litigations': '/legal/litigations',
+    'Legal': '/legal/litigations',
+    'Inspections': '/inspections/list',
+    'Inspection List': '/inspections/list',
+    'Templates List': '/inspections/templates',
+    'Template List': '/inspections/templates',
+    'Templates': '/inspections/templates',
     'Broadcasts': '/broadcasts',
     'Work Orders': '/facility/work-orders',
+    'Work Order': '/facility/work-orders',
+    'Requests': '/facility/requests',
+    'Request': '/facility/requests',
+    'Tickets': '/facility/tickets',
+    'Ticket': '/facility/tickets',
+    'Quotations': '/facility/quotations',
+    'Quotation': '/facility/quotations',
+    'Preventive Maintenance': '/facility/preventive-maintenance',
+    'Preventive maintenance': '/facility/preventive-maintenance',
+    'Parts/Inventory': '/facility/inventory',
+    'Parts / Inventory': '/facility/inventory',
+    'Inventory': '/facility/inventory',
+    'Party/Inventory': '/facility/inventory',
     'Assets': '/facility/assets',
     'Insights': '/insights',
     'Reports': '/reports',
@@ -409,6 +437,19 @@ export class SidebarComponent {
     'Space': '/bookings/spaces',
     'Reservations': '/bookings/reservations',
     'Reservation': '/bookings/reservations',
+    'Events': '/community/events',
+    'Event': '/community/events',
+    'Promotions': '/community/promotions',
+    'Promotion': '/community/promotions',
+    'Rules / Guide': '/community/rules-guides',
+    'Rules/Guide': '/community/rules-guides',
+    'Rules Guide': '/community/rules-guides',
+    'Rules & Guides': '/community/rules-guides',
+    'Rules and Guides': '/community/rules-guides',
+    'Rules & Guide': '/community/rules-guides',
+    'Rules Guides': '/community/rules-guides',
+    'Guides': '/community/rules-guides',
+    'Community': '/community/events',
   };
 
   private isAccountingParent(parentTitle?: string): boolean {
@@ -422,6 +463,217 @@ export class SidebarComponent {
   private isCommissionsParent(parentTitle?: string): boolean {
     const name = (parentTitle || '').trim().toLowerCase();
     return name === 'commissions' || name === 'commission';
+  }
+
+  private isHelpDeskMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    return name === 'helpdesk' || name === 'helpdesks';
+  }
+
+  private isFacilityMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return name === 'facility' || name === 'facilities';
+  }
+
+  private isTicketMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return name === 'ticket' || name === 'tickets';
+  }
+
+  /** Desired Facility submenu order (Figma / product IA). */
+  private readonly facilityChildOrder: string[] = [
+    'requests',
+    'work order',
+    'tickets',
+    'quotations',
+    'preventive maintenance',
+    'assets',
+    'party/inventory',
+    'purchase order',
+  ];
+
+  private normalizeFacilityChildKey(title?: string): string {
+    return (title || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/work orders?\b/, 'work order')
+      .replace(/\btickets?\b/, 'tickets')
+      .replace(/quotation(s)?\b/, 'quotations')
+      .replace(/preventive[\s-]?maintenance/, 'preventive maintenance')
+      .replace(/party[\s_/&-]*inventory/, 'party/inventory')
+      .replace(/parts?[\s_/&-]*inventory/, 'party/inventory')
+      .replace(/purchase[\s-]?orders?\b/, 'purchase order');
+  }
+
+  private facilityChildSortIndex(title?: string): number {
+    const key = this.normalizeFacilityChildKey(title);
+    const idx = this.facilityChildOrder.indexOf(key);
+    return idx === -1 ? this.facilityChildOrder.length + 1 : idx;
+  }
+
+  /** Reorder Facility children to match product order; leave unknown items at the end. */
+  private reorderFacilityChildren(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+    const facilityIndex = items.findIndex((item) => this.isFacilityMenu(item.title));
+    if (facilityIndex < 0) {
+      return items;
+    }
+
+    const facility = { ...items[facilityIndex] };
+    const children = [...(facility.children || [])].map((child) => {
+      if (this.isTicketMenu(child.title)) {
+        return { ...child, title: 'Tickets', path: '/facility/tickets' };
+      }
+      const key = this.normalizeFacilityChildKey(child.title);
+      if (key === 'quotations') {
+        return { ...child, title: 'Quotations', path: '/facility/quotations' };
+      }
+      if (key === 'preventive maintenance') {
+        return { ...child, title: 'Preventive Maintenance', path: '/facility/preventive-maintenance' };
+      }
+      if (key === 'party/inventory') {
+        return { ...child, title: 'Parts/Inventory', path: '/facility/inventory' };
+      }
+      // Design uses singular "Work Order"
+      if (key === 'work order' && (child.title || '').toLowerCase().includes('orders')) {
+        return { ...child, title: 'Work Order' };
+      }
+      return child;
+    });
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'quotations')) {
+      children.push({
+        title: 'Quotations',
+        type: 'link',
+        path: '/facility/quotations',
+        active: false,
+        selected: false,
+      });
+    }
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'preventive maintenance')) {
+      children.push({
+        title: 'Preventive Maintenance',
+        type: 'link',
+        path: '/facility/preventive-maintenance',
+        active: false,
+        selected: false,
+      });
+    }
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'party/inventory')) {
+      children.push({
+        title: 'Parts/Inventory',
+        type: 'link',
+        path: '/facility/inventory',
+        active: false,
+        selected: false,
+      });
+    }
+
+    children.sort((a, b) => {
+      const diff = this.facilityChildSortIndex(a.title) - this.facilityChildSortIndex(b.title);
+      if (diff !== 0) {
+        return diff;
+      }
+      return (a.title || '').localeCompare(b.title || '');
+    });
+
+    facility.type = 'sub';
+    facility.children = children;
+    facility.path = undefined;
+
+    const next = [...items];
+    next[facilityIndex] = facility;
+    return next;
+  }
+
+  /**
+   * Hide Help Desk as a top-level item and attach its Ticket child(ren) under Facility.
+   * Preserves API paths on Ticket links.
+   */
+  private moveHelpDeskTicketsUnderFacility(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    const helpDeskItems = items.filter((item) => this.isHelpDeskMenu(item.title));
+    if (!helpDeskItems.length) {
+      return items;
+    }
+
+    const ticketChildren: Menu[] = [];
+    for (const helpDesk of helpDeskItems) {
+      const kids = (helpDesk.children || []).filter((child) => this.isTicketMenu(child.title));
+      if (kids.length) {
+        ticketChildren.push(...kids);
+      } else if (helpDesk.type === 'link' || this.isTicketMenu(helpDesk.title)) {
+        ticketChildren.push({
+          title: 'Tickets',
+          type: 'link',
+          path: helpDesk.path || '',
+          icon: helpDesk.icon,
+          active: false,
+          selected: false,
+        });
+      } else if ((helpDesk.children || []).length) {
+        ticketChildren.push(...(helpDesk.children as Menu[]));
+      } else {
+        ticketChildren.push({
+          title: 'Tickets',
+          type: 'link',
+          path: helpDesk.path || '',
+          icon: helpDesk.icon,
+          active: false,
+          selected: false,
+        });
+      }
+    }
+
+    const withoutHelpDesk = items.filter((item) => !this.isHelpDeskMenu(item.title));
+    if (!ticketChildren.length) {
+      return withoutHelpDesk;
+    }
+
+    const facilityIndex = withoutHelpDesk.findIndex((item) => this.isFacilityMenu(item.title));
+    if (facilityIndex < 0) {
+      return withoutHelpDesk;
+    }
+
+    const facility = { ...withoutHelpDesk[facilityIndex] };
+    const existingChildren = [...(facility.children || [])];
+    const existingTicketTitles = new Set(
+      existingChildren
+        .filter((c) => this.isTicketMenu(c.title))
+        .map((c) => (c.title || '').trim().toLowerCase())
+    );
+
+    for (const ticket of ticketChildren) {
+      const key = (ticket.title || 'Tickets').trim().toLowerCase();
+      if (existingTicketTitles.has(key) || existingTicketTitles.has('ticket') || existingTicketTitles.has('tickets')) {
+        continue;
+      }
+      existingChildren.push({
+        ...ticket,
+        title: 'Tickets',
+        type: 'link',
+        path: '/facility/tickets',
+        active: false,
+        selected: false,
+      });
+      existingTicketTitles.add('tickets');
+    }
+
+    facility.type = 'sub';
+    facility.children = existingChildren;
+    facility.path = undefined;
+
+    const next = [...withoutHelpDesk];
+    next[facilityIndex] = facility;
+    return next;
   }
 
   private isReportMenu(menuName: string): boolean {
@@ -438,6 +690,34 @@ export class SidebarComponent {
   }
 
   /** Accounting reports are a different product from Rental Reports at /reports. */
+  private isCommunityParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return name === 'community' || name.includes('community');
+  }
+
+  /** Map API menu labels under Community to static frontend routes. */
+  private resolveCommunityPath(menuName: string): string {
+    const name = (menuName || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!name || name === 'community') {
+      return '/community/events';
+    }
+    if (name.includes('event')) {
+      return '/community/events';
+    }
+    if (name.includes('promo')) {
+      return '/community/promotions';
+    }
+    if (
+      name.includes('rule') ||
+      name.includes('guide') ||
+      name.includes('rules/guide') ||
+      name.includes('rules / guide')
+    ) {
+      return '/community/rules-guides';
+    }
+    return '';
+  }
+
   private resolveMenuPath(menuName: string, parentTitle?: string, fallbackUrl?: string): string {
     const normalizedName = (menuName || '').trim();
     if (this.isAccountingParent(parentTitle) && this.isReportMenu(normalizedName)) {
@@ -455,6 +735,12 @@ export class SidebarComponent {
         return '/commissions/landlord';
       }
     }
+    if (this.isCommunityParent(parentTitle)) {
+      const communityPath = this.resolveCommunityPath(normalizedName);
+      if (communityPath) {
+        return communityPath;
+      }
+    }
 
     let path = this.urlNameMap[normalizedName];
     if (!path) {
@@ -462,6 +748,12 @@ export class SidebarComponent {
       const matchingKey = Object.keys(this.urlNameMap).find((key) => key.toLowerCase() === lowerName);
       if (matchingKey) {
         path = this.urlNameMap[matchingKey];
+      }
+    }
+    if (!path) {
+      const communityPath = this.resolveCommunityPath(normalizedName);
+      if (communityPath) {
+        path = communityPath;
       }
     }
     if (!path && fallbackUrl) {

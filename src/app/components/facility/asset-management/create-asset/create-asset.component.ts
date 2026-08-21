@@ -103,6 +103,16 @@ export class CreateAssetComponent implements OnInit {
             code: p.code || p.property_code || p.id,
             name: p.name || p.property || p.code
           }));
+          const propCode = this.route.snapshot.queryParams['propertyCode'];
+          if (propCode) {
+            const found = this.properties.find(p => p.code === propCode || p.id === propCode);
+            if (found) {
+              this.selectedProperty = found.code;
+            } else {
+              this.selectedProperty = propCode;
+            }
+            this.onPropertyChange();
+          }
         }
         if (callback) callback();
       },

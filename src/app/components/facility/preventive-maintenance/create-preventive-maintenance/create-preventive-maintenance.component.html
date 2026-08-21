@@ -1,0 +1,224 @@
+<!-- Add Preventive Maintenance — Figma 3070:81409 -->
+<div class="ov-form ov-add-form pm-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Preventive Maintenance">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Preventive Maintenance</h3>
+        <p class="ov-page-sub">
+          Facility / Preventive Maintenance /
+          <span class="ov-page-sub__current">New Preventive Maintenance</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Preventive Maintenance</button>
+    </div>
+  </div>
+
+  <div class="pm-form__workspace">
+    <div class="pm-form__main">
+      <!-- Trigger Details -->
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Trigger Details</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div>
+            <label class="ov-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="name" placeholder="Enter name" />
+          </div>
+          <div>
+            <label class="ov-label">Start Date</label>
+            <div class="pm-date">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
+              <input type="text" class="ov-input pm-date__input" [(ngModel)]="startDate" placeholder="DD/MM/YYYY" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">1st PPM Date <span class="text-danger">*</span></label>
+              <div class="pm-date">
+                <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
+                <input type="text" class="ov-input pm-date__input" [(ngModel)]="firstPpmDate" placeholder="DD/MM/YYYY" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Ends On</label>
+              <div class="pm-date">
+                <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
+                <input type="text" class="ov-input pm-date__input" [(ngModel)]="endsOn" placeholder="DD/MM/YYYY" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work order due -->
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Work order due</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label class="ov-label">Every <span class="text-danger">*</span></label>
+              <input type="number" class="ov-input" [(ngModel)]="every" min="1" />
+            </div>
+            <div>
+              <label class="ov-label">Time span <span class="text-danger">*</span></label>
+              <ng-select [items]="options.timeSpans" [(ngModel)]="timeSpan"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Create <span class="text-danger">*</span></label>
+              <input type="number" class="ov-input" [(ngModel)]="createDaysBefore" min="0" />
+              <p class="pm-form__hint">It will be triggered X days before the planned date</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Information -->
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Property Information</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
+                placeholder="Select Property" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Unit</label>
+              <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
+                placeholder="Select Unit" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Common Area</label>
+            <ng-select [items]="options.commonAreas" [(ngModel)]="selectedCommonArea"
+              placeholder="Select" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset -->
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Asset</h6>
+        </div>
+        <div class="ov-card__body">
+          <p class="pm-form__intro">Select Asset for the work order.</p>
+          <label class="ov-label">Search Asset</label>
+          <input type="text" class="ov-input" [(ngModel)]="assetSearch"
+            placeholder="Search Asset by name, barcode, area, or location" />
+        </div>
+      </div>
+
+      <!-- Work order details -->
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Work order details</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div>
+            <label class="ov-label">Title <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="workOrderTitle" placeholder="Enter title" />
+          </div>
+          <div>
+            <label class="ov-label">Details</label>
+            <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
+              [(ngModel)]="workOrderDetails" placeholder="Enter details..."></textarea>
+          </div>
+          <div>
+            <label class="ov-label">Maintenance Category <span class="text-danger">*</span></label>
+            <ng-select [items]="options.categories" [(ngModel)]="selectedCategory"
+              placeholder="Select category" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pm-form__side">
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Assign To Responsible Person</h6>
+        </div>
+        <div class="ov-card__body">
+          <p class="pm-form__intro">Assign this work order to a responsible person directly without quotation.</p>
+          <input type="text" class="ov-input" [(ngModel)]="responsiblePerson"
+            placeholder="Enter responsible person's name..." />
+        </div>
+      </div>
+
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Technicians</h6>
+        </div>
+        <div class="ov-card__body">
+          <ng-select [items]="options.technicians" [(ngModel)]="selectedTechnicians" [multiple]="true"
+            placeholder="Search or select technicians..." class="ov-select w-full" appendTo="body">
+          </ng-select>
+        </div>
+      </div>
+
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Assign Vendor</h6>
+        </div>
+        <div class="ov-card__body">
+          <ng-select [items]="options.vendors" [(ngModel)]="selectedVendor"
+            placeholder="Choose Vendor" class="ov-select w-full" appendTo="body">
+          </ng-select>
+        </div>
+      </div>
+
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Post-PPM Inspection</h6>
+        </div>
+        <div class="ov-card__body">
+          <p class="pm-form__intro">Select the checkbox below to create post PPM inspections.</p>
+          <label class="pm-check">
+            <input type="checkbox" [(ngModel)]="allowPostPpm" />
+            <span>Allow Post-PPM Inspection</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Add CheckList</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="pm-check-row" *ngFor="let item of checklistItems; let i = index; trackBy: trackByIndex">
+            <input type="text" class="ov-input" [(ngModel)]="checklistItems[i]" placeholder="Enter" />
+            <button type="button" class="pm-check-row__del" (click)="removeChecklistItem(i)" aria-label="Remove checklist item">
+              <img src="assets/images/action-menu/trash.svg" alt="" width="16" height="16" />
+            </button>
+          </div>
+          <div class="pm-check-footer">
+            <p class="pm-form__hint m-0">You can add multiple fields here</p>
+            <button type="button" class="pm-check-add" (click)="addChecklistItem()" aria-label="Add checklist item">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Preventive Maintenance</button>
+  </div>
+</div>

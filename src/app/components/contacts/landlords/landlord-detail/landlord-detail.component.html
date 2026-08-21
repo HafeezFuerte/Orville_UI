@@ -5,7 +5,15 @@
     </a>
     <div>
       <h3 class="ov-page-title">{{ 'web.contacts.lblLandlordDetails' | translate }}</h3>
-      <p class="ov-page-sub mt-1">Contacts / Landlord / Details</p>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/landlords">Contacts</a></li>
+        <li class="px-2">/</li>
+        <li><a routerLink="/contacts/landlords">Landlords</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
+      </ol>
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
@@ -359,16 +367,16 @@
               <img class="ov-finance-summary__blob" src="assets/images/contacts/finance-blob.svg" alt="" aria-hidden="true" />
               <div>
                 <span class="ov-finance-summary__cash-label">Cash Balance</span>
-                <p class="ov-finance-summary__cash-value">AED 46,507,891.47</p>
+                <p class="ov-finance-summary__cash-value">AED {{ (landlordData?.cash_balance || landlordData?.wallet_balance || landlord.wallet.openingBalance || 0) | number:'1.2-2' }}</p>
               </div>
               <div class="ov-finance-summary__cash-metrics">
                 <div class="ov-finance-summary__cash-metric">
                   <span class="ov-finance-summary__cash-metric-label">Portfolio Total Income</span>
-                  <span class="ov-finance-summary__cash-metric-value">AED 46,533,471.47</span>
+                  <span class="ov-finance-summary__cash-metric-value">AED {{ (landlordData?.total_income || landlordData?.income || 0) | number:'1.2-2' }}</span>
                 </div>
                 <div class="ov-finance-summary__cash-metric">
                   <span class="ov-finance-summary__cash-metric-label">Wallet Deposit</span>
-                  <span class="ov-finance-summary__cash-metric-value">AED 46,507,891.47</span>
+                  <span class="ov-finance-summary__cash-metric-value">AED {{ (landlordData?.wallet_deposit || landlordData?.deposit || 0) | number:'1.2-2' }}</span>
                 </div>
               </div>
             </article>
@@ -376,19 +384,19 @@
             <div class="ov-finance-summary__tiles">
               <article class="ov-finance-summary__tile">
                 <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblPortfolioExpense' | translate }}</span>
-                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+                <span class="ov-finance-summary__tile-value">AED {{ (landlordData?.portfolio_expense || landlordData?.expense || 0) | number:'1.2-2' }}</span>
               </article>
               <article class="ov-finance-summary__tile">
                 <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblManagementFee' | translate }}</span>
-                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+                <span class="ov-finance-summary__tile-value">AED {{ (landlordData?.management_fee || landlordData?.fee || 0) | number:'1.2-2' }}</span>
               </article>
               <article class="ov-finance-summary__tile">
                 <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblLandlordContribution' | translate }}</span>
-                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+                <span class="ov-finance-summary__tile-value">AED {{ (landlordData?.landlord_contribution || landlordData?.contribution || 0) | number:'1.2-2' }}</span>
               </article>
               <article class="ov-finance-summary__tile">
                 <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblLandlordDistribution' | translate }}</span>
-                <span class="ov-finance-summary__tile-value">AED 0.00</span>
+                <span class="ov-finance-summary__tile-value">AED {{ (landlordData?.landlord_distribution || landlordData?.distribution || 0) | number:'1.2-2' }}</span>
               </article>
             </div>
           </div>
@@ -397,7 +405,7 @@
           <div class="ov-finance-summary__other">
             <article class="ov-finance-summary__tile">
               <span class="ov-finance-summary__tile-label">{{ 'web.contacts.lblPortfolioPerformance' | translate }}</span>
-              <span class="ov-finance-summary__tile-value">AED 46,533,471.47</span>
+              <span class="ov-finance-summary__tile-value">AED {{ (landlordData?.portfolio_performance || landlordData?.performance || 0) | number:'1.2-2' }}</span>
             </article>
           </div>
         </div>

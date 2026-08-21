@@ -1,0 +1,248 @@
+<form class="ov-form ov-add-form" [formGroup]="inspectionForm" (ngSubmit)="onSubmit()">
+  <!-- Header Page Row -->
+  <div class="ov-add-header page-header !py-4 flex justify-between items-center mb-4">
+    <div class="ov-add-header__start flex items-center gap-3">
+      <a routerLink="/inspections/list" class="ov-back" title="Back to Inspections">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
+      <div>
+        <h3 class="ov-page-title">New Inspection</h3>
+        <p class="ov-page-sub">
+          Inspection / <span class="ov-page-sub__current">New Inspection</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions flex gap-2">
+      <button type="button" routerLink="/inspections/list" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Create Inspection</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body flex flex-col lg:flex-row gap-5">
+    
+    <!-- Left Form Cards -->
+    <div class="flex-1 flex flex-col gap-5">
+      
+      <!-- Inspection Information Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor border-b border-defaultborder pb-2 mb-4">
+          Inspection Information
+        </h6>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Inspection Type <span class="text-danger">*</span></label>
+            <ng-select formControlName="inspectionType" [items]="inspectionTypes" placeholder="Select Type" class="ov-select w-full" appendTo="body"></ng-select>
+          </div>
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Inspection Date Time <span class="text-danger">*</span></label>
+            <input type="datetime-local" formControlName="inspectionDateTime" class="ov-input form-control rounded" placeholder="Select date & time">
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspection Scope Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor border-b border-defaultborder pb-2 mb-4">
+          Inspection Scope
+        </h6>
+        <style>
+          .ov-scope-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+          }
+          .ov-scope-card {
+            border: 1px solid var(--default-border, #e5e7eb);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.2s ease;
+          }
+          .ov-scope-card:hover {
+            background-color: #f9fafb;
+          }
+          .ov-scope-card.is-selected {
+            border-color: #1e293b;
+            background-color: #f8fafc;
+          }
+          .ov-scope-radio {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+          }
+          .ov-scope-card.is-selected .ov-scope-radio {
+            border-color: #1e293b;
+          }
+          .ov-scope-radio::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: transparent;
+          }
+          .ov-scope-card.is-selected .ov-scope-radio::after {
+            background-color: #1e293b;
+          }
+        </style>
+
+        <div class="ov-scope-grid mb-4">
+          <!-- Unit Inspection Card -->
+          <div (click)="inspectionForm.patchValue({scope: 'unit'})" 
+            class="ov-scope-card" [class.is-selected]="inspectionForm.value.scope === 'unit'">
+            <div class="ov-scope-radio"></div>
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-defaulttextcolor">Unit Inspection</span>
+              <span class="text-[10px] text-textmuted leading-normal mt-0.5">Property, unit, and lease</span>
+            </div>
+          </div>
+
+          <!-- Asset Inspection Card -->
+          <div (click)="inspectionForm.patchValue({scope: 'asset'})" 
+            class="ov-scope-card" [class.is-selected]="inspectionForm.value.scope === 'asset'">
+            <div class="ov-scope-radio"></div>
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-defaulttextcolor">Asset Inspection</span>
+              <span class="text-[10px] text-textmuted leading-normal mt-0.5">Inventory asset only</span>
+            </div>
+          </div>
+
+          <!-- Both Card -->
+          <div (click)="inspectionForm.patchValue({scope: 'both'})" 
+            class="ov-scope-card" [class.is-selected]="inspectionForm.value.scope === 'both'">
+            <div class="ov-scope-radio"></div>
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-defaulttextcolor">Both</span>
+              <span class="text-[10px] text-textmuted leading-normal mt-0.5">Unit and asset together</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-defaultborder my-4"></div>
+
+        <!-- Unit Information Sub Section -->
+        <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">Unit Information</h6>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Property</label>
+            <ng-select formControlName="property" [items]="properties" placeholder="Select Property" class="ov-select w-full" appendTo="body"></ng-select>
+          </div>
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Unit</label>
+            <ng-select formControlName="unit" [items]="units" placeholder="Select Unit" class="ov-select w-full" appendTo="body"></ng-select>
+          </div>
+          <div class="flex flex-col md:col-span-2">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Lease</label>
+            <ng-select formControlName="lease" [items]="leases" placeholder="Select" class="ov-select w-full" appendTo="body"></ng-select>
+          </div>
+        </div>
+
+        <div class="border-t border-defaultborder my-4"></div>
+
+        <!-- Asset Information Sub Section -->
+        <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">Asset Information</h6>
+        <div class="flex flex-col">
+          <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Asset</label>
+          <ng-select formControlName="asset" [items]="assets" placeholder="Select Asset" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+      </div>
+
+      <!-- Additional Notes Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor border-b border-defaultborder pb-2 mb-4">
+          Additional Notes
+        </h6>
+        <div class="flex flex-col">
+          <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Note</label>
+          <textarea formControlName="note" class="ov-input form-control rounded" rows="3" placeholder="Add a note for this inspection"></textarea>
+        </div>
+      </div>
+
+      <!-- Action buttons moved here under the left cards column -->
+      <div class="flex items-center gap-3 pt-2 mt-2 pb-6">
+        <button type="button" routerLink="/inspections/list" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="submit" class="ov-btn ov-btn-primary">Create Inspection</button>
+      </div>
+
+    </div>
+
+    <!-- Right Summary Card Column -->
+    <div class="w-full lg:w-[320px] flex flex-col gap-4">
+      
+      <!-- Inspector Selector Card -->
+      <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none">
+        <h6 class="ov-card-title text-[14px] font-bold text-defaulttextcolor m-0">Inspector</h6>
+        <p class="text-[11px] text-textmuted mt-1 leading-tight">Assign an inspector before saving the inspection.</p>
+        <div class="flex flex-col mt-4">
+          <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Inspector <span class="text-danger">*</span></label>
+          <ng-select formControlName="inspector" [items]="inspectors" placeholder="Select Inspector" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+      </div>
+
+      <!-- Live Summary Preview Card -->
+      <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none">
+        <h6 class="ov-card-title text-[14px] font-bold text-defaulttextcolor m-0">Summary</h6>
+        <p class="text-[11px] text-textmuted mt-1 leading-tight">Review inspection details before creating.</p>
+        <div class="border-t border-defaultborder my-3.5"></div>
+        
+        <style>
+          .ov-kv {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+          }
+          .ov-kv__label {
+            color: #8c90a6;
+          }
+          .ov-kv__value {
+            font-weight: 600;
+            color: #1a222c;
+          }
+        </style>
+
+        <div class="flex flex-col gap-4">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Inspection For</span>
+            <span class="ov-kv__value">{{ summaryScope }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Inspection Type</span>
+            <span class="ov-kv__value">{{ summaryType }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Date &amp; Time</span>
+            <span class="ov-kv__value">{{ inspectionForm.value.inspectionDateTime || '30-06-2026' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Inspector</span>
+            <span class="ov-kv__value">{{ inspectionForm.value.inspector || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property</span>
+            <span class="ov-kv__value">{{ summaryProperty }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit</span>
+            <span class="ov-kv__value">{{ summaryUnit }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Asset</span>
+            <span class="ov-kv__value">{{ summaryAsset }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</form>

@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 
 @Component({
   selector: 'app-landlord-detail',
@@ -19,7 +20,12 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 export class LandlordDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private portfolioService = inject(PortfolioService);
   
+  countries: any[] = [];
+  states: any[] = [];
+  cities: any[] = [];
+
   landlordId: any = null;
   landlordData: any = null;
   notesForm: any = {};
@@ -159,12 +165,93 @@ export class LandlordDetailComponent implements OnInit {
 
           console.log('Landlord Details Loaded:', this.landlordData);
           this.initializeTabs();
+          this.loadLocations();
         }
       },
       error: (err) => {
         console.error('Error fetching landlord details:', err);
       }
     });
+  }
+
+  loadLocations() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 1000,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.countries = res.objResult.table;
+          this.resolveLocationNames();
+        }
+      }
+    });
+  }
+
+  resolveLocationNames() {
+    if (!this.landlordData) return;
+    
+    // Resolve nationality
+    const natId = Number(this.landlordData.nationality);
+    if (natId) {
+      const country = this.countries.find(c => Number(c.id) === natId);
+      if (country) {
+        this.landlord.personal.nationality = country.country_name || country.name || String(natId);
+      }
+    }
+
+    // Resolve country
+    const countryId = Number(this.landlordData.country_id || this.landlordData.country);
+    if (countryId) {
+      const country = this.countries.find(c => Number(c.id) === countryId);
+      if (country) {
+        this.landlord.personal.country = country.country_name || country.name || String(countryId);
+      }
+
+      // Load states for this country
+      this.portfolioService.getMasterByType({
+        typeId: 1001,
+        filterId: 0,
+        filterText: countryId.toString(),
+        filterText1: ''
+      }).subscribe({
+        next: (resState: any) => {
+          if (resState.statusCode == 200 && resState.objResult && resState.objResult.table) {
+            this.states = resState.objResult.table;
+            const stateId = Number(this.landlordData.stateid || this.landlordData.state || this.landlordData.state_id);
+            if (stateId) {
+              const state = this.states.find(s => Number(s.id) === stateId);
+              if (state) {
+                this.landlord.personal.state = state.state_name || state.name || String(stateId);
+              }
+
+              // Load cities for this state
+              this.portfolioService.getMasterByType({
+                typeId: 1002,
+                filterId: 0,
+                filterText: stateId.toString(),
+                filterText1: ''
+              }).subscribe({
+                next: (resCity: any) => {
+                  if (resCity.statusCode == 200 && resCity.objResult && resCity.objResult.table) {
+                    this.cities = resCity.objResult.table;
+                    const cityId = Number(this.landlordData.city || this.landlordData.city_id);
+                    if (cityId) {
+                      const city = this.cities.find(ci => Number(ci.id) === cityId);
+                      if (city) {
+                        this.landlord.personal.city = city.city_name || city.name || String(cityId);
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
   }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];

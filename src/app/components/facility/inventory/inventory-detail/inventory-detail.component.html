@@ -1,0 +1,372 @@
+<!-- Inventory Detail — Figma 3137:116521 / 3144:124681 / 3147:127162 / 3147:129642
+     Add Inventory Lines modal — Figma 3138:122572 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Inventory" aria-label="Back">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Inventory Details</h3>
+      <p class="ov-page-sub mt-1">
+        Facility / Inventory /
+        <span class="ov-page-sub__current">Inventory Details</span>
+      </p>
+    </div>
+  </div>
+  <button type="button" class="ov-btn ov-btn-primary" (click)="goEdit()">Edit Item</button>
+</div>
+
+<div class="ov-detail-layout">
+  <aside class="ov-detail-layout__left flex flex-col gap-4">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h4 class="ov-card-title !text-[16px]">{{ item.itemName }}</h4>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Order #{{ item.id }}</p>
+        </div>
+        <button type="button" (click)="goEdit()"
+          class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5 shrink-0">
+          Edit Item
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+
+      <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted w-full">
+        View Activity
+      </button>
+
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title !text-[16px] m-0">Item Information</h5>
+
+      <div class="inv-info-card">
+        <div class="inv-info-card__head">
+          <h6 class="inv-info-card__title">Basic Information</h6>
+        </div>
+        <div class="inv-info-card__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ item.id }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Item Name:</span>
+            <span class="ov-kv__value">{{ item.itemName }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Part Number:</span>
+            <span class="ov-kv__value">{{ item.partNumber }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Category:</span>
+            <span class="ov-kv__value">{{ item.category }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Subcategory:</span>
+            <span class="ov-kv__value">{{ item.subcategory }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Stock Type:</span>
+            <span [ngClass]="stockClass(item.stockType)">{{ item.stockType }}</span>
+          </div>
+          <div class="ov-kv ov-kv--stack">
+            <span class="ov-kv__label">Description:</span>
+            <span class="ov-kv__value">{{ item.description }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Quantity &amp; Cost</h5>
+      <div class="flex flex-col gap-3">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Item Cost:</span>
+          <span class="ov-kv__value">{{ item.itemCost }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Item Quantity:</span>
+          <span class="ov-kv__value">{{ item.itemQuantity }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Quantity Threshold:</span>
+          <span class="ov-kv__value">{{ item.quantityThreshold }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Same Cost:</span>
+          <span class="ov-kv__value">{{ item.sameCost ? 'Yes' : 'No' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Dates</h5>
+      <div class="flex flex-col gap-3">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Placed Date:</span>
+          <span class="ov-kv__value">{{ item.placedDate }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Expiration Date:</span>
+          <span class="ov-kv__value">{{ item.expirationDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Additional Details</h5>
+      <div class="flex flex-col gap-3">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Category:</span>
+          <span class="ov-kv__value">{{ item.category }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Created:</span>
+          <span class="ov-kv__value">{{ item.created }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Last Updated:</span>
+          <span class="ov-kv__value">{{ item.lastUpdated }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card py-5">
+      <div class="px-5">
+        <h5 class="ov-card-title m-0">Custom Fields</h5>
+      </div>
+      <div class="border-t border-defaultborder my-5"></div>
+      <div class="px-5">
+        <p class="ov-kv-empty m-0">No value set</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="ov-detail-tabs">
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'details'"
+          (click)="setTab('details')">Details</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'lines'"
+          (click)="setTab('lines')">Inventory Lines</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'attachments'"
+          (click)="setTab('attachments')">Attachments</button>
+        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'notes'"
+          (click)="setTab('notes')">Notes</button>
+      </div>
+
+      <!-- Details tab — Figma 3137:116521 -->
+      <div *ngIf="activeTab === 'details'" class="p-5 flex flex-col gap-5">
+        <section>
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h5 class="ov-card-title m-0 !text-[18px]">Images</h5>
+            <span class="text-[13px] text-textmuted">Photos ({{ item.images.length }})</span>
+          </div>
+          <div class="inv-images" *ngIf="item.images.length; else noImages">
+            <div class="inv-images__card bg-white dark:bg-bodybg" *ngFor="let img of item.images; let i = index">
+              <div class="inv-images__thumb">
+                <img [src]="img.url" [alt]="img.name" />
+              </div>
+              <div class="inv-images__meta">
+                <span class="inv-images__name">{{ img.name }}</span>
+                <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Remove image"
+                  (click)="removeImage(i)">
+                  <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <ng-template #noImages>
+            <div class="inv-empty bg-white dark:bg-bodybg">
+              <p class="m-0 text-[14px] text-textmuted italic">No images uploaded.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <ng-container *ngTemplateOutlet="linesSection"></ng-container>
+      </div>
+
+      <!-- Inventory Lines tab — Figma 3144:124681 -->
+      <div *ngIf="activeTab === 'lines'" class="p-5">
+        <ng-container *ngTemplateOutlet="linesSection"></ng-container>
+      </div>
+
+      <!-- Attachments tab — Figma 3147:127162 -->
+      <div *ngIf="activeTab === 'attachments'" class="p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h5 class="ov-card-title m-0 !text-[18px]">Attachments</h5>
+          <button type="button" class="ov-btn ov-btn-primary !h-10">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            Add Attachments
+          </button>
+        </div>
+        <div class="inv-attach-list" *ngIf="item.attachments.length; else noAttach">
+          <div class="inv-attach-row bg-white dark:bg-bodybg" *ngFor="let file of item.attachments">
+            <div class="min-w-0">
+              <p class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ file.name }}</p>
+              <p class="m-0 text-[12px] text-textmuted">{{ file.type }} · {{ file.size }}</p>
+            </div>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Attachment actions">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" />
+            </button>
+          </div>
+        </div>
+        <ng-template #noAttach>
+          <div class="inv-empty bg-white dark:bg-bodybg">
+            <p class="m-0 text-[14px] text-textmuted italic">No attachments uploaded.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Notes tab — Figma 3147:129642 -->
+      <div *ngIf="activeTab === 'notes'" class="p-5">
+        <h5 class="ov-card-title mb-3 !text-[18px]">Notes</h5>
+        <div class="inv-empty bg-white dark:bg-bodybg">
+          <p class="m-0 text-[14px] leading-[20px] text-textmuted">{{ item.notes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #linesSection>
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h5 class="ov-card-title m-0 !text-[18px]">Inventory Lines</h5>
+    <button type="button" class="ov-btn ov-btn-primary !h-10" (click)="openAddLineModal()">
+      <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+      Add Inventory Lines
+    </button>
+  </div>
+
+  <div class="inv-lines-card bg-white dark:bg-bodybg">
+    <div class="inv-lines-toolbar">
+      <div class="ov-search max-w-none flex-1 sm:max-w-[320px]">
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input type="search" class="ov-input ov-search__input" placeholder="Search by name"
+          [(ngModel)]="lineSearch" (ngModelChange)="onLineSearch()" />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto px-5">
+      <app-shared-table
+        [columns]="lineColumns"
+        [data]="paginatedLines"
+        [loading]="false"
+        [hasActions]="false"
+        [showPaginator]="false"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <a *ngSwitchCase="'id'" href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
+            <span *ngSwitchCase="'status'" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            <span *ngSwitchCase="'availableQty'" class="inv-chip inv-chip--soft">{{ row.availableQty }}</span>
+            <div *ngSwitchCase="'action'" class="relative" data-inv-line-action>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+                (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" />
+              </button>
+            </div>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <div class="inv-lines-pager">
+      <div class="flex flex-wrap items-center gap-2 text-[13px] text-textmuted">
+        <span>Show</span>
+        <select class="inv-lines-pager__select bg-white dark:bg-bodybg" [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+        </select>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button type="button" class="inv-page-btn bg-white dark:bg-bodybg" (click)="previousPage()"
+          [disabled]="pageIndex === 0">‹</button>
+        <button type="button" class="inv-page-btn inv-page-btn--active" (click)="goPage(1)">1</button>
+        <button type="button" class="inv-page-btn bg-white dark:bg-bodybg" (click)="nextPage()"
+          [disabled]="displayPage >= totalPages">›</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Floating row action menu -->
+<div *ngIf="openRowActionId && rowMenuStyle" class="inv-row-menu bg-white dark:bg-bodybg"
+  [ngStyle]="rowMenuStyle" data-inv-line-action role="menu">
+  <button type="button" role="menuitem" class="inv-row-menu__item" (click)="openAddLineModal(); closeRowAction()">
+    Edit
+  </button>
+  <button type="button" role="menuitem" class="inv-row-menu__item inv-row-menu__item--danger"
+    (click)="removeLine(openRowActionId!)">
+    Delete
+  </button>
+</div>
+
+<!-- Add Inventory Lines Modal — Figma 3138:122572 -->
+<div *ngIf="showLineModal" class="ov-modal-backdrop" role="dialog" aria-modal="true"
+  aria-labelledby="inv-line-modal-title" (click)="closeLineModal()">
+  <div class="qt-item-modal-wrap" (click)="$event.stopPropagation()">
+    <button type="button" class="qt-item-modal__close bg-white dark:bg-bodybg" (click)="closeLineModal()"
+      aria-label="Close">
+      <img src="assets/images/quotations/close-x.svg" alt="" width="20" height="20" />
+    </button>
+
+    <div class="qt-item-modal bg-white dark:bg-bodybg">
+      <div class="qt-item-modal__head">
+        <h5 id="inv-line-modal-title" class="qt-item-modal__title !text-[22px]">Add Inventory Lines</h5>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__fields">
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Location</label>
+            <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.location" placeholder="Enter" />
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Area</label>
+            <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.area" placeholder="Enter" />
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Barcode</label>
+            <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.barcode" placeholder="Enter" />
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Cost</label>
+            <div class="qt-item-modal__money">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.cost"
+                min="0" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Available Quantity</label>
+            <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.availableQty" placeholder="Enter" />
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Minimum Quantity</label>
+            <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.minimumQty" placeholder="Enter" />
+          </div>
+        </div>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__footer">
+        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg"
+          (click)="closeLineModal()">Cancel</button>
+        <button type="button" class="qt-item-modal__save" (click)="saveLine()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

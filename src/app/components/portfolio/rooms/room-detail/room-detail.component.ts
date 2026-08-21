@@ -198,9 +198,9 @@ export class RoomDetailComponent implements OnInit {
     const tab = this.tabs.find(t => t.key === this.activeTab);
     return tab;
   }
-  fetchDetails(rawId: string): void {
+  fetchDetails(rawId: string, typeId = 15): void {
     const payload = {
-      typeId: 15,
+      typeId: typeId,
       filterId: 0,
       filterText: rawId,
       filterText1: "",
@@ -213,46 +213,46 @@ export class RoomDetailComponent implements OnInit {
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) {
           let detail = null;
-          detail = response.objResult.room[0];
+          detail = response.objResult.room?.[0] || response.objResult.unit?.[0];
           if (detail) {
             this.unit = {
               id: detail.code || detail.id || this.roomId,
-              name: detail.room_no || detail.name || this.unit?.name || 'Apartment 209',
+              name: detail.room_code || detail.unit_code || detail.room_name || detail.unit_name || detail.room_no || detail.unit_no || detail.name || this.unit?.name || 'Room Details',
               code:detail.code,
-              category: detail.category_name ||  'Residential',
-              beds: detail.beds || this.unit?.beds || '1 Bed',
-              baths: detail.baths || this.unit?.baths || '1 Bath',
-              area: detail.area || this.unit?.area || '1200 Sqft',
-              floor: detail.floor_no || detail.floor || this.unit?.floor || '1 Floor',
-              property: detail.property_Name || 'Marina Height Towers',
-              property_code: detail.property_code || 'Marina Height Towers', 
-              unit: detail.unitcode + ' - ' + detail.unit_no || 'Marina Height Towers',
-              location: detail.location || this.unit?.location || 'Dubai Marina, Tower A, Dubai',
+              category: detail.category_name ||  '-',
+              beds: detail.beds || this.unit?.beds || '-',
+              baths: detail.baths || this.unit?.baths || '-',
+              area: detail.area ? (detail.area + ' Sqft') : (this.unit?.area || '-'),
+              floor: detail.floor_no || detail.floor || this.unit?.floor || '-',
+              property: detail.property_Name || '-',
+              property_code: detail.property_code || '', 
+              unit: (detail.unitcode && detail.unit_no) ? (detail.unitcode + ' - ' + detail.unit_no) : (detail.unit_no || '-'),
+              location: detail.location || this.unit?.location || '-',
               ...this.mapLandlordFields(detail),
-              tags: detail.tags || this.unit?.tags || 'Premium',
-              roomType: detail.room_type_name || detail.room_type || this.unit?.roomType || 'Apartment',
-              managementFee: detail.management_fee ? this.currentUser?.currencyCode+` ${detail.management_fee}` : this.unit?.managementFee || 'AED 600',
-              status: detail.room_status_name || detail.room_status || detail.status || this.unit?.status || 'Occupied',
-              addedDate: detail.created || this.unit?.addedDate || 'May 26, 2026',
-              imageUrl: detail.unit_image || this.unit?.imageUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=60',
-              rentStatus: detail.rent_type || this.unit?.rentStatus || 'For Rent',
+              tags: detail.tags || this.unit?.tags || '',
+              roomType: detail.room_type_name || detail.unit_type_name || detail.room_type || detail.unit_type || this.unit?.roomType || '-',
+              managementFee: detail.management_fee ? this.currentUser?.currencyCode+` ${detail.management_fee}` : (this.unit?.managementFee || '-'),
+              status: detail.room_status_name || detail.unit_status_name || detail.room_status || detail.unit_status || detail.status || this.unit?.status || '-',
+              addedDate: detail.created || this.unit?.addedDate || '',
+              imageUrl: detail.unit_image || this.unit?.imageUrl || 'assets/images/common/placeholder.png',
+              rentStatus: detail.rent_type_name || this.unit?.rentStatus || '-',
               furnished: detail.is_furnished || false,
               smoking: detail.is_smoking_allowed || false,
               saleStatus: detail.sale_status || false,
               underDispute: (response.objResult.legal_cases && response.objResult.legal_cases.length > 0),
-              propertyAddress: detail.address_1 || 'Dubai Marina, Tower A, Dubai',
-              createdDate: detail.created_date ? new Date(detail.created_date).toLocaleDateString() : '07-22-2025',
-              lastUpdate: detail.modified_date ? new Date(detail.modified_date).toLocaleDateString() : (detail.created_date ? new Date(detail.created_date).toLocaleDateString() : '23-06-2026'),
+              propertyAddress: detail.address_1 || detail.location || '-',
+              createdDate: detail.created_date ? new Date(detail.created_date).toLocaleDateString() : '',
+              lastUpdate: detail.modified_date ? new Date(detail.modified_date).toLocaleDateString() : (detail.created_date ? new Date(detail.created_date).toLocaleDateString() : ''),
               isVerified: detail.is_it_verified || false,
-              marketRent: detail.market_rent ? this.currentUser?.currencyCode+` ${detail.market_rent}` : 'AED 36500.0',
-              deposit: detail.rent_deposit ? this.currentUser?.currencyCode+` ${detail.rent_deposit}` : 'AED 3000.0',
-              rentType: detail.rent_type_name || (detail.rent_type === 50 ? 'Per Year' : 'Per Year'),
-              rentPerSqft: detail.rent_per_area ? this.currentUser?.currencyCode+` ${detail.rent_per_area}` : 'AED 250.00',
-              totalServiceCharges: detail.total_service_charges ? this.currentUser?.currencyCode+` ${detail.total_service_charges}` : '0.00',
-              serviceCharges: detail.service_charge_per_area ? this.currentUser?.currencyCode+` ${detail.service_charge_per_area}` : '0.00',
+              marketRent: detail.market_rent ? this.currentUser?.currencyCode+` ${detail.market_rent}` : '-',
+              deposit: detail.rent_deposit ? this.currentUser?.currencyCode+` ${detail.rent_deposit}` : '-',
+              rentType: detail.rent_type_name || '',
+              rentPerSqft: detail.rent_per_area ? this.currentUser?.currencyCode+` ${detail.rent_per_area}` : '-',
+              totalServiceCharges: detail.total_service_charges ? this.currentUser?.currencyCode+` ${detail.total_service_charges}` : '-',
+              serviceCharges: detail.service_charge_per_area ? this.currentUser?.currencyCode+` ${detail.service_charge_per_area}` : '-',
               salePrice: detail.market_value ? this.currentUser?.currencyCode+` ${detail.market_value}` : '-',
               thresholdValue: detail.threshold_value ? this.currentUser?.currencyCode+` ${detail.threshold_value}` : '-',
-              managementFeeType: detail.management_fee_type || 'Percentage',
+              managementFeeType: detail.management_fee_type || '-',
               serviceDisabled: detail.disable_maintainence || false,
               trakessiNumber: detail.trakessi_number || '-',
               reraNumber: detail.rera_number || '-',
@@ -267,40 +267,46 @@ export class RoomDetailComponent implements OnInit {
               amenities: detail.amenities || []
             };
             this.item = this.unit;
+            this.unitAttachments = response.objResult.documents || [];   
+            this.broadcasts = response.objResult.broadcasts || [];
+            this.financials = response.objResult.financials || [];
+            this.notes = response.objResult.notes || [];
+            this.inventoryItems = response.objResult.inventory || [];
+            this.legalCases = response.objResult.legal_cases || [];
+            this.parkings = response.objResult.parking || [];
+            this.inspections = response.objResult.inspections || [];
+            const woList = response.objResult.workorders || [];
+            this.workOrders = woList.map((wo: any) => ({
+              id: wo.id,
+              code: wo.code || '',
+              title: wo.title || '',
+              status: wo.status_nm || wo.status || 'Open',
+              closingStatus: wo.closingStatus || wo.closing_status || 'Pending',
+              internalStatus: wo.internalStatus || wo.internal_status || 'Assigned',
+              dueDate: wo.due_date || wo.dueDate || '',
+              priority: wo.priority || '',
+              property: wo.property || '',
+              vendor: wo.vendor_name || wo.vendor || '',
+              user: wo.user_name || wo.user || '',
+              tags: wo.tags || '',
+              maintenanceCategory: wo.maintenance_name || wo.maintenance_category || wo.maintenanceCategory || '',
+              responsiblePersons: wo.responsible_persons || wo.responsiblePersons || '',
+              updatedAt: wo.modified_date || wo.updated_at || wo.updatedAt || '',
+              createdAt: wo.created_date || wo.created_at || wo.createdAt || ''
+            }));
+            this.initModeData(); 
+          } else if (typeId === 15) {
+            this.fetchDetails(rawId, 14);
           }
-          this.unitAttachments = response.objResult.documents|| [];   
-          this.broadcasts = response.objResult.broadcasts;
-          this.financials = response.objResult.financials || [];
-          this.notes = response.objResult.notes;
-          this.inventoryItems = response.objResult.inventory;
-          this.legalCases = response.objResult.legal_cases;
-          this.parkings = response.objResult.parking;
-          this.inspections = response.objResult.inspections;
-          const woList = response.objResult.workorders || [];
-          this.workOrders = woList.map((wo: any) => ({
-            id: wo.id,
-            code: wo.code || '',
-            title: wo.title || '',
-            status: wo.status_nm || wo.status || 'Open',
-            closingStatus: wo.closingStatus || wo.closing_status || 'Pending',
-            internalStatus: wo.internalStatus || wo.internal_status || 'Assigned',
-            dueDate: wo.due_date || wo.dueDate || '',
-            priority: wo.priority || '',
-            property: wo.property || '',
-            vendor: wo.vendor_name || wo.vendor || '',
-            user: wo.user_name || wo.user || '',
-            tags: wo.tags || '',
-            maintenanceCategory: wo.maintenance_name || wo.maintenance_category || wo.maintenanceCategory || '',
-            responsiblePersons: wo.responsible_persons || wo.responsiblePersons || '',
-            updatedAt: wo.modified_date || wo.updated_at || wo.updatedAt || '',
-            createdAt: wo.created_date || wo.created_at || wo.createdAt || ''
-          }));
-          this.initModeData(); 
-        
+        } else if (typeId === 15) {
+          this.fetchDetails(rawId, 14);
         }
       },
       error: err => {
         console.error(err);
+        if (typeId === 15) {
+          this.fetchDetails(rawId, 14);
+        }
       }
     });
   }

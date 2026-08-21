@@ -65,7 +65,7 @@
   <div class="ov-detail-layout__left flex flex-col gap-3">
     <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
       <div>
-        <h4 class="ov-card-title">{{ tenantData?.tenant || tenantData?.name || 'Ahmad Yasein' }}</h4>
+        <h4 class="ov-card-title">{{ tenantData?.tenant || tenantData?.name || '' }}</h4>
         <p class="ov-card-sub mt-1 break-all">{{ tenantData?.email_address || '' }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
@@ -134,7 +134,7 @@
         <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
       </div>
       <div class="px-5 py-4">
-        <p class="m-0 text-[13px] italic text-textmuted">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <p class="m-0 text-[13px] italic text-textmuted">{{ tenantData?.notes || tenantData?.note || 'No notes available.' }}</p>
       </div>
     </div>
 
@@ -209,23 +209,23 @@
         <span class="ov-statement-summary__eyebrow">Statement Summary</span>
         <div>
           <span class="ov-statement-summary__label">Current Balance</span>
-          <p class="ov-statement-summary__value">AED 0.00</p>
+          <p class="ov-statement-summary__value">AED {{ (tenantData?.current_balance || tenantData?.balance || 0) | number:'1.2-2' }}</p>
           <span class="ov-statement-summary__hint">Total due balance of Tenants Account</span>
         </div>
         <div class="ov-statement-summary__metrics">
           <div>
             <span class="ov-statement-summary__metric-label">Total Invoiced</span>
-            <span class="ov-statement-summary__metric-value">AED 3,000.00</span>
+            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.total_invoiced || tenantData?.invoiced || 0) | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Total charges levied on this statement</span>
           </div>
           <div>
             <span class="ov-statement-summary__metric-label">Total Paid</span>
-            <span class="ov-statement-summary__metric-value">AED 3,000.00</span>
+            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.total_paid || tenantData?.paid || 0) | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Payments received for this statement</span>
           </div>
           <div>
             <span class="ov-statement-summary__metric-label">Available Credits</span>
-            <span class="ov-statement-summary__metric-value">AED 0.00</span>
+            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.available_credits || tenantData?.credits || 0) | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Credit balances held for future adjustments</span>
           </div>
         </div>
@@ -750,7 +750,7 @@
     <div class="ov-modal__body flex flex-col gap-4">
       <div>
         <label class="ov-label">To Email Address</label>
-        <input type="email" readonly class="ov-input" value="ahmad&#64;fastech.com">
+        <input type="email" readonly class="ov-input" [value]="tenantData?.email_address || ''">
       </div>
       <div>
         <label class="ov-label">Subject</label>
