@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,FormGroup } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -14,16 +14,15 @@ import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { UnitsTableComponent } from '../../child-tables/units/units-table.component';
 import {WorkordersTableComponent} from '../../child-tables/workorders/workorders.component';
-import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
-import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+ import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule,WorkordersTableComponent,BroadcastsTableComponent, TranslateModule,UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule,WorkordersTableComponent,BroadcastsTableComponent, TranslateModule,UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })
-export class LeaseDetailComponent implements OnInit, OnDestroy {
+export class LeaseDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router); 
   private toastr = inject(ToastrService);
@@ -35,46 +34,6 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
   activeTab: string = 'Overview';
   showInvoiceModal: boolean = false;
   showInspectionModal: boolean = false;
-  showMoreDetails = false;
-  showActionMenu = false;
-  activeEntityPreview: 'tenant' | 'property' | 'unit' | 'lease' | null = null;
-  previewPanelStyle: Record<string, string> | null = null;
-  private previewTriggerEl: HTMLElement | null = null;
-
-  @ViewChild(DetailPageLayoutComponent)
-  detailLayout!: DetailPageLayoutComponent;
-
-  /** Port preview to document.body so sticky table headers cannot cover it. */
-  @ViewChild('leasePreviewEl')
-  set leasePreviewEl(ref: ElementRef<HTMLElement> | undefined) {
-    if (ref?.nativeElement) {
-      this.portPreviewToBody(ref.nativeElement);
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    this.showActionMenu = false;
-    const target = event.target as HTMLElement | null;
-    if (target?.closest?.('.lease-preview') || target?.closest?.('.lease-preview-anchor')) {
-      return;
-    }
-    this.closeEntityPreview();
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    this.showActionMenu = false;
-    this.closeEntityPreview();
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('window:resize')
-  onViewportChange(): void {
-    if (this.activeEntityPreview && this.previewTriggerEl) {
-      this.updatePreviewPosition(this.previewTriggerEl);
-    }
-  }
 
   openInvoiceModal() {
     this.showInvoiceModal = true;
@@ -92,59 +51,17 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
     this.showInspectionModal = false;
   }
 
-  /** Notes/Attachments-style tab toolbar state */
-  tabSearchQuery = '';
-  isTabColumnDropdownOpen = false;
-  isTabDrawerOpen = false;
-  tabFilterId = '';
-
-  toggleTabDrawer(open: boolean): void {
-    this.isTabDrawerOpen = open;
-  }
-
-  toggleTabColumnDropdown(): void {
-    this.isTabColumnDropdownOpen = !this.isTabColumnDropdownOpen;
-  }
-
-  visibleTabColumns(columns: any[]): any[] {
-    return (columns || []).filter((c: any) => c.visible !== false);
-  }
-
-  allTabColumnsVisible(columns: any[]): boolean {
-    const cols = columns || [];
-    return cols.length > 0 && cols.every((c: any) => c.visible !== false);
-  }
-
-  toggleTabColumn(col: any): void {
-    col.visible = !(col.visible !== false);
-  }
-
-  toggleAllTabColumns(columns: any[], event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    (columns || []).forEach((c: any) => (c.visible = checked));
-  }
-
-  applyTabFilters(): void {
-    this.isTabDrawerOpen = false;
-  }
-
-  clearTabFilters(): void {
-    this.tabFilterId = '';
-    this.tabSearchQuery = '';
-    this.isTabDrawerOpen = false;
-  }
-
   // Sidebar / Left panel metadata
   leaseInfo: any = {}; 
-  // Sub-grid columns (keys/bindings unchanged — presentation templates only)
-  invoiceColumns = [
-    { key: 'amt', label: 'Amount' + ' (' + this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
-    { key: 'adv_amt', label: 'Adv.Amount' + ' (' + this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
-    { key: 'account_name', label: 'web.leases.lblAccount', visible: true, useTemplate: true },
-    { key: 'due_date', label: 'web.leases.lblEndDate', visible: true, useTemplate: true },
+  // Sub-grid columns
+  invoiceColumns = [ 
+    { key: 'amt', label: 'Amount' +' ('+ this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
+    { key: 'adv_amt', label: 'Adv.Amount'+' ('+ this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
+    { key: 'account_name', label: 'web.leases.lblAccount', visible: true,useTemplate: true },
+    { key: 'due_date', label: 'web.leases.lblEndDate', visible: true,useTemplate: true },
     { key: 'recurring_cycle', label: 'web.leases.lblRecurringCycle', visible: true, useTemplate: true },
-    { key: 'payment_type', label: 'Payment Type', visible: true, useTemplate: true },
-    { key: 'attachment_path', label: 'Attachment', visible: true, useTemplate: true }
+    { key: 'payment_type', label: 'Payment Type', visible: true,useTemplate: true },
+    { key: 'attachment_path', label: 'Attachment', visible: true,useTemplate: true }
   ];
 
   tenantColumns = [
@@ -225,7 +142,7 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
     { key: 'unit', label: 'web.leases.lblUnit', visible: true },
     { key: 'scheduled', label: 'web.leases.lblScheduled', visible: true, useTemplate: true },
     { key: 'userId', label: 'web.leases.lblUserId', visible: true },
-    { key: 'createdAt', label: 'Date/Time', visible: true }
+    { key: 'createdAt', label: 'web.leases.lblCreated', visible: true }
   ];
 
   unitsColumns = [
@@ -269,16 +186,16 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
 
    
   legalColumns = [
-    { key: 'escalationOption', label: 'Escalation Option', visible: true },
+    { key: 'escalationOption', label: 'web.leases.lblEscalationOption', visible: true },
     { key: 'property', label: 'web.leases.lblProperty', visible: true },
     { key: 'unit', label: 'web.leases.lblUnit', visible: true },
-    { key: 'lease', label: 'Lease', visible: true },
-    { key: 'unitBlocked', label: 'Unit Blocked', visible: true, useTemplate: true },
-    { key: 'tenantBlocked', label: 'Tenant Blocked', visible: true, useTemplate: true },
-    { key: 'hearingsCount', label: 'Hearings Count', visible: true },
-    { key: 'attachmentsCount', label: 'Attachments Count', visible: true },
-    { key: 'notesCount', label: 'Notes Count', visible: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true }
+    { key: 'lease', label: 'web.common.lblLeases', visible: true },
+    { key: 'unitBlocked', label: 'web.leases.lblUnitBlocked', visible: true, useTemplate: true },
+    { key: 'tenantBlocked', label: 'web.leases.lblTenantBlocked', visible: true, useTemplate: true },
+    { key: 'hearingsCount', label: 'web.leases.lblHearingsCount', visible: true },
+    { key: 'attachmentsCount', label: 'web.leases.lblAttachmentsCount', visible: true },
+    { key: 'notesCount', label: 'web.leases.lblNotesCount', visible: true },
+    { key: 'internalStatus', label: 'web.contacts.lblInternalStatus', visible: true }
   ];
 
   // Grid Data Lists
@@ -341,255 +258,6 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
   get selectedTab(): DetailTab | undefined {
     return this.tabs.find(t => t.key === this.activeTab);
   }
-
-  /** Page title — Figma uses property name; fall back to existing lease fields only */
-  get leasePageTitle(): string {
-    const info = this.leaseInfo || {};
-    return (info.property || info.active_lease || info.name || '').toString().trim();
-  }
-
-  /** Left hero title — prefer full lease label from API */
-  get leaseCardTitle(): string {
-    const info = this.leaseInfo || {};
-    return (info.active_lease || info.name || info.property || '').toString().trim();
-  }
-
-  private get primaryTenant(): any {
-    return this.tenantsData?.[0] || {};
-  }
-
-  private get primaryUnit(): any {
-    return this.unitsData?.[0] || {};
-  }
-
-  get tenantPreview() {
-    const info = this.leaseInfo || {};
-    const t = this.primaryTenant;
-    return {
-      name: info.tenant || t.tenant || t.name || '-',
-      badge: t.tenant_type_badge || info.tenant_type_badge || 'Individual',
-      email: t.email_address || t.email || info.tenant_email || '-',
-      phone: t.phone_number || t.phone || info.tenant_phone || '-',
-      tenantType: t.tenant_type || info.tenant_type || 'Individual Tenant',
-      location: info.location || info.address || info.property || '-',
-      code: info.tenant_code || t.code || t.tenant_code || ''
-    };
-  }
-
-  get propertyPreview() {
-    const info = this.leaseInfo || {};
-    const unitsCount = info.property_units_count ?? info.units_count ?? this.unitsData?.length;
-    const occupancy = info.property_occupancy ?? info.occupancy;
-    const activeLeases = info.property_active_leases ?? info.active_leases_count;
-    return {
-      name: info.property || '-',
-      category: info.property_category || info.property_type || 'Residential',
-      unitsCount: unitsCount != null && unitsCount !== '' ? String(unitsCount) : '-',
-      occupancy: occupancy != null && occupancy !== ''
-        ? (String(occupancy).includes('%') ? String(occupancy) : `${occupancy}%`)
-        : '-',
-      activeLeases: activeLeases != null && activeLeases !== ''
-        ? `${activeLeases} Active Leases`
-        : 'Active Leases',
-      code: info.property_code || ''
-    };
-  }
-
-  get unitPreview() {
-    const info = this.leaseInfo || {};
-    const u = this.primaryUnit;
-    const beds = u.beds ?? u.bedrooms ?? info.beds ?? info.bedrooms;
-    const baths = u.baths ?? u.bathrooms ?? info.baths ?? info.bathrooms;
-    const code = info.unit_code || u.unit_code || u.code || info.unit || '';
-    const rent = info.unitMarketRent || info.monthlyRent || u.market_rent || u.rent || '-';
-    return {
-      name: info.unit || u.name || u.unit_code || '-',
-      location: info.location || info.address || info.property || '-',
-      type: u.unit_type || info.unit_type || 'Apartment',
-      beds: beds != null && beds !== '' ? `${beds} Bed` : '-',
-      baths: baths != null && baths !== '' ? `${baths} Bath` : '-',
-      rent,
-      code: code || '-',
-      occupancy: u.occupancy_status || info.unit_status || 'Occupied',
-      activeLeases: u.active_leases_label || '1 Active Lease',
-      id: info.unitcode || info.unit_id || u.id || u.code || code
-    };
-  }
-
-  get leasePreview() {
-    const info = this.leaseInfo || {};
-    const name =
-      info.renewedFrom ||
-      info.previous_lease_name ||
-      info.active_lease ||
-      (info.id ? `Lease - ${info.id}- ${info.property || ''}`.trim() : '') ||
-      '-';
-    const start =
-      info.previous_start_date ||
-      info.startDate ||
-      info.start_date ||
-      info.from_date ||
-      '';
-    const end =
-      info.previous_end_date ||
-      info.endDate ||
-      info.end_date ||
-      info.to_date ||
-      '';
-    const rawStatus =
-      info.previous_lease_status ||
-      info.lease_status ||
-      info.status_name ||
-      info.status;
-    const status =
-      !rawStatus || /^\d+$/.test(String(rawStatus).trim())
-        ? 'Completed'
-        : String(rawStatus);
-    const days = info.previous_days_left ?? info.leaseDaysLeft ?? info.days_left;
-    return {
-      name,
-      status,
-      property: info.property || '-',
-      rent: info.previous_monthly_rent || info.monthlyRent || info.monthly_rent || '-',
-      dateRange: start && end ? `${start} - ${end}` : start || end || '-',
-      daysLeft:
-        days != null && days !== ''
-          ? String(days).toLowerCase().includes('day')
-            ? String(days)
-            : `${days} days left`
-          : '-',
-      id: info.renewed_from_id || info.previous_lease_id || info.renewedFromId || info.id || this.leaseId
-    };
-  }
-
-  toggleEntityPreview(type: 'tenant' | 'property' | 'unit' | 'lease', event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.showActionMenu = false;
-    const trigger = event.currentTarget as HTMLElement;
-    if (this.activeEntityPreview === type) {
-      this.closeEntityPreview();
-      return;
-    }
-    this.activeEntityPreview = type;
-    this.previewTriggerEl = trigger;
-    this.updatePreviewPosition(trigger);
-    document.body.classList.add('lease-preview-open');
-    // Ensure portal runs after *ngIf paints (ViewChild setter + delayed backup)
-    queueMicrotask(() => this.portPreviewToBody());
-    setTimeout(() => this.portPreviewToBody(), 0);
-  }
-
-  /** Move preview under <body> and keep it above page chrome / sticky thead. */
-  private portPreviewToBody(el?: HTMLElement | null): void {
-    const preview =
-      el ||
-      (document.querySelector('body > .lease-preview') as HTMLElement | null) ||
-      (document.querySelector('app-lease-detail .lease-preview') as HTMLElement | null);
-    if (!preview) {
-      return;
-    }
-    if (preview.parentElement !== document.body) {
-      document.body.appendChild(preview);
-    }
-    // Inline !important beats trapped stacking contexts / encapsulation gaps
-    preview.style.setProperty('position', 'fixed', 'important');
-    preview.style.setProperty('z-index', '20000', 'important');
-    if (this.previewPanelStyle?.['top']) {
-      preview.style.setProperty('top', this.previewPanelStyle['top'], 'important');
-    }
-    if (this.previewPanelStyle?.['left']) {
-      preview.style.setProperty('left', this.previewPanelStyle['left'], 'important');
-    }
-    preview.style.setProperty('width', '320px', 'important');
-    preview.style.setProperty('max-width', 'calc(100vw - 24px)', 'important');
-  }
-
-  ngOnDestroy(): void {
-    document.body.classList.remove('lease-preview-open');
-    document.querySelectorAll('body > .lease-preview').forEach((node) => node.remove());
-  }
-
-  private closeEntityPreview(): void {
-    this.activeEntityPreview = null;
-    this.previewPanelStyle = null;
-    this.previewTriggerEl = null;
-    document.body.classList.remove('lease-preview-open');
-  }
-
-  private updatePreviewPosition(trigger: HTMLElement): void {
-    const card = trigger.closest('.lease-info-card') as HTMLElement | null;
-    const cardRect = (card || trigger).getBoundingClientRect();
-    const triggerRect = trigger.getBoundingClientRect();
-    const popoverWidth = 320;
-    const gap = 12;
-    const viewportPad = 12;
-
-    // Stay below the fixed page header (.app-header h-16 / z-49) — not under it
-    const headerEl = document.querySelector('.app-header') as HTMLElement | null;
-    const headerBottom = headerEl
-      ? Math.ceil(headerEl.getBoundingClientRect().bottom)
-      : 64;
-    const minTop = headerBottom + 8;
-
-    let left = cardRect.right + gap;
-    let top = triggerRect.top - 8;
-
-    if (left + popoverWidth > window.innerWidth - viewportPad) {
-      left = Math.max(viewportPad, cardRect.left - popoverWidth - gap);
-    }
-    const maxTop = window.innerHeight - viewportPad - 360;
-    top = Math.min(Math.max(minTop, top), Math.max(minTop, maxTop));
-
-    this.previewPanelStyle = {
-      position: 'fixed',
-      top: `${Math.round(top)}px`,
-      left: `${Math.round(left)}px`,
-      zIndex: '20000',
-      width: '320px',
-      maxWidth: 'calc(100vw - 24px)'
-    };
-    this.portPreviewToBody();
-  }
-
-  viewEntity(type: 'tenant' | 'property' | 'unit' | 'lease', event?: Event): void {
-    event?.preventDefault();
-    event?.stopPropagation();
-    this.closeEntityPreview();
-    switch (type) {
-      case 'tenant': {
-        const code = this.tenantPreview.code;
-        this.router.navigate(code ? ['/contacts/tenants', code] : ['/contacts/tenants']);
-        break;
-      }
-      case 'property': {
-        const code = this.propertyPreview.code;
-        this.router.navigate(code ? ['/properties', code] : ['/properties']);
-        break;
-      }
-      case 'unit': {
-        const id = this.unitPreview.id;
-        this.router.navigate(id ? ['/units', id] : ['/units']);
-        break;
-      }
-      case 'lease': {
-        const id = this.leasePreview.id;
-        if (id) {
-          this.router.navigate(['/leases', id]);
-        }
-        break;
-      }
-    }
-  }
-
-  editEntity(type: 'tenant', event?: Event): void {
-    event?.preventDefault();
-    event?.stopPropagation();
-    this.closeEntityPreview();
-    const code = this.tenantPreview.code;
-    this.router.navigate(code ? ['/contacts/tenants/edit-tenant', code] : ['/contacts/tenants']);
-  }
-
   initializeTabs() {
 
     this.tabs = [
@@ -720,35 +388,10 @@ export class LeaseDetailComponent implements OnInit, OnDestroy {
 
   handleTabChange(tabKey: string) {
     this.activeTab = tabKey;
-    this.showActionMenu = false;
-    this.closeEntityPreview();
   }
 
   editLease() {
-    this.showActionMenu = false;
     this.router.navigate(['/leases/edit-lease', this.leaseId]);
-  }
-
-  onLeaseAction(action: 'edit' | 'approval' | 'attachment' | 'note' | 'activity' | 'archive') {
-    this.showActionMenu = false;
-    switch (action) {
-      case 'edit':
-        this.editLease();
-        break;
-      case 'attachment':
-        this.activeTab = 'attachments';
-        setTimeout(() => this.detailLayout?.openModal(), 0);
-        break;
-      case 'note':
-        this.activeTab = 'notes';
-        setTimeout(() => this.detailLayout?.openModal(), 0);
-        break;
-      case 'approval':
-      case 'activity':
-      case 'archive':
-      default:
-        break;
-    }
   }
 
   goBack() {

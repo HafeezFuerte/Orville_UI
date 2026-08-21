@@ -1,0 +1,203 @@
+<div>
+  <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h3 class="ov-page-title">Requests</h3>
+      <p class="ov-page-sub">Track, assign and resolve maintenance requests across your properties.</p>
+    </div>
+    <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+      <button type="button" class="ov-btn ov-btn-ghost">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+        Export
+      </button>
+      <button type="button" class="ov-btn ov-btn-primary">
+        <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+        Create Request
+      </button>
+    </div>
+  </div>
+
+  <div class="ov-kpi-row mb-5">
+    <div class="ov-kpi">
+      <span class="ov-kpi__badge">Total Requests</span>
+      <div class="ov-kpi__val">{{ metrics.total }}</div>
+      <div class="ov-kpi__sub">{{ metrics.totalSub }}</div>
+    </div>
+    <div class="ov-kpi">
+      <span class="ov-kpi__badge">Open</span>
+      <div class="ov-kpi__val">{{ metrics.open }}</div>
+      <div class="ov-kpi__sub">{{ metrics.openSub }}</div>
+    </div>
+    <div class="ov-kpi">
+      <span class="ov-kpi__badge">Awaiting Approval</span>
+      <div class="ov-kpi__val">{{ metrics.awaiting }}</div>
+      <div class="ov-kpi__sub">{{ metrics.awaitingSub }}</div>
+    </div>
+    <div class="ov-kpi">
+      <span class="ov-kpi__badge">Response Due</span>
+      <div class="ov-kpi__val">{{ metrics.due }}</div>
+      <div class="ov-kpi__sub">{{ metrics.dueSub }}</div>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="flex flex-col gap-3 border-b border-defaultborder px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Requests List</h5>
+      <div class="overflow-x-auto" role="tablist" aria-label="Request status">
+        <div class="ov-seg ov-seg--solid !w-max max-w-none">
+          <button
+            type="button"
+            *ngFor="let tab of statusTabs"
+            class="ov-seg__btn"
+            [class.is-active]="statusFilter === tab"
+            (click)="setStatusFilter(tab)">
+            {{ tab }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
+      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
+        <label class="sr-only" for="request-search">Search</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input id="request-search" type="text" class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+      </div>
+      <div class="ov-toolbar__btns">
+        <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
+          <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+          Filter
+        </button>
+        <div class="relative" data-requests-columns (click)="$event.stopPropagation()">
+          <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
+          </button>
+          <app-column-menu
+            *ngIf="showColumnDropdown"
+            [columns]="tableColumns"
+            (toggle)="toggleColumn($event)"
+            (toggleAll)="toggleAllColumns($event)"
+            (closed)="showColumnDropdown = false">
+          </app-column-menu>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto px-5 pb-0 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="paginatedRows"
+        [loading]="false"
+        [hasActions]="false"
+        [showPaginator]="false"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+            <a *ngSwitchCase="'title'" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
+            <span *ngSwitchCase="'priority'" class="req-chip" [ngClass]="priorityClass(row.priority)">
+              {{ row.priority }}
+            </span>
+            <span *ngSwitchCase="'status'" class="req-chip" [ngClass]="statusClass(row.status)">
+              {{ row.status }}
+            </span>
+            <span *ngSwitchCase="'source'" class="req-chip req-chip--soft">
+              {{ row.source }}
+            </span>
+            <div *ngSwitchCase="'contact'" class="flex items-center gap-2">
+              <span class="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
+                {{ row.contactInitials }}
+              </span>
+              <span class="text-defaulttextcolor">{{ row.contactName }}</span>
+            </div>
+            <div *ngSwitchCase="'details'" class="requests-details" [attr.title]="row.details">
+              {{ row.details }}
+            </div>
+            <div *ngSwitchCase="'action'" class="requests-action" data-requests-action
+              (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+                [attr.aria-expanded]="openRowActionId === row.id"
+                (mousedown)="$event.stopPropagation()"
+                (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+            </div>
+            <span *ngSwitchDefault>{{ row[col.key] }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <div class="ov-page">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed menu outside the card so table overflow never breaks the card layout -->
+  <div *ngIf="openRowActionId && rowMenuStyle"
+    class="requests-row-menu"
+    role="menu"
+    data-requests-action
+    [ngStyle]="rowMenuStyle"
+    (click)="$event.stopPropagation()">
+    <button type="button" role="menuitem" class="requests-row-menu__item"
+      (click)="closeRowAction()">View</button>
+    <button type="button" role="menuitem" class="requests-row-menu__item"
+      (click)="closeRowAction()">Edit</button>
+  </div>
+
+  <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
+        <label class="ov-label">Title</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterTitle" placeholder="Enter title">
+      </div>
+      <div class="flex flex-col">
+        <label class="ov-label">Status</label>
+        <select class="ov-input" [(ngModel)]="filterStatus">
+          <option [ngValue]="null">All</option>
+          <option *ngFor="let status of statusOptions" [ngValue]="status">{{ status }}</option>
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="ov-label">Priority</label>
+        <select class="ov-input" [(ngModel)]="filterPriority">
+          <option [ngValue]="null">All</option>
+          <option *ngFor="let priority of priorityOptions" [ngValue]="priority">{{ priority }}</option>
+        </select>
+      </div>
+    </div>
+  </app-filter-drawer>
+</div>

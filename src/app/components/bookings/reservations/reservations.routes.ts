@@ -10,11 +10,6 @@ export const reservationsRoutes: Routes = [
     loadComponent: () => import('./create-new-reservation/reservation-add.component').then((m) => m.ReservationAddComponent)
   },
   {
-    path: 'flat-reservations',
-    redirectTo: '/bookings/flat-reservations',
-    pathMatch: 'full'
-  },
-  {
     path: ':id',
     loadComponent: () => import('./reservation-detail/reservation-detail.component').then((m) => m.ReservationDetailComponent)
   }

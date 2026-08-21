@@ -32,7 +32,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Task and Maintenance',
     items: [
-      { label: 'Request', icon: icon('checkup-list.svg') },
+      { label: 'Request', icon: icon('checkup-list.svg'), route: '/facility/requests' },
       { label: 'Word Order', icon: icon('wrench.svg'), route: '/facility/work-orders/create' },
       { label: 'Quotation', icon: icon('cash-banknote.svg') },
       { label: 'Preventive Maintenance', icon: icon('calendar-time.svg') },
@@ -81,8 +81,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
     title: 'Booking',
     items: [
       { label: 'Space', icon: icon('space.svg'), route: '/bookings/spaces/new' },
-      { label: 'Reservation', icon: icon('calendar-event.svg'), route: '/bookings/reservations/new' },
-      { label: 'Flat Reservation', icon: icon('calendar-event.svg'), route: '/bookings/flat-reservations' }
+      { label: 'Reservation', icon: icon('calendar-event.svg'), route: '/bookings/reservations/new' }
     ]
   },
   {
@@ -94,7 +93,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Helpdesk',
     items: [
-      { label: 'Tickets', icon: icon('tickets.svg') }
+      { label: 'Tickets', icon: icon('tickets.svg'), route: '/facility/tickets/create' }
     ]
   },
   {

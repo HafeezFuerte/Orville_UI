@@ -48,7 +48,6 @@ export class SidebarComponent {
   createOverlayOpen = false;
   settingsMenuItems: Menu[] = [];
   isSettingsMode = false;
-  private sideNavLoaded = false;
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -114,30 +113,22 @@ export class SidebarComponent {
   }
 
  
-  ngOnInit(): void {
-    this.store.select(selectCurrentUser).subscribe((data) => {
-      this.loggedInEmpId = data?.userId;
-      if (this.loggedInEmpId) {
-        this.loadSideNav();
-      }
-    });
-  }
-
-  private loadSideNav(): void {
-    if (this.sideNavLoaded) {
-      return;
-    }
-    this.sideNavLoaded = true;
-
-    const body = {
-      userid: this.loggedInEmpId,
-      company_id: 1,
-      clientId: '74BB6922',
-      source: 'web',
-      search_keyword: 'string'
-    };
-
-    this.commonServices.getSideNav(body).subscribe((res: any) => {
+  ngOnInit(): void { 
+   
+    this.store.select(selectCurrentUser).subscribe(data => {
+        this.loggedInEmpId = data?.userId;
+      });
+    const body = {  
+  "userid": this.loggedInEmpId,
+  "company_id": 1,
+  "clientId": "74BB6922",
+  "source": "web", 
+  "search_keyword": "string"
+};
+    
+    //this.spinner.show();
+    this.commonServices.getSideNav(body).subscribe((res: any) => { 
+      //this.spinner.hide();
       if (res["statusCode"] == "200") {
         // ✅ CORRECT ARRAY EXTRACTION
         const modules: Module[] = Array.isArray(res?.objResult)
@@ -154,12 +145,11 @@ export class SidebarComponent {
           // 🟢 Flatten logic: If only ONE module and ONE group, show pages directly
           const singleModule = modules[0];
           const singleGroup = singleModule.menuGroup[0];
-          const flatParentTitle = singleGroup.mainMenuName || singleModule.moduleName;
           
           this.menuItems = singleGroup.pages?.map((page: PageMenu) => {
             const normalizedName = page.menuName.trim();
-            const path = this.resolveMenuPath(normalizedName, flatParentTitle, page.url);
-
+            const path = this.resolveMenuPath(normalizedName, singleModule.moduleName, page.url);
+ 
             return {
               title: page.menuName,
               type: 'link',
@@ -169,10 +159,6 @@ export class SidebarComponent {
               selected: false,
             };
           }) || [];
-
-          if (this.isBookingsMenuContext(singleModule.moduleName, singleGroup.mainMenuName, this.menuItems)) {
-            this.menuItems = this.withFlatReservationsChild(this.menuItems);
-          }
         } else {
           // 🔵 Standard multi-level logic
           this.menuItems = modules.map((module: Module) => this.mapModuleToMenu(module));
@@ -203,6 +189,10 @@ export class SidebarComponent {
             const [portalModule] = this.menuItems.splice(portalIndex, 1);
             this.menuItems.unshift(portalModule);
           }
+
+          // Hide Help Desk; move Ticket under Facility; match Figma Facility order
+          this.menuItems = this.moveHelpDeskTicketsUnderFacility(this.menuItems);
+          this.menuItems = this.reorderFacilityChildren(this.menuItems);
         }
 
         // Add Settings menu item at the end
@@ -215,7 +205,6 @@ export class SidebarComponent {
           selected: false
         });
 
-        this.menuItems = this.finalizeMenuItems(this.menuItems);
         this.originalMenuItems = [...this.menuItems];
 
         this.ParentActive();
@@ -233,26 +222,7 @@ export class SidebarComponent {
         switcherArrowFn();
         checkHoriMenu();
       }
-    });
-  }
-
-  private finalizeMenuItems(items: any[]): any[] {
-    return items.map((item) => {
-      const next = { ...item };
-      if (next.type === 'link') {
-        const resolved = this.resolveMenuPath(String(next.title || ''), undefined, next.path);
-        if (resolved) {
-          next.path = resolved;
-        }
-      }
-      if (next.children?.length) {
-        next.children = this.finalizeMenuItems(next.children);
-        if (this.isBookingsMenuContext(undefined, next.title, next.children)) {
-          next.children = this.withFlatReservationsChild(next.children);
-        }
-      }
-      return next;
-    });
+    }) 
   }
 
 
@@ -300,25 +270,23 @@ export class SidebarComponent {
           children: this.withCommissionsAllChild([]),
         };
       }
-      if (this.isBookingsParent(normalizedName)) {
+      const path = this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases';
+      if (this.isLeaseModule(normalizedName)) {
         return {
           title: module.moduleName,
           type: 'sub',
           selected: false,
           active: false,
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
-          children: this.withFlatReservationsChild([]),
-        };
-      }
-      // Lease Management is a direct link — no single-item submenu
-      if (this.isLeaseModule(normalizedName)) {
-        return {
-          title: module.moduleName,
-          type: 'link',
-          path: this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
-          icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
-          active: false,
-          selected: false,
+          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          children: [
+            {
+              title: 'Leases',
+              type: 'link',
+              path,
+              active: false,
+              selected: false,
+            },
+          ],
         };
       }
 
@@ -335,21 +303,6 @@ export class SidebarComponent {
     let children = pages.map((page) => this.mapPageToChild(page, module.moduleName));
     if (this.isCommissionsParent(normalizedName)) {
       children = this.withCommissionsAllChild(children);
-    }
-    if (this.isBookingsMenuContext(normalizedName, undefined, children)) {
-      children = this.withFlatReservationsChild(children);
-    }
-
-    // Flatten Lease Management when API only returns one lease page
-    if (this.isLeaseModule(normalizedName) && children.length === 1) {
-      return {
-        title: module.moduleName,
-        type: 'link',
-        path: children[0].path || this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
-        icon: this.moduleIconMap[normalizedName] || 'bx bx-layer',
-        active: false,
-        selected: false,
-      };
     }
 
     return {
@@ -412,26 +365,6 @@ export class SidebarComponent {
     'leases manaement': '/leases',
     'leases management': '/leases',
     'lease management': '/leases',
-    'flat-reservations': '/bookings/flat-reservations',
-    '/flat-reservations': '/bookings/flat-reservations',
-    'bookings/flat-reservations': '/bookings/flat-reservations',
-    '/bookings/flat-reservations': '/bookings/flat-reservations',
-    'bookings/reservations/flat-reservations': '/bookings/flat-reservations',
-    '/bookings/reservations/flat-reservations': '/bookings/flat-reservations',
-    'rules-guide': '/community/rules-guides',
-    '/rules-guide': '/community/rules-guides',
-    'rules-guides': '/community/rules-guides',
-    '/rules-guides': '/community/rules-guides',
-    'rules/guide': '/community/rules-guides',
-    '/rules/guide': '/community/rules-guides',
-    'community/rules-guide': '/community/rules-guides',
-    '/community/rules-guide': '/community/rules-guides',
-    'community/rules': '/community/rules-guides',
-    '/community/rules': '/community/rules-guides',
-    'community/guides': '/community/rules-guides',
-    '/community/guides': '/community/rules-guides',
-    'community/rules-guides': '/community/rules-guides',
-    '/community/rules-guides': '/community/rules-guides',
   };
 
   private urlNameMap: { [key: string]: string } = {
@@ -464,6 +397,11 @@ export class SidebarComponent {
     'Templates': '/inspections/templates',
     'Broadcasts': '/broadcasts',
     'Work Orders': '/facility/work-orders',
+    'Work Order': '/facility/work-orders',
+    'Requests': '/facility/requests',
+    'Request': '/facility/requests',
+    'Tickets': '/facility/tickets',
+    'Ticket': '/facility/tickets',
     'Assets': '/facility/assets',
     'Insights': '/insights',
     'Reports': '/reports',
@@ -485,29 +423,25 @@ export class SidebarComponent {
     'Collection Requests': '/collection-requests',
     'Reminders': '/reminders',
     'Reminder': '/reminders',
-    'Events': '/community/events',
-    'Event': '/community/events',
-    'Promotions': '/community/promotions',
-    'Promotion': '/community/promotions',
-    'Rules/Guide': '/community/rules-guides',
-    'Rules / Guide': '/community/rules-guides',
-    'Rules/Guides': '/community/rules-guides',
-    'Rules / Guides': '/community/rules-guides',
-    'Rule/Guide': '/community/rules-guides',
-    'Rule / Guide': '/community/rules-guides',
-    'Rules': '/community/rules-guides',
-    'Guide': '/community/rules-guides',
-    'Guides': '/community/rules-guides',
-    'Community': '/community/events',
     'Bookings': '/bookings/reservations',
     'Booking': '/bookings/reservations',
     'Spaces': '/bookings/spaces',
     'Space': '/bookings/spaces',
     'Reservations': '/bookings/reservations',
     'Reservation': '/bookings/reservations',
-    'Flat Reservation': '/bookings/flat-reservations',
-    'Flat Reservations': '/bookings/flat-reservations',
-    'Flat Reservation Calendar': '/bookings/flat-reservations',
+    'Events': '/community/events',
+    'Event': '/community/events',
+    'Promotions': '/community/promotions',
+    'Promotion': '/community/promotions',
+    'Rules / Guide': '/community/rules-guides',
+    'Rules/Guide': '/community/rules-guides',
+    'Rules Guide': '/community/rules-guides',
+    'Rules & Guides': '/community/rules-guides',
+    'Rules and Guides': '/community/rules-guides',
+    'Rules & Guide': '/community/rules-guides',
+    'Rules Guides': '/community/rules-guides',
+    'Guides': '/community/rules-guides',
+    'Community': '/community/events',
   };
 
   private isAccountingParent(parentTitle?: string): boolean {
@@ -518,87 +452,182 @@ export class SidebarComponent {
     return name === 'ams' || name.includes('account');
   }
 
-  private isBookingsParent(parentTitle?: string): boolean {
-    if (!parentTitle) {
-      return false;
-    }
-    const name = parentTitle.trim().toLowerCase();
-    return name.includes('booking');
+  private isCommissionsParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return name === 'commissions' || name === 'commission';
   }
 
-  private isBookingsMenuContext(moduleName?: string, groupName?: string, children?: any[]): boolean {
-    if (this.isBookingsParent(moduleName) || this.isBookingsParent(groupName)) {
-      return true;
-    }
-    if (!children?.length) {
-      return false;
-    }
-    return children.some((child) => String(child?.path || '').startsWith('/bookings/'));
+  private isHelpDeskMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    return name === 'helpdesk' || name === 'helpdesks';
   }
 
-  private flatReservationsPath = '/bookings/flat-reservations';
-
-  private resolveFlatReservationPath(menuName: string, fallbackUrl?: string): string | null {
-    const name = (menuName || '').trim().toLowerCase();
-    if (name.includes('flat reservation')) {
-      return this.flatReservationsPath;
-    }
-    const raw = (fallbackUrl || '').trim();
-    if (!raw) {
-      return null;
-    }
-    const normalized = raw.toLowerCase().replace(/\/+$/, '');
-    if (
-      normalized === 'flat-reservations' ||
-      normalized === '/flat-reservations' ||
-      normalized.endsWith('/flat-reservations') ||
-      normalized.includes('flat-reservation') ||
-      normalized.includes('bookings/reservations/flat-reservations')
-    ) {
-      return this.flatReservationsPath;
-    }
-    return null;
+  private isFacilityMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return name === 'facility' || name === 'facilities';
   }
 
-  private withFlatReservationsChild(children: any[]): any[] {
-    const normalized = children.map((child) => {
-      const title = String(child?.title || '').toLowerCase();
-      const path = String(child?.path || '').trim().replace(/\/+$/, '');
-      if (title.includes('flat reservation')) {
-        return { ...child, path: this.flatReservationsPath };
+  private isTicketMenu(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return name === 'ticket' || name === 'tickets';
+  }
+
+  /** Desired Facility submenu order (Figma / product IA). */
+  private readonly facilityChildOrder: string[] = [
+    'requests',
+    'work order',
+    'tickets',
+    'quotations',
+    'preventive maintenance',
+    'assets',
+    'party/inventory',
+    'purchase order',
+  ];
+
+  private normalizeFacilityChildKey(title?: string): string {
+    return (title || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/work orders?\b/, 'work order')
+      .replace(/\btickets?\b/, 'tickets')
+      .replace(/quotation(s)?\b/, 'quotations')
+      .replace(/preventive[\s-]?maintenance/, 'preventive maintenance')
+      .replace(/party[\s_/&-]*inventory/, 'party/inventory')
+      .replace(/parts?[\s_/&-]*inventory/, 'party/inventory')
+      .replace(/purchase[\s-]?orders?\b/, 'purchase order');
+  }
+
+  private facilityChildSortIndex(title?: string): number {
+    const key = this.normalizeFacilityChildKey(title);
+    const idx = this.facilityChildOrder.indexOf(key);
+    return idx === -1 ? this.facilityChildOrder.length + 1 : idx;
+  }
+
+  /** Reorder Facility children to match product order; leave unknown items at the end. */
+  private reorderFacilityChildren(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+    const facilityIndex = items.findIndex((item) => this.isFacilityMenu(item.title));
+    if (facilityIndex < 0) {
+      return items;
+    }
+
+    const facility = { ...items[facilityIndex] };
+    const children = [...(facility.children || [])].map((child) => {
+      // Display label for tickets matches the design ("Tickets")
+      if (this.isTicketMenu(child.title)) {
+        return { ...child, title: 'Tickets', path: '/facility/tickets' };
       }
-      if (
-        path === 'flat-reservations' ||
-        path === '/flat-reservations' ||
-        (path.endsWith('/flat-reservations') && path !== this.flatReservationsPath)
-      ) {
-        return { ...child, path: this.flatReservationsPath };
+      // Design uses singular "Work Order"
+      const key = this.normalizeFacilityChildKey(child.title);
+      if (key === 'work order' && (child.title || '').toLowerCase().includes('orders')) {
+        return { ...child, title: 'Work Order' };
       }
       return child;
     });
 
-    const alreadyListed = normalized.some((child) => {
-      return String(child?.path || '').replace(/\/+$/, '') === this.flatReservationsPath;
+    children.sort((a, b) => {
+      const diff = this.facilityChildSortIndex(a.title) - this.facilityChildSortIndex(b.title);
+      if (diff !== 0) {
+        return diff;
+      }
+      return (a.title || '').localeCompare(b.title || '');
     });
-    if (alreadyListed) {
-      return normalized;
-    }
 
-    return [
-      ...normalized,
-      {
-        title: 'Flat Reservations',
-        type: 'link',
-        path: this.flatReservationsPath,
-        active: false,
-        selected: false,
-      },
-    ];
+    facility.type = 'sub';
+    facility.children = children;
+    facility.path = undefined;
+
+    const next = [...items];
+    next[facilityIndex] = facility;
+    return next;
   }
 
-  private isCommissionsParent(parentTitle?: string): boolean {
-    const name = (parentTitle || '').trim().toLowerCase();
-    return name === 'commissions' || name === 'commission';
+  /**
+   * Hide Help Desk as a top-level item and attach its Ticket child(ren) under Facility.
+   * Preserves API paths on Ticket links.
+   */
+  private moveHelpDeskTicketsUnderFacility(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    const helpDeskItems = items.filter((item) => this.isHelpDeskMenu(item.title));
+    if (!helpDeskItems.length) {
+      return items;
+    }
+
+    const ticketChildren: Menu[] = [];
+    for (const helpDesk of helpDeskItems) {
+      const kids = (helpDesk.children || []).filter((child) => this.isTicketMenu(child.title));
+      if (kids.length) {
+        ticketChildren.push(...kids);
+      } else if (helpDesk.type === 'link' || this.isTicketMenu(helpDesk.title)) {
+        ticketChildren.push({
+          title: 'Tickets',
+          type: 'link',
+          path: helpDesk.path || '',
+          icon: helpDesk.icon,
+          active: false,
+          selected: false,
+        });
+      } else if ((helpDesk.children || []).length) {
+        ticketChildren.push(...(helpDesk.children as Menu[]));
+      } else {
+        ticketChildren.push({
+          title: 'Tickets',
+          type: 'link',
+          path: helpDesk.path || '',
+          icon: helpDesk.icon,
+          active: false,
+          selected: false,
+        });
+      }
+    }
+
+    const withoutHelpDesk = items.filter((item) => !this.isHelpDeskMenu(item.title));
+    if (!ticketChildren.length) {
+      return withoutHelpDesk;
+    }
+
+    const facilityIndex = withoutHelpDesk.findIndex((item) => this.isFacilityMenu(item.title));
+    if (facilityIndex < 0) {
+      return withoutHelpDesk;
+    }
+
+    const facility = { ...withoutHelpDesk[facilityIndex] };
+    const existingChildren = [...(facility.children || [])];
+    const existingTicketTitles = new Set(
+      existingChildren
+        .filter((c) => this.isTicketMenu(c.title))
+        .map((c) => (c.title || '').trim().toLowerCase())
+    );
+
+    for (const ticket of ticketChildren) {
+      const key = (ticket.title || 'Tickets').trim().toLowerCase();
+      if (existingTicketTitles.has(key) || existingTicketTitles.has('ticket') || existingTicketTitles.has('tickets')) {
+        continue;
+      }
+      existingChildren.push({
+        ...ticket,
+        title: 'Tickets',
+        type: 'link',
+        path: '/facility/tickets',
+        active: false,
+        selected: false,
+      });
+      existingTicketTitles.add('tickets');
+    }
+
+    facility.type = 'sub';
+    facility.children = existingChildren;
+    facility.path = undefined;
+
+    const next = [...withoutHelpDesk];
+    next[facilityIndex] = facility;
+    return next;
   }
 
   private isReportMenu(menuName: string): boolean {
@@ -615,16 +644,36 @@ export class SidebarComponent {
   }
 
   /** Accounting reports are a different product from Rental Reports at /reports. */
+  private isCommunityParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return name === 'community' || name.includes('community');
+  }
+
+  /** Map API menu labels under Community to static frontend routes. */
+  private resolveCommunityPath(menuName: string): string {
+    const name = (menuName || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!name || name === 'community') {
+      return '/community/events';
+    }
+    if (name.includes('event')) {
+      return '/community/events';
+    }
+    if (name.includes('promo')) {
+      return '/community/promotions';
+    }
+    if (
+      name.includes('rule') ||
+      name.includes('guide') ||
+      name.includes('rules/guide') ||
+      name.includes('rules / guide')
+    ) {
+      return '/community/rules-guides';
+    }
+    return '';
+  }
+
   private resolveMenuPath(menuName: string, parentTitle?: string, fallbackUrl?: string): string {
     const normalizedName = (menuName || '').trim();
-    const flatReservationPath = this.resolveFlatReservationPath(normalizedName, fallbackUrl);
-    if (flatReservationPath) {
-      return flatReservationPath;
-    }
-    const rulesGuidePath = this.resolveRulesGuidePath(normalizedName, fallbackUrl);
-    if (rulesGuidePath) {
-      return rulesGuidePath;
-    }
     if (this.isAccountingParent(parentTitle) && this.isReportMenu(normalizedName)) {
       return '/accounting/reports';
     }
@@ -640,6 +689,12 @@ export class SidebarComponent {
         return '/commissions/landlord';
       }
     }
+    if (this.isCommunityParent(parentTitle)) {
+      const communityPath = this.resolveCommunityPath(normalizedName);
+      if (communityPath) {
+        return communityPath;
+      }
+    }
 
     let path = this.urlNameMap[normalizedName];
     if (!path) {
@@ -647,6 +702,12 @@ export class SidebarComponent {
       const matchingKey = Object.keys(this.urlNameMap).find((key) => key.toLowerCase() === lowerName);
       if (matchingKey) {
         path = this.urlNameMap[matchingKey];
+      }
+    }
+    if (!path) {
+      const communityPath = this.resolveCommunityPath(normalizedName);
+      if (communityPath) {
+        path = communityPath;
       }
     }
     if (!path && fallbackUrl) {
@@ -658,48 +719,6 @@ export class SidebarComponent {
     }
 
     return path || '';
-  }
-
-  private rulesGuidesPath = '/community/rules-guides';
-
-  private resolveRulesGuidePath(menuName: string, fallbackUrl?: string): string | null {
-    const name = (menuName || '').trim().toLowerCase().replace(/\s+/g, ' ');
-    if (
-      name === 'guides' ||
-      name === 'guide' ||
-      name === 'rules' ||
-      name === 'rules/guide' ||
-      name === 'rules / guide' ||
-      name === 'rules/guides' ||
-      name === 'rules / guides' ||
-      name === 'rule/guide' ||
-      name === 'rule / guide' ||
-      (name.includes('rule') && name.includes('guide'))
-    ) {
-      return this.rulesGuidesPath;
-    }
-
-    const raw = (fallbackUrl || '').trim();
-    if (!raw) {
-      return null;
-    }
-    const normalized = raw.toLowerCase().replace(/\/+$/, '');
-    if (
-      normalized === 'rules-guide' ||
-      normalized === '/rules-guide' ||
-      normalized === 'rules-guides' ||
-      normalized === '/rules-guides' ||
-      normalized === 'rules/guide' ||
-      normalized === '/rules/guide' ||
-      normalized.endsWith('/rules-guide') ||
-      normalized.endsWith('/rules-guides') ||
-      normalized.endsWith('/rules/guide') ||
-      normalized.includes('rules-guide') ||
-      normalized.includes('rules/guide')
-    ) {
-      return this.rulesGuidesPath;
-    }
-    return null;
   }
 
   private figmaIconMap: { [key: string]: string } = {

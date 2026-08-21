@@ -11,27 +11,8 @@ export const communityRoutes: Routes = [
   },
   {
     path: 'rules-guides',
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./rules-guides/rules-guides-list/rules-guides.component').then(
-            (m) => m.RulesGuidesComponent
-          )
-      },
-      {
-        path: 'new',
-        loadComponent: () =>
-          import('./rules-guides/create-guide/guide-add.component').then((m) => m.GuideAddComponent)
-      },
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./rules-guides/guide-detail/guide-detail.component').then(
-            (m) => m.GuideDetailComponent
-          )
-      }
-    ]
+    loadChildren: () =>
+      import('./rules-guides/rules-guides.routes').then((m) => m.rulesGuidesRoutes)
   },
   { path: 'rules-guide', redirectTo: 'rules-guides', pathMatch: 'full' },
   { path: 'rules', redirectTo: 'rules-guides', pathMatch: 'full' },

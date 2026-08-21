@@ -18,7 +18,7 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
 
   actionOptions = [
     { label: 'Edit Promotion', asset: 'assets/images/action-menu/pencil.svg', danger: false },
-    { label: 'Preview', asset: 'assets/images/action-menu/files.svg', danger: false },
+    { label: 'Preview', asset: 'assets/images/broadcasts/eye.svg', danger: false },
     { label: 'Delete', asset: 'assets/images/action-menu/trash.svg', danger: true }
   ];
 

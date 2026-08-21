@@ -149,20 +149,22 @@ export class DetailPageLayoutComponent {
 
   checkCommonTab() {
     const key = this.selectedTab?.key?.toLowerCase().replace(/[\s-_]/g, '') || '';
-    return key !== 'units' && 
-           key !== 'notes' && 
-           key !== 'attachments' && 
-           key !== 'edocuments' && 
-           key !== 'commonarea' && 
-           key !== 'parkings' && 
-           key !== 'rooms' && 
-           key !== 'broadcasts' &&
-           key !== 'notices' &&
-           key !== 'financials' &&
-           key !== 'inventory' &&
-           key !== 'workorders' &&
-           key !== 'legal' &&
-           key !== 'inspections';
+    // Only divert away from the overview slot when a dedicated ContentChild template is projected.
+    // Pages that keep tab bodies inside #overview (e.g. Tenant/Cheques on lease detail) still work.
+    const hasDedicated =
+      (key === 'units' && !!this.units) ||
+      (key === 'rooms' && !!this.units) ||
+      (key === 'notes' && !!this.notes) ||
+      ((key === 'attachments' || key === 'edocuments') && !!this.attachments) ||
+      (key === 'commonarea' && !!this.commonarea) ||
+      (key === 'parkings' && !!this.parkings) ||
+      (key === 'financials' && !!this.financials) ||
+      (key === 'inventory' && !!this.inventory) ||
+      (key === 'workorders' && !!this.workorders) ||
+      (key === 'legal' && !!this.legal) ||
+      (key === 'inspections' && !!this.inspections) ||
+      ((key === 'broadcasts' || key === 'notices') && !!this.broadcasts);
+    return !hasDedicated;
   }
   changeTab(tab: DetailTab) {
     this.activeTab = tab.key;

@@ -2,6 +2,36 @@ import { Routes } from '@angular/router';
 
 export const facilityRoutingModule: Routes = [
   {
+    path: 'requests',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./requests/requests-list/requests.component').then((m) => m.FacilityRequestsComponent),
+      }
+    ]
+  },
+  {
+    path: 'tickets',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./tickets/tickets-list/tickets.component').then((m) => m.FacilityTicketsComponent),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./tickets/create-ticket/create-ticket.component').then((m) => m.CreateTicketComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./tickets/ticket-detail/ticket-detail.component').then((m) => m.TicketDetailComponent),
+      }
+    ]
+  },
+  {
     path: 'work-orders',
     children: [
       {
@@ -50,7 +80,10 @@ export const facilityRoutingModule: Routes = [
           import('./asset-management/asset-detail/asset-detail.component').then((m) => m.AssetDetailComponent),
       }
     ]
+  },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'requests'
   }
 ];
-
-// Force recompile 1

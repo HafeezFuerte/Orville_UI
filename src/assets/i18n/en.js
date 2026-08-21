@@ -612,7 +612,6 @@ exports.locale = {
                 "btnBack": "Back",
                 "lblDanger": "Danger",
                 "msgConfirmDelete": "Are you sure you want to delete this row?",
-                "msgConfirmDeleteReservation": "Are you sure you want to delete this reservation?",
                 "lblNum1": "1",
                 "lblNum2": "2",
                 "lblNum3": "3",

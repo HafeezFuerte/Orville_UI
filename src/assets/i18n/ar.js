@@ -571,7 +571,6 @@ exports.locale = {
                 "btnDelete": "حذف",
                 "lblDanger": "خطر",
                 "msgConfirmDelete": "هل أنت متأكد أنك تريد حذف هذا الصف؟",
-                "msgConfirmDeleteReservation": "هل أنت متأكد أنك تريد حذف هذا الحجز؟",
                 "lblNum1": "١",
                 "lblNum2": "٢",
                 "lblNum3": "٣",

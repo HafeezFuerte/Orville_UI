@@ -1,0 +1,252 @@
+<div class="ov-form ov-add-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Tickets">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Ticket</h3>
+        <p class="ov-page-sub">
+          Facility / Tickets /
+          <span class="ov-page-sub__current">New Ticket</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">Create Ticket</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
+
+      <!-- Ticket details — Figma 2886:79705 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Ticket details</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--1">
+            <div>
+              <label class="ov-label">Title <span class="text-danger">*</span></label>
+              <ng-select [items]="titleOptions" [(ngModel)]="selectedTitle"
+                placeholder="Select escalation" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Description</label>
+              <textarea [(ngModel)]="description" rows="4"
+                placeholder="Description the work to be done..."
+                class="ov-input !h-auto min-h-[100px] resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rental — Figma 2886:79886 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Rental</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <ng-select [items]="properties" [(ngModel)]="selectedProperty"
+                placeholder="Select Property" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Unit</label>
+              <ng-select [items]="units" [(ngModel)]="selectedUnit"
+                placeholder="Select Unit" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Common Area</label>
+              <ng-select [items]="commonAreas" [(ngModel)]="selectedCommonArea"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Contact</label>
+              <ng-select [items]="contacts" [(ngModel)]="selectedContact"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details — Figma 2886:80218 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Details</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--1">
+            <div>
+              <label class="ov-label">Source <span class="text-danger">*</span></label>
+              <ng-select [items]="sources" [(ngModel)]="selectedSource"
+                placeholder="Select Source" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+          <div class="ov-fields ov-fields--3 mt-4">
+            <div>
+              <label class="ov-label">Date</label>
+              <div class="ct-date">
+                <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="ct-date__icon" />
+                <input type="text" class="ov-input ct-date__input" [(ngModel)]="dateValue"
+                  placeholder="DD/MM/YYYY" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Visiting Slot</label>
+              <ng-select [items]="visitingSlots" [(ngModel)]="selectedVisitingSlot"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Priority</label>
+              <ng-select [items]="priorities" [(ngModel)]="selectedPriority"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media — Figma 2886:80624 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Media</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div>
+            <label class="ov-label">Add Photos</label>
+            <div class="ct-dropzone" (click)="photoInput.click()">
+              <input #photoInput type="file" multiple class="hidden" accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                (change)="onMediaSelected($event, 'photos')" />
+              <img src="assets/images/rules-guides/upload.svg" alt="" width="35" height="35" class="ct-dropzone__icon" />
+              <p class="ct-dropzone__title">Drag and drop your file here</p>
+              <p class="ct-dropzone__sub">or browse from your device</p>
+              <button type="button" class="ct-browse-btn"
+                (click)="$event.stopPropagation(); photoInput.click()">Browse files</button>
+              <p class="ct-dropzone__hint">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="ov-label">Add Videos</label>
+            <div class="ct-dropzone" (click)="videoInput.click()">
+              <input #videoInput type="file" multiple class="hidden" accept="video/*"
+                (change)="onMediaSelected($event, 'videos')" />
+              <img src="assets/images/rules-guides/upload.svg" alt="" width="35" height="35" class="ct-dropzone__icon" />
+              <p class="ct-dropzone__title">Drag and drop your file here</p>
+              <p class="ct-dropzone__sub">or browse from your device</p>
+              <button type="button" class="ct-browse-btn"
+                (click)="$event.stopPropagation(); videoInput.click()">Browse files</button>
+              <p class="ct-dropzone__hint">Only Videos are allowed</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="ov-label">Other Media(s)</label>
+            <div class="ct-dropzone" (click)="otherInput.click()">
+              <input #otherInput type="file" multiple class="hidden"
+                accept=".pdf,.doc,.docx,.txt,.xlsx,application/pdf"
+                (change)="onMediaSelected($event, 'other')" />
+              <img src="assets/images/rules-guides/upload.svg" alt="" width="35" height="35" class="ct-dropzone__icon" />
+              <p class="ct-dropzone__title">Drag and drop your file here</p>
+              <p class="ct-dropzone__sub">or browse from your device</p>
+              <button type="button" class="ct-browse-btn"
+                (click)="$event.stopPropagation(); otherInput.click()">Browse files</button>
+              <p class="ct-dropzone__hint">Only PDF, DOC, DOCX, TXT, and XLSX files are allowed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="ov-add-layout__aside">
+
+      <!-- Department and Agent — Figma 2886:81483 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Department and Agent</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--1">
+            <div>
+              <label class="ov-label">Department</label>
+              <ng-select [items]="departments" [(ngModel)]="selectedDepartment"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">User</label>
+              <ng-select [items]="users" [(ngModel)]="selectedUser"
+                placeholder="Select User" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket Category — Figma 2890:84295 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Ticket Category</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--1">
+            <div>
+              <label class="ov-label">Ticket Category <span class="text-danger">*</span></label>
+              <ng-select [items]="categories" [(ngModel)]="selectedCategory"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Sub Category</label>
+              <ng-select [items]="subCategories" [(ngModel)]="selectedSubCategory"
+                placeholder="Select" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags — Figma 2886:81540 -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Tags</h6>
+        </div>
+        <div class="ov-card__body">
+          <label class="ov-label">Tags</label>
+          <div class="ct-tags">
+            <span *ngFor="let tag of tags; let i = index" class="ct-tags__chip">
+              {{ tag }}
+              <button type="button" class="ct-tags__remove" (click)="removeTag(i)" aria-label="Remove tag">
+                <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" />
+              </button>
+            </span>
+            <input type="text" class="ct-tags__input" [(ngModel)]="newTag"
+              (keydown)="onTagInputKey($event)"
+              placeholder="Enter" />
+          </div>
+          <p class="ct-tags__hint">Press Tab or Comma to add multiple tags</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">Create Ticket</button>
+  </div>
+</div>
