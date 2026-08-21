@@ -6,9 +6,12 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
 import {
-  INVOICE_KPIS,
-  INVOICE_ROWS,
+  INVOICE_KPIS, 
   INVOICE_STATUS_TABS,
   InvoiceRow,
   InvoiceStatus
@@ -22,57 +25,70 @@ import {
   styleUrl: './invoices.component.scss'
 })
 export class InvoicesComponent {
-  constructor(private router: Router) {}
-
+  constructor(private router: Router,
+    private commonService: CommonService,
+    private commontabservice : Common_TabsService,
+    private toastr:ToastrService) {}
+    isLoading:boolean=false;
   searchQuery = '';
   statusFilter: 'All' | InvoiceStatus = 'All';
   statusTabs = INVOICE_STATUS_TABS;
   kpis = INVOICE_KPIS;
+  currentUser: AuthPayload | null = this.commonService.getCurrentUser();
   isDrawerOpen = false;
   showColumnDropdown = false;
   openActionId: string | null = null;
-
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
   filterTo = '';
   filterAccount = '';
   filterStatus: InvoiceStatus | null = null;
   statusOptions: InvoiceStatus[] = INVOICE_STATUS_TABS.filter((tab): tab is InvoiceStatus => tab !== 'All');
-
-  pageIndex = 0;
-  pageSize = 5;
-  allRows = INVOICE_ROWS;
+  metrics = {
+    revenue: 'AED 4.3 M',
+    totalLeases: 24183,
+    activeLeases: 18420,
+    draftLeases: 3240,
+    expiringLeases: 420
+  };
+  pageIndex = 0; 
+  allRows:any= [];
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'to', label: 'To', visible: true },
-    { key: 'unitCommonArea', label: 'Unit / Common Area', visible: true },
-    { key: 'invoiceNumber', label: 'Invoice Number', visible: true },
-    { key: 'chequeNo', label: 'Cheque no', visible: true },
-    { key: 'invoiceDate', label: 'Invoice Date', visible: true },
-    { key: 'invoiceType', label: 'Invoice Type', visible: true },
-    { key: 'account', label: 'Account', visible: true },
-    { key: 'currency', label: 'Currency', visible: true },
-    { key: 'propertyName', label: 'Property Name', visible: true },
-    { key: 'propertyId', label: 'Property ID', visible: true },
-    { key: 'leaseId', label: 'Lease ID', visible: true },
-    { key: 'leaseStatus', label: 'Lease Status', visible: true, useTemplate: true },
-    { key: 'note', label: 'Note', visible: true },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true },
+    { key: 'cheque_status', label: 'Status', visible: true, useTemplate: true },
+    { key: 'Tenant', label: 'To', visible: true, useTemplate: true },
+    { key: 'unit_code', label: 'Unit / Common Area', visible: true , useTemplate: true},
+    { key: 'invoice_no', label: 'Invoice Number', visible: true, useTemplate: true },
+    { key: 'cheque_no', label: 'Cheque no', visible: true },
+    { key: 'invoice_date', label: 'Invoice Date', visible: true },
+    { key: 'invoice_type', label: 'Invoice Type', visible: true },
+    { key: 'account_name', label: 'Account', visible: true },
+    { key: 'currency_symbol', label: 'Currency', visible: true },
+    { key: 'property_name', label: 'Property Name', visible: true, useTemplate: true },
+    { key: 'property_code', label: 'Property ID', visible: true },
+    { key: 'lease_id', label: 'Lease ID', visible: true },
+    { key: 'lease_status', label: 'Lease Status', visible: true, useTemplate: true },
+    { key: 'notes', label: 'Note', visible: true },
     { key: 'workOrder', label: 'Work Order', visible: true },
-    { key: 'amount', label: 'Amount', visible: true },
-    { key: 'grossAmount', label: 'Gross Amount', visible: true },
-    { key: 'paid', label: 'Paid', visible: true },
-    { key: 'paymentVia', label: 'Payment Via', visible: true },
-    { key: 'moneyHeldBy', label: 'Money Held By', visible: true },
-    { key: 'ddRefNo', label: 'DD Ref No', visible: true },
-    { key: 'bankName', label: 'Bank Name', visible: true },
+    { key: 'total_amount', label: 'Amount', visible: true },
+    { key: 'total_amount', label: 'Gross Amount', visible: true },
+    { key: 'paid_amount', label: 'Paid', visible: true },
+    { key: 'payment_type', label: 'Payment Via', visible: true },
+    { key: 'money_held', label: 'Money Held By', visible: true },
+    { key: 'reference_no', label: 'DD Ref No', visible: true },
+    { key: 'bank_name', label: 'Bank Name', visible: true },
     { key: 'internalStatus', label: 'Internal Status', visible: true },
     { key: 'archived', label: 'Archived', visible: true },
-    { key: 'dueDate', label: 'Due Date', visible: true },
+    { key: 'due_date', label: 'Due Date', visible: true },
     { key: 'paidDate', label: 'Paid Date', visible: true },
     { key: 'cheques', label: 'Cheque(s)', visible: true },
     { key: 'days', label: 'Days', visible: true },
-    { key: 'writeAmountOff', label: 'Write Amount Off', visible: true },
-    { key: 'createdBy', label: 'Created By', visible: true },
+    { key: 'round_off', label: 'Write Amount Off', visible: true },
+    { key: 'createdby', label: 'Created By', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
@@ -83,10 +99,79 @@ export class InvoicesComponent {
   get allColumnsSelected(): boolean {
     return this.tableColumns.every((col) => col.visible !== false);
   }
+  getArabicLookupName(row:any,key:string){
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize; 
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize; 
+    this.loadinvoices();
+  }
+  loadinvoices() {
+    const filterList: any[] = [];
+    // if (this.activeStatusFilter && this.activeStatusFilter !== "All") {
+    //   filterList.push({ 'key': 'P.status', 'value': this.activeStatusFilter });
+    // }
+    // if (this.filterTenant) {
+    //   filterList.push({ 'key': 'tenant', 'value': this.filterTenant });
+    // }
+    // if (this.filterProperty) {
+    //   filterList.push({ 'key': 'property', 'value': this.filterProperty });
+    // }
+    // if (this.filterStatus) {
+    //   filterList.push({ 'key': 'P.status', 'value': this.filterStatus });
+    // }
 
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "INVOICES"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.invoices || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
   get filteredRows(): InvoiceRow[] {
     const q = this.searchQuery.trim().toLowerCase();
-    return this.allRows.filter((row) => {
+    return this.allRows.filter((row:any) => {
       if (this.statusFilter !== 'All' && row.status !== this.statusFilter) {
         return false;
       }
@@ -112,13 +197,13 @@ export class InvoicesComponent {
     });
   }
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
+  // get totalRecords(): number {
+  //   return this.filteredRows.length;
+  // }
 
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
+  // get totalPages(): number {
+  //   return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
+  // }
 
   get paginatedRows(): InvoiceRow[] {
     const start = this.pageIndex * this.pageSize;
@@ -210,29 +295,102 @@ export class InvoicesComponent {
     };
     return map[status] || 'inv-badge inv-badge--draft';
   }
-
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  loadMetrics() { 
+    this.commontabservice.getMasterByType({
+      typeId: 43,
+      filterid:0,
+       filterText: '',
+      filterText1: '' 
+    }).subscribe({
+      next: res => {
+        if(res['statusCode'] == 200){
+        let data = res.objResult.table[0]; 
+        if (data) {
+          this.metrics = {
+            totalLeases: data.total_leases !== undefined ? data.total_leases : this.metrics.totalLeases,
+            revenue: data.revene !== undefined ? this.currentUser?.currencyCode + ' ' + this.transform(data.revene) : this.metrics.revenue,
+            activeLeases: data.active_leases !== undefined ? data.active_leases : this.metrics.activeLeases,
+            draftLeases: data.draft !== undefined ? data.draft : this.metrics.draftLeases,
+            expiringLeases: data.expiring_leases !== undefined ? data.expiring_leases : this.metrics.expiringLeases
+          };
+        }
+      }
+      },
+      error: console.error
+    });
+ 
   }
-
+  
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadinvoices();
     }
   }
-
+  onPageSizeChange(): void {
+    this.pageNo = 0;
+    this.loadinvoices();
+  }
   nextPage(): void {
-    if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+    if (this.displayPage < (this.totalPages || 1)) {
+      this.pageNo++;
+      this.loadinvoices();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
+      this.pageNo = target;
+      this.loadinvoices();
     }
   }
+  transform(value: number, decimals: number = 2): string {
+    if (value === null || isNaN(value)) return value.toString();
+    if (value < 1000) return value.toString();
+
+    // Suffixes mapped by their mathematical tier (powers of 1000)
+    const suffixes = ['', 'K', 'M', 'B', 'T'];
+    const tier = Math.floor(Math.log10(Math.abs(value)) / 3);
+
+    // If the tier exceeds our array, default to the highest available suffix
+    const selectedTier = Math.min(tier, suffixes.length - 1);
+    
+    const suffix = suffixes[selectedTier];
+    const scale = Math.pow(10, selectedTier * 3);
+    const scaled = value / scale;
+
+    // Formats numbers cleanly (e.g., removes redundant .00 trailing zeros)
+    return scaled.toFixed(decimals).replace(/\.00$/, '') + suffix;
+  }
+  ngOnInit() {
+    
+    this.loadinvoices();
+    this.loadMetrics();
+    //this.loadLookup(24, 'tabs', 'lookup_name');
+  }
+  // onPageSizeChange(): void {
+  //   this.pageIndex = 0;
+  // }
+
+  // previousPage(): void {
+  //   if (this.pageIndex > 0) {
+  //     this.pageIndex--;
+  //   }
+  // }
+
+  // nextPage(): void {
+  //   if (this.displayPage < this.totalPages) {
+  //     this.pageIndex++;
+  //   }
+  // }
+
+  // goToPage(page: number): void {
+  //   const target = page - 1;
+  //   if (target >= 0 && target < this.totalPages) {
+  //     this.pageIndex = target;
+  //   }
+  // }
 
   @HostListener('document:click')
   onDocumentClick(): void {

@@ -53,16 +53,15 @@
       </h5>
     </div>
     <div class="ov-seg ov-seg--solid">
-      <button type="button" (click)="setStatusFilter('All')" class="ov-seg__btn"
-        [class.is-active]="activeStatusFilter === 'All'">All</button>
-      <button type="button" (click)="setStatusFilter('Active')" class="ov-seg__btn"
-        [class.is-active]="activeStatusFilter === 'Active'">Active</button>
-      <button type="button" (click)="setStatusFilter('Draft')" class="ov-seg__btn"
-        [class.is-active]="activeStatusFilter === 'Draft'">Draft</button>
-      <button type="button" (click)="setStatusFilter('Completed')" class="ov-seg__btn"
-        [class.is-active]="activeStatusFilter === 'Completed'">Completed</button>
-      <button type="button" (click)="setStatusFilter('Pending Approvals')" class="ov-seg__btn"
-        [class.is-active]="activeStatusFilter === 'Pending Approvals'">Pending</button>
+      <button *ngFor="let tab of tabs" 
+      (click)="onTabChange(tab)"
+      [class.is-active]="activeStatusFilter === tab.id"
+      [class.is-active]="activeStatusFilter === tab.id"
+      [class.text-gray-500]="activeStatusFilter !== tab.id"
+      [class.border-transparent]="activeStatusFilter !== tab.id"
+      class="ov-seg__btn">
+      {{ tab.name }}
+    </button>  
     </div>
   </div>
 

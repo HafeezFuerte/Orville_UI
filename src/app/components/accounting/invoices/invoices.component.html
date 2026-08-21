@@ -72,41 +72,66 @@
     </div>
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
-        <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container [ngSwitch]="col.key">
-            <ng-container *ngSwitchCase="'id'">
-              <a class="ov-link" [routerLink]="['/accounting/invoices', row.id]">{{ row.id }}</a>
-            </ng-container>
-            <ng-container *ngSwitchCase="'status'">
-              <span [class]="statusClass(row.status)">{{ row.status }}</span>
-            </ng-container>
-            <ng-container *ngSwitchCase="'leaseStatus'">
-              <span class="ov-status ov-status--active">{{ row.leaseStatus }}</span>
-            </ng-container>
-            <ng-container *ngSwitchCase="'action'">
-              <div class="relative inline-flex" (click)="$event.stopPropagation()">
-                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" aria-label="Row actions">
-                  <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
-                </button>
-                <div *ngIf="openActionId === row.id"
-                  class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
-                  <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                    (click)="viewInvoice(row.id)">View</button>
-                </div>
-              </div>
-            </ng-container>
+      <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="isLoading"
+      [hasActions]="false" [showPaginator]="false"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)">
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container [ngSwitch]="col.key">
+
+          <ng-container *ngSwitchCase="'code'">
+            <a [routerLink]="['/accounting/invoices/edit-invoice', row.code]" class="ov-link font-semibold">{{ row.code }}</a>
+          </ng-container> 
+          <ng-container *ngSwitchCase="'invoice_no'">
+            <a [routerLink]="['/accounting/invoices/edit-invoice', row.code]" class="ov-link font-semibold">{{ row.invoice_no }}</a>
+          </ng-container> 
+
+
+          <ng-container *ngSwitchCase="'Tenant'">
+            <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="ov-link font-semibold">{{ row.tenant }}</a>
           </ng-container>
-        </ng-template>
-      </app-shared-table>
+
+          <ng-container *ngSwitchCase="'property_name'">
+            <a [routerLink]="['/properties', row.property_code]" class="ov-link font-semibold">{{ row.property_name }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'unit_code'">
+            <a [routerLink]="['/units', row.unitcode]" class="ov-link font-semibold">{{ row.unit_code }}</a>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'cheque_status'">
+            <span class="ov-status"
+              [class.ov-status--active]="row.status_nm === 'Active'"
+              [class.ov-status--muted]="row.status_nm === 'Draft'"
+              [class.ov-status--soft]="row.status_nm === 'Completed'"
+              [class.ov-status--warning]="row.status_nm === 'Pending' || row.status_nm === 'Pending Approvals'"
+              [ngClass]="row.cheque_status_class || ''">
+              {{ getArabicLookupName(row, 'cheque_status') }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'total_amount'">
+            <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}} {{ row.total_amount }}</span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'action'">
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(row.lease_code, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionId === row.lease_code"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
+                  [routerLink]="['/leases', row.lease_code]"
+                  (click)="openActionId = null">View</a>
+              </div>
+            </div>
+          </ng-container>
+
+        </ng-container>
+      </ng-template>
+    </app-shared-table>
     </div>
 
     <div class="ov-page">

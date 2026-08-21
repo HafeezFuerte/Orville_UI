@@ -163,6 +163,7 @@ export class CreateLeaseComponent implements OnInit {
             if(res.objResult.table1){
               res.objResult.table1.forEach((element:any,index:number) => {
                 this.paymentSchedules.push({
+                  "includetax":element.includetax || false,
                   "Amount":element.amt || 0,
                   "AdvAmt":element.adv_amt || 0,  
                   "cheque_no":element.cheque_no,
@@ -282,6 +283,7 @@ export class CreateLeaseComponent implements OnInit {
     else{
       
       this.paymentSchedules.push({
+        "includetax":this.addpaymentbloc.includetax,
         "Amount":Number(this.addpaymentbloc.Amount.toFixed(2)),
         "AdvAmt":0,  
         "cheque_no":this.addpaymentbloc.cheque_no,

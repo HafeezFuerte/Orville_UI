@@ -17,12 +17,65 @@
       </div>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
-    <ng-container *ngIf="activeTab === 'Overview'">
+  <div class="flex gap-2 items-center mt-3 md:mt-0">
+    <ng-container>
       <div class="dropdown">
-        <button type="button" [attr.data-tooltip]="'Action Menu'" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
+        <button type="button" [attr.data-tooltip]="'Action Menu'" (click)="showActionMenu = !showActionMenu" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
           Action <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />
         </button>
+        <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+          <div class="ov-action-menu__list">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="!option.danger" type="button" role="menuitem"
+                class="ov-action-menu__item"
+                [class.ov-action-menu__item--danger-icon]="option.dangerIcon"
+                (click)="$event.stopPropagation(); onActionClick(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                  <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+          <div class="ov-action-menu__footer" *ngIf="hasDangerAction">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="option.danger" type="button" role="menuitem"
+                class="ov-action-menu__item ov-action-menu__item--danger"
+                (click)="$event.stopPropagation(); onActionClick(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                  <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+        </div> 
+      </div>
+      <div class="dropdown">
+        <button *ngIf="leaseInfo?.status==228 && approvalUser && approvalUser.user_code==currentUser?.userCode" type="button" [attr.data-tooltip]="'Action Menu'" (click)="showApprovalMenu = !showApprovalMenu" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
+          Approval Request <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />
+        </button>
+        <div *ngIf="showApprovalMenu" class="ov-action-menu" role="menu">
+          <div class="ov-action-menu__list">
+            <a role="menuitem" class="ov-action-menu__item"   (click)="OnApproveClick('Approve')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+              </span>
+              <span>Approve</span>
+            </a> 
+          </div>
+          <div class="ov-action-menu__footer">
+            <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="OnApproveClick('Reject')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
+              </span>
+              <span>Reject</span>
+            </button>
+          </div>
+        </div>
+
       </div>
       <button type="button" [attr.data-tooltip]="'Print Lease'" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover transition-all font-semibold shadow-sm flex items-center gap-1.5">
         <img src="assets/images/action-menu/printer.svg" alt="" width="14" height="14" /> Print Lease
@@ -68,9 +121,15 @@
         </div>
 
         <!-- Warning Message if Draft -->
-        <div *ngIf="leaseInfo.status === 'Draft'" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
+        <div *ngIf="leaseInfo.status === 176" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
           <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Lease in Draft Mode</p>
           <p class="m-0 text-[10px] leading-relaxed text-gray-600">Your lease is in draft mode. Once you activate it, the invoices will be posted in the accounting.</p>
+        </div>
+        <div *ngIf="leaseInfo.status === 228" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
+          <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Lease in Approval Mode</p>
+          <p class="m-0 text-[10px] leading-relaxed text-gray-600">Lease Approval is pending by 
+            <span class="font-bold text-gray-800">{{approvalUser && approvalUser.approver}}.</span>
+             </p>
         </div>
 
         <!-- Lease Information -->
@@ -312,12 +371,12 @@
           </div>
 
           <!-- Invoice Schedules Grid -->
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
+          <div *ngIf="paymentSchedules.length>0" class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Invoice Schedule</h6>
+              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Payment Schedules</h6>
             </div>
             <div class="p-4">
-              <app-shared-table [columns]="invoiceColumns" [data]="invoiceSchedules" [hasActions]="true">
+              <app-shared-table [columns]="invoiceColumns" [data]="paymentSchedules" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
                     <ng-container *ngSwitchCase="'amt'">
@@ -348,24 +407,33 @@
           </div>
 
           <!-- Cheques Table directly below Invoice Schedules -->
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
+          <div *ngIf="chequesData.length>0" class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Cheques</h6>
+              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Invoices</h6>
             </div>
             <div class="p-4">
               <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'amt'">
+                      <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
+                    </ng-container> 
+                    <ng-container *ngSwitchCase="'rcp_no'">
+                      <span [routerLink]="['/accounting/invoices/edit-invoice', row?.invoicecode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.rcp_no }}</span>
+                   </ng-container>
+                    <ng-container *ngSwitchCase="'Tenant'">
+                      <span [routerLink]="['/contacts/tenants/edit-tenant', row?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.tenant }}</span>
+                   </ng-container>
+                   <ng-container *ngSwitchCase="'unit_code'">
+                    <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
+                 </ng-container>
+                    <ng-container *ngSwitchCase="'cheque_status'">
+                      <span  [ngClass]="row.cheque_status_class || ''" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">{{ getArabicLookupName(row,'cheque_status') }}</span>
+                       
                     </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Cleared'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Cleared</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'attachment'">
+                    <ng-container *ngSwitchCase="'attachment_path'">
                       <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
-                        <i class="ri-file-pdf-line"></i> {{ row.attachment }}
+                        <i class="ri-file-pdf-line"></i> {{ row.attachment_path }}
                       </a>
                     </ng-container>
                   </ng-container>
@@ -446,16 +514,25 @@
               <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'amt'">
+                      <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
+                    </ng-container> 
+                    <ng-container *ngSwitchCase="'rcp_no'">
+                      <span [routerLink]="['/accounting/invoices/edit-invoice', row?.invoicecode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.rcp_no }}</span>
+                   </ng-container>
+                    <ng-container *ngSwitchCase="'Tenant'">
+                      <span [routerLink]="['/contacts/tenants/edit-tenant', row?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.tenant }}</span>
+                   </ng-container>
+                   <ng-container *ngSwitchCase="'unit_code'">
+                    <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
+                 </ng-container>
+                    <ng-container *ngSwitchCase="'cheque_status'">
+                      <span  [ngClass]="row.cheque_status_class || ''" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">{{ getArabicLookupName(row,'cheque_status') }}</span>
+                       
                     </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Cleared'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Cleared</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'attachment'">
+                    <ng-container *ngSwitchCase="'attachment_path'">
                       <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
-                        <i class="ri-file-pdf-line"></i> {{ row.attachment }}
+                        <i class="ri-file-pdf-line"></i> {{ row.attachment_path }}
                       </a>
                     </ng-container>
                   </ng-container>
@@ -666,5 +743,27 @@
       </div>
     </div>
   </div>
-
+  <div *ngIf="showApprovalModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="ov-modal">
+      <div class="ov-modal__header">
+        <div>
+          <h4 class="ov-modal__title">{{ApprovalModalText}}</h4>
+          <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
+        </div>
+        <button type="button" (click)="showApprovalModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
+          <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+        </button>
+      </div>
+      <div class="ov-modal__body flex flex-col gap-4"> 
+        <div>
+          <label class="ov-label">Notes</label>
+          <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" placeholder="Enter Comments....."></textarea>
+        </div>
+      </div>
+      <div class="ov-modal__footer">
+        <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
