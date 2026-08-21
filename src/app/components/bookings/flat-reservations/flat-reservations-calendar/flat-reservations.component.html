@@ -1,0 +1,459 @@
+<div>
+  <div class="page-header !py-4">
+    <div>
+      <h3 class="ov-page-title">Flat Reservations</h3>
+      <p class="ov-page-sub">Booking / <span class="ov-page-sub__current">Flat Reservations</span></p>
+    </div>
+  </div>
+
+  <div class="frc-shell box mb-5 overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="frc-top">
+      <div class="frc-top__nav">
+        <button type="button" class="ov-btn ov-btn-ghost frc-today" (click)="goToToday()">Today</button>
+        <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="shiftRange(-1)" aria-label="Previous">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="frc-chevron frc-chevron--prev">
+        </button>
+        <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="shiftRange(1)" aria-label="Next">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="frc-chevron frc-chevron--next">
+        </button>
+        <h4 class="frc-title">{{ rangeLabel }}</h4>
+      </div>
+      <div class="frc-top__tools">
+        <div class="ov-search frc-search">
+          <label class="sr-only" for="flat-reservation-search">Search</label>
+          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
+          <input id="flat-reservation-search" type="text" class="ov-input ov-search__input"
+            [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()" placeholder="Search guest, flat, or phone">
+        </div>
+        <div class="ov-action-wrap">
+          <button type="button" class="ov-btn ov-btn-ghost frc-view-btn" (click)="toggleViewMenu($event)"
+            [attr.aria-expanded]="showViewMenu">
+            {{ viewLabel }}
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14">
+          </button>
+          <div *ngIf="showViewMenu" class="ov-action-menu frc-view-menu" role="menu" (click)="$event.stopPropagation()">
+            <div class="ov-action-menu__list">
+              <button *ngFor="let item of views" type="button" role="menuitem" class="ov-action-menu__item"
+                [class.is-active]="view === item.id" (click)="setView(item.id)">
+                <span>{{ item.label }}</span>
+                <span class="frc-shortcut">{{ item.shortcut }}</span>
+              </button>
+            </div>
+            <div class="ov-action-menu__footer">
+              <button type="button" class="ov-action-menu__item" (click)="showCancelled = !showCancelled; onShowCancelledChange(); showViewMenu = false">
+                <span>{{ showCancelled ? '✓ ' : '' }}Show cancelled stays</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frc-body">
+      <aside class="frc-rail">
+        <button type="button" class="frc-create bg-white dark:bg-bodybg" (click)="openCreateBlank()">
+          <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18">
+          Create
+        </button>
+
+        <div class="frc-mini">
+          <div class="frc-mini__head">
+            <span>{{ miniLabel }}</span>
+            <div class="flex items-center">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare !h-7 !w-7" (click)="shiftMini(-1)" aria-label="Previous month">
+                <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" class="frc-chevron frc-chevron--prev">
+              </button>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare !h-7 !w-7" (click)="shiftMini(1)" aria-label="Next month">
+                <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" class="frc-chevron frc-chevron--next">
+              </button>
+            </div>
+          </div>
+          <div class="frc-mini__weekdays">
+            <span *ngFor="let day of weekdaysShort">{{ day }}</span>
+          </div>
+          <div class="frc-mini__grid">
+            <button
+              *ngFor="let day of miniDays; trackBy: trackByDayKey"
+              type="button"
+              class="frc-mini__day"
+              [class.is-muted]="!day.inMonth"
+              [class.is-today]="day.isToday"
+              [class.is-selected]="isAnchor(day) && !day.isToday"
+              (click)="selectDay(day)">
+              {{ day.dayNum }}
+            </button>
+          </div>
+        </div>
+
+        <div class="frc-cals">
+          <button type="button" class="frc-cals__toggle" (click)="propertiesOpen = !propertiesOpen">
+            My flats
+            <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12"
+              [class.frc-chevron--open]="propertiesOpen">
+          </button>
+          <div *ngIf="propertiesOpen" class="flex flex-col gap-3">
+            <div *ngFor="let group of propertyGroups; trackBy: trackByGroupName">
+              <p class="frc-cals__group">{{ group.name }}</p>
+              <label *ngFor="let flat of group.flats; trackBy: trackByFlatId" class="frc-check">
+                <input type="checkbox" [(ngModel)]="flatVisible[flat.id]" [name]="'flat-' + flat.id" (ngModelChange)="onFlatVisibilityChange()">
+                <span class="frc-dot" [ngClass]="'frc-dot--' + flatTone(flat.id)"></span>
+                <span>{{ flat.name }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="frc-main">
+        <ng-container *ngIf="view === 'month'">
+          <div class="frc-month-head">
+            <span *ngFor="let label of ['SUN','MON','TUE','WED','THU','FRI','SAT']">{{ label }}</span>
+          </div>
+          <div class="frc-month">
+            <div class="frc-month__week" *ngFor="let week of monthWeeks; trackBy: trackByWeekIndex" [style.min-height.px]="weekRowHeight(week)">
+              <button
+                *ngFor="let day of week.days; trackBy: trackByDayKey"
+                type="button"
+                class="frc-month__cell"
+                [class.is-muted]="!day.inMonth"
+                (dblclick)="openCreateOnDay(day, $event)">
+                <span class="frc-month__num" [class.is-today]="day.isToday" (click)="selectDay(day, 'day'); $event.stopPropagation()">{{ day.dayNum }}</span>
+              </button>
+              <div class="frc-month__events" [style.height.px]="weekRowHeight(week) - 38">
+                <button
+                  *ngFor="let bar of week.bars; trackBy: trackByBarStayId"
+                  type="button"
+                  class="frc-event"
+                  [class.frc-event--hidden]="bar.hidden"
+                  [ngClass]="'frc-event--' + flatTone(bar.stay.flatId)"
+                  [ngStyle]="barStyle(bar, 7)"
+                  (click)="onEventClick(bar.stay, $event)"
+                  (dblclick)="onEventDoubleClick(bar.stay, $event)">
+                  {{ eventLabel(bar.stay) }}
+                </button>
+                <button
+                  *ngIf="week.overflowCount > 0"
+                  type="button"
+                  class="frc-event-more"
+                  [style.top.px]="overflowTop(week.laneCount)"
+                  (click)="openWeekOverflow(week)">
+                  +{{ week.overflowCount }} more
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'day' || view === 'week' || view === 'days4'">
+          <div class="frc-timed" [style.--frc-cols]="timedDays.length">
+            <div class="frc-timed__head">
+              <div class="frc-timed__tz">{{ tzLabel }}</div>
+              <button
+                *ngFor="let day of timedDays; trackBy: trackByDayKey"
+                type="button"
+                class="frc-timed__day"
+                (click)="selectDay(day, 'day')">
+                <span>{{ day.weekday | uppercase }}</span>
+                <span class="frc-timed__num" [class.is-today]="day.isToday">{{ day.dayNum }}</span>
+              </button>
+            </div>
+            <div class="frc-allday" [style.--frc-cols]="timedDays.length">
+              <div class="frc-allday__label">All day</div>
+              <div class="frc-allday__track" [style.min-height.px]="allDayTrackHeight()">
+                <button
+                  *ngFor="let bar of allDayBars; trackBy: trackByBarStayId"
+                  type="button"
+                  class="frc-event"
+                  [class.frc-event--hidden]="bar.hidden"
+                  [ngClass]="'frc-event--' + flatTone(bar.stay.flatId)"
+                  [ngStyle]="barStyle(bar, timedDays.length)"
+                  (click)="onEventClick(bar.stay, $event)"
+                  (dblclick)="onEventDoubleClick(bar.stay, $event)">
+                  {{ eventLabel(bar.stay) }}
+                </button>
+                <button
+                  *ngIf="allDayOverflowCount > 0"
+                  type="button"
+                  class="frc-event-more"
+                  [style.top.px]="overflowTop(allDayLaneCount)"
+                  (click)="setView('schedule')">
+                  +{{ allDayOverflowCount }} more
+                </button>
+              </div>
+            </div>
+            <div class="frc-hours">
+              <div class="frc-hours__gutter">
+                <span *ngFor="let hour of hours" class="frc-hours__label">{{ hourLabel(hour) }}</span>
+              </div>
+              <div class="frc-hours__grid">
+                <div *ngFor="let day of timedDays; trackBy: trackByDayKey; let i = index" class="frc-hours__col"
+                  [class.is-drag]="isDragCell(i)"
+                  (mousedown)="onTimedMouseDown(i, $event)"
+                  (mouseenter)="onTimedMouseEnter(i)">
+                  <span *ngFor="let hour of hours" class="frc-hours__slot"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'year'">
+          <div class="frc-year">
+            <article *ngFor="let board of yearBoards" class="frc-year__board">
+              <button type="button" class="frc-year__title" (click)="openMonth(board.date)">{{ board.title }}</button>
+              <div class="frc-mini__weekdays">
+                <span *ngFor="let day of weekdaysShort">{{ day }}</span>
+              </div>
+              <div class="frc-mini__grid">
+                <button
+                  *ngFor="let day of board.days; trackBy: trackByDayKey"
+                  type="button"
+                  class="frc-mini__day"
+                  [class.is-muted]="!day.inMonth"
+                  [class.is-today]="day.isToday"
+                  [class.has-stay]="day.inMonth && staysOnDay(day.key)"
+                  (click)="selectDay(day, 'day')">
+                  {{ day.dayNum }}
+                </button>
+              </div>
+            </article>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'schedule'">
+          <div class="frc-agenda">
+            <div *ngIf="!agendaGroups.length" class="px-6 py-10 text-sm text-textmuted">No reservations in this range.</div>
+            <div *ngFor="let group of agendaGroups" class="frc-agenda__row">
+              <div class="frc-agenda__date">{{ group.heading }}</div>
+              <div class="frc-agenda__list">
+                <button *ngFor="let stay of group.stays; trackBy: trackByStayId" type="button" class="frc-agenda__item"
+                  (click)="onEventClick(stay, $event)" (dblclick)="onEventDoubleClick(stay, $event)">
+                  <span class="frc-dot" [ngClass]="'frc-dot--' + flatTone(stay.flatId)"></span>
+                  <span class="frc-agenda__when">All day</span>
+                  <span class="frc-agenda__name">{{ stay.guestName }}</span>
+                  <span class="frc-agenda__meta">{{ flatName(stay.flatId) }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showFormModal" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="flat-stay-form-title">
+  <div class="ov-modal ov-modal--lg" (click)="$event.stopPropagation()">
+    <div class="ov-modal__header">
+      <div>
+        <h6 class="ov-modal__title" id="flat-stay-form-title">{{ formMode === 'edit' ? 'Edit Reservation' : 'New Reservation' }}</h6>
+        <p class="ov-modal__sub">Guest stay on a flat for the selected dates.</p>
+      </div>
+      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="showFormModal = false" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
+      </button>
+    </div>
+    <div class="ov-modal__body">
+      <p *ngIf="formError" class="ov-modal__hint mb-3 text-danger">{{ formError }}</p>
+      <div class="ov-fields ov-fields--2">
+        <div>
+          <label class="ov-label">Guest name *</label>
+          <input type="text" class="ov-input" name="guestName" [(ngModel)]="form.guestName" placeholder="Enter">
+        </div>
+        <div>
+          <label class="ov-label">Phone</label>
+          <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter">
+        </div>
+        <div>
+          <label class="ov-label">Email</label>
+          <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter">
+        </div>
+        <div>
+          <label class="ov-label">Flat *</label>
+          <ng-select [(ngModel)]="form.flatId" [items]="flatSelectItems" bindValue="id" bindLabel="label"
+            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Start date *</label>
+          <div class="ov-date">
+            <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+            <input type="text" class="ov-input" name="checkIn" [(ngModel)]="form.checkIn"
+              mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">End date *</label>
+          <div class="ov-date">
+            <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+            <input type="text" class="ov-input" name="checkOut" [(ngModel)]="form.checkOut"
+              mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="DD/MM/YYYY">
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">Guests</label>
+          <input type="number" class="ov-input" name="guests" [(ngModel)]="form.guests" min="1">
+        </div>
+        <div>
+          <label class="ov-label">Status</label>
+          <ng-select [(ngModel)]="form.status" [items]="statusOptions"
+            class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Payment status</label>
+          <ng-select [(ngModel)]="form.paymentStatus" [items]="paymentOptions"
+            class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Total amount</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">AED</span>
+            <input type="number" class="ov-input" name="totalAmount" [(ngModel)]="form.totalAmount" placeholder="0.00">
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">Paid amount</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">AED</span>
+            <input type="number" class="ov-input" name="paidAmount" [(ngModel)]="form.paidAmount" placeholder="0.00">
+          </div>
+        </div>
+        <div class="ov-fields__full">
+          <label class="ov-label">Notes</label>
+          <textarea class="ov-input min-h-[88px]" name="notes" [(ngModel)]="form.notes" placeholder="Enter"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="ov-modal__footer">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showFormModal = false">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDetailModal && selectedStay" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="flat-stay-detail-title">
+  <div class="ov-modal ov-modal--lg frc-detail-modal" (click)="$event.stopPropagation()">
+    <div class="ov-modal__header frc-detail-modal__header">
+      <div class="min-w-0 flex-1">
+        <h6 class="ov-modal__title" id="flat-stay-detail-title">{{ selectedStay.guestName }}</h6>
+        <p class="ov-modal__sub">{{ selectedFlat?.name }} · {{ selectedFlat?.property }}</p>
+        <div class="frc-detail-modal__chips">
+          <span [class]="statusChip(selectedStay.status)">{{ selectedStay.status }}</span>
+          <span [class]="paymentChip(selectedStay.paymentStatus)">{{ selectedStay.paymentStatus }}</span>
+        </div>
+      </div>
+      <div class="flex shrink-0 items-start gap-2">
+        <div class="ov-action-wrap">
+          <button type="button" class="ov-btn ov-btn-ghost !h-9" (click)="toggleActionMenu($event)"
+            [attr.aria-expanded]="showActionMenu">
+            Action
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14">
+          </button>
+          <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+            <div class="ov-action-menu__list">
+              <ng-container *ngFor="let option of detailActions">
+                <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
+                  (click)="onDetailAction(option.label)">
+                  <span class="ov-action-menu__icon-box">
+                    <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                  </span>
+                  <span>{{ option.label }}</span>
+                </button>
+              </ng-container>
+            </div>
+            <div class="ov-action-menu__footer">
+              <ng-container *ngFor="let option of detailActions">
+                <button *ngIf="option.danger" type="button" role="menuitem"
+                  class="ov-action-menu__item ov-action-menu__item--danger" (click)="onDetailAction(option.label)">
+                  <span class="ov-action-menu__icon-box">
+                    <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                  </span>
+                  <span>{{ option.label }}</span>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="showDetailModal = false" aria-label="Close">
+          <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
+        </button>
+      </div>
+    </div>
+
+    <div class="ov-modal__body frc-detail-modal__body">
+      <div class="frc-detail-summary">
+        <div class="frc-detail-summary__item">
+          <span class="frc-detail-summary__label">Start date</span>
+          <span class="frc-detail-summary__value">{{ formatDate(selectedStay.checkIn) }}</span>
+        </div>
+        <div class="frc-detail-summary__divider" aria-hidden="true"></div>
+        <div class="frc-detail-summary__item">
+          <span class="frc-detail-summary__label">End date</span>
+          <span class="frc-detail-summary__value">{{ formatDate(selectedStay.checkOut) }}</span>
+        </div>
+        <div class="frc-detail-summary__meta">
+          <span>{{ stayNights(selectedStay) }} night{{ stayNights(selectedStay) === 1 ? '' : 's' }}</span>
+          <span>{{ selectedStay.guests }} guest{{ selectedStay.guests === 1 ? '' : 's' }}</span>
+        </div>
+      </div>
+
+      <div class="frc-detail-grid">
+        <section class="frc-detail-section">
+          <h6 class="frc-detail-section__title">Guest contact</h6>
+          <div class="frc-detail-section__rows">
+            <div class="frc-detail-row">
+              <span class="frc-detail-row__label">Phone</span>
+              <a *ngIf="selectedStay.phone; else noPhone" class="frc-detail-row__value frc-detail-row__link"
+                [href]="'tel:' + selectedStay.phone">{{ selectedStay.phone }}</a>
+              <ng-template #noPhone><span class="frc-detail-row__value">—</span></ng-template>
+            </div>
+            <div class="frc-detail-row">
+              <span class="frc-detail-row__label">Email</span>
+              <a *ngIf="selectedStay.email; else noEmail" class="frc-detail-row__value frc-detail-row__link"
+                [href]="'mailto:' + selectedStay.email">{{ selectedStay.email }}</a>
+              <ng-template #noEmail><span class="frc-detail-row__value">—</span></ng-template>
+            </div>
+          </div>
+        </section>
+
+        <section class="frc-detail-section">
+          <h6 class="frc-detail-section__title">Stay &amp; payment</h6>
+          <div class="frc-detail-section__rows">
+            <div class="frc-detail-row">
+              <span class="frc-detail-row__label">Flat</span>
+              <span class="frc-detail-row__value">{{ selectedFlat?.name }}</span>
+            </div>
+            <div class="frc-detail-row">
+              <span class="frc-detail-row__label">Total amount</span>
+              <span class="frc-detail-row__value">{{ amount(selectedStay.totalAmount) }}</span>
+            </div>
+            <div class="frc-detail-row">
+              <span class="frc-detail-row__label">Paid amount</span>
+              <span class="frc-detail-row__value">{{ amount(selectedStay.paidAmount) }}</span>
+            </div>
+            <div class="frc-detail-row" *ngIf="balanceDue(selectedStay) > 0">
+              <span class="frc-detail-row__label">Balance due</span>
+              <span class="frc-detail-row__value frc-detail-row__value--warning">{{ amount(balanceDue(selectedStay)) }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="frc-detail-notes">
+        <h6 class="frc-detail-section__title">Notes</h6>
+        <p class="frc-detail-notes__text">{{ selectedStay.notes || '—' }}</p>
+      </section>
+    </div>
+
+    <div class="ov-modal__footer">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="showDetailModal = false">Close</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="editFromDetail()">Edit reservation</button>
+    </div>
+  </div>
+</div>
+
+<app-delete-confirmation
+  *ngIf="showDeleteConfirm"
+  message="web.common.msgConfirmDeleteReservation"
+  (confirmed)="confirmDelete()"
+  (cancelled)="showDeleteConfirm = false">
+</app-delete-confirmation>

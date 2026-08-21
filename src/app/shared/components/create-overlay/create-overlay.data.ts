@@ -72,16 +72,17 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Community',
     items: [
-      { label: 'Event', icon: icon('calendar-event.svg') },
-      { label: 'Promotion', icon: icon('speakerphone.svg') },
-      { label: 'Rules / Guide', icon: icon('rules-guide.svg') }
+      { label: 'Event', icon: icon('calendar-event.svg'), route: '/community/events/new' },
+      { label: 'Promotion', icon: icon('speakerphone.svg'), route: '/community/promotions/new' },
+      { label: 'Rules / Guide', icon: icon('rules-guide.svg'), route: '/community/rules-guides/new' }
     ]
   },
   {
     title: 'Booking',
     items: [
       { label: 'Space', icon: icon('space.svg'), route: '/bookings/spaces/new' },
-      { label: 'Reservation', icon: icon('calendar-event.svg'), route: '/bookings/reservations/new' }
+      { label: 'Reservation', icon: icon('calendar-event.svg'), route: '/bookings/reservations/new' },
+      { label: 'Flat Reservation', icon: icon('calendar-event.svg'), route: '/bookings/flat-reservations' }
     ]
   },
   {

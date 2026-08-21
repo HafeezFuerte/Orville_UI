@@ -10,7 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
     styleUrls: ['./delete-confirmation.component.scss']
 })
 export class DeleteConfirmationComponent {
-    @Input() isVisible: boolean = false;
+    @Input() isVisible: boolean = true;
     @Input() message: string = 'web.common.msgConfirmDelete';
 
     @Output() confirmed = new EventEmitter<void>();

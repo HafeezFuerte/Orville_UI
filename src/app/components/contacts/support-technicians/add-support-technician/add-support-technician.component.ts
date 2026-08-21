@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { FlatpickrModule } from 'angularx-flatpickr';
 import { ToastrService } from 'ngx-toastr';
 
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
@@ -19,8 +18,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
     ReactiveFormsModule,
     TranslateModule,
     NgSelectModule,
-    RouterModule,
-    FlatpickrModule
+    RouterModule
   ],
   templateUrl: './add-support-technician.component.html',
   styleUrl: './add-support-technician.component.scss'
@@ -46,16 +44,97 @@ export class AddSupportTechnicianComponent implements OnInit {
   states: any[] = [];
   technicianTypes: any[] = [];
   categories: any[] = [];
-  docTypes = ['Trade License', 'Emirates ID', 'Passport'];
   existingTechnicians: any[] = [];
 
   // Form State
   displayAsCompany = false;
   assignment = false;
   qualifies = false;
-  
-  // Modal State
-  isAddDocModalOpen = false;
+
+  /** Presentation fields — Figma 991:7137 (fill existing save keys only) */
+  password = '';
+  emergencyPhone = '';
+  spokenLanguages: string[] = [];
+  timeZone: string | null = null;
+  roleId: number | null = 1;
+  departmentId: number | null = null;
+  displayAllTenants = false;
+
+  spokenLanguageOptions = [
+    'English', 'Arabic', 'Hindi', 'Urdu', 'French', 'Spanish', 'Tagalog', 'Malayalam'
+  ];
+
+  timeZones = [
+    'Asia/Dubai (GMT+4)',
+    'Asia/Riyadh (GMT+3)',
+    'Asia/Karachi (GMT+5)',
+    'Asia/Kolkata (GMT+5:30)',
+    'Europe/London (GMT+0)',
+    'America/New_York (GMT-5)'
+  ];
+
+  roles = [{ id: 1, name: 'Support Technician' }];
+
+  departments = [
+    { id: 1, name: 'Maintenance' },
+    { id: 2, name: 'Facilities' },
+    { id: 3, name: 'Operations' },
+    { id: 4, name: 'Customer Support' }
+  ];
+
+  /** Presentation-only email subscription checkboxes (Figma 991:7137) */
+  emailSubscriptions: { id: string; label: string; checked: boolean }[] = [
+    { id: 'agent_assigned', label: 'Agent Assigned to Unit', checked: false },
+    { id: 'assigned_ticket', label: 'Assigned Ticket Email', checked: false },
+    { id: 'cheque_bounced', label: 'Cheque Bounced Notification', checked: false },
+    { id: 'contract_ending', label: 'Contract Ending', checked: false },
+    { id: 'daily_summary', label: 'Daily summary', checked: false },
+    { id: 'delayed_inspection', label: 'Delayed Inspection Reminder Email', checked: false },
+    { id: 'delayed_rent', label: 'Delayed Rent by Tenant', checked: false },
+    { id: 'document_expiry', label: 'Document Expiry Email', checked: false },
+    { id: 'event_join', label: 'Event Join', checked: false },
+    { id: 'export_completed', label: 'Export Completed', checked: false },
+    { id: 'hold_payment', label: 'Hold Payment', checked: false },
+    { id: 'inspection_report', label: 'Inspection Report Email', checked: false },
+    { id: 'landlord_signed', label: 'Landlord have signed Contract', checked: false },
+    { id: 'lease_ending', label: 'Lease Ending Reminder Email', checked: false },
+    { id: 'lease_start', label: 'Lease Start', checked: false },
+    { id: 'manager_lease_completed', label: 'Manager Lease Completed', checked: false },
+    { id: 'manager_lease_end', label: 'Manager Lease End Email', checked: false },
+    { id: 'manager_new_ticket', label: 'Manager New Ticket Email', checked: false },
+    { id: 'manager_wo_reminder', label: 'Manager Work Order Reminder email', checked: false },
+    { id: 'new_approval', label: 'New approval request', checked: false },
+    { id: 'new_inspection', label: 'New inspection assigned email', checked: false },
+    { id: 'new_landlord', label: 'New Landlord Added Email', checked: false },
+    { id: 'new_lead', label: 'New Lead Added Email', checked: false },
+    { id: 'new_legal_case', label: 'New Legal Case Created', checked: false },
+    { id: 'new_legal_escalated', label: 'New Legal Case Escalated', checked: false },
+    { id: 'new_property', label: 'New Property Added Email', checked: false },
+    { id: 'new_reservation', label: 'New Reservation', checked: false },
+    { id: 'new_feedback', label: 'New System Feedback Created', checked: false },
+    { id: 'new_task_reminder', label: 'New task reminder email', checked: false },
+    { id: 'new_tenant', label: 'New Tenant Added Email', checked: false },
+    { id: 'new_unit', label: 'New Unit Added Email', checked: false },
+    { id: 'po_invoice', label: 'PO Invoice Reminder', checked: false },
+    { id: 'quotation_submission', label: 'Quotation Submission', checked: false },
+    { id: 'received_reservation', label: 'Received new Reservation', checked: false },
+    { id: 'reminder_notification', label: 'Reminder Notification email', checked: false },
+    { id: 'request_approved', label: 'Request Approved', checked: false },
+    { id: 'feedback_closed', label: 'System Feedback Closed', checked: false },
+    { id: 'tenant_feedback', label: 'Tenant has a new feedback', checked: false },
+    { id: 'ticket_note', label: 'Ticket Note Added Email', checked: false },
+    { id: 'upcoming_inspection', label: 'Upcoming Inspection Reminder Email', checked: false },
+    { id: 'upcoming_task', label: 'Upcoming task reminder email', checked: false },
+    { id: 'vendor_quotation_rejection', label: "Vendor's quotation rejection", checked: false },
+    { id: 'welcome_user', label: 'Welcome User Email', checked: false },
+    { id: 'wo_due', label: 'Work Order Due Reminder', checked: false },
+    { id: 'wo_emails', label: 'Work Order Emails', checked: false },
+    { id: 'wo_note_added', label: 'Work Order Note Added Email', checked: false },
+  ];
+
+  get allSubscriptionsSelected(): boolean {
+    return this.emailSubscriptions.length > 0 && this.emailSubscriptions.every(s => s.checked);
+  }
 
   technicianData = {
     email_address: '',
@@ -504,7 +583,7 @@ export class AddSupportTechnicianComponent implements OnInit {
       id: this.isEditMode ? this.technicianDbId : 0,
       username: this.technicianData.username || '',
       profileImage_path: '',
-      password: '', // default empty
+      password: this.password || '',
       technician_name: this.technicianData.first_name + ' ' + this.technicianData.last_name,
       first_name: this.technicianData.first_name,
       last_name: this.technicianData.last_name,
@@ -512,12 +591,12 @@ export class AddSupportTechnicianComponent implements OnInit {
       phone: this.technicianData.mobile_no || '',
       phone_number: this.technicianData.mobile_no || '',
       country_id: Number(this.technicianData.country_id) || 0,
-      role_id: 0, // default
-      department: Number(this.technicianData.technician_type) || 0,
-      display_all_tenants: false,
+      role_id: Number(this.roleId) || 0,
+      department: Number(this.departmentId) || Number(this.technicianData.technician_type) || 0,
+      display_all_tenants: !!this.displayAllTenants,
       technician_actions: Array.isArray(this.technicianData.category) ? this.technicianData.category.join(',') : (this.technicianData.category || ''),
-      spoken_languages: '',
-      time_zone: ''
+      spoken_languages: Array.isArray(this.spokenLanguages) ? this.spokenLanguages.join(',') : '',
+      time_zone: this.timeZone || ''
     };
 
     const formData = new FormData();
@@ -556,7 +635,8 @@ export class AddSupportTechnicianComponent implements OnInit {
     });
   }
 
-  toggleDocModal(state: boolean) {
-    this.isAddDocModalOpen = state;
+  toggleAllSubscriptions(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.emailSubscriptions.forEach(s => (s.checked = checked));
   }
 }

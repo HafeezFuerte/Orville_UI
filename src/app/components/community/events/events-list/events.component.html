@@ -1,0 +1,158 @@
+<div>
+  <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h3 class="ov-page-title">Events</h3>
+      <p class="ov-page-sub">Manage and view all Events</p>
+    </div>
+    <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="goToAdd()">
+        <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+        Add Events
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-5 overflow-x-auto" role="tablist" aria-label="Event status">
+    <div class="ov-seg ov-seg--tabs">
+      <button
+        type="button"
+        *ngFor="let tab of statusTabs"
+        class="ov-seg__btn"
+        [class.is-active]="statusFilter === tab"
+        (click)="setStatusFilter(tab)">
+        {{ tab }} ({{ countFor(tab) }})
+      </button>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
+      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
+        <label class="sr-only" for="event-search">Search</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input id="event-search" type="text" class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+      </div>
+      <div class="ov-toolbar__btns">
+        <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
+          <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+          Filter
+        </button>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
+          </button>
+          <app-column-menu
+            *ngIf="showColumnDropdown"
+            [columns]="tableColumns"
+            (toggle)="toggleColumn($event)"
+            (toggleAll)="toggleAllColumns($event)"
+            (closed)="showColumnDropdown = false">
+          </app-column-menu>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto px-5 pb-0 pt-5"
+      [class.events-table-wrap--menu-open]="!!openRowActionId">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="paginatedRows"
+        [loading]="false"
+        [hasActions]="false"
+        [showPaginator]="false"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <a *ngSwitchCase="'id'" class="ov-link" [routerLink]="['/community/events', row.id]">{{ row.id }}</a>
+            <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/events', row.id]">{{ row.name }}</a>
+            <span *ngSwitchCase="'status'"
+              class="inline-flex h-6 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [ngClass]="{
+                'bg-light text-defaulttextcolor': row.status === 'Draft',
+                'bg-primary text-white': row.status === 'Published',
+                'bg-danger/10 text-danger': row.status === 'Cancelled'
+              }">
+              {{ row.status }}
+            </span>
+            <span *ngSwitchCase="'maxAttendance'"
+              class="inline-flex h-6 items-center rounded-sm bg-light px-2.5 text-xs font-semibold text-defaulttextcolor">
+              {{ row.maxAttendance }}
+            </span>
+            <div *ngSwitchCase="'action'" class="relative" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+                (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openRowActionId === row.id"
+                class="events-row-menu absolute end-0 top-full mt-1 min-w-[148px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
+                  [routerLink]="['/community/events', row.id]"
+                  (click)="openRowActionId = null">View Details</a>
+                <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
+                  [routerLink]="['/community/events/new']"
+                  (click)="openRowActionId = null">Edit Event</a>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[13px] font-medium text-danger hover:bg-light"
+                  (click)="openRowActionId = null">Delete</button>
+              </div>
+            </div>
+            <span *ngSwitchDefault>{{ row[col.key] }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <div class="ov-page">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
+        <label class="ov-label">Event Name</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterName" placeholder="Enter name">
+      </div>
+      <div class="flex flex-col">
+        <label class="ov-label">Status</label>
+        <select class="ov-input" [(ngModel)]="filterStatus">
+          <option [ngValue]="null">All</option>
+          <option *ngFor="let status of statusOptions" [ngValue]="status">{{ status }}</option>
+        </select>
+      </div>
+    </div>
+  </app-filter-drawer>
+</div>

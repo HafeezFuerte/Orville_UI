@@ -1,0 +1,112 @@
+<div class="pb-16">
+  <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Guides">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Guide Details</h3>
+        <p class="ov-page-sub mt-1">Community / Guide / <span class="ov-page-sub__current">Details</span></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="ov-action-wrap">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
+          [attr.aria-expanded]="showActionMenu">
+          Action
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </button>
+        <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+          <div class="ov-action-menu__list">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
+                (click)="onAction(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+          <div class="ov-action-menu__footer">
+            <ng-container *ngFor="let option of actionOptions">
+              <button *ngIf="option.danger" type="button" role="menuitem"
+                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
+                <span class="ov-action-menu__icon-box">
+                  <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                </span>
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-detail-layout">
+    <aside class="guide-detail-layout__left flex flex-col gap-5">
+      <section class="box ov-card !mb-0">
+        <div class="ov-card__body !pt-5">
+          <h6 class="ov-card-title m-0">{{ detail.name }}</h6>
+          <p class="m-0 mt-1 text-[13px] text-textmuted">{{ detail.property }}</p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[13px]">View Activity</button>
+            <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[13px]" (click)="goToEdit()">Edit Guide</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="box ov-card !mb-0">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Property</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property:</span>
+            <span class="ov-kv__value">{{ detail.propertyFull }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="box ov-card !mb-0">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Guide Information</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-3">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ detail.id }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Guide Name:</span>
+            <span class="ov-kv__value">{{ detail.name }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created:</span>
+            <span class="ov-kv__value">{{ detail.createdAt }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Updated:</span>
+            <span class="ov-kv__value">{{ detail.updatedAt }}</span>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <section class="box ov-card !mb-0 guide-detail-layout__right">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Attachments</h6>
+      </div>
+      <div class="ov-card__body">
+        <div class="guide-attachments-empty">
+          <span class="guide-attachments-empty__icon">
+            <i class="ri-attachment-2" aria-hidden="true"></i>
+          </span>
+          <p class="m-0 text-sm font-semibold text-defaulttextcolor">No attachments found</p>
+          <p class="m-0 text-xs text-textmuted">No files are attached to this guide</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,36 +1,88 @@
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <!-- Back arrow button -->
-    <a (click)="goBack()" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm cursor-pointer" [attr.data-tooltip]="'web.leases.lblLeaseManagement' | translate">
+<!-- Lease Detail — Figma 1192:46534 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Leases" aria-label="Back">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    </a>
+    </button>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ leaseInfo.name }}</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Home</span>
-        <span>/</span>
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Lease</span>
-        <span>/</span>
-        <span class="text-gray-600">{{ leaseInfo.name }}</span>
-        <span>/</span>
-        <span class="text-gray-600">Details</span>
-      </div>
+      <h3 class="ov-page-title">{{ leasePageTitle }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a href="javascript:void(0)" (click)="goBack()">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a href="javascript:void(0)" (click)="goBack()">Lease</a></li>
+        <ng-container *ngIf="leasePageTitle">
+          <li class="px-2">/</li>
+          <li class="text-defaulttextcolor">{{ leasePageTitle }}</li>
+        </ng-container>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
+      </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-2 md:mt-0">
+  <div class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
     <ng-container *ngIf="activeTab === 'Overview'">
-      <div class="dropdown">
-        <button type="button" [attr.data-tooltip]="'Action Menu'" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
-          Action <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />
+      <div class="lease-action relative">
+        <button type="button" class="lease-action__btn"
+          [class.is-open]="showActionMenu"
+          (click)="$event.stopPropagation(); showActionMenu = !showActionMenu"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="showActionMenu"
+          [attr.data-tooltip]="'Action Menu'">
+          <span>Action</span>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="lease-ico"
+            [class.lease-ico--flip]="showActionMenu" />
         </button>
+        <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+          <div class="ov-action-menu__list">
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onLeaseAction('edit')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+              </span>
+              <span>Edit Lease</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onLeaseAction('approval')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/stamp.svg" alt="" width="14" height="14">
+              </span>
+              <span>Send for Approval</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onLeaseAction('attachment')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/files.svg" alt="" width="14" height="14">
+              </span>
+              <span>Add Attachment</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onLeaseAction('note')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/notebook.svg" alt="" width="14" height="14">
+              </span>
+              <span>Add Note</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onLeaseAction('activity')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+              </span>
+              <span>View Activity</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item lease-action-menu__archive"
+              (click)="onLeaseAction('archive')">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/trash.svg" alt="" width="14" height="14">
+              </span>
+              <span>Archive</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <button type="button" [attr.data-tooltip]="'Print Lease'" class="px-4 py-1.5 text-xs rounded-md bg-primary text-white border-0 hover:bg-primary-hover transition-all font-semibold shadow-sm flex items-center gap-1.5">
-        <img src="assets/images/action-menu/printer.svg" alt="" width="14" height="14" /> Print Lease
+      <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Print Lease'">
+        <img src="assets/images/action-menu/printer.svg" alt="" width="14" height="14" class="lease-ico lease-ico--on-primary" />
+        Print Lease
       </button>
     </ng-container>
     <ng-container *ngIf="activeTab !== 'Overview'">
-      <button type="button" (click)="editLease()" [attr.data-tooltip]="'Edit Lease'" class="w-8 h-8 rounded-md bg-[#1f2b45] text-white flex items-center justify-center border-0 hover:bg-[#131b2e] transition-all shadow-sm">
-        <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
+      <button type="button" (click)="editLease()" [attr.data-tooltip]="'Edit Lease'"
+        class="ov-btn ov-btn-primary !w-9 !h-9 !p-0 !min-w-0 flex items-center justify-center" aria-label="Edit Lease">
+        <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" class="lease-ico lease-ico--on-primary" />
       </button>
     </ng-container>
   </div>
@@ -38,208 +90,281 @@
 
 <div class="grid grid-cols-12 gap-6 mt-4">
   <app-detail-page-layout class="col-span-12" [tabs]="tabs" [(activeTab)]="activeTab" (activeTabChange)="handleTabChange($event)">
-    
+
     <!-- LEFT PANEL TEMPLATE -->
     <ng-template #leftPanel>
       <div class="col-span-12 lg:col-span-4 flex flex-col gap-4 text-xs">
-        
-        <!-- Status & Main actions card -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-4">
-          <div>
-            <h6 class="font-bold text-gray-800 text-sm m-0">{{ leaseInfo.name }}</h6>
-            <div class="flex items-center gap-2 mt-2">
-              <span class="px-2 py-0.5 rounded text-[9px] bg-gray-100 text-gray-500 font-bold border border-gray-200/50 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {{ leaseInfo.status }}
-              </span>
-              <span class="px-2 py-0.5 rounded text-[9px] bg-[#1f2b45] text-white font-bold flex items-center gap-1">
-                Renewed
-              </span>
+
+        <!-- Hero card -->
+        <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex flex-col gap-1.5">
+              <h4 class="ov-card-title !text-[16px] m-0">{{ leaseCardTitle }}</h4>
+              <p class="ov-card-sub !text-[13px] tracking-[0.26px] m-0 flex items-center gap-1.5"
+                *ngIf="leaseInfo.location || leaseInfo.address || leaseInfo.property">
+                <img src="assets/images/work-orders/map-pin.svg" alt="" width="13" height="13" class="lease-ico shrink-0" />
+                <span>{{ leaseInfo.location || leaseInfo.address || leaseInfo.property }}</span>
+              </p>
+              <div class="flex flex-wrap items-center gap-2 mt-0.5">
+                <span class="lease-status-pill">
+                  <span class="lease-status-pill__dot" aria-hidden="true"></span>
+                  {{ leaseInfo.status }}
+                </span>
+              </div>
             </div>
+            <span class="ov-flag shrink-0">Renewed</span>
           </div>
 
-          <div class="flex gap-2">
-            <button type="button" [attr.data-tooltip]="'View Activity'" class="w-1/2 py-2 text-[11px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
-              <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" /> View Activity
+          <div class="flex gap-5">
+            <button type="button" [attr.data-tooltip]="'View Activity'"
+              class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
+              View Activity
             </button>
-            <button type="button" (click)="editLease()" [attr.data-tooltip]="'Edit Lease'" class="w-1/2 py-2 text-[11px] rounded bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-all font-semibold flex items-center justify-center gap-1 shadow-sm">
-              <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" /> Edit Lease &rarr;
+            <button type="button" (click)="editLease()" [attr.data-tooltip]="'Edit Lease'"
+              class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor">
+              Edit Lease
+              <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" class="lease-ico" />
             </button>
           </div>
         </div>
 
-        <!-- Warning Message if Draft -->
-        <div *ngIf="leaseInfo.status === 'Draft'" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
-          <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Lease in Draft Mode</p>
-          <p class="m-0 text-[10px] leading-relaxed text-gray-600">Your lease is in draft mode. Once you activate it, the invoices will be posted in the accounting.</p>
+        <!-- Draft alert -->
+        <div *ngIf="leaseInfo.status === 'Draft'" class="lease-draft-alert" role="status">
+          <i class="ri-error-warning-line text-[18px] shrink-0" aria-hidden="true"></i>
+          <div class="min-w-0">
+            <p class="lease-draft-alert__title m-0">Lease in Draft Mode</p>
+            <p class="lease-draft-alert__body m-0">Your lease is in draft mode. Once you activate it, the invoices will be posted in the accounting.</p>
+          </div>
         </div>
 
         <!-- Lease Information -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Lease Information</h6>
-          
-          <div class="flex flex-col gap-2.5">
-            <div class="flex justify-between">
-              <span class="text-gray-400">Lease ID:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.id }}</span>
+        <div class="box ov-card lease-info-card !mb-0 overflow-visible">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">Lease Information</h6>
+          </div>
+          <div class="flex flex-col gap-4 px-5 py-4">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Lease ID:</span>
+              <span class="ov-kv__value">{{ leaseInfo.id }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Tenant:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.tenant }}</span>
+
+            <div class="lease-preview-anchor">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Tenant:</span>
+                <a href="javascript:void(0)" class="ov-kv__value ov-link font-semibold"
+                  (click)="toggleEntityPreview('tenant', $event)">{{ tenantPreview.name }}</a>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Property:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.property }}</span>
+
+            <div class="lease-preview-anchor">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Property:</span>
+                <a href="javascript:void(0)" class="ov-kv__value ov-link font-semibold"
+                  (click)="toggleEntityPreview('property', $event)">{{ propertyPreview.name }}</a>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Unit:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.unit }}</span>
+
+            <div class="lease-preview-anchor">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Unit:</span>
+                <a href="javascript:void(0)" class="ov-kv__value ov-link font-semibold"
+                  (click)="toggleEntityPreview('unit', $event)">{{ unitPreview.name }}</a>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Duration:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.duration }}</span>
+
+            <div class="ov-kv">
+              <span class="ov-kv__label">Duration:</span>
+              <span class="ov-kv__value">{{ leaseInfo.duration }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">No of Occupants:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.noOfOccupants }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">No of Occupants:</span>
+              <span class="ov-kv__value">{{ leaseInfo.noOfOccupants }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.startDate }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Start Date:</span>
+              <span class="ov-kv__value">{{ leaseInfo.startDate }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.endDate }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">End Date:</span>
+              <span class="ov-kv__value">{{ leaseInfo.endDate }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Lease Days Left:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.leaseDaysLeft }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Lease Days Left:</span>
+              <span class="ov-kv__value">{{ leaseInfo.leaseDaysLeft }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Collector:</span>
-              <span class="font-semibold text-gray-700">{{ leaseInfo.collector }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Collector:</span>
+              <span class="ov-kv__value">{{ leaseInfo.collector }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Short Term:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">No</span>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">Short Term:</span>
+              <span class="ov-flag ov-flag--no">No</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Renewed:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success border border-success/20">Yes</span>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">Renewed:</span>
+              <span class="ov-flag">Yes</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Renewed From:</span>
-              <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.renewedFrom }}</span>
+            <div class="lease-preview-anchor">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Renewed From:</span>
+                <a href="javascript:void(0)" class="ov-kv__value ov-link font-semibold"
+                  (click)="toggleEntityPreview('lease', $event)">{{ leasePreview.name }}</a>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Is Multi Unit:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">No</span>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">Is Multi Unit:</span>
+              <span class="ov-flag ov-flag--no">No</span>
+            </div>
+
+            <button type="button" class="lease-more-btn" (click)="showMoreDetails = !showMoreDetails">
+              {{ showMoreDetails ? 'View less details' : 'View more details' }}
+              <img src="assets/images/common/chevron-down.svg" alt="" width="16" height="16"
+                class="lease-ico" [class.lease-ico--flip]="showMoreDetails" />
+            </button>
+
+            <div class="flex flex-col gap-4" *ngIf="showMoreDetails">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Previous Lease Rent:</span>
+                <span class="ov-kv__value">AED 3300.00</span>
+              </div>
+              <div class="ov-kv items-start">
+                <span class="ov-kv__label">Remark:</span>
+                <span class="ov-kv__value">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+              </div>
+              <div class="ov-kv items-center">
+                <span class="ov-kv__label">Legal Case:</span>
+                <span class="ov-flag ov-flag--no">No</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Internal Status:</span>
+                <span class="ov-kv__value">None</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Created:</span>
+                <span class="ov-kv__value">06-26-2026</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Financial Information -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Financial Information</h6>
-          <div class="flex flex-col gap-2.5">
-            <div class="flex justify-between">
-              <span class="text-gray-400">Total Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.totalRent }}</span>
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">Financial Information</h6>
+          </div>
+          <div class="flex flex-col gap-4 px-5 py-4">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Total Rent:</span>
+              <span class="ov-kv__value">{{ leaseInfo.totalRent }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Annual Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.annualRent }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Annual Rent:</span>
+              <span class="ov-kv__value">{{ leaseInfo.annualRent }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Monthly Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.monthlyRent }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Monthly Rent:</span>
+              <span class="ov-kv__value">{{ leaseInfo.monthlyRent }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">No of Payments:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.noOfPayments }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">No of Payments:</span>
+              <span class="ov-kv__value">{{ leaseInfo.noOfPayments }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Unit Market Rent:</span>
-              <span class="font-bold text-gray-700">{{ leaseInfo.unitMarketRent }}</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Unit Market Rent:</span>
+              <span class="ov-kv__value">{{ leaseInfo.unitMarketRent }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Previous Lease Information -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblPreviousLease' | translate }}</h6>
-          <div class="flex flex-col gap-2.5">
-            <div class="flex flex-col gap-0.5">
-              <span class="text-gray-400">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
-              <a class="font-bold text-primary hover:underline cursor-pointer">Lease - 31650 - Marina Heights Towers</a>
+        <!-- Previous Lease -->
+        <div class="box ov-card lease-info-card !mb-0 overflow-visible">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">{{ 'web.leases.lblPreviousLease' | translate }}</h6>
+          </div>
+          <div class="flex flex-col gap-4 px-5 py-4">
+            <div class="flex flex-col gap-1 lease-preview-anchor">
+              <span class="ov-kv__label">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
+              <a href="javascript:void(0)" class="ov-link font-bold"
+                (click)="toggleEntityPreview('lease', $event)">{{ leasePreview.name }}</a>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-400">Status:</span>
-              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/15 text-success">Active</span>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">Status:</span>
+              <span class="ov-flag">Active</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
-              <span class="font-semibold text-gray-700">08-01-2025</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Start Date:</span>
+              <span class="ov-kv__value">08-01-2025</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
-              <span class="font-semibold text-gray-700">06-30-2026</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">End Date:</span>
+              <span class="ov-kv__value">06-30-2026</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Monthly Rent:</span>
-              <span class="font-bold text-gray-700">AED 2,200.00</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Monthly Rent:</span>
+              <span class="ov-kv__value">AED 2,200.00</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Days Left:</span>
-              <span class="font-bold text-gray-700">4 days</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Days Left:</span>
+              <span class="ov-kv__value">4 days</span>
             </div>
           </div>
         </div>
 
-        <!-- Dubai Tenancy Lease Information -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblDubaiTenancy' | translate }}</h6>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-400">No lease terms configured</span>
-            <button type="button" [attr.data-tooltip]="'web.leases.lblViewTerms' | translate" class="px-3 py-1 text-[10px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center gap-1">
-              {{ 'web.leases.lblViewTerms' | translate }} <i class="ri-arrow-right-s-line"></i>
-            </button>
+        <!-- Dubai Tenancy -->
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">{{ 'web.leases.lblDubaiTenancy' | translate }}</h6>
+          </div>
+          <div class="flex items-center justify-between gap-3 px-5 py-4">
+            <span class="text-[14px] text-textmuted">No lease terms configured</span>
+            <a href="javascript:void(0)" class="ov-link text-[13px] font-semibold shrink-0 whitespace-nowrap"
+              [attr.data-tooltip]="'web.leases.lblViewTerms' | translate">
+              {{ 'web.leases.lblViewTerms' | translate }}
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
           </div>
         </div>
 
         <!-- Move In Checklist -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblMoveInChecklist' | translate }}</h6>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-400">No checklist items configured</span>
-            <button type="button" [attr.data-tooltip]="'web.leases.lblViewChecklist' | translate" class="px-3 py-1 text-[10px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center gap-1">
-              {{ 'web.leases.lblViewChecklist' | translate }} <i class="ri-arrow-right-s-line"></i>
-            </button>
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">{{ 'web.leases.lblMoveInChecklist' | translate }}</h6>
+          </div>
+          <div class="flex items-center justify-between gap-3 px-5 py-4">
+            <span class="text-[14px] text-textmuted">No checklist items configured</span>
+            <a href="javascript:void(0)" class="ov-link text-[13px] font-semibold shrink-0 whitespace-nowrap"
+              [attr.data-tooltip]="'web.leases.lblViewChecklist' | translate">
+              {{ 'web.leases.lblViewChecklist' | translate }}
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
           </div>
         </div>
 
         <!-- Custom Fields -->
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
-          <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Custom Fields</h6>
-          <div class="flex flex-col gap-2.5">
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblNoOfPerson' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
+        <div class="box ov-card !mb-0 overflow-hidden">
+          <div class="border-b border-defaultborder px-5 py-3.5">
+            <h6 class="ov-card-title m-0">Custom Fields</h6>
+          </div>
+          <div class="flex flex-col gap-4 px-5 py-4">
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.leases.lblNoOfPerson' | translate }}:</span>
+              <span class="ov-kv__value">No value set</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblMoveInDate' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.leases.lblMoveInDate' | translate }}:</span>
+              <span class="ov-kv__value">No value set</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblCreatedBy' | translate }}:</span>
-              <span class="font-semibold text-gray-700">Zaid Rahman</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.leases.lblCreatedBy' | translate }}:</span>
+              <span class="ov-kv__value">Zaid Rahman</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">Created Date:</span>
-              <span class="font-semibold text-gray-700">08-26-2026</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Created Date:</span>
+              <span class="ov-kv__value">08-26-2026</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-400">{{ 'web.leases.lblPayingDate' | translate }}:</span>
-              <span class="font-semibold text-gray-700">No value set</span>
+            <div class="ov-kv">
+              <span class="ov-kv__label">{{ 'web.leases.lblPayingDate' | translate }}:</span>
+              <span class="ov-kv__value">No value set</span>
             </div>
           </div>
         </div>
@@ -250,96 +375,114 @@
     <!-- OVERVIEW TAB TEMPLATE -->
     <ng-template #overview>
       <div class="flex flex-col gap-6 text-xs">
-        
+
         <!-- Overview Content -->
         <div *ngIf="activeTab === 'Overview'" class="flex flex-col gap-6">
-          <!-- Financial Summary Grid layout -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h6 class="font-bold text-gray-700 text-[11px] uppercase tracking-wider m-0">Financial Summary</h6>
-              <span class="px-2 py-0.5 rounded text-[9px] bg-warning/10 text-warning font-semibold border border-warning/20">No Response</span>
-            </div>
+          <section class="lease-section">
+            <h5 class="lease-section__title">Lease Overview</h5>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <!-- Balance Card -->
-              <div class="p-5 rounded-xl bg-gradient-to-br from-[#1f2b45] to-[#131b2e] text-white shadow-sm flex flex-col justify-between h-32 md:col-span-2">
-                <div class="flex justify-between items-start">
-                  <div>
-                    <span class="text-[9px] font-bold text-white/60 tracking-wider uppercase">Current Balance</span>
-                    <h4 class="text-xl font-black mt-1">AED 1,500.00</h4>
-                  </div>
-                </div>
-                <div class="flex justify-between border-t border-white/10 pt-3 text-[10px]">
-                  <div>
-                    <span class="text-white/60 block">Total Income</span>
-                    <span class="font-bold">AED 1,200.00</span>
-                  </div>
-                  <div>
-                    <span class="text-white/60 block">Security Deposit</span>
-                    <span class="font-bold">AED 300.00</span>
-                  </div>
-                </div>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between gap-x-4 mb-4">
+              <div class="min-w-0">
+                <h6 class="lease-section__sub-title m-0">Financial Summary</h6>
+                <p class="lease-section__sub m-0 mt-1">
+                  Important values are grouped first, so the user can understand the lease position quickly.
+                </p>
               </div>
-
-              <!-- Single Cards grid -->
-              <div class="grid grid-cols-2 gap-3 md:col-span-1">
-                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Paid</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
-                </div>
-                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Upcoming</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
-                </div>
-                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Bounced</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
-                </div>
-                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Write Off</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
-                </div>
+              <div class="ov-detail-chip lease-chip--warning shrink-0 mt-2 sm:mt-0 flex items-center gap-1.5" aria-label="Payment response No Response">
+                <span class="lease-status-pill__dot !bg-[rgb(var(--warning))]" aria-hidden="true"></span>
+                <span class="font-normal">Payment response</span>
+                <span class="font-semibold">No Response</span>
               </div>
             </div>
 
-            <!-- Other amounts row -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
-              <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Equity</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
+            <div class="lease-metrics">
+              <div class="ov-detail-hero lease-metrics__hero">
+                <div>
+                  <span class="ov-detail-hero__label">Current Balance</span>
+                  <span class="ov-detail-hero__value">AED 1,500.00</span>
+                </div>
+                <div class="ov-detail-hero__meta">
+                  <div>
+                    Total Income
+                    <strong>AED 1,200.00</strong>
+                  </div>
+                  <div>
+                    Security Deposit
+                    <strong>AED 300.00</strong>
+                  </div>
+                </div>
               </div>
-              <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Outstanding Cheques</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
-              </div>
-              <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Refundable Amount</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 300.00</h5>
-              </div>
-              <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Pending Adjustments</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
+
+              <div class="lease-metrics__grid">
+                <div class="ov-detail-metric">
+                  <span class="ov-detail-metric__label">Paid</span>
+                  <span class="ov-detail-metric__value">AED 0.00</span>
+                </div>
+                <div class="ov-detail-metric">
+                  <span class="ov-detail-metric__label">Upcoming</span>
+                  <span class="ov-detail-metric__value">AED 0.00</span>
+                </div>
+                <div class="ov-detail-metric">
+                  <span class="ov-detail-metric__label">Bounced</span>
+                  <span class="ov-detail-metric__value">AED 0.00</span>
+                </div>
+                <div class="ov-detail-metric">
+                  <span class="ov-detail-metric__label">Write Off</span>
+                  <span class="ov-detail-metric__value">AED 0.00</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Invoice Schedules Grid -->
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Invoice Schedules (Fixed) 1</h6>
+            <div class="lease-metrics__soft">
+              <div class="ov-detail-soft">
+                <span class="ov-detail-soft__label">Equity</span>
+                <span class="ov-detail-soft__value">AED 0.00</span>
+              </div>
+              <div class="ov-detail-soft">
+                <span class="ov-detail-soft__label">Outstanding Cheques</span>
+                <span class="ov-detail-soft__value">AED 0.00</span>
+              </div>
+              <div class="ov-detail-soft">
+                <span class="ov-detail-soft__label">Refundable Amount</span>
+                <span class="ov-detail-soft__value">AED 300.00</span>
+              </div>
+              <div class="ov-detail-soft">
+                <span class="ov-detail-soft__label">Pending Adjustments</span>
+                <span class="ov-detail-soft__value">AED 0.00</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Invoice Schedules -->
+          <div class="box ov-card overflow-hidden !mb-0">
+            <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
+              <h6 class="ov-card-title m-0">Invoice Schedules (Fixed) 1</h6>
             </div>
             <div class="p-4">
               <app-shared-table [columns]="invoiceColumns" [data]="invoiceSchedules" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'invoiceId'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.invoiceId }}</span>
+                    <ng-container *ngSwitchCase="'amt'">
+                      <span class="text-textmuted">{{ currentUser?.currencyCode || 'AED' }} {{ row.amt | number:'1.2-2' }}</span>
                     </ng-container>
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-semibold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'adv_amt'">
+                      <span class="text-textmuted">{{ currentUser?.currencyCode || 'AED' }} {{ row.adv_amt | number:'1.2-2' }}</span>
                     </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span class="px-2 py-0.5 rounded bg-danger/10 text-danger text-[9px] font-bold border border-danger/20">Unpaid</span>
+                    <ng-container *ngSwitchCase="'account_name'">
+                      <span class="text-textmuted">{{ row.account_name }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'due_date'">
+                      <span class="text-textmuted">{{ row.due_date }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'recurring_cycle'">
+                      <span class="text-textmuted">{{ row.recurring_cycle }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'payment_type'">
+                      <span class="text-textmuted">{{ row.payment_type }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'attachment_path'">
+                      <a *ngIf="row.attachment_path" href="javascript:void(0)" class="ov-link font-medium">{{ row.attachment_path }}</a>
+                      <span *ngIf="!row.attachment_path" class="text-textmuted">—</span>
                     </ng-container>
                   </ng-container>
                 </ng-template>
@@ -347,24 +490,24 @@
             </div>
           </div>
 
-          <!-- Cheques Table directly below Invoice Schedules -->
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mt-6">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Cheques</h6>
+          <!-- Cheques -->
+          <div class="box ov-card overflow-hidden !mb-0">
+            <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
+              <h6 class="ov-card-title m-0">Cheques</h6>
             </div>
             <div class="p-4">
               <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
                     <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
+                      <span class="font-bold text-defaulttextcolor">AED {{ row.amount | number:'1.2-2' }}</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Cleared'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Cleared</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
+                      <span *ngIf="row.status === 'Cleared'" class="ov-detail-chip">Cleared</span>
+                      <span *ngIf="row.status === 'Pending'" class="ov-detail-chip lease-chip--warning">Pending</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'attachment'">
-                      <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
+                      <a class="ov-link cursor-pointer flex items-center gap-1 font-medium">
                         <i class="ri-file-pdf-line"></i> {{ row.attachment }}
                       </a>
                     </ng-container>
@@ -375,265 +518,302 @@
           </div>
         </div>
 
-        <!-- 1. TENANT TAB -->
-        <div *ngIf="activeTab === 'Tenant'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Tenants</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="tenantColumns" [data]="tenantsData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'activeLease'">
-                      <span class="text-primary hover:underline cursor-pointer font-medium">{{ row.activeLease }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'leasesCount'">
-                      <span class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">{{ row.leasesCount }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span class="px-2 py-0.5 rounded bg-success text-[10px] font-bold text-white shadow-sm">Active</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <!-- 1. TENANT TAB — Notes/Attachments chrome -->
+        <div *ngIf="activeTab === 'Tenant'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Tenants</h4>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: tenantColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(tenantColumns)" [data]="tenantsData" [hasActions]="true">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="ov-link font-bold cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'activeLease'">
+                  <span class="ov-link cursor-pointer font-medium">{{ row.activeLease }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'leasesCount'">
+                  <span class="ov-flag">{{ row.leasesCount }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span class="ov-flag">Active</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 2. FINANCIALS TAB -->
-        <div *ngIf="activeTab === 'Financials'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Financials</h6>
-              <button (click)="openInvoiceModal()" type="button" [attr.data-tooltip]="'web.leases.lblAddInvoice' | translate" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.leases.lblAddInvoice' | translate }}
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="financialsColumns" [data]="financialsData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span class="px-2 py-0.5 rounded bg-danger/10 text-danger text-[9px] font-bold border border-danger/20">Unpaid - Overdue - Partially Paid</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <div *ngIf="activeTab === 'Financials'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Financials</h4>
+            <button (click)="openInvoiceModal()" type="button" [attr.data-tooltip]="'web.leases.lblAddInvoice' | translate"
+              class="ov-btn ov-btn-primary">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              {{ 'web.leases.lblAddInvoice' | translate }}
+            </button>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: financialsColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(financialsColumns)" [data]="financialsData" [hasActions]="true">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="ov-link font-bold cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span class="ov-flag ov-flag--no">Unpaid - Overdue - Partially Paid</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'amount'">
+                  <span class="font-bold text-defaulttextcolor">AED {{ row.amount | number:'1.2-2' }}</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 3. CHEQUES TAB -->
-        <div *ngIf="activeTab === 'Cheques'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Cheques</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'amount'">
-                      <span class="font-bold text-gray-700">AED {{ row.amount | number:'1.2-2' }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Cleared'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Cleared</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'attachment'">
-                      <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
-                        <i class="ri-file-pdf-line"></i> {{ row.attachment }}
-                      </a>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <div *ngIf="activeTab === 'Cheques'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Cheques</h4>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: chequeColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(chequeColumns)" [data]="chequesData" [hasActions]="true">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'amount'">
+                  <span class="font-bold text-defaulttextcolor">AED {{ row.amount | number:'1.2-2' }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span *ngIf="row.status === 'Cleared'" class="ov-detail-chip">Cleared</span>
+                  <span *ngIf="row.status === 'Pending'" class="ov-detail-chip lease-chip--warning">Pending</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'attachment'">
+                  <a class="ov-link cursor-pointer flex items-center gap-1 font-medium">
+                    <i class="ri-file-pdf-line"></i> {{ row.attachment }}
+                  </a>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 4. WORK ORDERS TAB -->
-        <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Work Orders</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="workOrdersColumns" [data]="workOrdersData" [hasActions]="false">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Open'" class="px-2 py-0.5 rounded bg-primary text-white text-[10px] font-bold shadow-sm">Open</span>
-                      <span *ngIf="row.status === 'In Progress'" class="px-2 py-0.5 rounded bg-info text-white text-[10px] font-bold shadow-sm">In Progress</span>
-                      <span *ngIf="row.status === 'Completed'" class="px-2 py-0.5 rounded bg-success text-white text-[10px] font-bold shadow-sm">Completed</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'closingStatus'">
-                      <span class="px-2 py-0.5 rounded bg-warning text-white text-[10px] font-medium shadow-sm">{{ row.closingStatus }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'priority'">
-                      <span *ngIf="row.priority === 'High'" class="text-danger font-bold">High</span>
-                      <span *ngIf="row.priority === 'Medium'" class="text-warning font-semibold">Medium</span>
-                      <span *ngIf="row.priority === 'Low'" class="text-success">Low</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <div *ngIf="activeTab === 'Work Orders'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Work Orders</h4>
+            <button type="button" [attr.data-tooltip]="'Add Workorders'" class="ov-btn ov-btn-primary">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              Add Workorders
+            </button>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: workOrdersColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(workOrdersColumns)" [data]="workOrdersData" [hasActions]="false">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="ov-link font-bold cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span *ngIf="row.status === 'Open'" class="ov-flag">Open</span>
+                  <span *ngIf="row.status === 'In Progress'" class="ov-detail-chip">In Progress</span>
+                  <span *ngIf="row.status === 'Completed'" class="ov-detail-chip lease-chip--success">Completed</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'closingStatus'">
+                  <span class="ov-detail-chip lease-chip--warning">{{ row.closingStatus }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'priority'">
+                  <span *ngIf="row.priority === 'High'" class="text-danger font-bold">High</span>
+                  <span *ngIf="row.priority === 'Medium'" class="text-warning font-semibold">Medium</span>
+                  <span *ngIf="row.priority === 'Low'" class="text-success">Low</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 5. E-DOCUMENTS TAB -->
-        <div *ngIf="activeTab === 'E-Documents'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">E-Documents</h6>
-            </div>
-            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div *ngFor="let doc of eDocumentsData" class="p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-all flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded bg-danger/10 text-danger flex items-center justify-center font-bold text-xs">PDF</div>
-                  <div>
-                    <p class="font-bold text-gray-700 m-0 text-xs">{{ doc.name }}</p>
-                    <p class="text-[10px] text-gray-400 m-0 mt-0.5">{{ doc.size }} | {{ doc.updated }}</p>
-                  </div>
+        <div *ngIf="activeTab === 'E-Documents'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">E-Documents</h4>
+            <button type="button" [attr.data-tooltip]="'Add Attachments'" class="ov-btn ov-btn-primary">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              Add Attachments
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let doc of eDocumentsData"
+              class="p-4 rounded-xl border border-defaultborder bg-white dark:bg-bodybg hover:bg-[rgb(var(--light))] transition-all flex items-center justify-between">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded bg-danger/10 text-danger flex items-center justify-center font-bold text-xs shrink-0">PDF</div>
+                <div class="min-w-0">
+                  <p class="font-bold text-defaulttextcolor m-0 text-xs truncate">{{ doc.name }}</p>
+                  <p class="text-[10px] text-textmuted m-0 mt-0.5">{{ doc.size }} | {{ doc.updated }}</p>
                 </div>
-                <button type="button" [attr.data-tooltip]="'Download'" class="w-8 h-8 rounded bg-white border border-gray-200 text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center shadow-sm">
-                  <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-                </button>
               </div>
+              <button type="button" [attr.data-tooltip]="'Download'"
+                class="ov-btn ov-btn-ghost !w-8 !h-8 !p-0 !min-w-0 flex items-center justify-center shrink-0" aria-label="Download">
+                <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+              </button>
             </div>
           </div>
         </div>
 
         <!-- 6. NOTICES TAB -->
-        <div *ngIf="activeTab === 'Notices'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Notices</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="noticesColumns" [data]="noticesData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'preview'">
-                      <button type="button" [attr.data-tooltip]="'Quick View'" class="px-2.5 py-1 text-[10px] font-semibold border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all rounded shadow-sm flex items-center gap-1">
-                        <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" /> Quick View
-                      </button>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Published'" class="px-2 py-0.5 rounded bg-success text-white text-[10px] font-bold shadow-sm">Published</span>
-                      <span *ngIf="row.status === 'Draft'" class="px-2 py-0.5 rounded bg-gray-500 text-white text-[10px] font-bold shadow-sm">Draft</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <div *ngIf="activeTab === 'Notices'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Notices</h4>
+            <a routerLink="/broadcasts/create" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Broadcasts'">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              Add Broadcasts
+            </a>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: noticesColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(noticesColumns)" [data]="noticesData" [hasActions]="true">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="ov-link font-bold cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'preview'">
+                  <button type="button" [attr.data-tooltip]="'Quick View'"
+                    class="ov-btn ov-btn-ghost !h-8 !text-[10px] !px-2.5">
+                    <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" /> Quick View
+                  </button>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span *ngIf="row.status === 'Published'" class="ov-detail-chip lease-chip--success">Published</span>
+                  <span *ngIf="row.status === 'Draft'" class="ov-detail-chip">Draft</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 7. LEGAL TAB -->
-        <div *ngIf="activeTab === 'Legal'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Legal Cases</h6>
-              <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'unitBlocked'">
-                      <span *ngIf="row.unitBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.unitBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'tenantBlocked'">
-                      <span *ngIf="row.tenantBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.tenantBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
+        <div *ngIf="activeTab === 'Legal'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Legal Cases</h4>
+            <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="ov-btn ov-btn-primary">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              Add Legal Case
+            </button>
           </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: legalColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(legalColumns)" [data]="legalData" [hasActions]="false">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'unitBlocked'">
+                  <span *ngIf="row.unitBlocked === 'Yes'" class="ov-flag">Yes</span>
+                  <span *ngIf="row.unitBlocked === 'No'" class="ov-flag ov-flag--no">No</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'tenantBlocked'">
+                  <span *ngIf="row.tenantBlocked === 'Yes'" class="ov-flag">Yes</span>
+                  <span *ngIf="row.tenantBlocked === 'No'" class="ov-flag ov-flag--no">No</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
         </div>
 
         <!-- 8. INSPECTIONS TAB -->
-        <div *ngIf="activeTab === 'Inspections'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Inspections</h6>
-              <button (click)="openInspectionModal()" type="button" [attr.data-tooltip]="'Add Inspection'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Inspection
-              </button>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="inspectionsColumns" [data]="inspectionsData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'id'">
-                      <span class="text-primary font-bold hover:underline cursor-pointer">{{ row.id }}</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'status'">
-                      <span *ngIf="row.status === 'Completed'" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">Completed</span>
-                      <span *ngIf="row.status === 'Pending'" class="px-2 py-0.5 rounded bg-warning/15 text-warning text-[10px] font-bold">Pending</span>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'scheduled'">
-                      <span *ngIf="row.scheduled === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                      <span *ngIf="row.scheduled === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
+        <div *ngIf="activeTab === 'Inspections'" class="animate-fade-in">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h4 class="ov-card-title m-0">Lease Inspections</h4>
+            <button (click)="openInspectionModal()" type="button" [attr.data-tooltip]="'Add Inspection'"
+              class="ov-btn ov-btn-primary">
+              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+              Add Inspection
+            </button>
+          </div>
+          <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: inspectionsColumns }"></ng-container>
+          <app-shared-table [columns]="visibleTabColumns(inspectionsColumns)" [data]="inspectionsData" [hasActions]="true">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <span class="ov-link font-bold cursor-pointer">{{ row.id }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span *ngIf="row.status === 'Completed'" class="ov-detail-chip lease-chip--success">Completed</span>
+                  <span *ngIf="row.status === 'Pending'" class="ov-detail-chip lease-chip--warning">Pending</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'scheduled'">
+                  <span *ngIf="row.scheduled === 'Yes'" class="ov-flag">Yes</span>
+                  <span *ngIf="row.scheduled === 'No'" class="ov-flag ov-flag--no">No</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+
+      </div>
+    </ng-template>
+
+    <!-- Shared toolbar matching Notes/Attachments tabs -->
+    <ng-template #leaseTabToolbar let-columns="columns">
+      <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 py-0 mb-4 flex-col sm:flex-row items-stretch sm:items-center">
+        <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+          <input [(ngModel)]="tabSearchQuery" type="text" class="ov-input ov-search__input" placeholder="Search">
+        </div>
+        <div class="ov-toolbar__btns">
+          <button type="button" (click)="toggleTabDrawer(true)" class="ov-btn ov-btn-toolbar"
+            [attr.data-tooltip]="'web.common.lblFilter' | translate">
+            <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+            Filter
+          </button>
+          <div class="relative">
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleTabColumnDropdown()"
+              [attr.data-tooltip]="'web.common.lblColumns' | translate">
+              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+              Column
+            </button>
+            <div *ngIf="isTabColumnDropdownOpen"
+              class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+              <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+                <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary"
+                  [checked]="allTabColumnsVisible(columns)" (change)="toggleAllTabColumns(columns, $event)">
+                Select All
+              </label>
+              <label *ngFor="let col of columns"
+                class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+                <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary"
+                  [checked]="col.visible !== false" (change)="toggleTabColumn(col)">
+                {{ col.label | translate }}
+              </label>
             </div>
           </div>
         </div>
-
       </div>
     </ng-template>
 
     <!-- MULTI-TAB PORTLET CONTENTS (Bound to Projected units slot) -->
     <ng-template #units>
       <!-- UNITS TAB -->
-      <div *ngIf="activeTab === 'units'" class="flex flex-col gap-4 text-xs">
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Units</h6>
-          </div>
-          <div class="p-4">
-            <app-shared-table [columns]="unitsColumns" [data]="unitsData" [hasActions]="false">
-              <ng-template #colTemplate let-row="row" let-col="col">
-                <ng-container [ngSwitch]="col.key">
-                  <ng-container *ngSwitchCase="'status'">
-                    <span class="px-2 py-0.5 rounded bg-[#1f2b45] text-[10px] font-bold text-white shadow-sm">Occupied</span>
-                  </ng-container>
-                </ng-container>
-              </ng-template>
-            </app-shared-table>
-          </div>
+      <div *ngIf="activeTab === 'units'" class="animate-fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+          <h4 class="ov-card-title m-0">Lease Units</h4>
+          <button type="button" [attr.data-tooltip]="'Add Unit'" class="ov-btn ov-btn-primary">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            Add Unit
+          </button>
         </div>
+        <ng-container *ngTemplateOutlet="leaseTabToolbar; context: { columns: unitsColumns }"></ng-container>
+        <app-shared-table [columns]="visibleTabColumns(unitsColumns)" [data]="unitsData" [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'status'">
+                <span class="ov-flag">Occupied</span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
       </div>
 
       <!-- Default Placeholder for other tabs -->
-      <div *ngIf="activeTab !== 'units' && activeTab !== 'Tenant' && activeTab !== 'Financials' && activeTab !== 'Cheques' && activeTab !== 'Work Orders' && activeTab !== 'E-Documents' && activeTab !== 'Notices' && activeTab !== 'Legal' && activeTab !== 'notes' && activeTab !== 'attachments' && activeTab !== 'Inspections'" class="p-8 text-center text-gray-400 bg-white border border-gray-100 rounded-xl shadow-sm">
-        <i class="ri-folder-open-line text-2xl block mb-2 text-gray-300"></i>
+      <div *ngIf="activeTab !== 'units' && activeTab !== 'Tenant' && activeTab !== 'Financials' && activeTab !== 'Cheques' && activeTab !== 'Work Orders' && activeTab !== 'E-Documents' && activeTab !== 'Notices' && activeTab !== 'Legal' && activeTab !== 'notes' && activeTab !== 'attachments' && activeTab !== 'Inspections'"
+        class="p-8 text-center text-textmuted bg-white dark:bg-bodybg border border-defaultborder rounded-xl">
+        <i class="ri-folder-open-line text-2xl block mb-2 text-textmuted/50"></i>
         No data configured for tab: {{ activeTab }}
       </div>
     </ng-template>
@@ -650,104 +830,324 @@
 
   </app-detail-page-layout>
 
-  <!-- ADD NEW INVOICE MODAL -->
-  <div *ngIf="showInvoiceModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[150] p-4">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-xl overflow-hidden animate-fade-in text-xs">
-      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-        <div>
-          <h5 class="text-xs font-bold text-gray-800 m-0">Add New Invoice</h5>
-          <p class="text-[10px] text-gray-400 m-0">Create an invoice for this lease.</p>
+  <app-filter-drawer
+    [(isOpen)]="isTabDrawerOpen"
+    (apply)="applyTabFilters()"
+    (clear)="clearTabFilters()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
+        <label class="ov-label">Filter by ID</label>
+        <input type="text" class="ov-input" [(ngModel)]="tabFilterId" (keyup.enter)="applyTabFilters()">
+      </div>
+    </div>
+  </app-filter-drawer>
+
+  <!-- Entity previews — portaled to document.body (must sit above sticky table thead) -->
+  <ng-container *ngIf="activeEntityPreview as previewType">
+  <div #leasePreviewEl class="lease-preview" role="dialog"
+    [attr.aria-label]="previewType === 'tenant' ? 'Tenant Details' : previewType === 'property' ? 'Property Details' : previewType === 'unit' ? 'Unit Details' : 'Lease Details'"
+    [ngStyle]="previewPanelStyle" (click)="$event.stopPropagation()">
+
+    <!-- Tenant — Figma 1252:55234 -->
+    <ng-container *ngIf="previewType === 'tenant'">
+      <div class="lease-preview__header">
+        <div class="lease-preview__header-left">
+          <span class="lease-preview__icon" aria-hidden="true"><i class="ri-user-line"></i></span>
+          <div class="lease-preview__head-text">
+            <p class="lease-preview__title">Tenant Details</p>
+            <p class="lease-preview__subtitle">Primary lease holder</p>
+          </div>
         </div>
-        <button (click)="closeInvoiceModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button type="button" class="lease-preview__view" (click)="viewEntity('tenant', $event)">
+          View
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+      <div class="lease-preview__section">
+        <p class="lease-preview__name">{{ tenantPreview.name }}</p>
+        <span class="lease-preview__badge lease-preview__badge--success">{{ tenantPreview.badge }}</span>
+      </div>
+      <div class="lease-preview__rows">
+        <div class="lease-preview__row">
+          <span class="lease-preview__row-icon" aria-hidden="true">
+            <img src="assets/images/action-menu/mail.svg" alt="" width="18" height="18" />
+          </span>
+          <div class="lease-preview__row-text">
+            <span class="lease-preview__label">Email</span>
+            <span class="lease-preview__value">{{ tenantPreview.email }}</span>
+          </div>
+        </div>
+        <div class="lease-preview__row">
+          <span class="lease-preview__row-icon" aria-hidden="true"><i class="ri-phone-line"></i></span>
+          <div class="lease-preview__row-text">
+            <span class="lease-preview__label">Phone</span>
+            <span class="lease-preview__value">{{ tenantPreview.phone }}</span>
+          </div>
+        </div>
+        <div class="lease-preview__row">
+          <span class="lease-preview__row-icon" aria-hidden="true"><i class="ri-user-line"></i></span>
+          <div class="lease-preview__row-text">
+            <span class="lease-preview__label">Tenant Type</span>
+            <span class="lease-preview__value">{{ tenantPreview.tenantType }}</span>
+          </div>
+        </div>
+        <div class="lease-preview__row">
+          <span class="lease-preview__row-icon" aria-hidden="true">
+            <img src="assets/images/work-orders/map-pin.svg" alt="" width="18" height="18" />
+          </span>
+          <div class="lease-preview__row-text">
+            <span class="lease-preview__label">Location</span>
+            <span class="lease-preview__value">{{ tenantPreview.location }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="lease-preview__footer">
+        <button type="button" class="lease-preview__footer-btn" (click)="editEntity('tenant', $event)">
+          Edit Tenant
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Property — Figma 1252:55247 -->
+    <ng-container *ngIf="previewType === 'property'">
+      <div class="lease-preview__header">
+        <div class="lease-preview__header-left">
+          <span class="lease-preview__icon" aria-hidden="true"><i class="ri-building-line"></i></span>
+          <div class="lease-preview__head-text">
+            <p class="lease-preview__title">Property Details</p>
+          </div>
+        </div>
+        <button type="button" class="lease-preview__view" (click)="viewEntity('property', $event)">
+          View
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+      <div class="lease-preview__section">
+        <p class="lease-preview__name">{{ propertyPreview.name }}</p>
+        <span class="lease-preview__badge lease-preview__badge--info">{{ propertyPreview.category }}</span>
+      </div>
+      <div class="lease-preview__section lease-preview__section--stats">
+        <div class="lease-preview__stats">
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ propertyPreview.unitsCount }}</span>
+            <span class="lease-preview__stat-label">Units</span>
+          </div>
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ propertyPreview.occupancy }}</span>
+            <span class="lease-preview__stat-label">Occupancy</span>
+          </div>
+        </div>
+        <div class="lease-preview__pills">
+          <span class="lease-preview__badge lease-preview__badge--success lease-preview__badge--pill">{{ propertyPreview.activeLeases }}</span>
+        </div>
+      </div>
+      <div class="lease-preview__footer">
+        <button type="button" class="lease-preview__footer-btn" (click)="viewEntity('property', $event)">
+          View Property Profile
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Unit — Figma 1255:55355 -->
+    <ng-container *ngIf="previewType === 'unit'">
+      <div class="lease-preview__header">
+        <div class="lease-preview__header-left">
+          <span class="lease-preview__icon" aria-hidden="true"><i class="ri-home-4-line"></i></span>
+          <div class="lease-preview__head-text">
+            <p class="lease-preview__title">Unit Details</p>
+          </div>
+        </div>
+        <button type="button" class="lease-preview__view" (click)="viewEntity('unit', $event)">
+          View
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+      <div class="lease-preview__section lease-preview__section--unit">
+        <div class="min-w-0 flex-1">
+          <p class="lease-preview__name">{{ unitPreview.name }}</p>
+          <p class="lease-preview__loc">{{ unitPreview.location }}</p>
+        </div>
+        <span class="lease-preview__badge lease-preview__badge--info">{{ unitPreview.type }}</span>
+      </div>
+      <div class="lease-preview__section lease-preview__section--stats">
+        <div class="lease-preview__stats">
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ unitPreview.beds }}</span>
+            <span class="lease-preview__stat-label">Bedroom</span>
+          </div>
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ unitPreview.baths }}</span>
+            <span class="lease-preview__stat-label">Bathroom</span>
+          </div>
+        </div>
+        <div class="lease-preview__stats">
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ unitPreview.rent }}</span>
+            <span class="lease-preview__stat-label">Units</span>
+          </div>
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ unitPreview.code }}</span>
+            <span class="lease-preview__stat-label">Unit Code</span>
+          </div>
+        </div>
+        <div class="lease-preview__pills">
+          <span class="lease-preview__badge lease-preview__badge--muted lease-preview__badge--pill">{{ unitPreview.occupancy }}</span>
+          <span class="lease-preview__badge lease-preview__badge--success lease-preview__badge--pill">{{ unitPreview.activeLeases }}</span>
+        </div>
+      </div>
+      <div class="lease-preview__footer">
+        <button type="button" class="lease-preview__footer-btn" (click)="viewEntity('unit', $event)">
+          View Unit Details
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Lease — Figma 1255:55440 -->
+    <ng-container *ngIf="previewType === 'lease'">
+      <div class="lease-preview__header">
+        <div class="lease-preview__header-left">
+          <span class="lease-preview__icon" aria-hidden="true"><i class="ri-home-4-line"></i></span>
+          <div class="lease-preview__head-text">
+            <p class="lease-preview__title">Lease Details</p>
+          </div>
+        </div>
+        <button type="button" class="lease-preview__view" (click)="viewEntity('lease', $event)">
+          View
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+      <div class="lease-preview__section lease-preview__section--unit">
+        <p class="lease-preview__name lease-preview__name--lease">{{ leasePreview.name }}</p>
+        <span class="lease-preview__badge lease-preview__badge--brand">{{ leasePreview.status }}</span>
+      </div>
+      <div class="lease-preview__section lease-preview__section--stats">
+        <div class="lease-preview__stats lease-preview__stats--stack">
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ leasePreview.property }}</span>
+            <span class="lease-preview__stat-label">Property</span>
+          </div>
+          <div class="lease-preview__stat">
+            <span class="lease-preview__stat-val">{{ leasePreview.rent }}</span>
+            <span class="lease-preview__stat-label">Rent</span>
+          </div>
+        </div>
+        <div class="lease-preview__dates">
+          <i class="ri-calendar-event-line" aria-hidden="true"></i>
+          <span>{{ leasePreview.dateRange }}</span>
+        </div>
+      </div>
+      <div class="lease-preview__footer lease-preview__footer--split">
+        <span class="lease-preview__days-left">{{ leasePreview.daysLeft }}</span>
+        <button type="button" class="lease-preview__footer-link" (click)="viewEntity('lease', $event)">
+          Open Lease
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+    </ng-container>
+  </div>
+  </ng-container>
+
+  <!-- ADD NEW INVOICE MODAL -->
+  <div *ngIf="showInvoiceModal" class="ov-modal-backdrop" (click)="closeInvoiceModal()">
+    <div class="ov-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="ov-modal__header">
+        <div>
+          <h5 class="ov-modal__title">Add New Invoice</h5>
+          <p class="ov-modal__sub">Create an invoice for this lease.</p>
+        </div>
+        <button type="button" (click)="closeInvoiceModal()" class="ov-btn ov-btn-ghost !w-8 !h-8 !p-0 !min-w-0" aria-label="Close">
           <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
         </button>
       </div>
-      <div class="p-6 flex flex-col gap-4">
-        <h6 class="font-bold text-primary m-0 uppercase tracking-wider text-[10px]">Invoice Details</h6>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Amount *</label>
-            <input type="text" class="form-control text-xs" placeholder="0.00">
+      <div class="ov-modal__body">
+        <h6 class="ov-card-title !text-[12px] uppercase tracking-wider m-0 text-primary">Invoice Details</h6>
+        <div class="ov-fields grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Amount *</label>
+            <input type="text" class="ov-input" placeholder="0.00">
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Account *</label>
-            <select class="form-control text-xs">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Account *</label>
+            <select class="ov-input">
               <option>Select Account</option>
               <option>Rental Income</option>
             </select>
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Due On *</label>
-            <input type="date" class="form-control text-xs">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Due On *</label>
+            <input type="date" class="ov-input">
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Invoice Number</label>
-            <input type="text" class="form-control text-xs" placeholder="Enter invoice number">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Invoice Number</label>
+            <input type="text" class="ov-input" placeholder="Enter invoice number">
           </div>
         </div>
-        
-        <h6 class="font-bold text-primary m-0 mt-2 uppercase tracking-wider text-[10px]">Payment Setup</h6>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Recurring Cycle *</label>
-            <select class="form-control text-xs">
+
+        <h6 class="ov-card-title !text-[12px] uppercase tracking-wider m-0 mt-5 text-primary">Payment Setup</h6>
+        <div class="ov-fields grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Recurring Cycle *</label>
+            <select class="ov-input">
               <option>Select</option>
               <option>Fixed</option>
             </select>
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Tax Profile</label>
-            <select class="form-control text-xs">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Tax Profile</label>
+            <select class="ov-input">
               <option>Select Account</option>
             </select>
           </div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-        <button (click)="closeInvoiceModal()" class="ti-btn ti-btn-light !py-2 font-bold text-xs rounded-lg shadow-sm">Close</button>
-        <button (click)="closeInvoiceModal()" class="ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">Save Invoice</button>
+      <div class="ov-modal__footer">
+        <button type="button" (click)="closeInvoiceModal()" class="ov-btn ov-btn-ghost">Close</button>
+        <button type="button" (click)="closeInvoiceModal()" class="ov-btn ov-btn-primary">Save Invoice</button>
       </div>
     </div>
   </div>
 
   <!-- ADD INSPECTION MODAL -->
-  <div *ngIf="showInspectionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[150] p-4">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-xl overflow-hidden animate-fade-in text-xs">
-      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+  <div *ngIf="showInspectionModal" class="ov-modal-backdrop" (click)="closeInspectionModal()">
+    <div class="ov-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="ov-modal__header">
         <div>
-          <h5 class="text-xs font-bold text-gray-800 m-0">Add Inspection</h5>
-          <p class="text-[10px] text-gray-400 m-0">Schedule an inspection for this lease.</p>
+          <h5 class="ov-modal__title">Add Inspection</h5>
+          <p class="ov-modal__sub">Schedule an inspection for this lease.</p>
         </div>
-        <button (click)="closeInspectionModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button type="button" (click)="closeInspectionModal()" class="ov-btn ov-btn-ghost !w-8 !h-8 !p-0 !min-w-0" aria-label="Close">
           <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
         </button>
       </div>
-      <div class="p-6 flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection ID *</label>
-            <input type="text" class="form-control text-xs" placeholder="31668">
+      <div class="ov-modal__body">
+        <div class="ov-fields grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Inspection ID *</label>
+            <input type="text" class="ov-input" placeholder="31668">
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Name *</label>
-            <input type="text" class="form-control text-xs" placeholder="Move Out">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Inspection Name *</label>
+            <input type="text" class="ov-input" placeholder="Move Out">
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Type *</label>
-            <select class="form-control text-xs">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Inspection Type *</label>
+            <select class="ov-input">
               <option>Move Out</option>
               <option>Move In</option>
             </select>
           </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Date *</label>
-            <input type="date" class="form-control text-xs">
+          <div class="flex flex-col gap-1.5">
+            <label class="ov-label">Inspection Date *</label>
+            <input type="date" class="ov-input">
           </div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-        <button (click)="closeInspectionModal()" class="ti-btn ti-btn-light !py-2 font-bold text-xs rounded-lg shadow-sm">Cancel</button>
-        <button (click)="closeInspectionModal()" class="ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">Save Inspection</button>
+      <div class="ov-modal__footer">
+        <button type="button" (click)="closeInspectionModal()" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="button" (click)="closeInspectionModal()" class="ov-btn ov-btn-primary">Save Inspection</button>
       </div>
     </div>
   </div>

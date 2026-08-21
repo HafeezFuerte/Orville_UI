@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule,formatDate  } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 import { RouterModule, Router,ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
@@ -19,7 +18,7 @@ interface Occupant {
 @Component({
   selector: 'app-create-lease',
   standalone: true,
-  imports: [CommonModule,FileUploadComponent, FormsModule, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './create-lease.component.html',
   styleUrl: './create-lease.component.scss'
 })
@@ -267,6 +266,47 @@ export class CreateLeaseComponent implements OnInit {
     } else {
       this.attachedFile=null;
     }
+  }
+
+  onPayFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.attachedFile = input.files?.[0] || null;
+  }
+
+  onPayFileDrop(event: DragEvent) {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+      this.attachedFile = file;
+    }
+  }
+
+  clearPayFile() {
+    this.attachedFile = null;
+  }
+
+  clearPaymentForm() {
+    const depositFlag = this.addpaymentbloc?.isSecurityDeposit ?? 0;
+    this.addpaymentbloc = {
+      includetax: false,
+      isSecurityDeposit: depositFlag,
+      Amount: 0,
+      AdvAmt: 0,
+      attachedFile: null,
+      DueDate: null,
+      Memo: '',
+      money_held_by_id: null,
+      Recurrence_id: null,
+      cheque_no: '',
+      cheque_date: '',
+      bank: '',
+      held_by: null,
+      TaxProfileId: null,
+      AccountCode: null,
+      PaymentTypeid: null,
+      InvoiceNo: ''
+    };
+    this.attachedFile = null;
   }
   savePayments(){
     if(this.addpaymentbloc.Amount==null || this.addpaymentbloc.Amount==0){
