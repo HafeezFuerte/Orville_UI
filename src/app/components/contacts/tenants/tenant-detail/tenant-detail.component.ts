@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
@@ -20,6 +20,10 @@ export class TenantDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
+
+  @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
+  @ViewChild(NotesComponent) notesTable!: NotesComponent;
   
   tenantId: any = null;
   tenantData: any = null;
@@ -160,6 +164,7 @@ export class TenantDetailComponent implements OnInit {
     { label: 'Edit Tenant', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
     { label: 'Add Lease', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
     { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
+    { label: 'Add Notes', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
     { label: 'Add User', icon: 'ri-user-add-line' },
     { label: 'Add Emergency Contact', icon: 'ri-phone-line' },
     { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
@@ -176,17 +181,31 @@ export class TenantDetailComponent implements OnInit {
   onTenantAction(label: string): void {
     this.showActionDropdown = false;
     if (label === 'Edit Tenant') {
-      // Primary Edit button handles navigation; keep menu item for parity
-      window.location.href = '/contacts/tenants/edit-tenant/' + this.tenantId;
+      this.router.navigate(['/contacts/tenants/edit-tenant', this.tenantId]);
       return;
     }
     if (label === 'Add Lease') {
-      window.location.href = `/leases/create-lease?tenantCode=${this.tenantId}`;
+      this.router.navigate(['/leases/create'], { queryParams: { tenantCode: this.tenantId } });
       return;
     }
-    else if (label === 'Add Attachment') this.showAddAttachmentModal = true;
-    else if (label === 'Add User') this.showAddUserModal = true;
-    else if (label === 'Add Emergency Contact') this.showAddEmergencyContactModal = true;
+    else if (label === 'Add Attachment') {
+      this.activeTab = 'Attachments';
+      this.initializeTabs();
+      setTimeout(() => this.attachmentsTable?.openModal(), 0);
+    }
+    else if (label === 'Add Notes') {
+      this.activeTab = 'Notes';
+      this.initializeTabs();
+      setTimeout(() => this.notesTable?.openModal(), 0);
+    }
+    else if (label === 'Add User') {
+      this.activeTab = 'Users';
+      this.showAddUserModal = true;
+    }
+    else if (label === 'Add Emergency Contact') {
+      this.activeTab = 'Emergency Contact';
+      this.showAddEmergencyContactModal = true;
+    }
     else if (label === 'Add Broadcast') this.showAddBroadcastModal = true;
     else if (label === 'Send Email') this.showSendEmailModal = true;
   }

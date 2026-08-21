@@ -295,18 +295,11 @@ export class RoomDetailComponent implements OnInit {
               createdAt: wo.created_date || wo.created_at || wo.createdAt || ''
             }));
             this.initModeData(); 
-          } else if (typeId === 15) {
-            this.fetchDetails(rawId, 14);
           }
-        } else if (typeId === 15) {
-          this.fetchDetails(rawId, 14);
         }
       },
       error: err => {
         console.error(err);
-        if (typeId === 15) {
-          this.fetchDetails(rawId, 14);
-        }
       }
     });
   }

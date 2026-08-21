@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
@@ -21,6 +21,10 @@ export class LandlordDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private router = inject(Router);
+
+  @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
+  @ViewChild(NotesComponent) notesTable!: NotesComponent;
   
   countries: any[] = [];
   states: any[] = [];
@@ -304,17 +308,31 @@ export class LandlordDetailComponent implements OnInit {
   onLandlordAction(label: string): void {
     this.showActionDropdown = false;
     if (label === 'Edit Landlord') {
-      window.location.href = '/contacts/landlords/edit-landlord/' + this.landlordId;
+      this.router.navigate(['/contacts/landlords/edit-landlord', this.landlordId]);
       return;
     }
     if (label === 'Inflow') this.showInflowModal = true;
     else if (label === 'Outflow') this.showOutflowModal = true;
     else if (label === 'Landlord Contribution') this.showContributionModal = true;
     else if (label === 'Landlord Distribution') this.showDistributionModal = true;
-    else if (label === 'Add Notes') this.showAddNoteModal = true;
-    else if (label === 'Add Attachment') this.showAddAttachmentModal = true;
-    else if (label === 'Add User') this.showAddUserModal = true;
-    else if (label === 'Add Emergency Contact') this.showAddEmergencyContactModal = true;
+    else if (label === 'Add Notes') {
+      this.activeTab = 'Notes';
+      this.initializeTabs();
+      setTimeout(() => this.notesTable?.openModal(), 0);
+    }
+    else if (label === 'Add Attachment') {
+      this.activeTab = 'Attachments';
+      this.initializeTabs();
+      setTimeout(() => this.attachmentsTable?.openModal(), 0);
+    }
+    else if (label === 'Add User') {
+      this.activeTab = 'User';
+      this.showAddUserModal = true;
+    }
+    else if (label === 'Add Emergency Contact') {
+      this.activeTab = 'Emergency Contact';
+      this.showAddEmergencyContactModal = true;
+    }
   }
 
   // Email subscriptions list

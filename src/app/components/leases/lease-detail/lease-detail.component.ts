@@ -15,10 +15,11 @@ import { CommonService } from '../../../services/common.service';
 import { UnitsTableComponent } from '../../child-tables/units/units-table.component';
 import { WorkordersTableComponent } from '../../child-tables/workorders/workorders.component';
 import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
+import { FinancialsComponent } from '../../child-tables/financials/financials.component';
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent],
+  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FinancialsComponent],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })

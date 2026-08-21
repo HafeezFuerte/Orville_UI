@@ -137,48 +137,7 @@
   <section class="ov-detail-layout__right flex min-w-0 flex-col gap-6">
     <section>
       <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">Invoice Overview</h5>
-      <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'overview'">
-        <div class="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
-          <div class="ov-search flex-1 max-w-[437px]">
-            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
-            <input type="text" class="ov-input ov-search__input" [(ngModel)]="overviewQuery" placeholder="Search">
-          </div>
-          <div class="relative" (click)="$event.stopPropagation()">
-            <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('overview', $event)">
-              <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
-              Column
-            </button>
-            <div *ngIf="openColumnMenu === 'overview'" class="invd-col-menu">
-              <label>
-                <input type="checkbox" [checked]="allSelected(overviewCols)" (change)="toggleAll(overviewCols, $event)">
-                Select All
-              </label>
-              <label *ngFor="let col of overviewCols">
-                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(overviewCols, col.key)">
-                {{ col.label }}
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="invd-table-wrap">
-          <table class="invd-table">
-            <thead>
-              <tr>
-                <th *ngFor="let col of visible(overviewCols)">{{ col.label }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of filteredOverview()">
-                <td *ngFor="let col of visible(overviewCols)" [ngSwitch]="col.key">
-                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
-                  <span *ngSwitchCase="'inclusiveTax'" class="inv-badge inv-badge--navy">{{ row.inclusiveTax }}</span>
-                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <app-financials-table [invoices]="invoicesList" [leaseInfo]="leaseInfo" [currentUser]="currentUser"></app-financials-table>
     </section>
 
     <section>

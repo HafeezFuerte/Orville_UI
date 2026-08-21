@@ -20,19 +20,55 @@ import {
   TXN_COLUMNS
 } from './invoice-detail.data';
 import { INVOICE_ROWS } from './invoices.data';
+import { FinancialsComponent } from '../../child-tables/financials/financials.component';
 
 type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, FinancialsComponent],
   templateUrl: './invoice-detail.component.html',
   styleUrl: './invoice-detail.component.scss'
 })
 export class InvoiceDetailComponent implements OnInit {
   invoice: InvoiceDetail = INVOICE_DETAIL;
   overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
+
+  get invoicesList(): any[] {
+    const numAmt = Number(this.invoice.amountDue.replace(/[^\d.]/g, '')) || Number(this.invoice.balance.replace(/[^\d.]/g, '')) || 3000;
+    return [{
+      rcp_no: this.invoice.invoiceNo,
+      cheque_status: this.invoice.status,
+      created_date: this.invoice.issueDate,
+      cheque_date: this.invoice.dueDate,
+      payment_type: this.invoice.paymentVia,
+      amt: numAmt,
+      receipts: this.chequeRows.map((c) => ({
+        receiptNo: c.chequeNo ? c.chequeNo.replace('CH', 'RCP') : 'RCP-' + c.id,
+        date: c.chequeDate,
+        method: this.invoice.paymentVia || 'Cheque',
+        reference: c.chequeNo || '-',
+        amount: Number(c.amount.replace(/[^\d.]/g, '')) || 0,
+        status: c.status || 'Cleared'
+      }))
+    }];
+  }
+
+  get leaseInfo(): any {
+    return {
+      tenant: this.invoice.tenant,
+      unitcode: this.invoice.lease,
+      property: 'Dubai Marina, Tower A, Dubai',
+      property_code: '31658',
+      code: this.invoice.recordId,
+      status_nm: 'Active'
+    };
+  }
+
+  currentUser: any = {
+    currencyCode: 'AED'
+  };
   chequeRows: InvoiceChequeRow[] = INVOICE_CHEQUE_ROWS;
   txnRows: InvoiceTxnRow[] = INVOICE_TXN_ROWS;
   penaltyRows: InvoicePenaltyRow[] = INVOICE_PENALTY_ROWS;

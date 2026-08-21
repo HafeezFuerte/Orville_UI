@@ -1,0 +1,153 @@
+<div class="flex flex-col gap-5 text-xs">
+  
+  <div *ngIf="invoices.length === 0" class="box bg-white border border-gray-100 rounded-xl p-8 text-center shadow-sm">
+    <span class="text-gray-400 italic">No invoice records found</span>
+  </div>
+
+  <div *ngFor="let invoice of invoices; let i = index" class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden transition-all duration-200">
+    
+    <!-- Invoice Card Header (Clickable to collapse/expand) -->
+    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none" (click)="toggleExpand(invoice.invoicecode || invoice.id || i)">
+      <div class="flex items-center gap-3">
+        <span class="font-black text-gray-800 text-[13px] hover:text-primary transition-colors">
+          {{ invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || ('Payment Schedule #' + (i + 1)) }}
+        </span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-wider" [ngClass]="getStatusBadgeClass(invoice.cheque_status || invoice.status || 'Unpaid')">
+          {{ getArabicLookupName(invoice, 'cheque_status') || getArabicLookupName(invoice, 'status') || 'Unpaid' }}
+        </span>
+      </div>
+      
+      <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
+        <button type="button" class="ti-btn !py-1 !px-2.5 !text-[11px] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm font-semibold flex items-center gap-1">
+          <i class="ri-eye-line"></i> View Invoice
+        </button>
+        <button type="button" class="ti-btn !py-1 !px-2.5 !text-[11px] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm font-semibold flex items-center gap-1">
+          <i class="ri-download-line"></i> Download
+        </button>
+        <button type="button" (click)="toggleExpand(invoice.invoicecode || invoice.id || i)" class="w-7 h-7 rounded flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          <i class="ri-arrow-down-s-line transition-transform duration-200 text-[16px]" [class.rotate-180]="expandedInvoiceId === (invoice.invoicecode || invoice.id || i)"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Invoice Details Panel (Collapsible content) -->
+    <div *ngIf="expandedInvoiceId === (invoice.invoicecode || invoice.id || i)" class="p-5 flex flex-col gap-5 animate-fade-in">
+      
+      <!-- Meta Information Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-4 border-b border-gray-100 text-[11px]">
+        <div>
+          <span class="text-gray-400 block font-medium">Invoice Date</span>
+          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.created_date | date:'dd MMM yyyy' || '-' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block font-medium">Due Date</span>
+          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.cheque_date | date:'dd MMM yyyy' || '-' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block font-medium">Account</span>
+          <span class="font-bold text-gray-700 mt-0.5 block">Rental Income</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block font-medium">Payment Method</span>
+          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.payment_type || 'Mixed' }}</span>
+        </div>
+      </div>
+
+      <!-- Summary Metrics row (Figma 4 boxes) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Invoice Total</span>
+          <h5 class="text-[15px] font-black text-gray-800">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.amt | number:'1.2-2' }}</h5>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Amount Paid</span>
+          <h5 class="text-[15px] font-black text-success">{{ currentUser?.currencyCode || 'AED' }} {{ ((invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? invoice.amt : 0) | number:'1.2-2' }}</h5>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Balance Due</span>
+          <h5 class="text-[15px] font-black text-danger">{{ currentUser?.currencyCode || 'AED' }} {{ ((invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? 0 : invoice.amt) | number:'1.2-2' }}</h5>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Receipts</span>
+          <h5 class="text-[15px] font-black text-gray-800">{{ getReceiptsForInvoice(invoice).length }}</h5>
+        </div>
+      </div>
+
+      <!-- Allocation Progress Bar -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex justify-between items-center text-[10px] font-semibold">
+          <span class="text-gray-500">Payment progress</span>
+          <span class="text-gray-700">{{ (invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? '100% paid' : '0% paid' }}</span>
+        </div>
+        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-500" [ngClass]="(invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? 'bg-success w-full' : 'bg-danger w-0'"></div>
+        </div>
+      </div>
+
+      <!-- Receipts Detail Section -->
+      <div class="flex flex-col gap-3 mt-2">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <h6 class="font-bold text-gray-800 text-[12px] m-0">Receipts against this invoice</h6>
+              <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-bold border border-gray-200/50 text-[10px]">
+                {{ getReceiptsForInvoice(invoice).length }} receipts
+              </span>
+            </div>
+            <p class="text-[10px] text-gray-400 m-0 mt-0.5">Each receipt reduces the invoice balance. Invoice number is shown above only.</p>
+          </div>
+          <button type="button" class="px-3 py-1.5 text-[10px] rounded bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] font-semibold flex items-center gap-1.5 shadow-sm">
+            <i class="ri-add-line text-[12px]"></i> Record Receipt
+          </button>
+        </div>
+
+        <div class="table-responsive border border-gray-100 rounded-xl overflow-hidden shadow-sm w-full">
+          <table class="ov-table min-w-full">
+            <thead class="ov-table__head">
+              <tr class="border-b border-gray-100 bg-gray-50">
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Receipt No</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Date</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Method</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Reference</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Amount</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Status</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let receipt of getReceiptsForInvoice(invoice)" class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                <td class="py-3 px-4 font-bold text-primary text-xs whitespace-nowrap">
+                  <a href="javascript:void(0)" class="hover:underline">{{ receipt.receiptNo }}</a>
+                </td>
+                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.date | date:'dd MMM yyyy' }}</td>
+                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.method }}</td>
+                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.reference }}</td>
+                <td class="py-3 px-4 text-xs whitespace-nowrap font-bold text-gray-800">{{ currentUser?.currencyCode || 'AED' }} {{ receipt.amount | number:'1.2-2' }}</td>
+                <td class="py-3 px-4 text-xs whitespace-nowrap">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider" [ngClass]="getStatusBadgeClass(receipt.status)">
+                    {{ receipt.status }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center text-xs">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button type="button" class="w-7 h-7 rounded border bg-white text-gray-600 hover:bg-gray-50 flex items-center justify-center shadow-sm" title="View details">
+                      <i class="ri-more-2-line text-[14px]"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="flex justify-end mt-2 font-bold text-gray-700 text-[11px] gap-1">
+          <span>Total applied to invoice:</span>
+          <span class="text-primary">{{ currentUser?.currencyCode || 'AED' }} {{ ((invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? invoice.amt : 0) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 export class SupportTechnicianDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private router = inject(Router);
   
   technicianId: any = null;
   technicianData: any = null;
@@ -112,7 +113,7 @@ export class SupportTechnicianDetailComponent implements OnInit {
   onTechnicianAction(label: string): void {
     this.showActionDropdown = false;
     if (label === 'Edit Technician') {
-      window.location.href = '/contacts/support-technicians/edit-support-technician/' + this.technicianId;
+      this.router.navigate(['/contacts/support-technicians/edit-support-technician', this.technicianId]);
       return;
     }
   }
