@@ -9,6 +9,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -20,7 +21,12 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 export class VendorDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private portfolioService = inject(PortfolioService);
   
+  countries: any[] = [];
+  states: any[] = [];
+  cities: any[] = [];
+
   vendorId: any = null;
   vendorData: any = null;
   notesForm: any = {};
@@ -87,29 +93,137 @@ export class VendorDetailComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          if (res.objResult.vendor_dtls && res.objResult.vendor_dtls.length > 0) {
-            this.vendorData = res.objResult.vendor_dtls[0];
-          } else if (res.objResult.vendors && res.objResult.vendors.length > 0) {
-            this.vendorData = res.objResult.vendors[0];
-          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
-            this.vendorData = res.objResult[0];
+          const result = res.objResult;
+          let vendorObj: any = null;
+          if (result.table && result.table[0]) {
+            vendorObj = result.table[0];
+          } else if (result.vendors_dtls && result.vendors_dtls[0]) {
+            vendorObj = result.vendors_dtls[0];
+          } else if (result.vendor_dtls && result.vendor_dtls[0]) {
+            vendorObj = result.vendor_dtls[0];
+          } else if (result.vendors && result.vendors[0]) {
+            vendorObj = result.vendors[0];
+          } else {
+            const arrayKey = Object.keys(result).find(key => Array.isArray(result[key]) && result[key].length > 0 && key !== 'workorders' && key !== 'work_orders' && key !== 'units' && key !== 'bills' && key !== 'purchase_orders' && key !== 'documents' && key !== 'quotations' && key !== 'notes' && key !== 'users' && key !== 'emergency_dtls');
+            if (arrayKey) {
+              vendorObj = result[arrayKey][0];
+            }
           }
-          if (res.objResult.units) this.unitData = res.objResult.units;
-          if (res.objResult.work_orders) this.workOrderData = res.objResult.work_orders;
-          if (res.objResult.bills) this.billData = res.objResult.bills;
-          if (res.objResult.purchase_orders) this.poData = res.objResult.purchase_orders;
-          if (res.objResult.documents) this.attachmentData = res.objResult.documents;
-          if (res.objResult.quotations) this.quotationData = res.objResult.quotations;
-          if (res.objResult.note) this.noteData = res.objResult.note;
+          this.vendorData = vendorObj;
+          if (result.units) this.unitData = result.units;
+          if (result.workorders) this.workOrderData = result.workorders;
+          else if (result.work_orders) this.workOrderData = result.work_orders;
+          if (result.bills) this.billData = result.bills;
+          if (result.purchase_orders) this.poData = result.purchase_orders;
+          if (result.documents) this.attachmentData = result.documents;
+          if (result.quotations) this.quotationData = result.quotations;
+          if (result.notes) this.noteData = result.notes;
+          else if (result.note) this.noteData = result.note;
+          if (result.users) this.userData = result.users;
+          if (result.emergency_dtls) this.emergencyContactData = result.emergency_dtls;
           
+          if (this.vendorData) {
+            const data = this.vendorData;
+            this.vendor.id = data.id || data.code || this.vendor.id;
+            this.vendor.name = data.company_name || data.vendor_name || this.vendor.name;
+            this.vendor.email = data.email_address || data.email || this.vendor.email;
+            this.vendor.username = data.username || data.login_username || this.vendor.username;
+            this.vendor.trn = data.tax_registration_no || data.trn || '-';
+            this.vendor.tradeLicense = data.trade_license || '-';
+
+            this.vendor.personal.fullName = data.contact_name || data.full_name || this.vendor.personal.fullName;
+            this.vendor.personal.email = data.email_address || this.vendor.personal.email;
+            this.vendor.personal.phone = data.phone_number || data.mobile_no || this.vendor.personal.phone;
+            this.vendor.personal.address1 = data.address1 || this.vendor.personal.address1;
+            this.vendor.personal.address2 = data.address2 || this.vendor.personal.address2;
+            this.vendor.personal.country = data.country || data.country_id || this.vendor.personal.country;
+            this.vendor.personal.state = data.state || data.stateid || this.vendor.personal.state;
+            this.vendor.personal.city = data.city || this.vendor.personal.city;
+            this.vendor.personal.postcode = data.zipcode || data.postcode || '';
+            this.vendor.personal.created = data.created_at || data.created || '';
+            this.vendor.personal.lastUpdated = data.updated_at || data.lastUpdated || '';
+          }
+
           console.log('Vendor Details Loaded:', this.vendorData);
           this.initializeTabs();
+          this.loadLocations();
         }
       },
       error: (err) => {
         console.error('Error fetching vendor details:', err);
       }
     });
+  }
+
+  loadLocations() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 1000,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.countries = res.objResult.table;
+          this.resolveLocationNames();
+        }
+      }
+    });
+  }
+
+  resolveLocationNames() {
+    if (!this.vendorData) return;
+
+    // Resolve country
+    const countryId = Number(this.vendorData.country_id || this.vendorData.country);
+    if (countryId) {
+      const country = this.countries.find(c => Number(c.id) === countryId);
+      if (country) {
+        this.vendor.personal.country = country.country_name || country.name || String(countryId);
+      }
+
+      // Load states for this country
+      this.portfolioService.getMasterByType({
+        typeId: 1001,
+        filterId: 0,
+        filterText: countryId.toString(),
+        filterText1: ''
+      }).subscribe({
+        next: (resState: any) => {
+          if (resState.statusCode == 200 && resState.objResult && resState.objResult.table) {
+            this.states = resState.objResult.table;
+            const stateId = Number(this.vendorData.stateid || this.vendorData.state || this.vendorData.state_id);
+            if (stateId) {
+              const state = this.states.find(s => Number(s.id) === stateId);
+              if (state) {
+                this.vendor.personal.state = state.state_name || state.name || String(stateId);
+              }
+
+              // Load cities for this state
+              this.portfolioService.getMasterByType({
+                typeId: 1002,
+                filterId: 0,
+                filterText: stateId.toString(),
+                filterText1: ''
+              }).subscribe({
+                next: (resCity: any) => {
+                  if (resCity.statusCode == 200 && resCity.objResult && resCity.objResult.table) {
+                    this.cities = resCity.objResult.table;
+                    const cityId = Number(this.vendorData.city || this.vendorData.city_id);
+                    if (cityId) {
+                      const city = this.cities.find(ci => Number(ci.id) === cityId);
+                      if (city) {
+                        this.vendor.personal.city = city.city_name || city.name || String(cityId);
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
   }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
@@ -208,25 +322,26 @@ export class VendorDetailComponent implements OnInit {
   }
 
   // Vendor profiles
+  // Vendor profiles
   vendor = {
-    id: 31658,
-    name: 'Shamed Vendor',
-    email: 'shamedvendor@gmail.com',
-    username: 'orville_real',
+    id: 0,
+    name: 'Loading...',
+    email: '',
+    username: '',
     trn: '-',
     tradeLicense: '-',
     personal: {
-      fullName: 'Shamed Rehman',
-      email: 'rental@orvillerealestate.com',
-      phone: '43332903',
-      address1: 'Dubai Marina, Tower A, Dubai',
-      address2: 'Dubai Marina, Tower A, Dubai',
-      country: 'United Arab Emirates',
-      state: 'Dubai',
-      city: 'Dubai',
-      postcode: 'India',
-      created: '12-09-1995',
-      lastUpdated: '12-09-1995',
+      fullName: '',
+      email: '',
+      phone: '',
+      address1: '',
+      address2: '',
+      country: '',
+      state: '',
+      city: '',
+      postcode: '',
+      created: '',
+      lastUpdated: '',
       canCreateWorkOrder: false
     }
   };
@@ -420,6 +535,7 @@ export class VendorDetailComponent implements OnInit {
   ];
 
   technicianData: any[] = [];
+  emergencyContactData: any[] = [];
 
   setTab(tab: string) {
     this.activeTab = tab;

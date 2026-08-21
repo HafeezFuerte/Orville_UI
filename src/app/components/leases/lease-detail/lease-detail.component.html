@@ -484,6 +484,18 @@
                       <a *ngIf="row.attachment_path" href="javascript:void(0)" class="ov-link font-medium">{{ row.attachment_path }}</a>
                       <span *ngIf="!row.attachment_path" class="text-textmuted">—</span>
                     </ng-container>
+                    <ng-container *ngSwitchCase="'due_date'">
+                      <span class="font-bold text-gray-700">{{ row.due_date | date:'yyyy-MM-dd' }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'recurring_cycle'">
+                      <span class="font-bold text-gray-700">{{ row.recurring_cycle }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'payment_type'">
+                      <span class="font-bold text-gray-700">{{ row.payment_type }}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'attachment_path'">
+                      <span class="font-bold text-gray-700">{{ row.attachment_path}}</span>
+                    </ng-container> 
                   </ng-container>
                 </ng-template>
               </app-shared-table>
@@ -816,6 +828,7 @@
         <i class="ri-folder-open-line text-2xl block mb-2 text-textmuted/50"></i>
         No data configured for tab: {{ activeTab }}
       </div>
+ 
     </ng-template>
 
     <!-- PROJECTED NOTES SLOT -->

@@ -651,10 +651,10 @@ export class AddTenantComponent implements OnInit {
 
     // Files
     if (this.profileImage) {
-      formData.append('profileImage_path', this.profileImage, this.profileImage.name);
+      formData.append('profileImage', this.profileImage, this.profileImage.name);
     }
     if (this.signatureImage) {
-      formData.append('signature_path', this.signatureImage, this.signatureImage.name);
+      formData.append('signature', this.signatureImage, this.signatureImage.name);
     }
 
     this.propertiesService.saveTenant(formData).subscribe({

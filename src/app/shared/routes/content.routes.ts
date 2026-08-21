@@ -79,6 +79,16 @@ export const content: Routes = [
   { path: 'spaces/:id', redirectTo: '/bookings/spaces/:id' },
   { path: 'flat-reservations', redirectTo: '/bookings/flat-reservations', pathMatch: 'full' },
   {
+    path: 'legal',
+    loadChildren: () =>
+      import('../../components/legal/legal.routes').then((m) => m.legalRoutes),
+  },
+  {
+    path: 'inspections',
+    loadChildren: () =>
+      import('../../components/inspections/inspections.routes').then((m) => m.inspectionsRoutes),
+  },
+  {
     path: 'settings',
     children: [
       {

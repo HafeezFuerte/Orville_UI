@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 
 @Component({
   selector: 'app-landlord-detail',
@@ -19,7 +20,12 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 export class LandlordDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private portfolioService = inject(PortfolioService);
   
+  countries: any[] = [];
+  states: any[] = [];
+  cities: any[] = [];
+
   landlordId: any = null;
   landlordData: any = null;
   notesForm: any = {};
@@ -86,27 +92,166 @@ export class LandlordDetailComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          if (res.objResult.landlord_dtls && res.objResult.landlord_dtls.length > 0) {
-            this.landlordData = res.objResult.landlord_dtls[0];
-          } else if (res.objResult.landlords && res.objResult.landlords.length > 0) {
-            this.landlordData = res.objResult.landlords[0];
-          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
-            this.landlordData = res.objResult[0];
+          const result = res.objResult;
+          let landlordObj: any = null;
+          if (result.table && result.table[0]) {
+            landlordObj = result.table[0];
+          } else if (result.landlord_dtls && result.landlord_dtls[0]) {
+            landlordObj = result.landlord_dtls[0];
+          } else if (result.landlords && result.landlords[0]) {
+            landlordObj = result.landlords[0];
+          } else {
+            const arrayKey = Object.keys(result).find(key => Array.isArray(result[key]) && result[key].length > 0 && key !== 'leases' && key !== 'note' && key !== 'documents' && key !== 'emergency_dtls' && key !== 'units');
+            if (arrayKey) {
+              landlordObj = result[arrayKey][0];
+            }
           }
+          this.landlordData = landlordObj;
           if (res.objResult.leases) this.transactionData = res.objResult.leases; // Map if needed
           if (res.objResult.note) this.noteData = res.objResult.note;
           if (res.objResult.documents) this.attachmentData = res.objResult.documents;
           if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
           if (res.objResult.units) this.unitData = res.objResult.units;
           
+          if (this.landlordData) {
+            const data = this.landlordData;
+            this.landlord.id = data.id || this.landlord.id;
+            this.landlord.name = data.landlord || data.company_name || (data.first_name ? (data.first_name + ' ' + (data.last_name || '')) : '') || this.landlord.name;
+            this.landlord.email = data.email_address || data.email || this.landlord.email;
+            this.landlord.username = data.username || this.landlord.username;
+            this.landlord.personal.id = String(data.id || this.landlord.personal.id);
+            this.landlord.personal.name = data.landlord || (data.first_name ? (data.first_name + ' ' + (data.last_name || '')) : '') || this.landlord.personal.name;
+            this.landlord.personal.email = data.email_address || data.email || this.landlord.personal.email;
+            this.landlord.personal.phone = data.phone_number || data.mobile_no || this.landlord.personal.phone;
+            this.landlord.personal.nationality = data.nationality || this.landlord.personal.nationality;
+            this.landlord.personal.address1 = data.address1 || this.landlord.personal.address1;
+            this.landlord.personal.address2 = data.address2 || this.landlord.personal.address2;
+            this.landlord.personal.country = data.country || data.country_id || this.landlord.personal.country;
+            this.landlord.personal.state = data.state || data.stateid || this.landlord.personal.state;
+            this.landlord.personal.city = data.city || this.landlord.personal.city;
+            this.landlord.personal.tag = data.trade_license || this.landlord.personal.tag;
+
+            // Map Wallet Settings
+            this.landlord.wallet.openingBalance = data.opening_balance || this.landlord.wallet.openingBalance;
+            this.landlord.wallet.openingBalanceDate = data.opening_balance_date || this.landlord.wallet.openingBalanceDate;
+            this.landlord.wallet.negativeBalanceAllowed = data.negative_balances !== undefined ? data.negative_balances : this.landlord.wallet.negativeBalanceAllowed;
+            this.landlord.wallet.holdWalletMoney = data.auto_hold_amount_in_wallet !== undefined ? data.auto_hold_amount_in_wallet : this.landlord.wallet.holdWalletMoney;
+            this.landlord.wallet.includeSecurityDeposit = data.security_deposit_leases !== undefined ? data.security_deposit_leases : this.landlord.wallet.includeSecurityDeposit;
+            this.landlord.wallet.includeSecurityDepositNonLeasee = data.security_deposit_non_leases !== undefined ? data.security_deposit_non_leases : this.landlord.wallet.includeSecurityDepositNonLeasee;
+            this.landlord.wallet.includeContributionWalletDeposit = data.landlord_contribution !== undefined ? data.landlord_contribution : this.landlord.wallet.includeContributionWalletDeposit;
+
+            // Map Bank Details
+            if (data.bankdtls) {
+              this.landlord.bank.name = data.bankdtls.bank_name || this.landlord.bank.name;
+              this.landlord.bank.address = data.bankdtls.bank_address || this.landlord.bank.address;
+              this.landlord.bank.accountName = data.bankdtls.account_name || this.landlord.bank.accountName;
+              this.landlord.bank.swift = data.bankdtls.code_swift || this.landlord.bank.swift;
+              this.landlord.bank.iban = data.bankdtls.iban || this.landlord.bank.iban;
+              this.landlord.bank.accountNo = data.bankdtls.account_no || this.landlord.bank.accountNo;
+              this.landlord.bank.sortCode = data.bankdtls.sort_code || this.landlord.bank.sortCode;
+            } else {
+              this.landlord.bank.name = data.bank_name || this.landlord.bank.name;
+              this.landlord.bank.address = data.bank_address || this.landlord.bank.address;
+              this.landlord.bank.swift = data.code_swift || data.swift || this.landlord.bank.swift;
+              this.landlord.bank.iban = data.iban || this.landlord.bank.iban;
+              this.landlord.bank.accountNo = data.account_no || this.landlord.bank.accountNo;
+              this.landlord.bank.sortCode = data.sort_code || this.landlord.bank.sortCode;
+            }
+
+            // Map Signature Settings
+            this.landlord.signature.autoSign = data.is_auto_sign_leases !== undefined ? data.is_auto_sign_leases : this.landlord.signature.autoSign;
+            this.landlord.signature.signatureAttached = !!data.signature_path;
+          }
+
           console.log('Landlord Details Loaded:', this.landlordData);
           this.initializeTabs();
+          this.loadLocations();
         }
       },
       error: (err) => {
         console.error('Error fetching landlord details:', err);
       }
     });
+  }
+
+  loadLocations() {
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: 1000,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.countries = res.objResult.table;
+          this.resolveLocationNames();
+        }
+      }
+    });
+  }
+
+  resolveLocationNames() {
+    if (!this.landlordData) return;
+    
+    // Resolve nationality
+    const natId = Number(this.landlordData.nationality);
+    if (natId) {
+      const country = this.countries.find(c => Number(c.id) === natId);
+      if (country) {
+        this.landlord.personal.nationality = country.country_name || country.name || String(natId);
+      }
+    }
+
+    // Resolve country
+    const countryId = Number(this.landlordData.country_id || this.landlordData.country);
+    if (countryId) {
+      const country = this.countries.find(c => Number(c.id) === countryId);
+      if (country) {
+        this.landlord.personal.country = country.country_name || country.name || String(countryId);
+      }
+
+      // Load states for this country
+      this.portfolioService.getMasterByType({
+        typeId: 1001,
+        filterId: 0,
+        filterText: countryId.toString(),
+        filterText1: ''
+      }).subscribe({
+        next: (resState: any) => {
+          if (resState.statusCode == 200 && resState.objResult && resState.objResult.table) {
+            this.states = resState.objResult.table;
+            const stateId = Number(this.landlordData.stateid || this.landlordData.state || this.landlordData.state_id);
+            if (stateId) {
+              const state = this.states.find(s => Number(s.id) === stateId);
+              if (state) {
+                this.landlord.personal.state = state.state_name || state.name || String(stateId);
+              }
+
+              // Load cities for this state
+              this.portfolioService.getMasterByType({
+                typeId: 1002,
+                filterId: 0,
+                filterText: stateId.toString(),
+                filterText1: ''
+              }).subscribe({
+                next: (resCity: any) => {
+                  if (resCity.statusCode == 200 && resCity.objResult && resCity.objResult.table) {
+                    this.cities = resCity.objResult.table;
+                    const cityId = Number(this.landlordData.city || this.landlordData.city_id);
+                    if (cityId) {
+                      const city = this.cities.find(ci => Number(ci.id) === cityId);
+                      if (city) {
+                        this.landlord.personal.city = city.city_name || city.name || String(cityId);
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    }
   }
   branches = ['Main Branch', 'Branch A'];
   buildings = ['Building 1', 'Building 2'];
@@ -196,45 +341,45 @@ export class LandlordDetailComponent implements OnInit {
 
   // Landlord profile configurations & details
   landlord = {
-    id: 31658,
-    name: 'Orville Real Estate',
-    email: 'rental@orvillerealestate.com',
-    username: 'orville_real',
+    id: 0,
+    name: 'Loading...',
+    email: '',
+    username: '',
     verified: false,
     personal: {
-      id: '31568',
-      name: 'Orville Real Estate',
-      email: 'rental@orvillerealestate.com',
-      phone: '43332903',
-      dob: '12-09-1995',
-      maritalStatus: 'Single',
-      nationality: 'India',
-      address1: 'Dubai Marina, Tower A, Dubai',
-      address2: 'Dubai Marina, Tower A, Dubai',
-      country: 'United Arab Emirates',
-      state: 'Dubai',
-      city: 'Dubai',
-      tag: 'Orville',
+      id: '',
+      name: '',
+      email: '',
+      phone: '',
+      dob: '',
+      maritalStatus: '',
+      nationality: '',
+      address1: '',
+      address2: '',
+      country: '',
+      state: '',
+      city: '',
+      tag: '',
       profileVerified: false
     },
     wallet: {
       openingBalance: '0.0',
       openingBalanceDate: 'N/A',
-      negativeBalanceAllowed: true,
-      holdWalletMoney: true,
+      negativeBalanceAllowed: false,
+      holdWalletMoney: false,
       includeSecurityDeposit: false,
       includeSecurityDepositNonLeasee: false,
-      includeContributionWalletDeposit: true,
+      includeContributionWalletDeposit: false,
       moneyHeldBy: 'N/A'
     },
     bank: {
-      name: 'ENBD Bank',
-      address: 'Deira, Dubai',
-      accountName: 'Orville Real Estate',
+      name: '',
+      address: '',
+      accountName: '',
       swift: '-',
-      iban: 'ENB0351496556322',
-      accountNo: '125322878556984',
-      sortCode: '66841'
+      iban: '',
+      accountNo: '',
+      sortCode: ''
     },
     signature: {
       autoSign: false,

@@ -6,6 +6,7 @@ exports.locale = {
     data: {
         "web": {
             "contacts": {
+                "lblSignature": "Signature",
                 "lblNewTenant": "New Tenant",
                 "lblAllContacts": "All Contacts",
                 "lblViewEveryContact": "View every contact across your organisation",
@@ -255,7 +256,7 @@ exports.locale = {
                 "lblProperty": "Property",
                 "lblCancel": "Cancel",
                 "lblSaveProperty": "Save Property",
-                "lblUpdateProperty": "Update Property",
+               
                 "lblViewActivity": "View Activity",
                 "lblEditProperty": "Edit Property",
                 "lblPropertyBasics": "Property Basics",
@@ -433,6 +434,7 @@ exports.locale = {
                 "lblSearch": "Search..."
             },
             "common": {
+                "lblPortfolio": "Portfolio",
                 "lblAmount": "Amount",
                 "lblStatus": "Status",
                 "lblCompany": "Company",

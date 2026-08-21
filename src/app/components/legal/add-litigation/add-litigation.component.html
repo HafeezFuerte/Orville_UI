@@ -1,0 +1,167 @@
+<form class="ov-form ov-add-form" [formGroup]="litigationForm" (ngSubmit)="onSubmit()">
+  <!-- Header Page Actions -->
+  <div class="ov-add-header page-header !py-4 flex justify-between items-center">
+    <div class="ov-add-header__start flex items-center gap-3">
+      <a routerLink="/legal/litigations" class="ov-back" title="Back to Litigations">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
+      <div>
+        <h3 class="ov-page-title" *ngIf="!isEdit">New Litigation</h3>
+        <h3 class="ov-page-title" *ngIf="isEdit">Edit Litigation</h3>
+        <p class="ov-page-sub">
+          Legal / <span class="ov-page-sub__current" *ngIf="!isEdit">New Litigation</span><span class="ov-page-sub__current" *ngIf="isEdit">Edit Litigation</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions flex gap-2">
+      <button type="button" routerLink="/legal/litigations" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">
+        {{ isEdit ? 'Update Litigation' : 'Create Litigation' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="ov-add-body flex flex-col lg:flex-row gap-5">
+    <!-- Left Main Column (Case Details & Info) -->
+    <div class="flex-1 flex flex-col gap-5">
+      <!-- Case Information Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <div class="ov-card__head mb-4">
+          <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor">Case Information</h6>
+        </div>
+
+        <div class="ov-card__body">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Case Name -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Name <span class="text-danger">*</span></label>
+              <input type="text" formControlName="caseName" class="ov-input form-control rounded" placeholder="Enter Case Name">
+            </div>
+
+            <!-- Legal Firm -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Legal Firm <span class="text-danger">*</span></label>
+              <input type="text" formControlName="legalFirm" class="ov-input form-control rounded" placeholder="Enter">
+            </div>
+
+            <!-- Escalation Option -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Escalation Option</label>
+              <ng-select formControlName="escalationOption" [items]="escalationOptions" bindLabel="label" bindValue="value"
+                placeholder="Select escalation" class="ov-select w-full" appendTo="body"></ng-select>
+            </div>
+
+            <!-- Case Date -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Date <span class="text-danger">*</span></label>
+              <input type="date" formControlName="caseDate" class="ov-input form-control rounded">
+            </div>
+
+            <!-- Claimed Amount -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Claimed Amount</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">AED</span>
+                <input type="number" formControlName="claimedAmount" class="ov-input" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Collected Amount -->
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Collected Amount</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">AED</span>
+                <input type="number" formControlName="collectedAmount" class="ov-input" placeholder="0.00">
+              </div>
+            </div>
+
+            <!-- Nested Linkage border section -->
+            <div class="col-span-1 md:col-span-2 border border-dashed border-defaultborder rounded-xl p-4 mt-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col">
+                  <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Property</label>
+                  <ng-select formControlName="property" [items]="properties" placeholder="Select Property" class="ov-select w-full" appendTo="body"></ng-select>
+                </div>
+                <div class="flex flex-col">
+                  <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Unit</label>
+                  <ng-select formControlName="unit" [items]="units" placeholder="Select Unit" class="ov-select w-full" appendTo="body"></ng-select>
+                </div>
+                <div class="flex flex-col col-span-1 md:col-span-2">
+                  <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Lease</label>
+                  <ng-select formControlName="lease" [items]="leases" placeholder="Select Lease" class="ov-select w-full" appendTo="body"></ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Case Details Textarea Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <div class="ov-card__head mb-4">
+          <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor">Case Details</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Details</label>
+            <textarea formControlName="caseDetails" rows="4" class="ov-input form-control rounded" placeholder="Enter Case Details"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side Column (Status & Block toggles) -->
+    <div class="w-full lg:w-[320px] flex flex-col gap-5">
+      <!-- Status Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <div class="ov-card__head mb-3">
+          <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor">Status</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="flex flex-col">
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Status</label>
+            <ng-select formControlName="caseStatus" [items]="statuses" placeholder="Select Status" class="ov-select w-full" appendTo="body"></ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocking Status Card -->
+      <div class="ov-card bg-white border border-defaultborder rounded-2xl p-5">
+        <div class="ov-card__head mb-4">
+          <h6 class="ov-card-title text-[15px] font-semibold text-defaulttextcolor">Blocking Status</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <!-- Block Unit Toggle -->
+          <div class="flex justify-between items-start gap-3">
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-defaulttextcolor">Block Unit</span>
+              <span class="text-[11px] text-textmuted leading-tight mt-0.5">Prevents this unit from being used while litigation is active.</span>
+            </div>
+            <div class="form-check form-switch p-0 m-0">
+              <input type="checkbox" formControlName="blockUnit" class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]" role="switch">
+            </div>
+          </div>
+
+          <!-- Block Tenant Toggle -->
+          <div class="flex justify-between items-start gap-3 border-t border-defaultborder pt-3">
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-defaulttextcolor">Block Tenant</span>
+              <span class="text-[11px] text-textmuted leading-tight mt-0.5">Marks the tenant as blocked for new actions.</span>
+            </div>
+            <div class="form-check form-switch p-0 m-0">
+              <input type="checkbox" formControlName="blockTenant" class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]" role="switch">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons row -->
+  <div class="flex items-center gap-3 border-t border-defaultborder pt-4 mt-5">
+     <button type="button" routerLink="/legal/litigations" class="ov-btn ov-btn-ghost">Cancel</button>
+     <button type="submit" class="ov-btn ov-btn-primary bg-[#1a222a] text-white">
+       {{ isEdit ? 'Update Litigation' : 'Create Litigation' }}
+     </button>
+  </div>
+</form>

@@ -44,14 +44,38 @@ export class SupportTechnicianDetailComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          if (res.objResult.technician_dtls && res.objResult.technician_dtls.length > 0) {
-            this.technicianData = res.objResult.technician_dtls[0];
-          } else if (res.objResult.technicians && res.objResult.technicians.length > 0) {
-            this.technicianData = res.objResult.technicians[0];
-          } else if (Array.isArray(res.objResult) && res.objResult.length > 0) {
-            this.technicianData = res.objResult[0];
+          const result = res.objResult;
+          let tech: any = null;
+          if (result.table && result.table[0]) {
+            tech = result.table[0];
+          } else if (result.technicians_dtls && result.technicians_dtls[0]) {
+            tech = result.technicians_dtls[0];
+          } else if (result.technician_dtls && result.technician_dtls[0]) {
+            tech = result.technician_dtls[0];
+          } else if (result.technicians && result.technicians[0]) {
+            tech = result.technicians[0];
+          } else if (result.technician && result.technician[0]) {
+            tech = result.technician[0];
+          } else {
+            const arrayKey = Object.keys(result).find(key => Array.isArray(result[key]) && result[key].length > 0 && key !== 'workorders' && key !== 'work_orders');
+            if (arrayKey) {
+              tech = result[arrayKey][0];
+            }
           }
-          if (res.objResult.work_orders) this.workOrderData = res.objResult.work_orders;
+          this.technicianData = tech;
+          
+          if (result.workorders) this.workOrderData = result.workorders;
+          else if (result.work_orders) this.workOrderData = result.work_orders;
+
+          if (this.technicianData) {
+            const data = this.technicianData;
+            this.technician.id = data.id || data.code || this.technician.id;
+            this.technician.name = data.technician_name || (data.first_name ? (data.first_name + ' ' + (data.last_name || '')) : '') || this.technician.name;
+            this.technician.email = data.email || data.email_address || this.technician.email;
+            this.technician.phone = data.phone || data.mobile_no || this.technician.phone;
+            this.technician.username = data.username || this.technician.username;
+            this.technician.status = data.status || 'Active';
+          }
           
           console.log('Technician Details Loaded:', this.technicianData);
         }
@@ -95,17 +119,17 @@ export class SupportTechnicianDetailComponent implements OnInit {
 
   // Technician details mock
   technician = {
-    id: 31658,
-    name: 'suhel barwani Muhammed',
-    email: 'suhelbarwani@gmail.com',
-    phone: '+971 0528 6135 68',
-    username: 'suhel10',
+    id: 0,
+    name: 'Loading...',
+    email: '',
+    phone: '',
+    username: '',
     status: 'Active',
-    assignedJob: 'shamedvendor@gmail.com',
+    assignedJob: '',
     responsibleForWorkOrders: false,
     system: {
-      createdAt: '09-10-2025 03:22 PM',
-      lastLoginAt: '09-10-2026 09:21 PM'
+      createdAt: '',
+      lastLoginAt: ''
     }
   };
 

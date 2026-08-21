@@ -1,78 +1,79 @@
-<!-- Closed = not in DOM. Avoids FOUC of fixed right panel during route/load. -->
-<div
-  *ngIf="isOpen"
-  class="fixed inset-0 z-[1200] bg-black/30 backdrop-blur-sm ov-filter-drawer__backdrop"
-  (click)="closeDrawer()">
-</div>
-
-<div
-  *ngIf="isOpen"
-  class="fixed right-0 top-0 z-[1201] flex h-full w-[380px] flex-col border-l border-defaultborder bg-white shadow-2xl dark:bg-bodybg ov-filter-drawer__panel"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Filters">
-
-  <div class="flex items-center justify-between border-b border-defaultborder px-5 py-4">
-    <h5 class="m-0 text-sm font-bold text-defaulttextcolor">Filters</h5>
-    <button type="button" (click)="closeDrawer()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor" aria-label="Close filters">
-      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-    </button>
+<div class="ov-filter-drawer__container" [class.active]="isOpen">
+  <!-- Backdrop -->
+  <div
+    class="ov-filter-drawer__backdrop"
+    (click)="closeDrawer()">
   </div>
 
-  <div class="flex-1 space-y-4 overflow-y-auto p-5">
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col">
-        <label class="ov-label">Filter by Tags</label>
-        <ng-select [ngModel]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" [items]="tagsList" [searchable]="true" [clearable]="true"
-          placeholder="Select Tag" class="ov-select w-full" appendTo="body"></ng-select>
-      </div>
+  <!-- Panel -->
+  <div
+    class="flex h-full w-[380px] flex-col border-l border-defaultborder bg-white shadow-2xl dark:bg-bodybg ov-filter-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Filters">
 
-      <div class="flex flex-col">
-        <label class="ov-label">Filter by Area (sqft)</label>
-        <input type="text" class="ov-input" [ngModel]="selectedArea" (ngModelChange)="selectedAreaChange.emit($event)"
-          placeholder="e.g. 1523 Sqft">
-      </div>
-
-      <div class="flex flex-col">
-        <label class="ov-label">Filter by ID</label>
-        <input type="number" class="ov-input" [ngModel]="selectedId" (ngModelChange)="selectedIdChange.emit($event)"
-          placeholder="e.g. 31658">
-      </div>
-
-      <div class="flex flex-col">
-        <label class="ov-label">Filter by Reference No</label>
-        <input type="text" class="ov-input" [ngModel]="selectedRefNo" (ngModelChange)="selectedRefNoChange.emit($event)"
-          placeholder="Enter Ref No">
-      </div>
-
-      <div class="flex flex-col">
-        <label class="ov-label">Off Plan Status</label>
-        <ng-select [ngModel]="selectedOffPlanStatus" (ngModelChange)="selectedOffPlanStatusChange.emit($event)" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
-          placeholder="Select Off Plan Status" class="ov-select w-full" appendTo="body"></ng-select>
-      </div>
-
-      <div class="flex flex-col">
-        <label class="ov-label">Filter by Landlord</label>
-        <ng-select [ngModel]="selectedLandlord" (ngModelChange)="selectedLandlordChange.emit($event)" [items]="landlordsList" [searchable]="true" [clearable]="true"
-          placeholder="Select Landlord" class="ov-select w-full" appendTo="body"></ng-select>
-      </div>
-
-      <div class="flex flex-col">
-        <label class="ov-label">Internal Status</label>
-        <ng-select [ngModel]="selectedInternalStatus" (ngModelChange)="selectedInternalStatusChange.emit($event)" [items]="internalStatuses" [searchable]="true" [clearable]="true"
-          placeholder="Select Internal Status" class="ov-select w-full" appendTo="body"></ng-select>
-      </div>
+    <div class="flex items-center justify-between border-b border-defaultborder px-5 py-4">
+      <h5 class="m-0 text-sm font-bold text-defaulttextcolor">Filters</h5>
+      <button type="button" (click)="closeDrawer()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor" aria-label="Close filters">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+      </button>
     </div>
 
-    <ng-content></ng-content>
-  </div>
+    <div class="flex-1 space-y-4 overflow-y-auto p-5">
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col">
+          <label class="ov-label">Filter by Tags</label>
+          <ng-select [ngModel]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" [items]="tagsList" [searchable]="true" [clearable]="true"
+            placeholder="Select Tag" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
 
-  <div class="flex gap-3 border-t border-defaultborder bg-bodybg p-4">
-    <button type="button" (click)="applyFilters()" class="ov-btn ov-btn-primary flex-1">
-      Apply Filters
-    </button>
-    <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost flex-1">
-      Clear All
-    </button>
+        <div class="flex flex-col">
+          <label class="ov-label">Filter by Area (sqft)</label>
+          <input type="text" class="ov-input" [ngModel]="selectedArea" (ngModelChange)="selectedAreaChange.emit($event)"
+            placeholder="e.g. 1523 Sqft">
+        </div>
+
+        <div class="flex flex-col">
+          <label class="ov-label">Filter by ID</label>
+          <input type="number" class="ov-input" [ngModel]="selectedId" (ngModelChange)="selectedIdChange.emit($event)"
+            placeholder="e.g. 31658">
+        </div>
+
+        <div class="flex flex-col">
+          <label class="ov-label">Filter by Reference No</label>
+          <input type="text" class="ov-input" [ngModel]="selectedRefNo" (ngModelChange)="selectedRefNoChange.emit($event)"
+            placeholder="Enter Ref No">
+        </div>
+
+        <div class="flex flex-col">
+          <label class="ov-label">Off Plan Status</label>
+          <ng-select [ngModel]="selectedOffPlanStatus" (ngModelChange)="selectedOffPlanStatusChange.emit($event)" [items]="offPlanStatuses" [searchable]="true" [clearable]="true"
+            placeholder="Select Off Plan Status" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="ov-label">Filter by Landlord</label>
+          <ng-select [ngModel]="selectedLandlord" (ngModelChange)="selectedLandlordChange.emit($event)" [items]="landlordsList" [searchable]="true" [clearable]="true"
+            placeholder="Select Landlord" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="ov-label">Internal Status</label>
+          <ng-select [ngModel]="selectedInternalStatus" (ngModelChange)="selectedInternalStatusChange.emit($event)" [items]="internalStatuses" [searchable]="true" [clearable]="true"
+            placeholder="Select Internal Status" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+      </div>
+
+      <ng-content></ng-content>
+    </div>
+
+    <div class="flex gap-3 border-t border-defaultborder bg-bodybg p-4 mt-auto">
+      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost flex-1">
+        Clear
+      </button>
+      <button type="button" (click)="closeDrawer()" class="ov-btn ov-btn-ghost flex-1">
+        Close
+      </button>
+    </div>
   </div>
 </div>

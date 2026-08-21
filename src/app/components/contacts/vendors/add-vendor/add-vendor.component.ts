@@ -95,6 +95,21 @@ export class AddVendorComponent implements OnInit {
   };
   private docUploadTimer: ReturnType<typeof setInterval> | null = null;
 
+  selectedPhotoFile: File | null = null;
+  photoPreviewUrl: string | null = null;
+
+  uploadedDocuments: any[] = [];
+  docForm = {
+    document_type: null as string | null,
+    document_no: '',
+    issue_date: '',
+    expiry_date: '',
+    visible_for: 'None',
+    file: null as File | null,
+    fileName: '',
+    fileSize: ''
+  };
+
   selectedNationality: any = null;
 
   get selectedCountryObj() {
@@ -485,6 +500,7 @@ export class AddVendorComponent implements OnInit {
           this.displayAsCompany = vendor.display_as_company || false;
           this.assignment = vendor.auto_assign_assignment || false;
           this.qualifies = vendor.allow_create_work_order || false;
+          this.photoPreviewUrl = vendor.profileImage_path || null;
 
           if (this.vendorData.country_id) {
             this.loadLookup(1001, 'states', 'state_name', this.vendorData.country_id.toString(), () => {
@@ -505,6 +521,28 @@ export class AddVendorComponent implements OnInit {
   }
 
   saveVendor() {
+    if (!this.vendorData.first_name || !this.vendorData.first_name.trim()) {
+      this.toastr.warning('Contact Name is required.', 'Validation Warning');
+      return;
+    }
+    if (!this.vendorData.email_address || !this.vendorData.email_address.trim()) {
+      this.toastr.warning('Email Address is required.', 'Validation Warning');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.vendorData.email_address)) {
+      this.toastr.warning('Please enter a valid Email Address.', 'Validation Warning');
+      return;
+    }
+    if (!this.vendorData.address1 || !this.vendorData.address1.trim()) {
+      this.toastr.warning('Address Line 1 is required.', 'Validation Warning');
+      return;
+    }
+    if (!this.vendorData.country_id) {
+      this.toastr.warning('Country is required.', 'Validation Warning');
+      return;
+    }
+
     const email = this.vendorData.email_address;
     const mobile = this.vendorData.mobile_no;
     
@@ -558,6 +596,9 @@ export class AddVendorComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('reqObject', JSON.stringify(requestJson));
+    if (this.selectedPhotoFile) {
+      formData.append('profileImage', this.selectedPhotoFile, this.selectedPhotoFile.name);
+    }
 
     this.propertiesService.saveVendor(formData).subscribe({
       next: (res: any) => {
@@ -719,5 +760,66 @@ export class AddVendorComponent implements OnInit {
       return;
     }
     this.toastr.info(doc.name, 'Document');
+  }
+
+  onPhotoSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedPhotoFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoPreviewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onDocFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.docForm.file = file;
+      this.docForm.fileName = file.name;
+      this.docForm.fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+  }
+
+  saveDocument() {
+    if (!this.docForm.document_type) {
+      this.toastr.error("Document Type is required.", "Validation Error");
+      return;
+    }
+    if (!this.docForm.file) {
+      this.toastr.error("Please attach a file.", "Validation Error");
+      return;
+    }
+    
+    this.uploadedDocuments.push({
+      document_type: this.docForm.document_type,
+      document_no: this.docForm.document_no,
+      issue_date: this.docForm.issue_date,
+      expiry_date: this.docForm.expiry_date,
+      visible_for: this.docForm.visible_for,
+      fileName: this.docForm.fileName,
+      fileSize: this.docForm.fileSize,
+      file: this.docForm.file
+    });
+
+    this.docForm = {
+      document_type: null,
+      document_no: '',
+      issue_date: '',
+      expiry_date: '',
+      visible_for: 'None',
+      file: null,
+      fileName: '',
+      fileSize: ''
+    };
+    this.isAddDocModalOpen = false;
+    this.toastr.success("Document attached successfully.");
+  }
+
+  removeDocument(index: number) {
+    this.uploadedDocuments.splice(index, 1);
+    this.toastr.success("Document removed successfully.");
   }
 }

@@ -277,7 +277,16 @@ export class AddUnitComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          this.propertiesList= res.objResult.table;
+          this.propertiesList = res.objResult.table;
+          const propCode = this.route.snapshot.queryParams['propertyCode'];
+          if (propCode) {
+            const found = this.propertiesList.find(p => p.code === propCode || p.id === propCode);
+            if (found) {
+              this.unitForm.get('propertyCode')?.setValue(found.code || found.id);
+            } else {
+              this.unitForm.get('propertyCode')?.setValue(propCode);
+            }
+          }
         }
       },
       error: (err) => {
@@ -521,11 +530,11 @@ export class AddUnitComponent implements OnInit {
     formData.append('reqObject', JSON.stringify(requestBody));
     
     if (this.unitImageFile) {
-      formData.append('unit_image', this.unitImageFile);
+      formData.append('unitimage', this.unitImageFile);
     }
     
     if (this.unitBroucherFile) {
-      formData.append('unit_broucher', this.unitBroucherFile);
+      formData.append('broucher', this.unitBroucherFile);
     }
 
     this.propertiesService.addUnit(formData).subscribe({

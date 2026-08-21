@@ -1,0 +1,141 @@
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <a routerLink="/inspections/templates" class="ov-back" title="Back to Templates">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </a>
+    <div>
+      <h3 class="ov-page-title">Template Details</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li class="px-2">/</li>
+        <li><a [routerLink]="['/inspections/templates']">Template</a></li>
+        <li class="px-2">/</li>
+        <li class="font-semibold text-defaulttextcolor">Template Details</li>
+      </ol>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" routerLink="/inspections/create-template" [queryParams]="{ id: '31658' }" class="ov-btn ov-btn-primary">
+      Edit Template
+    </button>
+  </div>
+</div>
+
+<div class="ov-detail-layout flex flex-col lg:flex-row gap-5">
+  
+  <!-- Left Side Summary Panel (Merged Box) -->
+  <div class="w-full lg:w-[320px] flex flex-col gap-4">
+    
+    <!-- Single Unified Box -->
+    <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none flex flex-col gap-4">
+      
+      <!-- Top Title and Status Header -->
+      <div class="flex justify-between items-start pb-2 border-b border-defaultborder mb-1">
+        <div>
+          <h5 class="text-[16px] font-semibold text-defaulttextcolor mb-1">Move Out Inspection</h5>
+          <span class="text-xs text-textmuted">Template #31658</span>
+        </div>
+      </div>
+
+      <!-- Information heading text added here -->
+      <span class="text-xs font-bold text-defaulttextcolor uppercase tracking-wider px-1">Information</span>
+
+      <!-- Details Content (Merged in the same box, with an inner card container wrapper) -->
+      <div class="border border-defaultborder rounded-xl p-4 bg-white">
+        <h6 class="text-[13px] font-bold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">Template Details</h6>
+        <div class="flex flex-col gap-3 text-xs">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value font-semibold">31658</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Template Name:</span>
+            <span class="ov-kv__value">Move Out Inspection</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Create at:</span>
+            <span class="ov-kv__value font-semibold">15-07-2026</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">Created By:</span>
+            <span class="ov-solid-badge text-white bg-[#1b222c]" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 0.375rem; padding: 2px 8px; font-size: 10px; font-weight: 600;">Admin</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Update Date:</span>
+            <span class="ov-kv__value">15-07-2026</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Inspection Areas Column -->
+  <div class="flex-1 flex flex-col gap-0">
+
+    <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none mb-5 flex flex-col gap-4">
+      
+      <!-- Header is now inside the box -->
+      <div class="flex justify-between items-start pb-2 border-b border-defaultborder">
+        <div>
+          <h6 class="text-[15px] font-bold text-defaulttextcolor m-0">Inspection areas</h6>
+          <p class="text-xs text-textmuted mt-1 mb-0">Review the areas and sections included in this template.</p>
+        </div>
+        <span class="text-[11px] rounded px-2.5 py-0.5 font-semibold" style="background-color: rgb(233, 237, 241); color: #1a222c;">
+          2 areas • 2 sections
+        </span>
+      </div>
+      
+      <!-- Toolbar -->
+      <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 py-0 mb-2 flex justify-between items-center">
+        <div class="ov-search flex-1 max-w-[360px]">
+          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+          <input type="text" class="ov-input ov-search__input" placeholder="Search areas or sections">
+        </div>
+        <button type="button" (click)="expandAll()" class="ov-btn ov-btn-toolbar !py-1 text-xs">
+          Expand all
+        </button>
+      </div>
+
+      <!-- Accordion Areas List -->
+      <div class="flex flex-col gap-3">
+        <div *ngFor="let area of areasList; let idx = index" class="border border-defaultborder rounded-xl overflow-hidden bg-white">
+          
+          <!-- Accordion Header row -->
+          <div (click)="toggleArea(idx)" 
+            class="flex justify-between items-center p-4 bg-light/10 border-b border-defaultborder cursor-pointer hover:bg-light/20 transition-all select-none">
+            <div class="flex items-center gap-3">
+              <div class="text-textmuted">
+                <i class="ri-drag-move-fill text-[16px]"></i>
+              </div>
+              <div>
+                <h6 class="text-[13px] font-bold text-defaulttextcolor m-0">{{ area.name }}</h6>
+                <span class="text-[10px] text-textmuted font-semibold">{{ area.label }}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-textmuted font-semibold">{{ area.sections.length }} section(s)</span>
+              <i class="fe text-[12px] text-textmuted" 
+                [class.fe-chevron-down]="!expandedAreas[idx]" 
+                [class.fe-chevron-up]="expandedAreas[idx]"></i>
+            </div>
+          </div>
+
+          <!-- Accordion content list of sections -->
+          <div *ngIf="expandedAreas[idx]" class="p-4 bg-white flex flex-col gap-2.5">
+            <div *ngFor="let sec of area.sections" class="flex justify-between items-center text-xs py-1 px-2 hover:bg-light/10 rounded">
+              <div class="flex items-center gap-2 text-defaulttextcolor font-semibold">
+                <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                {{ sec.name }}
+              </div>
+              <span class="text-[10px] text-textmuted font-semibold">{{ sec.orderLabel }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

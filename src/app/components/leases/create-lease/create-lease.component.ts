@@ -181,6 +181,7 @@ export class CreateLeaseComponent implements OnInit {
                   "TaxProfile":element.profile_name,
                   "Memo":element.memo,
                   "InvoiceNo":element.invno,
+                  "attachment_path":element.attachment_path,
                   "isEdit":1,
                   "row_no":index+1});
               });
@@ -326,13 +327,13 @@ export class CreateLeaseComponent implements OnInit {
         "cheque_no":this.addpaymentbloc.cheque_no,
         "cheque_date":this.addpaymentbloc.cheque_date,
         "bank":this.addpaymentbloc.bank,
-        "held_by":this.addpaymentbloc.held_by?.id,
+        "held_by":this.addpaymentbloc.held_by,
         "AccountCode":this.addpaymentbloc.isSecurityDeposit==1 ?'F4F69': this.addpaymentbloc.AccountCode,
         "Account":this.addpaymentbloc.isSecurityDeposit==1 ?'Security Deposit':this.coaList.filter((item:any)=>{
           return item.id==this.addpaymentbloc.AccountCode
         })[0]?.name,
         "DueDate":this.addpaymentbloc.DueDate,
-        "Recurrence_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.addpaymentbloc.Recurrence_id?.id,
+        "Recurrence_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.addpaymentbloc.Recurrence_id,
         "Recurrence":this.addpaymentbloc.isSecurityDeposit==1 ?'Fixed':this.recurringList.filter((item:any)=>{
           return item.id==this.addpaymentbloc.Recurrence_id
         })[0]?.name,
@@ -356,6 +357,14 @@ export class CreateLeaseComponent implements OnInit {
         "row_no":this.paymentSchedules.length+1});
         if(this.attachedFile)
           this.attachedFiles.push({"row_no":this.paymentSchedules.length,"file":this.attachedFile})
+        this.showAddPayment=false;
+        this.attachedFile='';
+        this.addpaymentbloc.Amount=0;
+        this.addpaymentbloc.cheque_no='';
+        this.addpaymentbloc.AccountCode="";
+        this.addpaymentbloc.Recurrence_id=this.addpaymentbloc.held_by=this.addpaymentbloc.money_held_by_id=this.addpaymentbloc.PaymentTypeid=this.addpaymentbloc.TaxProfileId=0;
+
+        this.addpaymentbloc.cheque_date= this.addpaymentbloc.DueDate=''
     }
   }
   generatePayments(){
@@ -391,14 +400,21 @@ export class CreateLeaseComponent implements OnInit {
         "cheque_no":this.addpaymentbloc.cheque_no,
         "cheque_date":this.addpaymentbloc.cheque_date,
         "bank":this.addpaymentbloc.bank,
-        "held_by":this.addpaymentbloc.held_by?.id,
+        "held_by":this.addpaymentbloc.held_by,
+        "money_held_by_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.moneyHeldBy ,
+        "money_held_by":this.addpaymentbloc.isSecurityDeposit==1 ?'Fixed': 
+        this.moneyHeldOptions.filter((item:any)=>{
+          return item.id==this.moneyHeldBy
+        })[0]?.name ,
         "AccountCode":"7C2EF",
         "Account":"Rent Income",
         "DueDate":dueDate,
         "Recurrence_id":this.selectedLeaseType?.id,
         "Recurrence":this.selectedLeaseType?.name,
-        "PaymentTypeid":this.paymentMethod?.id,
-        "PaymentType":this.paymentMethod?.name,
+        "PaymentTypeid":this.paymentMethod,
+        "PaymentType": this.paymentMethods.filter((item:any)=>{
+          return item.id==this.paymentMethod
+        })[0]?.name,
         "TaxProfileId":0,
         "TaxProfile":'-',
         "Memo":'',
@@ -532,6 +548,17 @@ export class CreateLeaseComponent implements OnInit {
             this.coaList=this.allagentsList=res.objResult.table7 || [];
             this.taxProfilesList=this.allagentsList=res.objResult.table8 || []; 
             this.heldByList=this.allagentsList=res.objResult.table9 || [];
+
+            const tenantCode = this.route.snapshot.queryParams['tenantCode'];
+            if (tenantCode) {
+              const found = this.tenantsList.find(t => t.code === tenantCode || t.id === tenantCode || t.tenant_code === tenantCode);
+              if (found) {
+                this.selectedTenant = found.code || found.tenant_code || found.id;
+                this.selectedTenantObj = found;
+              } else {
+                this.selectedTenant = tenantCode;
+              }
+            }
           }
           else{
             (this as any)[targetProperty] = res.objResult.table;
