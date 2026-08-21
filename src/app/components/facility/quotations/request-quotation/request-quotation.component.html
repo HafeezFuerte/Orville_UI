@@ -1,0 +1,81 @@
+<!-- Request Quotation — Figma 1764:187358 -->
+<div class="ov-form ov-add-form qt-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Quotations">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Request Quotation</h3>
+        <p class="ov-page-sub">
+          Facility / Quotation /
+          <span class="ov-page-sub__current">Request Quotation</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="submit()">Create Quotation</button>
+    </div>
+  </div>
+
+  <div class="qt-form__body">
+    <div class="ov-card qt-form__card">
+      <div class="ov-card__head">
+        <div>
+          <h6 class="ov-card-title">Request Quotation</h6>
+          <p class="qt-form__card-sub">Request quotations from vendors. Fill in the details below.</p>
+        </div>
+      </div>
+      <div class="ov-card__body">
+        <div class="ov-fields ov-fields--2">
+          <div>
+            <label class="ov-label">Title <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="title" placeholder="Enter quotation title" />
+          </div>
+          <div>
+            <label class="ov-label">Reference</label>
+            <input type="text" class="ov-input" [(ngModel)]="reference" placeholder="Enter Reference No" />
+          </div>
+          <div>
+            <label class="ov-label">Work Order <span class="text-danger">*</span></label>
+            <ng-select [items]="options.workOrders" [(ngModel)]="selectedWorkOrder"
+              placeholder="Select Work Order" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Estimated Completion Date</label>
+            <div class="qt-date">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="qt-date__icon" />
+              <input type="text" class="ov-input qt-date__input" [(ngModel)]="estimatedDate" placeholder="DD/MM/YYYY" />
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Quotation Category</label>
+            <ng-select [items]="options.categories" [(ngModel)]="selectedCategory"
+              placeholder="Select Category" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Add Vendors <span class="text-danger">*</span></label>
+            <ng-select [items]="options.vendors" [(ngModel)]="selectedVendors" [multiple]="true"
+              placeholder="Select" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <label class="ov-label">Description</label>
+          <textarea [(ngModel)]="description" rows="6"
+            placeholder="Enter description"
+            class="ov-input !h-auto min-h-[140px] resize-none"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="submit()">Create Quotation</button>
+  </div>
+</div>

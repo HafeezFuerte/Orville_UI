@@ -57,6 +57,70 @@ export const facilityRoutingModule: Routes = [
     ]
   },
   {
+    path: 'quotations',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./quotations/quotations-list/quotations-list.component').then((m) => m.QuotationsListComponent),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./quotations/create-quotation/create-quotation.component').then((m) => m.CreateQuotationComponent),
+      },
+      {
+        path: 'request',
+        loadComponent: () =>
+          import('./quotations/request-quotation/request-quotation.component').then((m) => m.RequestQuotationComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./quotations/quotation-detail/quotation-detail.component').then((m) => m.QuotationDetailComponent),
+      }
+    ]
+  },
+  {
+    path: 'preventive-maintenance',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./preventive-maintenance/preventive-maintenance-list/preventive-maintenance-list.component').then(
+            (m) => m.PreventiveMaintenanceListComponent
+          ),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./preventive-maintenance/create-preventive-maintenance/create-preventive-maintenance.component').then(
+            (m) => m.CreatePreventiveMaintenanceComponent
+          ),
+      },
+    ]
+  },
+  {
+    path: 'inventory',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./inventory/inventory-list/inventory-list.component').then((m) => m.InventoryListComponent),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./inventory/create-inventory/create-inventory.component').then((m) => m.CreateInventoryComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./inventory/inventory-detail/inventory-detail.component').then((m) => m.InventoryDetailComponent),
+      },
+    ]
+  },
+  {
     path: 'assets',
     children: [
       {

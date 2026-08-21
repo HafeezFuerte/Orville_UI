@@ -402,6 +402,14 @@ export class SidebarComponent {
     'Request': '/facility/requests',
     'Tickets': '/facility/tickets',
     'Ticket': '/facility/tickets',
+    'Quotations': '/facility/quotations',
+    'Quotation': '/facility/quotations',
+    'Preventive Maintenance': '/facility/preventive-maintenance',
+    'Preventive maintenance': '/facility/preventive-maintenance',
+    'Parts/Inventory': '/facility/inventory',
+    'Parts / Inventory': '/facility/inventory',
+    'Inventory': '/facility/inventory',
+    'Party/Inventory': '/facility/inventory',
     'Assets': '/facility/assets',
     'Insights': '/insights',
     'Reports': '/reports',
@@ -516,17 +524,55 @@ export class SidebarComponent {
 
     const facility = { ...items[facilityIndex] };
     const children = [...(facility.children || [])].map((child) => {
-      // Display label for tickets matches the design ("Tickets")
       if (this.isTicketMenu(child.title)) {
         return { ...child, title: 'Tickets', path: '/facility/tickets' };
       }
-      // Design uses singular "Work Order"
       const key = this.normalizeFacilityChildKey(child.title);
+      if (key === 'quotations') {
+        return { ...child, title: 'Quotations', path: '/facility/quotations' };
+      }
+      if (key === 'preventive maintenance') {
+        return { ...child, title: 'Preventive Maintenance', path: '/facility/preventive-maintenance' };
+      }
+      if (key === 'party/inventory') {
+        return { ...child, title: 'Parts/Inventory', path: '/facility/inventory' };
+      }
+      // Design uses singular "Work Order"
       if (key === 'work order' && (child.title || '').toLowerCase().includes('orders')) {
         return { ...child, title: 'Work Order' };
       }
       return child;
     });
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'quotations')) {
+      children.push({
+        title: 'Quotations',
+        type: 'link',
+        path: '/facility/quotations',
+        active: false,
+        selected: false,
+      });
+    }
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'preventive maintenance')) {
+      children.push({
+        title: 'Preventive Maintenance',
+        type: 'link',
+        path: '/facility/preventive-maintenance',
+        active: false,
+        selected: false,
+      });
+    }
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'party/inventory')) {
+      children.push({
+        title: 'Parts/Inventory',
+        type: 'link',
+        path: '/facility/inventory',
+        active: false,
+        selected: false,
+      });
+    }
 
     children.sort((a, b) => {
       const diff = this.facilityChildSortIndex(a.title) - this.facilityChildSortIndex(b.title);

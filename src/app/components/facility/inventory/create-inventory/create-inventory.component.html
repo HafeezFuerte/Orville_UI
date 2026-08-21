@@ -1,0 +1,224 @@
+<!-- Create Inventory Item — Figma 3132:111823 -->
+<div class="ov-form ov-add-form inv-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Inventory">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Create Inventory Item</h3>
+        <p class="ov-page-sub">
+          Facility / Inventory /
+          <span class="ov-page-sub__current">New Inventory</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Item</button>
+    </div>
+  </div>
+
+  <div class="inv-form__workspace">
+    <div class="inv-form__main">
+      <!-- Item Information -->
+      <div class="ov-card inv-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Item Information</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Item Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="itemName" placeholder="Enter item name" />
+            </div>
+            <div>
+              <label class="ov-label">Part Number <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="partNumber" placeholder="Enter part number" />
+            </div>
+            <div>
+              <label class="ov-label">Category <span class="text-danger">*</span></label>
+              <ng-select [items]="options.categories" [(ngModel)]="selectedCategory"
+                placeholder="Select category" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Subcategory</label>
+              <ng-select [items]="options.subcategories" [(ngModel)]="selectedSubcategory"
+                placeholder="Select subcategory" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Detail <span class="text-danger">*</span></label>
+            <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
+              [(ngModel)]="detail" placeholder="Enter details..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- More Information -->
+      <div class="ov-card inv-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">More Information</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Placed Date <span class="text-danger">*</span></label>
+              <div class="inv-date">
+                <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="inv-date__icon" />
+                <input type="text" class="ov-input inv-date__input" [(ngModel)]="placedDate" placeholder="DD/MM/YYYY" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Expiration Date</label>
+              <div class="inv-date">
+                <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="inv-date__icon" />
+                <input type="text" class="ov-input inv-date__input" [(ngModel)]="expirationDate" placeholder="DD/MM/YYYY" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Vendor</label>
+            <ng-select [items]="options.vendors" [(ngModel)]="selectedVendor"
+              placeholder="Select vendor" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attachments -->
+      <div class="ov-card inv-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head inv-form__card-head-row">
+          <h6 class="ov-card-title m-0">Attachments</h6>
+          <button type="button" class="inv-link-btn" (click)="addAttachment()">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="14" height="14" />
+            Add Attachment
+          </button>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="inv-attach" *ngFor="let att of attachments; let i = index; trackBy: trackByIndex">
+            <button type="button" class="inv-attach__del" (click)="removeAttachment(i)" aria-label="Remove attachment">
+              <img src="assets/images/action-menu/trash.svg" alt="" width="16" height="16" />
+            </button>
+            <div>
+              <label class="ov-label">Attachment Type <span class="text-danger">*</span></label>
+              <ng-select [items]="options.attachmentTypes" [(ngModel)]="att.type"
+                placeholder="Select type" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div class="inv-dropzone bg-white dark:bg-bodybg" (click)="fileInput.click()">
+              <input #fileInput type="file" class="hidden" (change)="onFileSelected($event)" />
+              <img src="assets/images/rules-guides/upload.svg" alt="" width="32" height="32" />
+              <p class="inv-dropzone__title">Drag and drop your file here</p>
+              <p class="inv-dropzone__sub">or browse from your device</p>
+              <button type="button" class="inv-upload-btn"
+                (click)="$event.stopPropagation(); fileInput.click()">Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Lines -->
+      <div class="ov-card inv-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head inv-form__card-head-row">
+          <h6 class="ov-card-title m-0">Inventory Lines</h6>
+          <button type="button" class="inv-link-btn" (click)="addLine()">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="14" height="14" />
+            Add Line
+          </button>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="inv-line" *ngFor="let line of lines; let i = index; trackBy: trackByIndex">
+            <div class="inv-line__head">
+              <span class="inv-line__title">Line {{ i + 1 }}</span>
+              <button type="button" class="inv-attach__del" (click)="removeLine(i)" aria-label="Remove line">
+                <img src="assets/images/action-menu/trash.svg" alt="" width="16" height="16" />
+              </button>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label class="ov-label">Location</label>
+                <input type="text" class="ov-input" [(ngModel)]="line.location" placeholder="Enter" />
+              </div>
+              <div>
+                <label class="ov-label">Area</label>
+                <input type="text" class="ov-input" [(ngModel)]="line.area" placeholder="Enter" />
+              </div>
+              <div>
+                <label class="ov-label">Barcode</label>
+                <input type="text" class="ov-input" [(ngModel)]="line.barcode" placeholder="Enter" />
+              </div>
+              <div>
+                <label class="ov-label">Cost</label>
+                <div class="inv-money">
+                  <span class="inv-money__prefix bg-white dark:bg-bodybg">AED</span>
+                  <input type="text" class="ov-input inv-money__input" [(ngModel)]="line.cost" placeholder="500.00" />
+                </div>
+              </div>
+              <div>
+                <label class="ov-label">Available Quantity</label>
+                <input type="text" class="ov-input" [(ngModel)]="line.availableQty" placeholder="Enter" />
+              </div>
+              <div>
+                <label class="ov-label">Minimum Quantity</label>
+                <input type="text" class="ov-input" [(ngModel)]="line.minimumQty" placeholder="Enter" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-form__side">
+      <div class="ov-card inv-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Inventory Settings</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="inv-setting">
+            <label class="inv-toggle">
+              <input type="checkbox" [(ngModel)]="nonStockItem" />
+              <span class="inv-toggle__track"><span class="inv-toggle__thumb"></span></span>
+              <span class="inv-toggle__label">This is a non-stock item</span>
+            </label>
+            <p class="inv-setting__hint">Non-stock parts aren't kept in stock. They can only be purchased.</p>
+          </div>
+          <label class="inv-toggle">
+            <input type="checkbox" [(ngModel)]="nonStockSameForAll" />
+            <span class="inv-toggle__track"><span class="inv-toggle__thumb"></span></span>
+            <span class="inv-toggle__label">Same for all inventory lines</span>
+          </label>
+
+          <div class="inv-setting">
+            <label class="inv-toggle">
+              <input type="checkbox" [(ngModel)]="randomBarcode" />
+              <span class="inv-toggle__track"><span class="inv-toggle__thumb"></span></span>
+              <span class="inv-toggle__label">Use randomly-generated barcode</span>
+            </label>
+          </div>
+          <label class="inv-toggle">
+            <input type="checkbox" [(ngModel)]="barcodeSameForAll" />
+            <span class="inv-toggle__track"><span class="inv-toggle__thumb"></span></span>
+            <span class="inv-toggle__label">Same for all inventory lines</span>
+          </label>
+
+          <div class="inv-setting">
+            <label class="inv-toggle">
+              <input type="checkbox" [(ngModel)]="costSameForAll" />
+              <span class="inv-toggle__track"><span class="inv-toggle__thumb"></span></span>
+              <span class="inv-toggle__label">Same for all inventory lines</span>
+            </label>
+            <p class="inv-setting__hint">Enabling this will apply the cost from the first line to all subsequent lines.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Item</button>
+  </div>
+</div>
