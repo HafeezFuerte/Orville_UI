@@ -508,6 +508,17 @@ export class CreateLeaseComponent implements OnInit {
             this.coaList=this.allagentsList=res.objResult.table7 || [];
             this.taxProfilesList=this.allagentsList=res.objResult.table8 || []; 
             this.heldByList=this.allagentsList=res.objResult.table9 || [];
+
+            const tenantCode = this.route.snapshot.queryParams['tenantCode'];
+            if (tenantCode) {
+              const found = this.tenantsList.find(t => t.code === tenantCode || t.id === tenantCode || t.tenant_code === tenantCode);
+              if (found) {
+                this.selectedTenant = found.code || found.tenant_code || found.id;
+                this.selectedTenantObj = found;
+              } else {
+                this.selectedTenant = tenantCode;
+              }
+            }
           }
           else{
             (this as any)[targetProperty] = res.objResult.table;

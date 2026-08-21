@@ -508,7 +508,14 @@ export class AddRoomComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          this.propertiesList= res.objResult.table;
+          this.propertiesList = res.objResult.table;
+          const propCode = this.route.snapshot.queryParams['propertyCode'];
+          if (propCode) {
+            const found = this.propertiesList.find(p => p.code === propCode || p.id === propCode);
+            const val = found ? (found.code || found.id) : propCode;
+            this.roomForm.get('propertyCode')?.setValue(val);
+            this.loadUnits(3, val);
+          }
         }
       },
       error: (err) => {

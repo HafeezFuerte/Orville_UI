@@ -4,7 +4,8 @@ import {
   EventEmitter,
   Input,
   Output,
-  TemplateRef
+  TemplateRef,
+  inject
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -95,6 +96,13 @@ export class DetailPageLayoutComponent {
     const cols = this.selectedTab?.columns || [];
     if (!cols.length) return false;
     return cols.every((c: any) => c.visible !== false);
+  }
+
+  private route = inject(ActivatedRoute);
+
+  get propertyCodeQueryParams() {
+    const code = this.route.snapshot.paramMap.get('code') || this.route.parent?.snapshot.paramMap.get('code') || '';
+    return code ? { propertyCode: code } : {};
   }
 
   constructor( 

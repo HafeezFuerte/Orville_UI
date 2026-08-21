@@ -156,11 +156,13 @@ export class UnitsTableComponent {
     this.columns=this.roomColumns;
   }
   redirect_link(){
+    const propertyCode = this.route.snapshot.paramMap.get('code') || this.route.parent?.snapshot.paramMap.get('code') || '';
+    const query = propertyCode ? `?propertyCode=${propertyCode}` : '';
     if(this.selectedTab.key=="units"){
-      window.location.href='/add-unit'
+      window.location.href='/add-unit' + query;
     }
     if(this.selectedTab.key=="rooms"){
-      window.location.href='/add-room'
+      window.location.href='/add-room' + query;
     }
   }
   search_with_keyword() {

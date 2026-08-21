@@ -105,13 +105,28 @@ export class TenantDetailComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          if (res.objResult.tenant_dtls && res.objResult.tenant_dtls.length > 0) {
-            this.tenantData = res.objResult.tenant_dtls[0];
+          const result = res.objResult;
+          let tenantObj: any = null;
+          if (result.table && result.table[0]) {
+            tenantObj = result.table[0];
+          } else if (result.tenant_dtls && result.tenant_dtls[0]) {
+            tenantObj = result.tenant_dtls[0];
+          } else if (result.tenants && result.tenants[0]) {
+            tenantObj = result.tenants[0];
+          } else {
+            const arrayKey = Object.keys(result).find(key => Array.isArray(result[key]) && result[key].length > 0 && key !== 'leases' && key !== 'note' && key !== 'notes' && key !== 'documents' && key !== 'emergency_dtls');
+            if (arrayKey) {
+              tenantObj = result[arrayKey][0];
+            }
           }
-          if (res.objResult.leases) this.leaseData = res.objResult.leases;
-          if (res.objResult.note) this.noteData = res.objResult.note;
-          if (res.objResult.documents) this.attachmentData = res.objResult.documents;
-          if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
+          this.tenantData = tenantObj;
+
+          if (result.leases) this.leaseData = result.leases;
+          if (result.notes) this.noteData = result.notes;
+          else if (result.note) this.noteData = result.note;
+          if (result.documents) this.attachmentData = result.documents;
+          if (result.emergency_dtls) this.emergencyContactData = result.emergency_dtls;
+          if (result.users) this.userData = result.users;
           
           console.log('Tenant Details Loaded:', this.tenantData);
           this.initializeTabs();
@@ -165,7 +180,10 @@ export class TenantDetailComponent implements OnInit {
       window.location.href = '/contacts/tenants/edit-tenant/' + this.tenantId;
       return;
     }
-    if (label === 'Add Lease') this.showAddLeaseModal = true;
+    if (label === 'Add Lease') {
+      window.location.href = `/leases/create-lease?tenantCode=${this.tenantId}`;
+      return;
+    }
     else if (label === 'Add Attachment') this.showAddAttachmentModal = true;
     else if (label === 'Add User') this.showAddUserModal = true;
     else if (label === 'Add Emergency Contact') this.showAddEmergencyContactModal = true;
