@@ -1,0 +1,219 @@
+<!-- Create Visitor — Figma 3193:94544 -->
+<div class="ov-form ov-add-form visitor-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Visitors">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Visitor</h3>
+        <p class="ov-page-sub">
+          Guests /
+          <span class="ov-page-sub__current">New Visitor</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Visitor</button>
+    </div>
+  </div>
+
+  <div class="visitor-form__grid">
+    <div class="visitor-form__main">
+      <!-- Visitor Information -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Visitor Information</h6>
+            <p class="visitor-form__card-desc">Basic identification details of the incoming visitor.</p>
+          </div>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="fullName" placeholder="Enter visitor's full name" />
+            </div>
+            <div>
+              <label class="ov-label">Email Address <span class="text-danger">*</span></label>
+              <input type="email" class="ov-input" [(ngModel)]="email" placeholder="Enter email address" />
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Phone Number <span class="text-danger">*</span></label>
+            <div class="visitor-phone">
+              <ng-select [items]="['+971', '+966', '+974']" [(ngModel)]="countryCode"
+                [clearable]="false" [searchable]="false" class="visitor-phone__code ov-select" appendTo="body">
+              </ng-select>
+              <input type="text" class="ov-input visitor-phone__number" [(ngModel)]="phone" placeholder="Enter mobile number" />
+            </div>
+            <p class="visitor-form__help">Use a mobile number that can receive visitor notifications.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visit Details -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Visit Details</h6>
+            <p class="visitor-form__card-desc">Define the duration, timing and validity of the visit.</p>
+          </div>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Visit Date <span class="text-danger">*</span></label>
+              <ng-select [items]="[]" [(ngModel)]="visitDate" placeholder="Select visit date"
+                class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Number of Visitors <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="numberOfVisitors" />
+            </div>
+            <div>
+              <label class="ov-label">Visit Type <span class="text-danger">*</span></label>
+              <ng-select [items]="options.visitTypes" [(ngModel)]="visitType"
+                class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Expected Duration</label>
+              <ng-select [items]="options.durations" [(ngModel)]="expectedDuration"
+                placeholder="Expected duration (Optional)" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="border-t border-defaultborder"></div>
+
+          <div class="flex flex-col gap-3">
+            <label class="visitor-form__radio">
+              <input type="radio" name="validityMode" value="one-time" [(ngModel)]="validityMode" />
+              <span>One Time Validity</span>
+            </label>
+            <label class="visitor-form__radio">
+              <input type="radio" name="validityMode" value="set-validity" [(ngModel)]="validityMode" />
+              <span>Set Validity</span>
+            </label>
+          </div>
+
+          <div>
+            <label class="ov-label">Set Validity</label>
+            <ng-select [items]="options.validity" [(ngModel)]="setValidity"
+              class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property & Unit -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Property &amp; Unit</h6>
+            <p class="visitor-form__card-desc">Specify the building property and unit number being visited.</p>
+          </div>
+        </div>
+        <div class="ov-card__body">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
+                placeholder="Select property" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Unit <span class="text-danger">*</span></label>
+              <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
+                placeholder="Select unit" class="ov-select w-full" appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Relationships -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Relationships</h6>
+            <p class="visitor-form__card-desc">Link the visitor to an existing primary tenant or contact.</p>
+          </div>
+        </div>
+        <div class="ov-card__body">
+          <div>
+            <label class="ov-label">Contact (Optional)</label>
+            <ng-select [items]="options.contacts" [(ngModel)]="selectedContact"
+              placeholder="Select contact" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Notes</h6>
+            <p class="visitor-form__card-desc">Any additional context or security instructions for gate staff.</p>
+          </div>
+        </div>
+        <div class="ov-card__body">
+          <div>
+            <label class="ov-label">Notes</label>
+            <textarea class="ov-input visitor-form__textarea" [(ngModel)]="notes"
+              placeholder="Enter any additional notes" rows="4"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="visitor-form__side">
+      <!-- Access Details -->
+      <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
+        <div class="ov-card__head visitor-form__card-head">
+          <div>
+            <h6 class="ov-card-title">Access Details</h6>
+            <p class="visitor-form__card-desc">Access parameters and credentials.</p>
+          </div>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div>
+            <label class="ov-label !font-semibold !text-defaulttextcolor">Access Pass Type</label>
+            <ng-select [items]="options.accessPassTypes" [(ngModel)]="accessPassType"
+              class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+
+          <div class="border-t border-defaultborder"></div>
+
+          <div class="visitor-form__toggle">
+            <div>
+              <p class="visitor-form__toggle-label">Parking Required</p>
+              <p class="visitor-form__toggle-desc">Enable parking access for visitor vehicle</p>
+            </div>
+            <label class="visitor-form__switch">
+              <input type="checkbox" [(ngModel)]="parkingRequired" />
+              <span class="visitor-form__switch-track"></span>
+            </label>
+          </div>
+
+          <div>
+            <label class="ov-label !font-semibold !text-defaulttextcolor">Vehicle Number</label>
+            <input type="text" class="ov-input" [(ngModel)]="vehicleNumber" placeholder="Enter vehicle license plate" />
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="visitor-form__footer">
+    <div class="border-t border-defaultborder pt-4 flex flex-wrap items-center gap-2">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Visitor</button>
+    </div>
+  </div>
+</div>

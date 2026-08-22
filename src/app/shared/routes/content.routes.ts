@@ -57,6 +57,11 @@ export const content: Routes = [
       ),
   },
   {
+    path: 'visitors',
+    loadChildren: () =>
+      import('../../components/visitors/visitors.routes').then((m) => m.visitorsRoutes),
+  },
+  {
     path: 'reminders',
     loadChildren: () =>
       import('../../components/reminders/reminders.routes').then((m) => m.remindersRoutes),

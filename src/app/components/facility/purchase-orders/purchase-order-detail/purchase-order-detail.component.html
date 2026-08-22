@@ -1,0 +1,250 @@
+<!-- Purchase Order Detail — Figma 3159:138083 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+  <div class="flex items-start gap-4">
+    <button type="button" class="ov-back" (click)="goBack()" title="Back to Purchase Order" aria-label="Back">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h3 class="ov-page-title">Purchase Order Details</h3>
+      <p class="ov-page-sub mt-1">
+        Facility / Purchase Order /
+        <span class="ov-page-sub__current">Purchase Order Details</span>
+      </p>
+    </div>
+  </div>
+  <div class="po-action relative" (click)="$event.stopPropagation()">
+    <button type="button" class="po-action__btn"
+      [class.is-open]="showActionMenu"
+      (click)="showActionMenu = !showActionMenu">
+      <span>Action</span>
+      <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="14" height="14"
+        [class.po-action__chevron--open]="showActionMenu" />
+    </button>
+    <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+      <div class="ov-action-menu__list">
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="goEdit(); showActionMenu = false">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+          </span>
+          <span>Edit Purchase Order</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ov-detail-layout">
+  <aside class="ov-detail-layout__left flex flex-col gap-4">
+    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h4 class="ov-card-title !text-[16px]">{{ order.title }}</h4>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">PO #{{ order.poRef }}</p>
+        </div>
+        <button type="button" (click)="goEdit()"
+          class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5 shrink-0">
+          Edit Purchase Order
+          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
+        </button>
+      </div>
+
+      <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted w-full">
+        View Activity
+      </button>
+
+      <div class="border-t border-defaultborder"></div>
+      <h5 class="ov-card-title !text-[16px] m-0">Basic Information</h5>
+
+      <div class="po-info-card">
+        <div class="po-info-card__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ order.id }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Item Name:</span>
+            <span class="ov-kv__value">{{ order.title }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Status:</span>
+            <span [ngClass]="statusClass(order.status)">{{ order.status }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Purchase Order Number:</span>
+            <span class="ov-kv__value">{{ order.poNumber }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Title:</span>
+            <span class="ov-kv__value">{{ order.title }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Category:</span>
+            <span class="ov-kv__value">{{ order.category }}</span>
+          </div>
+          <div class="ov-kv ov-kv--stack">
+            <span class="ov-kv__label">Details:</span>
+            <span class="ov-kv__value">{{ order.details }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Requisitioner:</span>
+            <span class="ov-kv__value">{{ order.requisitioner }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Vendor</h5>
+      <div class="flex flex-col gap-3">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Vendor:</span>
+          <span class="ov-kv__value">{{ order.vendorName }}</span>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Email:</span>
+          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.vendorEmail }}</a>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Phone:</span>
+          <span class="ov-kv__value">{{ order.vendorPhone }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card p-5">
+      <h5 class="ov-card-title m-0 mb-4">Location</h5>
+      <div class="flex flex-col gap-3">
+        <div class="ov-kv">
+          <span class="ov-kv__label">Property:</span>
+          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.property }}</a>
+        </div>
+        <div class="ov-kv">
+          <span class="ov-kv__label">Unit:</span>
+          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.unit }}</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card py-5">
+      <div class="px-5">
+        <h5 class="ov-card-title m-0">Custom Fields</h5>
+      </div>
+      <div class="border-t border-defaultborder my-5"></div>
+      <div class="px-5">
+        <p class="ov-kv-empty m-0">No value set</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
+    <!-- Shipping Information -->
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="po-ship-card">
+        <h5 class="po-ship-card__title">Shipping Information</h5>
+        <div class="border-t border-defaultborder"></div>
+        <div class="po-ship-card__grid">
+          <div class="po-ship-card__col">
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">Ship To Name:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.shipToName }}</span>
+            </div>
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">Company Name:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.companyName }}</span>
+            </div>
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">Phone:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.phone }}</span>
+            </div>
+          </div>
+          <div class="po-ship-card__col">
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">Address:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.address }}</span>
+            </div>
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">City:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.city }}</span>
+            </div>
+            <div class="po-ship-kv">
+              <span class="po-ship-kv__label">State &amp; Zip Code:</span>
+              <span class="po-ship-kv__value">{{ order.shipping.stateZip }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h5 class="ov-card-title m-0 !text-[18px]">Line Items</h5>
+        </div>
+
+        <div class="po-lines-card bg-white dark:bg-bodybg">
+          <div class="po-lines-toolbar">
+            <div class="ov-search max-w-none flex-1 sm:max-w-[320px]">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input type="search" class="ov-input ov-search__input" placeholder="Search by name"
+                [(ngModel)]="lineSearch" (ngModelChange)="onLineSearch()" />
+            </div>
+          </div>
+
+          <div class="overflow-x-auto px-5">
+            <app-shared-table
+              [columns]="lineColumns"
+              [data]="paginatedLines"
+              [loading]="false"
+              [hasActions]="false"
+              [showPaginator]="false"
+              [totalRecords]="totalRecords"
+              [pageSize]="pageSize"
+              [pageIndex]="pageIndex">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <span *ngSwitchCase="'quantity'" class="po-chip po-chip--soft">{{ row.quantity }}</span>
+                  <div *ngSwitchCase="'action'" class="relative" data-po-line-action>
+                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+                      (click)="toggleRowAction(row.id, $event)">
+                      <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" />
+                    </button>
+                  </div>
+                  <span *ngSwitchDefault>{{ row[col.key] }}</span>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
+          </div>
+
+          <div class="po-lines-pager">
+            <div class="flex flex-wrap items-center gap-2 text-[13px] text-textmuted">
+              <span>Show</span>
+              <select class="po-lines-pager__select bg-white dark:bg-bodybg" [(ngModel)]="pageSize"
+                (ngModelChange)="onPageSizeChange()">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+              </select>
+              <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-[13px] text-textmuted mr-2">Page {{ displayPage }} of {{ totalPages }}</span>
+              <button type="button" class="po-page-btn bg-white dark:bg-bodybg" (click)="previousPage()"
+                [disabled]="pageIndex === 0">‹</button>
+              <button type="button" class="po-page-btn po-page-btn--active" (click)="goPage(1)">1</button>
+              <button type="button" class="po-page-btn bg-white dark:bg-bodybg" (click)="nextPage()"
+                [disabled]="displayPage >= totalPages">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="openRowActionId && rowMenuStyle" class="po-row-menu bg-white dark:bg-bodybg"
+  [ngStyle]="rowMenuStyle" data-po-line-action role="menu">
+  <button type="button" role="menuitem" class="po-row-menu__item" (click)="goEdit(); closeRowAction()">Edit</button>
+  <button type="button" role="menuitem" class="po-row-menu__item po-row-menu__item--danger"
+    (click)="closeRowAction()">Delete</button>
+</div>

@@ -38,7 +38,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
       { label: 'Preventive Maintenance', icon: icon('calendar-time.svg'), route: '/facility/preventive-maintenance/create' },
       { label: 'Inventory Assets', icon: icon('inventory-assets.svg'), route: '/facility/assets/create' },
       { label: 'Inventory Item', icon: icon('inventory-item.svg'), route: '/facility/inventory/create' },
-      { label: 'Purchase Order', icon: icon('purchase-order.svg') }
+      { label: 'Purchase Order', icon: icon('purchase-order.svg'), route: '/facility/purchase-orders/create' }
     ]
   },
   {
@@ -99,7 +99,7 @@ export const CREATE_OVERLAY_CATEGORIES: CreateOverlayCategory[] = [
   {
     title: 'Visitors',
     items: [
-      { label: 'Visitors', icon: icon('user-square.svg') }
+      { label: 'Visitors', icon: icon('user-square.svg'), route: '/visitors/create' }
     ]
   },
   {

@@ -1,0 +1,260 @@
+<!-- Create Purchase Order — Figma 3150:136448 + Add Line Item modal 3150:137772 -->
+<div class="ov-form ov-add-form po-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" title="Back to Purchase Order">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Create Purchase Order</h3>
+        <p class="ov-page-sub">
+          Facility / Purchase Order /
+          <span class="ov-page-sub__current">Create Purchase Order</span>
+        </p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+    </div>
+  </div>
+
+  <div class="po-form__body">
+    <!-- Location -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Location</h6>
+      </div>
+      <div class="ov-card__body">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="ov-label">Property</label>
+            <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
+              placeholder="Search Property" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">Unit</label>
+            <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
+              placeholder="Search Unit" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Order Details -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Purchase Order Details</h6>
+      </div>
+      <div class="ov-card__body flex flex-col gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="ov-label">Vendor <span class="text-danger">*</span></label>
+            <ng-select [items]="options.vendors" [(ngModel)]="selectedVendor"
+              placeholder="Select Vendor" class="ov-select w-full" appendTo="body">
+            </ng-select>
+          </div>
+          <div>
+            <label class="ov-label">PO Number <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="poNumber" placeholder="Enter PO number" />
+          </div>
+          <div>
+            <label class="ov-label">PO Date</label>
+            <div class="po-date">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="po-date__icon" />
+              <input type="text" class="ov-input po-date__input" [(ngModel)]="poDate" placeholder="Select PO date" />
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Due Date</label>
+            <div class="po-date">
+              <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="po-date__icon" />
+              <input type="text" class="ov-input po-date__input" [(ngModel)]="dueDate" placeholder="Select due date" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Information -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Shipping Information</h6>
+      </div>
+      <div class="ov-card__body flex flex-col gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="ov-label">Shipping Name</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingName" placeholder="Enter shipping name" />
+          </div>
+          <div>
+            <label class="ov-label">Shipping Phone</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingPhone" placeholder="Enter shipping phone" />
+          </div>
+          <div>
+            <label class="ov-label">Shipping Company Name</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingCompanyName" placeholder="Enter company name" />
+          </div>
+          <div>
+            <label class="ov-label">Shipping State</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingState" placeholder="Enter state" />
+          </div>
+          <div>
+            <label class="ov-label">Shipping City</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingCity" placeholder="Enter city" />
+          </div>
+          <div>
+            <label class="ov-label">Shipping Zipcode</label>
+            <input type="text" class="ov-input" [(ngModel)]="shippingZipcode" placeholder="Enter zipcode" />
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">Shipping Address</label>
+          <input type="text" class="ov-input" [(ngModel)]="shippingAddress" placeholder="Enter shipping address" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head po-form__card-head-row">
+        <h6 class="ov-card-title m-0">Line Items</h6>
+        <button type="button" class="po-link-btn" (click)="openAddLineItem()">
+          <img src="assets/images/work-orders/plus.svg" alt="" width="14" height="14" />
+          Add Line Item
+        </button>
+      </div>
+      <div class="ov-card__body">
+        <div class="po-empty-lines" *ngIf="!lineItems.length">
+          No line items added yet. Click Add Line Item to get started.
+        </div>
+        <div class="po-lines-table" *ngIf="lineItems.length">
+          <div class="po-lines-table__row po-lines-table__row--head">
+            <span>Item Code</span>
+            <span>Inventory Item</span>
+            <span>Qty</span>
+            <span>Price</span>
+            <span>Total</span>
+            <span></span>
+          </div>
+          <div class="po-lines-table__row" *ngFor="let item of lineItems">
+            <span class="font-semibold">{{ item.itemCode }}</span>
+            <span>{{ item.inventoryItem }}</span>
+            <span>{{ item.quantity }}</span>
+            <span>{{ formatMoney(item.price) }}</span>
+            <span>{{ formatMoney(item.total) }}</span>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLineItem(item.id)" aria-label="Remove">
+              <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Details</h6>
+      </div>
+      <div class="ov-card__body">
+        <label class="ov-label">Details</label>
+        <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
+          [(ngModel)]="details" placeholder="Write details here..."></textarea>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div class="ov-card po-form__card bg-white dark:bg-bodybg">
+      <div class="ov-card__head">
+        <h6 class="ov-card-title">Note</h6>
+      </div>
+      <div class="ov-card__body">
+        <label class="ov-label">Note</label>
+        <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
+          [(ngModel)]="note" placeholder="Add any extra notes here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+  </div>
+</div>
+
+<!-- Add Line Item Modal — Figma 3150:137772 -->
+<div *ngIf="showLineModal" class="ov-modal-backdrop" role="dialog" aria-modal="true"
+  aria-labelledby="po-line-modal-title" (click)="closeLineModal()">
+  <div class="qt-item-modal-wrap" (click)="$event.stopPropagation()">
+    <button type="button" class="qt-item-modal__close bg-white dark:bg-bodybg" (click)="closeLineModal()"
+      aria-label="Close">
+      <img src="assets/images/quotations/close-x.svg" alt="" width="20" height="20" />
+    </button>
+
+    <div class="qt-item-modal bg-white dark:bg-bodybg">
+      <div class="qt-item-modal__head">
+        <h5 id="po-line-modal-title" class="qt-item-modal__title !text-[22px]">Add Line Item</h5>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__fields">
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Item Code</label>
+          <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.itemCode" placeholder="Enter" />
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Inventory Item</label>
+          <ng-select [items]="options.inventoryItems" [(ngModel)]="modal.inventoryItem"
+            placeholder="Select" class="ov-select w-full" appendTo="body">
+          </ng-select>
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Description</label>
+          <textarea class="qt-item-modal__textarea" rows="4"
+            [(ngModel)]="modal.description" placeholder="Enter"></textarea>
+        </div>
+
+        <div class="qt-item-modal__row">
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Quantity <span class="text-danger">*</span></label>
+            <input type="number" class="qt-item-modal__input" [(ngModel)]="modal.quantity"
+              min="1" step="1" placeholder="Enter" />
+          </div>
+          <div class="qt-item-modal__field">
+            <label class="qt-item-modal__label">Price (Cents)</label>
+            <div class="qt-item-modal__money">
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.price"
+                min="0" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Tax Profile</label>
+          <ng-select [items]="options.taxProfiles" [(ngModel)]="modal.taxProfile"
+            placeholder="Select" class="ov-select w-full" appendTo="body">
+          </ng-select>
+        </div>
+
+        <div class="qt-item-modal__field">
+          <label class="qt-item-modal__label">Total (Calculated)</label>
+          <input type="text" class="qt-item-modal__input" [value]="modalTotal.toFixed(2)" readonly />
+        </div>
+      </div>
+
+      <hr class="qt-item-modal__divider" />
+
+      <div class="qt-item-modal__footer">
+        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg"
+          (click)="closeLineModal()">Cancel</button>
+        <button type="button" class="qt-item-modal__save" (click)="saveLineItem()">Add Item</button>
+      </div>
+    </div>
+  </div>
+</div>

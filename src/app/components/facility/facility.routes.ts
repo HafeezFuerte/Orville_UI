@@ -121,6 +121,41 @@ export const facilityRoutingModule: Routes = [
     ]
   },
   {
+    path: 'purchase-order',
+    pathMatch: 'full',
+    redirectTo: 'purchase-orders',
+  },
+  {
+    path: 'purchase-order/:id',
+    redirectTo: 'purchase-orders/:id',
+  },
+  {
+    path: 'purchase-orders',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./purchase-orders/purchase-order-list/purchase-order-list.component').then(
+            (m) => m.PurchaseOrderListComponent
+          ),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./purchase-orders/create-purchase-order/create-purchase-order.component').then(
+            (m) => m.CreatePurchaseOrderComponent
+          ),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./purchase-orders/purchase-order-detail/purchase-order-detail.component').then(
+            (m) => m.PurchaseOrderDetailComponent
+          ),
+      },
+    ]
+  },
+  {
     path: 'assets',
     children: [
       {
