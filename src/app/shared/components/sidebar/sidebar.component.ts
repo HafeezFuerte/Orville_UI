@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, Renderer2, HostListener } from '@angular/core';
 import { Menu, NavService } from '../../services/nav.service';
-import { Subscription, fromEvent, map, tap } from 'rxjs';
+import { Subscription, fromEvent } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { checkHoriMenu, switcherArrowFn } from './sidebar';
@@ -195,6 +195,8 @@ export class SidebarComponent {
           this.menuItems = this.reorderFacilityChildren(this.menuItems);
         }
 
+        this.menuItems = this.ensureVisitorsMenu(this.menuItems);
+
         // Add Settings menu item at the end
         this.menuItems.push({
           title: 'Settings',
@@ -270,6 +272,16 @@ export class SidebarComponent {
           children: this.withCommissionsAllChild([]),
         };
       }
+      if (this.isVisitorsParent(normalizedName)) {
+        return {
+          title: 'Visitors',
+          type: 'sub',
+          selected: false,
+          active: false,
+          icon: this.getFigmaIcon('visitors') || module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          children: this.withVisitorsChildren(),
+        };
+      }
       const path = this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases';
       if (this.isLeaseModule(normalizedName)) {
         return {
@@ -304,9 +316,12 @@ export class SidebarComponent {
     if (this.isCommissionsParent(normalizedName)) {
       children = this.withCommissionsAllChild(children);
     }
+    if (this.isVisitorsParent(normalizedName)) {
+      children = this.withVisitorsChildren();
+    }
 
     return {
-      title: module.moduleName,
+      title: this.isVisitorsParent(normalizedName) ? 'Visitors' : module.moduleName,
       type: 'sub',
       selected: false,
       active: false,
@@ -344,6 +359,35 @@ export class SidebarComponent {
     ];
   }
 
+  private withVisitorsChildren(): any[] {
+    return [
+      {
+        title: 'All Visitors',
+        type: 'link',
+        path: '/visitors',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Check-In Visitors',
+        type: 'link',
+        path: '/visitors/check-in',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Check-Out Visitors',
+        type: 'link',
+        path: '/visitors/check-out',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+    ];
+  }
+
   private moduleIconMap: { [key: string]: string } = {
     'HMS': 'bx bx-user-circle',       // Human Resource Management
     'AMS': 'bx bx-wallet',            // Account Management
@@ -365,6 +409,10 @@ export class SidebarComponent {
     'leases manaement': '/leases',
     'leases management': '/leases',
     'lease management': '/leases',
+    'facility/purchase-order': '/facility/purchase-orders',
+    '/facility/purchase-order': '/facility/purchase-orders',
+    'purchase-order': '/facility/purchase-orders',
+    '/purchase-order': '/facility/purchase-orders',
   };
 
   private urlNameMap: { [key: string]: string } = {
@@ -410,6 +458,8 @@ export class SidebarComponent {
     'Parts / Inventory': '/facility/inventory',
     'Inventory': '/facility/inventory',
     'Party/Inventory': '/facility/inventory',
+    'Purchase Order': '/facility/purchase-orders',
+    'Purchase Orders': '/facility/purchase-orders',
     'Assets': '/facility/assets',
     'Insights': '/insights',
     'Reports': '/reports',
@@ -429,6 +479,15 @@ export class SidebarComponent {
     'Landlord Commissions': '/commissions/landlord',
     'Collection Request': '/collection-requests',
     'Collection Requests': '/collection-requests',
+    'Visitors': '/visitors',
+    'Visitor': '/visitors',
+    'Guests': '/visitors',
+    'Guest List': '/visitors',
+    'All Visitors': '/visitors',
+    'Check-In Visitors': '/visitors/check-in',
+    'Check-In Visitor': '/visitors/check-in',
+    'Check-Out Visitors': '/visitors/check-out',
+    'Check-Out Visitor': '/visitors/check-out',
     'Reminders': '/reminders',
     'Reminder': '/reminders',
     'Bookings': '/bookings/reservations',
@@ -463,6 +522,67 @@ export class SidebarComponent {
   private isCommissionsParent(parentTitle?: string): boolean {
     const name = (parentTitle || '').trim().toLowerCase();
     return name === 'commissions' || name === 'commission';
+  }
+
+  private isVisitorsParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return name === 'guests' || name === 'visitor' || name === 'visitors' || name.includes('guest');
+  }
+
+  private isVisitorsChildTitle(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return (
+      name === 'all visitors' ||
+      name === 'check-in visitors' ||
+      name === 'check-in visitor' ||
+      name === 'check-out visitors' ||
+      name === 'check-out visitor' ||
+      name === 'guest list'
+    );
+  }
+
+  private resolveVisitorsChildPath(menuName: string): string {
+    const name = (menuName || '').trim().toLowerCase();
+    if (name.includes('check-in')) {
+      return '/visitors/check-in';
+    }
+    if (name.includes('check-out')) {
+      return '/visitors/check-out';
+    }
+    return '/visitors';
+  }
+
+  private ensureVisitorsMenu(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    const hasVisitorsParent = items.some((item) => this.isVisitorsParent(item.title));
+    let result = items;
+
+    if (hasVisitorsParent) {
+      result = items.filter((item) => {
+        if (item.type === 'sub') {
+          return true;
+        }
+        return !this.isVisitorsChildTitle(item.title);
+      });
+    }
+
+    return result.map((item) => {
+      if (!this.isVisitorsParent(item.title)) {
+        return item;
+      }
+
+      return {
+        title: 'Visitors',
+        type: 'sub',
+        icon: this.getFigmaIcon('visitors') || item.icon,
+        active: false,
+        selected: false,
+        children: this.withVisitorsChildren(),
+      };
+    });
   }
 
   private isHelpDeskMenu(title?: string): boolean {
@@ -537,6 +657,9 @@ export class SidebarComponent {
       if (key === 'party/inventory') {
         return { ...child, title: 'Parts/Inventory', path: '/facility/inventory' };
       }
+      if (key === 'purchase order') {
+        return { ...child, title: 'Purchase Order', path: '/facility/purchase-orders' };
+      }
       // Design uses singular "Work Order"
       if (key === 'work order' && (child.title || '').toLowerCase().includes('orders')) {
         return { ...child, title: 'Work Order' };
@@ -569,6 +692,16 @@ export class SidebarComponent {
         title: 'Parts/Inventory',
         type: 'link',
         path: '/facility/inventory',
+        active: false,
+        selected: false,
+      });
+    }
+
+    if (!children.some((c) => this.normalizeFacilityChildKey(c.title) === 'purchase order')) {
+      children.push({
+        title: 'Purchase Order',
+        type: 'link',
+        path: '/facility/purchase-orders',
         active: false,
         selected: false,
       });
@@ -696,6 +829,31 @@ export class SidebarComponent {
   }
 
   /** Map API menu labels under Community to static frontend routes. */
+  /** API menus sometimes emit singular purchase-order paths that 404 against our routes. */
+  private normalizePurchaseOrderPath(path?: string): string {
+    if (!path) {
+      return '';
+    }
+    const trimmed = path.trim();
+    if (!trimmed) {
+      return '';
+    }
+    const withLeadingSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+    if (
+      withLeadingSlash === '/facility/purchase-order' ||
+      withLeadingSlash.startsWith('/facility/purchase-order/')
+    ) {
+      return withLeadingSlash.replace('/facility/purchase-order', '/facility/purchase-orders');
+    }
+    if (
+      withLeadingSlash === '/purchase-order' ||
+      withLeadingSlash.startsWith('/purchase-order/')
+    ) {
+      return withLeadingSlash.replace('/purchase-order', '/facility/purchase-orders');
+    }
+    return withLeadingSlash;
+  }
+
   private resolveCommunityPath(menuName: string): string {
     const name = (menuName || '').trim().toLowerCase().replace(/\s+/g, ' ');
     if (!name || name === 'community') {
@@ -741,6 +899,9 @@ export class SidebarComponent {
         return communityPath;
       }
     }
+    if (this.isVisitorsParent(parentTitle)) {
+      return this.resolveVisitorsChildPath(normalizedName);
+    }
 
     let path = this.urlNameMap[normalizedName];
     if (!path) {
@@ -759,6 +920,11 @@ export class SidebarComponent {
     if (!path && fallbackUrl) {
       path = this.urlMap[fallbackUrl] || fallbackUrl;
     }
+    if (!path && this.isVisitorsChildTitle(normalizedName)) {
+      path = this.resolveVisitorsChildPath(normalizedName);
+    }
+
+    path = this.normalizePurchaseOrderPath(path);
 
     if (this.isAccountingParent(parentTitle) && this.isReportsRoute(path)) {
       return '/accounting/reports';
@@ -796,6 +962,8 @@ export class SidebarComponent {
     'work orders': './assets/images/nav/facility.svg',
     'assets': './assets/images/nav/facility.svg',
     'guests': './assets/images/nav/guests.svg',
+    'visitors': './assets/images/nav/guests.svg',
+    'visitor': './assets/images/nav/guests.svg',
     'legal': './assets/images/nav/legal.svg',
     'inspections': './assets/images/nav/inspections.svg',
     'reports': './assets/images/nav/reports.svg',
@@ -1071,6 +1239,22 @@ export class SidebarComponent {
     if (bestMatch) {
       this.setMenuHeaders((bestMatch as any).element, (bestMatch as any).ele, (bestMatch as any).child1);
       return;
+    }
+
+    if (currentUrl.startsWith('/visitors')) {
+      for (const element of this.menuItems) {
+        if (element.title !== 'Visitors' || element.type !== 'sub' || !element.children?.length) {
+          continue;
+        }
+        const activeChild =
+          element.children.find((child) => child.path === currentUrl) ||
+          element.children.find((child) => child.path === '/visitors') ||
+          element.children[0];
+        if (activeChild) {
+          this.setMenuHeaders(element, activeChild);
+          return;
+        }
+      }
     }
 
     // 4. Fallback search (Truncated) - only if no specific match found

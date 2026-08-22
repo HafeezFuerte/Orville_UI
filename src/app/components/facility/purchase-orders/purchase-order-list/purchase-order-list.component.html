@@ -1,0 +1,115 @@
+<!-- Purchase Order List — Figma 3150:134570 -->
+<div>
+  <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h3 class="ov-page-title">Purchase Order</h3>
+      <p class="ov-page-sub">Manage and view all Purchase Order</p>
+    </div>
+    <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+      <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
+        <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+        Add Item
+      </button>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
+      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input type="text" class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+      </div>
+      <div class="ov-toolbar__btns">
+        <div class="relative" data-po-columns (click)="$event.stopPropagation()">
+          <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
+            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+            Column
+          </button>
+          <app-column-menu
+            *ngIf="showColumnDropdown"
+            [columns]="tableColumns"
+            (toggle)="toggleColumn($event)"
+            (toggleAll)="toggleAllColumns($event)"
+            (closed)="showColumnDropdown = false">
+          </app-column-menu>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto px-5 pb-0 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="paginatedRows"
+        [loading]="false"
+        [hasActions]="false"
+        [showPaginator]="false"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <a *ngSwitchCase="'id'" class="ov-link font-semibold"
+              [routerLink]="['/facility/purchase-orders', row.id]"
+              (click)="closeRowAction()">{{ row.id }}</a>
+            <a *ngSwitchCase="'title'" class="ov-link"
+              [routerLink]="['/facility/purchase-orders', row.id]"
+              (click)="closeRowAction()">{{ row.title }}</a>
+            <span *ngSwitchCase="'status'" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            <span *ngSwitchCase="'totalAmount'" class="font-semibold text-defaulttextcolor">{{ row.totalAmount }}</span>
+            <a *ngSwitchCase="'vendor'" class="ov-link" href="javascript:void(0)">{{ row.vendor }}</a>
+            <div *ngSwitchCase="'action'" class="po-action" data-po-action (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+                [attr.aria-expanded]="openRowActionId === row.id"
+                (mousedown)="$event.stopPropagation()"
+                (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+            </div>
+            <span *ngSwitchDefault>{{ row[col.key] }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+
+    <div class="ov-page">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <button type="button" class="ov-page__btn is-active" (click)="goPage(1)">1</button>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="openRowActionId && rowMenuStyle"
+    class="po-row-menu bg-white dark:bg-bodybg"
+    role="menu"
+    data-po-action
+    [ngStyle]="rowMenuStyle"
+    (click)="$event.stopPropagation()">
+    <button type="button" role="menuitem" class="po-row-menu__item" (click)="navigateToCreate()">Edit</button>
+    <a role="menuitem" class="po-row-menu__item"
+      [routerLink]="['/facility/purchase-orders', openRowActionId!]"
+      (click)="closeRowAction()">View</a>
+  </div>
+</div>

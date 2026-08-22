@@ -1,0 +1,158 @@
+<!-- Visitor Detail — Figma 3202:97153 -->
+<div class="visitor-detail pb-16">
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex items-start gap-4">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Visitors" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">Visitor Details</h3>
+        <p class="ov-page-sub mt-1">
+          Guests /
+          <span class="ov-page-sub__current">Visitor Details</span>
+        </p>
+      </div>
+    </div>
+    <div class="visitor-action relative" (click)="$event.stopPropagation()">
+      <button type="button" class="visitor-action__btn"
+        [class.is-open]="showActionMenu"
+        (click)="showActionMenu = !showActionMenu">
+        <span>Action</span>
+        <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="14" height="14"
+          [class.visitor-action__chevron--open]="showActionMenu" />
+      </button>
+      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <button type="button" role="menuitem" class="ov-action-menu__item" (click)="goEdit(); showActionMenu = false">
+            <span class="ov-action-menu__icon-box">
+              <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+            </span>
+            <span>Edit Visitor</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout">
+    <aside class="ov-detail-layout__left flex flex-col gap-4">
+      <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+        <div>
+          <h4 class="ov-card-title !text-[16px]">{{ detail.visitorName }}</h4>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">{{ detail.propertyLabel }}</p>
+        </div>
+        <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold w-full">
+          View Activity
+        </button>
+
+        <div class="border-t border-defaultborder"></div>
+        <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
+
+        <div class="visitor-info-card">
+          <h6 class="visitor-info-card__title">Visitor Information</h6>
+          <div class="visitor-info-card__body">
+            <div class="ov-kv"><span class="ov-kv__label">ID:</span><span class="ov-kv__value font-bold">{{ detail.id }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Name:</span><span class="ov-kv__value font-bold">{{ detail.visitorName }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value font-bold">{{ detail.email }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value font-bold">{{ detail.phone }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="visitor-info-card ov-card !mb-0">
+        <h6 class="visitor-info-card__title">Visit</h6>
+        <div class="visitor-info-card__body visitor-info-card__body--grid">
+          <div class="ov-kv"><span class="ov-kv__label">Visiting date:</span><span class="ov-kv__value font-bold">{{ detail.visitingDate }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Visitors:</span><span class="ov-kv__value font-bold">{{ detail.numberOfVisitors }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Duration:</span><span class="ov-kv__value font-bold">{{ detail.duration }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Visit type:</span><span class="ov-kv__value font-bold">{{ detail.visitType }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">One-time validity:</span><span class="ov-kv__value font-bold">{{ detail.oneTimeValidity }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Country:</span><span class="ov-kv__value font-bold">{{ detail.country }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Check-in:</span><span class="ov-kv__value font-bold">{{ detail.checkIn }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Check-out:</span><span class="ov-kv__value font-bold">{{ detail.checkOut }}</span></div>
+        </div>
+      </div>
+
+      <div class="visitor-info-card ov-card !mb-0">
+        <h6 class="visitor-info-card__title">Property &amp; Unit</h6>
+        <div class="visitor-info-card__body visitor-info-card__body--grid">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property:</span>
+            <a href="javascript:void(0)" class="ov-link font-bold">{{ detail.property }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit:</span>
+            <a href="javascript:void(0)" class="ov-link font-bold">{{ detail.unit }}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="visitor-info-card ov-card !mb-0">
+        <h6 class="visitor-info-card__title">Status</h6>
+        <div class="visitor-info-card__body visitor-info-card__body--grid">
+          <div class="ov-kv ov-kv--inline">
+            <span class="ov-kv__label">Sent:</span>
+            <span class="visitor-tag visitor-tag--soft">{{ detail.sentTag }}</span>
+          </div>
+          <div class="ov-kv ov-kv--inline">
+            <span class="ov-kv__label">Code:</span>
+            <span class="visitor-tag visitor-tag--outline">{{ detail.codeStatus }}</span>
+          </div>
+          <div class="ov-kv ov-kv--inline">
+            <span class="ov-kv__label">Entry:</span>
+            <span [ngClass]="statusClass(detail.entryStatus)">{{ detail.entryStatus }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="visitor-info-card ov-card !mb-0">
+        <h6 class="visitor-info-card__title">Relationships</h6>
+        <div class="visitor-info-card__body visitor-info-card__body--grid">
+          <div class="ov-kv"><span class="ov-kv__label">Contact:</span><span class="ov-kv__value font-bold">{{ detail.contact }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Invited by:</span><span class="ov-kv__value font-bold">{{ detail.invitedBy }}</span></div>
+        </div>
+      </div>
+
+      <div class="visitor-info-card ov-card !mb-0">
+        <h6 class="visitor-info-card__title">Notes</h6>
+        <div class="visitor-info-card__body">
+          <div class="ov-kv ov-kv--stack">
+            <span class="ov-kv__label">Notes:</span>
+            <span class="ov-kv__value font-bold">{{ detail.notes }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="ov-detail-layout__right min-w-0 flex flex-col gap-4">
+      <div class="box ov-card overflow-visible shadow-none !mb-0">
+        <div class="border-b border-defaultborder px-5 py-3.5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h6 class="m-0 text-[16px] font-bold leading-[23px] text-defaulttextcolor">Visitor details and information</h6>
+        </div>
+
+        <section class="visitor-panel">
+          <h5 class="visitor-panel__title">Pass &amp; system</h5>
+          <div class="visitor-panel__divider"></div>
+          <div class="visitor-panel__rows">
+            <div class="visitor-panel__row"><span class="visitor-panel__label">Passcode:</span><span>{{ detail.passcode }}</span></div>
+            <div class="visitor-panel__row"><span class="visitor-panel__label">Code expiry:</span><span>{{ detail.codeExpiry }}</span></div>
+            <div class="visitor-panel__row"><span class="visitor-panel__label">UUID:</span><span>{{ detail.uuid }}</span></div>
+            <div class="visitor-panel__row"><span class="visitor-panel__label">Created:</span><span>{{ detail.systemCreated }}</span></div>
+            <div class="visitor-panel__row"><span class="visitor-panel__label">Updated:</span><span>{{ detail.systemUpdated }}</span></div>
+          </div>
+        </section>
+
+        <section class="visitor-panel">
+          <h5 class="visitor-panel__title">QR code</h5>
+          <div class="visitor-panel__divider"></div>
+          <div class="visitor-qr">
+            <div class="visitor-qr__frame">
+              <img src="assets/iconfonts/tabler-icons/icons/qrcode.svg" alt="" class="visitor-qr__image" />
+            </div>
+            <p class="visitor-qr__caption">Scan this QR code to access visitor information</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
