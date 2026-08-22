@@ -244,6 +244,7 @@ export class LeaseDetailComponent implements OnInit {
   ];
 
   chequesData:any[]=[];
+  invoiceData:any[]=[];
   approvalUser:any={};
   unitsData: any[] = [];
   loading: boolean = false;
@@ -473,7 +474,8 @@ export class LeaseDetailComponent implements OnInit {
           this.workOrdersData = res.objResult.workorders || [];
           this.customFields = res.objResult.customFields || [];
           this.paymentSchedules = res.objResult.payment_schedules || [];
-          this.chequesData= res.objResult.invoice_dtls || [];
+          this.chequesData= res.objResult.receipt_dtls || [];
+          this.invoiceData= res.objResult.invoice_dtls || [];
           this.approvalUser= res.objResult.approval_dtls[0] || {}
           this.initializeTabs();
 

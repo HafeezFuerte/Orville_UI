@@ -99,19 +99,37 @@
             <a [routerLink]="['/units', row.unitcode]" class="ov-link font-semibold">{{ row.unit_code }}</a>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'cheque_status'">
-            <span class="ov-status"
-              [class.ov-status--active]="row.status_nm === 'Active'"
-              [class.ov-status--muted]="row.status_nm === 'Draft'"
-              [class.ov-status--soft]="row.status_nm === 'Completed'"
-              [class.ov-status--warning]="row.status_nm === 'Pending' || row.status_nm === 'Pending Approvals'"
-              [ngClass]="row.cheque_status_class || ''">
-              {{ getArabicLookupName(row, 'cheque_status') }}
+          <ng-container *ngSwitchCase="'lease_id'">
+            <a [routerLink]="['/leases/edit-lease', row.lease_id]" class="ov-link font-semibold">{{ row.lease_id }}</a>
+          </ng-container>
+    
+          <ng-container *ngSwitchCase="'invoice_status'">
+            <span class="ov-status" 
+              [class.ov-status--active]="row.invoice_status === 'Paid'"
+              [class.ov-status--muted]="row.invoice_status === 'Draft'"
+              [class.ov-status--soft]="row.invoice_status === 'Unpaid'"
+              [class.ov-status--warning]="row.invoice_status === 'UnPaid'|| row.invoice_status === 'Bounced' || row.invoice_status === 'Hold'"
+              [ngClass]="row.invoice_status_class || ''">
+              {{ getArabicLookupName(row, 'invoice_status') }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'lease_status'">
+            <span class="ov-status" 
+               [class.ov-status--active]="row.lease_status === 'Active'"
+              [class.ov-status--muted]="row.lease_status === 'Draft'"
+              [class.ov-status--soft]="row.lease_status === 'Completed'"
+              [class.ov-status--warning]="row.lease_status === 'Pending' || row.lease_status === 'Pending Approvals'"
+              [ngClass]="row.class_name || ''">
+              {{ getArabicLookupName(row, 'lease_status') }}
             </span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'total_amount'">
             <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}} {{ row.total_amount }}</span>
+          </ng-container>
+            <ng-container *ngSwitchCase="'currency_symbol'">
+            <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}}</span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'action'">

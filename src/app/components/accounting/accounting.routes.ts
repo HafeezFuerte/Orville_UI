@@ -14,6 +14,11 @@ export const accountingRoutes: Routes = [
       import('./invoices/invoices.component').then((m) => m.InvoicesComponent)
   },
   {
+    path: 'invoices/edit-invoice/:code',
+    loadComponent: () =>
+      import('./invoices/invoices.component').then((m) => m.InvoicesComponent)
+  }, 
+  {
     path: 'invoices/:id',
     loadComponent: () =>
       import('./invoices/invoice-detail.component').then((m) => m.InvoiceDetailComponent)

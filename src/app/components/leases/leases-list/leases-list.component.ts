@@ -168,7 +168,7 @@ export class LeasesListComponent implements OnInit {
   }
   loadLookup(filterId: number, targetProperty: string, nameField: string) {
     this.commontabservice.getMasterByType({
-      typeId: 2,
+      typeId: 53,
       filterId: filterId,
       filterText: '',
       filterText1: ''

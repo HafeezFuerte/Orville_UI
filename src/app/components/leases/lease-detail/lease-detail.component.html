@@ -6,7 +6,7 @@
     </a>
     <div>
       <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ leaseInfo.name }}</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+      <div class="text-[11px] text-gray-600 font-medium flex items-center gap-1">
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">Home</span>
         <span>/</span>
         <span class="cursor-pointer hover:text-primary" (click)="goBack()">Lease</span>
@@ -104,7 +104,7 @@
               <span class="px-2 py-0.5 rounded text-[9px] bg-gray-100 text-gray-500 font-bold border border-gray-200/50 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {{ leaseInfo.status_nm }}
               </span>
-              <span class="px-2 py-0.5 rounded text-[9px] bg-[#1f2b45] text-white font-bold flex items-center gap-1">
+              <span *ngIf="leaseInfo.is_renewed == true" class="px-2 py-0.5 rounded text-[9px] bg-[#1f2b45] text-white font-bold flex items-center gap-1">
                 Renewed
               </span>
             </div>
@@ -138,52 +138,52 @@
           
           <div class="flex flex-col gap-2.5">
             <div class="flex justify-between">
-              <span class="text-gray-400">Lease ID:</span>
+              <span class="text-gray-600">Lease ID:</span>
               <span class="font-bold text-gray-700">{{ leaseInfo.code  }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Tenant:</span>
+              <span class="text-gray-600">Tenant:</span>
               <span [routerLink]="['/contacts/tenants/edit-tenant', leaseInfo?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.tenant }}</span>
                
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Property:</span>
+              <span class="text-gray-600">Property:</span>
               <span [routerLink]="['/edit-property', leaseInfo?.property_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.property }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Unit:</span>
+              <span class="text-gray-600">Unit:</span>
               <span [routerLink]="['/edit-unit', leaseInfo?.unit_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.unitcode }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Duration:</span>
+              <span class="text-gray-600">Duration:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.total_months  }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">No of Occupants:</span>
+              <span class="text-gray-600">No of Occupants:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.no_of_persons  }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
+              <span class="text-gray-600">Start Date:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.start_date | date:'MMM d yyyy' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
+              <span class="text-gray-600">End Date:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.end_date | date:'MMM d yyyy' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Lease Days Left:</span>
+              <span class="text-gray-600">Lease Days Left:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.leaseDaysLeft  }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Collector:</span>
+              <span class="text-gray-600">Collector:</span>
               <span class="font-semibold text-gray-700">{{ leaseInfo.collectedby  }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Short Term:</span>
+              <span class="text-gray-600">Short Term:</span>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">{{leaseInfo.is_lease_short_term == true ? 'Yes' :'No'}}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Renewed:</span>
+              <span class="text-gray-600">Renewed:</span>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/10 text-success border border-success/20">{{leaseInfo.is_renewed == true ? 'Yes' :'No'}}</span>
             </div>
             <div class="flex justify-between" *ngIf="leaseInfo.is_renewed == true">
@@ -191,7 +191,7 @@
               <span class="font-bold text-primary hover:underline cursor-pointer">{{ leaseInfo.renewed_from || '-' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Is Multi Unit:</span>
+              <span class="text-gray-600">Is Multi Unit:</span>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-danger/10 text-danger border border-danger/20">No</span>
             </div>
           </div>
@@ -229,27 +229,27 @@
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblPreviousLease' | translate }}</h6>
           <div class="flex flex-col gap-2.5">
             <div class="flex flex-col gap-0.5">
-              <span class="text-gray-400">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
+              <span class="text-gray-600">{{ 'web.leases.lblPreviousLeaseName' | translate }}:</span>
               <a class="font-bold text-primary hover:underline cursor-pointer">Lease - 31650 - Marina Heights Towers</a>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Status:</span>
+              <span class="text-gray-600">Status:</span>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success/15 text-success">Active</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Start Date:</span>
+              <span class="text-gray-600">Start Date:</span>
               <span class="font-semibold text-gray-700">08-01-2025</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">End Date:</span>
+              <span class="text-gray-600">End Date:</span>
               <span class="font-semibold text-gray-700">06-30-2026</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Monthly Rent:</span>
+              <span class="text-gray-600">Monthly Rent:</span>
               <span class="font-bold text-gray-700">AED 2,200.00</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-400">Days Left:</span>
+              <span class="text-gray-600">Days Left:</span>
               <span class="font-bold text-gray-700">4 days</span>
             </div>
           </div>
@@ -259,7 +259,7 @@
         <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex flex-col gap-3">
           <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">{{ 'web.leases.lblDubaiTenancy' | translate }}</h6>
           <div class="flex items-center justify-between">
-            <span class="text-gray-400">No lease terms configured</span>
+            <span class="text-gray-600">No lease terms configured</span>
             <button type="button" [attr.data-tooltip]="'web.leases.lblViewTerms' | translate" class="px-3 py-1 text-[10px] rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all font-semibold flex items-center gap-1">
               {{ 'web.leases.lblViewTerms' | translate }} <i class="ri-arrow-right-s-line"></i>
             </button>
@@ -313,17 +313,17 @@
                 <div class="flex justify-between items-start">
                   <div>
                     <span class="text-[9px] font-bold text-white/60 tracking-wider uppercase">Current Balance</span>
-                    <h4 class="text-xl font-black mt-1">AED 1,500.00</h4>
+                    <h4 class="text-xl font-black mt-1">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].total_amount | number:'1.2-2'):0 }}</h4>
                   </div>
                 </div>
                 <div class="flex justify-between border-t border-white/10 pt-3 text-[10px]">
                   <div>
                     <span class="text-white/60 block">Total Income</span>
-                    <span class="font-bold">AED 1,200.00</span>
+                    <span class="font-bold">{{ currentUser?.currencyCode || 'AED' }} {{leaseInfo?.income_amt}}</span>
                   </div>
                   <div>
                     <span class="text-white/60 block">Security Deposit</span>
-                    <span class="font-bold">AED 300.00</span>
+                    <span class="font-bold">{{ currentUser?.currencyCode || 'AED' }} {{leaseInfo?.security_income_amt}}</span>
                   </div>
                 </div>
               </div>
@@ -331,20 +331,20 @@
               <!-- Single Cards grid -->
               <div class="grid grid-cols-2 gap-3 md:col-span-1">
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Paid</span>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Paid</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].paid_amount | number:'1.2-2'):0 }}</h5>
+                </div>
+                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Upcoming</span>
                   <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
                 </div>
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Upcoming</span>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Bounced</span>
                   <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
                 </div>
                 <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Bounced</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
-                </div>
-                <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                  <span class="text-[9px] font-bold text-gray-400 uppercase">Write Off</span>
-                  <h5 class="text-sm font-black text-gray-800 mt-2">AED 0.00</h5>
+                  <span class="text-[9px] font-bold text-gray-600 uppercase">Write Off</span>
+                  <h5 class="text-sm font-black text-gray-800 mt-2">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].round_off | number:'1.2-2'):0 }}</h5>
                 </div>
               </div>
             </div>
@@ -352,19 +352,19 @@
             <!-- Other amounts row -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Equity</span>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Equity</span>
                 <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Outstanding Cheques</span>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Outstanding Cheques</span>
                 <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Refundable Amount</span>
-                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 300.00</h5>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Refundable Amount</span>
+                <h5 class="text-sm font-bold text-gray-700 text-center mt-2">{{ currentUser?.currencyCode || 'AED' }} {{leaseInfo?.security_income_amt}}</h5>
               </div>
               <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col justify-between">
-                <span class="text-[9px] font-bold text-gray-400 uppercase text-center">Pending Adjustments</span>
+                <span class="text-[9px] font-bold text-gray-600 uppercase text-center">Pending Adjustments</span>
                 <h5 class="text-sm font-bold text-gray-700 text-center mt-2">AED 0.00</h5>
               </div>
             </div>
@@ -412,33 +412,7 @@
               <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Invoices</h6>
             </div>
             <div class="p-4">
-              <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'amt'">
-                      <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
-                    </ng-container> 
-                    <ng-container *ngSwitchCase="'rcp_no'">
-                      <span [routerLink]="['/accounting/invoices', row?.invoicecode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.rcp_no }}</span>
-                   </ng-container>
-                    <ng-container *ngSwitchCase="'Tenant'">
-                      <span [routerLink]="['/contacts/tenants/edit-tenant', row?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.tenant }}</span>
-                   </ng-container>
-                   <ng-container *ngSwitchCase="'unit_code'">
-                    <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
-                 </ng-container>
-                    <ng-container *ngSwitchCase="'cheque_status'">
-                      <span  [ngClass]="row.cheque_status_class || ''" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">{{ getArabicLookupName(row,'cheque_status') }}</span>
-                       
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'attachment_path'">
-                      <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
-                        <i class="ri-file-pdf-line"></i> {{ row.attachment_path }}
-                      </a>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
+              <app-financials-table [receipts]="chequesData && chequesData.length > 0 ? chequesData : paymentSchedules" [invoices]="invoiceData && invoiceData.length > 0 ? invoiceData : []" [leaseInfo]="leaseInfo" [currentUser]="currentUser"></app-financials-table>
             </div>
           </div>
         </div>
@@ -527,7 +501,7 @@
             </button>
           </div>
           <div class="p-4">
-            <app-financials-table [invoices]="chequesData && chequesData.length > 0 ? chequesData : paymentSchedules" [leaseInfo]="leaseInfo" [currentUser]="currentUser"></app-financials-table>
+            <app-financials-table [receipts]="chequesData && chequesData.length > 0 ? chequesData : paymentSchedules" [invoices]="invoiceData && invoiceData.length > 0 ? invoiceData : []" [leaseInfo]="leaseInfo" [currentUser]="currentUser"></app-financials-table>
           </div>
         </div>
       </div>
@@ -639,9 +613,9 @@
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div>
           <h5 class="text-xs font-bold text-gray-800 m-0">Add New Invoice</h5>
-          <p class="text-[10px] text-gray-400 m-0">Create an invoice for this lease.</p>
+          <p class="text-[10px] text-gray-600 m-0">Create an invoice for this lease.</p>
         </div>
-        <button (click)="closeInvoiceModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button (click)="closeInvoiceModal()" class="text-gray-600 hover:text-gray-600 transition-all">
           <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
         </button>
       </div>
@@ -699,9 +673,9 @@
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div>
           <h5 class="text-xs font-bold text-gray-800 m-0">Add Inspection</h5>
-          <p class="text-[10px] text-gray-400 m-0">Schedule an inspection for this lease.</p>
+          <p class="text-[10px] text-gray-600 m-0">Schedule an inspection for this lease.</p>
         </div>
-        <button (click)="closeInspectionModal()" class="text-gray-400 hover:text-gray-600 transition-all">
+        <button (click)="closeInspectionModal()" class="text-gray-600 hover:text-gray-600 transition-all">
           <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
         </button>
       </div>

@@ -1,7 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit,inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
 import {
   CHEQUE_COLUMNS,
   INVOICE_CHEQUE_ROWS,
@@ -32,28 +35,33 @@ type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
   styleUrl: './invoice-detail.component.scss'
 })
 export class InvoiceDetailComponent implements OnInit {
-  invoice: InvoiceDetail = INVOICE_DETAIL;
+  invoice: any={};
+  invoice_no:string='';
+  receiptslist:any=[];
+  invoicesList:any=[];
   overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
-
-  get invoicesList(): any[] {
-    const numAmt = Number(this.invoice.amountDue.replace(/[^\d.]/g, '')) || Number(this.invoice.balance.replace(/[^\d.]/g, '')) || 3000;
-    return [{
-      rcp_no: this.invoice.invoiceNo,
-      cheque_status: this.invoice.status,
-      created_date: this.invoice.issueDate,
-      cheque_date: this.invoice.dueDate,
-      payment_type: this.invoice.paymentVia,
-      amt: numAmt,
-      receipts: this.chequeRows.map((c) => ({
-        receiptNo: c.chequeNo ? c.chequeNo.replace('CH', 'RCP') : 'RCP-' + c.id,
-        date: c.chequeDate,
-        method: this.invoice.paymentVia || 'Cheque',
-        reference: c.chequeNo || '-',
-        amount: Number(c.amount.replace(/[^\d.]/g, '')) || 0,
-        status: c.status || 'Cleared'
-      }))
-    }];
-  }
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+  private commontabservice = inject(Common_TabsService);
+  // get invoicesList(): any[] {
+  //   const numAmt = Number(this.invoice.amountDue.replace(/[^\d.]/g, '')) || Number(this.invoice.balance.replace(/[^\d.]/g, '')) || 3000;
+  //   return [{
+  //     rcp_no: this.invoice.invoiceNo,
+  //     cheque_status: this.invoice.status,
+  //     created_date: this.invoice.issueDate,
+  //     cheque_date: this.invoice.dueDate,
+  //     payment_type: this.invoice.paymentVia,
+  //     amt: numAmt,
+  //     receipts: this.chequeRows.map((c) => ({
+  //       receiptNo: c.chequeNo ? c.chequeNo.replace('CH', 'RCP') : 'RCP-' + c.id,
+  //       date: c.chequeDate,
+  //       method: this.invoice.paymentVia || 'Cheque',
+  //       reference: c.chequeNo || '-',
+  //       amount: Number(c.amount.replace(/[^\d.]/g, '')) || 0,
+  //       status: c.status || 'Cleared'
+  //     }))
+  //   }];
+  // }
 
   get leaseInfo(): any {
     return {
@@ -95,20 +103,29 @@ export class InvoiceDetailComponent implements OnInit {
     if (!id) {
       return;
     }
-    const row = INVOICE_ROWS.find((item) => item.id === id);
-    this.invoice = {
-      ...this.invoice,
-      id,
-      invoiceNo: row?.invoiceNumber || this.invoice.invoiceNo,
-      tenant: row?.to || this.invoice.tenant,
-      issueDate: row?.invoiceDate || this.invoice.issueDate,
-      dueDate: row?.dueDate || this.invoice.dueDate,
-      paymentVia: row?.paymentVia || this.invoice.paymentVia,
-      preparedBy: row?.createdBy || this.invoice.preparedBy,
-      amountPaid: row?.paid || this.invoice.amountPaid,
-      amountDue: row?.status === 'Paid' ? 'AED 0.00' : row?.amount || this.invoice.amountDue,
-      status: row?.status || this.invoice.status
-    };
+    this.invoice_no=id; 
+    this.getInvoiceDetails();
+  }
+
+  getInvoiceDetails() {
+    this.commontabservice.getMasterByType({
+      typeId: 52,
+      filterId: 0,
+      filterText: this.invoice_no,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.invoice_dtls) { 
+          this.invoicesList= res.objResult.invoice_dtls || [];
+          this.receiptslist= res.objResult.receipt_dtls || []; 
+        }
+        else
+          this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching typeid: 22:`, err);
+      }
+    });
   }
 
   goBack(): void {

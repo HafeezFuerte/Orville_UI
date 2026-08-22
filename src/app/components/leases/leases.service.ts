@@ -32,6 +32,12 @@ saveLease(payload: any): Observable<any> {
     payload
   );
 } 
+save_rcp_payment(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Accounting/receive_rcp_payment',
+    payload
+  );
+} 
 getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/get_masters_by_paging',
