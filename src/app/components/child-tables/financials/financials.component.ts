@@ -61,6 +61,11 @@ export class FinancialsComponent implements OnInit {
       this.invoice=this.invoices[0];
       this.expandedInvoiceId = this.invoices[0].invoicecode || this.invoices[0].id || 0;
     }
+    if(this.invoices.length==0){
+      setTimeout(() => {
+        this.invoice=this.invoices[0];
+      }, 500);
+    }
   }
   onRadioChange(){
     if(this.receivepayment.receivefull==1)

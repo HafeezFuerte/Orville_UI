@@ -22,9 +22,11 @@
         type="button"
         *ngFor="let tab of statusTabs"
         class="ov-seg__btn"
-        [class.is-active]="statusFilter === tab"
-        (click)="setStatusFilter(tab)">
-        {{ tab }}
+        [class.is-active]="statusFilter === tab.id"
+        [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+        [class.border-transparent]="statusFilter !== tab.id" 
+        (click)="setStatusFilter(tab.id)">
+        {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
       </button>
     </div>
   </div>
@@ -32,7 +34,7 @@
   <div class="ov-kpi-row mb-5">
     <div class="ov-kpi" *ngFor="let kpi of kpis">
       <span class="ov-kpi__badge">{{ kpi.label }}</span>
-      <div class="ov-kpi__val">{{ kpi.value }}</div>
+      <div class="ov-kpi__val">{{currentUser?.currencyCode}} {{ kpi.value | number:'1.2-2' }}</div>
       <div class="ov-kpi__sub">{{ kpi.sub }}</div>
     </div>
   </div>
@@ -126,7 +128,7 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'total_amount'">
-            <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}} {{ row.total_amount }}</span>
+            <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}} {{ row.total_amount | number:'1.2-2' }}</span>
           </ng-container>
             <ng-container *ngSwitchCase="'currency_symbol'">
             <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}}</span>

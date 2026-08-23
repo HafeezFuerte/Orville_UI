@@ -42,36 +42,38 @@ export class LeaseDetailComponent implements OnInit {
   showInspectionModal: boolean = false;
   showProgressPopover: boolean = false;
 
-  approvalSteps = [
-    {
-      step: 1,
-      title: 'Lease Submitted',
-      date: '12 Aug, 10:20',
-      description: 'Lease draft created and submitted for review',
-      status: 'completed'
-    },
-    {
-      step: 2,
-      title: 'Manager Review',
-      date: '14 Aug, 16:05',
-      description: 'Property manager reviewed terms and units',
-      status: 'completed'
-    },
-    {
-      step: 3,
-      title: 'Finance Approval',
-      date: '18 Aug, 11:30',
-      description: 'Payment schedule and amounts verified',
-      status: 'current'
-    },
-    {
-      step: 4,
-      title: 'Final Approval',
-      date: 'Pending',
-      description: 'Lease activated and ready to execute',
-      status: 'pending'
-    }
-  ];
+  approvalSteps:any=[];
+  
+  // = [
+  //   {
+  //     step: 1,
+  //     title: 'Lease Submitted',
+  //     date: '12 Aug, 10:20',
+  //     description: 'Lease draft created and submitted for review',
+  //     status: 'completed'
+  //   },
+  //   {
+  //     step: 2,
+  //     title: 'Manager Review',
+  //     date: '14 Aug, 16:05',
+  //     description: 'Property manager reviewed terms and units',
+  //     status: 'completed'
+  //   },
+  //   {
+  //     step: 3,
+  //     title: 'Finance Approval',
+  //     date: '18 Aug, 11:30',
+  //     description: 'Payment schedule and amounts verified',
+  //     status: 'current'
+  //   },
+  //   {
+  //     step: 4,
+  //     title: 'Final Approval',
+  //     date: 'Pending',
+  //     description: 'Lease activated and ready to execute',
+  //     status: 'pending'
+  //   }
+  // ];
 
   toggleProgressPopover(): void {
     this.showProgressPopover = !this.showProgressPopover;
@@ -494,6 +496,9 @@ export class LeaseDetailComponent implements OnInit {
     this.getLeaseDetails();
    
   }
+  get totalPrice(): number {
+    return this.paymentSchedules?.reduce((acc, current) => acc + current.amt, 0);
+  }
   getArabicLookupName(row: any, key: string) {
     return row[(localStorage.getItem("selectedLang") == "EN" ? key : key + '_ar')];
   }
@@ -521,6 +526,7 @@ export class LeaseDetailComponent implements OnInit {
           this.chequesData= res.objResult.receipt_dtls || [];
           this.invoiceData= res.objResult.invoice_dtls || [];
           this.approvalUser= res.objResult.approval_dtls[0] || {}
+          this.approvalSteps=res.objResult.approval_steps || [];
           this.initializeTabs();
 
           if(this.leaseInfo.status==176){ // draft mode

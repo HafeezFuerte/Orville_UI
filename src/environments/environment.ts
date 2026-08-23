@@ -4,8 +4,8 @@
 export const environment = {
   production: true,
      
-      apiurl: "http://development.orvillerealestate.com/",
-         //apiurl: "https://appapi.orvillerealestate.com/",
+      //apiurl: "http://development.orvillerealestate.com/",
+        apiurl: "https://appapi.orvillerealestate.com/",
 
   firebase: {
     authDomain: "************************",

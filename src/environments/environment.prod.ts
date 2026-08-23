@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiurl: "https://orville.pulseadmin.in/",
-  //apiurl: "https://appapi.orvillerealestate.com/",
+  //apiurl: "https://orville.pulseadmin.in/",
+  apiurl: "https://appapi.orvillerealestate.com/",
   firebase: {
     apiKey: "************************************",
     authDomain: "**********************************************",

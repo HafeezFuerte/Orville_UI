@@ -36,10 +36,10 @@
     <div class="box ov-card !mb-0 overflow-hidden">
       <div class="px-4 py-4">
         <div class="flex items-center gap-2 flex-wrap">
-          <h4 class="m-0 text-lg font-bold leading-6 text-defaulttextcolor">Invoice - {{ invoice.id }}</h4>
-          <span class="inv-badge" [ngClass]="statusBadge(invoice.status)">{{ invoice.status }}</span>
+          <h4 class="m-0 text-lg font-bold leading-6 text-defaulttextcolor">Invoice - {{ invoice.invoice_no }}</h4>
+          <span class="inv-badge" [ngClass]="statusBadge(invoice.invoice_status)">{{ invoice.invoice_status }}</span>
         </div>
-        <p class="mt-1 mb-0 text-[13px] text-textmuted">{{ invoice.type }}</p>
+        <p class="mt-1 mb-0 text-[13px] text-textmuted">{{ getArabicLookupName(invoice,'invoice_type_name') }}</p>
         <div class="grid grid-cols-2 gap-2 mt-4">
           <button type="button" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">View Activity</button>
           <button type="button" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">Print Invoice</button>
@@ -50,19 +50,19 @@
         <h6 class="m-0 mb-3 text-sm font-bold text-defaulttextcolor">Information</h6>
         <div class="invd-due" [ngClass]="dueCardClass">
           <p class="invd-due__label">Due Amount</p>
-          <p class="invd-due__value">{{ invoice.amountDue }}</p>
+          <p class="invd-due__value">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount| number:'1.2-2' }}</p>
           <div class="invd-due__badges">
-            <span class="inv-badge" [ngClass]="statusBadge(invoice.status)">{{ invoice.status }}</span>
+            <span class="inv-badge" [ngClass]="statusBadge(invoice.invoice_status)">{{ getArabicLookupName(invoice,'invoice_status') }}</span>
             <span *ngIf="showDeposited" class="inv-badge inv-badge--pending">Deposited</span>
           </div>
           <div class="invd-due__rows">
-            <div><span>Subtotal</span><b>{{ invoice.subtotal }}</b></div>
-            <div><span>Tax</span><b>{{ invoice.tax }}</b></div>
-            <div><span>Discount</span><b>{{ invoice.discount }}</b></div>
+            <div><span>Subtotal</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.subtotal| number:'1.2-2' }}</b></div>
+            <div><span>Tax</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.tax_amount | number:'1.2-2'}}</b></div>
+            <div><span>Discount</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.discount | number:'1.2-2'}}</b></div>
             <hr>
-            <div><span>Balance</span><b>{{ invoice.balance }}</b></div>
-            <div><span>Amount Paid</span><b>{{ invoice.amountPaid }}</b></div>
-            <div><span>Amount Due</span><b>{{ invoice.amountDue }}</b></div>
+            <div><span>Balance</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount| number:'1.2-2' }}</b></div>
+            <div><span>Amount Paid</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.paid_amount| number:'1.2-2' }}</b></div>
+            <div><span>Amount Due</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount| number:'1.2-2' }}</b></div>
           </div>
         </div>
       </div>
@@ -73,16 +73,16 @@
         <h6 class="m-0 text-sm font-bold text-defaulttextcolor">Invoice Information</h6>
       </div>
       <div class="flex flex-col gap-3 px-4 py-4">
-        <div class="ov-kv"><span class="ov-kv__label">Invoice ID</span><span class="ov-kv__value">{{ invoice.recordId }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Invoice No</span><span class="ov-kv__value">{{ invoice.invoiceNo }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Tenant</span><a class="ov-link" href="javascript:void(0)">{{ invoice.tenant }}</a></div>
-        <div class="ov-kv"><span class="ov-kv__label">Lease</span><a class="ov-link" href="javascript:void(0)">{{ invoice.lease }}</a></div>
-        <div class="ov-kv"><span class="ov-kv__label">Issue Date</span><span class="ov-kv__value">{{ invoice.issueDate }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Due Date</span><span class="ov-kv__value">{{ invoice.dueDate }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Payment Via</span><span class="ov-kv__value">{{ invoice.paymentVia }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Prepared by</span><span class="ov-kv__value">{{ invoice.preparedBy }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Amount Due</span><span class="ov-kv__value">{{ invoice.amountDue }}</span></div>
-        <div class="ov-kv"><span class="ov-kv__label">Reference No</span><span class="ov-kv__value">{{ invoice.referenceNo }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Invoice ID</span><span class="ov-kv__value">{{ invoice.code }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Invoice No</span><span class="ov-kv__value">{{ invoice.invoice_no }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label" >Tenant</span><a class="ov-link" [routerLink]="['/contacts/tenants/edit-tenant', invoice.tenant_code]" href="javascript:void(0)">{{ invoice.tenant }}</a></div>
+        <div class="ov-kv"><span class="ov-kv__label" >Lease</span><a class="ov-link" [routerLink]="['/leases', invoice.lease_id]" href="javascript:void(0)">{{ invoice.active_lease }}</a></div>
+        <div class="ov-kv"><span class="ov-kv__label">Issue Date</span><span class="ov-kv__value">{{ invoice.invoice_date| date:'dd MMM yyyy' || '-'  }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Due Date</span><span class="ov-kv__value">{{ invoice.due_date| date:'dd MMM yyyy' || '-'  }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Payment Via</span><span class="ov-kv__value">{{ invoice.payment_type_name }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Prepared by</span><span class="ov-kv__value">{{ invoice.createdby }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Amount Due</span><span class="ov-kv__value">{{ currentUser?.currencyCode || 'AED' }}{{ invoice.balance_amount }}</span></div>
+        <div class="ov-kv"><span class="ov-kv__label">Reference No</span><span class="ov-kv__value">{{ invoice.reference_no }}</span></div>
       </div>
     </div>
 
@@ -173,7 +173,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of filteredCheques()">
+              <tr *ngFor="let row of chequeRows">
                 <td *ngFor="let col of visible(chequeCols)" [ngSwitch]="col.key">
                   <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
                   <a *ngSwitchCase="'attachment'" class="ov-link" href="javascript:void(0)">{{ row.attachment }}</a>
@@ -220,7 +220,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of filteredTxns()">
+              <tr *ngFor="let row of filteredTxns">
                 <td *ngFor="let col of visible(txnCols)" [ngSwitch]="col.key">
                   <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
                   <span *ngSwitchCase="'qbStatus'" class="inv-badge" [ngClass]="row.qbStatus === 'Synced' ? 'inv-badge--synced' : 'inv-badge--draft'">{{ row.qbStatus }}</span>
@@ -266,7 +266,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of filteredPenalties()">
+              <tr *ngFor="let row of filteredPenalties">
                 <td *ngFor="let col of visible(penaltyCols)" [ngSwitch]="col.key">
                   <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
                   <div *ngSwitchCase="'action'" class="invd-row-actions">

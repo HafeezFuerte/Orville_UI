@@ -77,9 +77,15 @@ export class InvoiceDetailComponent implements OnInit {
   currentUser: any = {
     currencyCode: 'AED'
   };
-  chequeRows: InvoiceChequeRow[] = INVOICE_CHEQUE_ROWS;
-  txnRows: InvoiceTxnRow[] = INVOICE_TXN_ROWS;
-  penaltyRows: InvoicePenaltyRow[] = INVOICE_PENALTY_ROWS;
+  
+  filteredCheques:any=[];
+
+  filteredTxns:any=[];
+
+  filteredPenalties:any=[];
+  chequeRows: any=[];
+  txnRows: any=[];
+  penaltyRows:any=[];
 
   overviewCols = OVERVIEW_COLUMNS.map((col) => ({ ...col }));
   chequeCols = CHEQUE_COLUMNS.map((col) => ({ ...col }));
@@ -114,9 +120,10 @@ export class InvoiceDetailComponent implements OnInit {
       filterText: this.invoice_no,
       filterText1: ''
     }).subscribe({
-      next: (res: any) => {
+      next: (res: any) => { 
         if (res.statusCode == 200 && res.objResult && res.objResult.invoice_dtls) { 
           this.invoicesList= res.objResult.invoice_dtls || [];
+          this.invoice=this.invoicesList[0] || {};
           this.receiptslist= res.objResult.receipt_dtls || []; 
         }
         else
@@ -127,7 +134,10 @@ export class InvoiceDetailComponent implements OnInit {
       }
     });
   }
-
+  getArabicLookupName(row: any, key: string): string {
+    const selectedLang = localStorage.getItem("selectedLang") || "EN";
+    return row[(selectedLang === "EN" ? key : key + '_ar')] || row[key] || '';
+  }
   goBack(): void {
     void this.router.navigate(['/accounting/invoices']);
   }
@@ -174,17 +184,6 @@ export class InvoiceDetailComponent implements OnInit {
     return this.filterRows(this.overviewRows, this.overviewQuery);
   }
 
-  filteredCheques(): InvoiceChequeRow[] {
-    return this.filterRows(this.chequeRows, this.chequeQuery);
-  }
-
-  filteredTxns(): InvoiceTxnRow[] {
-    return this.filterRows(this.txnRows, this.txnQuery);
-  }
-
-  filteredPenalties(): InvoicePenaltyRow[] {
-    return this.filterRows(this.penaltyRows, this.penaltyQuery);
-  }
 
   cell(row: object, key: string): string {
     return String((row as Record<string, unknown>)[key] ?? '');

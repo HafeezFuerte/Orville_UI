@@ -20,7 +20,7 @@
   <div class="flex flex-wrap gap-2 items-center mt-3 md:mt-0">
     <ng-container>
       <!-- Approval Status In Progress Pill & Dropdown -->
-      <div class="relative dropdown">
+      <div *ngIf="leaseInfo?.status==228" class="relative dropdown">
         <button type="button" (click)="toggleProgressPopover()"
           class="px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all font-semibold flex items-center gap-2 border border-blue-200/60 shadow-xs cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-blue-600"></span>
@@ -395,7 +395,7 @@
                 <div class="flex justify-between items-start">
                   <div>
                     <span class="text-[9px] font-bold text-white/60 tracking-wider uppercase">Current Balance</span>
-                    <h4 class="text-xl font-black mt-1">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].total_amount | number:'1.2-2'):0 }}</h4>
+                    <h4 class="text-xl font-black mt-1">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].total_amount | number:'1.2-2'): totalPrice | number:'1.2-2' }}</h4>
                   </div>
                 </div>
                 <div class="flex justify-between border-t border-white/10 pt-3 text-[10px]">

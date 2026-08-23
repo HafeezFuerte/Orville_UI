@@ -31,9 +31,9 @@ export class InvoicesComponent {
     private toastr:ToastrService) {}
     isLoading:boolean=false;
   searchQuery = '';
-  statusFilter: 'All' | InvoiceStatus = 'All';
-  statusTabs = INVOICE_STATUS_TABS;
-  kpis = INVOICE_KPIS;
+  statusFilter:any= 'All';
+  statusTabs:any[]=[];
+  kpis:any[] =[];// INVOICE_KPIS;
   currentUser: AuthPayload | null = this.commonService.getCurrentUser();
   isDrawerOpen = false;
   showColumnDropdown = false;
@@ -105,18 +105,10 @@ export class InvoicesComponent {
   }
   loadinvoices() {
     const filterList: any[] = [];
-    // if (this.activeStatusFilter && this.activeStatusFilter !== "All") {
-    //   filterList.push({ 'key': 'P.status', 'value': this.activeStatusFilter });
-    // }
-    // if (this.filterTenant) {
-    //   filterList.push({ 'key': 'tenant', 'value': this.filterTenant });
-    // }
-    // if (this.filterProperty) {
-    //   filterList.push({ 'key': 'property', 'value': this.filterProperty });
-    // }
-    // if (this.filterStatus) {
-    //   filterList.push({ 'key': 'P.status', 'value': this.filterStatus });
-    // }
+    if (this.statusFilter && this.statusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    } 
+ 
 
     const payload = {
       userid: this.currentUser?.userId,
@@ -128,7 +120,7 @@ export class InvoicesComponent {
       seqno: 0,
       search_keyword: this.searchQuery || "",
       pagecount: this.pageSize,
-      filter_by: '',
+      filter_by: this.statusFilter !== 'All' ? 'status' : '',
       filter_list: JSON.stringify(filterList),
       featureid: "INVOICES"
     };
@@ -220,9 +212,10 @@ export class InvoicesComponent {
     return [1, 2, 3, 4, 5, '...', total];
   }
 
-  setStatusFilter(status: 'All' | InvoiceStatus): void {
+  setStatusFilter(status: string ): void {
     this.statusFilter = status;
     this.pageIndex = 0;
+    this.loadinvoices();
   }
 
   onSearch(): void {
@@ -352,9 +345,29 @@ export class InvoicesComponent {
   }
   ngOnInit() {
     
-    this.loadinvoices();
-    this.loadMetrics();
-    //this.loadLookup(24, 'tabs', 'lookup_name');
+    this.loadinvoices(); 
+    this.loadLookup(54, 'tabs', 'lookup_name');
+  }
+  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+    this.commontabservice.getMasterByType({
+      typeId: 54,
+      filterId: filterId,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          this.statusTabs.push({"id":"All","name":"All"}); 
+          this.statusTabs.push(...res.objResult.table1); 
+          this.kpis=res.objResult.table;
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
   }
   // onPageSizeChange(): void {
   //   this.pageIndex = 0;
