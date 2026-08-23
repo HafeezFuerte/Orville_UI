@@ -213,14 +213,14 @@ export class LeasesListComponent implements OnInit {
   }
  
   applyFilters() {
-    this.filteredLeases = this.allLeases.filter(lease => {
-      if (this.activeStatusFilter !== 'All' && lease.status !== this.activeStatusFilter) {
+    this.filteredLeases = (this.allLeases || []).filter(lease => {
+      if (this.activeStatusFilter && this.activeStatusFilter !== 'All' && lease.status !== this.activeStatusFilter) {
         return false;
       }
-      if (this.filterTenant && !lease.tenant.toLowerCase().includes(this.filterTenant.toLowerCase())) {
+      if (this.filterTenant && !lease.tenant?.toLowerCase().includes(this.filterTenant.toLowerCase())) {
         return false;
       }
-      if (this.filterProperty && !lease.property.toLowerCase().includes(this.filterProperty.toLowerCase())) {
+      if (this.filterProperty && !lease.property?.toLowerCase().includes(this.filterProperty.toLowerCase())) {
         return false;
       }
       if (this.filterStatus && lease.status !== this.filterStatus) {
@@ -229,11 +229,15 @@ export class LeasesListComponent implements OnInit {
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         return (
-          lease.leaseName.toLowerCase().includes(query) ||
-          lease.tenant.toLowerCase().includes(query) ||
-          lease.property.toLowerCase().includes(query) ||
-          lease.unit.toLowerCase().includes(query) ||
-          lease.id.includes(query)
+          (lease.active_lease && lease.active_lease.toLowerCase().includes(query)) ||
+          (lease.leaseName && lease.leaseName.toLowerCase().includes(query)) ||
+          (lease.tenant && lease.tenant.toLowerCase().includes(query)) ||
+          (lease.property && lease.property.toLowerCase().includes(query)) ||
+          (lease.unit_code && lease.unit_code.toLowerCase().includes(query)) ||
+          (lease.lease_code && lease.lease_code.toString().toLowerCase().includes(query)) ||
+          (lease.code && lease.code.toString().toLowerCase().includes(query)) ||
+          (lease.id && lease.id.toString().toLowerCase().includes(query)) ||
+          (lease.status_nm && lease.status_nm.toLowerCase().includes(query))
         );
       }
       return true;

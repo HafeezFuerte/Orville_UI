@@ -176,6 +176,7 @@ export class AssetListComponent implements OnInit {
             status: item.status_name || item.status_nm || (item.status == 1 || item.status === '1' || item.status === 'Operational' || item.status === 'Active' || item.is_active === true ? 'Operational' : 'Down')
           })).sort((a: any, b: any) => a.id - b.id);
           this.totalRecords = res.objResult.total_records || (res.objResult.rows_info && res.objResult.rows_info[0]?.totalrecords) || this.assetData.length;
+          this.allAssetsData = [...this.assetData];
         }
       },
       error: (err) => {
@@ -183,6 +184,27 @@ export class AssetListComponent implements OnInit {
         console.error("Error loading assets:", err);
       }
     });
+  }
+
+  allAssetsData: Asset[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allAssetsData || this.allAssetsData.length === 0) {
+      this.allAssetsData = [...(this.assetData || [])];
+    }
+    let temp = [...(this.allAssetsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(a =>
+        (a.assetName && a.assetName.toLowerCase().includes(q)) ||
+        (a.model && a.model.toLowerCase().includes(q)) ||
+        (a.category && a.category.toLowerCase().includes(q)) ||
+        (a.property && a.property.toLowerCase().includes(q)) ||
+        (a.unit && a.unit.toLowerCase().includes(q)) ||
+        (a.id && a.id.toString().toLowerCase().includes(q))
+      );
+    }
+    this.assetData = temp;
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {

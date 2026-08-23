@@ -11,35 +11,41 @@
       <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
         <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">Home</a></li>
         <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/tenants" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblContact' | translate }}</a></li>
+        <li><a routerLink="/contacts/tenants" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblContact' |
+            translate }}</a></li>
         <li class="px-2 text-gray-400">/</li>
         <li><a routerLink="/contacts/tenants" class="hover:text-primary cursor-pointer">Tenants</a></li>
         <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}</li>
+        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? 'Edit Tenant' :
+          ('web.contacts.lblNewTenant' | translate) }}</li>
       </ol>
     </div>
   </div>
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20">
-  
+
   <!-- LEFT COLUMN (Main Form) -->
   <div class="xl:col-span-8 flex flex-col gap-x-3 gap-y-2">
-    
+
     <!-- 1. Happy Tenant Application Login Information -->
     <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
       <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblTenantLoginInfo' | translate }}</h6>
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblTenantLoginInfo' |
+          translate }}</h6>
       </div>
       <div class="box-body p-4">
         <div class="flex items-center gap-x-3 gap-y-2 mb-6">
-          <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20 overflow-hidden">
-            <img *ngIf="profilePreviewUrl" [src]="profilePreviewUrl" alt="Profile Preview" class="w-full h-full object-cover">
+          <div
+            class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20 overflow-hidden">
+            <img *ngIf="profilePreviewUrl" [src]="profilePreviewUrl" alt="Profile Preview"
+              class="w-full h-full object-cover">
             <span *ngIf="!profilePreviewUrl">PH</span>
           </div>
           <div class="flex flex-col gap-1.5">
             <input type="file" (change)="onProfileImageSelected($event)" accept="image/*" class="hidden" #profileUpload>
-            <button type="button" (click)="profileUpload.click()" class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
+            <button type="button" (click)="profileUpload.click()"
+              class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
               <i class="ri-upload-2-line"></i> Upload Photo
             </button>
             <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
@@ -48,12 +54,18 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
-            <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.email_address" [placeholder]="'web.contacts.lblEnter' | translate">
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblEmail' |
+              translate }} <span class="text-danger">*</span></label>
+            <input type="email"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+              [(ngModel)]="tenantData.email_address" [placeholder]="'web.contacts.lblEnteruser' | translate">
           </div>
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblUsername' | translate }}</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.username" [placeholder]="'web.contacts.lblEnter' | translate">
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblUsername' |
+              translate }}</label>
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+              [(ngModel)]="tenantData.username" [placeholder]="'web.contacts.lblEnteremail' | translate">
           </div>
         </div>
       </div>
@@ -62,33 +74,41 @@
     <!-- 2. General Information -->
     <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
       <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblGeneralInformation' | translate }}</h6>
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblGeneralInformation' |
+          translate }}</h6>
       </div>
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Honorific</label>
-          <ng-select #honorificSelect [items]="honorifics" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.honorific">
+          <ng-select #honorificSelect [items]="honorifics" appendTo="body" [searchable]="true" placeholder="Select"
+            class="ng-select-sm w-full" [(ngModel)]="tenantData.honorific">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="honorificSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                  (input)="honorificSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
           </ng-select>
         </div>
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">First Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.first_name" placeholder="Enter">
+          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">First Name <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.first_name" placeholder="Enter">
         </div>
-        
+
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Last Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.last_name" placeholder="Enter">
+          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Last Name <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.last_name" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Middle Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.middle_name" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.middle_name" placeholder="Enter">
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Phone Number</label>
           <div class="flex input-group">
@@ -96,34 +116,46 @@
               <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
               <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
             </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.mobile_no" placeholder="Enter">
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
+              [(ngModel)]="tenantData.mobile_no" placeholder="Enter">
           </div>
         </div>
 
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblGender' | translate }}</label>
-          <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelect' | translate" class="ng-select-sm w-full" [(ngModel)]="tenantData.gender">
+          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblGender' |
+            translate }}</label>
+          <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true"
+            [placeholder]="'web.contacts.lblSelect' | translate" class="ng-select-sm w-full"
+            [(ngModel)]="tenantData.gender">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="genderSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                  (input)="genderSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
           </ng-select>
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Date of Birth</label>
           <div class="input-group relative">
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.dob" mwlFlatpickr [altInput]="true" [convertModelValue]="true" placeholder="Select Date">
-            <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><img src="assets/images/myday/calendar.svg" alt="" width="16" height="16" /></button>
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+              [(ngModel)]="tenantData.dob" mwlFlatpickr [altInput]="true" [convertModelValue]="true"
+              placeholder="Select Date">
+            <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><img
+                src="assets/images/myday/calendar.svg" alt="" width="16" height="16" /></button>
           </div>
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Status</label>
-          <ng-select #statusSelect [items]="statuses" appendTo="body" [searchable]="true" placeholder="Select Status" class="ng-select-sm w-full" [(ngModel)]="tenantData.status">
+          <ng-select #statusSelect [items]="statuses" appendTo="body" [searchable]="true" placeholder="Select Status"
+            class="ng-select-sm w-full" [(ngModel)]="tenantData.status">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="statusSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                  (input)="statusSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
           </ng-select>
@@ -134,31 +166,39 @@
     <!-- 3. Address Information -->
     <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
       <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblAddressInformation' | translate }}</h6>
+        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblAddressInformation' |
+          translate }}</h6>
       </div>
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 1</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.address1" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.address1" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 2</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.address2" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.address2" placeholder="Enter">
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Nationality</label>
-          <ng-select #nationalitySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="selectedNationality">
+          <ng-select #nationalitySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true"
+            placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="selectedNationality">
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="nationalitySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                  (input)="nationalitySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
           </ng-select>
         </div>
         <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Country <span class="text-danger">*</span></label>
-          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="tenantData.country_id" (change)="onCountryChange()">
+          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Country <span
+              class="text-danger">*</span></label>
+          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
+            [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full"
+            [(ngModel)]="tenantData.country_id" (change)="onCountryChange()">
             <ng-template ng-option-tmp let-item="item">
               <div class="flex items-center gap-2">
                 <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
@@ -166,7 +206,8 @@
             </ng-template>
             <ng-template ng-header-tmp>
               <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                  (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </div>
             </ng-template>
             <ng-template ng-label-tmp let-item="item">
@@ -176,31 +217,38 @@
             </ng-template>
           </ng-select>
         </div>
-        
+
         <div class="grid grid-cols-3 gap-3 md:col-span-2">
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">City</label>
-            <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.city" bindValue="id" bindLabel="name">
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">State/ Province</label>
+            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select"
+              class="ng-select-sm w-full" [(ngModel)]="tenantData.stateid" bindValue="id" bindLabel="name"
+              (change)="onStateChange()">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="citySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                    (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </div>
               </ng-template>
             </ng-select>
           </div>
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">State/ Province</label>
-            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="tenantData.stateid" bindValue="id" bindLabel="name" (change)="onStateChange()">
+            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">City</label>
+            <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select"
+              class="ng-select-sm w-full" [(ngModel)]="tenantData.city" bindValue="id" bindLabel="name">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
+                    (input)="citySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </div>
               </ng-template>
             </ng-select>
           </div>
           <div>
             <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Postcode</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.zipcode" placeholder="Enter">
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+              [(ngModel)]="tenantData.zipcode" placeholder="Enter">
           </div>
         </div>
       </div>
@@ -219,7 +267,9 @@
               <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
               <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
             </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.addionalphone1" placeholder="Enter">
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
+              [(ngModel)]="tenantData.addionalphone1" placeholder="Enter">
           </div>
         </div>
         <div>
@@ -229,17 +279,21 @@
               <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
               <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
             </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.addionalphone2" placeholder="Enter">
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
+              [(ngModel)]="tenantData.addionalphone2" placeholder="Enter">
           </div>
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Landline Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.landline_no" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.landline_no" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Fax Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.fax_no" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.fax_no" placeholder="Enter">
         </div>
       </div>
     </div>
@@ -252,13 +306,15 @@
       <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Name on Lease</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.name_on_lease" placeholder="Enter">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.name_on_lease" placeholder="Enter">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Email on Lease</label>
-          <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.email_on_lease" placeholder="Enter">
+          <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.email_on_lease" placeholder="Enter">
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Phone on Lease</label>
           <div class="flex input-group">
@@ -266,17 +322,19 @@
               <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
               <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
             </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="tenantData.phone_on_lease" placeholder="Enter">
+            <input type="text"
+              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
+              [(ngModel)]="tenantData.phone_on_lease" placeholder="Enter">
           </div>
         </div>
       </div>
     </div>
-    
+
   </div>
 
   <!-- RIGHT COLUMN (Side Panels) -->
   <div class="xl:col-span-4 flex flex-col gap-x-3 gap-y-2">
-    
+
     <!-- 1. Statement Of Account -->
     <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
       <div class="box-header p-4 border-b border-gray-100">
@@ -286,17 +344,20 @@
         <div class="flex items-start justify-between gap-x-3 gap-y-2">
           <div>
             <h6 class="text-[12px] font-bold text-gray-800 m-0">Auto Schedule?</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">If enabled, a monthly statement of account will be emailed on the scheduled day.</p>
+            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">If enabled, a monthly statement of account will be
+              emailed on the scheduled day.</p>
           </div>
           <div class="custom-toggle-switch flex-shrink-0 mt-1">
             <input type="checkbox" id="autoSchedule" [(ngModel)]="autoSchedule">
             <label for="autoSchedule" class="label-primary"></label>
           </div>
         </div>
-        
+
         <div class="flex items-center gap-3 text-[12px] text-gray-600 font-medium">
-          On the 
-          <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false" class="w-16 ng-select-sm text-center font-bold" [(ngModel)]="tenantData.schedule_day" placeholder="1"></ng-select> 
+          On the
+          <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false"
+            class="w-16 ng-select-sm text-center font-bold" [(ngModel)]="tenantData.schedule_day"
+            placeholder="1"></ng-select>
           of every month
         </div>
       </div>
@@ -318,18 +379,21 @@
             <label for="displayAsCompany" class="label-primary"></label>
           </div>
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Company Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.company_name" placeholder="Select Company Name">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.company_name" placeholder="Select Company Name">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Tax Registration Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.tax_registration_no" placeholder="Enter Tax Registration Number">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.tax_registration_no" placeholder="Enter Tax Registration Number">
         </div>
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Trade License</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="tenantData.trade_license" placeholder="Enter Trade License">
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
+            [(ngModel)]="tenantData.trade_license" placeholder="Enter Trade License">
         </div>
       </div>
     </div>
@@ -341,24 +405,30 @@
       </div>
       <div class="p-5 flex flex-col gap-x-3 gap-y-2">
         <div class="flex items-start gap-2">
-          <input type="checkbox" id="autoSign" [(ngModel)]="autoSignLeases" class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
+          <input type="checkbox" id="autoSign" [(ngModel)]="autoSignLeases"
+            class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
           <div>
             <h6 class="text-[11px] font-bold text-gray-800 m-0">Auto Sign Leases</h6>
             <p class="text-[9px] text-gray-500 mt-0.5">Automatically add tenant signature to all leases.</p>
           </div>
         </div>
-        
+
         <div>
           <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Upload your signature</label>
           <input type="file" (change)="onSignatureSelected($event)" accept="image/*" class="hidden" #sigUpload>
-          <div (click)="sigUpload.click()" class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer overflow-hidden">
-            <img *ngIf="signaturePreviewUrl" [src]="signaturePreviewUrl" alt="Signature Preview" class="max-h-20 object-contain">
-            <div *ngIf="!signaturePreviewUrl" class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
+          <div (click)="sigUpload.click()"
+            class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer overflow-hidden">
+            <img *ngIf="signaturePreviewUrl" [src]="signaturePreviewUrl" alt="Signature Preview"
+              class="max-h-20 object-contain">
+            <div *ngIf="!signaturePreviewUrl"
+              class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
               <i class="ri-upload-2-line text-lg"></i>
             </div>
-            <span *ngIf="!signaturePreviewUrl" class="text-[10px] font-medium text-gray-500 text-center">Click to upload or drag and drop</span>
+            <span *ngIf="!signaturePreviewUrl" class="text-[10px] font-medium text-gray-500 text-center">Click to upload
+              or drag and drop</span>
           </div>
-          <p class="text-[9px] text-gray-500 mt-2 text-center leading-relaxed">Attached Signature will be automatically populated in signature pad while approving lease.</p>
+          <p class="text-[9px] text-gray-500 mt-2 text-center leading-relaxed">Attached Signature will be automatically
+            populated in signature pad while approving lease.</p>
         </div>
       </div>
     </div>
@@ -370,7 +440,8 @@
       </div>
       <div class="p-5 flex flex-col gap-x-3 gap-y-2">
         <div class="flex items-start gap-2">
-          <input type="checkbox" id="disableListing" [(ngModel)]="disableListing" class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
+          <input type="checkbox" id="disableListing" [(ngModel)]="disableListing"
+            class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
           <div>
             <h6 class="text-[11px] font-bold text-gray-800 m-0">Disable Listing</h6>
             <p class="text-[9px] text-gray-500 mt-0.5">If enabled, it will disable listings for this tenant.</p>
@@ -378,19 +449,21 @@
         </div>
       </div>
     </div>
-    
+
   </div>
 
   <!-- FULL WIDTH BOTTOM SECTIONS -->
   <div class="xl:col-span-12 flex flex-col gap-x-3 gap-y-2">
-    
+
     <!-- Notes -->
     <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
       <div class="box-header p-4 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Notes</h6>
       </div>
       <div class="box-body p-4">
-        <textarea class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]" [(ngModel)]="tenantData.notes" placeholder="Enter Notes"></textarea>
+        <textarea
+          class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]"
+          [(ngModel)]="tenantData.notes" placeholder="Enter Notes"></textarea>
       </div>
     </div>
 
@@ -408,11 +481,15 @@
 </div>
 
 <!-- Fixed Floating Form Actions Bottom Bar -->
-<div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" routerLink="/contacts/tenants" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
+<div
+  class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
+  <button type="button" routerLink="/contacts/tenants"
+    class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
     Cancel
   </button>
-  <button type="button" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95" (click)="saveTenant()">
+  <button type="button"
+    class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95"
+    (click)="saveTenant()">
     {{ isEditMode ? 'Save Changes' : 'Save Tenant' }}
   </button>
 </div>

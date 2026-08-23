@@ -137,7 +137,8 @@ export class LandlordsComponent implements OnInit {
       next: (response: any) => {
         this.isLoading = false;
         if (response && response.statusCode === "200" && response.objResult) {
-          this.paginatedLandlords = response.objResult.landlords
+          this.allLandlordsData = response.objResult.landlords || [];
+          this.paginatedLandlords = response.objResult.landlords || [];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords;
             this.totalPages = response.objResult.rows_info[0].noofpages;
@@ -151,6 +152,28 @@ export class LandlordsComponent implements OnInit {
         console.error('Error fetching landlords:', err);
       }
     });
+  }
+
+  allLandlordsData: any[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allLandlordsData || this.allLandlordsData.length === 0) {
+      this.allLandlordsData = [...(this.paginatedLandlords || [])];
+    }
+    let temp = [...(this.allLandlordsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter((t: any) =>
+        (t.landlord && t.landlord.toLowerCase().includes(q)) ||
+        (t.name && t.name.toLowerCase().includes(q)) ||
+        (t.email_address && t.email_address.toLowerCase().includes(q)) ||
+        (t.email && t.email.toLowerCase().includes(q)) ||
+        (t.phone_number && t.phone_number.toLowerCase().includes(q)) ||
+        (t.phoneNumber && t.phoneNumber.toLowerCase().includes(q)) ||
+        (t.code && t.code.toString().toLowerCase().includes(q))
+      );
+    }
+    this.paginatedLandlords = temp;
   }
 
   onSearch() {

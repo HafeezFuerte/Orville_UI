@@ -40,6 +40,50 @@ export class LeaseDetailComponent implements OnInit {
   activeTab: string = 'Overview';
   showInvoiceModal: boolean = false;
   showInspectionModal: boolean = false;
+  showProgressPopover: boolean = false;
+
+  approvalSteps = [
+    {
+      step: 1,
+      title: 'Lease Submitted',
+      date: '12 Aug, 10:20',
+      description: 'Lease draft created and submitted for review',
+      status: 'completed'
+    },
+    {
+      step: 2,
+      title: 'Manager Review',
+      date: '14 Aug, 16:05',
+      description: 'Property manager reviewed terms and units',
+      status: 'completed'
+    },
+    {
+      step: 3,
+      title: 'Finance Approval',
+      date: '18 Aug, 11:30',
+      description: 'Payment schedule and amounts verified',
+      status: 'current'
+    },
+    {
+      step: 4,
+      title: 'Final Approval',
+      date: 'Pending',
+      description: 'Lease activated and ready to execute',
+      status: 'pending'
+    }
+  ];
+
+  toggleProgressPopover(): void {
+    this.showProgressPopover = !this.showProgressPopover;
+    if (this.showProgressPopover) {
+      this.showActionMenu = false;
+      this.showApprovalMenu = false;
+    }
+  }
+
+  sendApprovalReminder(): void {
+    this.toastr.success('Approval reminder sent successfully');
+  }
 
   @ViewChild(DetailPageLayoutComponent)
   detailLayout!: DetailPageLayoutComponent;

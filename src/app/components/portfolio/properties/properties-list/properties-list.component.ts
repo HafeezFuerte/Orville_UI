@@ -196,13 +196,17 @@ private loadMetrics(
       const type = this.selectedType.toLowerCase();
       result = result.filter(p => (p.type_name || '').toLowerCase() === type);
     }
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter(p =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.code && p.code.toString().toLowerCase().includes(q)) ||
+        (p.type_name && p.type_name.toLowerCase().includes(q)) ||
+        (p.address_1 && p.address_1.toLowerCase().includes(q)) ||
+        (p.tags && p.tags.toLowerCase().includes(q))
+      );
+    }
     this.paginatedProperties = result;
-
-    // let result = this.properties;
-
-    // // Apply text search
-    // if (this.searchQuery) {
-    //   const q = this.searchQuery.toLowerCase();
     //   result = result.filter(p => 
     //     p.name.toLowerCase().includes(q) || 
     //     p.type_name.toLowerCase().includes(q)

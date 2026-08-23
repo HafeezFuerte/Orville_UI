@@ -156,6 +156,7 @@ export class BroadcastListComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.objResult && res.objResult.broadcasts) {
+          this.allBroadcastsData = res.objResult.broadcasts || [];
           this.broadcastData = res.objResult.broadcasts;
           this.totalRecords = res.objResult.total_records || res.objResult.broadcasts.length;
         }
@@ -165,6 +166,26 @@ export class BroadcastListComponent implements OnInit {
         console.error('Error loading broadcasts:', err);
       }
     });
+  }
+
+  allBroadcastsData: Broadcast[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allBroadcastsData || this.allBroadcastsData.length === 0) {
+      this.allBroadcastsData = [...(this.broadcastData || [])];
+    }
+    let temp = [...(this.allBroadcastsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter((b: any) =>
+        (b.subject && b.subject.toLowerCase().includes(q)) ||
+        (b.broadcastType && b.broadcastType.toLowerCase().includes(q)) ||
+        (b.sendTo && b.sendTo.toLowerCase().includes(q)) ||
+        (b.code && b.code.toString().toLowerCase().includes(q)) ||
+        (b.id && b.id.toString().toLowerCase().includes(q))
+      );
+    }
+    this.broadcastData = temp;
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {

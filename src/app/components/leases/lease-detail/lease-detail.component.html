@@ -1,24 +1,106 @@
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between mb-6">
+  <div class="flex items-start gap-4">
     <!-- Back arrow button -->
-    <a (click)="goBack()" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm cursor-pointer" [attr.data-tooltip]="'web.leases.lblLeaseManagement' | translate">
+    <a (click)="goBack()" class="ov-back cursor-pointer" [attr.data-tooltip]="'web.leases.lblLeaseManagement' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">{{ leaseInfo.name }}</h3>
-      <div class="text-[11px] text-gray-600 font-medium flex items-center gap-1">
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Home</span>
-        <span>/</span>
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">Lease</span>
-        <span>/</span>
-        <span class="text-gray-600">{{ leaseInfo.active_lease }}</span>
-        <span>/</span>
-        <span class="text-gray-600">Details</span>
-      </div>
+      <h3 class="ov-page-title">{{ leaseInfo.name }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">{{ 'web.common.lblHome' | translate }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ 'web.common.lblLeases' | translate }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ leaseInfo.active_lease || leaseInfo.name }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor">Details</li>
+      </ol>
     </div>
   </div>
-  <div class="flex gap-2 items-center mt-3 md:mt-0">
+  <div class="flex flex-wrap gap-2 items-center mt-3 md:mt-0">
     <ng-container>
+      <!-- Approval Status In Progress Pill & Dropdown -->
+      <div class="relative dropdown">
+        <button type="button" (click)="toggleProgressPopover()"
+          class="px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all font-semibold flex items-center gap-2 border border-blue-200/60 shadow-xs cursor-pointer">
+          <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+          <span>In Progress</span>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="10" height="10" class="opacity-70" />
+        </button>
+
+        <!-- Approval Workflow Popover -->
+        <div *ngIf="showProgressPopover"
+          class="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 z-50 animate-fade-in text-xs"
+          (click)="$event.stopPropagation()">
+          
+          <!-- Popover Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+            <h5 class="font-bold text-gray-800 text-sm m-0">Approval</h5>
+            <span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+              In Progress
+            </span>
+          </div>
+
+          <!-- Workflow Steps Timeline -->
+          <div class="flex flex-col gap-0 relative">
+            <ng-container *ngFor="let stepItem of approvalSteps; let i = index; let isLast = last">
+              <div class="flex items-start gap-3.5 relative pb-5" [class.pb-0]="isLast">
+                
+                <!-- Connector Line -->
+                <div *ngIf="!isLast"
+                  class="absolute left-[13px] top-[26px] bottom-0 w-[2px]"
+                  [ngClass]="{
+                    'bg-emerald-600': stepItem.status === 'completed',
+                    'border-l-2 border-dashed border-gray-200': stepItem.status !== 'completed'
+                  }">
+                </div>
+
+                <!-- Step Icon / Badge -->
+                <div class="relative z-10 flex-shrink-0">
+                  <!-- Completed Step: Green circle with check mark -->
+                  <div *ngIf="stepItem.status === 'completed'"
+                    class="w-[28px] h-[28px] rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <i class="ri-check-line text-sm font-bold"></i>
+                  </div>
+
+                  <!-- Current Step: Blue circle outline with step number -->
+                  <div *ngIf="stepItem.status === 'current'"
+                    class="w-[28px] h-[28px] rounded-full bg-white border-2 border-blue-500 text-blue-600 font-bold text-xs flex items-center justify-center shadow-xs">
+                    {{ stepItem.step }}
+                  </div>
+
+                  <!-- Pending Step: Dashed gray circle with step number -->
+                  <div *ngIf="stepItem.status === 'pending'"
+                    class="w-[28px] h-[28px] rounded-full bg-gray-50 border-2 border-dashed border-gray-300 text-gray-400 font-medium text-xs flex items-center justify-center">
+                    {{ stepItem.step }}
+                  </div>
+                </div>
+
+                <!-- Step Content Details -->
+                <div class="flex-1 pt-0.5 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <h6 class="font-bold text-gray-800 text-xs m-0 truncate">{{ stepItem.title }}</h6>
+                    <span class="text-[10px] text-gray-400 font-medium flex-shrink-0">{{ stepItem.date }}</span>
+                  </div>
+                  <p class="text-[11px] text-gray-500 m-0 mt-0.5 leading-relaxed">{{ stepItem.description }}</p>
+                </div>
+
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Popover Footer Action Button -->
+          <div class="mt-5 pt-3 border-t border-gray-100">
+            <button type="button" (click)="sendApprovalReminder()"
+              class="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition-all border border-emerald-200/60 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+              Send approval reminder
+            </button>
+          </div>
+
+        </div>
+      </div>
+
       <div class="dropdown">
         <button type="button" [attr.data-tooltip]="'Action Menu'" (click)="showActionMenu = !showActionMenu" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
           Action <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />

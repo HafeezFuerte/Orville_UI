@@ -332,6 +332,7 @@ export class WorkOrderListComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.objResult && res.objResult.workorders) {
+          this.allWorkOrdersData = res.objResult.workorders || [];
           this.workOrderData = res.objResult.workorders;
           if(res.objResult.rows_info)
           {
@@ -347,6 +348,29 @@ export class WorkOrderListComponent implements OnInit {
         console.error("Error loading work orders:", err);
       }
     });
+  }
+
+  allWorkOrdersData: WorkOrder[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allWorkOrdersData || this.allWorkOrdersData.length === 0) {
+      this.allWorkOrdersData = [...(this.workOrderData || [])];
+    }
+    let temp = [...(this.allWorkOrdersData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(w =>
+        (w.title && w.title.toLowerCase().includes(q)) ||
+        (w.workOrder && w.workOrder.toLowerCase().includes(q)) ||
+        (w.property && w.property.toLowerCase().includes(q)) ||
+        (w.unit && w.unit.toLowerCase().includes(q)) ||
+        (w.vendor_name && w.vendor_name.toLowerCase().includes(q)) ||
+        (w.vendor && w.vendor.toLowerCase().includes(q)) ||
+        (w.code && w.code.toString().toLowerCase().includes(q)) ||
+        (w.id && w.id.toString().toLowerCase().includes(q))
+      );
+    }
+    this.workOrderData = temp;
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {

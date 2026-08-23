@@ -188,7 +188,8 @@ export class VendorsComponent implements OnInit {
       next: (response: any) => {
         this.isLoading = false; 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedVendors=response.objResult.vendors  
+          this.allVendorsData = response.objResult.vendors || [];
+          this.paginatedVendors = response.objResult.vendors || [];
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -203,6 +204,30 @@ export class VendorsComponent implements OnInit {
         console.error('Error fetching vendors:', err);
       }
     });
+  }
+
+  allVendorsData: any[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allVendorsData || this.allVendorsData.length === 0) {
+      this.allVendorsData = [...(this.paginatedVendors || [])];
+    }
+    let temp = [...(this.allVendorsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter((t: any) =>
+        (t.company_name && t.company_name.toLowerCase().includes(q)) ||
+        (t.company && t.company.toLowerCase().includes(q)) ||
+        (t.contact_name && t.contact_name.toLowerCase().includes(q)) ||
+        (t.contact && t.contact.toLowerCase().includes(q)) ||
+        (t.email_address && t.email_address.toLowerCase().includes(q)) ||
+        (t.email && t.email.toLowerCase().includes(q)) ||
+        (t.phone_number && t.phone_number.toLowerCase().includes(q)) ||
+        (t.phoneNumber && t.phoneNumber.toLowerCase().includes(q)) ||
+        (t.code && t.code.toString().toLowerCase().includes(q))
+      );
+    }
+    this.paginatedVendors = temp;
   }
 
   onSearch() {

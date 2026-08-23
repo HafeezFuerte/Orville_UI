@@ -1,18 +1,21 @@
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <!-- Back arrow button -->
-    <a (click)="goBack()" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm cursor-pointer" [attr.title]="'web.leases.lblLeaseManagement' | translate">
+<div class="ov-add-header page-header mb-6">
+  <div class="ov-add-header__start">
+    <a (click)="goBack()" class="ov-back cursor-pointer" [attr.title]="'web.leases.lblLeaseManagement' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </a>
     <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem]! font-semibold m-0">
-        {{ leaseId=='' ? ('web.leases.lblNewLease'| translate ) : ('web.leases.lblEditLease'| translate )  }}</h3>
-      <div class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-        <span class="cursor-pointer hover:text-primary" (click)="goBack()">{{ 'web.leases.lblLeaseManagement' | translate }}</span>
-        <span>/</span>
-        <span *ngIf="leaseId==''" class="text-gray-600">{{ 'web.leases.lblNewLease' | translate }}</span>
-        <span *ngIf="leaseId!=''" class="text-gray-600">{{ leaseInfo?.active_lease }}</span>
-      </div>
+      <h3 *ngIf="leaseId===''" class="ov-page-title">{{ 'web.leases.lblNewLease' | translate }}</h3>
+      <h3 *ngIf="leaseId!==''" class="ov-page-title">{{ 'web.leases.lblEditLease' | translate }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">{{ 'web.common.lblHome' | translate }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ 'web.leases.lblLeaseManagement' | translate }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ 'web.common.lblLeases' | translate }}</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor" *ngIf="leaseId===''">{{ 'web.leases.lblNewLease' | translate }}</li>
+        <li class="font-semibold text-defaulttextcolor" *ngIf="leaseId!==''">{{ leaseInfo?.active_lease || ('web.leases.lblEditLease' | translate) }}</li>
+      </ol>
     </div>
   </div>
 </div>

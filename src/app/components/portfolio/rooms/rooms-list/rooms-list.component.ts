@@ -247,6 +247,7 @@ export class RoomsListComponent implements OnInit {
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
           const nextBatch = response.objResult.rooms || [];
+          this.allRoomsData = nextBatch;
           this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...nextBatch] : nextBatch;
           if(response.objResult.rows_info)
           {
@@ -256,13 +257,31 @@ export class RoomsListComponent implements OnInit {
         }
         else
           this.toastr.error("No record[s] found");
-
       },
       error: err => {
         console.error(err);
-        this.filterAndPaginate();
       }
     });
+  }
+
+  allRoomsData: any[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allRoomsData || this.allRoomsData.length === 0) {
+      this.allRoomsData = [...(this.paginatedUnits || [])];
+    }
+    let result = this.allRoomsData || [];
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter((u: any) =>
+        (u.room_code && u.room_code.toLowerCase().includes(q)) ||
+        (u.room_no && u.room_no.toLowerCase().includes(q)) ||
+        (u.property_Name && u.property_Name.toLowerCase().includes(q)) ||
+        (u.land_lord && u.land_lord.toLowerCase().includes(q)) ||
+        (u.code && u.code.toString().toLowerCase().includes(q))
+      );
+    }
+    this.paginatedUnits = result;
   }
   handleChildNotification(ev:any){
     if(ev.action_name=="edit")

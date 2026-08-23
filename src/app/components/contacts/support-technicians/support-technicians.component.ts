@@ -134,7 +134,8 @@ export class SupportTechniciansComponent implements OnInit {
       next: (response: any) => {
         this.isLoading = false;
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedTechnicians=response.objResult.support_technicians  
+          this.allTechniciansData = response.objResult.support_technicians || [];
+          this.paginatedTechnicians = response.objResult.support_technicians || [];
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -149,6 +150,28 @@ export class SupportTechniciansComponent implements OnInit {
         console.error('Error fetching support technicians:', err);
       }
     });
+  }
+
+  allTechniciansData: any[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allTechniciansData || this.allTechniciansData.length === 0) {
+      this.allTechniciansData = [...(this.paginatedTechnicians || [])];
+    }
+    let temp = [...(this.allTechniciansData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter((t: any) =>
+        (t.name && t.name.toLowerCase().includes(q)) ||
+        (t.email_address && t.email_address.toLowerCase().includes(q)) ||
+        (t.email && t.email.toLowerCase().includes(q)) ||
+        (t.phone_number && t.phone_number.toLowerCase().includes(q)) ||
+        (t.phone && t.phone.toLowerCase().includes(q)) ||
+        (t.username && t.username.toLowerCase().includes(q)) ||
+        (t.code && t.code.toString().toLowerCase().includes(q))
+      );
+    }
+    this.paginatedTechnicians = temp;
   }
 
   onSearch() {

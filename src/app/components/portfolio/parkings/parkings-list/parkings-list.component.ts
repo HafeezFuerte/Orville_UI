@@ -233,7 +233,8 @@ export class ParkingsListComponent implements OnInit {
     this.propertiesService.getParkings(payload).subscribe({
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.paginatedParkings=response.objResult.parkings  
+          this.allParkingsData = response.objResult.parkings || [];
+          this.paginatedParkings = response.objResult.parkings || [];
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -250,28 +251,24 @@ export class ParkingsListComponent implements OnInit {
       }
     });
   }
- 
+
+  allParkingsData: any[] = [];
+
   applyFilters(): void {
-    // let temp = [...this.allParkings];
-
-    // if (this.searchQuery.trim()) {
-    //   const q = this.searchQuery.toLowerCase();
-    //   temp = temp.filter(p => p.property.toLowerCase().includes(q) || p.parking_no.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q));
-    // }
-
-    // this.filteredParkings = temp;
-    // this.totalRecords = temp.length;
-    
-    // if (!this.userChangedPageSize) {
-    //   if (this.totalRecords <= 5) this.pageSize = 5;
-    //   else if (this.totalRecords <= 10) this.pageSize = 10;
-    //   else if (this.totalRecords <= 25) this.pageSize = 25;
-    //   else if (this.totalRecords <= 50) this.pageSize = 50;
-    //   else this.pageSize = 100;
-    // }
-
-    // this.pageNo = 1;
-    // this.updatePagination();
+    if (!this.allParkingsData || this.allParkingsData.length === 0) {
+      this.allParkingsData = [...(this.paginatedParkings || [])];
+    }
+    let temp = [...(this.allParkingsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(p =>
+        (p.property && p.property.toLowerCase().includes(q)) ||
+        (p.parking_no && p.parking_no.toString().toLowerCase().includes(q)) ||
+        (p.unit && p.unit.toLowerCase().includes(q)) ||
+        (p.code && p.code.toString().toLowerCase().includes(q))
+      );
+    }
+    this.paginatedParkings = temp;
   }
  
   onSearch(): void {

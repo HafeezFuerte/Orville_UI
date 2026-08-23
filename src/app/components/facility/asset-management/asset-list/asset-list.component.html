@@ -19,7 +19,7 @@
         <label class="sr-only" for="asset-search">Search</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="asset-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
       </div>
       <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
         <i class="ri-search-line text-[18px]"></i>
@@ -68,7 +68,7 @@
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
           <ng-container *ngSwitchCase="'id'">
-            <a href="javascript:void(0)" (click)="navigateToDetail(row.code)" class="ov-link font-semibold">{{ row.id }}</a>
+            <a href="javascript:void(0)" (click)="navigateToDetail(row.code || row.id)" class="ov-link font-semibold">{{ row.code || row.id }}</a>
           </ng-container>
           <ng-container *ngSwitchCase="'category'">
             <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'category') || '-' }}</span>
