@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import {
   EXPENSE_ACCOUNTS,
   EXPENSE_BANKS,
@@ -24,7 +24,7 @@ import {
 @Component({
   selector: 'app-add-expense',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlatpickrModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective],
   templateUrl: './add-expense.component.html',
   styleUrl: './add-expense.component.scss'
 })

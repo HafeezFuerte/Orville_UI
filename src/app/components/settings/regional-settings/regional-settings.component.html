@@ -1,93 +1,192 @@
-<div class="container-fluid py-4">
-  <div class="d-md-flex d-block align-items-center justify-content-between mb-4 page-header-breadcrumb">
-    <h1 class="page-title fw-semibold fs-18 mb-0">Regional Settings</h1>
+<form class="rs-settings" [formGroup]="regionalSettingsForm" (ngSubmit)="onSubmit()">
+  <div class="rs-settings__page-header">
+    <div class="rs-settings__title-block">
+      <h1 class="rs-settings__title">Regional Settings</h1>
+      <p class="rs-settings__subtitle">
+        Control how dates, money, and measurements appear across the portal.
+      </p>
+    </div>
+    <span class="rs-settings__summary">
+      <img src="./assets/images/settings/globe.svg" alt="" width="14" height="14" />
+      {{ summaryLabel }}
+    </span>
   </div>
 
-  <form [formGroup]="regionalSettingsForm" (ngSubmit)="onSubmit()">
-    <div class="grid grid-cols-12 gap-6">
-      
-      <!-- Full Width Panel (No gap on the right side) -->
-      <div class="col-span-12">
-        
-        <div class="box">
-          <div class="box-header">
-            <div>
-              <h6 class="box-title mb-1">Regional Settings</h6>
-              <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">
-                Used to calculate timezones, measurement unit, and currencies.
-              </p>
-            </div>
-          </div>
+  <div class="rs-settings__tip">
+    These settings apply to invoices, leases, reports, and calendars for all users.
+  </div>
 
-          <div class="box-body">
-            <div class="grid grid-cols-12 gap-4">
-              
-              <!-- Time Zone -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Time Zone <span class="text-danger">*</span></label>
-                <ng-select [items]="timezones" bindLabel="name" bindValue="id" formControlName="timezone" placeholder="Select Time Zone"
-                  [class.is-invalid]="regionalSettingsForm.get('timezone')?.touched && regionalSettingsForm.get('timezone')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="regionalSettingsForm.get('timezone')?.touched && regionalSettingsForm.get('timezone')?.hasError('required')">
-                  Time zone is required.
-                </div>
-              </div>
+  <section class="rs-settings__card">
+    <div class="rs-settings__section-head">
+      <h2 class="rs-settings__section-title">Time &amp; Calendar</h2>
+      <p class="rs-settings__section-sub">Affects schedules, due dates, and how dates are shown.</p>
+    </div>
 
-              <!-- Currency -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Currency <span class="text-danger">*</span></label>
-                <ng-select [items]="currencies" bindLabel="displayName" bindValue="id" formControlName="currency" placeholder="Select Currency"
-                  [class.is-invalid]="regionalSettingsForm.get('currency')?.touched && regionalSettingsForm.get('currency')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="regionalSettingsForm.get('currency')?.touched && regionalSettingsForm.get('currency')?.hasError('required')">
-                  Currency is required.
-                </div>
-              </div>
-
-              <!-- Date Format -->
-              <div class="col-span-12 md:col-span-4">
-                <label class="form-label">Date Format <span class="text-danger">*</span></label>
-                <ng-select [items]="dateFormats" bindLabel="name" bindValue="id" formControlName="dateFormat" placeholder="Select Date Format"
-                  [class.is-invalid]="regionalSettingsForm.get('dateFormat')?.touched && regionalSettingsForm.get('dateFormat')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="regionalSettingsForm.get('dateFormat')?.touched && regionalSettingsForm.get('dateFormat')?.hasError('required')">
-                  Date format is required.
-                </div>
-              </div>
-
-              <!-- Unit System -->
-              <div class="col-span-12 md:col-span-4">
-                <label class="form-label">Unit System <span class="text-danger">*</span></label>
-                <ng-select [items]="unitSystems" bindLabel="name" bindValue="id" formControlName="unitSystem" placeholder="Select Unit System"
-                  [class.is-invalid]="regionalSettingsForm.get('unitSystem')?.touched && regionalSettingsForm.get('unitSystem')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="regionalSettingsForm.get('unitSystem')?.touched && regionalSettingsForm.get('unitSystem')?.hasError('required')">
-                  Unit system is required.
-                </div>
-              </div>
-
-              <!-- Default Payment Method -->
-              <div class="col-span-12 md:col-span-4">
-                <label class="form-label">Default Payment Method <span class="text-danger">*</span></label>
-                <ng-select [items]="paymentMethods" bindLabel="name" bindValue="id" formControlName="defaultPaymentMethod" placeholder="Select Payment Method"
-                  [class.is-invalid]="regionalSettingsForm.get('defaultPaymentMethod')?.touched && regionalSettingsForm.get('defaultPaymentMethod')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="regionalSettingsForm.get('defaultPaymentMethod')?.touched && regionalSettingsForm.get('defaultPaymentMethod')?.hasError('required')">
-                  Default payment method is required.
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Box Footer containing Action Buttons -->
-          <div class="box-footer flex justify-end gap-2 border-t border-gray-200 p-4">
-            <button type="button" class="ti-btn ti-btn-light !py-1 !px-4 !text-[0.75rem] font-semibold">Cancel</button>
-            <button type="submit" class="ti-btn ti-btn-primary !py-1 !px-4 !text-[0.75rem] font-semibold" [disabled]="regionalSettingsForm.invalid">Update Settings</button>
-          </div>
+    <div class="rs-settings__row">
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-timezone">Time Zone</label>
+        <ng-select
+          id="rs-timezone"
+          class="ov-select w-full"
+          [items]="timezones"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="timezone"
+          placeholder="Select Time Zone"
+          [searchable]="true"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Used for bookings, shifts, and reminders.</p>
+        <div
+          class="rs-settings__error"
+          *ngIf="regionalSettingsForm.get('timezone')?.touched && regionalSettingsForm.get('timezone')?.hasError('required')"
+        >
+          Time zone is required.
         </div>
+      </div>
 
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-date-format">Date Format</label>
+        <ng-select
+          id="rs-date-format"
+          class="ov-select w-full"
+          [items]="dateFormats"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="dateFormat"
+          placeholder="Select Date Format"
+          [searchable]="false"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Example shown in parentheses.</p>
+        <div
+          class="rs-settings__error"
+          *ngIf="regionalSettingsForm.get('dateFormat')?.touched && regionalSettingsForm.get('dateFormat')?.hasError('required')"
+        >
+          Date format is required.
+        </div>
       </div>
     </div>
-  </form>
-</div>
+
+    <div class="rs-settings__row">
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-first-day">First day of week</label>
+        <ng-select
+          id="rs-first-day"
+          class="ov-select w-full"
+          [items]="weekDays"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="firstDayOfWeek"
+          placeholder="Select day"
+          [searchable]="false"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Controls calendar week start across the app.</p>
+      </div>
+
+      <div class="rs-settings__field rs-settings__field--note">
+        <span class="rs-settings__label rs-settings__label--spacer" aria-hidden="true">&nbsp;</span>
+        <div class="rs-settings__info-note">
+          <p class="rs-settings__info-title">Tip</p>
+          <p class="rs-settings__info-text">
+            Changing timezone will not convert past records — only new activity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rs-settings__card">
+    <div class="rs-settings__section-head">
+      <h2 class="rs-settings__section-title">Money &amp; Units</h2>
+      <p class="rs-settings__section-sub">Used on invoices, contracts, and property measurements.</p>
+    </div>
+
+    <div class="rs-settings__row">
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-currency">Currency</label>
+        <ng-select
+          id="rs-currency"
+          class="ov-select w-full"
+          [items]="currencies"
+          bindLabel="displayName"
+          bindValue="id"
+          formControlName="currency"
+          placeholder="Select Currency"
+          [searchable]="true"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Shown on invoices, receipts, and reports.</p>
+        <div
+          class="rs-settings__error"
+          *ngIf="regionalSettingsForm.get('currency')?.touched && regionalSettingsForm.get('currency')?.hasError('required')"
+        >
+          Currency is required.
+        </div>
+      </div>
+
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-unit-system">Unit System</label>
+        <ng-select
+          id="rs-unit-system"
+          class="ov-select w-full"
+          [items]="unitSystems"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="unitSystem"
+          placeholder="Select Unit System"
+          [searchable]="false"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Applies to area, length, and listing details.</p>
+        <div
+          class="rs-settings__error"
+          *ngIf="regionalSettingsForm.get('unitSystem')?.touched && regionalSettingsForm.get('unitSystem')?.hasError('required')"
+        >
+          Unit system is required.
+        </div>
+      </div>
+    </div>
+
+    <div class="rs-settings__row">
+      <div class="rs-settings__field">
+        <label class="rs-settings__label" for="rs-payment">Default payment method</label>
+        <ng-select
+          id="rs-payment"
+          class="ov-select w-full"
+          [items]="paymentMethods"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="defaultPaymentMethod"
+          placeholder="Select Payment Method"
+          [searchable]="false"
+          [clearable]="false"
+        ></ng-select>
+        <p class="rs-settings__hint">Pre-selected when creating invoices and receipts.</p>
+        <div
+          class="rs-settings__error"
+          *ngIf="regionalSettingsForm.get('defaultPaymentMethod')?.touched && regionalSettingsForm.get('defaultPaymentMethod')?.hasError('required')"
+        >
+          Default payment method is required.
+        </div>
+      </div>
+
+      <div class="rs-settings__field rs-settings__field--note">
+        <span class="rs-settings__label rs-settings__label--spacer" aria-hidden="true">&nbsp;</span>
+        <div class="rs-settings__payment-note">
+          Staff can still change the method per transaction.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rs-settings__footer">
+    <p class="rs-settings__footer-note">
+      Review changes carefully — they affect invoices and reports.
+    </p>
+    <button type="submit" class="ov-btn ov-btn-primary" [disabled]="regionalSettingsForm.invalid">
+      Update
+    </button>
+  </div>
+</form>

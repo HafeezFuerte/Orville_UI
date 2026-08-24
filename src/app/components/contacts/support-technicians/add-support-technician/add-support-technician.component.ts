@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import { ToastrService } from 'ngx-toastr';
 
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
@@ -20,7 +20,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
     TranslateModule,
     NgSelectModule,
     RouterModule,
-    FlatpickrModule
+    FlowbiteDatepickerDirective
   ],
   templateUrl: './add-support-technician.component.html',
   styleUrl: './add-support-technician.component.scss'

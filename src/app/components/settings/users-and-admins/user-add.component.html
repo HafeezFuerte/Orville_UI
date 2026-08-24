@@ -1,0 +1,284 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg"
+        aria-label="Back to Users and Admins"
+        (click)="cancel()">
+        <img
+          src="./assets/images/common/arrow-narrow-left.svg"
+          alt=""
+          width="18"
+          height="18" />
+      </button>
+      <div class="min-w-0">
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+          {{ pageTitle }}
+        </h1>
+        <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+          {{ breadcrumb }}
+        </p>
+      </div>
+    </div>
+    <div class="flex shrink-0 items-center gap-2.5">
+      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary"
+        [disabled]="!canSave"
+        (click)="save()">
+        Save
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile card -->
+  <section
+    class="flex w-full flex-col gap-5 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+    <h2 class="m-0 text-base font-semibold text-defaulttextcolor">{{ pageTitle }}</h2>
+
+    <!-- Photo -->
+    <div class="flex flex-wrap items-center gap-4">
+      <div
+        class="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-defaultborder bg-bodybg dark:bg-white/5">
+        <img
+          *ngIf="photoPreview"
+          [src]="photoPreview"
+          alt=""
+          class="size-full object-cover" />
+        <img
+          *ngIf="!photoPreview"
+          src="./assets/images/settings/user-square.svg"
+          alt=""
+          width="28"
+          height="28" />
+      </div>
+      <label class="ov-btn ov-btn-ghost cursor-pointer">
+        Upload Photo
+        <input
+          type="file"
+          accept="image/*"
+          class="sr-only"
+          (change)="onPhotoSelected($event)" />
+      </label>
+    </div>
+
+    <!-- Email -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-textmuted" for="ua-email">
+        Email <span class="text-danger">*</span>
+      </label>
+      <input
+        id="ua-email"
+        type="email"
+        class="ov-input"
+        placeholder="name@company.com"
+        [(ngModel)]="email" />
+    </div>
+
+    <!-- Username / Password -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-username">Username</label>
+        <p class="m-0 text-xs text-textmuted">Leave blank to auto generate a username</p>
+        <input
+          id="ua-username"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="username" />
+      </div>
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-password">Password</label>
+        <p class="m-0 text-xs text-transparent select-none" aria-hidden="true">.</p>
+        <input
+          id="ua-password"
+          type="password"
+          class="ov-input"
+          [(ngModel)]="password"
+          autocomplete="new-password" />
+      </div>
+    </div>
+
+    <!-- Names -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-first">
+          First Name <span class="text-danger">*</span>
+        </label>
+        <input
+          id="ua-first"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="firstName" />
+      </div>
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-last">
+          Last Name <span class="text-danger">*</span>
+        </label>
+        <input
+          id="ua-last"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="lastName" />
+      </div>
+    </div>
+
+    <!-- Country / Phone -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-country">
+          Country <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <select
+            id="ua-country"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="country">
+            <option value="">Select Phone Country</option>
+            <option *ngFor="let c of countryOptions" [value]="c">{{ c }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-phone">Phone</label>
+        <input
+          id="ua-phone"
+          type="tel"
+          class="ov-input"
+          [(ngModel)]="phone" />
+      </div>
+    </div>
+
+    <!-- Group / Role -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-group">Group</label>
+        <div class="relative">
+          <select
+            id="ua-group"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="group">
+            <option value="">Select Group</option>
+            <option *ngFor="let g of groupOptions" [value]="g">{{ g }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-role">
+          Role <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <select
+            id="ua-role"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="role">
+            <option value="">Choose a Role</option>
+            <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Timezone / Languages -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-tz">Time Zone</label>
+        <div class="relative">
+          <select
+            id="ua-tz"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="timeZone">
+            <option *ngFor="let t of timeZoneOptions" [value]="t">{{ t }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="ua-lang">Spoken languages</label>
+        <input
+          id="ua-lang"
+          type="text"
+          class="ov-input"
+          placeholder="e.g. English, Arabic"
+          [(ngModel)]="spokenLanguages" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Tenant Visibility -->
+  <section
+    class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+    <div class="flex flex-col gap-1.5">
+      <h2 class="m-0 text-base font-semibold text-defaulttextcolor">Tenant Visibility</h2>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        This update will result in all tenants being visible to the user, regardless of whether they
+        have been assigned to any units. However, users holding the Manager role will not be
+        impacted by this change.
+      </p>
+    </div>
+
+    <label class="flex cursor-pointer flex-col gap-1">
+      <span class="inline-flex items-center gap-2.5">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+          [(ngModel)]="displayAllTenants" />
+        <span class="text-sm font-medium text-defaulttextcolor">Display All Tenants</span>
+      </span>
+      <span class="ps-6 text-xs text-textmuted">
+        Enabling this will showcase all tenants to this user.
+      </span>
+    </label>
+
+    <div class="h-px w-full bg-defaultborder"></div>
+
+    <div class="flex flex-col gap-3">
+      <label class="inline-flex cursor-pointer items-center gap-2.5">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+          [checked]="allNotificationsSelected"
+          (change)="toggleSelectAllNotifications()" />
+        <span class="text-sm font-semibold text-defaulttextcolor">Select All</span>
+      </label>
+
+      <div class="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
+        <label
+          *ngFor="let opt of notificationOptions"
+          class="inline-flex cursor-pointer items-start gap-2.5">
+          <input
+            type="checkbox"
+            class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+            [checked]="isNotificationSelected(opt)"
+            (change)="toggleNotification(opt)" />
+          <span class="text-sm font-medium text-defaulttextcolor">{{ opt }}</span>
+        </label>
+      </div>
+    </div>
+  </section>
+</div>

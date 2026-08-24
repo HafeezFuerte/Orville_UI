@@ -1,0 +1,293 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-col gap-1.5">
+    <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+      Profile verification
+    </h1>
+    <p class="m-0 max-w-3xl text-[13px] font-normal leading-normal text-textmuted">
+      Require landlords and tenants to complete mandatory profile fields before they can take
+      actions.
+    </p>
+  </div>
+
+  <!-- Enable + message card -->
+  <section
+    class="flex w-full flex-col gap-5 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-start gap-3">
+        <button
+          type="button"
+          class="pv-toggle mt-0.5"
+          [class.pv-toggle--on]="enabled"
+          [attr.aria-pressed]="enabled"
+          aria-label="Enable profile verification for landlords and tenants"
+          (click)="enabled = !enabled">
+          <span class="pv-toggle__knob"></span>
+        </button>
+        <div class="min-w-0 flex-1">
+          <p class="m-0 text-sm font-semibold text-defaulttextcolor">
+            Enable profile verification for landlords and tenants
+          </p>
+          <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+            This setting will require landlords and tenants to upload mandatory information before
+            they can take any action.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-px w-full bg-defaultborder"></div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-semibold text-defaulttextcolor" for="pv-message">
+        Profile verification message
+      </label>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+        <textarea
+          id="pv-message"
+          rows="2"
+          class="ov-input flex-1"
+          placeholder="Enter the message shown to landlords and tenants"
+          [(ngModel)]="verificationMessage"></textarea>
+        <button type="button" class="ov-btn ov-btn-primary shrink-0" (click)="saveMessage()">
+          Save
+        </button>
+      </div>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        This message will be displayed to landlords and tenants before they can take any action.
+      </p>
+      <p *ngIf="messageSaved" class="m-0 text-xs font-medium text-success">
+        Verification message saved.
+      </p>
+    </div>
+  </section>
+
+  <!-- Mandatory fields card -->
+  <section
+    class="flex w-full flex-col overflow-hidden rounded-xl border border-defaultborder bg-white dark:bg-bodybg">
+    <!-- Tabs -->
+    <div
+      class="flex items-center gap-1 border-b border-defaultborder px-2"
+      role="tablist"
+      aria-label="Profile verification roles">
+      <button
+        type="button"
+        role="tab"
+        class="pv-tab"
+        [class.pv-tab--active]="activeTab === 'landlord'"
+        [attr.aria-selected]="activeTab === 'landlord'"
+        (click)="setTab('landlord')">
+        Landlord
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="pv-tab"
+        [class.pv-tab--active]="activeTab === 'tenant'"
+        [attr.aria-selected]="activeTab === 'tenant'"
+        (click)="setTab('tenant')">
+        Tenant
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-4 p-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0 flex-1">
+          <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
+            Mandatory {{ roleLabel }} Fields
+          </h2>
+          <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+            Add mandatory fields for {{ roleLabel }}
+          </p>
+        </div>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="openEditFields()">
+          <span class="text-lg leading-none" aria-hidden="true">+</span>
+          Add {{ roleLabel }} Fields
+        </button>
+      </div>
+
+      <div
+        *ngIf="!enabled"
+        class="pv-warn"
+        role="status">
+        <span class="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[#D08A28] text-[11px] font-bold text-white" aria-hidden="true">i</span>
+        <span>
+          Profile verification is disabled. Enable it above to require and edit mandatory fields.
+        </span>
+      </div>
+
+      <label
+        class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-bodybg px-3.5 dark:bg-white/5">
+        <img
+          src="./assets/images/settings/search.svg"
+          alt=""
+          width="14"
+          height="14"
+          class="shrink-0 opacity-60" />
+        <input
+          type="search"
+          class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+          [placeholder]="'Search ' + roleLabel.toLowerCase() + ' fields...'"
+          [attr.aria-label]="'Search ' + roleLabel + ' fields'"
+          [(ngModel)]="fieldSearch" />
+      </label>
+
+      <div
+        class="w-full overflow-hidden rounded-2xl border border-defaultborder"
+        role="list"
+        [attr.aria-label]="'Mandatory ' + roleLabel + ' fields'">
+        <div
+          *ngFor="let field of filteredSelectedFields; let last = last"
+          class="flex items-center justify-between gap-3 px-5 py-3.5"
+          [class.border-b]="!last"
+          [class.border-defaultborder]="!last"
+          role="listitem">
+          <span class="text-sm font-medium uppercase tracking-wide text-defaulttextcolor">
+            {{ field.label }}
+          </span>
+          <button
+            type="button"
+            class="ov-icon-btn ov-icon-btn--danger"
+            [attr.aria-label]="'Remove ' + field.label"
+            [disabled]="!enabled"
+            (click)="removeField(field.id)">
+            <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+          </button>
+        </div>
+
+        <div
+          *ngIf="filteredSelectedFields.length === 0"
+          class="px-5 py-10 text-center text-sm text-textmuted">
+          <ng-container *ngIf="selectedFields.length === 0; else noSearchMatch">
+            No mandatory fields yet. Click “Add {{ roleLabel }} Fields” to choose fields.
+          </ng-container>
+          <ng-template #noSearchMatch>No fields match your search.</ng-template>
+        </div>
+      </div>
+
+      <p class="m-0 text-xs text-textmuted">
+        {{ selectedFields.length }} field{{ selectedFields.length === 1 ? '' : 's' }} required for
+        {{ roleLabel.toLowerCase() }}s
+      </p>
+    </div>
+  </section>
+</div>
+
+<!-- Edit fields modal -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[560px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'pv-modal-title'"
+    (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="ov-modal-close"
+      aria-label="Close"
+      (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="flex max-h-[min(80vh,640px)] w-full flex-col overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-1.5 border-b border-defaultborder px-5 py-4">
+        <h2 id="pv-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+          {{ modalTitle }}
+        </h2>
+        <p class="m-0 text-[13px] font-normal text-textmuted">
+          Select which profile fields {{ roleLabel.toLowerCase() }}s must complete.
+        </p>
+      </div>
+
+      <div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-5">
+        <div *ngIf="!enabled" class="pv-warn" role="status">
+          <span
+            class="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[#D08A28] text-[11px] font-bold text-white"
+            aria-hidden="true">
+            i
+          </span>
+          <span>
+            Your company has disabled profile verification so you cannot select any mandatory
+            fields.
+          </span>
+        </div>
+
+        <label
+          class="ov-inline-search h-10 w-full rounded-lg border border-defaultborder bg-bodybg px-3.5 dark:bg-white/5">
+          <img
+            src="./assets/images/settings/search.svg"
+            alt=""
+            width="14"
+            height="14"
+            class="shrink-0 opacity-60" />
+          <input
+            type="search"
+            class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+            placeholder="Search fields..."
+            aria-label="Search fields"
+            [(ngModel)]="modalSearch" />
+        </label>
+
+        <div
+          class="overflow-hidden rounded-xl border border-defaultborder"
+          [class.opacity-50]="!enabled"
+          [class.pointer-events-none]="!enabled">
+          <label
+            class="flex cursor-pointer items-center gap-2.5 border-b border-defaultborder bg-bodybg px-4 py-3 dark:bg-white/5">
+            <input
+              type="checkbox"
+              class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+              [checked]="allDraftSelected"
+              [indeterminate]="someDraftSelected"
+              [disabled]="!enabled"
+              (change)="toggleSelectAllDraft()" />
+            <span class="text-sm font-semibold text-defaulttextcolor">Select All</span>
+          </label>
+
+          <label
+            *ngFor="let field of modalFilteredOptions; let last = last"
+            class="flex cursor-pointer items-center gap-2.5 px-4 py-3 hover:bg-bodybg dark:hover:bg-white/5"
+            [class.border-b]="!last"
+            [class.border-defaultborder]="!last">
+            <input
+              type="checkbox"
+              class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+              [checked]="isDraftSelected(field.id)"
+              [disabled]="!enabled"
+              (change)="toggleDraftField(field.id)" />
+            <span class="text-sm font-medium text-defaulttextcolor">{{ field.label }}</span>
+          </label>
+
+          <div
+            *ngIf="modalFilteredOptions.length === 0"
+            class="px-4 py-8 text-center text-sm text-textmuted">
+            No fields match your search.
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!enabled"
+          (click)="saveFields()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

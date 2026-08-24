@@ -1,0 +1,131 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg"
+        aria-label="Back to Roles and Permissions"
+        (click)="cancel()">
+        <img
+          src="./assets/images/common/arrow-narrow-left.svg"
+          alt=""
+          width="18"
+          height="18" />
+      </button>
+      <div class="min-w-0">
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+          Roles &amp; Permissions
+        </h1>
+        <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+          {{ breadcrumb }}
+        </p>
+      </div>
+    </div>
+    <div class="flex shrink-0 items-center gap-2.5">
+      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary"
+        [disabled]="!canSave"
+        (click)="save()">
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <!-- Role name + global select -->
+  <section
+    class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="flex min-w-0 flex-1 flex-col gap-2 sm:max-w-md">
+        <label class="text-sm font-medium text-textmuted" for="rp-name">
+          Role Name <span class="text-danger">*</span>
+        </label>
+        <input
+          id="rp-name"
+          type="text"
+          class="ov-input disabled:opacity-60"
+          placeholder="Enter Role Name"
+          [(ngModel)]="roleName"
+          [disabled]="isSystem" />
+        <p *ngIf="isSystem" class="m-0 text-xs text-textmuted">
+          This is a protected system role. Permissions are read-only.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <span
+          class="inline-flex items-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+          {{ selectedCount }} / {{ totalCount }} selected
+        </span>
+        <label
+          class="inline-flex h-10 cursor-pointer items-center gap-2.5 rounded-lg border border-defaultborder bg-bodybg px-3.5"
+          [class.cursor-not-allowed]="isSystem"
+          [class.opacity-60]="isSystem">
+          <input
+            type="checkbox"
+            class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+            [checked]="allSelected"
+            [indeterminate]="someSelected"
+            [disabled]="isSystem"
+            (change)="toggleSelectAll()" />
+          <span class="text-sm font-semibold text-defaulttextcolor">Select all</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Permission category cards -->
+  <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <section
+      *ngFor="let cat of categories"
+      class="flex flex-col overflow-hidden rounded-xl border border-defaultborder bg-white dark:bg-bodybg">
+      <div
+        class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder bg-bodybg px-4 py-3 dark:bg-white/5">
+        <h2 class="m-0 text-sm font-semibold text-defaulttextcolor">{{ cat.name }}</h2>
+        <label
+          class="inline-flex cursor-pointer items-center gap-2"
+          [class.cursor-not-allowed]="isSystem"
+          [class.opacity-60]="isSystem">
+          <input
+            type="checkbox"
+            class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+            [checked]="categoryAllSelected(cat)"
+            [indeterminate]="categorySomeSelected(cat)"
+            [disabled]="isSystem"
+            [attr.aria-label]="'Select all ' + cat.name"
+            (change)="toggleCategoryAll(cat)" />
+          <span class="text-xs font-semibold text-textmuted">Select All</span>
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2.5 p-4 sm:grid-cols-2">
+        <label
+          *ngFor="let p of cat.permissions"
+          class="inline-flex cursor-pointer items-start gap-2.5 rounded-lg border border-transparent px-2 py-1.5 transition-colors hover:border-defaultborder hover:bg-bodybg"
+          [class.cursor-not-allowed]="isSystem"
+          [class.opacity-60]="isSystem">
+          <input
+            type="checkbox"
+            class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+            [checked]="isChecked(cat.id, p.id)"
+            [disabled]="isSystem"
+            (change)="toggle(cat.id, p.id)" />
+          <span class="text-sm font-medium leading-snug text-defaulttextcolor">{{ p.label }}</span>
+        </label>
+      </div>
+    </section>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-end gap-2.5">
+    <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
+    <button
+      type="button"
+      class="ov-btn ov-btn-primary"
+      [disabled]="!canSave"
+      (click)="save()">
+      Save
+    </button>
+  </div>
+</div>

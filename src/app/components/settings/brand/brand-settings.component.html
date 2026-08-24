@@ -1,0 +1,174 @@
+<div class="brand-settings">
+  <h1 class="brand-settings__title">Brand Settings</h1>
+
+  <div class="brand-settings__intro">
+    <h2 class="brand-settings__intro-title">Company Branding</h2>
+    <p class="brand-settings__intro-sub">
+      Upload your logos and define base colors used across the dashboard.
+    </p>
+  </div>
+
+  <div class="brand-settings__card">
+    <div class="brand-settings__uploads">
+      <div class="brand-settings__upload" *ngFor="let upload of uploads">
+        <label class="brand-settings__label" [attr.for]="'brand-file-' + upload.key">{{ upload.label }}</label>
+        <button
+          type="button"
+          class="brand-settings__dropzone"
+          [class.brand-settings__dropzone--filled]="!!upload.previewUrl"
+          (click)="fileInput.click()"
+        >
+          <img
+            *ngIf="upload.previewUrl"
+            class="brand-settings__preview"
+            [src]="upload.previewUrl"
+            [alt]="upload.label"
+          />
+          <ng-container *ngIf="!upload.previewUrl">
+            <img
+              class="brand-settings__upload-icon"
+              src="./assets/images/settings/upload-image.svg"
+              alt=""
+              width="28"
+              height="28"
+            />
+            <span class="brand-settings__upload-hint">{{ upload.hint }}</span>
+          </ng-container>
+        </button>
+        <input
+          #fileInput
+          class="brand-settings__file-input"
+          type="file"
+          accept="image/*"
+          [id]="'brand-file-' + upload.key"
+          (change)="onFileSelected($event, upload)"
+        />
+      </div>
+    </div>
+
+    <div class="brand-settings__divider" aria-hidden="true"></div>
+
+    <div class="brand-settings__colors">
+      <div class="brand-settings__field brand-settings__field--grow">
+        <label class="brand-settings__label" for="brand-primary">Primary Color</label>
+        <div class="brand-settings__color-input">
+          <button
+            type="button"
+            class="brand-settings__swatch"
+            [style.background]="primaryColor"
+            aria-label="Pick primary color"
+            (click)="primaryPicker.click()"
+          ></button>
+          <input
+            #primaryPicker
+            id="brand-primary-picker"
+            class="brand-settings__native-color"
+            type="color"
+            [value]="primaryColor"
+            (input)="onPrimaryPicker($event)"
+          />
+          <input
+            id="brand-primary"
+            class="brand-settings__hex"
+            type="text"
+            [ngModel]="primaryColor"
+            (ngModelChange)="onPrimaryInput($event)"
+            maxlength="7"
+            spellcheck="false"
+          />
+        </div>
+      </div>
+
+      <div class="brand-settings__field brand-settings__field--grow">
+        <label class="brand-settings__label" for="brand-secondary">Secondary Color</label>
+        <div class="brand-settings__color-input">
+          <button
+            type="button"
+            class="brand-settings__swatch"
+            [style.background]="secondaryColor"
+            aria-label="Pick secondary color"
+            (click)="secondaryPicker.click()"
+          ></button>
+          <input
+            #secondaryPicker
+            id="brand-secondary-picker"
+            class="brand-settings__native-color"
+            type="color"
+            [value]="secondaryColor"
+            (input)="onSecondaryPicker($event)"
+          />
+          <input
+            id="brand-secondary"
+            class="brand-settings__hex"
+            type="text"
+            [ngModel]="secondaryColor"
+            (ngModelChange)="onSecondaryInput($event)"
+            maxlength="7"
+            spellcheck="false"
+          />
+        </div>
+      </div>
+
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="generateTheme()">
+        Generate Theme
+      </button>
+    </div>
+
+    <div class="brand-settings__theme-row">
+      <div class="brand-settings__field brand-settings__field--theme">
+        <label class="brand-settings__label" for="brand-theme">Theme</label>
+        <ng-select
+          id="brand-theme"
+          class="ov-select w-full"
+          [items]="themeOptions"
+          bindLabel="label"
+          bindValue="value"
+          [(ngModel)]="selectedTheme"
+          [clearable]="false"
+          [searchable]="false"
+        ></ng-select>
+      </div>
+
+      <div class="brand-settings__mode" role="group" aria-label="Theme mode">
+        <span class="brand-settings__mode-icon" aria-hidden="true">
+          <img src="./assets/images/settings/sun.svg" alt="" width="16" height="16" />
+        </span>
+        <button
+          type="button"
+          class="brand-settings__toggle"
+          [class.brand-settings__toggle--on]="darkMode"
+          [attr.aria-pressed]="darkMode"
+          aria-label="Toggle dark mode preference"
+          (click)="toggleDarkMode()"
+        >
+          <span class="brand-settings__toggle-knob"></span>
+        </button>
+        <span class="brand-settings__mode-icon" aria-hidden="true">
+          <img src="./assets/images/settings/moon.svg" alt="" width="16" height="16" />
+        </span>
+      </div>
+    </div>
+
+    <div class="brand-settings__divider" aria-hidden="true"></div>
+
+    <div class="brand-settings__card-actions">
+      <button
+        type="button"
+        class="ov-btn ov-btn-ghost"
+        [disabled]="!applyPreviewEnabled"
+        (click)="applyPreview()"
+      >
+        Apply Preview
+      </button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="reset()">
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="brand-settings__footer">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="saveThemeJson()">
+      Save Theme JSON
+    </button>
+  </div>
+</div>

@@ -1,0 +1,335 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Attachment Types
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Define document types and which fields are required when uploading attachments.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <label
+      class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+      <img
+        src="./assets/images/settings/search.svg"
+        alt=""
+        width="14"
+        height="14"
+        class="shrink-0" />
+      <input
+        type="search"
+        class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+        placeholder="Search attachment types..."
+        aria-label="Search attachment types"
+        [(ngModel)]="searchQuery" />
+    </label>
+
+    <span
+      class="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+      {{ countLabel }}
+    </span>
+  </div>
+
+  <!-- Table -->
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    aria-label="Attachment types">
+    <div class="w-full overflow-x-auto">
+      <div
+        class="flex min-w-[1100px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
+        role="row">
+        <div class="w-14 shrink-0 text-xs font-semibold text-textmuted" role="columnheader">ID</div>
+        <div class="min-w-[140px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
+          Name
+        </div>
+        <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Issue Date
+        </div>
+        <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Expiry Date
+        </div>
+        <div class="w-[72px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Number
+        </div>
+        <div class="w-[100px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Authority
+        </div>
+        <div class="w-[100px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Future Issue
+        </div>
+        <div class="w-[72px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Renew
+        </div>
+        <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Count
+        </div>
+        <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Reminder
+        </div>
+        <div class="w-[88px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Actions
+        </div>
+      </div>
+
+      <div
+        *ngFor="let row of filteredRows"
+        class="flex min-w-[1100px] gap-3 border-t border-defaultborder px-5 py-3.5"
+        role="row">
+        <div
+          class="flex w-14 shrink-0 items-center text-sm text-textmuted"
+          role="cell">
+          {{ row.id }}
+        </div>
+        <div class="flex min-w-[140px] flex-1 items-center" role="cell">
+          <button
+            type="button"
+            class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+            (click)="openEdit(row)">
+            {{ row.name }}
+          </button>
+        </div>
+        <div class="flex w-[88px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.hasIssueDate
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            "
+            [attr.aria-label]="row.hasIssueDate ? 'Yes' : 'No'">
+            {{ row.hasIssueDate ? '✓' : '—' }}
+          </span>
+        </div>
+        <div class="flex w-[88px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.hasExpiryDate
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            ">
+            {{ row.hasExpiryDate ? '✓' : '—' }}
+          </span>
+        </div>
+        <div class="flex w-[72px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.hasNumber
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            ">
+            {{ row.hasNumber ? '✓' : '—' }}
+          </span>
+        </div>
+        <div class="flex w-[100px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.hasIssuingAuthority
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            ">
+            {{ row.hasIssuingAuthority ? '✓' : '—' }}
+          </span>
+        </div>
+        <div class="flex w-[100px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.hasFutureIssueDate
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            ">
+            {{ row.hasFutureIssueDate ? '✓' : '—' }}
+          </span>
+        </div>
+        <div class="flex w-[72px] shrink-0 items-center justify-center" role="cell">
+          <span
+            class="inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+            [ngClass]="
+              row.renewAttachment
+                ? 'bg-success/10 text-success'
+                : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
+            ">
+            {{ row.renewAttachment ? '✓' : '—' }}
+          </span>
+        </div>
+        <div
+          class="flex w-[88px] shrink-0 items-center justify-center text-sm font-medium text-defaulttextcolor"
+          role="cell">
+          {{ row.attachmentsCount | number }}
+        </div>
+        <div
+          class="flex w-[88px] shrink-0 items-center justify-center text-sm text-defaulttextcolor"
+          role="cell">
+          {{ row.expiryReminderDays }}
+        </div>
+        <div class="flex w-[88px] shrink-0 items-center gap-2" role="cell">
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Edit attachment type"
+            (click)="openEdit(row)">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            type="button"
+            class="ov-icon-btn ov-icon-btn--danger"
+            aria-label="Delete attachment type"
+            (click)="deleteType(row)">
+            <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="filteredRows.length === 0"
+      class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+      No attachment types found.
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit modal -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[640px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="at-modal-title"
+    (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="ov-modal-close"
+      aria-label="Close"
+      (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="at-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ modalTitle }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">
+            Configure the attachment type name, reminder, and available fields.
+          </p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="flex flex-col gap-5 p-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="at-name">
+              Attachment Type <span class="text-danger">*</span>
+            </label>
+            <input
+              id="at-name"
+              type="text"
+              class="ov-input"
+              placeholder="Please enter a document type name"
+              [(ngModel)]="draftName" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="at-reminder">
+              Expiry Reminder <span class="text-danger">*</span>
+            </label>
+            <input
+              id="at-reminder"
+              type="number"
+              min="0"
+              class="ov-input"
+              [(ngModel)]="draftExpiryReminder" />
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-defaultborder">
+          <div class="border-b border-defaultborder px-4 py-3">
+            <h3 class="m-0 text-sm font-semibold text-defaulttextcolor">Field options</h3>
+          </div>
+          <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftHasIssueDate" />
+              <span class="text-sm font-medium text-defaulttextcolor">Has Issue Date</span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftHasExpiryDate" />
+              <span class="text-sm font-medium text-defaulttextcolor">Has Expiry Date</span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftHasNumber" />
+              <span class="text-sm font-medium text-defaulttextcolor">Has Number</span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftHasIssuingAuthority" />
+              <span class="text-sm font-medium text-defaulttextcolor">Has Issuing Authority</span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftHasFutureIssueDate" />
+              <span class="text-sm font-medium text-defaulttextcolor">Has Future Issue Date</span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="draftRenewAttachment" />
+              <span class="text-sm font-medium text-defaulttextcolor">Renew Attachment</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!canSave"
+          (click)="saveType()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

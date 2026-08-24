@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
 import {
@@ -18,7 +18,7 @@ import {
 @Component({
   selector: 'app-report-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlatpickrModule, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FilterDrawerComponent, ColumnMenuComponent],
   templateUrl: './report-view.component.html',
   styleUrl: './report-view.component.scss'
 })

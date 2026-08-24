@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import {
   BANKS,
   CHEQUE_IN_HAND,
@@ -24,7 +24,7 @@ import {
 @Component({
   selector: 'app-add-invoice',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlatpickrModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective],
   templateUrl: './add-invoice.component.html',
   styleUrl: './add-invoice.component.scss'
 })

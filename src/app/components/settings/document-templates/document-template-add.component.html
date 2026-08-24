@@ -1,0 +1,142 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg"
+        aria-label="Back to Document Templates"
+        (click)="cancel()">
+        <img
+          src="./assets/images/common/arrow-narrow-left.svg"
+          alt=""
+          width="18"
+          height="18" />
+      </button>
+      <div class="min-w-0">
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+          Add Document Template
+        </h1>
+        <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+          Document Templates / New
+        </p>
+      </div>
+    </div>
+    <div class="flex shrink-0 items-center gap-2.5">
+      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+    </div>
+  </div>
+
+  <!-- Tip banner -->
+  <div
+    class="w-full rounded-[10px] border border-defaultborder bg-bodybg px-4 py-3 text-[13px] font-normal leading-normal text-textmuted">
+    Templates created here can be printed from the lease page using prefilled lease elements.
+  </div>
+
+  <!-- Editor body -->
+  <div class="flex w-full flex-col items-start gap-4 lg:flex-row">
+    <!-- Left: Document Template Editor -->
+    <section
+      class="flex min-w-0 flex-1 flex-col gap-5 overflow-hidden rounded-xl border border-defaultborder bg-white p-6 dark:bg-bodybg">
+      <div class="flex flex-col gap-1">
+        <h2 class="m-0 text-lg font-semibold leading-normal text-defaulttextcolor">
+          Document Template
+        </h2>
+        <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+          Define the template type, title and body content.
+        </p>
+      </div>
+
+      <div class="flex w-full flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="dt-type">Template Type</label>
+        <div class="relative">
+          <select
+            id="dt-type"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="templateType">
+            <option *ngFor="let t of typeOptions" [value]="t">{{ t }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+
+      <div class="flex w-full flex-col gap-2">
+        <label class="text-sm font-medium text-textmuted" for="dt-title">
+          Title <span class="text-danger">*</span>
+        </label>
+        <input
+          id="dt-title"
+          type="text"
+          class="ov-input"
+          placeholder="e.g. Lease_Agreement_ORV"
+          [(ngModel)]="title" />
+      </div>
+
+      <div class="flex w-full flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
+        <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+        <p class="m-0 text-xs font-normal text-textmuted">
+          Drag autofill elements into the editor. Printed leases will replace each field with live
+          tenant and lease data.
+        </p>
+      </div>
+
+      <div class="flex w-full flex-col gap-4">
+        <label class="text-sm font-medium text-textmuted">
+          Content <span class="text-danger">*</span>
+        </label>
+        <div
+          class="dt-editor overflow-hidden rounded-lg border border-defaultborder"
+          (dragover)="onEditorDragOver($event)"
+          (drop)="onEditorDrop($event)">
+          <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+          <ngx-editor
+            [editor]="editor"
+            [(ngModel)]="content"
+            placeholder="Start writing your document template…">
+          </ngx-editor>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Autofill Sidebar -->
+    <aside
+      class="flex w-full shrink-0 flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white px-4 py-5 dark:bg-bodybg lg:w-[393px]">
+      <button
+        type="button"
+        class="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-[10px] border-[1.5px] border-info bg-bodybg px-3.5 py-3 text-left">
+        <span class="text-sm font-medium text-[#BD9759]" aria-hidden="true">⚡</span>
+        <span class="text-[13px] font-semibold text-defaulttextcolor">
+          Ask RiaAI for Autofill Suggestions
+        </span>
+      </button>
+
+      <div
+        class="rounded-lg border border-defaultborder bg-bodybg p-3.5 text-xs font-normal leading-normal text-textmuted">
+        Click or drag an element to insert it at the cursor position in the editor.
+      </div>
+
+      <h3 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
+        Auto Fill Elements
+      </h3>
+
+      <div class="flex w-full flex-col gap-2">
+        <button
+          type="button"
+          *ngFor="let el of autofillElements"
+          class="flex w-full cursor-grab items-center gap-2.5 rounded-lg border-0 bg-[#eeeef5] px-3 py-2.5 text-left active:cursor-grabbing dark:bg-white/10"
+          draggable="true"
+          (dragstart)="onAutofillDragStart($event, el)"
+          (click)="insertAutofill(el)">
+          <span class="shrink-0 text-xs text-textmuted" aria-hidden="true">⠿</span>
+          <span class="min-w-0 flex-1 text-[13px] font-medium text-defaulttextcolor">{{ el }}</span>
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>

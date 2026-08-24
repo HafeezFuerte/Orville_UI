@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
@@ -22,7 +22,7 @@ import {
     FormsModule,
     RouterModule,
     NgSelectModule,
-    FlatpickrModule,
+    FlowbiteDatepickerDirective,
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent

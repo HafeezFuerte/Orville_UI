@@ -49,25 +49,7 @@ interface LookupItem {
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedTableComponent, NgSelectModule],
   templateUrl: './masters.component.html',
-  styles: [
-    `
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      display: block !important;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.03);
-      border-radius: 10px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.15) !important;
-      border-radius: 10px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.25) !important;
-    }
-    `
-  ]
+  styleUrl: './masters.component.scss',
 })
 export class MastersComponent implements OnInit {
 
@@ -98,11 +80,21 @@ export class MastersComponent implements OnInit {
   showForm: boolean = false;
 
   tableColumns = [
-    { key: 'code', label: 'Code', isHtml: true, width: '20%' },
-    { key: 'name', label: 'Name', isHtml: true, width: '30%' },
-    { key: 'description', label: 'Description', isHtml: true, width: '30%' },
-    { key: 'is_active', label: 'Status', useTemplate: true, width: '20%' }
+    { key: 'code', label: 'Code', useTemplate: true, width: '18%' },
+    { key: 'name', label: 'Name', useTemplate: true, width: '28%' },
+    { key: 'description', label: 'Description', useTemplate: true, width: '28%' },
+    { key: 'is_active', label: 'Status', useTemplate: true, width: '120px' },
   ];
+
+  /** Plain text for shared-table cells (strips accidental HTML from API). */
+  cellText(value: unknown): string {
+    if (value == null || value === '') {
+      return '-';
+    }
+    const div = document.createElement('div');
+    div.innerHTML = String(value);
+    return (div.textContent || div.innerText || '-').trim() || '-';
+  }
 
   masterForm: FormGroup = this.fb.group({
     id: [0],
@@ -256,10 +248,6 @@ export class MastersComponent implements OnInit {
   // ── Helpers ────────────────────────────────────────────────────────────────
   getActiveCategory(): LookupType | null {
     return this.categories.find(c => c.id === this.selectedCategoryId) || null;
-  }
-
-  toggleStatus(item: LookupItem): void {
-    item.is_active = !item.is_active;
   }
 
   // ── Form open / close ──────────────────────────────────────────────────────

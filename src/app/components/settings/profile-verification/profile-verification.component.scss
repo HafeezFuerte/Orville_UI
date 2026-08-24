@@ -1,0 +1,92 @@
+.pv-toggle {
+  position: relative;
+  display: inline-block;
+  height: 22px;
+  width: 40px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 9999px;
+  border: 1px solid var(--default-border);
+  background: #eeeef5;
+  padding: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &--on {
+    border-color: rgb(var(--primary-rgb));
+    background: rgb(var(--primary-rgb));
+  }
+
+  &__knob {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    display: block;
+    height: 16px;
+    width: 16px;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: left 0.15s ease;
+  }
+
+  &--on &__knob {
+    left: calc(100% - 18px);
+  }
+}
+
+.pv-tab {
+  position: relative;
+  margin: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--default-text-color);
+  }
+
+  &--active {
+    font-weight: 600;
+    color: rgb(var(--primary-rgb));
+    border-bottom-color: rgb(var(--primary-rgb));
+  }
+}
+
+/* Primary navy is invisible on dark chrome — use light text + link underline */
+:host-context(.dark) .pv-tab {
+  color: rgb(255 255 255 / 0.55);
+
+  &:hover {
+    color: #ffffff;
+  }
+
+  &--active {
+    color: #ffffff;
+    border-bottom-color: rgb(var(--link));
+  }
+}
+
+.pv-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(208, 138, 40, 0.35);
+  background: rgba(208, 138, 40, 0.1);
+  padding: 0.875rem 1rem;
+  color: #8a5a14;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+
+  .dark & {
+    color: #f0c987;
+  }
+}

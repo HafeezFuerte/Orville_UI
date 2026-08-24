@@ -1,0 +1,356 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-col gap-1.5">
+    <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+      Bulk Assign Properties
+    </h1>
+    <p class="m-0 max-w-3xl text-[13px] font-normal leading-normal text-textmuted">
+      Users are allocated specific properties or units, and they will have access to view only those
+      assigned properties.
+    </p>
+  </div>
+
+  <div class="flex w-full flex-col gap-4 lg:flex-row lg:items-start">
+    <!-- Assign panel -->
+    <aside
+      class="flex w-full shrink-0 flex-col gap-4 rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg lg:w-[280px]">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="m-0 text-base font-semibold text-defaulttextcolor">Assign</h2>
+        <span
+          class="inline-flex items-center rounded-full bg-[#eeeef5] px-2.5 py-1 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+          Selected units: {{ selectedCount }}
+        </span>
+      </div>
+
+      <div class="flex flex-col gap-2" data-users-picker>
+        <span class="text-sm font-medium text-textmuted">Users</span>
+
+        <div class="relative">
+          <!-- Dropdown trigger -->
+          <button
+            type="button"
+            class="flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-defaultborder bg-white px-3.5 text-left text-sm dark:bg-bodybg"
+            [class.border-primary]="usersDropdownOpen"
+            [attr.aria-expanded]="usersDropdownOpen"
+            aria-haspopup="listbox"
+            (click)="toggleUsersDropdown()">
+            <span
+              class="min-w-0 truncate"
+              [class.text-textmuted]="selectedUserIds.length === 0"
+              [class.text-defaulttextcolor]="selectedUserIds.length > 0">
+              {{ usersTriggerLabel }}
+            </span>
+            <img
+              src="./assets/images/settings/chevron-down.svg"
+              alt=""
+              width="14"
+              height="14"
+              class="shrink-0 opacity-60 transition-transform"
+              [class.rotate-180]="usersDropdownOpen" />
+          </button>
+
+          <!-- Dropdown panel: search + checklist -->
+          <div
+            *ngIf="usersDropdownOpen"
+            class="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-defaultborder bg-white shadow-lg dark:bg-bodybg"
+            role="listbox"
+            aria-label="Select users"
+            (click)="$event.stopPropagation()">
+            <div class="border-b border-defaultborder p-2">
+              <label
+                class="ov-inline-search h-9 w-full rounded-lg border border-defaultborder bg-bodybg px-3 dark:bg-white/5">
+                <img
+                  src="./assets/images/settings/search.svg"
+                  alt=""
+                  width="14"
+                  height="14"
+                  class="shrink-0 opacity-60" />
+                <input
+                  type="search"
+                  class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+                  placeholder="Search users..."
+                  aria-label="Search users"
+                  [(ngModel)]="userSearchQuery" />
+              </label>
+            </div>
+
+            <div class="max-h-52 overflow-y-auto p-1.5">
+              <button
+                type="button"
+                *ngFor="let user of filteredUsers"
+                role="option"
+                class="flex w-full cursor-pointer items-start gap-2.5 rounded-md px-2.5 py-2 text-left hover:bg-bodybg dark:hover:bg-white/10"
+                [attr.aria-selected]="isUserSelected(user.id)"
+                (click)="toggleUser(user.id)">
+                <input
+                  type="checkbox"
+                  class="pointer-events-none form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+                  [checked]="isUserSelected(user.id)"
+                  tabindex="-1" />
+                <span class="min-w-0">
+                  <span class="block text-sm font-medium text-defaulttextcolor">{{ user.name }}</span>
+                  <span class="block text-xs text-textmuted">{{ user.email }}</span>
+                </span>
+              </button>
+
+              <p
+                *ngIf="filteredUsers.length === 0"
+                class="m-0 px-2.5 py-4 text-center text-sm text-textmuted">
+                No users found.
+              </p>
+            </div>
+
+            <div
+              class="flex items-center justify-between gap-2 border-t border-defaultborder px-3 py-2">
+              <span class="text-xs text-textmuted">
+                {{ selectedUserIds.length }} selected
+              </span>
+              <button
+                type="button"
+                class="text-xs font-medium text-primary hover:underline"
+                (click)="closeUsersDropdown()">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected user chips -->
+        <div *ngIf="selectedUsers.length > 0" class="flex flex-wrap gap-1.5">
+          <span
+            *ngFor="let user of selectedUsers"
+            class="inline-flex max-w-full items-center gap-1 rounded-full bg-[#eeeef5] py-1 pl-2.5 pr-1 text-xs font-medium text-defaulttextcolor dark:bg-white/10 dark:text-white">
+            <span class="truncate">{{ user.name }}</span>
+            <button
+              type="button"
+              class="inline-flex size-5 shrink-0 items-center justify-center rounded-full text-textmuted hover:bg-white/80 hover:text-defaulttextcolor dark:hover:bg-white/20"
+              [attr.aria-label]="'Remove ' + user.name"
+              (click)="removeUser(user.id)">
+              ×
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary w-full"
+        [disabled]="!canAssign"
+        (click)="assign()">
+        Assign
+      </button>
+
+      <p *ngIf="assignMessage" class="m-0 text-xs font-medium text-success">
+        {{ assignMessage }}
+      </p>
+    </aside>
+
+    <!-- Table panel -->
+    <div class="flex min-w-0 flex-1 flex-col gap-3">
+      <!-- Toolbar -->
+      <div class="flex w-full flex-wrap items-center justify-between gap-3">
+        <label
+          class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+          <img
+            src="./assets/images/settings/search.svg"
+            alt=""
+            width="14"
+            height="14"
+            class="shrink-0" />
+          <input
+            type="search"
+            class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+            placeholder="Search by property name..."
+            aria-label="Search by property name"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()" />
+        </label>
+
+        <div class="flex items-center gap-2">
+          <div class="relative" data-filters-dropdown>
+            <button
+              type="button"
+              class="ov-btn ov-btn-ghost"
+              [attr.aria-expanded]="showFilters"
+              (click)="toggleFilters()">
+              Filters
+            </button>
+            <div
+              *ngIf="showFilters"
+              class="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg"
+              (click)="$event.stopPropagation()">
+              <label class="mb-1 block text-xs font-medium text-textmuted" for="ba-landlord">
+                Landlord
+              </label>
+              <select
+                id="ba-landlord"
+                class="ov-input"
+                [(ngModel)]="landlordFilter"
+                (ngModelChange)="onSearchChange()">
+                <option value="">All</option>
+                <option *ngFor="let l of landlordOptions" [value]="l">{{ l }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="relative" data-columns-dropdown>
+            <button
+              type="button"
+              class="ov-btn ov-btn-ghost"
+              [attr.aria-expanded]="showColumns"
+              (click)="toggleColumns()">
+              Columns ({{ visibleColumnCount }})
+            </button>
+            <div
+              *ngIf="showColumns"
+              class="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg"
+              (click)="$event.stopPropagation()">
+              <label
+                *ngFor="let col of columns"
+                class="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1.5">
+                <input
+                  type="checkbox"
+                  class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                  [(ngModel)]="col.visible" />
+                <span class="text-sm text-defaulttextcolor">{{ col.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div
+        class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+        role="table"
+        aria-label="Properties and units">
+        <div class="w-full overflow-x-auto">
+          <div
+            class="flex min-w-[720px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
+            role="row">
+            <div class="flex w-10 shrink-0 items-center" role="columnheader">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                [checked]="allPageSelected"
+                [indeterminate]="somePageSelected"
+                aria-label="Select all units on this page"
+                (change)="toggleSelectAllPage()" />
+            </div>
+            <div
+              *ngIf="isColumnVisible('property')"
+              class="min-w-[160px] flex-1 text-xs font-semibold text-textmuted"
+              role="columnheader">
+              Property
+            </div>
+            <div
+              *ngIf="isColumnVisible('unit')"
+              class="w-[120px] shrink-0 text-xs font-semibold text-textmuted sm:w-[140px]"
+              role="columnheader">
+              Unit
+            </div>
+            <div
+              *ngIf="isColumnVisible('landlords')"
+              class="w-[160px] shrink-0 text-xs font-semibold text-textmuted sm:w-[200px]"
+              role="columnheader">
+              Landlords
+            </div>
+            <div
+              *ngIf="isColumnVisible('beds')"
+              class="w-[100px] shrink-0 text-xs font-semibold text-textmuted"
+              role="columnheader">
+              Beds
+            </div>
+          </div>
+
+          <div
+            *ngFor="let row of pagedUnits"
+            class="flex min-w-[720px] gap-3 border-t border-defaultborder px-5 py-3.5"
+            role="row">
+            <div class="flex w-10 shrink-0 items-center" role="cell">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                [checked]="isSelected(row.id)"
+                [attr.aria-label]="'Select ' + row.unit"
+                (change)="toggleUnit(row.id)" />
+            </div>
+            <div
+              *ngIf="isColumnVisible('property')"
+              class="flex min-w-[160px] flex-1 items-center text-sm font-medium text-link"
+              role="cell">
+              {{ row.property }}
+            </div>
+            <div
+              *ngIf="isColumnVisible('unit')"
+              class="flex w-[120px] shrink-0 items-center text-sm font-medium text-link sm:w-[140px]"
+              role="cell">
+              {{ row.unit }}
+            </div>
+            <div
+              *ngIf="isColumnVisible('landlords')"
+              class="flex w-[160px] shrink-0 items-center text-sm text-defaulttextcolor sm:w-[200px]"
+              role="cell">
+              {{ row.landlords }}
+            </div>
+            <div
+              *ngIf="isColumnVisible('beds')"
+              class="flex w-[100px] shrink-0 items-center text-sm text-textmuted"
+              role="cell">
+              {{ row.beds }}
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="pagedUnits.length === 0"
+          class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+          No properties found.
+        </div>
+
+        <!-- Footer / pagination -->
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 border-t border-defaultborder px-5 py-3.5">
+          <div class="flex flex-wrap items-center gap-3 text-sm text-textmuted">
+            <label class="inline-flex items-center gap-2">
+              <span>Show:</span>
+              <select
+                class="h-8 rounded-md border border-defaultborder bg-bodybg px-2 text-sm text-defaulttextcolor"
+                [(ngModel)]="pageSize"
+                (ngModelChange)="onPageSizeChange()">
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+                <option [ngValue]="50">50</option>
+              </select>
+            </label>
+            <span>
+              Showing {{ rangeStart }} to {{ rangeEnd }} of {{ totalRecords }} records
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="me-2 text-sm text-textmuted">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+            <button
+              type="button"
+              class="inline-flex size-8 items-center justify-center rounded-md border border-defaultborder bg-white text-sm text-defaulttextcolor disabled:opacity-40 dark:bg-bodybg"
+              [disabled]="currentPage <= 1"
+              (click)="goToPage(currentPage - 1)"
+              aria-label="Previous page">
+              ‹
+            </button>
+            <button
+              type="button"
+              class="inline-flex size-8 items-center justify-center rounded-md border border-defaultborder bg-white text-sm text-defaulttextcolor disabled:opacity-40 dark:bg-bodybg"
+              [disabled]="currentPage >= totalPages"
+              (click)="goToPage(currentPage + 1)"
+              aria-label="Next page">
+              ›
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

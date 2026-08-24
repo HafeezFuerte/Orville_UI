@@ -1,275 +1,484 @@
-<div class="container-fluid py-4">
-  <div class="d-md-flex d-block align-items-center justify-content-between mb-4 page-header-breadcrumb">
-    <h1 class="page-title fw-semibold fs-18 mb-0">Company Details</h1>
-  </div>
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <form class="flex flex-col gap-5" [formGroup]="companyDetailsForm" (ngSubmit)="onSubmit()">
+    <!-- Page header -->
+    <div class="flex w-full flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Company Details
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Update your company details and preferences.
+      </p>
+    </div>
 
-  <form [formGroup]="companyDetailsForm" (ngSubmit)="onSubmit()">
-    <div class="grid grid-cols-12 gap-6">
-      
-      <!-- Full Width Panel (No gap on the right side) -->
-      <div class="col-span-12">
-        
-        <!-- General Information -->
-        <div class="box mb-6">
-          <div class="box-header">
-            <div>
-              <h6 class="box-title mb-1">General Information</h6>
-              <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">Core identity and description details</p>
-            </div>
-          </div>
-          <div class="box-body">
-            <div class="grid grid-cols-12 gap-4">
-              <!-- Name -->
-              <div class="col-span-12">
-                <label class="form-label">Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="name" placeholder="Enter company name"
-                  [class.is-invalid]="companyDetailsForm.get('name')?.touched && companyDetailsForm.get('name')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('name')?.touched && companyDetailsForm.get('name')?.hasError('required')">
-                  Company name is required.
-                </div>
-              </div>
-              
-              <!-- Email -->
-              <div class="col-span-12">
-                <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control w-full !rounded-md" formControlName="email" placeholder="Enter company email"
-                  [class.is-invalid]="companyDetailsForm.get('email')?.touched && companyDetailsForm.get('email')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('email')?.touched">
-                  <span *ngIf="companyDetailsForm.get('email')?.hasError('required')">Email is required.</span>
-                  <span *ngIf="companyDetailsForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
-                </div>
-              </div>
-
-              <!-- Description -->
-              <div class="col-span-12">
-                <label class="form-label">Description</label>
-                <textarea class="form-control w-full !rounded-md" formControlName="description" rows="3" placeholder="Description of your business often used in bios and listings"></textarea>
-                <small class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Description of your business often used in bios and listings.</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Address -->
-        <div class="box mb-6">
-          <div class="box-header">
-            <div>
-              <h6 class="box-title mb-1">Address</h6>
-              <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">Location details for the company</p>
-            </div>
-          </div>
-          <div class="box-body">
-            <div class="grid grid-cols-12 gap-4">
-              <!-- Company Phone -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Company Phone <span class="text-danger">*</span></label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="companyPhone" placeholder="Enter phone number"
-                  [class.is-invalid]="companyDetailsForm.get('companyPhone')?.touched && companyDetailsForm.get('companyPhone')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('companyPhone')?.touched && companyDetailsForm.get('companyPhone')?.hasError('required')">
-                  Phone number is required.
-                </div>
-              </div>
-
-              <!-- Address 1 -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Address 1 <span class="text-danger">*</span></label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="addressLine1" placeholder="Enter Address 1"
-                  [class.is-invalid]="companyDetailsForm.get('addressLine1')?.touched && companyDetailsForm.get('addressLine1')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('addressLine1')?.touched && companyDetailsForm.get('addressLine1')?.hasError('required')">
-                  Address Line 1 is required.
-                </div>
-              </div>
-
-              <!-- Address 2 -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Address 2</label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="addressLine2" placeholder="Enter Address 2">
-              </div>
-
-              <!-- Country -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Country <span class="text-danger">*</span></label>
-                <ng-select [items]="countries" bindLabel="country_name" bindValue="id" formControlName="country" 
-                  (change)="onCountryChange($event)" placeholder="Select Country"
-                  [class.is-invalid]="companyDetailsForm.get('country')?.touched && companyDetailsForm.get('country')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="companyDetailsForm.get('country')?.touched && companyDetailsForm.get('country')?.hasError('required')">
-                  Country is required.
-                </div>
-              </div>
-
-              <!-- State -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">State <span class="text-danger">*</span></label>
-                <ng-select [items]="states" bindLabel="state_name" bindValue="id" formControlName="state" 
-                  (change)="onStateChange($event)" placeholder="Select State"
-                  [class.is-invalid]="companyDetailsForm.get('state')?.touched && companyDetailsForm.get('state')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="companyDetailsForm.get('state')?.touched && companyDetailsForm.get('state')?.hasError('required')">
-                  State is required.
-                </div>
-              </div>
-
-              <!-- City -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">City <span class="text-danger">*</span></label>
-                <ng-select [items]="cities" bindLabel="city_name" bindValue="id" formControlName="city" placeholder="Select City"
-                  [class.is-invalid]="companyDetailsForm.get('city')?.touched && companyDetailsForm.get('city')?.invalid">
-                </ng-select>
-                <div class="invalid-feedback d-block text-danger" *ngIf="companyDetailsForm.get('city')?.touched && companyDetailsForm.get('city')?.hasError('required')">
-                  City is required.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Other settings -->
-        <div class="box mb-6">
-          <div class="box-header">
-            <div>
-              <h6 class="box-title mb-1">Other settings</h6>
-              <p class="text-[#8c9097] dark:text-white/50 text-[0.75rem] mb-0">Configurations and invoicing settings</p>
-            </div>
-          </div>
-          <div class="box-body">
-            <div class="grid grid-cols-12 gap-4">
-              <!-- VAT # -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">VAT #</label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="vatNumber" placeholder="Enter VAT Number">
-              </div>
-
-              <!-- Invoice Prefix -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Invoice Prefix <span class="text-danger">*</span></label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="invoicePrefix" placeholder="Enter prefix (e.g. INV)"
-                  [class.is-invalid]="companyDetailsForm.get('invoicePrefix')?.touched && companyDetailsForm.get('invoicePrefix')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('invoicePrefix')?.touched && companyDetailsForm.get('invoicePrefix')?.hasError('required')">
-                  Invoice prefix is required.
-                </div>
-              </div>
-
-              <!-- Commercial License No -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Commercial License No</label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="commercialLicenseNo" placeholder="Enter Commercial License No">
-              </div>
-
-              <!-- P.O Box -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">P.O Box</label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="poBox" placeholder="Enter P.O Box">
-              </div>
-
-              <!-- Public Website URL -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Public Website URL</label>
-                <div class="input-group">
-                  <span class="input-group-text">https://</span>
-                  <input type="text" class="form-control" formControlName="publicWebsiteUrl" placeholder="Enter domain">
-                  <span class="input-group-text">happytenant.tech</span>
-                </div>
-              </div>
-
-              <!-- Permit # -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Permit #</label>
-                <input type="text" class="form-control w-full !rounded-md" formControlName="permitNumber" placeholder="Enter Permit #">
-              </div>
-
-              <!-- Precision -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Precision <span class="text-danger">*</span></label>
-                <input type="number" class="form-control w-full !rounded-md" formControlName="precision" placeholder="Enter precision"
-                  [class.is-invalid]="companyDetailsForm.get('precision')?.touched && companyDetailsForm.get('precision')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('precision')?.touched && companyDetailsForm.get('precision')?.hasError('required')">
-                  Precision is required.
-                </div>
-              </div>
-
-              <!-- Booking Block Period -->
-              <div class="col-span-12 md:col-span-6">
-                <label class="form-label">Booking Block Period <span class="text-danger">*</span></label>
-                <input type="number" class="form-control w-full !rounded-md" formControlName="bookingBlockPeriod" placeholder="Enter booking block period"
-                  [class.is-invalid]="companyDetailsForm.get('bookingBlockPeriod')?.touched && companyDetailsForm.get('bookingBlockPeriod')?.invalid">
-                <div class="invalid-feedback" *ngIf="companyDetailsForm.get('bookingBlockPeriod')?.touched && companyDetailsForm.get('bookingBlockPeriod')?.hasError('required')">
-                  Booking block period is required.
-                </div>
-                <small class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Set the number of days to block bookings after a tenant's reservation.</small>
-              </div>
-
-              <!-- Checkboxes (2 columns / two in a row) -->
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-expired-docs" formControlName="allowAttachExpiredDocs" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-expired-docs">Allow To Attach Expired Documents</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">You can allow to attach expired documents for all users.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-dup-invoices" formControlName="allowDuplicateInvoices" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-dup-invoices">Allow duplicate invoices?</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">When an invoice is printed more than once, the text 'Duplicate' will be automatically included by default.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-multiple-bookings" formControlName="allowMultipleDailyBookings" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-multiple-bookings">Allow Multiple Daily Bookings</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">Enable to allow more than one bookings per day for tenants.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-landlord-info" formControlName="displayLandlordInfo" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-landlord-info">Display landlord information in invoice</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">If enabled, the landlord's information will be displayed when the invoice is printed.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-archive" formControlName="enableArchivingNoBalanceEffect" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-archive">Enable archiving without affecting the landlord's balance?</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">If selected, archiving properties, units, tenants and leases will not affect the landlord's balance.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-span-12 md:col-span-6 mt-4">
-                <div class="flex items-start">
-                  <input type="checkbox" id="check-ticket-unrecognized" formControlName="createTicketUnrecognizedEmail" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                  <div class="ms-3">
-                    <label class="text-xs font-semibold text-gray-700 d-block" for="check-ticket-unrecognized">Create ticket from unrecognized email contacts?</label>
-                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem] d-block mt-0.5">If selected, emails from contacts not in your system will automatically create tickets instead of being ignored.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Move Save Details button inside Other Settings bottom right -->
-          <div class="box-footer flex justify-end gap-2 border-t border-gray-200 p-4">
-            <button type="button" class="ti-btn ti-btn-light !py-1 !px-4 !text-[0.75rem] font-semibold">Cancel</button>
-            <button type="submit" class="ti-btn ti-btn-primary !py-1 !px-4 !text-[0.75rem] font-semibold" [disabled]="companyDetailsForm.invalid">Save Details</button>
-          </div>
-        </div>
-
+    <!-- General Information -->
+    <section
+      class="overflow-hidden rounded-2xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+      <div class="mb-4 flex flex-col gap-4">
+        <h2 class="m-0 text-base font-semibold text-defaulttextcolor">General Information</h2>
+        <div class="h-px w-full bg-defaultborder"></div>
       </div>
+
+      <div class="ov-fields ov-fields--2">
+        <div>
+          <label class="ov-label" for="cd-name">
+            Company Name <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-name"
+            type="text"
+            class="ov-input"
+            formControlName="name"
+            placeholder="Orville Real Estate"
+            [class.is-invalid]="
+              companyDetailsForm.get('name')?.touched && companyDetailsForm.get('name')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('name')?.touched &&
+              companyDetailsForm.get('name')?.hasError('required')
+            ">
+            Company name is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-email">
+            Email <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-email"
+            type="email"
+            class="ov-input"
+            formControlName="email"
+            placeholder="hello@orvillerealestate.com"
+            [class.is-invalid]="
+              companyDetailsForm.get('email')?.touched && companyDetailsForm.get('email')?.invalid
+            " />
+          <div class="mt-1 text-xs text-danger" *ngIf="companyDetailsForm.get('email')?.touched">
+            <span *ngIf="companyDetailsForm.get('email')?.hasError('required')">
+              Email is required.
+            </span>
+            <span *ngIf="companyDetailsForm.get('email')?.hasError('email')">
+              Please enter a valid email address.
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-phone">
+            Phone Number <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-phone"
+            type="text"
+            class="ov-input"
+            formControlName="companyPhone"
+            placeholder="+971 4 123 4567"
+            [class.is-invalid]="
+              companyDetailsForm.get('companyPhone')?.touched &&
+              companyDetailsForm.get('companyPhone')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('companyPhone')?.touched &&
+              companyDetailsForm.get('companyPhone')?.hasError('required')
+            ">
+            Phone number is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-website">Website</label>
+          <input
+            id="cd-website"
+            type="text"
+            class="ov-input"
+            formControlName="publicWebsiteUrl"
+            placeholder="www.orvillerealestate.com" />
+        </div>
+
+        <div class="ov-fields__full">
+          <label class="ov-label" for="cd-description">Company Description</label>
+          <textarea
+            id="cd-description"
+            rows="4"
+            class="ov-input"
+            formControlName="description"
+            placeholder="Premium property management company operating across Dubai and Abu Dhabi."></textarea>
+          <p class="m-0 mt-1 text-xs text-textmuted">
+            Description of your business often used in bios and listings.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Address -->
+    <section
+      class="overflow-hidden rounded-2xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+      <div class="mb-4 flex flex-col gap-4">
+        <h2 class="m-0 text-base font-semibold text-defaulttextcolor">Address</h2>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="ov-fields ov-fields--2">
+        <div class="ov-fields__full">
+          <label class="ov-label" for="cd-address1">
+            Street Address <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-address1"
+            type="text"
+            class="ov-input"
+            formControlName="addressLine1"
+            placeholder="Marina Plaza, Dubai Marina"
+            [class.is-invalid]="
+              companyDetailsForm.get('addressLine1')?.touched &&
+              companyDetailsForm.get('addressLine1')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('addressLine1')?.touched &&
+              companyDetailsForm.get('addressLine1')?.hasError('required')
+            ">
+            Address Line 1 is required.
+          </div>
+        </div>
+
+        <div class="ov-fields__full">
+          <label class="ov-label" for="cd-address2">Address 2</label>
+          <input
+            id="cd-address2"
+            type="text"
+            class="ov-input"
+            formControlName="addressLine2"
+            placeholder="Enter Address 2" />
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-city">
+            City <span class="text-danger">*</span>
+          </label>
+          <ng-select
+            id="cd-city"
+            class="ov-select w-full"
+            [items]="cities"
+            bindLabel="city_name"
+            bindValue="id"
+            formControlName="city"
+            placeholder="Select City"
+            [searchable]="true"
+            [clearable]="false"
+            appendTo="body"></ng-select>
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('city')?.touched &&
+              companyDetailsForm.get('city')?.hasError('required')
+            ">
+            City is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-state">
+            Emirate / State <span class="text-danger">*</span>
+          </label>
+          <ng-select
+            id="cd-state"
+            class="ov-select w-full"
+            [items]="states"
+            bindLabel="state_name"
+            bindValue="id"
+            formControlName="state"
+            (change)="onStateChange($event)"
+            placeholder="Select State"
+            [searchable]="true"
+            [clearable]="false"
+            appendTo="body"></ng-select>
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('state')?.touched &&
+              companyDetailsForm.get('state')?.hasError('required')
+            ">
+            State is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-postal">Postal Code</label>
+          <input
+            id="cd-postal"
+            type="text"
+            class="ov-input"
+            formControlName="poBox"
+            placeholder="00000" />
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-country">
+            Country <span class="text-danger">*</span>
+          </label>
+          <ng-select
+            id="cd-country"
+            class="ov-select w-full"
+            [items]="countries"
+            bindLabel="country_name"
+            bindValue="id"
+            formControlName="country"
+            (change)="onCountryChange($event)"
+            placeholder="Select Country"
+            [searchable]="true"
+            [clearable]="false"
+            appendTo="body"></ng-select>
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('country')?.touched &&
+              companyDetailsForm.get('country')?.hasError('required')
+            ">
+            Country is required.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other Settings -->
+    <section
+      class="overflow-hidden rounded-2xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+      <div class="mb-4 flex flex-col gap-4">
+        <h2 class="m-0 text-base font-semibold text-defaulttextcolor">Other Settings</h2>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="ov-fields ov-fields--2">
+        <div>
+          <label class="ov-label" for="cd-vat">VAT #</label>
+          <input
+            id="cd-vat"
+            type="text"
+            class="ov-input"
+            formControlName="vatNumber"
+            placeholder="Enter VAT Number" />
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-invoice-prefix">
+            Invoice Prefix <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-invoice-prefix"
+            type="text"
+            class="ov-input"
+            formControlName="invoicePrefix"
+            placeholder="Enter prefix (e.g. INV)"
+            [class.is-invalid]="
+              companyDetailsForm.get('invoicePrefix')?.touched &&
+              companyDetailsForm.get('invoicePrefix')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('invoicePrefix')?.touched &&
+              companyDetailsForm.get('invoicePrefix')?.hasError('required')
+            ">
+            Invoice prefix is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-license">Commercial License No</label>
+          <input
+            id="cd-license"
+            type="text"
+            class="ov-input"
+            formControlName="commercialLicenseNo"
+            placeholder="Enter Commercial License No" />
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-permit">Permit #</label>
+          <input
+            id="cd-permit"
+            type="text"
+            class="ov-input"
+            formControlName="permitNumber"
+            placeholder="Enter Permit #" />
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-precision">
+            Precision <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-precision"
+            type="number"
+            class="ov-input"
+            formControlName="precision"
+            placeholder="Enter precision"
+            [class.is-invalid]="
+              companyDetailsForm.get('precision')?.touched &&
+              companyDetailsForm.get('precision')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('precision')?.touched &&
+              companyDetailsForm.get('precision')?.hasError('required')
+            ">
+            Precision is required.
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label" for="cd-booking-block">
+            Booking Block Period <span class="text-danger">*</span>
+          </label>
+          <input
+            id="cd-booking-block"
+            type="number"
+            class="ov-input"
+            formControlName="bookingBlockPeriod"
+            placeholder="Enter booking block period"
+            [class.is-invalid]="
+              companyDetailsForm.get('bookingBlockPeriod')?.touched &&
+              companyDetailsForm.get('bookingBlockPeriod')?.invalid
+            " />
+          <div
+            class="mt-1 text-xs text-danger"
+            *ngIf="
+              companyDetailsForm.get('bookingBlockPeriod')?.touched &&
+              companyDetailsForm.get('bookingBlockPeriod')?.hasError('required')
+            ">
+            Booking block period is required.
+          </div>
+          <p class="m-0 mt-1 text-xs text-textmuted">
+            Set the number of days to block bookings after a tenant's reservation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preferences -->
+    <section
+      class="overflow-hidden rounded-2xl border border-defaultborder bg-white p-5 dark:bg-bodybg sm:p-6">
+      <div class="mb-4 flex flex-col gap-4">
+        <h2 class="m-0 text-base font-semibold text-defaulttextcolor">Preferences</h2>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="flex flex-col gap-5">
+        <label class="flex cursor-pointer items-start gap-3" for="check-expired-docs">
+          <input
+            type="checkbox"
+            id="check-expired-docs"
+            formControlName="allowAttachExpiredDocs"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">
+              Allow To Attach Expired Documents
+            </span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              You can allow to attach expired documents for all users.
+            </span>
+          </span>
+        </label>
+
+        <label class="flex cursor-pointer items-start gap-3" for="check-dup-invoices">
+          <input
+            type="checkbox"
+            id="check-dup-invoices"
+            formControlName="allowDuplicateInvoices"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">Allow duplicate invoices?</span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              When an invoice is printed more than once, the text 'Duplicate' will be automatically
+              included by default.
+            </span>
+          </span>
+        </label>
+
+        <label class="flex cursor-pointer items-start gap-3" for="check-multiple-bookings">
+          <input
+            type="checkbox"
+            id="check-multiple-bookings"
+            formControlName="allowMultipleDailyBookings"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">
+              Allow Multiple Daily Bookings
+            </span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              Enable to allow more than one bookings per day for tenants.
+            </span>
+          </span>
+        </label>
+
+        <label class="flex cursor-pointer items-start gap-3" for="check-landlord-info">
+          <input
+            type="checkbox"
+            id="check-landlord-info"
+            formControlName="displayLandlordInfo"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">
+              Display landlord information in invoice
+            </span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              If enabled, the landlord's information will be displayed when the invoice is printed.
+            </span>
+          </span>
+        </label>
+
+        <label class="flex cursor-pointer items-start gap-3" for="check-archive">
+          <input
+            type="checkbox"
+            id="check-archive"
+            formControlName="enableArchivingNoBalanceEffect"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">
+              Enable archiving without affecting the landlord's balance?
+            </span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              If selected, archiving properties, units, tenants and leases will not affect the
+              landlord's balance.
+            </span>
+          </span>
+        </label>
+
+        <label class="flex cursor-pointer items-start gap-3" for="check-ticket-unrecognized">
+          <input
+            type="checkbox"
+            id="check-ticket-unrecognized"
+            formControlName="createTicketUnrecognizedEmail"
+            class="form-checkbox mt-0.5 h-3.5 w-3.5 shrink-0 rounded-[3px] border-defaultborder text-primary" />
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-textmuted">
+              Create ticket from unrecognized email contacts?
+            </span>
+            <span class="mt-1 block text-[13px] font-normal text-[#93939D]">
+              If selected, emails from contacts not in your system will automatically create tickets
+              instead of being ignored.
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap items-center justify-end gap-3 pb-2">
+      <button type="button" class="ov-btn ov-btn-muted" (click)="onCancel()">Cancel</button>
+      <button
+        type="submit"
+        class="ov-btn ov-btn-primary min-w-[120px]"
+        [disabled]="companyDetailsForm.invalid">
+        Update
+      </button>
     </div>
   </form>
 </div>

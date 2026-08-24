@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../../../components/common/store/login-auth-params/auth.selectors';
+import { buildFigmaSettingsMenuItems } from '../../../components/settings/settings-menu.data';
 interface PageMenu {
   menuID: number;
   menuName: string;
@@ -48,6 +49,8 @@ export class SidebarComponent {
   createOverlayOpen = false;
   settingsMenuItems: Menu[] = [];
   isSettingsMode = false;
+  settingsSearchQuery = '';
+  private allSettingsMenuItems: Menu[] = [];
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -163,22 +166,9 @@ export class SidebarComponent {
           // 🔵 Standard multi-level logic
           this.menuItems = modules.map((module: Module) => this.mapModuleToMenu(module));
 
-          // 🟢 Extract Settings items from separate Level 1 Modules in DB
+          // 🟢 Hide Settings Level-1 modules from main nav (settings live in settings mode)
           const settingsModules = modules.filter(m => m.jsonLabel?.trim() === 'Settings' || m.moduleName.trim() === 'Settings');
           if (settingsModules.length > 0) {
-            this.settingsMenuItems = settingsModules.map((mod: Module) => {
-              const normalizedName = mod.moduleName.trim();
-              let path = this.urlNameMap[normalizedName] || this.urlMap[mod.url] || mod.url || '';
-              return {
-                title: mod.moduleName,
-                type: 'link',
-                path: path,
-                icon: mod.menu_icon || 'bx-circle',
-                active: false,
-                selected: false
-              };
-            });
-            // Filter out settings items from the main menuItems list
             const settingsNames = settingsModules.map(m => m.moduleName.trim());
             this.menuItems = this.menuItems.filter(m => m.title !== 'Settings' && !settingsNames.includes(m.title || ''));
           }
@@ -197,12 +187,16 @@ export class SidebarComponent {
 
         this.menuItems = this.ensureVisitorsMenu(this.menuItems);
 
+        // Figma settings menu (always — independent of API Settings modules)
+        this.settingsMenuItems = buildFigmaSettingsMenuItems();
+        this.allSettingsMenuItems = [...this.settingsMenuItems];
+
         // Add Settings menu item at the end
         this.menuItems.push({
           title: 'Settings',
           type: 'link',
           path: '/settings/company-details',
-          icon: 'bx-cog',
+          icon: this.getFigmaIcon('settings') || 'bx-cog',
           active: false,
           selected: false
         });
@@ -996,6 +990,11 @@ export class SidebarComponent {
 
   switchToSettingsMenu() {
     this.isSettingsMode = true;
+    this.settingsSearchQuery = '';
+    if (!this.allSettingsMenuItems.length) {
+      this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
+      this.settingsMenuItems = [...this.allSettingsMenuItems];
+    }
     this.menuItems = [
       {
         title: 'Back to Main Menu',
@@ -1009,8 +1008,48 @@ export class SidebarComponent {
     ];
   }
 
+  onSettingsSearchChange(query: string) {
+    this.settingsSearchQuery = query || '';
+    const q = this.settingsSearchQuery.trim().toLowerCase();
+    const source = this.allSettingsMenuItems.length
+      ? this.allSettingsMenuItems
+      : buildFigmaSettingsMenuItems();
+
+    if (!q) {
+      this.settingsMenuItems = source.map((item) => ({ ...item }));
+    } else {
+      const filtered: Menu[] = [];
+      let pendingHeading: Menu | null = null;
+      for (const item of source) {
+        if (item.type === 'heading') {
+          pendingHeading = { ...item };
+          continue;
+        }
+        if ((item.title || '').toLowerCase().includes(q)) {
+          if (pendingHeading) {
+            filtered.push(pendingHeading);
+            pendingHeading = null;
+          }
+          filtered.push({ ...item });
+        }
+      }
+      this.settingsMenuItems = filtered;
+    }
+
+    const backItem: Menu = {
+      title: 'Back to Main Menu',
+      type: 'link',
+      path: '/insights',
+      icon: 'bx-arrow-back',
+      active: false,
+      selected: false
+    };
+    this.menuItems = [backItem, ...this.settingsMenuItems];
+  }
+
   restoreMainMenu() {
     this.isSettingsMode = false;
+    this.settingsSearchQuery = '';
     this.menuItems = [...this.originalMenuItems];
   }
 
@@ -1018,7 +1057,7 @@ export class SidebarComponent {
   setNavActive(item: any) {
     if (item.title === 'Settings') {
       this.switchToSettingsMenu();
-      const firstItem = this.menuItems.find(m => m.title === 'Company details');
+      const firstItem = this.menuItems.find(m => m.title === 'Company Details');
       if (firstItem) {
         firstItem.active = true;
         firstItem.selected = true;
@@ -1027,6 +1066,10 @@ export class SidebarComponent {
     }
     if (item.title === 'Back to Main Menu') {
       this.restoreMainMenu();
+      return;
+    }
+
+    if (item.type === 'heading') {
       return;
     }
 

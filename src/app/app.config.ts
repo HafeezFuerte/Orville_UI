@@ -12,7 +12,6 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ToastrModule } from 'ngx-toastr';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { loaderInterceptor } from './services/loader.interceptor';
-import { FlatpickrModule } from 'angularx-flatpickr';
 import { TranslateModule } from "@ngx-translate/core";
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginatorIntl } from './shared/services/custom-paginator-intl.service';
@@ -37,7 +36,6 @@ export const appConfig: ApplicationConfig = {
    }
   ),
   importProvidersFrom(
-    FlatpickrModule.forRoot(),
     TranslateModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
     ToastrModule.forRoot({

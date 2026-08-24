@@ -95,14 +95,16 @@
               <label class="ov-label">Start Date</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-                <input type="text" class="ov-input !pl-[44px]" name="startDate" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY">
+                <input type="text" class="ov-input" name="startDate" [(ngModel)]="form.startDate"
+                  appFlowbiteDatepicker placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div>
               <label class="ov-label">End Date</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-                <input type="text" class="ov-input !pl-[44px]" name="endDate" [(ngModel)]="form.endDate" placeholder="DD/MM/YYYY">
+                <input type="text" class="ov-input" name="endDate" [(ngModel)]="form.endDate"
+                  appFlowbiteDatepicker placeholder="DD/MM/YYYY">
               </div>
             </div>
           </div>
@@ -165,13 +167,18 @@
             <label class="ov-label">Slot Price</label>
             <input type="text" class="ov-input" name="slotPrice" [(ngModel)]="form.slotPrice" placeholder="Enter">
           </div>
-          <div class="flex items-center gap-3 rounded-lg bg-light px-2.5 py-4">
-            <button type="button" class="relative h-[30px] w-[57px] shrink-0 rounded-[35px]"
-              [class.bg-primary]="form.enablePayment"
-              [class.bg-light]="!form.enablePayment"
-              (click)="form.enablePayment = !form.enablePayment" [attr.aria-pressed]="form.enablePayment">
-              <span class="absolute top-[3px] size-6 rounded-[35px] bg-white transition-all"
-                [style.left]="form.enablePayment ? '29px' : '4px'"></span>
+          <div class="flex items-center gap-3 rounded-lg border border-dashed border-[#cfd4dc] bg-transparent px-2.5 py-4">
+            <button type="button"
+              class="relative h-[30px] w-[57px] shrink-0 rounded-[35px] border transition-colors"
+              [ngClass]="form.enablePayment
+                ? 'border-primary bg-primary'
+                : 'border-[#b8bfc9] bg-[#cfd4dc]'"
+              (click)="form.enablePayment = !form.enablePayment"
+              [attr.aria-pressed]="form.enablePayment"
+              aria-label="Enable Payment">
+              <span
+                class="pointer-events-none absolute top-[2px] size-[24px] rounded-full bg-white shadow-sm transition-all"
+                [style.left]="form.enablePayment ? '29px' : '3px'"></span>
             </button>
             <div>
               <p class="m-0 text-sm font-medium text-defaulttextcolor">Enable Payment</p>

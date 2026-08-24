@@ -1,0 +1,108 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">User Roles</h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Define roles and control what each role can view, create, edit, and export.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openNew()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New Role
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <label
+      class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+      <img
+        src="./assets/images/settings/search.svg"
+        alt=""
+        width="14"
+        height="14"
+        class="shrink-0" />
+      <input
+        type="search"
+        class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+        placeholder="Search roles by name"
+        aria-label="Search roles by name"
+        [(ngModel)]="searchQuery" />
+    </label>
+
+    <span
+      class="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+      {{ countLabel }}
+    </span>
+  </div>
+
+  <!-- Table -->
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    aria-label="User roles">
+    <div
+      class="flex gap-4 overflow-x-auto bg-bodybg px-5 py-3.5 dark:bg-white/5"
+      role="row">
+      <div class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
+        Name
+      </div>
+      <div
+        class="w-[120px] shrink-0 text-center text-xs font-semibold text-textmuted sm:w-[160px]"
+        role="columnheader">
+        No. of Users
+      </div>
+      <div
+        class="w-[100px] shrink-0 text-xs font-semibold text-textmuted sm:w-[140px]"
+        role="columnheader">
+        Actions
+      </div>
+    </div>
+
+    <div
+      *ngFor="let row of filteredRoles"
+      class="flex gap-4 overflow-x-auto border-t border-defaultborder px-5 py-4"
+      role="row">
+      <div class="flex min-w-[180px] flex-1 items-center" role="cell">
+        <button
+          type="button"
+          class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+          (click)="openEdit(row)">
+          {{ row.name }}
+        </button>
+      </div>
+      <div
+        class="flex w-[120px] shrink-0 items-center justify-center text-sm font-medium text-defaulttextcolor sm:w-[160px]"
+        role="cell">
+        {{ row.userCount }}
+      </div>
+      <div class="flex w-[100px] shrink-0 items-center gap-2 sm:w-[140px]" role="cell">
+        <ng-container *ngIf="!row.system">
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Edit role"
+            (click)="openEdit(row)">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            *ngIf="row.userCount === 0"
+            type="button"
+            class="ov-icon-btn ov-icon-btn--danger"
+            aria-label="Delete role"
+            (click)="deleteRole(row)">
+            <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+          </button>
+        </ng-container>
+        <span *ngIf="row.system" class="text-xs text-textmuted">Protected</span>
+      </div>
+    </div>
+
+    <div
+      *ngIf="filteredRoles.length === 0"
+      class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+      No roles found.
+    </div>
+  </div>
+</div>

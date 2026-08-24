@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { admin, dashboardRoutingModule } from '../../components/dashboards/dashboard.routes';
+import { SETTINGS_PLACEHOLDER_ROUTES } from '../../components/settings/settings-menu.data';
 
 export const content: Routes = [
   {
@@ -107,7 +108,156 @@ export const content: Routes = [
       {
         path: 'masters',
         loadComponent: () => import('../../components/settings/masters/masters.component').then(m => m.MastersComponent)
-      }
+      },
+      {
+        path: 'brand',
+        loadComponent: () =>
+          import('../../components/settings/brand/brand-settings.component').then((m) => m.BrandSettingsComponent),
+      },
+      {
+        path: 'watermark',
+        loadComponent: () =>
+          import('../../components/settings/watermark/watermark-settings.component').then(
+            (m) => m.WatermarkSettingsComponent
+          ),
+      },
+      {
+        path: 'departments',
+        loadComponent: () =>
+          import('../../components/settings/departments/departments-settings.component').then(
+            (m) => m.DepartmentsSettingsComponent
+          ),
+      },
+      {
+        path: 'document-template',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                '../../components/settings/document-templates/document-templates.component'
+              ).then((m) => m.DocumentTemplatesComponent),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import(
+                '../../components/settings/document-templates/document-template-add.component'
+              ).then((m) => m.DocumentTemplateAddComponent),
+          },
+        ],
+      },
+      {
+        path: 'pdf-builder',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../../components/settings/pdf-builder/pdf-builder.component').then(
+                (m) => m.PdfBuilderComponent
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('../../components/settings/pdf-builder/pdf-builder-add.component').then(
+                (m) => m.PdfBuilderAddComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'mandatory-documents',
+        loadComponent: () =>
+          import(
+            '../../components/settings/mandatory-documents/mandatory-documents.component'
+          ).then((m) => m.MandatoryDocumentsComponent),
+      },
+      {
+        path: 'attachment-types',
+        loadComponent: () =>
+          import(
+            '../../components/settings/attachment-types/attachment-types.component'
+          ).then((m) => m.AttachmentTypesComponent),
+      },
+      {
+        path: 'users-and-admins',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                '../../components/settings/users-and-admins/users-and-admins.component'
+              ).then((m) => m.UsersAndAdminsComponent),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('../../components/settings/users-and-admins/user-add.component').then(
+                (m) => m.UserAddComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'roles-and-permissions',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                '../../components/settings/roles-and-permissions/roles-and-permissions.component'
+              ).then((m) => m.RolesAndPermissionsComponent),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('../../components/settings/roles-and-permissions/role-add.component').then(
+                (m) => m.RoleAddComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'bulk-assign-properties',
+        loadComponent: () =>
+          import(
+            '../../components/settings/bulk-assign-properties/bulk-assign-properties.component'
+          ).then((m) => m.BulkAssignPropertiesComponent),
+      },
+      {
+        path: 'profile-verification',
+        loadComponent: () =>
+          import(
+            '../../components/settings/profile-verification/profile-verification.component'
+          ).then((m) => m.ProfileVerificationComponent),
+      },
+      {
+        path: 'invoice-receipt-profiles',
+        loadComponent: () =>
+          import(
+            '../../components/settings/invoice-receipt-profiles/invoice-receipt-profiles.component'
+          ).then((m) => m.InvoiceReceiptProfilesComponent),
+      },
+      ...SETTINGS_PLACEHOLDER_ROUTES.filter((r) => !r.path.includes('/')).map((r) => ({
+        path: r.path,
+        loadComponent: () =>
+          import('../../components/settings/settings-placeholder/settings-placeholder.component').then(
+            (m) => m.SettingsPlaceholderComponent
+          ),
+        data: { title: r.title },
+      })),
+      {
+        path: 'servicehub',
+        children: SETTINGS_PLACEHOLDER_ROUTES.filter((r) => r.path.startsWith('servicehub/')).map((r) => ({
+          path: r.path.replace('servicehub/', ''),
+          loadComponent: () =>
+            import('../../components/settings/settings-placeholder/settings-placeholder.component').then(
+              (m) => m.SettingsPlaceholderComponent
+            ),
+          data: { title: r.title },
+        })),
+      },
     ]
   }
 ];

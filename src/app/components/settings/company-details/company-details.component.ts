@@ -17,7 +17,7 @@ import { environment } from '../../../../environments/environment';
     NgSelectModule
   ],
   templateUrl: './company-details.component.html',
-  styleUrls: []
+  styleUrls: ['./company-details.component.scss'],
 })
 export class CompanyDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -310,5 +310,9 @@ export class CompanyDetailsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  onCancel(): void {
+    this.fetchCompanyDetails();
   }
 }

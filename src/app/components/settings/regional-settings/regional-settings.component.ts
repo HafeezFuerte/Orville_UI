@@ -17,7 +17,7 @@ import { environment } from '../../../../environments/environment';
     NgSelectModule
   ],
   templateUrl: './regional-settings.component.html',
-  styleUrls: []
+  styleUrl: './regional-settings.component.scss',
 })
 export class RegionalSettingsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -28,21 +28,21 @@ export class RegionalSettingsComponent implements OnInit {
   regionalSettingsForm!: FormGroup;
   companyData: any = null; // Store entire company details row to preserve other columns on save
 
-  // Dropdown lists
+  // Dropdown lists (ids preserved for API compatibility)
   timezones = [
-    { id: 'Abu Dhabi (UTC+4)', name: 'Abu Dhabi (UTC+4)' },
-    { id: 'GMT (UTC+0)', name: 'GMT (UTC+0)' },
-    { id: 'London (UTC+0)', name: 'London (UTC+0)' },
-    { id: 'Paris (UTC+1)', name: 'Paris (UTC+1)' },
-    { id: 'Cairo (UTC+2)', name: 'Cairo (UTC+2)' },
-    { id: 'Moscow (UTC+3)', name: 'Moscow (UTC+3)' },
-    { id: 'Dubai (UTC+4)', name: 'Dubai (UTC+4)' },
-    { id: 'India (UTC+5:30)', name: 'India (UTC+5:30)' },
-    { id: 'Singapore (UTC+8)', name: 'Singapore (UTC+8)' },
-    { id: 'Tokyo (UTC+9)', name: 'Tokyo (UTC+9)' },
-    { id: 'Sydney (UTC+10)', name: 'Sydney (UTC+10)' },
-    { id: 'New York (UTC-5)', name: 'New York (UTC-5)' },
-    { id: 'Los Angeles (UTC-8)', name: 'Los Angeles (UTC-8)' }
+    { id: 'Abu Dhabi (UTC+4)', name: '(GMT+04:00) Abu Dhabi' },
+    { id: 'GMT (UTC+0)', name: '(GMT+00:00) GMT' },
+    { id: 'London (UTC+0)', name: '(GMT+00:00) London' },
+    { id: 'Paris (UTC+1)', name: '(GMT+01:00) Paris' },
+    { id: 'Cairo (UTC+2)', name: '(GMT+02:00) Cairo' },
+    { id: 'Moscow (UTC+3)', name: '(GMT+03:00) Moscow' },
+    { id: 'Dubai (UTC+4)', name: '(GMT+04:00) Dubai' },
+    { id: 'India (UTC+5:30)', name: '(GMT+05:30) India' },
+    { id: 'Singapore (UTC+8)', name: '(GMT+08:00) Singapore' },
+    { id: 'Tokyo (UTC+9)', name: '(GMT+09:00) Tokyo' },
+    { id: 'Sydney (UTC+10)', name: '(GMT+10:00) Sydney' },
+    { id: 'New York (UTC-5)', name: '(GMT-05:00) New York' },
+    { id: 'Los Angeles (UTC-8)', name: '(GMT-08:00) Los Angeles' }
   ];
 
   currencies: any[] = [];
@@ -54,6 +54,26 @@ export class RegionalSettingsComponent implements OnInit {
     { id: 'MM/DD/YYYY', name: 'MM/DD/YYYY (12/01/2022)' },
     { id: 'YYYY-MM-DD', name: 'YYYY-MM-DD (2022-12-01)' }
   ];
+
+  weekDays = [
+    { id: 'Monday', name: 'Monday' },
+    { id: 'Sunday', name: 'Sunday' },
+    { id: 'Saturday', name: 'Saturday' },
+  ];
+
+  get summaryLabel(): string {
+    const currency = this.currencies.find(
+      (c) => c.id === this.regionalSettingsForm?.get('currency')?.value
+    );
+    const code = currency?.code || 'AED';
+    const tz = this.regionalSettingsForm?.get('timezone')?.value || '';
+    const gmt = tz.includes('UTC+4') || tz.includes('Abu Dhabi') || tz.includes('Dubai')
+      ? 'GMT+4'
+      : tz.includes('UTC')
+        ? tz.replace(/.*\((UTC[^)]+)\).*/, '$1').replace('UTC', 'GMT')
+        : 'GMT+4';
+    return `UAE · ${gmt} · ${code}`;
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -69,7 +89,9 @@ export class RegionalSettingsComponent implements OnInit {
       currency: [null, [Validators.required]],
       dateFormat: [null, [Validators.required]],
       unitSystem: [null, [Validators.required]],
-      defaultPaymentMethod: [null, [Validators.required]]
+      defaultPaymentMethod: [null, [Validators.required]],
+      // Presentation-only (Figma). Not sent to update_regional_settings.
+      firstDayOfWeek: ['Monday'],
     });
   }
 

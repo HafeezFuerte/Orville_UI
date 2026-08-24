@@ -1,0 +1,196 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Users and Admins
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Manage portal users, admins, and support technicians.
+      </p>
+    </div>
+  </div>
+
+  <!-- Main tabs -->
+  <div class="ov-seg ov-seg--tabs w-full overflow-x-auto">
+    <button
+      type="button"
+      *ngFor="let tab of mainTabs"
+      class="ov-seg__btn"
+      [class.is-active]="mainTab === tab.id"
+      (click)="setMainTab(tab.id)">
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <!-- Section header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <div class="flex min-w-0 flex-wrap items-center gap-3">
+      <h2 class="m-0 text-base font-semibold text-defaulttextcolor">{{ pageTitle }}</h2>
+      <div class="ov-seg">
+        <button
+          type="button"
+          *ngFor="let tab of statusTabs"
+          class="ov-seg__btn"
+          [class.is-active]="statusFilter === tab.id"
+          (click)="statusFilter = tab.id">
+          {{ tab.label }}
+        </button>
+      </div>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openNew()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      {{ addLabel }}
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+      <label
+        class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+        <img
+          src="./assets/images/settings/search.svg"
+          alt=""
+          width="14"
+          height="14"
+          class="shrink-0" />
+        <input
+          type="search"
+          class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+          [placeholder]="'Search ' + pageTitle + '...'"
+          [attr.aria-label]="'Search ' + pageTitle"
+          [(ngModel)]="searchQuery" />
+      </label>
+
+      <div class="relative">
+        <select
+          class="ov-input cursor-pointer appearance-none pr-8"
+          [(ngModel)]="roleFilter"
+          aria-label="Filter by role">
+          <option value="">Role</option>
+          <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
+        </select>
+        <img
+          src="./assets/images/settings/chevron-down.svg"
+          alt=""
+          width="12"
+          height="12"
+          class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+      </div>
+    </div>
+
+    <span
+      class="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+      {{ countLabel }}
+    </span>
+  </div>
+
+  <!-- Table -->
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    [attr.aria-label]="pageTitle">
+    <div class="w-full overflow-x-auto">
+      <div
+        class="flex min-w-[1080px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
+        role="row">
+        <div class="w-12 shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Image
+        </div>
+        <div class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
+          User Details
+        </div>
+        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Username
+        </div>
+        <div class="w-[130px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Phone
+        </div>
+        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Role
+        </div>
+        <div class="w-[100px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Reference No
+        </div>
+        <div class="w-[100px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Login
+        </div>
+        <div class="w-16 shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
+          Units
+        </div>
+        <div class="w-[160px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Actions
+        </div>
+      </div>
+
+      <div
+        *ngFor="let row of filteredRows"
+        class="flex min-w-[1080px] gap-3 border-t border-defaultborder px-5 py-3.5"
+        role="row">
+        <div class="flex w-12 shrink-0 items-center" role="cell">
+          <span
+            class="inline-flex size-9 items-center justify-center rounded-full text-xs font-semibold text-white"
+            [style.background]="row.avatarColor">
+            {{ row.initials }}
+          </span>
+        </div>
+        <div class="flex min-w-[180px] flex-1 flex-col justify-center gap-0.5" role="cell">
+          <button
+            type="button"
+            class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+            (click)="openEdit(row)">
+            {{ row.name }}
+          </button>
+          <span class="text-xs text-textmuted">{{ row.email }}</span>
+        </div>
+        <div class="flex w-[120px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
+          {{ row.username }}
+        </div>
+        <div class="flex w-[130px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
+          {{ row.phone }}
+        </div>
+        <div class="flex w-[120px] shrink-0 items-center" role="cell">
+          <span
+            class="inline-flex items-center rounded-md bg-[#eeeef5] px-2.5 py-1 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+            {{ row.role }}
+          </span>
+        </div>
+        <div class="flex w-[100px] shrink-0 items-center text-sm text-textmuted" role="cell">
+          {{ row.referenceNo || '—' }}
+        </div>
+        <div class="flex w-[100px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
+          {{ row.lastLogin }}
+        </div>
+        <div
+          class="flex w-16 shrink-0 items-center justify-center text-sm font-medium text-defaulttextcolor"
+          role="cell">
+          {{ row.units }}
+        </div>
+        <div class="flex w-[160px] shrink-0 items-center gap-2" role="cell">
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Edit user"
+            (click)="openEdit(row)">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            type="button"
+            class="inline-flex h-8 items-center gap-1.5 rounded-md border border-defaultborder bg-white px-2 text-xs font-medium text-danger dark:bg-bodybg"
+            [attr.aria-label]="row.status === 'active' ? 'Block user' : 'Unblock user'"
+            (click)="toggleBlock(row)">
+            <img src="./assets/images/settings/ban.svg" alt="" width="14" height="14" />
+            {{ row.status === 'active' ? 'Block User' : 'Unblock' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="filteredRows.length === 0"
+      class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+      No {{ pageTitle.toLowerCase() }} found.
+    </div>
+  </div>
+</div>

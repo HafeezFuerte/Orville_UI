@@ -15,7 +15,7 @@ import { environment } from '../../../../environments/environment';
     FormsModule
   ],
   templateUrl: './company-shifts.component.html',
-  styleUrls: []
+  styleUrl: './company-shifts.component.scss'
 })
 export class CompanyShiftsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -25,6 +25,8 @@ export class CompanyShiftsComponent implements OnInit {
 
   companyShiftsForm!: FormGroup;
   daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  private readonly weekdayIndexes = [0, 1, 2, 3, 4];
+  private readonly weekendIndexes = [5, 6];
 
   ngOnInit(): void {
     this.initForm();
@@ -32,21 +34,23 @@ export class CompanyShiftsComponent implements OnInit {
   }
 
   initForm(): void {
-    const shiftGroups = this.daysOfWeek.map(day => this.fb.group({
-      dayName: [day],
-      enabled: [false],
-      startTime: [{ value: '', disabled: true }],
-      endTime: [{ value: '', disabled: true }]
-    }));
+    const shiftGroups = this.daysOfWeek.map((day, index) => {
+      const isWeekday = index < 5;
+      return this.fb.group({
+        dayName: [day],
+        enabled: [isWeekday],
+        startTime: [{ value: isWeekday ? '09:00' : '', disabled: !isWeekday }],
+        endTime: [{ value: isWeekday ? '18:00' : '', disabled: !isWeekday }]
+      });
+    });
 
     this.companyShiftsForm = this.fb.group({
       selectAll: [false],
       shifts: this.fb.array(shiftGroups)
     });
 
-    // Listen to changes on the selectAll control
     this.companyShiftsForm.get('selectAll')?.valueChanges.subscribe(val => {
-      this.toggleAll(val);
+      this.toggleAll(!!val);
     });
   }
 
@@ -54,35 +58,83 @@ export class CompanyShiftsComponent implements OnInit {
     return this.companyShiftsForm.get('shifts') as FormArray;
   }
 
+  get summaryLabel(): string {
+    const active = this.shiftsFormArray.controls
+      .map((ctrl, i) => ({ enabled: !!ctrl.get('enabled')?.value, index: i }))
+      .filter((d) => d.enabled);
+
+    if (!active.length) {
+      return '0 days active';
+    }
+
+    const weekdaysOnly = active.length === 5 && active.every((d) => d.index < 5);
+    if (weekdaysOnly) {
+      return '5 days active · Mon–Fri';
+    }
+
+    if (active.length === 7) {
+      return '7 days active · Mon–Sun';
+    }
+
+    const short = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const names = active.map((d) => short[d.index]).join(', ');
+    return `${active.length} day${active.length === 1 ? '' : 's'} active · ${names}`;
+  }
+
+  getDurationLabel(index: number): string {
+    const group = this.shiftsFormArray.at(index) as FormGroup;
+    if (!group.get('enabled')?.value) {
+      return '—';
+    }
+    const start = group.get('startTime')?.value as string;
+    const end = group.get('endTime')?.value as string;
+    if (!start || !end) {
+      return '—';
+    }
+    const startMins = this.toMinutes(start);
+    const endMins = this.toMinutes(end);
+    if (startMins === null || endMins === null || endMins <= startMins) {
+      return '—';
+    }
+    const hours = (endMins - startMins) / 60;
+    const whole = Math.floor(hours);
+    const fraction = hours - whole;
+    if (fraction === 0) {
+      return `${whole} hrs`;
+    }
+    if (fraction === 0.5) {
+      return `${whole}.5 hrs`;
+    }
+    return `${hours.toFixed(1)} hrs`;
+  }
+
   toggleDay(index: number): void {
     const group = this.shiftsFormArray.at(index) as FormGroup;
     const enabled = group.get('enabled')?.value;
-    
+
     if (enabled) {
       group.get('startTime')?.enable();
       group.get('endTime')?.enable();
-      // Set default times if empty
       if (!group.get('startTime')?.value) {
         group.get('startTime')?.setValue('09:00');
       }
       if (!group.get('endTime')?.value) {
-        group.get('endTime')?.setValue('17:00');
+        group.get('endTime')?.setValue('18:00');
       }
     } else {
       group.get('startTime')?.disable();
       group.get('endTime')?.disable();
     }
 
-    // Update selectAll status based on all individual checkboxes
     const allChecked = this.shiftsFormArray.controls.every(ctrl => ctrl.get('enabled')?.value);
     this.companyShiftsForm.get('selectAll')?.setValue(allChecked, { emitEvent: false });
   }
 
   toggleAll(checked: boolean): void {
-    this.shiftsFormArray.controls.forEach((ctrl, idx) => {
+    this.shiftsFormArray.controls.forEach((ctrl) => {
       const group = ctrl as FormGroup;
       group.get('enabled')?.setValue(checked, { emitEvent: false });
-      
+
       if (checked) {
         group.get('startTime')?.enable();
         group.get('endTime')?.enable();
@@ -90,7 +142,7 @@ export class CompanyShiftsComponent implements OnInit {
           group.get('startTime')?.setValue('09:00');
         }
         if (!group.get('endTime')?.value) {
-          group.get('endTime')?.setValue('17:00');
+          group.get('endTime')?.setValue('18:00');
         }
       } else {
         group.get('startTime')?.disable();
@@ -99,7 +151,30 @@ export class CompanyShiftsComponent implements OnInit {
     });
   }
 
-  // Helper: Convert "09:00 AM" to "09:00"
+  applyWeekdays(): void {
+    this.weekdayIndexes.forEach((index) => {
+      const group = this.shiftsFormArray.at(index) as FormGroup;
+      group.get('enabled')?.setValue(true, { emitEvent: false });
+      group.get('startTime')?.enable();
+      group.get('endTime')?.enable();
+      group.get('startTime')?.setValue('09:00');
+      group.get('endTime')?.setValue('18:00');
+    });
+    this.syncSelectAll();
+  }
+
+  clearWeekend(): void {
+    this.weekendIndexes.forEach((index) => {
+      const group = this.shiftsFormArray.at(index) as FormGroup;
+      group.get('enabled')?.setValue(false, { emitEvent: false });
+      group.get('startTime')?.setValue('');
+      group.get('endTime')?.setValue('');
+      group.get('startTime')?.disable();
+      group.get('endTime')?.disable();
+    });
+    this.syncSelectAll();
+  }
+
   convertTo24Hour(timeStr: string): string {
     if (!timeStr) return '';
     if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
@@ -117,7 +192,6 @@ export class CompanyShiftsComponent implements OnInit {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
   }
 
-  // Helper: Convert "09:00" to "09:00 AM"
   convertTo12Hour(timeStr: string): string {
     if (!timeStr) return '';
     const match = timeStr.match(/^(\d{2}):(\d{2})$/);
@@ -131,7 +205,6 @@ export class CompanyShiftsComponent implements OnInit {
     return `${String(hours).padStart(2, '0')}:${minutes} ${modifier}`;
   }
 
-  // Load shifts on load
   fetchShifts(): void {
     const url = environment.apiurl + 'api/Masters/_getMasters';
     const user = this.commonService.getCurrentUser();
@@ -186,8 +259,7 @@ export class CompanyShiftsComponent implements OnInit {
       }
     });
 
-    const allChecked = this.shiftsFormArray.controls.every(ctrl => ctrl.get('enabled')?.value);
-    this.companyShiftsForm.get('selectAll')?.setValue(allChecked, { emitEvent: false });
+    this.syncSelectAll();
   }
 
   onSubmit(): void {
@@ -196,7 +268,6 @@ export class CompanyShiftsComponent implements OnInit {
       return;
     }
 
-    // Verify start time < end time for enabled days
     let valid = true;
     this.shiftsFormArray.controls.forEach((ctrl) => {
       const group = ctrl as FormGroup;
@@ -212,7 +283,6 @@ export class CompanyShiftsComponent implements OnInit {
 
     if (!valid) return;
 
-    // Build the shifts array payload
     const shiftsToSend = this.shiftsFormArray.controls
       .filter(ctrl => ctrl.get('enabled')?.value)
       .map(ctrl => {
@@ -249,5 +319,18 @@ export class CompanyShiftsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  private syncSelectAll(): void {
+    const allChecked = this.shiftsFormArray.controls.every(ctrl => ctrl.get('enabled')?.value);
+    this.companyShiftsForm.get('selectAll')?.setValue(allChecked, { emitEvent: false });
+  }
+
+  private toMinutes(time: string): number | null {
+    const match = time.match(/^(\d{2}):(\d{2})$/);
+    if (!match) {
+      return null;
+    }
+    return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
   }
 }

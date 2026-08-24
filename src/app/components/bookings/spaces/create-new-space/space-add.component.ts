@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
+import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import { SpaceAvailability } from '../spaces.data';
 
 interface WeekDayRow {
@@ -16,7 +17,7 @@ interface WeekDayRow {
 @Component({
   selector: 'app-space-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FileUploadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FileUploadComponent],
   templateUrl: './space-add.component.html'
 })
 export class SpaceAddComponent {

@@ -19,22 +19,39 @@
           <i class="fe fe-chevron-left"></i>
         </div>
 
-        <div class="orville-create-wrap">
+        <div class="orville-create-wrap" *ngIf="!isSettingsMode">
           <button type="button" class="orville-create-btn bg-primary" aria-label="Create" (click)="createOverlayOpen = true">
             <img src="./assets/images/nav/plus.svg" alt="" width="14" height="14">
             <span class="orville-create-label">Create</span>
           </button>
         </div>
 
-        <ul class="main-menu">
+        <div class="orville-settings-search" *ngIf="isSettingsMode">
+          <input
+            type="search"
+            class="orville-settings-search__input"
+            placeholder="Search settings..."
+            [ngModel]="settingsSearchQuery"
+            (ngModelChange)="onSettingsSearchChange($event)"
+            aria-label="Search settings"
+          />
+        </div>
+
+        <ul class="main-menu" [class.orville-settings-menu]="isSettingsMode">
           <li *ngFor="let menuItem of menuItems" class="slide" [ngClass]="{
               'has-sub': menuItem.type === 'sub',
               open: menuItem.active,
-              active: menuItem.selected
+              active: menuItem.selected,
+              'orville-settings-heading': menuItem.type === 'heading'
             }">
+            <!-- section heading (settings) -->
+            <div *ngIf="menuItem.type === 'heading'" class="orville-settings-heading__label">
+              {{ menuItem.title }}
+            </div>
+
             <!-- link -->
             <a *ngIf="menuItem.type === 'link' && menuItem.path" class="side-menu__item" [routerLink]="menuItem.path"
-              routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="active" [routerLinkActiveOptions]="{ exact: menuItem.exact ?? true }"
               (click)="setNavActive(menuItem); menuOpen()">
               <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
                 [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>

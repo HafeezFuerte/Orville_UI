@@ -1,0 +1,170 @@
+<div class="dept-settings">
+  <div class="dept-settings__page-header">
+    <div class="dept-settings__title-block">
+      <h1 class="dept-settings__title">Departments</h1>
+      <p class="dept-settings__subtitle">
+        Group users so tickets can be routed to the right team.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <img src="./assets/images/settings/plus-white.svg" alt="" width="14" height="14" />
+      Add Department
+    </button>
+  </div>
+
+  <div class="dept-settings__toolbar">
+    <label class="dept-settings__search">
+      <img src="./assets/images/settings/search.svg" alt="" width="14" height="14" />
+      <input
+        type="search"
+        [(ngModel)]="searchQuery"
+        placeholder="Search departments..."
+        aria-label="Search departments"
+      />
+    </label>
+    <span class="dept-settings__count">{{ countLabel }}</span>
+  </div>
+
+  <div class="dept-settings__table" role="table" aria-label="Departments">
+    <div class="dept-settings__thead" role="row">
+      <div class="dept-settings__th dept-settings__col--name" role="columnheader">Name</div>
+      <div class="dept-settings__th dept-settings__col--users" role="columnheader">Users</div>
+      <div class="dept-settings__th dept-settings__col--admin" role="columnheader">Is Admin</div>
+      <div class="dept-settings__th dept-settings__col--actions" role="columnheader">Actions</div>
+    </div>
+
+    <div
+      class="dept-settings__row"
+      role="row"
+      *ngFor="let row of filteredDepartments"
+    >
+      <div class="dept-settings__td dept-settings__col--name" role="cell">
+        <button type="button" class="dept-settings__name-link" (click)="openEdit(row)">
+          {{ row.name }}
+        </button>
+      </div>
+      <div class="dept-settings__td dept-settings__col--users" role="cell">
+        <img src="./assets/images/settings/users.svg" alt="" width="14" height="14" />
+        <span>{{ row.users }}</span>
+      </div>
+      <div class="dept-settings__td dept-settings__col--admin" role="cell">
+        <span
+          class="dept-settings__badge"
+          [class.dept-settings__badge--yes]="row.isAdmin"
+          [class.dept-settings__badge--no]="!row.isAdmin"
+        >
+          {{ row.isAdmin ? 'Yes' : 'No' }}
+        </span>
+      </div>
+      <div class="dept-settings__td dept-settings__col--actions" role="cell">
+        <button
+          type="button"
+          class="ov-icon-btn"
+          aria-label="Edit department"
+          (click)="openEdit(row)"
+        >
+          <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+        </button>
+        <button
+          type="button"
+          class="ov-icon-btn ov-icon-btn--danger"
+          aria-label="Delete department"
+          (click)="deleteDepartment(row)"
+        >
+          <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+        </button>
+      </div>
+    </div>
+
+    <div class="dept-settings__empty" *ngIf="filteredDepartments.length === 0">
+      No departments found.
+    </div>
+  </div>
+</div>
+
+<div
+  class="dept-settings__overlay"
+  *ngIf="modalOpen"
+  (click)="closeModal()"
+  role="presentation"
+>
+  <div
+    class="dept-settings__modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dept-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      type="button"
+      class="ov-modal-close dept-settings__modal-x"
+      aria-label="Close"
+      (click)="closeModal()"
+    >
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x"
+      />
+    </button>
+
+    <div class="dept-settings__modal-surface">
+      <div class="dept-settings__modal-header">
+        <h2 id="dept-modal-title" class="dept-settings__modal-title">{{ modalTitle }}</h2>
+        <p class="dept-settings__modal-sub">{{ modalSubtitle }}</p>
+      </div>
+
+      <div class="dept-settings__modal-body">
+        <div class="dept-settings__modal-section">
+          <div class="dept-settings__modal-section-head">
+            <h3 class="dept-settings__modal-section-title">Department details</h3>
+          </div>
+          <div class="dept-settings__modal-section-body">
+            <div class="dept-settings__modal-field">
+              <label class="ov-label" for="dept-name">
+                Department Name <span class="dept-settings__req">*</span>
+              </label>
+              <input
+                id="dept-name"
+                class="ov-input"
+                type="text"
+                [(ngModel)]="draftName"
+                placeholder="Enter department name"
+              />
+              <p class="dept-settings__modal-hint">
+                Use a clear name so tickets can be routed correctly.
+              </p>
+            </div>
+
+            <label class="dept-settings__admin-check">
+              <input type="checkbox" [(ngModel)]="draftIsAdmin" />
+              <span class="dept-settings__check-box" aria-hidden="true"></span>
+              <span class="dept-settings__admin-copy">
+                <span class="dept-settings__admin-title">Admin department</span>
+                <span class="dept-settings__admin-hint">
+                  Members can manage tickets assigned to this department.
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="dept-settings__modal-footer">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!draftName.trim()"
+          (click)="saveDepartment()"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

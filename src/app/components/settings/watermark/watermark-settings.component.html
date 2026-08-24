@@ -1,0 +1,182 @@
+<div class="wm-settings">
+  <div class="wm-settings__header">
+    <div class="wm-settings__title-block">
+      <h1 class="wm-settings__title">Watermark Configuration</h1>
+      <p class="wm-settings__subtitle">
+        Add watermarks to your images for branding and protection.
+      </p>
+    </div>
+    <div class="wm-settings__header-actions">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleWatermark()">
+        {{ watermarkEnabled ? 'Disable Watermark' : 'Enable Watermark' }}
+      </button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="update()">
+        Update
+      </button>
+    </div>
+  </div>
+
+  <div class="wm-settings__body">
+    <section class="wm-settings__card wm-settings__card--settings">
+      <div class="wm-settings__section-head">
+        <h2 class="wm-settings__section-title">Watermark Settings</h2>
+        <p class="wm-settings__section-sub">
+          Configure watermark type, rotation, and display options for your images.
+        </p>
+      </div>
+
+      <div class="wm-settings__fields">
+        <div class="wm-settings__field wm-settings__field--type">
+          <label class="wm-settings__label" for="wm-type">Type</label>
+          <ng-select
+            id="wm-type"
+            class="ov-select w-full"
+            [items]="typeOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="watermarkType"
+            [clearable]="false"
+            [searchable]="false"
+          ></ng-select>
+        </div>
+
+        <div class="wm-settings__field wm-settings__field--rotation">
+          <label class="wm-settings__label" for="wm-rotation">Rotation</label>
+          <ng-select
+            id="wm-rotation"
+            class="ov-select w-full"
+            [items]="rotationOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="rotation"
+            [clearable]="false"
+            [searchable]="false"
+          ></ng-select>
+        </div>
+
+        <div class="wm-settings__field wm-settings__field--display">
+          <span class="wm-settings__label">Display Settings</span>
+          <label class="wm-settings__check">
+            <input type="checkbox" [(ngModel)]="repeatWatermark" />
+            <span class="wm-settings__check-box" aria-hidden="true">
+              <img
+                *ngIf="repeatWatermark"
+                src="./assets/images/settings/check-white.svg"
+                alt=""
+                width="10"
+                height="10"
+              />
+            </span>
+            <span class="wm-settings__check-text">Repeat watermark</span>
+          </label>
+        </div>
+      </div>
+
+      <p class="wm-settings__label wm-settings__label--block">Watermark Image</p>
+
+      <div class="wm-settings__image-row">
+        <div class="wm-settings__current" *ngIf="showCurrentPane; else emptyCurrent">
+          <img
+            *ngIf="watermarkPreviewUrl"
+            class="wm-settings__current-img"
+            [src]="watermarkPreviewUrl"
+            alt="Current watermark"
+          />
+          <div *ngIf="showDefaultLogo" class="wm-settings__logo" aria-hidden="true">
+            <img
+              class="wm-settings__logo-emblem"
+              src="./assets/images/settings/wm-logo-emblem.svg"
+              alt=""
+              width="48"
+              height="48"
+            />
+            <span class="wm-settings__logo-wordmark">
+              <img src="./assets/images/settings/wm-logo-orville.svg" alt="ORVILLE" width="98" height="18" />
+              <img src="./assets/images/settings/wm-logo-tag.svg" alt="REAL ESTATE" width="98" height="5" />
+            </span>
+          </div>
+          <button
+            type="button"
+            class="wm-settings__remove"
+            aria-label="Remove watermark image"
+            (click)="removeWatermarkImage()"
+          >
+            <img src="./assets/images/settings/x-white.svg" alt="" width="12" height="12" />
+          </button>
+        </div>
+        <ng-template #emptyCurrent>
+          <div class="wm-settings__current wm-settings__current--empty">
+            <span class="wm-settings__empty-hint">No watermark image</span>
+          </div>
+        </ng-template>
+
+        <div class="wm-settings__replace" (click)="fileInput.click()">
+          <img
+            class="wm-settings__upload-icon"
+            src="./assets/images/settings/upload-cloud.svg"
+            alt=""
+            width="22"
+            height="22"
+          />
+          <p class="wm-settings__replace-hint">Drag and drop or click to replace</p>
+          <button
+            type="button"
+            class="ov-btn ov-btn-ghost"
+            (click)="$event.stopPropagation(); fileInput.click()"
+          >
+            Replace Image
+          </button>
+          <input
+            #fileInput
+            class="wm-settings__file-input"
+            type="file"
+            accept="image/*"
+            (change)="onReplaceImage($event)"
+          />
+        </div>
+      </div>
+    </section>
+
+    <aside class="wm-settings__card wm-settings__card--preview">
+      <div class="wm-settings__section-head">
+        <h2 class="wm-settings__section-title">Preview</h2>
+        <p class="wm-settings__section-sub">
+          Preview how your watermark will appear on images.
+        </p>
+      </div>
+
+      <div class="wm-settings__preview-media">
+        <img
+          class="wm-settings__preview-bg"
+          src="./assets/images/settings/watermark-preview.png"
+          alt=""
+        />
+        <div class="wm-settings__preview-overlay" aria-hidden="true"></div>
+        <div
+          class="wm-settings__preview-mark"
+          [attr.data-position]="rotation"
+          *ngIf="showPreviewMark"
+        >
+          <ng-container *ngIf="watermarkPreviewUrl; else defaultPreviewLogo">
+            <img [src]="watermarkPreviewUrl" alt="" />
+          </ng-container>
+          <ng-template #defaultPreviewLogo>
+            <div class="wm-settings__logo wm-settings__logo--preview">
+              <img
+                class="wm-settings__logo-emblem"
+                src="./assets/images/settings/wm-logo-emblem.svg"
+                alt=""
+                width="48"
+                height="48"
+              />
+              <span class="wm-settings__logo-wordmark">
+                <img src="./assets/images/settings/wm-logo-orville.svg" alt="" width="98" height="18" />
+                <img src="./assets/images/settings/wm-logo-tag.svg" alt="" width="98" height="5" />
+              </span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,366 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Invoice/Receipt Profiles
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Manage company details and logos used on invoices and receipts.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <label
+      class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+      <img
+        src="./assets/images/settings/search.svg"
+        alt=""
+        width="14"
+        height="14"
+        class="shrink-0" />
+      <input
+        type="search"
+        class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+        placeholder="Search profiles..."
+        aria-label="Search profiles"
+        [(ngModel)]="searchQuery" />
+    </label>
+    <span
+      class="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+      {{ countLabel }}
+    </span>
+  </div>
+
+  <!-- Table -->
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    aria-label="Invoice and receipt profiles">
+    <div class="w-full overflow-x-auto">
+      <div
+        class="flex min-w-[820px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
+        role="row">
+        <div class="min-w-[160px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
+          Name
+        </div>
+        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted sm:w-[140px]" role="columnheader">
+          City
+        </div>
+        <div class="w-[140px] shrink-0 text-xs font-semibold text-textmuted sm:w-[180px]" role="columnheader">
+          Address
+        </div>
+        <div class="w-[160px] shrink-0 text-xs font-semibold text-textmuted sm:w-[200px]" role="columnheader">
+          Country
+        </div>
+        <div class="w-[88px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Logos
+        </div>
+        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
+          Action
+        </div>
+      </div>
+
+      <div
+        *ngFor="let row of filteredRows"
+        class="flex min-w-[820px] gap-3 border-t border-defaultborder px-5 py-3.5"
+        role="row">
+        <div class="flex min-w-[160px] flex-1 items-center" role="cell">
+          <button
+            type="button"
+            class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+            (click)="openEdit(row)">
+            {{ row.name }}
+          </button>
+        </div>
+        <div
+          class="flex w-[120px] shrink-0 items-center text-sm text-defaulttextcolor sm:w-[140px]"
+          role="cell">
+          {{ row.city || '—' }}
+        </div>
+        <div
+          class="flex w-[140px] shrink-0 items-center text-sm text-defaulttextcolor sm:w-[180px]"
+          role="cell">
+          {{ row.address1 || '—' }}
+        </div>
+        <div
+          class="flex w-[160px] shrink-0 items-center text-sm text-defaulttextcolor sm:w-[200px]"
+          role="cell">
+          {{ row.country || '—' }}
+        </div>
+        <div class="flex w-[88px] shrink-0 items-center" role="cell">
+          <img
+            *ngIf="row.logoUrl"
+            [src]="row.logoUrl"
+            [alt]="row.logoName || 'Logo'"
+            class="h-8 w-8 rounded-md object-cover" />
+          <span *ngIf="!row.logoUrl" class="text-sm text-textmuted">—</span>
+        </div>
+        <div class="flex w-[120px] shrink-0 items-center gap-2" role="cell">
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Edit profile"
+            (click)="openEdit(row)">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Duplicate profile"
+            (click)="duplicate(row)">
+            <img src="./assets/images/settings/copy.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            type="button"
+            class="ov-icon-btn ov-icon-btn--danger"
+            aria-label="Delete profile"
+            (click)="deleteProfile(row)">
+            <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="filteredRows.length === 0"
+      class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+      No invoice/receipt profiles found.
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit modal -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[720px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="irp-modal-title"
+    (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="ov-modal-close"
+      aria-label="Close"
+      (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="flex max-h-[min(88vh,760px)] w-full flex-col overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-1.5 border-b border-defaultborder px-5 py-4">
+        <h2 id="irp-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+          {{ modalTitle }}
+        </h2>
+        <p class="m-0 text-[13px] font-normal text-textmuted">
+          Company details printed on invoices and receipts.
+        </p>
+      </div>
+
+      <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+        <!-- Logos -->
+        <div class="flex flex-col gap-2">
+          <span class="ov-label">Logos</span>
+          <div
+            class="irp-dropzone"
+            [class.irp-dropzone--active]="dropActive"
+            [class.irp-dropzone--filled]="!!draft.logoUrl"
+            role="button"
+            tabindex="0"
+            (click)="logoInput.click()"
+            (keydown.enter)="logoInput.click()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)">
+            <ng-container *ngIf="!draft.logoUrl; else logoPreview">
+              <img
+                src="./assets/images/settings/upload.svg"
+                alt=""
+                width="28"
+                height="28" />
+              <span class="text-sm font-medium text-defaulttextcolor">Add file</span>
+              <span class="text-xs text-textmuted">or drop files to upload</span>
+            </ng-container>
+            <ng-template #logoPreview>
+              <div class="flex items-center gap-3">
+                <img
+                  [src]="draft.logoUrl"
+                  [alt]="draft.logoName"
+                  class="h-12 w-12 rounded-lg object-cover" />
+                <span class="min-w-0 flex-1 truncate text-sm text-defaulttextcolor">
+                  {{ draft.logoName }}
+                </span>
+                <button
+                  type="button"
+                  class="text-xs font-medium text-danger"
+                  (click)="removeLogo(); $event.stopPropagation()">
+                  Remove
+                </button>
+              </div>
+            </ng-template>
+          </div>
+          <input
+            #logoInput
+            class="irp-file-input"
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)" />
+        </div>
+
+        <!-- Fields -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-name">
+              Name <span class="text-danger">*</span>
+            </label>
+            <input
+              id="irp-name"
+              type="text"
+              class="ov-input"
+              placeholder="Profile name"
+              [(ngModel)]="draft.name" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-email">Email</label>
+            <input
+              id="irp-email"
+              type="email"
+              class="ov-input"
+              placeholder="email@company.com"
+              [(ngModel)]="draft.email" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-phone">Phone</label>
+            <input
+              id="irp-phone"
+              type="tel"
+              class="ov-input"
+              placeholder="Phone number"
+              [(ngModel)]="draft.phone" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-vat">VAT #</label>
+            <input
+              id="irp-vat"
+              type="text"
+              class="ov-input"
+              placeholder="VAT number"
+              [(ngModel)]="draft.vat" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-address1">Address 1</label>
+            <input
+              id="irp-address1"
+              type="text"
+              class="ov-input"
+              placeholder="Address line 1"
+              [(ngModel)]="draft.address1" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-address2">Address 2</label>
+            <input
+              id="irp-address2"
+              type="text"
+              class="ov-input"
+              placeholder="Address line 2"
+              [(ngModel)]="draft.address2" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-country">Country</label>
+            <div class="relative">
+              <select
+                id="irp-country"
+                class="ov-input cursor-pointer appearance-none pr-8"
+                [(ngModel)]="draft.country"
+                (ngModelChange)="onCountryChange()">
+                <option value="">Select country</option>
+                <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+              </select>
+              <img
+                src="./assets/images/settings/chevron-down.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-state">State</label>
+            <div class="relative">
+              <select
+                id="irp-state"
+                class="ov-input cursor-pointer appearance-none pr-8 disabled:opacity-50"
+                [disabled]="!draft.country"
+                [(ngModel)]="draft.state">
+                <option value="">Select state</option>
+                <option *ngFor="let s of stateOptions" [value]="s">{{ s }}</option>
+              </select>
+              <img
+                src="./assets/images/settings/chevron-down.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-city">City</label>
+            <input
+              id="irp-city"
+              type="text"
+              class="ov-input"
+              placeholder="City"
+              [(ngModel)]="draft.city" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="irp-postcode">Postcode</label>
+            <input
+              id="irp-postcode"
+              type="text"
+              class="ov-input"
+              placeholder="Postcode"
+              [(ngModel)]="draft.postcode" />
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="irp-footer">Footer</label>
+          <textarea
+            id="irp-footer"
+            rows="3"
+            class="ov-input"
+            placeholder="Footer text shown on invoices and receipts"
+            [(ngModel)]="draft.footer"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!canSave"
+          (click)="save()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

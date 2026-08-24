@@ -1,0 +1,240 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Mandatory Documents
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Require tenants or landlords to upload mandatory documents before continuing.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="updateSettings()">
+      Update
+    </button>
+  </div>
+
+  <!-- Enable settings card -->
+  <section
+    class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
+    <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
+      Enable Mandatory Document Settings
+    </h2>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="relative inline-block h-[22px] w-10 shrink-0 cursor-pointer rounded-full border border-solid p-0 transition-colors"
+        [ngClass]="
+          enabled ? 'border-primary bg-primary' : 'border-defaultborder bg-[#eeeef5]'
+        "
+        (click)="enabled = !enabled"
+        [attr.aria-pressed]="enabled"
+        aria-label="Enable Mandatory Documents">
+        <span
+          class="pointer-events-none absolute top-1/2 block h-4 w-4 -translate-y-1/2 rounded-full bg-white shadow transition-[left]"
+          [ngClass]="enabled ? 'left-[calc(100%-18px)]' : 'left-0.5'"></span>
+      </button>
+      <span class="text-sm font-semibold text-defaulttextcolor">Enable Mandatory Documents</span>
+    </div>
+    <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+      Allows you to restrict tenants or landlords from performing actions until mandatory documents
+      are uploaded.
+    </p>
+  </section>
+
+  <!-- Documents list card -->
+  <section
+    class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
+        Mandatory Documents
+      </h2>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+        <span class="text-lg leading-none" aria-hidden="true">+</span>
+        Add Document
+      </button>
+    </div>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder"
+      role="table"
+      aria-label="Mandatory documents">
+      <div
+        class="flex gap-4 overflow-x-auto bg-bodybg px-5 py-3.5 dark:bg-white/5"
+        role="row">
+        <div class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
+          Document Type
+        </div>
+        <div
+          class="w-[200px] shrink-0 text-xs font-semibold text-textmuted sm:w-[280px] lg:w-[420px]"
+          role="columnheader">
+          User Type
+        </div>
+        <div
+          class="w-[100px] shrink-0 text-xs font-semibold text-textmuted sm:w-[160px] lg:w-[200px]"
+          role="columnheader">
+          Actions
+        </div>
+      </div>
+
+      <div
+        *ngFor="let row of documents"
+        class="flex gap-4 overflow-x-auto border-t border-defaultborder bg-white px-5 py-4 dark:bg-bodybg"
+        role="row">
+        <div class="flex min-w-[180px] flex-1 items-center" role="cell">
+          <button
+            type="button"
+            class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+            (click)="openEdit(row)">
+            {{ row.documentType }}
+          </button>
+        </div>
+        <div
+          class="flex w-[200px] shrink-0 items-center sm:w-[280px] lg:w-[420px]"
+          role="cell">
+          <span
+            class="inline-flex items-center rounded-md bg-[#eeeef5] px-2.5 py-1 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+            {{ row.userType }}
+          </span>
+        </div>
+        <div
+          class="flex w-[100px] shrink-0 items-center gap-2 sm:w-[160px] lg:w-[200px]"
+          role="cell">
+          <button
+            type="button"
+            class="ov-icon-btn"
+            aria-label="Edit document"
+            (click)="openEdit(row)">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+          </button>
+          <button
+            type="button"
+            class="ov-icon-btn ov-icon-btn--danger"
+            aria-label="Delete document"
+            (click)="deleteDocument(row)">
+            <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="documents.length === 0"
+        class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+        No mandatory documents yet.
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Add / Edit modal -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[600px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="md-modal-title"
+    (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="ov-modal-close"
+      aria-label="Close"
+      (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="md-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ modalTitle }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">{{ modalSubtitle }}</p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="p-5">
+        <div class="overflow-hidden rounded-2xl border border-defaultborder py-4">
+          <div class="px-4">
+            <h3 class="m-0 text-base font-semibold text-defaulttextcolor">Mandatory Documents</h3>
+          </div>
+          <div class="mt-4 h-px w-full bg-defaultborder"></div>
+          <div class="flex flex-col gap-4 px-4 pt-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="flex min-w-0 flex-col gap-2">
+                <label class="text-sm font-medium text-textmuted" for="md-doc-type">
+                  Document type <span class="text-danger">*</span>
+                </label>
+                <div class="relative">
+                  <select
+                    id="md-doc-type"
+                    class="ov-input cursor-pointer appearance-none pr-8"
+                    [(ngModel)]="draftDocumentType">
+                    <option *ngFor="let t of documentTypeOptions" [value]="t">{{ t }}</option>
+                  </select>
+                  <img
+                    src="./assets/images/settings/chevron-down.svg"
+                    alt=""
+                    width="12"
+                    height="12"
+                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              <div class="flex min-w-0 flex-col gap-2">
+                <label class="text-sm font-medium text-textmuted" for="md-user-type">
+                  User type <span class="text-danger">*</span>
+                </label>
+                <div class="relative">
+                  <select
+                    id="md-user-type"
+                    class="ov-input cursor-pointer appearance-none pr-8"
+                    [(ngModel)]="draftUserType">
+                    <option *ngFor="let t of userTypeOptions" [value]="t">{{ t }}</option>
+                  </select>
+                  <img
+                    src="./assets/images/settings/chevron-down.svg"
+                    alt=""
+                    width="12"
+                    height="12"
+                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
+              <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+              <p class="m-0 text-xs font-normal text-textmuted">
+                Users of this type must upload the selected document before restricted actions are
+                allowed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!canSave"
+          (click)="saveDocument()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
