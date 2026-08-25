@@ -283,6 +283,91 @@
   }
 }
 
+/*
+ * Dark page theme + light menu: sidebar surface goes dark (dark:bg-bodybg) while
+ * vertical.scss / light-menu rules still disagree (text-muted vs #8f9bb3 / #6b6b7d).
+ * Force one idle color for every top-level + child item.
+ */
+:host-context(html.dark),
+:host-context(.dark) {
+  ::ng-deep {
+    .main-menu > .slide > .side-menu__item,
+    .orville-parent-item {
+      color: rgb(255 255 255 / 0.72) !important;
+
+      .side-menu__label,
+      .orville-nav-icon,
+      .side-menu__icon,
+      .side-menu__angle {
+        color: rgb(255 255 255 / 0.72) !important;
+        fill: rgb(255 255 255 / 0.72) !important;
+      }
+
+      &:hover:not(.active) {
+        color: #fff !important;
+
+        .side-menu__label,
+        .orville-nav-icon,
+        .side-menu__icon,
+        .side-menu__angle {
+          color: #fff !important;
+          fill: #fff !important;
+        }
+      }
+    }
+
+    .slide-menu.child1 .side-menu__item,
+    .slide-menu.child2 .side-menu__item,
+    .slide-menu.child3 .side-menu__item,
+    .slide-menu .orville-sub-item {
+      color: rgb(255 255 255 / 0.72) !important;
+
+      .side-menu__label,
+      .side-menu__angle {
+        color: rgb(255 255 255 / 0.72) !important;
+      }
+
+      &:hover:not(.active) {
+        color: #fff !important;
+        background-color: rgb(255 255 255 / 0.08) !important;
+
+        .side-menu__label,
+        .side-menu__angle {
+          color: #fff !important;
+        }
+      }
+
+      &.active {
+        color: rgb(var(--orville-accent)) !important;
+        background-color: rgb(255 255 255 / 0.08) !important;
+
+        .side-menu__label,
+        .side-menu__angle {
+          color: rgb(var(--orville-accent)) !important;
+        }
+      }
+    }
+  }
+}
+
+/* Light menu active pill stays gold on dark page theme */
+:host-context(html.dark):host-context([data-menu-styles='light']),
+:host-context(.dark):host-context([data-menu-styles='light']) {
+  ::ng-deep {
+    .main-menu > .slide > .side-menu__item.active {
+      background-color: rgb(var(--orville-nav-active-bg)) !important;
+      color: rgb(var(--orville-accent)) !important;
+
+      .side-menu__label,
+      .orville-nav-icon,
+      .side-menu__icon {
+        color: rgb(var(--orville-accent)) !important;
+        fill: rgb(var(--orville-accent)) !important;
+      }
+    }
+  }
+}
+
 /* Dark / colored menus — translucent active chip with light text */
 :host-context([data-menu-styles='dark']),
 :host-context([data-menu-styles='color']),

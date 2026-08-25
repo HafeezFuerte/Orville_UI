@@ -1,381 +1,426 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/vendors" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    </button>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ isEditMode ? 'Edit Vendor' : 'New Vendor' }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">Home</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/vendors" class="hover:text-primary cursor-pointer">Contacts</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/vendors" class="hover:text-primary cursor-pointer">Vendors</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? 'Edit Vendor' : 'New Vendor' }}</li>
-      </ol>
-    </div>
-  </div>
-</div>
-
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20">
-  
-  <!-- LEFT COLUMN (Main Form) -->
-  <div class="xl:col-span-8 flex flex-col gap-x-3 gap-y-2">
-    
-    <!-- 1. Happy Tenant Application Login Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Happy Tenant Application Login Information</h6>
-      </div>
-      <div class="box-body p-4">
-        <div class="flex items-center gap-x-3 gap-y-2 mb-6">
-          <div
-            class="w-16 h-16 rounded-full overflow-hidden bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20">
-            <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" class="w-full h-full object-cover">
-            <span *ngIf="!photoPreviewUrl">PH</span>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <input type="file" #photoInput style="display: none" accept="image/*" (change)="onPhotoSelected($event)">
-            <button type="button" (click)="photoInput.click()"
-              class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
-              <i class="ri-upload-2-line"></i> Upload Photo
-            </button>
-            <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Email <span class="text-danger">*</span></label>
-            <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.email_address" placeholder="Enter">
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Username</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.username" placeholder="Enter">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. General Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">General Information</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Company Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.company_name" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Contact Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.first_name" placeholder="Enter">
-        </div>
-        
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Phone Number</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" [(ngModel)]="vendorData.mobile_no" placeholder="Enter">
-          </div>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Fax Number</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0" placeholder="Enter">
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Tax Registration Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.tax_registration_no" placeholder="Enter">
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Address Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Address Information</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 1 <span class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.address1" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 2</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.address2" placeholder="Enter">
-        </div>
-        
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Country <span class="text-danger">*</span></label>
-          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="vendorData.country_id" (change)="onCountryChange()">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-            <ng-template ng-label-tmp let-item="item">
-              <div class="flex items-center gap-2">
-                <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
-              </div>
-            </ng-template>
-            <ng-template ng-option-tmp let-item="item">
-              <div class="flex items-center gap-2">
-                <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        <div class="grid grid-cols-3 gap-3 md:col-span-2">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">State/ Province</label>
-            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="vendorData.stateid" bindValue="id" bindLabel="name" (change)="onStateChange()">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">City</label>
-            <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="vendorData.city" bindValue="id" bindLabel="name">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="citySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Postcode</label>
-            <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white" [(ngModel)]="vendorData.zipcode" placeholder="Enter">
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 4. Documents & Attachments -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-        <div>
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Documents & Attachments</h6>
-          <p class="text-[10px] text-gray-500 mt-0.5 m-0">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
-        </div>
-        <button type="button" (click)="toggleDocModal(true)" class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 shrink-0">
-          <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Document
-        </button>
-      </div>
-      <div class="p-6 flex flex-col gap-3">
-        <!-- Empty State -->
-        <div *ngIf="uploadedDocuments.length === 0"
-          class="w-full flex flex-col items-center justify-center py-6 border border-dashed border-gray-200 rounded-lg bg-gray-50/50">
-          <div class="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center text-xl mb-3"><i
-              class="ri-file-text-line"></i></div>
-          <h6 class="text-sm font-bold text-gray-800 m-0">No documents uploaded yet</h6>
-          <p class="text-[10px] text-gray-500 mt-1 max-w-xs text-center">Keep important documents organized and choose
-            whether they are visible to tenants, landlords, or kept private.</p>
-          <button type="button" (click)="toggleDocModal(true)"
-            class="mt-3 px-4 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] font-semibold shadow-sm">Add
-            Document</button>
-        </div>
-
-        <!-- Document List -->
-        <div *ngFor="let doc of uploadedDocuments; let i = index"
-          class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-primary/30 transition-colors">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-md bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
-              <i class="ri-file-pdf-line"></i>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-gray-800">{{ doc.fileName }}</span>
-              <div class="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
-                <span>{{ doc.document_type }}</span> <span class="w-1 h-1 rounded-full bg-gray-300"></span> <span>{{ doc.fileSize }}</span> <span
-                  class="w-1 h-1 rounded-full bg-gray-300"></span> <span>Uploaded today</span>
-                <span
-                  class="px-2 py-0.5 rounded-full bg-[#d2a36b]/10 text-[#d2a36b] font-semibold ml-2 border border-[#d2a36b]/20">{{ doc.visible_for }}</span>
-              </div>
-            </div>
-          </div>
-          <button type="button" (click)="removeDocument(i)"
-            class="text-xs font-bold text-danger bg-white border border-red-200 px-3 py-1 rounded-md hover:bg-red-50 shadow-sm">Remove</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT COLUMN (Side Panels) -->
-  <div class="xl:col-span-4 flex flex-col gap-x-3 gap-y-2">
-    
-    <!-- Company Name -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Company Name</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div class="flex items-start justify-between gap-x-3 gap-y-2">
-          <div>
-            <h6 class="text-[12px] font-bold text-gray-800 m-0">Display as Company</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">If enabled it will be shown in the list page</p>
-          </div>
-          <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="displayAsCompany" [(ngModel)]="displayAsCompany">
-            <label for="displayAsCompany" class="label-primary"></label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vendor Type -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Vendor Type</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Vendor Type</label>
-          <ng-select #vendorTypeSelect [items]="vendorTypes" appendTo="body" [searchable]="true" placeholder="Select Type" class="ng-select-sm w-full" [(ngModel)]="vendorData.vendor_type" bindValue="id" bindLabel="name">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="vendorTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        
-        <div class="flex items-start justify-between gap-x-3 gap-y-2">
-          <div>
-            <h6 class="text-[12px] font-bold text-gray-800 m-0">Assignment</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Auto assign tasks</p>
-          </div>
-          <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="assignment" [(ngModel)]="assignment">
-            <label for="assignment" class="label-primary"></label>
-          </div>
-        </div>
-
-        <div class="flex items-start justify-between gap-x-3 gap-y-2">
-          <div>
-            <h6 class="text-[12px] font-bold text-gray-800 m-0">Qualifies</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Check if qualifies for maintenance jobs</p>
-          </div>
-          <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="qualifies" [(ngModel)]="qualifies">
-            <label for="qualifies" class="label-primary"></label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Categories -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Categories</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Select Categories</label>
-          <ng-select #categorySelect [items]="categories" appendTo="body" [searchable]="true" placeholder="Select Categories" [multiple]="true" class="ng-select-sm w-full" [(ngModel)]="vendorData.category" bindValue="id" bindLabel="name">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="categorySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Fixed Floating Form Actions Bottom Bar -->
-<div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" routerLink="/contacts/vendors" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
-    Cancel
-  </button>
-  <button type="button" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95" (click)="saveVendor()">
-    {{ isEditMode ? 'Save Changes' : 'Save Vendor' }}
-  </button>
-</div>
-
-<!-- Modal: Add Document -->
-<div *ngIf="isAddDocModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-  <div class="ov-modal ov-modal--sm">
-    <div class="ov-modal__header">
+<div class="ov-form ov-add-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <a routerLink="/contacts/vendors" class="ov-back" title="Back to Vendors">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
       <div>
-        <h6 class="ov-modal__title">Add document</h6>
+        <h3 class="ov-page-title">{{ isEditMode ? 'Edit Vendor' : 'New Vendor' }}</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a routerLink="/contacts/vendors">Contacts</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/contacts/vendors">Vendors</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit Vendor' : 'New Vendor' }}</li>
+        </ol>
       </div>
-      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleDocModal(false)" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" routerLink="/contacts/vendors" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveVendor()">
+        {{ isEditMode ? 'Save Changes' : 'Save Vendor' }}
       </button>
     </div>
+  </div>
 
-    <div class="ov-modal__body flex flex-col gap-4">
-      <div class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-[13px] text-primary">
-        <i class="ri-information-line mt-0.5 text-[16px]"></i>
-        <span>Select document type, enter details and upload the document to attach it to the profile.</span>
-      </div>
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
 
-      <div>
-        <label class="ov-label">Document Type <span class="text-danger">*</span></label>
-        <ng-select [items]="docTypes" appendTo="body" [searchable]="true" placeholder="Search Document Type" class="ov-select w-full" [(ngModel)]="docForm.document_type"></ng-select>
-        <span class="ov-modal__hint">Please enter mapping in the field below to automatically map the document</span>
-      </div>
-
-      <div>
-        <label class="ov-label">Document number</label>
-        <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.document_no">
-      </div>
-
-      <div class="ov-fields ov-fields--2">
-        <div>
-          <label class="ov-label">Issue Date</label>
-          <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="Select Date" [(ngModel)]="docForm.issue_date">
+      <!-- Happy Tenant Application Login Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Happy Tenant Application Login Information</h6>
         </div>
-        <div>
-          <label class="ov-label">Expiry Date</label>
-          <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="Select Date" [(ngModel)]="docForm.expiry_date">
-        </div>
-      </div>
-
-      <div>
-        <label class="ov-label">Visible for verify</label>
-        <ng-select [items]="['None', 'Tenant', 'Landlord']" appendTo="body" [searchable]="true" placeholder="Select" class="ov-select w-full" [(ngModel)]="docForm.visible_for"></ng-select>
-      </div>
-
-      <div>
-        <label class="ov-label">Note Add / Attach <span class="text-danger">*</span></label>
-        <input type="file" #docFileInput style="display: none" (change)="onDocFileSelected($event)">
-        <div (click)="docFileInput.click()" class="mt-1 flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-defaultborder bg-bodybg p-6 hover:bg-light transition-colors">
-          <div class="flex h-10 w-10 items-center justify-center rounded-md border border-defaultborder bg-white text-textmuted shadow-sm">
-            <i class="ri-upload-cloud-2-line text-lg"></i>
+        <div class="ov-card__body">
+          <div class="ov-photo-row">
+            <div class="ov-photo-avatar">
+              <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" alt="Profile Preview">
+              <span *ngIf="!photoPreviewUrl">PH</span>
+            </div>
+            <div class="ov-photo-meta">
+              <input type="file" #photoInput class="hidden" accept="image/*" (change)="onPhotoSelected($event)">
+              <button type="button" (click)="photoInput.click()" class="ov-btn ov-btn-primary">
+                <i class="ri-upload-2-line"></i> Upload Photo
+              </button>
+              <span class="ov-photo-hint">JPG, PNG or GIF (max. 5MB)</span>
+            </div>
           </div>
-          <span class="text-xs text-defaulttextcolor font-semibold" *ngIf="docForm.fileName">{{ docForm.fileName }} ({{ docForm.fileSize }})</span>
-          <span class="text-[10px] text-textmuted" *ngIf="!docForm.fileName">Click to browse file</span>
+
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Email <span class="text-danger">*</span></label>
+              <input type="email" class="ov-input" [(ngModel)]="vendorData.email_address" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Username</label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.username" placeholder="Enter">
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- General Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">General Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Company Name</label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.company_name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Contact Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.first_name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Phone Number</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" [(ngModel)]="vendorData.mobile_no" placeholder="Enter">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Fax Number</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" placeholder="Enter">
+              </div>
+            </div>
+            <div class="ov-fields__span-2">
+              <label class="ov-label">Tax Registration Number</label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.tax_registration_no" placeholder="Enter">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Address Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Address Line 1 <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.address1" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Address Line 2</label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.address2" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Country <span class="text-danger">*</span></label>
+              <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
+                [searchable]="true" placeholder="Select Country" class="ov-select w-full"
+                [(ngModel)]="vendorData.country_id" (change)="onCountryChange()">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="countrySelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt=""> {{ item.name }}
+                  </div>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt=""> {{ item.name }}
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">State/ Province</label>
+              <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select"
+                class="ov-select w-full" [(ngModel)]="vendorData.stateid" bindValue="id" bindLabel="name"
+                (change)="onStateChange()">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="stateSelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">City</label>
+              <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select"
+                class="ov-select w-full" [(ngModel)]="vendorData.city" bindValue="id" bindLabel="name">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="citySelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Postcode</label>
+              <input type="text" class="ov-input" [(ngModel)]="vendorData.zipcode" placeholder="Enter">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents & Attachments -->
+      <div class="ov-card">
+        <div class="ov-card__head ov-card__head--row">
+          <div>
+            <h6 class="ov-card-title">Documents &amp; Attachments</h6>
+            <p class="ov-card-sub">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
+          </div>
+          <button type="button" (click)="toggleDocModal(true)" class="ov-link-info">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Document
+          </button>
+        </div>
+        <div class="ov-card__body flex flex-col gap-3">
+          <div *ngIf="uploadedDocuments.length === 0" class="ov-doc-empty">
+            <div class="ov-doc-empty__icon"><i class="ri-file-text-line"></i></div>
+            <h6 class="ov-doc-empty__title">No documents uploaded yet</h6>
+            <p class="ov-doc-empty__sub">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
+            <button type="button" (click)="toggleDocModal(true)" class="ov-btn ov-btn-primary mt-1">Add Document</button>
+          </div>
+
+          <div *ngFor="let doc of uploadedDocuments; let i = index" class="ov-doc-row">
+            <div class="ov-doc-row__info">
+              <div class="ov-doc-row__icon"><i class="ri-file-pdf-line"></i></div>
+              <div class="flex flex-col min-w-0">
+                <span class="ov-doc-row__name">{{ doc.fileName }}</span>
+                <div class="ov-doc-row__meta">
+                  <span>{{ doc.document_type }}</span>
+                  <span class="ov-doc-row__dot"></span>
+                  <span>{{ doc.fileSize }}</span>
+                  <span class="ov-doc-row__dot"></span>
+                  <span>Uploaded today</span>
+                  <span class="ov-doc-row__badge">{{ doc.visible_for }}</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" (click)="removeDocument(i)" class="ov-btn ov-btn-ghost ov-doc-row__remove">Remove</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleDocModal(false)">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">Save</button>
+    <!-- Right column -->
+    <aside class="ov-add-layout__aside">
+
+      <!-- Company Name -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Company Name</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-switch-row">
+            <div>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Display as Company</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">If enabled it will be shown in the list page</small>
+            </div>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input id="displayAsCompany" type="checkbox" [(ngModel)]="displayAsCompany"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vendor Type -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Vendor Type</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div>
+            <label class="ov-label">Vendor Type</label>
+            <ng-select #vendorTypeSelect [items]="vendorTypes" appendTo="body" [searchable]="true"
+              placeholder="Select Type" class="ov-select w-full" [(ngModel)]="vendorData.vendor_type"
+              bindValue="id" bindLabel="name">
+              <ng-template ng-header-tmp>
+                <input type="text" placeholder="Search" (input)="vendorTypeSelect.filter($any($event.target).value)"
+                  (click)="$event.stopPropagation()">
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignment / Qualifies -->
+      <div class="ov-card">
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="ov-switch-row">
+            <div>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Assignment</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">Auto assign tasks</small>
+            </div>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input id="assignment" type="checkbox" [(ngModel)]="assignment"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]">
+            </div>
+          </div>
+
+          <hr class="border-defaultborder m-0">
+
+          <div class="ov-switch-row">
+            <div>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Qualifies</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">Check if qualifies for maintenance jobs</small>
+            </div>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input id="qualifies" type="checkbox" [(ngModel)]="qualifies"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Categories</h6>
+        </div>
+        <div class="ov-card__body">
+          <div>
+            <label class="ov-label">Maintenance Categories</label>
+            <ng-select #categorySelect [items]="categories" appendTo="body" [searchable]="true"
+              placeholder="Select Categories" [multiple]="true" class="ov-select w-full"
+              [(ngModel)]="vendorData.category" bindValue="id" bindLabel="name">
+              <ng-template ng-header-tmp>
+                <input type="text" placeholder="Search" (input)="categorySelect.filter($any($event.target).value)"
+                  (click)="$event.stopPropagation()">
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <div class="ov-add-footer">
+    <button type="button" routerLink="/contacts/vendors" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="saveVendor()">
+      {{ isEditMode ? 'Save Changes' : 'Save Vendor' }}
+    </button>
+  </div>
+</div>
+
+<!-- Modal: Add Document — Figma 1056:8002 -->
+<div *ngIf="isAddDocModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack">
+    <button type="button" class="ov-modal__float-close" (click)="toggleDocModal(false)" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="ov-modal ov-modal--doc">
+      <div class="ov-modal__header ov-modal__header--doc">
+        <div>
+          <h6 class="ov-modal__title ov-modal__title--doc">Add Document</h6>
+          <p class="ov-modal__sub ov-modal__sub--doc">Select a document type, upload a file, and choose who can view it.</p>
+        </div>
+      </div>
+
+      <div class="ov-modal__body ov-modal__body--doc">
+        <div>
+          <label class="ov-label">Document type <span class="text-danger">*</span></label>
+          <ng-select [items]="docTypes" appendTo="body" [searchable]="true" placeholder="Select Document Type"
+            class="ov-select w-full" [(ngModel)]="docForm.document_type"></ng-select>
+          <span class="ov-modal__hint">Choose the category that best matches the uploaded document.</span>
+        </div>
+
+        <div>
+          <label class="ov-label">Document Number</label>
+          <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.document_no">
+        </div>
+
+        <div class="ov-fields ov-fields--2">
+          <div>
+            <label class="ov-label">Issue Date</label>
+            <div class="ov-date">
+              <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+              <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
+                [(ngModel)]="docForm.issue_date">
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Expiry Date</label>
+            <div class="ov-date">
+              <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+              <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
+                [(ngModel)]="docForm.expiry_date">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label">Issuing Authority</label>
+          <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.issuing_authority">
+        </div>
+
+        <div class="ov-modal__share-panel">
+          <div class="ov-modal__share">
+            <div class="ov-modal__share-copy">
+              <span class="ov-modal__share-title">Share with tenant</span>
+              <span class="ov-modal__hint">Visible in the tenant mobile app.</span>
+            </div>
+            <div class="custom-toggle-switch flex-shrink-0">
+              <input type="checkbox" id="vnShareTenant" [(ngModel)]="docForm.share_with_tenant">
+              <label for="vnShareTenant" class="label-primary"></label>
+            </div>
+          </div>
+          <div class="ov-modal__share">
+            <div class="ov-modal__share-copy">
+              <span class="ov-modal__share-title">Share with landlord</span>
+              <span class="ov-modal__hint">Visible in the landlord mobile app.</span>
+            </div>
+            <div class="custom-toggle-switch flex-shrink-0">
+              <input type="checkbox" id="vnShareLandlord" [(ngModel)]="docForm.share_with_landlord">
+              <label for="vnShareLandlord" class="label-primary"></label>
+            </div>
+          </div>
+        </div>
+
+        <input type="file" #docFileInput class="hidden" accept=".pdf,.jpg,.jpeg,.png" (change)="onDocFileSelected($event)">
+        <div class="ov-modal__drop" role="button" tabindex="0" (click)="docFileInput.click()"
+          (keydown.enter)="docFileInput.click()">
+          <img class="ov-modal__drop-icon" src="assets/images/common/upload-doc.svg" alt="" width="35" height="35" />
+          <div>
+            <p class="ov-modal__drop-title">Drag and drop your file here</p>
+            <p class="ov-modal__drop-sub">or browse from your device</p>
+          </div>
+          <button type="button" class="ov-btn-accent" (click)="$event.stopPropagation(); docFileInput.click()">Browse files</button>
+          <p class="ov-modal__drop-hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
+        </div>
+
+        <div class="ov-modal__file" *ngIf="docForm.fileName">
+          <div class="ov-modal__file-main">
+            <div class="ov-modal__file-ico">
+              <img src="assets/images/common/file-invoice.svg" alt="" width="20" height="20" />
+            </div>
+            <div>
+              <p class="ov-modal__file-name">{{ docForm.fileName }}</p>
+              <div class="ov-modal__file-meta">
+                <span>{{ docForm.fileExt || 'FILE' }}</span>
+                <span class="ov-modal__file-dot"></span>
+                <span>{{ docForm.fileSize }}</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="ov-modal__file-remove" (click)="clearDocFile()">Remove</button>
+        </div>
+      </div>
+
+      <div class="ov-modal__footer ov-modal__footer--doc">
+        <button type="button" class="ov-btn ov-btn-soft" (click)="toggleDocModal(false)">Close</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">Save</button>
+      </div>
     </div>
   </div>
 </div>
-<!-- End::row-1 -->

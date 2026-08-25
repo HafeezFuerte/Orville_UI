@@ -1,0 +1,452 @@
+/* Shared Facility kanban board — Tickets + Work Orders (light + dark) */
+
+.ov-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 4px;
+  padding: 1px;
+}
+
+.ov-view-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--primary) / 0.04);
+  }
+
+  &.is-on {
+    background: rgb(var(--primary));
+
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
+}
+
+.ov-kanban {
+  min-height: 650px;
+}
+
+.ov-kanban__track {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.ov-kanban__col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 302px;
+  width: 302px;
+  max-width: 302px;
+  min-height: 434px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f8fb;
+}
+
+.ov-kanban__col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 18px;
+}
+
+.ov-kanban__col-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ov-kanban__col-name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  color: rgb(var(--primary));
+  white-space: nowrap;
+}
+
+.ov-kanban__col-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 18px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgb(var(--text-muted));
+}
+
+.ov-kanban__col-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ov-kanban__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.ov-kanban-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+}
+
+.ov-kanban-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.ov-kanban-card__id {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.ov-kanban-card__priority {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgb(var(--default-border));
+  background: #f8f8fb;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+  color: rgb(var(--default-text-color));
+
+  &--emergency {
+    color: #c94a4a;
+    border-color: rgb(201 74 74 / 0.25);
+    background: rgb(201 74 74 / 0.08);
+  }
+
+  &--high {
+    color: rgb(var(--primary));
+  }
+
+  &--medium {
+    color: #d08a28;
+    border-color: rgb(208 138 40 / 0.25);
+    background: rgb(208 138 40 / 0.08);
+  }
+
+  &--low {
+    color: #27865b;
+  }
+
+  &--soft {
+    color: rgb(var(--text-muted));
+  }
+}
+
+.ov-kanban-card__title {
+  margin: 0;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: rgb(var(--default-text-color));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ov-kanban-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: rgb(var(--text-muted));
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.ov-kanban-card__divider {
+  width: 100%;
+  height: 0;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.ov-kanban-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.ov-kanban-card__assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ov-kanban-card__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgb(var(--primary));
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.ov-kanban-card__assignee-name {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: rgb(var(--primary));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.ov-kanban-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: normal;
+  color: rgb(var(--text-muted));
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ov-kanban-card__status-menu {
+  position: absolute;
+  inset-inline-end: 0;
+  z-index: 20;
+  margin-top: 4px;
+  min-width: 148px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px 0;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--default-border));
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.ov-kanban-card__status-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(var(--primary) / 0.08);
+    color: rgb(var(--default-text-color));
+    outline: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .ov-kanban__col {
+    flex-basis: 280px;
+    width: 280px;
+    max-width: 280px;
+  }
+}
+
+/* Dark mode — shared for tickets + work orders */
+.dark .ov-view-toggle {
+  border-color: rgb(255 255 255 / 0.12);
+}
+
+.dark .ov-view-toggle__btn {
+  background: rgb(var(--body-bg));
+
+  &:hover {
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  &.is-on {
+    background: rgb(var(--primary));
+
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
+
+  &:not(.is-on) img {
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+  }
+}
+
+.dark .ov-kanban__col {
+  background: rgb(255 255 255 / 0.04);
+}
+
+.dark .ov-kanban__col-name {
+  color: #fff;
+}
+
+.dark .ov-kanban__col-count {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.12);
+  color: rgb(255 255 255 / 0.7);
+}
+
+.dark .ov-kanban__col-more img {
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+
+.dark .ov-kanban-card {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.12);
+  box-shadow: none;
+}
+
+.dark .ov-kanban-card__title {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.dark .ov-kanban-card__meta {
+  color: rgb(255 255 255 / 0.55);
+
+  > img {
+    filter: brightness(0) invert(1);
+    opacity: 0.65;
+  }
+}
+
+.dark .ov-kanban-card__divider {
+  border-top-color: rgb(255 255 255 / 0.12);
+}
+
+.dark .ov-kanban-card__assignee-name {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.dark .ov-kanban-card__priority {
+  background: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.12);
+  color: rgb(255 255 255 / 0.85);
+
+  &--emergency {
+    color: #f0a0a0;
+    border-color: rgb(201 74 74 / 0.45);
+    background: rgb(201 74 74 / 0.22);
+  }
+
+  &--high {
+    color: #c4c4e0;
+  }
+
+  &--medium {
+    color: #f0c987;
+    border-color: rgb(208 138 40 / 0.45);
+    background: rgb(208 138 40 / 0.18);
+  }
+
+  &--low {
+    color: #7dcea6;
+  }
+
+  &--soft {
+    color: rgb(255 255 255 / 0.55);
+  }
+}
+
+.dark .ov-kanban-card__status {
+  background: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.85);
+
+  img {
+    filter: brightness(0) invert(1);
+    opacity: 0.75;
+  }
+}
+
+.dark .ov-kanban-card__status-menu {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.14);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.dark .ov-kanban-card__status-item {
+  color: rgb(255 255 255 / 0.88);
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+  }
+}

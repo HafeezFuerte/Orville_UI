@@ -1,4 +1,610 @@
-/* Create lease styling */
-.box {
-  margin-bottom: 0px !important; /* Force override portfolio detail page layout */
+/* Figma 1382:21828 — New Lease management */
+
+.ov-add-form {
+  display: flex !important;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: none;
+}
+
+.ov-add-header {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 20px 0 16px !important;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-add-header__start {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.ov-add-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.ov-add-header .ov-btn {
+  padding-inline: 20px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+}
+
+.ov-add-header .ov-btn-ghost {
+  border-color: transparent;
+  color: rgb(var(--text-muted));
+}
+
+.ov-add-body {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 400px !important;
+  column-gap: 20px;
+  row-gap: 1.25rem;
+  width: 100%;
+  max-width: 1188px;
+  margin-inline: auto;
+}
+
+.ov-add-layout__main {
+  grid-column: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ov-add-layout__aside {
+  grid-column: 2;
+  display: flex;
+  width: 400px;
+  max-width: 400px;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 84px;
+  align-self: start;
+}
+
+@media (max-width: 767px) {
+  .ov-add-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .ov-add-layout__aside {
+    grid-column: 1;
+    width: 100%;
+    max-width: none;
+    position: static;
+  }
+}
+
+.lease-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+
+  input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: rgb(var(--primary));
+  }
+}
+
+.lease-field-hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 17px;
+  color: rgb(var(--text-muted));
+}
+
+.lease-duration {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 16px 20px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+  background: rgb(var(--body-bg));
+  font-size: 14px;
+  color: rgb(var(--default-text-color));
+}
+
+.dark .lease-duration {
+  background: rgb(var(--default-background));
+}
+
+.lease-sched-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lease-sched-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.lease-sched-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.26px;
+  color: rgb(var(--link));
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(var(--link-hover));
+  }
+
+  &--danger {
+    color: #c94a4a;
+  }
+}
+
+.lease-sched-desc {
+  font-size: 13px;
+  line-height: 17px;
+  color: rgb(var(--text-muted));
+}
+
+.lease-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+}
+
+.lease-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgb(var(--default-border));
+    font-size: 12px;
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: 600;
+    color: rgb(var(--default-text-color));
+    background: rgb(var(--body-bg));
+  }
+
+  td {
+    color: rgb(var(--text-muted));
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.dark .lease-table th {
+  background: rgb(var(--default-background));
+}
+
+/* Selection Summary — cream accent pills (Figma accent #BD9759 chrome, not theme primary) */
+.lease-summary__block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.lease-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.lease-summary__label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+}
+
+.lease-summary__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: rgb(var(--primary));
+  cursor: pointer;
+}
+
+.lease-summary__pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border-left: 3px solid #bd9759;
+  background: #f7f1e7;
+}
+
+.dark .lease-summary__pill {
+  background: rgb(189 151 89 / 0.15);
+}
+
+.lease-summary__pill-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #bd9759;
+}
+
+.lease-summary__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--primary));
+  white-space: nowrap;
+}
+
+.dark .lease-summary__badge {
+  background: rgb(var(--body-bg));
+}
+
+.lease-summary__empty {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: rgb(var(--body-bg));
+  font-size: 14px;
+  color: #b1b1b3;
+}
+
+.dark .lease-summary__empty {
+  background: rgb(var(--default-background));
+}
+
+.lease-summary__rule {
+  width: 100%;
+  margin: 4px 0 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.lease-summary__details-title {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--default-text-color));
+}
+
+.lease-summary__kv {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lease-summary__kv-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.lease-summary__k {
+  color: rgb(var(--text-muted));
+  font-weight: 400;
+}
+
+.lease-summary__v {
+  color: rgb(var(--default-text-color));
+  font-weight: 700;
+}
+
+.lease-occupant-stack {
+  width: 100%;
+  max-width: 520px;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.lease-occupant-modal {
+  width: 100%;
+  max-width: none;
+  padding: 20px 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.lease-occupant-modal__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 20px 18px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.lease-occupant-modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: rgb(var(--default-text-color));
+}
+
+.lease-occupant-modal__sub {
+  margin: 0;
+  max-width: 364px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  color: #93939d;
+}
+
+.lease-occupant-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.lease-occupant-modal__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lease-occupant-modal__fields .ov-label {
+  margin-bottom: 16px !important;
+}
+
+.lease-occupant-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 34px;
+  padding: 3px 10px;
+  border: 1px dashed rgb(var(--default-border));
+  border-radius: 4px;
+  background: rgb(var(--body-bg));
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgb(var(--light));
+  }
+}
+
+.dark .lease-occupant-add {
+  background: rgb(var(--default-background));
+}
+
+.lease-occupant-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.dark .lease-occupant-list {
+  background: rgb(var(--body-bg));
+}
+
+.lease-occupant-list__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 18px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.lease-occupant-list__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.lease-occupant-list__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 3px 9px 2px 8px;
+  border-radius: 25px;
+  background: #eeeef5;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+  white-space: nowrap;
+}
+
+.dark .lease-occupant-list__count {
+  background: rgba(var(--primary-rgb), 0.15);
+}
+
+.lease-occupant-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.lease-occupant-list__empty {
+  margin: 0;
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-style: italic;
+  color: rgb(var(--text-muted));
+}
+
+.lease-occupant-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 20px 15px 10px;
+  border: 1px solid rgb(238 238 245);
+  border-radius: 8px;
+  background: rgb(var(--body-bg));
+}
+
+.dark .lease-occupant-row {
+  border-color: rgb(var(--default-border));
+  background: rgb(var(--default-background));
+}
+
+.lease-occupant-row__cols {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lease-occupant-row__k {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgb(var(--text-muted));
+}
+
+.lease-occupant-row__v {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.lease-occupant-row__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.lease-occupant-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--light));
+  }
+}
+
+.dark .lease-occupant-icon-btn {
+  background: rgb(var(--body-bg));
+}
+
+.lease-occupant-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px 20px 0;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.lease-occupant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 36px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lease-occupant-btn--close {
+  background: #eeeef5;
+  color: rgb(var(--text-muted));
+}
+
+.dark .lease-occupant-btn--close {
+  background: rgba(var(--primary-rgb), 0.15);
+  color: rgb(var(--text-muted));
+}
+
+.lease-occupant-btn--save {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+@media (max-width: 575px) {
+  .lease-occupant-row {
+    flex-direction: column;
+  }
+
+  .lease-occupant-row__cols {
+    grid-template-columns: 1fr;
+  }
+
+  .lease-occupant-row__actions {
+    align-self: flex-end;
+  }
 }

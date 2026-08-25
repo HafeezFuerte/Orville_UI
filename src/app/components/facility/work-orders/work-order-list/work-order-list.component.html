@@ -45,12 +45,12 @@
       <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">
         {{ viewMode === 'board' ? 'Workflow Board' : 'Work Orders List' }}
       </h5>
-      <div class="wo-view-toggle">
-        <button type="button" (click)="setViewMode('list')" class="wo-view-toggle__btn"
+      <div class="ov-view-toggle">
+        <button type="button" (click)="setViewMode('list')" class="ov-view-toggle__btn"
           [class.is-on]="viewMode === 'list'" data-tooltip="Switch to List" aria-label="List view">
           <img src="assets/images/work-orders/list-details.svg" alt="" width="20" height="20" class="wo-icon" />
         </button>
-        <button type="button" (click)="setViewMode('board')" class="wo-view-toggle__btn"
+        <button type="button" (click)="setViewMode('board')" class="ov-view-toggle__btn"
           [class.is-on]="viewMode === 'board'" data-tooltip="Switch to Board" aria-label="Board view">
           <img src="assets/images/work-orders/board.svg" alt="" width="20" height="20" class="wo-icon" />
         </button>
@@ -188,57 +188,57 @@
   </div>
 
   <!-- Kanban / Workflow Board (Figma 2946:97655) -->
-  <div *ngIf="viewMode === 'board'" class="wo-kanban px-5 pb-5 pt-5">
-    <div class="wo-kanban__track">
-      <section class="wo-kanban__col" *ngFor="let col of kanbanColumns">
-        <header class="wo-kanban__col-head">
-          <div class="wo-kanban__col-title">
-            <span class="wo-kanban__col-name">{{ col }}</span>
-            <span class="wo-kanban__col-count">{{ columnCount(col) }}</span>
+  <div *ngIf="viewMode === 'board'" class="ov-kanban px-5 pb-5 pt-5">
+    <div class="ov-kanban__track">
+      <section class="ov-kanban__col" *ngFor="let col of kanbanColumns">
+        <header class="ov-kanban__col-head">
+          <div class="ov-kanban__col-title">
+            <span class="ov-kanban__col-name">{{ col }}</span>
+            <span class="ov-kanban__col-count">{{ columnCount(col) }}</span>
           </div>
-          <button type="button" class="wo-kanban__col-more" aria-label="Column actions">
+          <button type="button" class="ov-kanban__col-more" aria-label="Column actions">
             <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="14" height="14" class="wo-icon" />
           </button>
         </header>
 
-        <div class="wo-kanban__stack">
-          <article class="wo-kanban-card" *ngFor="let row of cardsForColumn(col)"
+        <div class="ov-kanban__stack">
+          <article class="ov-kanban-card" *ngFor="let row of cardsForColumn(col)"
             (click)="navigateToDetail(row.code)">
-            <div class="wo-kanban-card__top">
-              <a class="wo-kanban-card__id ov-link" [routerLink]="['/facility/work-orders', row.code]"
+            <div class="ov-kanban-card__top">
+              <a class="ov-kanban-card__id ov-link" [routerLink]="['/facility/work-orders', row.code]"
                 (click)="$event.stopPropagation()">#{{ row.code }}</a>
-              <span class="wo-kanban-card__priority" [ngClass]="kanbanPriorityClass(row.priority)">
+              <span class="ov-kanban-card__priority" [ngClass]="kanbanPriorityClass(row.priority)">
                 {{ row.priority || '-' }}
               </span>
             </div>
 
-            <h6 class="wo-kanban-card__title">{{ row.title || '-' }}</h6>
+            <h6 class="ov-kanban-card__title">{{ row.title || '-' }}</h6>
 
-            <div class="wo-kanban-card__meta">
+            <div class="ov-kanban-card__meta">
               <img src="assets/images/work-orders/map-pin.svg" alt="" width="12" height="12" class="wo-icon" />
               <span>{{ cardLocation(row) }}</span>
             </div>
-            <div class="wo-kanban-card__meta">
+            <div class="ov-kanban-card__meta">
               <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="wo-icon" />
               <span>{{ cardDate(row) }}</span>
             </div>
 
-            <div class="wo-kanban-card__divider"></div>
+            <div class="ov-kanban-card__divider"></div>
 
-            <div class="wo-kanban-card__foot" (click)="$event.stopPropagation()">
-              <div class="wo-kanban-card__assignee">
-                <span class="wo-kanban-card__avatar">{{ assigneeInitials(row) }}</span>
-                <span class="wo-kanban-card__assignee-name">{{ assigneeName(row) }}</span>
+            <div class="ov-kanban-card__foot" (click)="$event.stopPropagation()">
+              <div class="ov-kanban-card__assignee">
+                <span class="ov-kanban-card__avatar">{{ assigneeInitials(row) }}</span>
+                <span class="ov-kanban-card__assignee-name">{{ assigneeName(row) }}</span>
               </div>
               <div class="relative">
-                <button type="button" class="wo-kanban-card__status"
+                <button type="button" class="ov-kanban-card__status"
                   (click)="toggleKanbanStatus(row.code, $event)">
                   {{ getArabicLookupName(row, 'status_nm') || col }}
                   <img src="assets/images/work-orders/chevron-down.svg" alt="" width="12" height="12" class="wo-icon" />
                 </button>
-                <div *ngIf="openKanbanStatusCode === row.code" class="wo-kanban-card__status-menu">
+                <div *ngIf="openKanbanStatusCode === row.code" class="ov-kanban-card__status-menu">
                   <button type="button" *ngFor="let status of kanbanColumns"
-                    class="wo-kanban-card__status-item"
+                    class="ov-kanban-card__status-item"
                     (click)="openKanbanStatusCode = null">{{ status }}</button>
                 </div>
               </div>

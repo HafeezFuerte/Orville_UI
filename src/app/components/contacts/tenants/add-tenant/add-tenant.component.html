@@ -1,495 +1,581 @@
-<!-- Start::row-1 -->
-<div class="block justify-between page-header md:flex mb-6 items-center">
-  <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/tenants" class="ti-btn ti-btn-light btn-wave !px-3 !py-2">
-      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    </button>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">Home</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/tenants" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblContact' |
-            translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/tenants" class="hover:text-primary cursor-pointer">Tenants</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? 'Edit Tenant' :
-          ('web.contacts.lblNewTenant' | translate) }}</li>
-      </ol>
+<div class="ov-form ov-add-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <a routerLink="/contacts/tenants" class="ov-back" title="Back to Tenants">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
+      <div>
+        <h3 class="ov-page-title">{{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a routerLink="/contacts/tenants">{{ 'web.contacts.lblContact' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/contacts/tenants">Tenants</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit Tenant' : ('web.contacts.lblNewTenant' | translate) }}</li>
+        </ol>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" routerLink="/contacts/tenants" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveTenant()">
+        {{ isEditMode ? 'Save Changes' : 'Save Tenant' }}
+      </button>
     </div>
   </div>
-</div>
 
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-x-3 gap-y-2 pb-20">
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
 
-  <!-- LEFT COLUMN (Main Form) -->
-  <div class="xl:col-span-8 flex flex-col gap-x-3 gap-y-2">
-
-    <!-- 1. Happy Tenant Application Login Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblTenantLoginInfo' |
-          translate }}</h6>
-      </div>
-      <div class="box-body p-4">
-        <div class="flex items-center gap-x-3 gap-y-2 mb-6">
-          <div
-            class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20 overflow-hidden">
-            <img *ngIf="profilePreviewUrl" [src]="profilePreviewUrl" alt="Profile Preview"
-              class="w-full h-full object-cover">
-            <span *ngIf="!profilePreviewUrl">PH</span>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <input type="file" (change)="onProfileImageSelected($event)" accept="image/*" class="hidden" #profileUpload>
-            <button type="button" (click)="profileUpload.click()"
-              class="px-3 py-1.5 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-sm flex items-center gap-1.5 w-fit">
-              <i class="ri-upload-2-line"></i> Upload Photo
-            </button>
-            <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
-          </div>
+      <!-- Happy Tenant Application Login Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.contacts.lblTenantLoginInfo' | translate }}</h6>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblEmail' |
-              translate }} <span class="text-danger">*</span></label>
-            <input type="email"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-              [(ngModel)]="tenantData.email_address" [placeholder]="'web.contacts.lblEnteruser' | translate">
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblUsername' |
-              translate }}</label>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-              [(ngModel)]="tenantData.username" [placeholder]="'web.contacts.lblEnteremail' | translate">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. General Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblGeneralInformation' |
-          translate }}</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Honorific</label>
-          <ng-select #honorificSelect [items]="honorifics" appendTo="body" [searchable]="true" placeholder="Select"
-            class="ng-select-sm w-full" [(ngModel)]="tenantData.honorific">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="honorificSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">First Name <span
-              class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.first_name" placeholder="Enter">
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Last Name <span
-              class="text-danger">*</span></label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.last_name" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Middle Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.middle_name" placeholder="Enter">
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Phone Number</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
-              [(ngModel)]="tenantData.mobile_no" placeholder="Enter">
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblGender' |
-            translate }}</label>
-          <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true"
-            [placeholder]="'web.contacts.lblSelect' | translate" class="ng-select-sm w-full"
-            [(ngModel)]="tenantData.gender">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="genderSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Date of Birth</label>
-          <div class="input-group relative">
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-              [(ngModel)]="tenantData.dob" appFlowbiteDatepicker
-              placeholder="Select Date">
-            <button class="btn btn-sm bg-gray-50 border border-gray-200 border-s-0"><img
-                src="assets/images/myday/calendar.svg" alt="" width="16" height="16" /></button>
-          </div>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Status</label>
-          <ng-select #statusSelect [items]="statuses" appendTo="body" [searchable]="true" placeholder="Select Status"
-            class="ng-select-sm w-full" [(ngModel)]="tenantData.status">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="statusSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Address Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblAddressInformation' |
-          translate }}</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 1</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.address1" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Address Line 2</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.address2" placeholder="Enter">
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Nationality</label>
-          <ng-select #nationalitySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true"
-            placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="selectedNationality">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="nationalitySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Country <span
-              class="text-danger">*</span></label>
-          <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
-            [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full"
-            [(ngModel)]="tenantData.country_id" (change)="onCountryChange()">
-            <ng-template ng-option-tmp let-item="item">
-              <div class="flex items-center gap-2">
-                <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
-              </div>
-            </ng-template>
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                  (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-              </div>
-            </ng-template>
-            <ng-template ng-label-tmp let-item="item">
-              <div class="flex items-center gap-2">
-                <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3 md:col-span-2">
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">State/ Province</label>
-            <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select"
-              class="ng-select-sm w-full" [(ngModel)]="tenantData.stateid" bindValue="id" bindLabel="name"
-              (change)="onStateChange()">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                    (input)="stateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">City</label>
-            <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select"
-              class="ng-select-sm w-full" [(ngModel)]="tenantData.city" bindValue="id" bindLabel="name">
-              <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..."
-                    (input)="citySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-          <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Postcode</label>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-              [(ngModel)]="tenantData.zipcode" placeholder="Enter">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Additional Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Additional Information</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Additional Phone1</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
-              [(ngModel)]="tenantData.addionalphone1" placeholder="Enter">
-          </div>
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Additional Phone2</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
-              [(ngModel)]="tenantData.addionalphone2" placeholder="Enter">
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Landline Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.landline_no" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Fax Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.fax_no" placeholder="Enter">
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. Tenancy Lease Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Tenancy Lease Information</h6>
-      </div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Name on Lease</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.name_on_lease" placeholder="Enter">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Email on Lease</label>
-          <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.email_on_lease" placeholder="Enter">
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Phone on Lease</label>
-          <div class="flex input-group">
-            <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center">
-              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
-              <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
-            </span>
-            <input type="text"
-              class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0"
-              [(ngModel)]="tenantData.phone_on_lease" placeholder="Enter">
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT COLUMN (Side Panels) -->
-  <div class="xl:col-span-4 flex flex-col gap-x-3 gap-y-2">
-
-    <!-- 1. Statement Of Account -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Statement Of Account</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div class="flex items-start justify-between gap-x-3 gap-y-2">
-          <div>
-            <h6 class="text-[12px] font-bold text-gray-800 m-0">Auto Schedule?</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">If enabled, a monthly statement of account will be
-              emailed on the scheduled day.</p>
-          </div>
-          <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="autoSchedule" [(ngModel)]="autoSchedule">
-            <label for="autoSchedule" class="label-primary"></label>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3 text-[12px] text-gray-600 font-medium">
-          On the
-          <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false"
-            class="w-16 ng-select-sm text-center font-bold" [(ngModel)]="tenantData.schedule_day"
-            placeholder="1"></ng-select>
-          of every month
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Company Information -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Company Information</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div class="flex items-start justify-between gap-x-3 gap-y-2">
-          <div>
-            <h6 class="text-[12px] font-bold text-gray-800 m-0">Display as Company</h6>
-            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">If enabled it will be shown in the list page</p>
-          </div>
-          <div class="custom-toggle-switch flex-shrink-0 mt-1">
-            <input type="checkbox" id="displayAsCompany" [(ngModel)]="displayAsCompany">
-            <label for="displayAsCompany" class="label-primary"></label>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Company Name</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.company_name" placeholder="Select Company Name">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Tax Registration Number</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.tax_registration_no" placeholder="Enter Tax Registration Number">
-        </div>
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Trade License</label>
-          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white"
-            [(ngModel)]="tenantData.trade_license" placeholder="Enter Trade License">
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Signature -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Signature</h6>
-      </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div class="flex items-start gap-2">
-          <input type="checkbox" id="autoSign" [(ngModel)]="autoSignLeases"
-            class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
-          <div>
-            <h6 class="text-[11px] font-bold text-gray-800 m-0">Auto Sign Leases</h6>
-            <p class="text-[9px] text-gray-500 mt-0.5">Automatically add tenant signature to all leases.</p>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">Upload your signature</label>
-          <input type="file" (change)="onSignatureSelected($event)" accept="image/*" class="hidden" #sigUpload>
-          <div (click)="sigUpload.click()"
-            class="w-full border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-gray-100 transition-colors cursor-pointer overflow-hidden">
-            <img *ngIf="signaturePreviewUrl" [src]="signaturePreviewUrl" alt="Signature Preview"
-              class="max-h-20 object-contain">
-            <div *ngIf="!signaturePreviewUrl"
-              class="w-10 h-10 bg-white rounded-md shadow-sm flex items-center justify-center text-gray-500 border border-gray-100">
-              <i class="ri-upload-2-line text-lg"></i>
+        <div class="ov-card__body">
+          <div class="ov-photo-row">
+            <div class="ov-photo-avatar">
+              <img *ngIf="profilePreviewUrl" [src]="profilePreviewUrl" alt="Profile Preview">
+              <span *ngIf="!profilePreviewUrl">PH</span>
             </div>
-            <span *ngIf="!signaturePreviewUrl" class="text-[10px] font-medium text-gray-500 text-center">Click to upload
-              or drag and drop</span>
+            <div class="ov-photo-meta">
+              <input type="file" (change)="onProfileImageSelected($event)" accept="image/*" class="hidden" #profileUpload>
+              <button type="button" (click)="profileUpload.click()" class="ov-btn ov-btn-primary">
+                <i class="ri-upload-2-line"></i> Upload Photo
+              </button>
+              <span class="ov-photo-hint">JPG, PNG or GIF (max. 5MB)</span>
+            </div>
           </div>
-          <p class="text-[9px] text-gray-500 mt-2 text-center leading-relaxed">Attached Signature will be automatically
-            populated in signature pad while approving lease.</p>
+
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
+              <input type="email" class="ov-input" [(ngModel)]="tenantData.email_address"
+                [placeholder]="'web.contacts.lblEnteruser' | translate">
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.contacts.lblUsername' | translate }}</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.username"
+                [placeholder]="'web.contacts.lblEnteremail' | translate">
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 4. Property Listings -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Property Listings</h6>
+      <!-- General Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.contacts.lblGeneralInformation' | translate }}</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Honorific</label>
+              <ng-select #honorificSelect [items]="honorifics" appendTo="body" [searchable]="true"
+                placeholder="Select" class="ov-select w-full" [(ngModel)]="tenantData.honorific">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="honorificSelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">First Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.first_name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Last Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.last_name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Middle Name</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.middle_name" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Phone Number</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" [(ngModel)]="tenantData.mobile_no" placeholder="Enter">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.contacts.lblGender' | translate }}</label>
+              <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true"
+                [placeholder]="'web.contacts.lblSelect' | translate" class="ov-select w-full"
+                [(ngModel)]="tenantData.gender">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="genderSelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Date of Birth</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="16" height="16" />
+                <input type="text" class="ov-input" [(ngModel)]="tenantData.dob" appFlowbiteDatepicker
+                  placeholder="Select Date">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Status</label>
+              <ng-select #statusSelect [items]="statuses" appendTo="body" [searchable]="true"
+                placeholder="Select Status" class="ov-select w-full" [(ngModel)]="tenantData.status">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="statusSelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="p-5 flex flex-col gap-x-3 gap-y-2">
-        <div class="flex items-start gap-2">
-          <input type="checkbox" id="disableListing" [(ngModel)]="disableListing"
-            class="form-checkbox h-3.5 w-3.5 text-primary rounded mt-0.5">
+
+      <!-- Address Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.contacts.lblAddressInformation' | translate }}</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Address Line 1</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.address1" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Address Line 2</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.address2" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Nationality</label>
+              <ng-select #nationalitySelect [items]="countries" appendTo="body" bindLabel="name"
+                [searchable]="true" placeholder="Select" class="ov-select w-full"
+                [(ngModel)]="selectedNationality">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="nationalitySelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Country <span class="text-danger">*</span></label>
+              <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
+                [searchable]="true" placeholder="Select Country" class="ov-select w-full"
+                [(ngModel)]="tenantData.country_id" (change)="onCountryChange()">
+                <ng-template ng-option-tmp let-item="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt=""> {{ item.name }}
+                  </div>
+                </ng-template>
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="countrySelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt=""> {{ item.name }}
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">State/ Province</label>
+              <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select"
+                class="ov-select w-full" [(ngModel)]="tenantData.stateid" bindValue="id" bindLabel="name"
+                (change)="onStateChange()">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="stateSelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">City</label>
+              <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select"
+                class="ov-select w-full" [(ngModel)]="tenantData.city" bindValue="id" bindLabel="name">
+                <ng-template ng-header-tmp>
+                  <input type="text" placeholder="Search" (input)="citySelect.filter($any($event.target).value)"
+                    (click)="$event.stopPropagation()">
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Postcode</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.zipcode" placeholder="Enter">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents & Attachments -->
+      <div class="ov-card">
+        <div class="ov-card__head ov-card__head--row">
           <div>
-            <h6 class="text-[11px] font-bold text-gray-800 m-0">Disable Listing</h6>
-            <p class="text-[9px] text-gray-500 mt-0.5">If enabled, it will disable listings for this tenant.</p>
+            <h6 class="ov-card-title">Documents &amp; Attachments</h6>
+            <p class="ov-card-sub">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
+          </div>
+          <button type="button" class="ov-link-info" (click)="toggleDocModal(true)">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            Add Document
+          </button>
+        </div>
+        <div class="ov-card__body flex flex-col gap-3">
+          <div *ngIf="uploadedDocuments.length === 0" class="ov-doc-empty">
+            <div class="ov-doc-empty__icon"><i class="ri-file-text-line"></i></div>
+            <h6 class="ov-doc-empty__title">No documents uploaded yet</h6>
+            <p class="ov-doc-empty__sub">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
+            <button type="button" class="ov-btn ov-btn-primary mt-1" (click)="toggleDocModal(true)">Add Document</button>
+          </div>
+
+          <div *ngFor="let doc of uploadedDocuments; let i = index" class="ov-doc-row">
+            <div class="ov-doc-row__info">
+              <div class="ov-doc-row__icon"><i class="ri-file-pdf-line"></i></div>
+              <div class="flex flex-col min-w-0">
+                <span class="ov-doc-row__name">{{ doc.fileName }}</span>
+                <div class="ov-doc-row__meta">
+                  <span>{{ doc.document_type }}</span>
+                  <span class="ov-doc-row__dot"></span>
+                  <span>{{ doc.fileSize }}</span>
+                  <span class="ov-doc-row__dot"></span>
+                  <span>Uploaded today</span>
+                  <span class="ov-doc-row__badge">{{ doc.visible_for }}</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="ov-btn ov-btn-ghost ov-doc-row__remove" (click)="removeDocument(i)">Remove</button>
           </div>
         </div>
       </div>
+
+      <!-- Additional Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Additional Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Additional Phone1</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" [(ngModel)]="tenantData.addionalphone1" placeholder="Enter">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Additional Phone2</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" [(ngModel)]="tenantData.addionalphone2" placeholder="Enter">
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Landline Number</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.landline_no" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Fax Number</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.fax_no" placeholder="Enter">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tenancy Lease Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Tenancy Lease Information</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Name on Lease</label>
+              <input type="text" class="ov-input" [(ngModel)]="tenantData.name_on_lease" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Email on Lease</label>
+              <input type="email" class="ov-input" [(ngModel)]="tenantData.email_on_lease" placeholder="Enter">
+            </div>
+            <div>
+              <label class="ov-label">Phone on Lease</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+                </span>
+                <input type="text" class="ov-input" [(ngModel)]="tenantData.phone_on_lease" placeholder="Enter">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Notes</h6>
+        </div>
+        <div class="ov-card__body">
+          <textarea class="ov-input" rows="5" [(ngModel)]="tenantData.notes" placeholder="Enter Notes"></textarea>
+        </div>
+      </div>
+
+      <!-- Custom Fields -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Custom Fields</h6>
+        </div>
+        <div class="ov-card__body">
+          <p class="ov-empty-fields text-textmuted mb-0">No fields available for tenants.</p>
+        </div>
+      </div>
+
     </div>
 
+    <!-- Right column -->
+    <aside class="ov-add-layout__aside">
+
+      <!-- Statement Of Account -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Statement Of Account</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="ov-switch-row">
+            <div>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Auto Schedule?</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">
+                If enabled, a monthly statement of account will be emailed on the scheduled day.
+              </small>
+            </div>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input type="checkbox" id="autoSchedule" [(ngModel)]="autoSchedule"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]">
+            </div>
+          </div>
+
+          <hr class="border-defaultborder m-0">
+
+          <div class="ov-schedule-row">
+            <span class="text-[14px] text-defaulttextcolor">On the</span>
+            <ng-select [items]="daysOfMonth" [clearable]="false" [searchable]="false" appendTo="body"
+              class="ov-select ov-select--day" [(ngModel)]="tenantData.schedule_day" placeholder="1"></ng-select>
+            <span class="text-[14px] text-defaulttextcolor">of every month</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Company Information</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="ov-switch-row">
+            <div>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Display as Company</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">If enabled it will be shown in the list page</small>
+            </div>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input type="checkbox" id="displayAsCompany" [(ngModel)]="displayAsCompany"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]">
+            </div>
+          </div>
+
+          <div>
+            <label class="ov-label">Company Name</label>
+            <input type="text" class="ov-input" [(ngModel)]="tenantData.company_name" placeholder="Select Company Name">
+          </div>
+          <div>
+            <label class="ov-label">Tax Registration Number</label>
+            <input type="text" class="ov-input" [(ngModel)]="tenantData.tax_registration_no"
+              placeholder="Enter Tax Registration Number">
+          </div>
+          <div>
+            <label class="ov-label">Trade License</label>
+            <input type="text" class="ov-input" [(ngModel)]="tenantData.trade_license" placeholder="Enter Trade License">
+          </div>
+        </div>
+      </div>
+
+      <!-- Signature -->
+      <div class="ov-card ov-upload">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Signature</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <label class="ov-check">
+            <input type="checkbox" id="autoSign" [(ngModel)]="autoSignLeases" class="form-check-input">
+            <div>
+              <span>Auto Sign Leases</span>
+              <small>Automatically add tenant signature to all leases.</small>
+            </div>
+          </label>
+
+          <div>
+            <label class="ov-label">Upload your signature</label>
+            <input type="file" (change)="onSignatureSelected($event)" accept="image/*" class="hidden" #sigUpload>
+            <div (click)="sigUpload.click()" class="ov-dropzone" role="button" tabindex="0">
+              <img *ngIf="signaturePreviewUrl" [src]="signaturePreviewUrl" alt="Signature Preview" class="ov-dropzone__preview">
+              <ng-container *ngIf="!signaturePreviewUrl">
+                <div class="ov-dropzone__icon">
+                  <i class="ri-upload-2-line text-lg"></i>
+                </div>
+                <span class="ov-dropzone__text">Click to upload or drag and drop</span>
+              </ng-container>
+            </div>
+            <p class="ov-card-sub mt-2 mb-0 text-center">
+              Attached Signature will be automatically populated in signature pad while approving lease.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Listings -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Property Listings</h6>
+        </div>
+        <div class="ov-card__body">
+          <label class="ov-check">
+            <input type="checkbox" id="disableListing" [(ngModel)]="disableListing" class="form-check-input">
+            <div>
+              <span>Disable Listing</span>
+              <small>If enabled, it will disable listings for this tenant.</small>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </aside>
   </div>
 
-  <!-- FULL WIDTH BOTTOM SECTIONS -->
-  <div class="xl:col-span-12 flex flex-col gap-x-3 gap-y-2">
-
-    <!-- Notes -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Notes</h6>
-      </div>
-      <div class="box-body p-4">
-        <textarea
-          class="form-control text-[12px] bg-gray-50 border-gray-200 focus:bg-white w-full rounded-md p-3 min-h-[100px]"
-          [(ngModel)]="tenantData.notes" placeholder="Enter Notes"></textarea>
-      </div>
-    </div>
-
-    <!-- Custom Fields -->
-    <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-      <div class="box-header p-4 border-b border-gray-100">
-        <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Custom Fields</h6>
-      </div>
-      <div class="p-8 text-center">
-        <span class="text-[11px] font-medium text-gray-500">No fields available for tenants.</span>
-      </div>
-    </div>
-
+  <div class="ov-add-footer">
+    <button type="button" routerLink="/contacts/tenants" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="saveTenant()">
+      {{ isEditMode ? 'Save Changes' : 'Save Tenant' }}
+    </button>
   </div>
 </div>
 
-<!-- Fixed Floating Form Actions Bottom Bar -->
-<div
-  class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" routerLink="/contacts/tenants"
-    class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
-    Cancel
-  </button>
-  <button type="button"
-    class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95"
-    (click)="saveTenant()">
-    {{ isEditMode ? 'Save Changes' : 'Save Tenant' }}
-  </button>
+<!-- Modal: Add Document — Figma 1056:8002 -->
+<div *ngIf="isAddDocModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack">
+    <button type="button" class="ov-modal__float-close" (click)="toggleDocModal(false)" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="ov-modal ov-modal--doc">
+      <div class="ov-modal__header ov-modal__header--doc">
+        <div>
+          <h6 class="ov-modal__title ov-modal__title--doc">Add Document</h6>
+          <p class="ov-modal__sub ov-modal__sub--doc">Select a document type, upload a file, and choose who can view it.</p>
+        </div>
+      </div>
+
+      <div class="ov-modal__body ov-modal__body--doc">
+        <div>
+          <label class="ov-label">Document type <span class="text-danger">*</span></label>
+          <ng-select [items]="docTypes" appendTo="body" [searchable]="true" placeholder="Select Document Type"
+            class="ov-select w-full" [(ngModel)]="docForm.document_type"></ng-select>
+          <span class="ov-modal__hint">Choose the category that best matches the uploaded document.</span>
+        </div>
+
+        <div>
+          <label class="ov-label">Document Number</label>
+          <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.document_no">
+        </div>
+
+        <div class="ov-fields ov-fields--2">
+          <div>
+            <label class="ov-label">Issue Date</label>
+            <div class="ov-date">
+              <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+              <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
+                [(ngModel)]="docForm.issue_date">
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Expiry Date</label>
+            <div class="ov-date">
+              <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+              <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
+                [(ngModel)]="docForm.expiry_date">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="ov-label">Issuing Authority</label>
+          <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.issuing_authority">
+        </div>
+
+        <div class="ov-modal__share-panel">
+          <div class="ov-modal__share">
+            <div class="ov-modal__share-copy">
+              <span class="ov-modal__share-title">Share with tenant</span>
+              <span class="ov-modal__hint">Visible in the tenant mobile app.</span>
+            </div>
+            <div class="custom-toggle-switch flex-shrink-0">
+              <input type="checkbox" id="tnShareTenant" [(ngModel)]="docForm.share_with_tenant">
+              <label for="tnShareTenant" class="label-primary"></label>
+            </div>
+          </div>
+          <div class="ov-modal__share">
+            <div class="ov-modal__share-copy">
+              <span class="ov-modal__share-title">Share with landlord</span>
+              <span class="ov-modal__hint">Visible in the landlord mobile app.</span>
+            </div>
+            <div class="custom-toggle-switch flex-shrink-0">
+              <input type="checkbox" id="tnShareLandlord" [(ngModel)]="docForm.share_with_landlord">
+              <label for="tnShareLandlord" class="label-primary"></label>
+            </div>
+          </div>
+        </div>
+
+        <input type="file" #docFileInput class="hidden" accept=".pdf,.jpg,.jpeg,.png" (change)="onDocFileSelected($event)">
+        <div class="ov-modal__drop" role="button" tabindex="0" (click)="docFileInput.click()"
+          (keydown.enter)="docFileInput.click()">
+          <img class="ov-modal__drop-icon" src="assets/images/common/upload-doc.svg" alt="" width="35" height="35" />
+          <div>
+            <p class="ov-modal__drop-title">Drag and drop your file here</p>
+            <p class="ov-modal__drop-sub">or browse from your device</p>
+          </div>
+          <button type="button" class="ov-btn-accent" (click)="$event.stopPropagation(); docFileInput.click()">Browse files</button>
+          <p class="ov-modal__drop-hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
+        </div>
+
+        <div class="ov-modal__file" *ngIf="docForm.fileName">
+          <div class="ov-modal__file-main">
+            <div class="ov-modal__file-ico">
+              <img src="assets/images/common/file-invoice.svg" alt="" width="20" height="20" />
+            </div>
+            <div>
+              <p class="ov-modal__file-name">{{ docForm.fileName }}</p>
+              <div class="ov-modal__file-meta">
+                <span>{{ docForm.fileExt || 'FILE' }}</span>
+                <span class="ov-modal__file-dot"></span>
+                <span>{{ docForm.fileSize }}</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="ov-modal__file-remove" (click)="clearDocFile()">Remove</button>
+        </div>
+      </div>
+
+      <div class="ov-modal__footer ov-modal__footer--doc">
+        <button type="button" class="ov-btn ov-btn-soft" (click)="toggleDocModal(false)">Close</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">Save</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -276,23 +276,19 @@ export class SidebarComponent {
           children: this.withVisitorsChildren(),
         };
       }
-      const path = this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases';
+      // Figma: Lease Management is a direct link (no single-item "Leases" submenu).
       if (this.isLeaseModule(normalizedName)) {
         return {
           title: module.moduleName,
-          type: 'sub',
-          selected: false,
+          type: 'link',
+          path: this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
+          icon:
+            this.getFigmaIcon(normalizedName) ||
+            module.menu_icon ||
+            this.moduleIconMap[normalizedName] ||
+            'bx bx-layer',
           active: false,
-          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
-          children: [
-            {
-              title: 'Leases',
-              type: 'link',
-              path,
-              active: false,
-              selected: false,
-            },
-          ],
+          selected: false,
         };
       }
 
@@ -312,6 +308,22 @@ export class SidebarComponent {
     }
     if (this.isVisitorsParent(normalizedName)) {
       children = this.withVisitorsChildren();
+    }
+    // Flatten Lease Management when API only returns a single Leases child (matches Figma).
+    if (this.isLeaseModule(normalizedName) && children.length <= 1) {
+      const only = children[0];
+      return {
+        title: module.moduleName,
+        type: 'link',
+        path: only?.path || this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
+        icon:
+          this.getFigmaIcon(normalizedName) ||
+          module.menu_icon ||
+          this.moduleIconMap[normalizedName] ||
+          'bx bx-layer',
+        active: false,
+        selected: false,
+      };
     }
 
     return {

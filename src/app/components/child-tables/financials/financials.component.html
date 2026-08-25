@@ -1,238 +1,209 @@
-<div class="flex flex-col gap-5 text-xs">
-  
-  <div *ngIf="invoices.length === 0" class="box bg-white border border-gray-100 rounded-xl p-8 text-center shadow-sm">
-    <span class="text-gray-600 italic">No invoice records found</span>
+<div class="fin" [class.fin--tab]="variant === 'tab'">
+  <div class="fin__head" *ngIf="variant !== 'tab'">
+    <h6 class="fin__title">Invoice &amp; Receipts</h6>
   </div>
 
-  <div  class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden transition-all duration-200">
-    
-    <!-- Invoice Card Header (Clickable to collapse/expand) -->
-    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
-      <div class="flex items-center gap-3">
-        <span class="font-black text-gray-800 text-[13px] hover:text-primary transition-colors">
-          {{ invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || ('Payment Schedule #') }}
+  <div *ngIf="invoices.length === 0" class="fin__empty">
+    <span>No invoice records found</span>
+  </div>
+
+  <div *ngIf="invoices.length > 0" class="fin__card">
+    <div class="fin__inv-top">
+      <div class="fin__inv-id">
+        <span class="fin__inv-no">
+          Invoice - {{ invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || invoice.invoicecode || invoice.code || '—' }}
         </span>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-wider" [ngClass]="invoice.invoice_status_class">
+        <span class="fin__badge fin__badge--status">
           {{ getArabicLookupName(invoice, 'invoice_status') || 'Unpaid' }}
         </span>
       </div>
-      
-      <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
-        <button type="button" class="ti-btn !py-1 !px-2.5 !text-[11px] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm font-semibold flex items-center gap-1">
-          <i class="ri-eye-line"></i> View Invoice
+      <div class="fin__inv-actions">
+        <button type="button" class="ov-btn ov-btn-ghost">View Invoice</button>
+        <button type="button" class="ov-btn ov-btn-ghost">Download</button>
+      </div>
+    </div>
+
+    <div class="fin__meta">
+      <div class="fin__meta-item">
+        <span class="fin__meta-label">Invoice Date</span>
+        <span class="fin__meta-value">{{ invoice.invoice_date | date:'dd MMM yyyy' || '-' }}</span>
+      </div>
+      <div class="fin__meta-item">
+        <span class="fin__meta-label">Due Date</span>
+        <span class="fin__meta-value">{{ invoice.due_date | date:'dd MMM yyyy' || '-' }}</span>
+      </div>
+      <div class="fin__meta-item">
+        <span class="fin__meta-label">Invoice Type</span>
+        <span class="fin__meta-value">{{ getArabicLookupName(invoice,'invoice_type_name') || '-' }}</span>
+      </div>
+      <div class="fin__meta-item">
+        <span class="fin__meta-label">Account</span>
+        <span class="fin__meta-value">{{ invoice.account_name || '-' }}</span>
+      </div>
+      <div class="fin__meta-item">
+        <span class="fin__meta-label">Payment Via</span>
+        <span class="fin__meta-value">{{ invoice.payment_type_name || 'Mixed' }}</span>
+      </div>
+    </div>
+
+    <div class="fin__stats">
+      <div class="fin__stat">
+        <span class="fin__stat-label">Invoice Total</span>
+        <span class="fin__stat-value">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.total_amount | number:'1.2-2' }}</span>
+      </div>
+      <div class="fin__stat">
+        <span class="fin__stat-label">Amount Paid</span>
+        <span class="fin__stat-value">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.paid_amount | number:'1.2-2' }}</span>
+      </div>
+      <div class="fin__stat">
+        <span class="fin__stat-label">Balance Due</span>
+        <span class="fin__stat-value" [class.fin__stat-value--danger]="(invoice.balance_amount || 0) > 0">
+          {{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount | number:'1.2-2' }}
+        </span>
+      </div>
+      <div class="fin__stat">
+        <span class="fin__stat-label">Receipts</span>
+        <span class="fin__stat-value">{{ receipts.length }}</span>
+      </div>
+    </div>
+
+    <div class="fin__progress">
+      <div class="fin__progress-labels">
+        <span>Payment progress</span>
+        <span class="fin__progress-pct">{{ paymentProgressPct | number:'1.0-1' }}% paid</span>
+      </div>
+      <div class="fin__progress-track">
+        <div class="fin__progress-fill" [style.width.%]="paymentProgressPct"></div>
+      </div>
+    </div>
+
+    <div class="fin__receipts">
+      <div class="fin__receipts-head">
+        <div class="fin__receipts-copy">
+          <div class="fin__receipts-title-row">
+            <h6 class="fin__receipts-title">Receipts against this invoice</h6>
+            <span class="fin__count">{{ receipts.length }} receipts</span>
+          </div>
+          <p class="fin__receipts-sub">Each receipt reduces the invoice balance. Invoice number is shown above only.</p>
+        </div>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="openRecordReceipt()">
+          <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+          Record Receipt
         </button>
-        <button type="button" class="ti-btn !py-1 !px-2.5 !text-[11px] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm font-semibold flex items-center gap-1">
-          <i class="ri-download-line"></i> Download
-        </button> 
-      </div>
-    </div>
-
-    <!-- Invoice Details Panel (Collapsible content) -->
-    <div  class="p-5 flex flex-col gap-5 animate-fade-in">
-      
-      <!-- Meta Information Row -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-4 border-b border-gray-100 text-[11px]">
-        <div>
-          <span class="text-gray-600 block font-medium">Invoice Date</span>
-          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.invoice_date | date:'dd MMM yyyy' || '-' }}</span>
-        </div>
-        <div>
-          <span class="text-gray-600 block font-medium">Due Date</span>
-          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.due_date | date:'dd MMM yyyy' || '-' }}</span>
-        </div>
-        <div>
-          <span class="text-gray-600 block font-medium">Invoice Type</span>
-          <span class="font-bold text-gray-700 mt-0.5 block">{{getArabicLookupName(invoice,'invoice_type_name')}}</span>
-        </div>
-        <div>
-          <span class="text-gray-600 block font-medium">Account</span>
-          <span class="font-bold text-gray-700 mt-0.5 block">{{invoice.account_name}}</span>
-        </div>
-        <div>
-          <span class="text-gray-600 block font-medium">Payment Method</span>
-          <span class="font-bold text-gray-700 mt-0.5 block">{{ invoice.payment_type_name || 'Mixed' }}</span>
-        </div>
       </div>
 
-      <!-- Summary Metrics row (Figma 4 boxes) -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
-          <span class="text-[9px] font-bold text-gray-600 uppercase tracking-wider">Invoice Total</span>
-          <h5 class="text-[15px] font-black text-gray-800">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.total_amount | number:'1.2-2' }}</h5>
-        </div>
-        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
-          <span class="text-[9px] font-bold text-gray-600 uppercase tracking-wider">Amount Paid</span>
-          <h5 class="text-[15px] font-black text-success">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.paid_amount  | number:'1.2-2' }}</h5>
-        </div>
-        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
-          <span class="text-[9px] font-bold text-gray-600 uppercase tracking-wider">Balance Due</span>
-          <h5 class="text-[15px] font-black text-danger">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount | number:'1.2-2' }}</h5>
-        </div>
-        <div class="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col gap-1 shadow-sm">
-          <span class="text-[9px] font-bold text-gray-600 uppercase tracking-wider">Receipts</span>
-          <h5 class="text-[15px] font-black text-gray-800">{{ receipts.length }}</h5>
-        </div>
-      </div>
-
-      <!-- Allocation Progress Bar -->
-      <div class="flex flex-col gap-1.5">
-        <div class="flex justify-between items-center text-[10px] font-semibold">
-          <span class="text-gray-500">Payment progress</span>
-          <span class="text-gray-700">{{ (invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? '100% paid' : '0% paid' }}</span>
-        </div>
-        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-500" [ngClass]="(invoice.cheque_status === 'Paid' || invoice.status === 'Paid') ? 'bg-success w-full' : 'bg-danger w-0'"></div>
-        </div>
-      </div>
-
-      <!-- Receipts Detail Section -->
-      <div class="flex flex-col gap-3 mt-2">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <div class="flex items-center gap-2">
-              <h6 class="font-bold text-gray-800 text-[12px] m-0">Receipts against this invoice</h6>
-              <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-bold border border-gray-200/50 text-[10px]">
-                {{ receipts.length }} receipts
-              </span>
-            </div>
-            <p class="text-[10px] text-gray-600 m-0 mt-0.5">Each receipt reduces the invoice balance. Invoice number is shown above only.</p>
-          </div>
-          <button type="button" class="px-3 py-1.5 text-[10px] rounded bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] font-semibold flex items-center gap-1.5 shadow-sm">
-            <i class="ri-add-line text-[12px]"></i> Record Receipt
-          </button>
-        </div>
-
-        <div class="table-responsive border border-gray-100 rounded-xl overflow-hidden shadow-sm w-full">
-          <table class="ov-table min-w-full">
-            <thead class="ov-table__head">
-              <tr class="border-b border-gray-100 bg-gray-50">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Receipt No</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Method</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Reference</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Amount</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4 whitespace-nowrap">Paid Date</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let receipt of receipts" class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
-                <td class="py-3 px-4 font-bold text-primary text-xs whitespace-nowrap">
-                  <a href="javascript:void(0)" (click)="showActionMenu(receipt)" class="hover:underline">{{ receipt.rcp_no }}</a>
-                </td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.due_date | date:'dd MMM yyyy' }}</td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ getArabicLookupName(receipt,'payment_type_name') }}</td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.memo }}</td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap font-bold text-gray-800">{{ currentUser?.currencyCode || 'AED' }} {{ receipt.amt | number:'1.2-2' }}</td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider" [ngClass]="receipt.cheque_status_class">
-                    {{ receipt.cheque_status }}
-                  </span>
-                </td>
-                <td class="py-3 px-4 text-xs whitespace-nowrap font-medium text-gray-600">{{ receipt.last_payment_date | date:'dd MMM yyyy' || '-' }}</td>
-                <td class="py-3 px-4 text-center text-xs">
-                  <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" (click)="showActionMenu(receipt)"  class="w-7 h-7 rounded border bg-white text-gray-600 hover:bg-gray-50 flex items-center justify-center shadow-sm" title="View details">
-                      <i class="ri-more-2-line text-[14px]"></i>
-                    </button>
-              
+      <div class="fin__table-wrap">
+        <table class="fin__table">
+          <thead>
+            <tr>
+              <th>Receipt No</th>
+              <th>Date</th>
+              <th>Method</th>
+              <th>Reference</th>
+              <th class="text-end">Amount</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let receipt of receipts; let i = index">
+              <td>
+                <a href="javascript:void(0)" class="fin__link" (click)="showActionMenu(receipt, $event)">{{ receipt.rcp_no }}</a>
+              </td>
+              <td>{{ receipt.due_date | date:'dd MMM yyyy' }}</td>
+              <td>{{ getArabicLookupName(receipt,'payment_type_name') }}</td>
+              <td class="fin__muted">{{ receipt.memo || receipt.cheque_no || '-' }}</td>
+              <td class="text-end fin__amt">{{ currentUser?.currencyCode || 'AED' }} {{ receipt.amt | number:'1.2-2' }}</td>
+              <td>
+                <span class="fin__badge" [ngClass]="getReceiptStatusClass(receipt)">
+                  {{ getArabicLookupName(receipt,'cheque_status') || receipt.cheque_status || '—' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="fin__actions relative">
+                  <button type="button" class="fin__more" (click)="showActionMenu(receipt, $event)" title="View details" aria-label="Actions" [attr.aria-expanded]="isMenuOpen(receipt)">···</button>
+                  <div *ngIf="isMenuOpen(receipt)" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+                    <div class="ov-action-menu__list">
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Edit')">
+                        <span class="ov-action-menu__icon-box">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+                        </span>
+                        <span>Edit</span>
+                      </button>
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Payment')">
+                        <span class="ov-action-menu__icon-box">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/plus.svg" alt="" width="14" height="14">
+                        </span>
+                        <span>Receive Payment</span>
+                      </button>
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Print')">
+                        <span class="ov-action-menu__icon-box">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
+                        </span>
+                        <span>Print Receipt</span>
+                      </button>
+                    </div>
+                    <div class="ov-action-menu__footer">
+                      <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="OnApproveClick('Reject')">
+                        <span class="ov-action-menu__icon-box">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/trash.svg" alt="" width="14" height="14">
+                        </span>
+                        <span>Archive</span>
+                      </button>
+                    </div>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-      
-        </div>
-        <div class="dropdown">
-        
-          <div *ngIf="showApprovalMenu" class="ov-action-menu" role="menu">
-            <div class="ov-action-menu__list">
-              <a role="menuitem" class="ov-action-menu__item"   (click)="OnApproveClick('Edit')">
-                <span class="ov-action-menu__icon-box">
-                  <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
-                </span>
-                <span>Edit</span>
-              </a> 
-            </div>
-            <div class="ov-action-menu__list">
-              <a role="menuitem" class="ov-action-menu__item"   (click)="OnApproveClick('Payment')">
-                <span class="ov-action-menu__icon-box">
-                  <img class="ov-action-menu__icon" src="assets/images/action-menu/plus.svg" alt="" width="14" height="14">
-                </span>
-                <span>Receive Payment</span>
-              </a> 
-            </div>
-            <div class="ov-action-menu__list">
-              <a role="menuitem" class="ov-action-menu__item"   (click)="OnApproveClick('Print')">
-                <span class="ov-action-menu__icon-box">
-                  <img class="ov-action-menu__icon" src="assets/images/action-menu/Print.svg" alt="" width="14" height="14">
-                </span>
-                <span>Print Receipt</span>
-              </a> 
-            </div>
-            <div class="ov-action-menu__footer">
-              
-              <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="OnApproveClick('Reject')">
-                <span class="ov-action-menu__icon-box">
-                  <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
-                </span>
-                <span>Archive</span>
-              </button>
-            </div>
-          </div>
-  
-        </div>
- 
-        <div class="flex justify-end mt-2 font-bold text-gray-700 text-[11px] gap-1">
-          <span>Total applied to invoice:</span>
-          <span class="text-primary">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.total_amount | number:'1.2-2' }}</span>
-        </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Total applied to invoice</td>
+              <td class="text-end fin__amt">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.paid_amount | number:'1.2-2' }}</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
-
     </div>
-
   </div>
-
 </div>
-<!-- Modal 7: Send Email Popup -->
+
 <div *ngIf="showReceivePayment" class="ov-modal-backdrop" role="dialog" aria-modal="true">
   <div class="ov-modal">
     <div class="ov-modal__header">
       <div>
         <h4 class="ov-modal__title">Receive Payment</h4>
-        <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
       </div>
       <button type="button" (click)="showReceivePayment = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
     </div>
-    <div class="ov-modal__body flex flex-col gap-4 ">
+    <div class="ov-modal__body flex flex-col gap-4">
       <div class="form-check form-switch">
-        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Receive Full Payment</label>
+        <label class="block text-[11px] font-semibold text-textmuted mb-1.5">Receive Full Payment</label>
         <input [(ngModel)]="receivepayment.receivefull" (change)="onRadioChange()"
             class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
             type="checkbox">
-
-    </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4"> 
-      <div>
-        <label class="ov-label">Amount</label>
-        <input type="number" [disabled]="receivepayment.receivefull==1"  class="ov-input" [(ngModel)]="receivepayment.Amount" [value]="">
       </div>
-      <div>
-        <label class="ov-label">Paid Date</label>
-        <input type="date" class="ov-input" [(ngModel)]="receivepayment.paiddate">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+        <div>
+          <label class="ov-label">Amount</label>
+          <input type="number" [disabled]="receivepayment.receivefull==1" class="ov-input" [(ngModel)]="receivepayment.Amount">
+        </div>
+        <div>
+          <label class="ov-label">Paid Date</label>
+          <input type="date" class="ov-input" [(ngModel)]="receivepayment.paiddate">
+        </div>
+        <div>
+          <label class="ov-label">Payment Via</label>
+          <ng-select [(ngModel)]="receivepayment.payment_via" bindValue="id" bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Account</label>
+          <ng-select [(ngModel)]="receivepayment.account" bindValue="account_code" bindLabel="account_name" [items]="coa_list" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+        </div>
       </div>
-      <div>
-        <label class="ov-label">Payment Via</label>
-        <ng-select [(ngModel)]="receivepayment.payment_via"  bindValue="id"   placeholder="Payment Type"   bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
-      </div>
-      <div>
-        <label class="ov-label">Account</label>
-        <ng-select [(ngModel)]="receivepayment.account"  bindValue="account_code"   placeholder="Payment Type"   bindLabel="account_name" [items]="coa_list" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
-      </div>
-    </div>
       <div>
         <label class="ov-label">Notes</label>
         <textarea rows="5" class="ov-input" [(ngModel)]="receivepayment.notes" placeholder="Enter remarks here..."></textarea>
@@ -240,16 +211,14 @@
       <div>
         <label class="ov-label">Add Receipt</label>
         <app-file-upload
-        [accept]="'image/*'" 
-        (filesChanged)="onFilesSelected($event)"
-        [buttonText]="'web.property.lblUploadImage' | translate"
-        [dropText]="'web.property.lblDropYourImageHereOr' | translate"
-        [browseText]="'web.property.lblBrowse' | translate"
-        >
-    </app-file-upload>
+          [accept]="'image/*'"
+          (filesChanged)="onFilesSelected($event)"
+          [buttonText]="'web.property.lblUploadImage' | translate"
+          [dropText]="'web.property.lblDropYourImageHereOr' | translate"
+          [browseText]="'web.property.lblBrowse' | translate">
+        </app-file-upload>
       </div>
     </div>
- 
     <div class="ov-modal__footer">
       <button type="button" (click)="showReceivePayment = false" class="ov-btn ov-btn-ghost">Cancel</button>
       <button type="button" (click)="save_payment()" class="ov-btn ov-btn-primary">Receive</button>

@@ -2,6 +2,7 @@
 
 @import "./assets/css/style.css";
 @import "./assets/scss/orville-ds";
+@import "./assets/scss/orville-kanban";
 @import '../node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.css';
 
 @import "../node_modules/angular-calendar/css/angular-calendar.css";
@@ -799,12 +800,97 @@ body:has(.ov-filter-drawer__panel) [data-tooltip]:hover::after {
 .dark .ov-input:focus,
 .dark textarea.ov-input:focus,
 .dark .form-control:focus,
+.dark .form-select:focus,
 .dark .ng-select.ng-select-focused:not(.orville-header-select) > .ng-select-container,
 .dark .ng-select.ng-select-opened:not(.orville-header-select) > .ng-select-container {
   background-color: rgb(var(--dark-bg, var(--default-background))) !important;
   background: rgb(var(--dark-bg, var(--default-background))) !important;
-  border-color: rgb(var(--primary)) !important;
+  /* Primary navy (#26264F) is invisible on dark bg — use link + ring */
+  border-color: rgb(var(--link)) !important;
+  box-shadow: 0 0 0 3px rgb(var(--link) / 0.35) !important;
   color: rgb(255 255 255 / 0.9) !important;
+  outline: none !important;
+}
+
+.dark .ov-input-addon:focus-within,
+.dark .ov-phone:focus-within {
+  border-color: rgb(var(--link)) !important;
+  box-shadow: 0 0 0 3px rgb(var(--link) / 0.35) !important;
+}
+
+/* Dark mode switches — primary navy + dark knob were invisible */
+.dark .ti-switch {
+  background-color: rgb(255 255 255 / 0.22) !important;
+  border-color: transparent !important;
+}
+
+.dark .ti-switch::before {
+  background-color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+.dark .ti-switch:checked {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+  background-image: none !important;
+}
+
+.dark .ti-switch:checked::before {
+  background-color: #fff !important;
+}
+
+.dark .ti-switch:focus,
+.dark .ti-switch:focus-visible {
+  outline: 2px solid rgb(var(--link)) !important;
+  outline-offset: 2px !important;
+}
+
+/* Tailwind peer toggles (peer-checked:bg-primary) */
+.dark .peer:checked ~ .peer-checked\:bg-primary {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+}
+
+.dark .peer ~ div[class*="bg-gray-200"] {
+  background-color: rgb(255 255 255 / 0.22);
+}
+
+.dark .peer:checked ~ div[class*="peer-checked:bg-primary"]::after,
+.dark .peer:checked ~ .peer-checked\:bg-primary::after {
+  background-color: #fff !important;
+  border-color: #fff !important;
+}
+
+/* Ynex custom-toggle-switch */
+.dark .custom-toggle-switch > label::before {
+  background-color: rgb(255 255 255 / 0.28) !important;
+  opacity: 1 !important;
+}
+
+.dark .custom-toggle-switch > label::after {
+  background-color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label.label-primary,
+.dark .custom-toggle-switch > input[type='checkbox']:checked + .label-primary {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+  color: #fff !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label::before {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+  opacity: 0.55 !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label::after {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+}
+
+.dark .custom-toggle-switch > label:has(.dot) .dot {
+  background-color: #fff !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label:has(.dot) {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
 }
 
 .dark .ov-input::placeholder,
@@ -858,13 +944,16 @@ body:has(.ov-filter-drawer__panel) [data-tooltip]:hover::after {
   color: rgb(var(--text-muted)) !important;
 }
 
-/* Flowbite datepicker — compact modern (Spaces page only) */
+/* Flowbite datepicker — compact modern
+   fixed = stays anchored to the input under page/modal scroll;
+   z-index above ov-modal-backdrop (10050). */
 .datepicker.dropdown,
 .datepicker.orville-datepicker,
 .datepicker.dropdown.orville-datepicker {
-  z-index: 9 !important;
-  position: absolute !important;
-  padding-top: 6px !important;
+  z-index: 10100 !important;
+  position: fixed !important;
+  padding-top: 0 !important;
+  margin: 0 !important;
 }
 
 .datepicker.orville-datepicker .datepicker-picker {

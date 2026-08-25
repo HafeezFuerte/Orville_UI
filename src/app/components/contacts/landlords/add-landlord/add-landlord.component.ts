@@ -61,10 +61,14 @@ export class AddLandlordComponent implements OnInit {
     document_no: '',
     issue_date: '',
     expiry_date: '',
+    issuing_authority: '',
+    share_with_tenant: false,
+    share_with_landlord: false,
     visible_for: 'None',
     file: null as File | null,
     fileName: '',
-    fileSize: ''
+    fileSize: '',
+    fileExt: ''
   };
 
   onDocFileSelected(event: any) {
@@ -73,7 +77,42 @@ export class AddLandlordComponent implements OnInit {
       this.docForm.file = file;
       this.docForm.fileName = file.name;
       this.docForm.fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      const parts = file.name.split('.');
+      this.docForm.fileExt = (parts.length > 1 ? parts.pop() : 'FILE')!.toUpperCase();
     }
+  }
+
+  clearDocFile(): void {
+    this.docForm.file = null;
+    this.docForm.fileName = '';
+    this.docForm.fileSize = '';
+    this.docForm.fileExt = '';
+  }
+
+  private resolveDocVisibleFor(): string {
+    const t = this.docForm.share_with_tenant;
+    const l = this.docForm.share_with_landlord;
+    if (t && l) return 'Tenant, Landlord';
+    if (t) return 'Tenant';
+    if (l) return 'Landlord';
+    return 'None';
+  }
+
+  private resetDocForm(): void {
+    this.docForm = {
+      document_type: null,
+      document_no: '',
+      issue_date: '',
+      expiry_date: '',
+      issuing_authority: '',
+      share_with_tenant: false,
+      share_with_landlord: false,
+      visible_for: 'None',
+      file: null,
+      fileName: '',
+      fileSize: '',
+      fileExt: ''
+    };
   }
 
   saveDocument() {
@@ -85,28 +124,22 @@ export class AddLandlordComponent implements OnInit {
       this.toastr.error("Please attach a file.", "Validation Error");
       return;
     }
-    
+
+    this.docForm.visible_for = this.resolveDocVisibleFor();
+
     this.uploadedDocuments.push({
       document_type: this.docForm.document_type,
       document_no: this.docForm.document_no,
       issue_date: this.docForm.issue_date,
       expiry_date: this.docForm.expiry_date,
+      issuing_authority: this.docForm.issuing_authority,
       visible_for: this.docForm.visible_for,
       fileName: this.docForm.fileName,
       fileSize: this.docForm.fileSize,
       file: this.docForm.file
     });
 
-    this.docForm = {
-      document_type: null,
-      document_no: '',
-      issue_date: '',
-      expiry_date: '',
-      visible_for: 'None',
-      file: null,
-      fileName: '',
-      fileSize: ''
-    };
+    this.resetDocForm();
     this.isAddDocModalOpen = false;
     this.toastr.success("Document attached successfully.");
   }
@@ -667,6 +700,9 @@ export class AddLandlordComponent implements OnInit {
 
   toggleDocModal(state: boolean) {
     this.isAddDocModalOpen = state;
+    if (!state) {
+      this.resetDocForm();
+    }
   }
 
   onPhotoSelected(event: any) {

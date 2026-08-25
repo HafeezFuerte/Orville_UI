@@ -239,6 +239,13 @@ export const content: Routes = [
             '../../components/settings/invoice-receipt-profiles/invoice-receipt-profiles.component'
           ).then((m) => m.InvoiceReceiptProfilesComponent),
       },
+      {
+        path: 'discount-profiles',
+        loadComponent: () =>
+          import(
+            '../../components/settings/discount-profiles/discount-profiles.component'
+          ).then((m) => m.DiscountProfilesComponent),
+      },
       ...SETTINGS_PLACEHOLDER_ROUTES.filter((r) => !r.path.includes('/')).map((r) => ({
         path: r.path,
         loadComponent: () =>

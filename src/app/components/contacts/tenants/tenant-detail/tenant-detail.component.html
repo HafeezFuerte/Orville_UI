@@ -62,145 +62,158 @@
 </div>
 
 <div class="ov-detail-layout pb-20">
-  <div class="ov-detail-layout__left flex flex-col gap-3">
-    <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
-      <div>
-        <h4 class="ov-card-title">{{ tenantData?.tenant || tenantData?.name || '' }}</h4>
-        <p class="ov-card-sub mt-1 break-all">{{ tenantData?.email_address || '' }}</p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]">View Activity</button>
-        <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]" (click)="showSubscriptionsModal = true">Email Sub (8/37)</button>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Login Information</h6>
-        <span class="ov-detail-chip"
-          [class.ov-detail-chip--danger]="tenantData?.verified_status !== 'Verified'">
-          {{ tenantData?.verified_status || 'Not Verified' }}
-        </span>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Email:</span>
-          <span class="ov-kv__value">{{ tenantData?.email_address || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Username:</span>
-          <span class="ov-kv__value">{{ tenantData?.login_username || '-' }}</span>
-        </div>
-        <button *ngIf="tenantData?.verified_status !== 'Verified'" type="button"
-          class="ov-btn ov-btn-ghost w-full !h-9 mt-1 text-[12px]">Verify Email</button>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Lease Information</h6>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4">
-        <div class="ov-kv">
-          <span class="ov-kv__label">ID:</span>
-          <span class="ov-kv__value">{{ tenantData?.lease_code || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Name:</span>
-          <span class="ov-kv__value">{{ tenantData?.tenant || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Email:</span>
-          <span class="ov-kv__value ov-link">{{ tenantData?.email_address || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Phone:</span>
-          <span class="ov-kv__value">{{ tenantData?.phone_number || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Company:</span>
-          <span class="ov-kv__value">{{ tenantData?.company_name || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Active Lease:</span>
-          <span class="ov-kv__value">{{ tenantData?.active_lease || '-' }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Note</h6>
-        <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
-      </div>
-      <div class="px-5 py-4">
-        <p class="m-0 text-[13px] italic text-textmuted">{{ tenantData?.notes || tenantData?.note || 'No notes available.' }}</p>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Statement Of Account</h6>
-      </div>
-      <div class="px-5 py-4 flex justify-between items-center gap-3">
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+      <div class="ov-detail-side__hero">
         <div>
-          <span class="block text-[13px] font-semibold text-defaulttextcolor">Auto Schedule?</span>
-          <span class="text-[12px] text-textmuted">Scheduled for 1st of the month</span>
+          <h4 class="ov-detail-side__title">{{ tenantData?.tenant || tenantData?.name || '' }}</h4>
+          <p class="ov-detail-side__email">
+            <img src="assets/images/action-menu/mail.svg" alt="" width="13" height="13" />
+            <span>{{ tenantData?.email_address || '' }}</span>
+          </p>
         </div>
-        <div class="custom-toggle-switch shrink-0">
-          <input type="checkbox" id="autoScheduleSide" [(ngModel)]="autoSchedule">
-          <label for="autoScheduleSide" class="label-primary"></label>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action">View Activity</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub (8/37)</button>
         </div>
       </div>
-    </div>
 
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Emergency Contact</h6>
-        <button type="button" (click)="showAddEmergencyContactModal = true"
-          class="ov-icon-btn !h-7 !w-7 !rounded-md bg-primary text-white border-0" aria-label="Add emergency contact">
-          <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
-        </button>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4" *ngIf="emergencyContactData && emergencyContactData.length > 0; else noEmergencyContact">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Name:</span>
-          <span class="ov-kv__value">{{ emergencyContactData[0]?.column1 || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Email:</span>
-          <span class="ov-kv__value">{{ emergencyContactData[0]?.email_address || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Phone:</span>
-          <span class="ov-kv__value">{{ emergencyContactData[0]?.phone || '-' }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Role:</span>
-          <span class="ov-kv__value">{{ emergencyContactData[0]?.role_name || '-' }}</span>
-        </div>
-      </div>
-      <ng-template #noEmergencyContact>
-        <div class="ov-kv-empty px-5 py-4">No emergency contacts found.</div>
-      </ng-template>
-    </div>
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Information</h6>
 
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Custom Fields</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Login Information</h6>
+          <span class="ov-detail-chip"
+            [class.ov-detail-chip--danger]="tenantData?.verified_status !== 'Verified'">
+            {{ tenantData?.verified_status || 'Not Verified' }}
+          </span>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value">{{ tenantData?.email_address || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Username:</span>
+            <span class="ov-kv__value">{{ tenantData?.login_username || '-' }}</span>
+          </div>
+        </div>
+        <div class="ov-detail-panel__footer" *ngIf="tenantData?.verified_status !== 'Verified'">
+          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 text-[12px]">Verify Email</button>
+        </div>
       </div>
-      <div class="ov-kv-empty px-5 py-6 text-center">No custom fields configured yet.</div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Lease Information</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ tenantData?.lease_code || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Name:</span>
+            <span class="ov-kv__value">{{ tenantData?.tenant || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value ov-link">{{ tenantData?.email_address || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__value">{{ tenantData?.phone_number || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Company:</span>
+            <span class="ov-kv__value">{{ tenantData?.company_name || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Active Lease:</span>
+            <span class="ov-kv__value">{{ tenantData?.active_lease || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Note</h6>
+          <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
+        </div>
+        <div class="ov-detail-panel__body">
+          <p class="m-0 text-[13px] italic text-textmuted">{{ tenantData?.notes || tenantData?.note || 'No notes available.' }}</p>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Statement Of Account</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="flex justify-between items-center gap-3">
+            <div>
+              <span class="block text-[13px] font-semibold text-defaulttextcolor">Auto Schedule?</span>
+              <span class="text-[12px] text-textmuted">Scheduled for 1st of the month</span>
+            </div>
+            <div class="custom-toggle-switch shrink-0">
+              <input type="checkbox" id="autoScheduleSide" [(ngModel)]="autoSchedule">
+              <label for="autoScheduleSide" class="label-primary"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Emergency Contact</h6>
+          <button type="button" (click)="showAddEmergencyContactModal = true"
+            class="ov-icon-btn !h-7 !w-7 !rounded-md bg-primary text-white border-0" aria-label="Add emergency contact">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
+          </button>
+        </div>
+        <div class="ov-detail-panel__body" *ngIf="emergencyContactData && emergencyContactData.length > 0; else noEmergencyContact">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Name:</span>
+            <span class="ov-kv__value">{{ emergencyContactData[0]?.column1 || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value">{{ emergencyContactData[0]?.email_address || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__value">{{ emergencyContactData[0]?.phone || '-' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Role:</span>
+            <span class="ov-kv__value">{{ emergencyContactData[0]?.role_name || '-' }}</span>
+          </div>
+        </div>
+        <ng-template #noEmergencyContact>
+          <div class="ov-detail-panel__empty">No emergency contacts found.</div>
+        </ng-template>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Custom Fields</h6>
+        </div>
+        <div class="ov-detail-panel__empty">No custom fields configured yet.</div>
+      </div>
     </div>
   </div>
 
-  <div class="ov-detail-layout__right flex flex-col gap-3">
+  <div class="ov-detail-layout__right">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
     <div class="ov-detail-tabs">
       <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
         [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
+    <div class="p-5">
     <!-- TAB: Statement -->
-    <div *ngIf="activeTab === 'Statement'" class="box ov-card flex flex-col gap-5 overflow-hidden p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Statement'" class="flex flex-col gap-5 animate-fade-in">
       <h4 class="ov-card-title m-0">Tenant Overview</h4>
 
       <!-- Statement Summary — Orville navy finance card (Figma primary #26264F tokens) -->
@@ -263,7 +276,7 @@
     </div>
 
     <!-- TAB: Leases -->
-    <div *ngIf="activeTab === 'Leases'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Leases'" class="flex flex-col gap-4 animate-fade-in">
       <h4 class="ov-card-title m-0">Tenant Leases</h4>
       <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
         <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
@@ -287,17 +300,17 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-3 animate-fade-in">
       <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: Users -->
-    <div *ngIf="activeTab === 'Users'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Users'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <h4 class="ov-card-title m-0">Tenant Users</h4>
         <button type="button" (click)="showAddUserModal = true"
@@ -331,7 +344,7 @@
     </div>
 
     <!-- TAB: Emergency Contact -->
-    <div *ngIf="activeTab === 'Emergency Contact'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Emergency Contact'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <h4 class="ov-card-title m-0">Emergency Contact</h4>
         <button type="button" (click)="showAddEmergencyContactModal = true"
@@ -361,6 +374,8 @@
       </app-shared-table>
     </div>
 
+    </div>
+    </div>
   </div>
 </div>
 

@@ -65,152 +65,160 @@
 </div>
 
 <div class="ov-detail-layout pb-20">
-  <div class="ov-detail-layout__left flex flex-col gap-3">
-
-    <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
-      <div>
-        <h4 class="ov-card-title">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h4>
-        <p class="ov-card-sub mt-1 break-all">{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]"
-          [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]">Edit Profile</button>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Basic Information</h6>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Name:</span>
-          <span class="ov-kv__value">{{ technicianData?.contact_name || technicianData?.name || technician.name }}</span>
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+      <div class="ov-detail-side__hero">
+        <div>
+          <h4 class="ov-detail-side__title">{{ technicianData?.contact_name || technicianData?.name || technician.name || 'Loading...' }}</h4>
+          <p class="ov-detail-side__email">
+            <img src="assets/images/action-menu/mail.svg" alt="" width="13" height="13" />
+            <span>{{ technicianData?.email_address || technicianData?.email || technician.email || '' }}</span>
+          </p>
         </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Email:</span>
-          <span class="ov-kv__value ov-link">{{ technicianData?.email_address || technicianData?.email || technician.email }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Phone:</span>
-          <span class="ov-kv__value">{{ technicianData?.mobile || technicianData?.phone_no || technician.phone }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Username:</span>
-          <span class="ov-kv__value">{{ technicianData?.user_name || technician.username }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Status:</span>
-          <span class="ov-detail-chip">Active</span>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis"
+            [routerLink]="['/contacts/support-technicians/edit-support-technician', technicianId]">Edit Profile</button>
         </div>
       </div>
-    </div>
 
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Work Order Information</h6>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Assigned Job:</span>
-          <span class="ov-kv__value">{{ technicianData?.email_id || technician.assignedJob }}</span>
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Information</h6>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Basic Information</h6>
         </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Responsible for WO:</span>
-          <span class="ov-detail-chip" [class.ov-detail-chip--danger]="!(technicianData?.responsible_for_wo || technicianData?.responsibleForWorkOrders || technician.responsibleForWorkOrders)">
-            {{ (technicianData?.responsible_for_wo || technicianData?.responsibleForWorkOrders || technician.responsibleForWorkOrders) ? 'Yes' : 'No' }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">System Information</h6>
-      </div>
-      <div class="flex flex-col gap-2.5 px-5 py-4">
-        <div class="ov-kv">
-          <span class="ov-kv__label">ID:</span>
-          <span class="ov-kv__value">{{ technicianId }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Created At:</span>
-          <span class="ov-kv__value">{{ technician.system.createdAt }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Last Login At:</span>
-          <span class="ov-kv__value">{{ technician.system.lastLoginAt }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="box ov-card !mb-0 overflow-hidden">
-      <div class="border-b border-defaultborder px-5 py-3.5">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Custom Fields</h6>
-      </div>
-      <div class="ov-kv-empty px-5 py-6 text-center">No custom fields configured yet. Custom fields will appear here when configured.</div>
-    </div>
-
-  </div>
-
-  <div class="ov-detail-layout__right flex flex-col gap-3">
-
-    <div class="ov-detail-tabs">
-      <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
-        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
-    </div>
-
-    <div *ngIf="activeTab === 'Work Orders'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
-      <div class="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-defaultborder">
-        <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Assigned Work Orders</h6>
-      </div>
-
-      <div class="flex justify-between items-center gap-3 flex-wrap">
-        <div class="ov-search flex-grow max-w-[256px]">
-          <label class="sr-only" for="tech-wo-search">Search</label>
-          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-          <input id="tech-wo-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery" placeholder="Search" />
-        </div>
-
-        <div class="relative">
-          <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
-            class="ov-btn ov-btn-toolbar"
-            [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
-            <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
-          </button>
-
-          <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
-            <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
-              <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-              Select All
-            </label>
-            <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-              <label *ngFor="let col of workOrderColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
-                <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
-                {{ col.label | translate }}
-              </label>
-            </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Name:</span>
+            <span class="ov-kv__value">{{ technicianData?.contact_name || technicianData?.name || technician.name }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Email:</span>
+            <span class="ov-kv__value ov-link">{{ technicianData?.email_address || technicianData?.email || technician.email }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__value">{{ technicianData?.mobile || technicianData?.phone_no || technician.phone }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Username:</span>
+            <span class="ov-kv__value">{{ technicianData?.user_name || technician.username }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Status:</span>
+            <span class="ov-detail-chip">Active</span>
           </div>
         </div>
       </div>
 
-      <app-shared-table [columns]="visibleColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
-        <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container *ngIf="col.key === 'id'">
-            <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
-          </ng-container>
-          <ng-container *ngIf="col.key === 'status'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-              [ngClass]="row.status === 'Open' ? 'bg-primary/10 text-primary' : row.status === 'Completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.status }}</span>
-          </ng-container>
-          <ng-container *ngIf="col.key === 'priority'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
-              [ngClass]="row.priority === 'High' ? 'bg-danger/10 text-danger' : 'bg-gray-100 text-gray-600'">{{ row.priority }}</span>
-          </ng-container>
-        </ng-template>
-      </app-shared-table>
-    </div>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Work Order Information</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">Assigned Job:</span>
+            <span class="ov-kv__value">{{ technicianData?.email_id || technician.assignedJob }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Responsible for WO:</span>
+            <span class="ov-detail-chip" [class.ov-detail-chip--danger]="!(technicianData?.responsible_for_wo || technicianData?.responsibleForWorkOrders || technician.responsibleForWorkOrders)">
+              {{ (technicianData?.responsible_for_wo || technicianData?.responsibleForWorkOrders || technician.responsibleForWorkOrders) ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+      </div>
 
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">System Information</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value">{{ technicianId }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Created At:</span>
+            <span class="ov-kv__value">{{ technician.system.createdAt }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Last Login At:</span>
+            <span class="ov-kv__value">{{ technician.system.lastLoginAt }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Custom Fields</h6>
+        </div>
+        <div class="ov-detail-panel__empty">No custom fields configured yet. Custom fields will appear here when configured.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout__right">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
+      <div class="ov-detail-tabs">
+        <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
+          [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
+      </div>
+
+      <div class="p-5">
+        <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-3 animate-fade-in">
+          <div class="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-defaultborder">
+            <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Assigned Work Orders</h6>
+          </div>
+
+          <div class="flex justify-between items-center gap-3 flex-wrap">
+            <div class="ov-search flex-grow max-w-[256px]">
+              <label class="sr-only" for="tech-wo-search">Search</label>
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input id="tech-wo-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery" placeholder="Search" />
+            </div>
+
+            <div class="relative">
+              <button type="button" (click)="showColumnDropdown = !showColumnDropdown"
+                class="ov-btn ov-btn-toolbar"
+                [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
+                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+                Column
+              </button>
+
+              <div *ngIf="showColumnDropdown" class="absolute right-0 mt-1.5 z-30 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[180px] flex flex-col gap-2 animate-fade-in">
+                <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700 text-[10px] uppercase border-b pb-1.5 mb-1">
+                  <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+                  Select All
+                </label>
+                <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
+                  <label *ngFor="let col of workOrderColumns" class="flex items-center gap-2 cursor-pointer text-gray-600 text-xs hover:text-gray-900 transition-colors">
+                    <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(col.key)" class="form-checkbox h-3.5 w-3.5 text-primary rounded">
+                    {{ col.label | translate }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <app-shared-table [columns]="visibleColumns" [data]="workOrderData" [loading]="false" [hasActions]="false">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container *ngIf="col.key === 'id'">
+                <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
+              </ng-container>
+              <ng-container *ngIf="col.key === 'status'">
+                <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+                  [ngClass]="row.status === 'Open' ? 'bg-primary/10 text-primary' : row.status === 'Completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ row.status }}</span>
+              </ng-container>
+              <ng-container *ngIf="col.key === 'priority'">
+                <span class="badge rounded px-2 py-0.5 text-[9px] font-bold"
+                  [ngClass]="row.priority === 'High' ? 'bg-danger/10 text-danger' : 'bg-gray-100 text-gray-600'">{{ row.priority }}</span>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

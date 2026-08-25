@@ -107,7 +107,6 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
 
 /** Flat list of settings paths that use the shared placeholder (existing pages excluded). */
 export const SETTINGS_PLACEHOLDER_ROUTES: { path: string; title: string }[] = [
-  { path: 'discount-profiles', title: 'Discount Profiles' },
   { path: 'tax-profiles', title: 'Tax Profiles' },
   { path: 'bank-accounts', title: 'Bank Accounts' },
   { path: 'invoice-settings', title: 'Invoice Settings' },

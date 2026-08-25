@@ -110,7 +110,7 @@ form.ov-add-form {
   gap: 16px;
   width: 100%;
   max-width: 1188px;
-  margin: 0 auto 32px;
+  margin: 0.5rem auto 2rem;
   padding-top: 10px;
   border-top: 1px solid rgb(var(--default-border));
 }
@@ -119,6 +119,17 @@ form.ov-add-form {
   min-width: 72px;
   padding-inline: 20px;
   font-weight: 600;
+  letter-spacing: 0.28px;
+}
+
+.ov-add-footer .ov-btn-ghost {
+  border-color: transparent;
+  background: #fff;
+  color: rgb(var(--text-muted));
+}
+
+.dark .ov-add-footer .ov-btn-ghost {
+  background: rgb(var(--body-bg));
 }
 
 .ov-add-layout__main {
@@ -152,17 +163,6 @@ form.ov-add-form {
     max-width: none;
     position: static;
   }
-}
-
-.ov-add-footer {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 1188px;
-  margin: 0.5rem auto 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgb(var(--default-border));
 }
 
 .ov-label {
@@ -261,6 +261,12 @@ form.ov-add-form {
   &::placeholder {
     color: rgb(var(--text-muted));
   }
+
+  &:focus {
+    border-color: rgb(var(--link));
+    box-shadow: 0 0 0 3px rgb(var(--link) / 0.35);
+    outline: none;
+  }
 }
 
 textarea.ov-input {
@@ -343,6 +349,11 @@ textarea.ov-input {
 .ov-input-addon:focus-within {
   border-color: rgb(var(--primary));
   box-shadow: 0 0 0 1px rgb(var(--primary));
+}
+
+.dark .ov-input-addon:focus-within {
+  border-color: rgb(var(--link));
+  box-shadow: 0 0 0 3px rgb(var(--link) / 0.35);
 }
 
 /* Phone dial-code + number — Figma prefix/input combo (modals & forms) */
@@ -528,6 +539,8 @@ textarea.ov-input {
   margin-bottom: 0;
   box-shadow: none;
   border-radius: 1rem;
+  /* Prevent child backgrounds from painting over the rounded border stroke */
+  background-clip: padding-box;
 }
 
 .ng-select.ov-select .ng-select-container .ng-value-container,
@@ -1049,6 +1062,10 @@ html.dark .ov-inline-search input[type='text'],
   border-color: rgb(255 255 255 / 0.1);
 }
 
+.dark .box.ov-card {
+  background: rgb(var(--dark-bg)) !important;
+}
+
 .ov-card-title {
   margin: 0;
   font-size: 16px;
@@ -1151,6 +1168,12 @@ html.dark .ov-inline-search input[type='text'],
   color: rgb(var(--default-text-color) / 0.85) !important;
 }
 
+.dark .ng-select.ov-select.ng-select-focused .ng-select-container,
+.dark .ng-select.ov-select.ng-select-opened .ng-select-container {
+  border-color: rgb(var(--link)) !important;
+  box-shadow: 0 0 0 3px rgb(var(--link) / 0.35) !important;
+}
+
 .ng-select.ov-select .ng-arrow-wrapper {
   position: relative !important;
   width: 38px !important;
@@ -1234,13 +1257,19 @@ html.dark .ov-inline-search input[type='text'],
   padding: 20px 12px 12px 12px !important;
   border: 0 none;
   border-bottom: 1px solid rgb(var(--default-border)) !important;
-  background: #fff;
+  background: #fff !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   line-height: 18px;
   color: rgb(var(--default-text-color)) !important;
   white-space: nowrap;
   vertical-align: middle;
+}
+
+/* Kill Ynex leftover thead tints (bg-info/10) so every detail tab matches */
+.main-content thead.bg-info\/10,
+.main-content .table thead.bg-info\/10 {
+  background-color: transparent !important;
 }
 
 .ov-table tbody tr,
@@ -1280,6 +1309,18 @@ html.dark .ov-inline-search input[type='text'],
   border-inline: 0 !important;
   border-top: 0 !important;
   border-bottom: 1px solid rgb(var(--default-border)) !important;
+}
+
+/* Sticky table heads — one token for every detail / child table */
+.main-content .table-vertical-scroll {
+  position: relative;
+}
+
+.main-content .table-vertical-scroll > table > thead,
+.main-content .table-vertical-scroll > table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 /* Figma link #2563EB — use .ov-link / .text-link everywhere for clickable text */
@@ -1322,8 +1363,114 @@ html.dark .ov-inline-search input[type='text'],
 }
 
 .dark .ov-table thead tr th,
-.dark .main-content .table thead tr th {
+.dark .main-content .table thead tr th,
+.dark .main-content .table-vertical-scroll > table > thead,
+.dark .main-content .table-vertical-scroll > table > thead > tr > th {
+  background: rgb(var(--dark-bg)) !important;
+  color: rgb(var(--default-text-color)) !important;
+  border-bottom-color: rgb(255 255 255 / 0.1) !important;
+}
+
+.dark .main-content thead.bg-info\/10,
+.dark .main-content .table thead.bg-info\/10 {
+  background-color: transparent !important;
+}
+
+.main-content .table tbody td.ov-table__empty,
+.ov-table tbody td.ov-table__empty {
+  background: rgb(var(--light) / 0.45) !important;
+  color: rgb(var(--text-muted));
+}
+
+.dark .main-content .table tbody td.ov-table__empty,
+.dark .ov-table tbody td.ov-table__empty {
+  background: rgb(255 255 255 / 0.04) !important;
+  color: rgb(var(--text-muted)) !important;
+}
+
+/* Detail shells — one border color; avoid double-edge glow in dark */
+.dark .box.ov-card,
+.dark .ov-detail-side,
+.dark .ov-detail-panel,
+.dark .ld-side,
+.dark .ld-panel,
+.dark .ld-fin {
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+/* Lease detail surfaces (html.dark — component .dark.* fails encapsulation) */
+.dark .ld-side,
+.dark .ld-panel,
+.dark .ld-fin,
+.dark .ld-approval-pop,
+.dark .ld-hero__btn,
+.dark .ld-fin__response {
+  background: rgb(var(--dark-bg)) !important;
+}
+
+/* Invoice & Receipts card (financials child table — same encapsulation issue) */
+.dark .fin__card,
+.dark .fin__empty {
+  background: rgb(var(--dark-bg)) !important;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .fin__table-wrap {
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .fin__table thead tr,
+.dark .fin__table tfoot tr {
+  background: rgb(var(--dark-bg)) !important;
+}
+
+.dark .fin__table td {
+  border-bottom-color: rgb(255 255 255 / 0.08);
+}
+
+.dark .fin__stat {
+  background: rgb(var(--body-bg)) !important;
+}
+
+.dark .fin__badge--status,
+.dark .fin__badge--partial,
+.dark .fin__badge--cleared {
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(var(--default-text-color));
+}
+
+.dark .fin__badge--unpaid {
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(var(--text-muted));
+}
+
+.dark .fin__badge--paid {
+  background: rgb(62 111 168 / 0.2);
+  color: #8eb4e0;
+}
+
+.dark .ld-fin__metric,
+.dark .ld-link-row {
+  background: rgb(var(--body-bg)) !important;
+}
+
+.dark .ld-status-pill {
+  background: rgb(var(--light)) !important;
+}
+
+.dark .ov-detail-side,
+.dark .ov-detail-panel,
+.dark .ov-detail-side__action {
+  background: rgb(var(--dark-bg));
+}
+
+.dark .ov-detail-panel__empty {
   background: rgb(var(--body-bg));
+}
+
+.dark .ov-detail-tabs {
+  background: rgb(var(--dark-bg));
+  border-bottom-color: rgb(255 255 255 / 0.1);
 }
 
 /* Navy --primary is unreadable on dark table cells (Units / Rooms chips, etc.) */
@@ -1362,6 +1509,38 @@ html.dark .app-sidebar .slide-menu.child3 .side-menu__item:hover {
 html.dark .app-sidebar .slide-menu .side-menu__item.active .side-menu__label,
 html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
   color: #fff !important;
+}
+
+/* Unify top-level sidebar idle color in dark page theme (fixes mixed muted / white labels) */
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item .side-menu__label,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item .side-menu__icon,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item .side-menu__angle,
+html.dark .app-sidebar .orville-parent-item,
+html.dark .app-sidebar .orville-parent-item .side-menu__label,
+html.dark .app-sidebar .orville-parent-item .orville-nav-icon,
+html.dark .app-sidebar .orville-parent-item .side-menu__icon,
+html.dark .app-sidebar .orville-parent-item .side-menu__angle,
+html.dark .app-sidebar .orville-nav-icon {
+  color: rgb(255 255 255 / 0.72) !important;
+  fill: rgb(255 255 255 / 0.72) !important;
+}
+
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item:hover:not(.active),
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item:hover:not(.active) .side-menu__label,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item:hover:not(.active) .orville-nav-icon,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item:hover:not(.active) .side-menu__icon,
+html.dark .app-sidebar .main-menu > .slide > .side-menu__item:hover:not(.active) .side-menu__angle {
+  color: #fff !important;
+  fill: #fff !important;
+}
+
+html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-menu__item.active,
+html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-menu__item.active .side-menu__label,
+html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-menu__item.active .orville-nav-icon,
+html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-menu__item.active .side-menu__icon {
+  color: rgb(189 151 89) !important;
+  fill: rgb(189 151 89) !important;
 }
 
 .mat-mdc-paginator {
@@ -1557,6 +1736,19 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
   opacity: 1;
 }
 
+/* Paginator chevrons are stroke #6B6B7D — invisible on dark chips without invert */
+.dark .ov-page__chevron,
+.dark .ov-page__size img,
+.dark .ov-page__btn img {
+  filter: brightness(0) invert(1);
+  opacity: 0.75;
+}
+
+.dark .ov-page__btn:disabled img,
+.dark .ov-page__btn:disabled .ov-page__chevron {
+  opacity: 0.35;
+}
+
 .ov-page__btn:hover:not(:disabled):not(.is-active) {
   background: rgb(var(--light));
 }
@@ -1724,6 +1916,270 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 
 .ov-modal--lg {
   max-width: 640px;
+}
+
+/* Add Document modal — Figma 1056:8002 */
+.ov-modal-stack {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 520px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.ov-modal-stack .ov-modal--doc {
+  width: 100%;
+  max-width: none;
+}
+
+.ov-modal__float-close {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(37 37 54 / 0.08);
+  cursor: pointer;
+}
+
+.dark .ov-modal__float-close {
+  background: rgb(var(--body-bg));
+}
+
+.ov-modal--doc {
+  max-width: 520px;
+  border-radius: 16px;
+  padding-block: 20px;
+}
+
+.ov-modal__header--doc {
+  padding: 0 20px 18px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-modal__title--doc {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.ov-modal__sub--doc {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: normal;
+  color: #93939d;
+}
+
+.ov-modal__body--doc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 449px;
+  padding: 20px;
+}
+
+.ov-modal__footer--doc {
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px 20px 0;
+  border-top: 1px solid rgb(var(--default-border));
+  background: transparent;
+}
+
+.ov-btn-soft {
+  min-width: 80px;
+  height: 36px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: 8px;
+  background: #eeeef5;
+  color: rgb(var(--text-muted));
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dark .ov-btn-soft {
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(var(--default-text-color));
+}
+
+.ov-modal__footer--doc .ov-btn-primary {
+  min-width: 80px;
+  height: 36px;
+  padding-inline: 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ov-modal__share-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 10px;
+  border-radius: 8px;
+  background: rgb(var(--default-background));
+}
+
+.ov-modal__share-panel .ov-modal__share {
+  padding: 0;
+}
+
+.ov-modal__share-panel .ov-modal__hint {
+  margin-top: 0;
+  color: #93939d;
+  font-size: 13px;
+}
+
+.ov-modal__drop {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px dashed rgb(var(--default-border));
+  border-radius: 8px;
+  background: rgb(var(--default-background));
+  text-align: center;
+  cursor: pointer;
+}
+
+.ov-modal__drop-icon {
+  display: block;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.ov-modal__drop-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: normal;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-modal__drop-sub {
+  margin: 3px 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #93939d;
+}
+
+.ov-btn-accent {
+  display: inline-flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 20px;
+  border: 0;
+  border-radius: 4px;
+  background: #bd9759;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+  cursor: pointer;
+}
+
+.ov-btn-accent:hover {
+  filter: brightness(0.96);
+}
+
+.ov-modal__drop-hint {
+  margin: 0;
+  max-width: 336px;
+  font-size: 10px;
+  line-height: normal;
+  color: #93939d;
+}
+
+.ov-modal__file {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid #eeeef5;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.dark .ov-modal__file {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(var(--body-bg));
+}
+
+.ov-modal__file-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 15px;
+}
+
+.ov-modal__file-ico {
+  display: flex;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgb(var(--default-background));
+}
+
+.ov-modal__file-ico img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.ov-modal__file-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-modal__file-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-modal__file-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgb(var(--text-muted));
+}
+
+.ov-modal__file-remove {
+  flex-shrink: 0;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--text-muted));
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .dark .ov-modal {
@@ -1904,7 +2360,16 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
   white-space: nowrap;
   padding: 0 0.5rem;
   border-bottom: 1px solid rgb(var(--default-border));
+  /* Match .box.ov-card top radius so white fill does not square off the border corners */
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
   background: #fff;
+}
+
+/* Card that hosts the tab strip — keep overflow visible for menus, but clip only the top corners via tabs radius */
+.box.ov-card > .ov-detail-tabs:first-child {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .dark .ov-detail-tabs {
@@ -1987,6 +2452,161 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
     min-width: 0;
     flex: 1 1 auto;
   }
+}
+
+/* Contact detail left shell — Figma landlord 1537:64268 (single outer + nested panels) */
+.ov-detail-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: #fff;
+}
+
+.dark .ov-detail-side {
+  background: rgb(var(--body-bg));
+}
+
+.ov-detail-side__rule {
+  width: 100%;
+  height: 0;
+  border-top: 1px solid rgb(var(--default-border));
+}
+
+.ov-detail-side__section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-detail-side__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.ov-detail-side__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.32px;
+  color: rgb(var(--default-text-color));
+  word-break: break-word;
+}
+
+.ov-detail-side__email {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.28px;
+  color: rgb(var(--text-muted));
+  word-break: break-all;
+
+  img {
+    flex-shrink: 0;
+  }
+}
+
+.ov-detail-side__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.ov-detail-side__action {
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 36px;
+  padding: 4px 10px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+}
+
+.dark .ov-detail-side__action {
+  background: rgb(var(--body-bg));
+}
+
+.ov-detail-side__action--emphasis {
+  color: rgb(var(--default-text-color));
+}
+
+.ov-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 16px;
+  background: #fff;
+}
+
+.dark .ov-detail-panel {
+  background: rgb(var(--body-bg));
+}
+
+.ov-detail-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+.ov-detail-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-detail-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+
+.ov-detail-panel__footer {
+  padding: 0 20px 20px;
+}
+
+.ov-detail-panel__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 20px 20px;
+  padding: 28px 16px;
+  border-radius: 8px;
+  background: rgb(var(--body-bg));
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
 }
 
 .ov-detail-chip {
@@ -2352,14 +2972,22 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 
 .dark .ov-action-menu__icon-box {
   background: transparent;
+  border-color: rgb(255 255 255 / 0.14);
+}
+
+/* Action SVGs use stroke #252536 — invert so they read on dark surfaces */
+.dark .ov-action-menu__icon {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 
 .dark .ov-action-menu__item--danger .ov-action-menu__icon-box {
   background: rgb(var(--danger) / 0.16);
 }
 
-.dark .ov-action-menu__item--danger .ov-action-menu__icon-box {
-  background: rgb(var(--danger) / 0.16);
+.dark .ov-action-menu__item--danger .ov-action-menu__icon {
+  filter: none;
+  opacity: 1;
 }
 
 .dark .ov-action-menu__footer {
@@ -2750,6 +3378,49 @@ html.dark .app-sidebar .slide-menu .side-menu__item:hover .side-menu__label {
 
 .custom-toggle-switch > label:has(.dot) .dot {
   box-shadow: 0 1px 2px rgba(37, 37, 54, 0.18);
+}
+
+/* Dark mode — form focus + switches (primary navy invisible on dark) */
+.dark .ti-switch {
+  background-color: rgb(255 255 255 / 0.22) !important;
+}
+
+.dark .ti-switch::before {
+  background-color: #fff !important;
+}
+
+.dark .ti-switch:checked {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+}
+
+.dark .ti-switch:checked::before {
+  background-color: #fff !important;
+}
+
+.dark .peer:checked ~ .peer-checked\:bg-primary {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+}
+
+.dark .custom-toggle-switch > label::before {
+  background-color: rgb(255 255 255 / 0.28) !important;
+  opacity: 1 !important;
+}
+
+.dark .custom-toggle-switch > label::after {
+  background-color: #fff !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label::before {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+  opacity: 0.55 !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label::after {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
+}
+
+.dark .custom-toggle-switch > input[type='checkbox']:checked + label.label-primary {
+  background-color: color-mix(in srgb, rgb(var(--primary)) 45%, white) !important;
 }
 
 /* Tenant Statement Summary — navy hero card (Figma financial summary / #26264F) */
@@ -3427,6 +4098,86 @@ html.dark .acc-reports-card {
   background: rgb(var(--dark-bg, 37 39 41)) !important;
   border-color: rgb(var(--default-border)) !important;
   box-shadow: none;
+}
+
+/* Property grid cards — component .dark.* fails when dark is on <html> */
+html.dark .ov-prop-card,
+.dark .ov-prop-card {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+html.dark .ov-prop-card__stat,
+.dark .ov-prop-card__stat {
+  background: transparent !important;
+  border-color: rgb(255 255 255 / 0.1) !important;
+}
+
+html.dark .ov-prop-card__occ-track,
+.dark .ov-prop-card__occ-track {
+  background: rgb(255 255 255 / 0.1) !important;
+}
+
+html.dark .ov-prop-card__btn--ghost,
+.dark .ov-prop-card__btn--ghost {
+  background: transparent !important;
+  border-color: rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.85) !important;
+}
+
+html.dark .ov-prop-card__btn--ghost:hover,
+.dark .ov-prop-card__btn--ghost:hover {
+  background: rgb(255 255 255 / 0.08) !important;
+  color: #fff !important;
+}
+
+html.dark .ov-prop-card__status,
+.dark .ov-prop-card__status {
+  background: rgb(var(--success) / 0.16) !important;
+}
+
+html.dark .ov-prop-card__addr img,
+html.dark .ov-prop-card__icon img,
+html.dark .ov-prop-card__type-label img,
+.dark .ov-prop-card__addr img,
+.dark .ov-prop-card__icon img,
+.dark .ov-prop-card__type-label img {
+  filter: brightness(0) invert(1);
+  opacity: 0.75;
+}
+
+/* Insights highlight cards — navy --primary titles are unreadable on dark cards */
+html.dark .orville-insights,
+.dark .orville-insights {
+  --ins-card: rgb(var(--dark-bg, 37 39 41));
+  --ins-track: rgb(255 255 255 / 0.08);
+}
+
+html.dark .orville-hl,
+.dark .orville-hl {
+  background: rgb(var(--dark-bg, 37 39 41)) !important;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+html.dark .orville-hl__name,
+.dark .orville-hl__name {
+  color: rgb(var(--default-text-color)) !important;
+}
+
+html.dark .orville-hl__sub,
+.dark .orville-hl__sub {
+  color: rgb(var(--text-muted)) !important;
+}
+
+html.dark .orville-hl__chart--line,
+.dark .orville-hl__chart--line {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgb(255 255 255 / 0.12) 0,
+    rgb(255 255 255 / 0.12) 1px,
+    transparent 1px,
+    transparent calc(100% / 11)
+  );
 }
 
 html.dark .acc-reports-card__title {
