@@ -6,7 +6,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
-
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
 export interface Litigation {
   id: string;
   name: string;
@@ -34,12 +37,15 @@ export interface Litigation {
   styleUrls: []
 })
 export class LitigationsComponent implements OnInit {
+  private commonService =inject(CommonService);
+  private commontabservice =inject(Common_TabsService);
+  private toastr=inject(ToastrService);
   searchQuery: string = '';
   isLoading: boolean = false;
   activeStatusFilter: string = 'All';
   showColumnDropdown = false;
   isDrawerOpen: boolean = false;
-
+  currentUser: AuthPayload | null = this.commonService.getCurrentUser();
   // Filter models
   filterLegalFirm: string | null = null;
   filterProperty: string | null = null;
@@ -53,19 +59,22 @@ export class LitigationsComponent implements OnInit {
 
   pageNo = 0;
   pageSize = 10;
-  totalRecords = 5;
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
   
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'name', label: 'Name', visible: true },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true },
+    { key: 'case_name', label: 'Name', visible: true },
     { key: 'details', label: 'Details', visible: true },
-    { key: 'legalFirm', label: 'Legal Firm', visible: true },
-    { key: 'caseDate', label: 'Case Date', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'escalationOption', label: 'Escalation Option', visible: true },
+    { key: 'legal_firm', label: 'Legal Firm', visible: true },
+    { key: 'case_date', label: 'Case Date', visible: true },
+    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
+    { key: 'escalation_option', label: 'Escalation Option', visible: true},
     { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'lease', label: 'Lease', visible: true, useTemplate: true },
+    { key: 'unit_no', label: 'Unit', visible: true, useTemplate: true },
+    { key: 'active_lease', label: 'Lease', visible: true, useTemplate: true },
+    { key: 'tenant', label: 'Tenant', visible: true, useTemplate: true },
     { key: 'unitBlocked', label: 'Unit Blocked', visible: true, useTemplate: true },
     { key: 'tenantBlocked', label: 'Tenant Blocked', visible: true, useTemplate: true },
     { key: 'hearingsCount', label: 'Hearings Count', visible: true, useTemplate: true },
@@ -74,105 +83,62 @@ export class LitigationsComponent implements OnInit {
     { key: 'internalStatus', label: 'Internal Statuses', visible: true }
   ];
 
-  litigationsData: Litigation[] = [
-    {
-      id: 'LC-1001',
-      name: 'Rent Recovery Case',
-      details: 'Tenant has 3 months overdue rent.',
-      legalFirm: 'Smith & Partners',
-      caseDate: '15-07-2026',
-      status: 'Open',
-      escalationOption: 2,
-      property: 'Sunrise Apartments',
-      unit: 'A-101',
-      lease: 'LEASE-2025-001',
-      unitBlocked: 'Yes',
-      tenantBlocked: 'No',
-      hearingsCount: 2,
-      attachmentsCount: 5,
-      notesCount: 3,
-      internalStatus: 'Under Review'
-    },
-    {
-      id: 'LC-1002',
-      name: 'Lease Violation',
-      details: 'Unauthorized structural modifications.',
-      legalFirm: 'Legal Associates LLC',
-      caseDate: '18-07-2026',
-      status: 'Closed',
-      escalationOption: 5,
-      property: 'Green Heights',
-      unit: 'B-205',
-      lease: 'LEASE-2024-056',
-      unitBlocked: 'No',
-      tenantBlocked: 'No',
-      hearingsCount: 1,
-      attachmentsCount: 2,
-      notesCount: 4,
-      internalStatus: 'Awaiting Response'
-    },
-    {
-      id: 'LC-1003',
-      name: 'Eviction Proceedings',
-      details: 'Continuous rent default despite notices.',
-      legalFirm: 'Justice Legal Consultants',
-      caseDate: '08-07-2026',
-      status: 'Pending',
-      escalationOption: 3,
-      property: 'Oak Residency',
-      unit: 'C-312',
-      lease: 'LEASE-2023-089',
-      unitBlocked: 'Yes',
-      tenantBlocked: 'Yes',
-      hearingsCount: 4,
-      attachmentsCount: 8,
-      notesCount: 6,
-      internalStatus: 'Hearing Scheduled'
-    },
-    {
-      id: 'LC-1004',
-      name: 'Property Damage Claim',
-      details: 'Significant damage found during inspection.',
-      legalFirm: 'Elite Law Firm',
-      caseDate: '22-07-2026',
-      status: 'Open',
-      escalationOption: 2,
-      property: 'City Center Plaza',
-      unit: 'D-108',
-      lease: 'LEASE-2025-018',
-      unitBlocked: 'No',
-      tenantBlocked: 'No',
-      hearingsCount: 0,
-      attachmentsCount: 3,
-      notesCount: 2,
-      internalStatus: 'Evidence Collection'
-    },
-    {
-      id: 'LC-1005',
-      name: 'Security Deposit Dispute',
-      details: 'Tenant disputes final deductions.',
-      legalFirm: 'Prime Legal Services',
-      caseDate: '20-07-2026',
-      status: 'Closed',
-      escalationOption: 1,
-      property: 'River View Towers',
-      unit: 'E-412',
-      lease: 'LEASE-2022-145',
-      unitBlocked: 'No',
-      tenantBlocked: 'No',
-      hearingsCount: 3,
-      attachmentsCount: 6,
-      notesCount: 5,
-      internalStatus: 'Closed Successfully'
-    }
-  ];
+  litigationsData:any= [];
 
   filteredData: Litigation[] = [];
 
   ngOnInit() {
+    this.loadlegalcases();
     this.applyFilters();
   }
+  getArabicLookupName(row:any,key:string){ 
+    return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
+  } 
+  loadlegalcases() {
+    const filterList: any[] = [];
+    if (this.activeStatusFilter && this.activeStatusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.activeStatusFilter });
+    }
+     
 
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: this.activeStatusFilter !== 'All' ? 'status' : '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "LEGAL_CASES"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) {  
+          this.litigationsData = response.objResult.legal_cases || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.litigationsData = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+       
+        this.litigationsData = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }
@@ -233,7 +199,20 @@ export class LitigationsComponent implements OnInit {
     this.filteredData = temp;
     this.totalRecords = this.filteredData.length;
   }
-
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize; 
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize; 
+    this.loadlegalcases();
+  }
   clearFilters() {
     this.filterLegalFirm = null;
     this.filterProperty = null;

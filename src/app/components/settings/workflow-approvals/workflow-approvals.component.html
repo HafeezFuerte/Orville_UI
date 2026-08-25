@@ -1,0 +1,179 @@
+<div class="container-fluid py-4">
+  <div class="d-md-flex d-block align-items-center justify-content-between mb-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Workflow Approvals</h1>
+  </div>
+<div class="xl:col-span-12 col-span-12">
+  <div class="box custom-box">
+      <div class="box-body !p-6">
+        <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-6">
+          <label class="form-label">Screen <span class="text-danger">*</span></label>
+          <ng-select [items]="screens"  
+            (change)="onscreenChange($event)" placeholder="Select screen" >
+          </ng-select>
+          
+        </div></div>
+          <div class="flex items-center justify-between mb-4 mt-2">
+              <div class="flex items-center gap-6"> 
+                  <!-- Simple Workflow -->
+                  <div class="form-check flex items-center min-h-[1.5rem] ps-0">
+                      <input class="form-check-input custom-radio-input" type="radio" name="workflowType"
+                          id="simpleWorkflow" value="simple" [(ngModel)]="workflowType">
+                      <label class="form-check-label text-sm font-medium cursor-pointer ms-2" for="simpleWorkflow">
+                          {{ 'web.common.lblSimpleWorkflow' | translate }}
+                      </label>
+                  </div>
+
+                  <!-- Multiple Workflow -->
+                  <div class="form-check flex items-center min-h-[1.5rem] ps-0">
+                      <input class="form-check-input custom-radio-input" type="radio" name="workflowType"
+                          id="multipleWorkflow" value="multiple" [(ngModel)]="workflowType">
+                      <label class="form-check-label text-sm font-medium cursor-pointer ms-2" for="multipleWorkflow">
+                          {{ 'web.common.lblMultipleWorkflow' | translate }}
+                      </label>
+                  </div>
+              </div>
+
+              <!-- Add Level Button (Square Purple with Tooltip like Employees) -->
+              <div class="hs-tooltip ti-main-tooltip" *ngIf="workflowType === 'multiple'">
+                  <button type="button"
+                      class="hs-tooltip-toggle ti-btn ti-btn-icon w-[2.313rem] h-[2.313rem] !ms-2 ti-btn-primary"
+                      (click)="addLevel()">
+                      <i class="ri-add-line"></i>
+                      <span
+                          class="hs-tooltip-content ti-main-tooltip-content py-1 px-2 !bg-black !text-xs !font-medium !text-white shadow-sm"
+                          role="tooltip">
+                          {{ 'web.common.lblAddLevel' | translate }}
+                      </span>
+                  </button>
+              </div>
+          </div>
+
+          <!-- Content based on selection -->
+          <div class="mt-4 pt-4 border-t border-dashed">
+
+              <!-- Multiple Workflow Selection -->
+              <div *ngIf="workflowType === 'multiple'">
+                  <div class="w-full">
+                      <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+                          <thead class="bg-info/10">
+                              <tr class="border-b border-defaultborder">
+                                  <th scope="col" class="text-start w-[100px]">{{ 'web.common.lblLevelNo' | translate }}</th>
+                                  <th scope="col" class="text-start">{{ 'web.common.lblApproverUser' | translate }}</th>
+                                  <th scope="col" class="text-center w-[180px]">{{ 'web.common.lblNotifications' | translate }}</th>
+                                  <th scope="col" class="text-center w-[120px]">{{ 'web.common.lblEmail' | translate }}</th>
+                                  <th scope="col" class="text-center w-[120px]">{{ 'web.common.lblSMS' | translate }}</th>
+                                  <th scope="col" class="text-center w-[100px]">{{ 'web.common.lblAction' | translate }}</th>
+                              </tr>
+                          </thead>
+                          <tbody  >
+                              <tr *ngFor="let level of workflowLevels; let i = index" cdkDrag
+                                  class="border-b border-defaultborder task-list bg-white cursor-move">
+                                  <td class="text-start">
+                                      <div class="text-gray-800">{{ 'web.common.lblNum' + (i + 1) | translate }}</div>
+                                  </td>
+                                  <td>
+                                      <ng-select [items]="users"   bindValue="code" #userSearch
+                                          [(ngModel)]="level.userId" [searchable]="true" [clearable]="false"
+                                          [placeholder]="'web.common.phSelectUser' | translate" appendTo="body"
+                                          class="w-full form-control-ng-select small shadow-sm">
+                                          <ng-template ng-header-tmp>
+                                              <input type="text"
+                                                  class="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none"
+                                                  [placeholder]="'web.common.phSearch' | translate"
+                                                  (input)="userSearch.filter($any($event.target).value)" />
+                                          </ng-template> 
+                                          <ng-template ng-label-tmp let-item="item">
+                                            {{ item.code }} - {{ item.name }}
+                                        </ng-template>
+                                        <ng-template ng-option-tmp let-item="item">
+                                          {{ item.code }} - {{ item.name }}
+                                      </ng-template>
+
+                                      </ng-select>
+                                  </td>
+                                  <td>
+                                      <div class="custom-toggle-switch toggle-sm flex items-center justify-center">
+                                          <span class="me-2 text-[9px] font-bold uppercase transition-colors"
+                                              [class.text-primary]="level.isNotificationEnabled"
+                                              [class.text-gray-300]="!level.isNotificationEnabled">{{ 'web.common.lblActive' | translate }}</span>
+                                          <input [id]="'notifActive_' + i" type="checkbox"
+                                              [(ngModel)]="level.isNotificationEnabled"
+                                              (change)="toggleNotifications(level)">
+                                          <label [for]="'notifActive_' + i" class="label-primary"></label>
+                                          <span class="ms-2 text-[9px] font-bold uppercase transition-colors"
+                                              [class.text-gray-300]="level.isNotificationEnabled"
+                                              [class.text-primary]="!level.isNotificationEnabled">{{ 'web.common.lblInactive' | translate }}</span>
+                                      </div>
+                                  </td>
+                                  <td>
+                                      <div class="custom-toggle-switch toggle-sm flex items-center justify-center"
+                                          [style.opacity]="level.isNotificationEnabled ? '1' : '0.5'"
+                                          [style.pointer-events]="level.isNotificationEnabled ? 'auto' : 'none'">
+                                          <span class="me-2 text-[9px] font-bold uppercase"
+                                              [class.text-primary]="level.notificationEmail"
+                                              [class.text-gray-300]="!level.notificationEmail">{{ 'web.common.lblTrue' | translate }}</span>
+                                          <input [id]="'emailNotif_' + i" type="checkbox"
+                                              [(ngModel)]="level.notificationEmail"
+                                              [disabled]="!level.isNotificationEnabled">
+                                          <label [for]="'emailNotif_' + i" class="label-primary"></label>
+                                          <span class="ms-2 text-[9px] font-bold uppercase"
+                                              [class.text-gray-300]="level.notificationEmail"
+                                              [class.text-primary]="!level.notificationEmail">{{ 'web.common.lblFalse' | translate }}</span>
+                                      </div>
+                                  </td>
+                                  <td>
+                                      <div class="custom-toggle-switch toggle-sm flex items-center justify-center"
+                                          [style.opacity]="level.isNotificationEnabled ? '1' : '0.5'"
+                                          [style.pointer-events]="level.isNotificationEnabled ? 'auto' : 'none'">
+                                          <span class="me-2 text-[9px] font-bold uppercase"
+                                              [class.text-primary]="level.notificationSms"
+                                              [class.text-gray-300]="!level.notificationSms">{{ 'web.common.lblTrue' | translate }}</span>
+                                          <input [id]="'smsNotif_' + i" type="checkbox"
+                                              [(ngModel)]="level.notificationSms"
+                                              [disabled]="!level.isNotificationEnabled">
+                                          <label [for]="'smsNotif_' + i" class="label-primary"></label>
+                                          <span class="ms-2 text-[9px] font-bold uppercase"
+                                              [class.text-gray-300]="level.notificationSms"
+                                              [class.text-primary]="!level.notificationSms">{{ 'web.common.lblFalse' | translate }}</span>
+                                      </div>
+                                  </td>
+                                  <td class="text-center">
+                                      <div class="flex items-center justify-center gap-2">
+                                          <!-- Delete (Styled as Components Group) -->
+                                          <!-- Delete (Styled as Components Group) -->
+                                          <div class="hs-tooltip ti-main-tooltip">
+                                              <button type="button"
+                                                  class="hs-tooltip-toggle ti-btn ti-btn-danger ti-btn-sm !py-1 !px-2"
+                                                  (click)="removeLevel(i)" [disabled]="workflowLevels.length <= 1">
+                                                  <i class="ri-delete-bin-line"></i>
+                                                  <span
+                                                      class="hs-tooltip-content ti-main-tooltip-content py-1 px-2 !bg-black !text-xs !font-medium !text-white shadow-sm"
+                                                      role="tooltip">
+                                                      {{'web.common.btnDelete' | translate}}
+                                                  </span>
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+
+              <!-- Global Action Buttons (Styled as requested) -->
+              <div class="xl:col-span-12 col-span-12 flex justify-end gap-2 mt-6">
+                  <button type="button" class="ti-btn ti-btn-light !py-1 !px-4" (click)="onCancel()">
+                      {{ 'web.common.btnCancel' | translate }}
+                  </button>
+                  <button type="button" class="ti-btn ti-btn-primary !py-1 !px-4 flex items-center gap-1"
+                      (click)="onSave()">
+                      <i class="ri-save-line"></i> {{ 'web.common.btnSave' | translate }}
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+</div>

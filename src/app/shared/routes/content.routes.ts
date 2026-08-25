@@ -102,6 +102,10 @@ export const content: Routes = [
         loadComponent: () => import('../../components/settings/company-shifts/company-shifts.component').then(m => m.CompanyShiftsComponent)
       },
       {
+        path: 'workflow-approvals',
+        loadComponent: () => import('../../components/settings/workflow-approvals/workflow-approvals.component').then(m => m.WorkflowApprovalsComponent)
+      },
+      {
         path: 'regional-settings',
         loadComponent: () => import('../../components/settings/regional-settings/regional-settings.component').then(m => m.RegionalSettingsComponent)
       },

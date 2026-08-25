@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../components/common/store/login-auth-params/auth.selectors';
 import { AuthPayload } from '../components/common/store/login-auth-params/auth.models';
-
+import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -52,6 +52,22 @@ export class CommonService {
   getSideNav(data: any) {
     return this.http.post(SharedUrlLinks._sidenav, data, { headers: this.updateHeaders() });
   } 
+  saveLegalCases(payload: any): Observable<any> {
+    return this.postAPI(
+      environment.apiurl + 'api/Masters/save_update_legal_cases',
+      payload
+    );
+  }
+  saveLegalHearing(payload: any): Observable<any> {
+    return this.postAPI(
+      environment.apiurl + 'api/Masters/save_update_legal_hearing',
+      payload
+    );
+  }
+  private postAPI(url: string, payload: any): Observable<any> {
+    const headers = this.updateHeaders();
+    return this.http.post(url, payload, { headers });
+  }
     commonPayload() {
     return {
       userId: this.currentUser?.userId,

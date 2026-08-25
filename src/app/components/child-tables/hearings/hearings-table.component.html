@@ -39,20 +39,23 @@
         
         <!-- ID Link -->
         <ng-container *ngSwitchCase="'id'">
-          <a (click)="openHearingDetails(row)" href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
+          <a (click)="openHearingDetails(row)" href="javascript:void(0)" class="ov-link font-semibold">{{ row.code }}</a>
         </ng-container>
         
         <!-- custom badge with white box styling -->
         <ng-container *ngSwitchCase="'attachment'">
-          <span class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px] !py-0.5 !px-2 rounded">
-            {{ row.attachment }}
-          </span>
+          <span class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px] !py-0.5 !px-2 rounded"
+                                    (click)="linkClick(row.file_path )">
+                                    {{ row.file_path!=null ? 'View File': 'N/A' }}
+                                </span>
+
+    
         </ng-container>
         
         <!-- action drop menu icon indicator -->
-        <ng-container *ngSwitchCase="'action'">
+        <!-- <ng-container *ngSwitchCase="'action'">
           <span class="text-textmuted cursor-pointer font-bold">•••</span>
-        </ng-container>
+        </ng-container> -->
       </ng-container>
     </ng-template>
   </app-shared-table>
@@ -60,7 +63,7 @@
 
 <app-reusable-modal
   *ngIf="showModal"
-  [title]="selectedHearing ? 'Edit Hearing: #' + selectedHearing.id : 'Add Hearing'"
+  [title]="selectedHearing ? 'Edit Hearing: #' + selectedHearing.code : 'Add Hearing'"
   subtitle="Enter hearing details"
   [saveText]="'Save'"
   (save)="saveHearing()"
@@ -68,7 +71,7 @@
   <form [formGroup]="hearingForm" class="p-4 flex flex-col gap-4">
     <div class="flex flex-col">
       <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Date</label>
-      <input type="text" formControlName="date" class="ov-input form-control rounded" placeholder="e.g. 22-07-2026">
+      <input type="date" formControlName="date" class="ov-input form-control rounded" placeholder="e.g. 22-07-2026">
     </div>
     <div class="flex flex-col">
       <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Description</label>
@@ -76,7 +79,12 @@
     </div>
     <div class="flex flex-col">
       <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Attachment</label>
-      <input type="text" formControlName="attachment" class="ov-input form-control rounded" placeholder="e.g. 1 File">
+      <app-file-upload
+      [accept]="'image/*'"
+      [multiple]="false"
+      [browseText]="'Click'"
+      (filesChanged)="onFilesSelected($event)">
+  </app-file-upload>
     </div>
   </form>
 </app-reusable-modal>

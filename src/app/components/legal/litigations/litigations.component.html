@@ -94,15 +94,15 @@
 
   <!-- Shared Table rendering -->
   <div class="px-5 pb-5 pt-0">
-    <app-shared-table [columns]="visibleColumns" [data]="filteredData" [loading]="isLoading"
+    <app-shared-table [columns]="visibleColumns" [data]="litigationsData" [loading]="isLoading"
       [hasActions]="false" [showPaginator]="true" [totalRecords]="totalRecords" [pageSize]="pageSize"
       [pageIndex]="pageNo" (pageChange)="onPageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
 
           <!-- clickable link ID cell -->
-          <ng-container *ngSwitchCase="'id'">
-            <a routerLink="/legal/litigation-details" class="ov-link font-semibold">{{ row.id }}</a>
+          <ng-container *ngSwitchCase="'code'">
+            <a [routerLink]="['/legal/litigation-details', row.code]"   class="ov-link font-semibold">{{ row.code }}</a>
           </ng-container>
 
 <style>
@@ -120,48 +120,47 @@
 </style>
 
           <!-- custom status badge modifier matching Figma -->
-          <ng-container *ngSwitchCase="'status'">
-            <span *ngIf="row.status === 'Open'" class="ov-figma-badge bg-gray-100 dark:bg-white/10 text-defaulttextcolor border border-defaultborder">
-              Open
-            </span>
-            <span *ngIf="row.status === 'Closed'" class="ov-figma-badge bg-[#C0392B] text-white">
-              Closed
-            </span>
-            <span *ngIf="row.status === 'Pending'" class="ov-figma-badge bg-[#D35400] text-white">
-              Pending
+          <ng-container *ngSwitchCase="'status_nm'">
+            <span [ngClass]="row.class_name || ''" class="ov-figma-badge bg-[#C0392B] text-white">
+              {{ getArabicLookupName(row, 'status_nm') }}
             </span>
           </ng-container>
 
           <!-- clickable properties link -->
           <ng-container *ngSwitchCase="'property'">
-            <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.property }}</a>
+            <a [routerLink]="['/properties', row.property_code]" class="ov-link font-semibold">{{ row.property }}</a>
           </ng-container>
 
           <!-- clickable units link -->
-          <ng-container *ngSwitchCase="'unit'">
-            <a href="javascript:void(0)" class="ov-link">{{ row.unit }}</a>
+          <ng-container *ngSwitchCase="'unit_no'">
+            <a [routerLink]="['/units', row.unitcode]" class="ov-link font-semibold">{{ row.unit_no }}</a>
           </ng-container>
+        
 
           <!-- plain text lease code (no link) -->
-          <ng-container *ngSwitchCase="'lease'">
-            <span class="text-defaulttextcolor font-medium text-[13px]">{{ row.lease }}</span>
+          <ng-container *ngSwitchCase="'active_lease'">
+            <a [routerLink]="['/leases', row.lease_code]" class="ov-link font-semibold">{{ row.active_lease }}</a>
+          </ng-container>
+          <ng-container *ngSwitchCase="'tenant'">
+            <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="ov-link font-semibold">{{
+              row.tenant }}</a>
           </ng-container>
 
           <!-- Yes/No blocked status badge styling -->
           <ng-container *ngSwitchCase="'unitBlocked'">
-            <span *ngIf="row.unitBlocked === 'Yes'" class="ov-figma-badge bg-[#1b222c] text-white min-w-[50px]">
+            <span *ngIf="row.unitBlocked === true" class="ov-figma-badge bg-[#1b222c] text-white min-w-[50px]">
               Yes
             </span>
-            <span *ngIf="row.unitBlocked === 'No'" class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px]">
+            <span *ngIf="row.unitBlocked === false" class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px]">
               No
             </span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'tenantBlocked'">
-            <span *ngIf="row.tenantBlocked === 'Yes'" class="ov-figma-badge bg-[#1b222c] text-white min-w-[50px]">
+            <span *ngIf="row.tenantBlocked === true" class="ov-figma-badge bg-[#1b222c] text-white min-w-[50px]">
               Yes
             </span>
-            <span *ngIf="row.tenantBlocked === 'No'" class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px]">
+            <span *ngIf="row.tenantBlocked === false" class="ov-figma-badge bg-white text-defaulttextcolor border border-defaultborder min-w-[50px]">
               No
             </span>
           </ng-container>

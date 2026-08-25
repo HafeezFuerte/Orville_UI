@@ -260,7 +260,7 @@ export class CreateLeaseComponent implements OnInit {
     }
     else{
     this.addpaymentbloc.isSecurityDeposit=flg;
-    this.showAddPayment=flg==2 ? false : true;
+    this.showAddPayment=!this.showAddPayment;
     }
   }
   onFilesSelected(files: File[]) {
@@ -351,16 +351,23 @@ export class CreateLeaseComponent implements OnInit {
     else if(this.annualRent==null || this.annualRent==0){
       this.toastr.error("Invalid annualRent");
     }
+    else if (this.paymentMethod==169 && (this.addpaymentbloc.cheque_no=="" || this.addpaymentbloc.cheque_no==null))
+    {
+      this.toastr.error("Enter atleast one cheque no");
+    }
     else{
       this.monthlyRent= Number((this.rentAmount / this.totalPayments).toFixed(2));
       this.paymentSchedules=[];
       let dueDate=this.startDate;
+      debugger;
       for (let index = 0; index < this.totalPayments; index++) {
         this.paymentSchedules.push({
         "Amount":Number((this.rentAmount / this.totalPayments).toFixed(2)),
         "AdvAmt":0,  
-        "cheque_no":this.addpaymentbloc.cheque_no,
-        "cheque_date":this.addpaymentbloc.cheque_date,
+        "cheque_no":this.addpaymentbloc.cheque_no!=null && index==0 ? 
+          this.addpaymentbloc.cheque_no : 
+          this.addpaymentbloc.cheque_no==null || this.addpaymentbloc.cheque_no=="" ? " chk -"+(index+1) : this.addpaymentbloc.cheque_no + " -"+(index+1),
+        "cheque_date":this.addpaymentbloc.cheque_date!=null && index==0 ? this.addpaymentbloc.cheque_date:dueDate,
         "bank":this.addpaymentbloc.bank,
         "held_by":this.addpaymentbloc.held_by,
         "money_held_by_id":this.addpaymentbloc.isSecurityDeposit==1 ?'90':this.moneyHeldBy ,
@@ -383,8 +390,7 @@ export class CreateLeaseComponent implements OnInit {
         "InvoiceNo":'',
         "isEdited":0,
         "row_no":(index+1)});
-        dueDate=this.addMonthsToDate(this.totalPayments,dueDate);
-        
+        dueDate=this.addMonthsToDate(this.totalPayments,dueDate); 
       }
     }
   }

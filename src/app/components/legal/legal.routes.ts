@@ -10,7 +10,11 @@ export const legalRoutes: Routes = [
     loadComponent: () => import('./add-litigation/add-litigation.component').then(m => m.AddLitigationComponent)
   },
   {
-    path: 'litigation-details',
+    path: 'edit-litigation/:id',
+    loadComponent: () => import('./add-litigation/add-litigation.component').then(m => m.AddLitigationComponent)
+  },
+  {
+    path: 'litigation-details/:id',
     loadComponent: () => import('./litigation-details/litigation-details.component').then(m => m.LitigationDetailsComponent)
-  }
+  } 
 ];
