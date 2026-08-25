@@ -131,6 +131,7 @@ loadProperty(){
       this.isLoading = false;
           if (res["statusCode"] == "200") {
              this.property = res.objResult.property[0];
+             console.log("Loaded property details from API:", this.property);
              this.propertyForm.patchValue({
                 propertyName: this.property.name,
                 prefix: this.property.prefix,
@@ -141,17 +142,17 @@ loadProperty(){
                 state: this.property.state_id,
                 city: this.property.city_id,
                 zipCode: this.property.zip_code,
-                latitude: this.property.lat,
-                longitude: this.property.long,
-                community: this.property.community,
-                landNo: this.property.land_no,
-                floors: this.property.floors,
-                totalUnits: this.property.total_units,
-                parkingSpaces: this.property.parking_spaces,
-                tags: this.property.tags,
-                description: this.property.strdesc,
-                propertyType: this.property.property_type,
-                purchaseValue: this.property.purchase_value
+                latitude: this.property.lat ?? this.property.latitude ?? '',
+                longitude: this.property.lon ?? this.property.long ?? this.property.longitude ?? '',
+                community: this.property.community ?? '',
+                landNo: this.property.land_no ?? this.property.landNo ?? '',
+                floors: this.property.no_of_floors || this.property.floors || this.property.noOfFloors || 0,
+                totalUnits: this.property.total_units || this.property.totalUnits || 0,
+                parkingSpaces: this.property.parking_spaces || this.property.parking_floors || this.property.parkingSpaces || 0,
+                tags: this.property.tags ?? '',
+                description: this.property.strdesc ?? this.property.description ?? '',
+                propertyType: this.property.property_type ?? this.property.propertyType,
+                purchaseValue: this.property.purchase_value ?? this.property.purchage_value ?? this.property.purchaseValue
             });
             this.loadMasterDataByType( 2, 1001, 'states', this.property.country_id.toString(), '', () => { this.propertyForm.patchValue({ state: this.property.state_id }); } );
             this.loadMasterDataByType( 2, 1002, 'cities', this.property.state_id.toString(), '', () => { this.propertyForm.patchValue({ city: this.property.city_id }); } );
@@ -318,6 +319,9 @@ validatePayments(errors: string[]): void {
     }
   });
 }
+onPropertyImageSelected(files: File[]): void {
+  this.propertyImages = files;
+}
 onSubmit() { 
   const propertyFormLabels = {
   propertyName: this.translate.instant('web.property.lblPropertyName'),
@@ -394,19 +398,25 @@ if (errors.length > 0) {
       state_id: Number(form.state) || 0,
       city_id: Number(form.city) || 0,
       total_units: Number(form.totalUnits) || 0,
+      totalUnits: Number(form.totalUnits) || 0,
       zipcode: form.zipCode,
       lat: form.latitude,
       lon: form.longitude,
+      long: form.longitude,
+      longitude: form.longitude,
 
       community: form.community,
       land_no: form.landNo,
       no_of_floors: Number(form.floors) || 0,
+      floors: Number(form.floors) || 0,
       parking_floors: Number(form.parkingSpaces) || 0,
+      parking_spaces: Number(form.parkingSpaces) || 0,
       tags: form.tags,
       desc: form.description,
 
       property_type: Number(form.propertyType) || 0,
       purchage_value: Number(form.purchaseValue) || 0,
+      purchase_value: Number(form.purchaseValue) || 0,
 
       amenities: this.selectedAmenities.join(','),
 

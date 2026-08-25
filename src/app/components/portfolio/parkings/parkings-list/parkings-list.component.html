@@ -1,60 +1,60 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="ov-page-title">Parkings</h3>
-    <p class="ov-page-sub">{{ metrics.total || 0 }} parkings under management</p>
+    <h3 class="ov-page-title">{{ 'web.parkings.lblParkings' | translate }}</h3>
+    <p class="ov-page-sub">{{ metrics.total || 0 }} {{ 'web.parkings.lblParkingsUnderManagement' | translate }}</p>
     <p class="sr-only">Manage your property inventory — create, organize, and track all parkings across your portfolio with precision.</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
     <button type="button" class="ov-btn ov-btn-ghost">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-      Export
+      {{ 'web.common.lblExport' | translate }}
     </button>
     <button type="button" (click)="toggleAddModal(true)" class="ov-btn ov-btn-primary">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-      Add Parking
+      {{ 'web.parkings.lblAddParking' | translate }}
     </button>
   </div>
 </div>
 
 <div class="ov-kpi-row mb-5">
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Total Parking</span>
+    <span class="ov-kpi__badge">{{ 'web.parkings.lblTotalParking' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.total }}</div>
-    <div class="ov-kpi__sub">Portfolio Bays</div>
+    <div class="ov-kpi__sub">{{ 'web.parkings.lblPortfolioBays' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Available Parking</span>
+    <span class="ov-kpi__badge">{{ 'web.parkings.lblAvailableParking' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.available }}</div>
-    <div class="ov-kpi__sub">Available for lease</div>
+    <div class="ov-kpi__sub">{{ 'web.parkings.lblAvailableForLease' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Occupied Parking</span>
+    <span class="ov-kpi__badge">{{ 'web.parkings.lblOccupiedParking' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.occupied }}</div>
-    <div class="ov-kpi__sub">Active tenant contracts</div>
+    <div class="ov-kpi__sub">{{ 'web.parkings.lblActiveTenantContracts' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Reserved Parkings</span>
+    <span class="ov-kpi__badge">{{ 'web.parkings.lblReservedParkings' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.reserved }}</div>
-    <div class="ov-kpi__sub">Blocked / Guest allocation</div>
+    <div class="ov-kpi__sub">{{ 'web.parkings.lblBlockedGuestAllocation' | translate }}</div>
   </div>
 </div>
 
 <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
     <div class="flex flex-wrap items-center gap-3">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Parking List</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.parkings.lblParkingList' | translate }}</h5>
     </div>
   </div>
 
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="parking-search">Search by Property, Parking No or Unit</label>
+        <label class="sr-only" for="parking-search">{{ 'web.parkings.phSearchParking' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="parking-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" (input)="applyFilters()" placeholder="Search by Property, Parking No or Unit">
+          (keyup.enter)="onSearch()" (input)="applyFilters()" [placeholder]="'web.parkings.phSearchParking' | translate">
       </div>
-      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.common.lblSearch' | translate">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
@@ -62,13 +62,13 @@
       <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.common.lblFilter' | translate }}
       </button>
       <div class="relative">
         <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contacts.lblColumn' | translate }}
         </button>
         <div *ngIf="showColumnDropdown"
           class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -85,8 +85,8 @@
           </label>
         </div>
       </div>
-      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" title="Reset Filters">
-        Clear
+      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" [title]="'web.contacts.lblResetFilters' | translate">
+        {{ 'web.common.lblClear' | translate }}
       </button>
     </div>
   </div>
@@ -158,11 +158,11 @@
             </button>
             <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="viewParking(row)">View</button>
+                (click)="viewParking(row)">{{ 'web.common.lblView' | translate }}</button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="editParking(row); openActionCode = null">Edit</button>
+                (click)="editParking(row); openActionCode = null">{{ 'web.common.lblEdit' | translate }}</button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">Delete</button>
+                (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
             </div>
           </div>
         </ng-container>
@@ -173,17 +173,17 @@
 
   <div class="ov-page">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.Unit.lblShowing' | translate }} {{ startRecord }} {{ 'web.Unit.lblTo' | translate }} {{ endRecord }} {{ 'web.Unit.lblOf' | translate }} {{ totalRecords }} {{ 'web.Unit.lblRecords' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.Unit.lblPage' | translate }} {{ displayPage }} {{ 'web.Unit.lblOf' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
@@ -205,7 +205,7 @@
   <div class="ov-modal">
     <div class="ov-modal__header">
       <div>
-        <h6 class="ov-modal__title">{{ isEditMode ? 'Edit' : 'Add' }} Parking</h6>
+        <h6 class="ov-modal__title">{{ isEditMode ? ('web.parkings.lblEditParking' | translate) : ('web.parkings.lblAddParking' | translate) }}</h6>
       </div>
       <button type="button" (click)="toggleAddModal(false)" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
@@ -214,8 +214,8 @@
 
     <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="ov-label">Property <span class="text-danger">*</span></label>
-        <ng-select [items]="propertiesList" bindValue="code" placeholder="Search property"
+        <label class="ov-label">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
+        <ng-select [items]="propertiesList" bindValue="code" [placeholder]="'web.parkings.lblSearchProperty' | translate"
           class="ov-select w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
           [searchable]="true" (change)="onPropertyChange($event)">
           <ng-template ng-label-tmp let-item="item">
@@ -228,8 +228,8 @@
       </div>
 
       <div>
-        <label class="ov-label">Unit <span class="text-danger">*</span></label>
-        <ng-select [items]="unitsList" bindValue="code" placeholder="Search unit"
+        <label class="ov-label">{{ 'web.common.lblUnits' | translate }} <span class="text-danger">*</span></label>
+        <ng-select [items]="unitsList" bindValue="code" [placeholder]="'web.parkings.lblSearchUnit' | translate"
           class="ov-select w-full" appendTo="body" [(ngModel)]="parkingForm.unit_code" [searchable]="true">
           <ng-template ng-label-tmp let-item="item">
             {{ item.code }} - {{ item.unit_no }}
@@ -242,41 +242,41 @@
 
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">Parking No. <span class="text-danger">*</span></label>
-          <input type="text" class="ov-input" placeholder="e.g P-004" [(ngModel)]="parkingForm.parking_no">
+          <label class="ov-label">{{ 'web.parkings.lblParkingNo' | translate }} <span class="text-danger">*</span></label>
+          <input type="text" class="ov-input" [placeholder]="'web.parkings.phParkingNoPlaceholder' | translate" [(ngModel)]="parkingForm.parking_no">
         </div>
         <div>
-          <label class="ov-label">Parking Type <span class="text-danger">*</span></label>
+          <label class="ov-label">{{ 'web.parkings.lblParkingType' | translate }} <span class="text-danger">*</span></label>
           <ng-select [items]="ParkingTypeList" bindLabel="name" bindValue="id"
-            placeholder="Select type" class="ov-select w-full" appendTo="body"
+            [placeholder]="'web.parkings.phSelectType' | translate" class="ov-select w-full" appendTo="body"
             [(ngModel)]="parkingForm.parking_type" [searchable]="true"></ng-select>
         </div>
       </div>
 
       <div>
-        <label class="ov-label">Recurring Cycle</label>
+        <label class="ov-label">{{ 'web.leases.lblRecurringCycle' | translate }}</label>
         <ng-select [items]="RecurringCycleList"
-          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ov-select w-full" appendTo="body"
+          bindLabel="name" bindValue="id" [placeholder]="'web.parkings.lblSelectCycle' | translate" class="ov-select w-full" appendTo="body"
           [(ngModel)]="parkingForm.recurring_cycle" [searchable]="true"></ng-select>
       </div>
 
       <div>
-        <label class="ov-label">Status</label>
+        <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
         <ng-select [items]="StatusList"
-          bindLabel="name" bindValue="id" placeholder="Select cycle" class="ov-select w-full" appendTo="body"
+          bindLabel="name" bindValue="id" [placeholder]="'web.Unit.lblSelectStatus' | translate" class="ov-select w-full" appendTo="body"
           [(ngModel)]="parkingForm.status" [searchable]="true"></ng-select>
       </div>
 
       <div>
-        <label class="ov-label">Remarks</label>
-        <textarea class="ov-input !h-auto min-h-[80px]" rows="3" placeholder="Please enter remarks here" [(ngModel)]="parkingForm.remarks"></textarea>
+        <label class="ov-label">{{ 'web.portfolio.popups.parking.lblRemarks' | translate }}</label>
+        <textarea class="ov-input !h-auto min-h-[80px]" rows="3" [placeholder]="'web.parkings.lblRemarksPlaceholder' | translate" [(ngModel)]="parkingForm.remarks"></textarea>
       </div>
     </div>
 
     <div class="ov-modal__footer">
-      <button type="button" (click)="toggleAddModal(false)" class="ov-btn ov-btn-ghost">Close</button>
+      <button type="button" (click)="toggleAddModal(false)" class="ov-btn ov-btn-ghost">{{ 'web.common.lblClose' | translate }}</button>
       <button type="button" (click)="saveParking()" class="ov-btn ov-btn-primary">
-        {{ isEditMode ? 'Update' : 'Save' }}
+        {{ isEditMode ? ('web.common.lblUpdate' | translate) : ('web.common.lblSave' | translate) }}
       </button>
     </div>
   </div>
@@ -289,23 +289,23 @@
 
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
-      <label class="ov-label">Property</label>
+      <label class="ov-label">{{ 'web.leases.lblProperty' | translate }}</label>
       <ng-select [(ngModel)]="selectedProperty" [items]="propertiesList" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
+        (change)="onSearch()" bindLabel="name" bindValue="code" [placeholder]="'web.rooms.lblAllProperties' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
     <div class="flex flex-col">
-      <label class="ov-label">Status</label>
+      <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
       <ng-select [(ngModel)]="selectedStatus" [items]="StatusList" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
+        (change)="onSearch()" bindLabel="name" bindValue="id" [placeholder]="'web.parkings.lblAllStatus' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
     <div class="flex flex-col">
-      <label class="ov-label">Parking Type</label>
+      <label class="ov-label">{{ 'web.parkings.lblParkingType' | translate }}</label>
       <ng-select [(ngModel)]="selectedType" [items]="ParkingTypeList" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Types"
+        (change)="onSearch()" bindLabel="name" bindValue="id" [placeholder]="'web.parkings.lblAllTypes' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
   </div>

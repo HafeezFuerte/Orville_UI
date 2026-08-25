@@ -34,19 +34,19 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/plus.svg" alt="" width="14" height="14">
             </span>
-            <span>Add Unit</span>
+            <span>{{ 'web.property.lblAddUnit' | translate }}</span>
           </a>
           <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionAddAttachment()">
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/paperclip.svg" alt="" width="14" height="14">
             </span>
-            <span>Add Attachment</span>
+            <span>{{ 'web.property.lblAddAttachment' | translate }}</span>
           </button>
           <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionAddNotes()">
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/file-invoice.svg" alt="" width="14" height="14">
             </span>
-            <span>Add Notes</span>
+            <span>{{ 'web.property.lblAddNotes' | translate }}</span>
           </button>
           <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onActionViewActivity()">
             <span class="ov-action-menu__icon-box">
@@ -60,7 +60,7 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
             </span>
-            <span>Archive</span>
+            <span>{{ 'web.property.lblArchive' | translate }}</span>
           </button>
         </div>
       </div>
@@ -222,7 +222,7 @@
               <span class="ov-kv__value">{{ property?.zip_code || '-' }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Parking:</span>
+              <span class="ov-kv__label">{{ 'web.property.lblParking' | translate }}:</span>
               <span class="ov-kv__value">{{ property?.parking_spaces || '-' }}</span>
             </div>
           </div>
@@ -230,7 +230,7 @@
 
         <div class="ov-card overflow-hidden py-5">
           <div class="flex items-center justify-between px-5">
-            <h5 class="ov-card-title m-0">Location &amp; Coordinates</h5>
+            <h5 class="ov-card-title m-0">{{ 'web.property.lblLocationAndCoordinates' | translate }}</h5>
             <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
               <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
             </button>
@@ -314,7 +314,7 @@
             <span *ngFor="let amenity of property?.amenities">
               <span *ngIf="amenity.amenity" class="ov-amenity-chip">
                 <i class="ri-check-line text-[16px]"></i>
-                {{ amenity.amenity }}
+                {{ (currentLang === 'ar' ? (amenity.amenity_ar || amenity.name_ar || amenity.amenity) : amenity.amenity) }}
               </span>
             </span>
           </div>
@@ -349,20 +349,20 @@
     <ng-template #overview>
       <div class="flex flex-col gap-5">
         <div>
-          <h5 class="ov-card-title">Property Overview</h5>
+          <h5 class="ov-card-title">{{ 'web.property.lblPropertyOverview' | translate }}</h5>
           <p class="sr-only">Real-time occupancy rates and performance breakdowns.</p>
         </div>
 
         <div class="w-full rounded-xl border border-defaultborder bg-white px-5 py-4">
-          <div class="text-[14px] text-textmuted leading-4">Property Type</div>
+          <div class="text-[14px] text-textmuted leading-4">{{ 'web.property.lblPropertyType' | translate }}</div>
           <div class="text-[24px] font-semibold leading-[31px] text-defaulttextcolor mt-0.5">{{ property?.type_name || 'Residential' }}</div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="box ov-card flex flex-col items-center p-5">
             <div class="w-full mb-4">
-              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">Rooms</div>
+              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.property.lblOccupancyRate' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ 'web.property.lblRooms' | translate }}</div>
             </div>
             <div class="relative size-[228px]">
               <svg class="size-full -rotate-90" viewBox="0 0 36 36">
@@ -374,20 +374,20 @@
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ roomsOccupancyPct }}%</span>
-                <span class="text-[14px] font-medium text-textmuted">Occupied</span>
+                <span class="text-[14px] font-medium text-textmuted">{{ 'web.property.lblOccupied' | translate }}</span>
               </div>
             </div>
             <div class="mt-4 text-center">
-              <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">{{ occupiedRooms }} / {{ totalRooms }} units</div>
-              <div class="text-[14px] text-textmuted">Number of occupied rooms</div>
+              <div class="text-[14px] font-medium text-defaulttextcolor">{{ 'web.property.lblOccupancyRate' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ occupiedRooms }} / {{ totalRooms }} {{ 'web.property.lblRooms' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ 'web.property.lblNumOccupiedRooms' | translate }}</div>
             </div>
           </div>
 
           <div class="box ov-card flex flex-col items-center p-5">
             <div class="w-full mb-4">
-              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">Units</div>
+              <div class="text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.property.lblOccupancyRate' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ 'web.common.lblUnits' | translate }}</div>
             </div>
             <div class="relative size-[228px]">
               <svg class="size-full -rotate-90" viewBox="0 0 36 36">
@@ -399,13 +399,13 @@
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <span class="text-[26px] font-extrabold text-defaulttextcolor">{{ occupancyPct }}%</span>
-                <span class="text-[14px] font-medium text-textmuted">Occupied</span>
+                <span class="text-[14px] font-medium text-textmuted">{{ 'web.property.lblOccupied' | translate }}</span>
               </div>
             </div>
             <div class="mt-4 text-center">
-              <div class="text-[14px] font-medium text-defaulttextcolor">Occupancy Rate</div>
-              <div class="text-[14px] text-textmuted">{{ occupiedUnits }} / {{ totalUnits }} units</div>
-              <div class="text-[14px] text-textmuted">Number of occupied units</div>
+              <div class="text-[14px] font-medium text-defaulttextcolor">{{ 'web.property.lblOccupancyRate' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ occupiedUnits }} / {{ totalUnits }} {{ 'web.common.lblUnits' | translate }}</div>
+              <div class="text-[14px] text-textmuted">{{ 'web.property.lblNumOccupiedUnits' | translate }}</div>
             </div>
           </div>
         </div>

@@ -1,348 +1,175 @@
-<!-- Figma 991:7137 — Contacts > Add Support Technicians / New User -->
-<div class="ov-form ov-add-form">
-  <div class="ov-add-header page-header">
-    <div class="ov-add-header__start">
-      <a routerLink="/contacts/support-technicians" class="ov-back" title="Back to Support Technicians">
-        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-      </a>
-      <div>
-        <h3 class="ov-page-title">{{ isEditMode ? 'Edit User' : 'New User' }}</h3>
-        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-          <li><a routerLink="/contacts/support-technicians">Contacts</a></li>
-          <li class="px-2">/</li>
-          <li><a routerLink="/contacts/support-technicians">Support Technicians</a></li>
-          <li class="px-2">/</li>
-          <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit User' : 'New User' }}</li>
-        </ol>
-      </div>
-    </div>
-    <div class="ov-add-header__actions">
-      <button type="button" routerLink="/contacts/support-technicians" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveTechnician()">
-        {{ isEditMode ? 'Save Changes' : 'Save' }}
-      </button>
+<!-- New User / Support Technician - Figma 991:7137 -->
+<div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between mb-4">
+  <div class="flex items-start gap-4">
+    <a routerLink="/contacts/support-technicians" class="ov-back cursor-pointer" title="Back to Support Technicians">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </a>
+    <div>
+      <h3 class="ov-page-title">{{ isEditMode ? 'Edit User' : 'New User' }}</h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">Home</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">contacts</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">Support Technicians</a></li>
+        <li class="px-2 text-gray-400">/</li>
+        <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit User' : 'New User' }}</li>
+      </ol>
     </div>
   </div>
-
-  <div class="ov-add-body st-add-body">
-    <div class="ov-add-layout__main">
-
-      <!-- Personal Information (Figma) -->
-      <div class="ov-card">
-        <div class="ov-card__head">
-          <h6 class="ov-card-title">Personal Information</h6>
-        </div>
-        <div class="ov-card__body">
-          <div class="ov-photo-row">
-            <div class="ov-photo-avatar">
-              <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" alt="Profile Preview">
-              <span *ngIf="!photoPreviewUrl">PH</span>
-            </div>
-            <div class="ov-photo-meta">
-              <input type="file" #photoInput class="hidden" accept="image/*" (change)="onPhotoSelected($event)">
-              <button type="button" (click)="photoInput.click()" class="ov-btn ov-btn-primary">
-                <i class="ri-upload-2-line"></i> Upload Photo
-              </button>
-              <span class="ov-photo-hint">JPG, PNG or GIF (max. 5MB)</span>
-            </div>
-          </div>
-
-          <div class="ov-fields ov-fields--2">
-            <div>
-              <label class="ov-label">Email <span class="text-danger">*</span></label>
-              <input type="email" class="ov-input" [(ngModel)]="technicianData.email_address" placeholder="Enter">
-            </div>
-            <div>
-              <label class="ov-label">Username</label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.username" placeholder="Enter">
-            </div>
-          </div>
-
-          <div class="ov-fields ov-fields--3 mt-4">
-            <div>
-              <label class="ov-label">First Name <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.first_name" placeholder="Enter">
-            </div>
-            <div>
-              <label class="ov-label">Last Name <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.last_name" placeholder="Enter">
-            </div>
-            <div>
-              <label class="ov-label">Role <span class="text-danger">*</span></label>
-              <ng-select #techTypeSelect [items]="technicianTypes" appendTo="body" [searchable]="true"
-                placeholder="Support Technician" class="ov-select w-full"
-                [(ngModel)]="technicianData.technician_type" bindValue="id" bindLabel="name">
-                <ng-template ng-header-tmp>
-                  <input type="text" placeholder="Search"
-                    (input)="techTypeSelect.filter($any($event.target).value)"
-                    (click)="$event.stopPropagation()">
-                </ng-template>
-              </ng-select>
-            </div>
-          </div>
-
-          <div class="ov-fields ov-fields--3 mt-4">
-            <div>
-              <label class="ov-label">Country <span class="text-danger">*</span></label>
-              <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
-                [searchable]="true" placeholder="Select Country" class="ov-select w-full"
-                [(ngModel)]="technicianData.country_id" (change)="onCountryChange()">
-                <ng-template ng-header-tmp>
-                  <input type="text" placeholder="Search"
-                    (input)="countrySelect.filter($any($event.target).value)"
-                    (click)="$event.stopPropagation()">
-                </ng-template>
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="flex items-center gap-2">
-                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt="">
-                    {{ item.name }}
-                  </div>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="flex items-center gap-2">
-                    <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3" alt="">
-                    {{ item.name }}
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-            <div>
-              <label class="ov-label">Phone Number</label>
-              <div class="ov-phone">
-                <span class="ov-phone__code">
-                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
-                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
-                </span>
-                <input type="text" class="ov-input" [(ngModel)]="technicianData.mobile_no" placeholder="Enter">
-              </div>
-            </div>
-            <div>
-              <label class="ov-label">Emergency Phone</label>
-              <div class="ov-phone">
-                <span class="ov-phone__code">
-                  <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
-                  <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
-                </span>
-                <input type="text" class="ov-input" placeholder="Enter">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Address Information -->
-      <div class="ov-card">
-        <div class="ov-card__head">
-          <h6 class="ov-card-title">Address Information</h6>
-        </div>
-        <div class="ov-card__body">
-          <div class="ov-fields ov-fields--2">
-            <div>
-              <label class="ov-label">Address Line 1 <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.address1" placeholder="Enter">
-            </div>
-            <div>
-              <label class="ov-label">Address Line 2</label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.address2" placeholder="Enter">
-            </div>
-          </div>
-          <div class="ov-fields ov-fields--3 mt-4">
-            <div>
-              <label class="ov-label">State/ Province</label>
-              <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" placeholder="Select"
-                class="ov-select w-full" [(ngModel)]="technicianData.stateid" bindValue="id" bindLabel="name"
-                (change)="onStateChange()">
-                <ng-template ng-header-tmp>
-                  <input type="text" placeholder="Search"
-                    (input)="stateSelect.filter($any($event.target).value)"
-                    (click)="$event.stopPropagation()">
-                </ng-template>
-              </ng-select>
-            </div>
-            <div>
-              <label class="ov-label">City</label>
-              <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" placeholder="Select"
-                class="ov-select w-full" [(ngModel)]="technicianData.city" bindValue="id" bindLabel="name">
-                <ng-template ng-header-tmp>
-                  <input type="text" placeholder="Search"
-                    (input)="citySelect.filter($any($event.target).value)"
-                    (click)="$event.stopPropagation()">
-                </ng-template>
-              </ng-select>
-            </div>
-            <div>
-              <label class="ov-label">Postcode</label>
-              <input type="text" class="ov-input" [(ngModel)]="technicianData.zipcode" placeholder="Enter">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Technician Role (existing toggles; Figma Role select is in Personal Information) -->
-      <div class="ov-card">
-        <div class="ov-card__head">
-          <h6 class="ov-card-title">Technician Role</h6>
-        </div>
-        <div class="ov-card__body flex flex-col gap-4">
-          <div class="ov-switch-row">
-            <div>
-              <h6 class="st-switch-title">Assignment</h6>
-              <p class="st-switch-sub">Auto assign tasks</p>
-            </div>
-            <div class="custom-toggle-switch flex-shrink-0">
-              <input type="checkbox" id="assignment" [(ngModel)]="assignment">
-              <label for="assignment" class="label-primary"></label>
-            </div>
-          </div>
-          <div class="ov-switch-row">
-            <div>
-              <h6 class="st-switch-title">Qualifies</h6>
-              <p class="st-switch-sub">Check if qualifies for maintenance jobs</p>
-            </div>
-            <div class="custom-toggle-switch flex-shrink-0">
-              <input type="checkbox" id="qualifies" [(ngModel)]="qualifies">
-              <label for="qualifies" class="label-primary"></label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ov-card">
-        <div class="ov-card__head">
-          <h6 class="ov-card-title">Categories</h6>
-        </div>
-        <div class="ov-card__body">
-          <label class="ov-label">Select Categories / Skills</label>
-          <ng-select #catSkillsSelect [items]="categories" appendTo="body" [searchable]="true"
-            placeholder="Select Categories" [multiple]="true" class="ov-select w-full"
-            [(ngModel)]="technicianData.category" bindValue="id" bindLabel="name">
-            <ng-template ng-header-tmp>
-              <input type="text" placeholder="Search"
-                (input)="catSkillsSelect.filter($any($event.target).value)"
-                (click)="$event.stopPropagation()">
-            </ng-template>
-          </ng-select>
-        </div>
-      </div>
-
-      <!-- Documents & Attachments -->
-      <div class="ov-card">
-        <div class="ov-card__head st-doc-head">
-          <div>
-            <h6 class="ov-card-title">Documents & Attachments</h6>
-            <p class="ov-card-sub m-0 mt-1">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
-          </div>
-          <button type="button" class="ov-btn ov-btn-primary shrink-0" (click)="toggleDocModal(true)">
-            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="st-doc-plus" />
-            Add Document
-          </button>
-        </div>
-        <div class="ov-card__body">
-          <div *ngIf="uploadedDocuments.length === 0" class="st-doc-empty">
-            <div class="st-doc-empty__icon"><i class="ri-file-text-line"></i></div>
-            <h6 class="st-doc-empty__title">No documents uploaded yet</h6>
-            <p class="st-doc-empty__sub">Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.</p>
-            <button type="button" class="ov-btn ov-btn-primary" (click)="toggleDocModal(true)">Add Document</button>
-          </div>
-
-          <div *ngFor="let doc of uploadedDocuments; let i = index" class="st-doc-row">
-            <div class="st-doc-row__main">
-              <div class="st-doc-row__ico"><i class="ri-file-pdf-line"></i></div>
-              <div>
-                <span class="st-doc-row__name">{{ doc.fileName }}</span>
-                <div class="st-doc-row__meta">
-                  <span>{{ doc.document_type }}</span>
-                  <span class="st-doc-dot"></span>
-                  <span>{{ doc.fileSize }}</span>
-                  <span class="st-doc-dot"></span>
-                  <span>Uploaded today</span>
-                  <span class="st-doc-badge">{{ doc.visible_for }}</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="ov-btn ov-btn-ghost st-doc-remove" (click)="removeDocument(i)">Remove</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="ov-add-footer">
+  <div class="flex items-center gap-3">
     <button type="button" routerLink="/contacts/support-technicians" class="ov-btn ov-btn-ghost">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="saveTechnician()">
-      {{ isEditMode ? 'Save Changes' : 'Save' }}
-    </button>
+    <button type="button" (click)="saveTechnician()" class="ov-btn ov-btn-primary px-6">Save</button>
   </div>
 </div>
 
-<!-- Modal: Add Document -->
-<div *ngIf="isAddDocModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-  <div class="ov-modal ov-modal--sm">
-    <div class="ov-modal__header">
-      <div>
-        <h6 class="ov-modal__title">Add document</h6>
-      </div>
-      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleDocModal(false)" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-      </button>
-    </div>
+<div class="max-w-5xl mx-auto flex flex-col gap-6 pb-4">
+  
+  <!-- 1. Personal Information Card -->
+  <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
+    <h6 class="font-bold text-gray-800 text-sm mb-6">Personal Information</h6>
 
-    <div class="ov-modal__body flex flex-col gap-4">
-      <div class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-[13px] text-primary">
-        <i class="ri-information-line mt-0.5 text-[16px]"></i>
-        <span>Select document type, enter details and upload the document to attach it to the profile.</span>
+    <!-- Avatar & Upload -->
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-16 h-16 rounded-full overflow-hidden bg-primary/10 text-primary flex items-center justify-center text-xl font-bold border border-primary/20">
+        <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" class="w-full h-full object-cover">
+        <span *ngIf="!photoPreviewUrl">PH</span>
       </div>
-
-      <div>
-        <label class="ov-label">Document Type <span class="text-danger">*</span></label>
-        <ng-select [items]="docTypes" appendTo="body" placeholder="Search Document Type" class="ov-select w-full"
-          [(ngModel)]="docForm.document_type"></ng-select>
-        <span class="ov-modal__hint">Please enter mapping in the field below to automatically map the document</span>
-      </div>
-
-      <div>
-        <label class="ov-label">Document number</label>
-        <input type="text" class="ov-input" placeholder="Enter" [(ngModel)]="docForm.document_no">
-      </div>
-
-      <div class="ov-fields ov-fields--2">
-        <div>
-          <label class="ov-label">Issue Date</label>
-          <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="Select Date"
-            [(ngModel)]="docForm.issue_date">
-        </div>
-        <div>
-          <label class="ov-label">Expiry Date</label>
-          <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="Select Date"
-            [(ngModel)]="docForm.expiry_date">
-        </div>
-      </div>
-
-      <div>
-        <label class="ov-label">Visible for verify</label>
-        <ng-select [items]="['None', 'Tenant', 'Landlord']" appendTo="body" placeholder="Select"
-          class="ov-select w-full" [(ngModel)]="docForm.visible_for"></ng-select>
-      </div>
-
-      <div>
-        <label class="ov-label">Note Add / Attach <span class="text-danger">*</span></label>
-        <input type="file" #docFileInput class="hidden" (change)="onDocFileSelected($event)">
-        <div (click)="docFileInput.click()"
-          class="mt-1 flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-defaultborder bg-bodybg p-6 hover:bg-light transition-colors">
-          <div
-            class="flex h-10 w-10 items-center justify-center rounded-md border border-defaultborder bg-white dark:bg-bodybg text-textmuted shadow-sm">
-            <i class="ri-upload-cloud-2-line text-lg"></i>
-          </div>
-          <span class="text-xs text-defaulttextcolor font-semibold" *ngIf="docForm.fileName">{{ docForm.fileName }} ({{ docForm.fileSize }})</span>
-          <span class="text-[10px] text-textmuted" *ngIf="!docForm.fileName">Click to browse file</span>
-        </div>
+      <div class="flex flex-col gap-1.5">
+        <input type="file" #photoInput style="display: none" accept="image/*" (change)="onPhotoSelected($event)">
+        <button type="button" (click)="photoInput.click()" class="px-4 py-2 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-xs flex items-center gap-1.5 w-fit">
+          <i class="ri-upload-2-line"></i> Upload Photo
+        </button>
+        <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
       </div>
     </div>
 
-    <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleDocModal(false)">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">Save</button>
+    <!-- Row 1: Email, Username -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Email <span class="text-danger">*</span></label>
+        <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.email_address" placeholder="Enter">
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Username</label>
+        <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.username" placeholder="Enter">
+      </div>
+    </div>
+
+    <!-- Row 2: Passwords, First Name, Last Name -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Passwords</label>
+        <input type="password" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.password" placeholder="Enter">
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">First Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.first_name" placeholder="Enter">
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Last Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.last_name" placeholder="Enter">
+      </div>
+    </div>
+
+    <!-- Row 3: Country, Phone Number, Spoken Languages -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Country <span class="text-danger">*</span></label>
+        <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="technicianData.country_id" (change)="onCountryChange()">
+          <ng-template ng-header-tmp>
+            <div class="p-1.5 border-b border-gray-100">
+              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+            </div>
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            <div class="flex items-center gap-2">
+              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
+            </div>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            <div class="flex items-center gap-2">
+              <img [src]="'https://flagcdn.com/w20/' + getFlagCode(item.name) + '.png'" class="w-4 h-3"> {{item.name}}
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Phone Number</label>
+        <div class="flex input-group">
+          <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center rounded-l-lg">
+            <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
+            <span class="text-xs text-gray-500">{{ getDialCode(selectedCountryObj?.name) }}</span>
+          </span>
+          <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white border-s-0 rounded-r-lg p-2.5" [(ngModel)]="technicianData.mobile_no" placeholder="Enter">
+        </div>
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Spoken Languages</label>
+        <ng-select [items]="spokenLanguagesList" appendTo="body" [searchable]="true" placeholder="Select" class="ng-select-sm w-full" [(ngModel)]="technicianData.spoken_languages"></ng-select>
+      </div>
+    </div>
+
+    <!-- Row 4: Time Zone, Role, Department -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Time Zone</label>
+        <ng-select [items]="timeZonesList" appendTo="body" [searchable]="true" placeholder="Select Time Zone" class="ng-select-sm w-full" [(ngModel)]="technicianData.time_zone"></ng-select>
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Role <span class="text-danger">*</span></label>
+        <ng-select [items]="rolesList" appendTo="body" [searchable]="true" placeholder="Support Technician" class="ng-select-sm w-full" [(ngModel)]="technicianData.role"></ng-select>
+      </div>
+      <div>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Department</label>
+        <ng-select [items]="departmentsList" appendTo="body" [searchable]="true" placeholder="Select Department" class="ng-select-sm w-full" [(ngModel)]="technicianData.department"></ng-select>
+      </div>
     </div>
   </div>
+
+  <!-- 2. Tenant Visibility Card -->
+  <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
+    <h6 class="font-bold text-gray-800 text-sm mb-1">Tenant Visibility</h6>
+    <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+      This update will result in all tenants being visible to the user, regardless of whether they have been assigned to any units. However, users holding the Manager role will not be impacted by this change.
+    </p>
+    <div class="flex items-center justify-between p-4 bg-gray-50/60 rounded-xl border border-gray-100">
+      <div>
+        <h6 class="text-xs font-bold text-gray-800 m-0">Display All Tenant</h6>
+        <p class="text-[11px] text-gray-500 m-0 mt-0.5">Enabling this will showcase all tenants to this user</p>
+      </div>
+      <div class="custom-toggle-switch flex-shrink-0">
+        <input type="checkbox" id="displayAllTenants" [(ngModel)]="technicianData.display_all_tenants">
+        <label for="displayAllTenants" class="label-primary"></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Email Subscriptions Card -->
+  <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
+    <h6 class="font-bold text-gray-800 text-sm mb-4">Email Subscriptions</h6>
+    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+      <input type="checkbox" id="selectAllSubs" [checked]="selectAllSubscriptions" (change)="toggleSelectAllSubscriptions($event)" class="form-checkbox h-4 w-4 text-primary rounded">
+      <label for="selectAllSubs" class="text-xs font-bold text-gray-700 cursor-pointer">Select All</label>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-y-3 gap-x-6 text-xs">
+      <div *ngFor="let sub of emailSubscriptions" class="flex items-center gap-2.5">
+        <input type="checkbox" [id]="sub.id" [(ngModel)]="sub.checked" (change)="updateSelectAllState()" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+        <label [for]="sub.id" class="text-[11px] text-gray-600 font-medium cursor-pointer hover:text-gray-900 truncate" [title]="sub.label">
+          {{ sub.label }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Centered Action Bar -->
+  <div class="flex items-center flex-start gap-3 py-4">
+    <button type="button" routerLink="/contacts/support-technicians" class="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all font-semibold text-xs border border-gray-200">
+      Cancel
+    </button>
+    <button type="button" (click)="saveTechnician()" class="px-6 py-2 rounded-lg bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-all font-semibold text-xs shadow-sm">
+      Save
+    </button>
+  </div>
+
 </div>

@@ -28,6 +28,7 @@ import { CommonService } from '../../../../services/common.service';
 export class AddRoomComponent implements OnInit {
   public roomForm!: FormGroup;
   public isLoading = false;
+  public showScrollToTop = false;
 
   // File attachments state
   roomImageFile: File | null = null;

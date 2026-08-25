@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-ov-paginator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './ov-paginator.component.html'
 })
 export class OvPaginatorComponent {

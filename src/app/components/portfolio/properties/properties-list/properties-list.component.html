@@ -1,26 +1,26 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
     <h3 class="ov-page-title">{{ 'web.property.lblProperties' | translate }}</h3>
-    <p class="ov-page-sub">{{ metrics.properties || 0 }} properties under management</p>
+    <p class="ov-page-sub">{{ metrics.properties || 0 }} {{ 'web.property.lblPropertiesUnderManagement' | translate }}</p>
     <p class="sr-only">{{ 'web.property.lblPropertyDesc' | translate }}</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-      Export
+      {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Import">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.property.lblImport' | translate">
       <i class="ri-upload-2-line text-[18px]"></i>
-      Import
+      {{ 'web.property.lblImport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" routerLink="/broadcasts" data-tooltip="Send Broadcast">
+    <button type="button" class="ov-btn ov-btn-ghost" routerLink="/broadcasts" [attr.data-tooltip]="'web.property.lblSendBroadcast' | translate">
       <i class="ri-megaphone-line text-[18px]"></i>
-      Send Broadcast
+      {{ 'web.property.lblSendBroadcast' | translate }}
     </button>
     <button type="button" class="ov-btn ov-btn-primary" routerLink="/add-property"
       [attr.data-tooltip]="'web.property.lblNewProperty' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-      Add Property
+      {{ 'web.property.lblAddProperty' | translate }}
     </button>
   </div>
 </div>
@@ -29,7 +29,7 @@
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.property.lblTotalProperties' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.properties }}</div>
-    <div class="ov-kpi__sub">Across all categories <span class="sr-only">{{ 'web.property.lblPortfolio' | translate }}</span></div>
+    <div class="ov-kpi__sub">{{ 'web.property.lblAcrossAllCategories' | translate }} <span class="sr-only">{{ 'web.property.lblPortfolio' | translate }}</span></div>
   </div>
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.property.lblTotalUnitsRooms' | translate }}</span>
@@ -51,7 +51,7 @@
 <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
     <div class="flex flex-wrap items-center gap-3">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Property List</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.property.lblPropertyList' | translate }}</h5>
       <p class="sr-only">{{ 'web.property.lblProperty' | translate }}</p>
       <div class="inline-flex h-9 items-center overflow-hidden rounded-lg border border-defaultborder">
         <button type="button" (click)="setViewMode('list')" class="ov-icon-btn !h-9 !w-10 rounded-none border-0"
@@ -68,15 +68,15 @@
     </div>
     <div class="ov-seg ov-seg--solid">
       <button type="button" (click)="setTypeFilter(null)" class="ov-seg__btn" [class.is-active]="!selectedType">{{ 'web.common.lblAll' | translate }}</button>
-      <button type="button" (click)="setTypeFilter('Residential')" class="ov-seg__btn" [class.is-active]="selectedType === 'Residential'">Residential</button>
-      <button type="button" (click)="setTypeFilter('Commercial')" class="ov-seg__btn" [class.is-active]="selectedType === 'Commercial'">Commercial</button>
+      <button type="button" (click)="setTypeFilter('Residential')" class="ov-seg__btn" [class.is-active]="selectedType === 'Residential'">{{ 'web.property.lblResidential' | translate }}</button>
+      <button type="button" (click)="setTypeFilter('Commercial')" class="ov-seg__btn" [class.is-active]="selectedType === 'Commercial'">{{ 'web.property.lblCommercial' | translate }}</button>
     </div>
   </div>
 
   <div class="flex flex-wrap items-center gap-3 px-5 py-3">
     <div class="ov-seg ov-seg--solid">
       <button type="button" (click)="setCategoryFilter('All')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'All'">{{ 'web.common.lblAll' | translate }}</button>
-      <button type="button" (click)="setCategoryFilter('Units')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Units'">{{ 'web.Unit.lblUnits' | translate }}</button>
+      <button type="button" (click)="setCategoryFilter('Units')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Units'">{{ 'web.common.lblUnits' | translate }}</button>
       <button type="button" (click)="setCategoryFilter('Rooms')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Rooms'">{{ 'web.property.lblRooms' | translate }}</button>
     </div>
   </div>
@@ -87,7 +87,7 @@
         <label class="sr-only" for="property-search">{{ 'web.property.lblSearchProperty' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="property-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" (input)="applyLocalFilters()" placeholder="Filter Items by Property Name">
+          (keyup.enter)="onSearch()" (input)="applyLocalFilters()" [placeholder]="'web.property.lblSearchPropertyPlaceholder' | translate">
       </div>
       <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
         <i class="ri-search-line text-[18px]"></i>
@@ -97,13 +97,13 @@
       <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.common.lblFilter' | translate }}
       </button>
       <div class="relative">
         <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contacts.lblColumn' | translate }}
         </button>
         <div *ngIf="showColumnDropdown" class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
           <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
@@ -112,12 +112,12 @@
           </label>
           <label *ngFor="let col of tableColumns" class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
             <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)" class="h-3.5 w-3.5 rounded text-primary">
-            {{ col.label }}
+            {{ col.label | translate }}
           </label>
         </div>
       </div>
       <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" title="Reset Filters">
-        Clear
+        {{ 'web.contacts.lblCancel' | translate }}
       </button>
     </div>
   </div>
@@ -234,10 +234,10 @@
         <div class="ov-prop-card__occupancy">
           <div class="ov-prop-card__occ-row">
             <div>
-              <div class="ov-prop-card__occ-title">Occupancy</div>
+              <div class="ov-prop-card__occ-title">{{ 'web.property.lblOccupancy' | translate }}</div>
               <div class="ov-prop-card__occ-sub">
-                {{ property.occupied_units || 0 }} of {{ property.total_units || 0 }}
-                {{ categoryFilter === 'Rooms' ? 'rooms' : 'units' }} are occupied
+                {{ property.occupied_units || 0 }} {{ 'web.property.lblOf' | translate }} {{ property.total_units || 0 }}
+                {{ (categoryFilter === 'Rooms' ? 'web.property.lblRooms' : 'web.common.lblUnits') | translate }} {{ 'web.property.lblUnitsOccupied' | translate }}
               </div>
             </div>
             <span class="ov-prop-card__occ-pct">
@@ -253,22 +253,22 @@
         <div class="ov-prop-card__stats">
           <div class="ov-prop-card__stat">
             <span class="ov-prop-card__stat-val">{{ property.total_units || 0 }}</span>
-            <span class="ov-prop-card__stat-lbl">{{ categoryFilter === 'Rooms' ? 'Rooms' : 'Units' }}</span>
+            <span class="ov-prop-card__stat-lbl">{{ (categoryFilter === 'Rooms' ? 'web.property.lblRooms' : 'web.common.lblUnits') | translate }}</span>
           </div>
           <div class="ov-prop-card__stat">
             <span class="ov-prop-card__stat-val">{{ property.occupied_units || 0 }}</span>
-            <span class="ov-prop-card__stat-lbl">Occupied</span>
+            <span class="ov-prop-card__stat-lbl">{{ 'web.property.lblOccupied' | translate }}</span>
           </div>
           <div class="ov-prop-card__stat">
             <span class="ov-prop-card__stat-val">{{ (property.total_units || 0) - (property.occupied_units || 0) }}</span>
-            <span class="ov-prop-card__stat-lbl">Vacant</span>
+            <span class="ov-prop-card__stat-lbl">{{ 'web.property.lblVacant' | translate }}</span>
           </div>
         </div>
 
         <div class="ov-prop-card__types">
           <div class="ov-prop-card__types-head">
-            <span>Units types</span>
-            <a [routerLink]="['/properties', property.code]" class="ov-link">Manage units</a>
+            <span>{{ 'web.property.lblUnitsTypes' | translate }}</span>
+            <a [routerLink]="['/properties', property.code]" class="ov-link">{{ 'web.property.lblManageUnits' | translate }}</a>
           </div>
           <div class="ov-prop-card__types-grid">
             <div class="ov-prop-card__type-pill">
@@ -306,11 +306,11 @@
       </div>
 
       <div class="ov-prop-card__footer">
-        <span class="ov-prop-card__added">Added {{ property.created_date | date:'MMM d, yyyy' }}</span>
+        <span class="ov-prop-card__added">{{ 'web.property.lblAdded' | translate }} {{ property.created_date | date:'MMM d, yyyy' }}</span>
         <div class="ov-prop-card__actions">
-          <a [routerLink]="['/properties', property.code]" class="ov-prop-card__btn ov-prop-card__btn--ghost">Manage Units</a>
+          <a [routerLink]="['/properties', property.code]" class="ov-prop-card__btn ov-prop-card__btn--ghost">{{ 'web.property.lblManageUnits' | translate }}</a>
           <a [routerLink]="['/properties', property.code]" class="ov-prop-card__btn ov-prop-card__btn--primary">
-            View Property
+            {{ 'web.property.lblViewProperty' | translate }}
             <img src="assets/images/property-grid/arrow.svg" alt="" width="16" height="8">
           </a>
         </div>
@@ -320,24 +320,24 @@
 
   <div class="ov-prop-loadmore" *ngIf="viewMode === 'grid' && canLoadMore">
     <button type="button" class="ov-btn ov-btn-ghost ov-prop-loadmore__btn" (click)="loadMore()">
-      Load more
+      {{ 'web.property.lblLoadMore' | translate }}
       <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
     </button>
   </div>
 
   <div class="ov-page" *ngIf="viewMode === 'list'">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.property.lblShow' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.property.lblShowing' | translate }} {{ startRecord }} {{ 'web.property.lblTo' | translate }} {{ endRecord }} {{ 'web.property.lblOf' | translate }} {{ totalRecords }} {{ 'web.property.lblRecords' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.property.lblPage' | translate }} {{ displayPage }} {{ 'web.property.lblOf' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />

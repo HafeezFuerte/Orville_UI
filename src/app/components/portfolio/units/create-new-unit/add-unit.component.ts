@@ -28,6 +28,7 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
 export class AddUnitComponent implements OnInit {
   public unitForm!: FormGroup;
   public isLoading = false;
+  public showScrollToTop = false;
   currentUser: AuthPayload | null = null;
   // File attachments state
   unitImageFile: File | null = null;

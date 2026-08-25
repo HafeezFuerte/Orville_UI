@@ -54,7 +54,7 @@
 <div class="ov-detail-layout pb-16">
   <aside class="ov-detail-layout__left">
     <div class="lcd-side">
-      <h4 class="lcd-side__title">Contract - 7942</h4>
+      <h4 class="lcd-side__title">Contract - {{ contract.id }}</h4>
       <p class="lcd-side__sub">Landlord Agreement</p>
       <button type="button" class="ov-btn ov-btn-ghost lcd-side__cta">View Activity</button>
 
@@ -64,20 +64,20 @@
         <h6>Contract Information</h6>
         <div class="lcd-rows">
           <p><span>Contract ID:</span> <b>{{ contract.id }}</b></p>
-          <p><span>Name:</span> <b>Abdullah Al Shakib</b></p>
+          <p><span>Name:</span> <b>{{ contract.name }}</b></p>
           <p><span>Type:</span> <b>General</b></p>
-          <p><span>Cycle:</span> <b>Fixed</b></p>
-          <p><span>Fee Type:</span> <b>Fix</b></p>
-          <p><span>Renew Status:</span> <b>Renewed</b></p>
+          <p><span>Cycle:</span> <b>{{ contractCycle }}</b></p>
+          <p><span>Fee Type:</span> <b>{{ feeType }}</b></p>
+          <p><span>Renew Status:</span> <b>{{ contract.status }}</b></p>
           <p><span>Start Date:</span> <b>{{ contract.startDate }}</b></p>
           <p><span>End Date:</span> <b>{{ contract.endDate }}</b></p>
-          <p><span>Days Left:</span> <b>250 days</b></p>
+          <p><span>Days Left:</span> <b>{{ contract.daysLeft }}</b></p>
           <p><span>Value:</span> <b>{{ contract.value }}</b></p>
-          <p><span>Payment Via:</span> <b>Cheque</b></p>
-          <p><span>No of Payments:</span> <b>2</b></p>
+          <p><span>Payment Via:</span> <b>{{ paymentVia }}</b></p>
+          <p><span>No of Payments:</span> <b>{{ noOfPayments }}</b></p>
           <p class="lcd-rows__stack">
             <span>Remark:</span>
-            <b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper ante sed tempus semper. Curabitur convallis et eros ac tincidunt.</b>
+            <b>—</b>
           </p>
         </div>
       </section>
@@ -86,26 +86,26 @@
         <h6>Associated Party</h6>
         <div class="lcd-rows">
           <p><span>Type:</span> <b>Landlord</b></p>
-          <p><span>Name:</span> <b>Orville Real Estate</b></p>
-          <p><span>Email:</span> <b>rental&#64;orvillerealestate.com</b></p>
-          <p><span>Phone:</span> <b>+971 5866 256 32</b></p>
+          <p><span>Name:</span> <b>{{ contract.landlord }}</b></p>
+          <p><span>Email:</span> <b>—</b></p>
+          <p><span>Phone:</span> <b>—</b></p>
         </div>
       </section>
 
       <section class="lcd-block">
         <h6>Timeline</h6>
         <div class="lcd-rows">
-          <p><span>Created At:</span> <b>06-06-2026</b></p>
-          <p><span>Updated At:</span> <b>06-06-2026</b></p>
+          <p><span>Created At:</span> <b>{{ createdDate }}</b></p>
+          <p><span>Updated At:</span> <b>{{ modifiedDate || '—' }}</b></p>
         </div>
       </section>
 
       <section class="lcd-block">
         <h6>Financial Snapshot</h6>
         <div class="lcd-rows">
-          <p><span>Annual Rent:</span> <b>-</b></p>
-          <p><span>Percentage:</span> <b>-</b></p>
-          <p><span>PMA Type:</span> <b>-</b></p>
+          <p><span>Annual Rent:</span> <b>AED {{ annualRent.toFixed(2) }}</b></p>
+          <p><span>Percentage:</span> <b>{{ percentage }}%</b></p>
+          <p><span>PMA Type:</span> <b>{{ pmaType }}</b></p>
         </div>
       </section>
     </div>
@@ -152,6 +152,9 @@
                 </tr>
               </thead>
               <tbody>
+                <tr *ngIf="filteredProperties.length === 0">
+                  <td [attr.colspan]="visiblePropertyColumns.length" class="text-center py-4 text-gray-500">No records found</td>
+                </tr>
                 <tr *ngFor="let row of filteredProperties">
                   <td *ngFor="let col of visiblePropertyColumns" [ngSwitch]="col.key">
                     <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
@@ -219,6 +222,9 @@
                 </tr>
               </thead>
               <tbody>
+                <tr *ngIf="filteredUnits.length === 0">
+                  <td [attr.colspan]="visibleUnitColumns.length" class="text-center py-4 text-gray-500">No records found</td>
+                </tr>
                 <tr *ngFor="let row of filteredUnits">
                   <td *ngFor="let col of visibleUnitColumns" [ngSwitch]="col.key">
                     <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
@@ -285,6 +291,9 @@
                 </tr>
               </thead>
               <tbody>
+                <tr *ngIf="filteredRooms.length === 0">
+                  <td [attr.colspan]="visibleRoomColumns.length" class="text-center py-4 text-gray-500">No records found</td>
+                </tr>
                 <tr *ngFor="let row of filteredRooms">
                   <td *ngFor="let col of visibleRoomColumns" [ngSwitch]="col.key">
                     <a *ngSwitchCase="'id'" class="lcd-link" href="javascript:void(0)">{{ row.id }}</a>
@@ -337,6 +346,9 @@
                 </tr>
               </thead>
               <tbody>
+                <tr *ngIf="commissions.length === 0">
+                  <td colspan="7" class="text-center py-4 text-gray-500">No records found</td>
+                </tr>
                 <tr *ngFor="let row of commissions">
                   <td>{{ row.from }}</td>
                   <td>{{ row.type }}</td>
@@ -361,6 +373,7 @@
             </div>
           </div>
           <div class="lcd-files">
+            <div *ngIf="documents.length === 0" class="text-center py-4 text-gray-500 w-full">No records found</div>
             <div class="lcd-file" *ngFor="let doc of documents">
               <span class="lcd-file__pdf">PDF</span>
               <div>
@@ -390,6 +403,9 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="signatures.length === 0">
+                <td colspan="6" class="text-center py-4 text-gray-500">No records found</td>
+              </tr>
               <tr *ngFor="let row of signatures">
                 <td>{{ row.id }}</td>
                 <td><span class="ov-status ov-status--warning">{{ row.status }}</span></td>
@@ -421,6 +437,9 @@
               </tr>
             </thead>
             <tbody>
+              <tr *ngIf="payments.length === 0">
+                <td colspan="9" class="text-center py-4 text-gray-500">No records found</td>
+              </tr>
               <tr *ngFor="let row of payments">
                 <td>{{ row.id }}</td>
                 <td><span class="ov-status ov-status--warning">{{ row.status }}</span></td>

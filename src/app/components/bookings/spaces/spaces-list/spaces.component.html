@@ -45,7 +45,7 @@
       <app-shared-table
         [columns]="visibleColumns"
         [data]="paginatedRows"
-        [loading]="false"
+        [loading]="isLoading"
         [hasActions]="false"
         [showPaginator]="false"
         [totalRecords]="totalRecords"
@@ -70,7 +70,7 @@
             </button>
             <div *ngSwitchCase="'dateRange'" class="flex flex-col gap-1">
               <span>{{ row.dateRange }}</span>
-              <span class="inline-flex h-6 w-fit items-center rounded-sm px-2.5 text-xs font-bold"
+              <span *ngIf="row.rangeStatus" class="inline-flex h-6 w-fit items-center rounded-sm px-2.5 text-xs font-bold"
                 [class.bg-primary]="row.rangeStatus === 'Active'"
                 [class.text-white]="row.rangeStatus === 'Active'"
                 [class.bg-light]="row.rangeStatus !== 'Active'"

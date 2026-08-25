@@ -34,12 +34,11 @@ export class ParkingsComponent {
   totalRecords: number = 0;
   columns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'parking_no', label: 'web.property.lblParkingNo', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'parking_no', label: 'web.portfolio.parking.lblParkingNo', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'property', label: 'web.property.lblProperty' , useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
-    { key: 'unit_code1', label: 'web.property.lblUnit', is_editCol: true,redirect_url:"/units",edit_col:"unit_code",useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, isHtml: false },
-    { key: 'parking_type_nm', label: 'web.portfolio.popups.parking.lblParkingType', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'createdby', label: 'web.portfolio.popups.parking.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'recurring_cycle_nm', label: 'web.portfolio.popups.parking.lblRecurringCycle', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'unit_code1', label: 'web.portfolio.parking.lblUnit', is_editCol: true,redirect_url:"/units",edit_col:"unit_code",useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, isHtml: false },
+    { key: 'parking_type_nm', label: 'web.portfolio.parking.lblParkingType', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'createdby', label: 'web.portfolio.parking.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass:'', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     
   ];
     

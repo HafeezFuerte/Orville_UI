@@ -35,14 +35,14 @@ export class NotesComponent {
   totalRecords: number = 0;
   columns: any[] = [
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'subject', label: 'web.property.lblSubject', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'description', label: 'web.property.lblContent', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
-    { key: 'status', label: 'web.property.lblVia', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'uploaded_date', label: 'web.property.lblNoteDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'created_by', label: 'web.property.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.property.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true },
-    { key: 'uploaded_date', label: 'web.property.lblCreatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'modified_date', label: 'web.property.lblModifiedDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'subject', label: 'web.portfolio.notes.lblSubject', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'description', label: 'web.portfolio.notes.lblContent', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
+    { key: 'status', label: 'web.portfolio.notes.lblStatus', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'uploaded_date', label: 'web.portfolio.notes.lblNoteDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'created_by', label: 'web.portfolio.notes.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'file_path', label: 'web.portfolio.notes.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true },
+    { key: 'uploaded_date', label: 'web.portfolio.notes.lblCreatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true },
+    { key: 'modified_date', label: 'web.portfolio.notes.lblModifiedDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
   ];
   searchQuery: string = '';
   pageSize: number = 5;

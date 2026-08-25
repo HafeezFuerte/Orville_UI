@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -39,7 +40,7 @@ export interface Unit {
   templateUrl: './units-list.component.html',
   styleUrl: './units-list.component.scss'
 })
-export class UnitsListComponent implements OnInit {
+export class UnitsListComponent implements OnInit, OnDestroy {
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   searchQuery: string = '';
@@ -110,6 +111,25 @@ export class UnitsListComponent implements OnInit {
     { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
+  private translateColumns(): void {
+    const t = (key: string) => this.translate.instant(key);
+    const map: Record<string, string> = {
+      id:               t('web.common.lblID'),
+      name:             t('web.common.lblName'),
+      category:         t('web.Unit.lblCategory'),
+      beds:             t('web.Unit.lblBeds'),
+      property_Name:    t('web.property.lblProperty'),
+      land_lord:        t('web.Unit.lblLandlord'),
+      tags:             t('web.property.lblTags'),
+      unitType:         t('web.Unit.lblUnitType'),
+      floor_no:         t('web.Unit.lblFloorNumber'),
+      management_fee:   t('web.Unit.lblManagementFee'),
+      unit_status_name: t('web.Unit.lblStatus'),
+      action:           t('web.Unit.lblAction'),
+    };
+    this.tableColumns = this.tableColumns.map(col => ({ ...col, label: map[col.key] ?? col.label }));
+  }
+
   openActionCode: string | number | null = null;
 
   get visibleColumns() {
@@ -138,6 +158,8 @@ export class UnitsListComponent implements OnInit {
   filteredUnits: any = [];
   paginatedUnits: any = [];
   currentUser: AuthPayload | null = null;
+  private langSub: Subscription | null = null;
+
   constructor(public translate: TranslateService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
 
   getArabicLookupName(row: any, key: string): string {
@@ -146,12 +168,18 @@ export class UnitsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
+    this.translateColumns();
+    this.langSub = this.translate.onLangChange.subscribe(() => this.translateColumns());
     this.loadMetrics();
     this.loadMasterDataByType(2,4,"categories",'','');
     this.loadMasterDataByType(2,7,"statuses",'','');
     this.loadMasterDataByType(2,5,"bedsOptions",'','');
      this.loadMasterDataByType(11,0,"propertiesList",'',''); 
     this.loadUnits();
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
   }
 
     loadMasterDataByType(
