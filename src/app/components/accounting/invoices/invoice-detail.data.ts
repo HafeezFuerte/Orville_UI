@@ -28,6 +28,7 @@ export interface InvoiceCol {
   key: string;
   label: string;
   visible: boolean;
+  useTemplate ?:boolean;
 }
 
 export interface InvoiceOverviewRow {
@@ -164,14 +165,25 @@ export const OVERVIEW_COLUMNS: InvoiceCol[] = [
 ];
 
 export const CHEQUE_COLUMNS: InvoiceCol[] = [
-  { key: 'id', label: 'ID', visible: true },
-  { key: 'chequeNo', label: 'Cheque No', visible: true },
-  { key: 'bankName', label: 'Bank Name', visible: true },
-  { key: 'chequeDate', label: 'Cheque Date', visible: true },
-  { key: 'amount', label: 'Amount', visible: true },
-  { key: 'inHand', label: 'Cheque In Hand', visible: true },
-  { key: 'status', label: 'Status', visible: true },
-  { key: 'attachment', label: 'Attachment', visible: true }
+  { key: 'id', label: 'web.common.lblID', visible: true },
+    { key: 'rcp_no', label: 'Receipt No', visible: true, useTemplate: true },
+    { key: 'cheque_no', label: 'web.leases.lblChequeNo', visible: true }, 
+    { key: 'bank_name', label: 'web.leases.lblBankName', visible: true },
+    { key: 'cheque_date', label: 'web.leases.lblChequeDate', visible: true },
+    { key: 'heldBy', label: 'web.leases.lblHeldBy', visible: true },
+    { key: 'amt', label: 'web.common.lblAmount', visible: true, useTemplate: true },
+    { key: 'cheque_status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'cheque_in_hand', label: 'In Hand', visible: true },
+    { key: 'returned', label: 'Returned', visible: true },
+    { key: 'returnedDate', label: 'Returned Date', visible: true },
+    { key: 'bounceDate', label: 'Bounce Date', visible: true },
+    { key: 'bounceReason', label: 'Bounce Reason', visible: true },
+    { key: 'withdrawalReason', label: 'Withdrawal Reason', visible: true },
+    { key: 'Tenant', label: 'Contact Name', visible: true, useTemplate: true },
+    { key: 'landlord', label: 'web.leases.lblLandlord', visible: true, useTemplate: true },
+    { key: 'unit_code', label: 'web.leases.lblUnit', visible: true , useTemplate: true},
+    { key: 'attachment_path', label: 'Attachment', visible: true  , useTemplate: true}
 ];
 
 export const TXN_COLUMNS: InvoiceCol[] = [

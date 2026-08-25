@@ -1,10 +1,13 @@
 import { Component, HostListener, OnInit,inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
+import { NotesComponent } from '../../child-tables/notes/notes.component';
+import { AttachmentsComponent } from '../../child-tables/attachments/attachments.component';
 import {
   CHEQUE_COLUMNS,
   INVOICE_CHEQUE_ROWS,
@@ -30,19 +33,25 @@ type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, FinancialsComponent],
+  imports: [CommonModule,NotesComponent,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
   templateUrl: './invoice-detail.component.html',
   styleUrl: './invoice-detail.component.scss'
 })
 export class InvoiceDetailComponent implements OnInit {
-  invoice: any={};
+  invoice: any={}; 
+  Form!: FormGroup;
+  loading:boolean=false;
   invoice_no:string='';
+  notesData : any[] = [];
+  attahmentData : any[] = [];
   receiptslist:any=[];
   invoicesList:any=[];
   overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
+   
+
   // get invoicesList(): any[] {
   //   const numAmt = Number(this.invoice.amountDue.replace(/[^\d.]/g, '')) || Number(this.invoice.balance.replace(/[^\d.]/g, '')) || 3000;
   //   return [{
@@ -81,7 +90,7 @@ export class InvoiceDetailComponent implements OnInit {
   filteredCheques:any=[];
 
   filteredTxns:any=[];
-
+  tabs:any=[];
   filteredPenalties:any=[];
   chequeRows: any=[];
   txnRows: any=[];
@@ -109,10 +118,50 @@ export class InvoiceDetailComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.invoice_no=id; 
+    this.invoice_no=id;  
     this.getInvoiceDetails();
   }
+  get selectedNotesTab(): any | undefined {
+    return this.tabs.find((t:any) => t.key === "notes");
+  }
+  get selectedAttachmentTab(): any | undefined {
+    return this.tabs.find((t:any) => t.key === "attachments");
+  }
+  initializeTabs() {
 
+    this.tabs = [ 
+      {
+        key: 'attachments',
+        label: 'web.common.lblAttachments',
+        layout: 'content',
+        entity: "Invoices",
+        entity_id: this.invoice_no,
+        data: this.attahmentData,
+        totalRecords: this.attahmentData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Attachments',
+        form: this.Form,
+        popupType: 'attachment'
+      },
+     
+      {
+        key: 'notes',
+        label: 'web.common.lblNotes',
+        layout: 'content',
+        entity: "Invoices",
+        entity_id: this.invoice_no,
+        data: this.notesData,
+        totalRecords: this.notesData?.length || 0,
+        loading: this.loading,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.Form,
+        popupType: 'notes'
+      }, 
+    ];
+
+  }
   getInvoiceDetails() {
     this.commontabservice.getMasterByType({
       typeId: 52,
@@ -125,6 +174,9 @@ export class InvoiceDetailComponent implements OnInit {
           this.invoicesList= res.objResult.invoice_dtls || [];
           this.invoice=this.invoicesList[0] || {};
           this.receiptslist= res.objResult.receipt_dtls || []; 
+          this.notesData=res.objResult.notes || []; 
+          this.attahmentData=res.objResult.documents || [];
+          this.initializeTabs(); 
         }
         else
           this.toastr.error("No record[s] found");

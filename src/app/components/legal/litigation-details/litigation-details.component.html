@@ -33,17 +33,17 @@
       <!-- Summary Block Header -->
       <div class="flex flex-col gap-3.5">
         <div>
-          <h4 class="ov-card-title">Rent Recovery Case</h4>
+          <h4 class="ov-card-title">{{legalInfo?.case_name}}</h4>
           <span class="ov-card-sub mt-1.5 flex items-center gap-1.5 !text-[13px]">
-            Case #LC-1001
+            Case #{{legalInfo?.legal_code}}
           </span>
         </div>
 
         <div class="flex gap-5">
-          <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
+          <button [routerLink]="['/legal/edit-litigation',legalInfo?.code]"  type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
             View Activity
           </button>
-          <a [routerLink]="['/legal/add-litigation']" [queryParams]="{ id: 'LC-1001' }" class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
+          <a [routerLink]="['/legal/edit-litigation',legalInfo?.code]"   class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
             Edit Litigation
             <i class="ri-arrow-right-line text-[14px]"></i>
           </a>
@@ -78,41 +78,41 @@
           <div class="flex flex-col gap-4 px-5 mt-4">
             <div class="ov-kv">
               <span class="ov-kv__label">ID:</span>
-              <span class="ov-kv__value">LC-001</span>
+              <span class="ov-kv__value">{{legalInfo?.code}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Case Name:</span>
-              <span class="ov-kv__value">Rent Recovery Case</span>
+              <span class="ov-kv__value">{{legalInfo?.case_name}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Legal Firm:</span>
-              <span class="ov-kv__value font-semibold">Smith & Partners</span>
+              <span class="ov-kv__value font-semibold">{{legalInfo?.legal_firm}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Case Date:</span>
-              <span class="ov-kv__value">15-07-2026</span>
+              <span class="ov-kv__value">{{legalInfo?.case_date | date:'MMM d yyyy'}}</span>
             </div>
             <div class="ov-kv items-center">
               <span class="ov-kv__label">Status:</span>
               <span class="ov-flag">
-                Open
+                {{legalInfo?.status_nm}}
               </span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Escalation Option:</span>
-              <span class="ov-kv__value">3</span>
+              <span class="ov-kv__value"> {{legalInfo?.escalation_option}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Details:</span>
-              <span class="ov-kv__value">Tenant has 3 months overdue rent.</span>
+              <span class="ov-kv__value">{{legalInfo?.details}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">10-07-2026</span>
+              <span class="ov-kv__value">{{legalInfo?.created_date | date:'MMM d yyyy'}}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Last Updated:</span>
-              <span class="ov-kv__value">10-07-2026</span>
+              <span class="ov-kv__value">{{legalInfo?.modified_date | date:'MMM d yyyy'}}</span>
             </div>
           </div>
         </div>
@@ -126,13 +126,13 @@
             <div class="ov-kv">
               <span class="ov-kv__label">Property:</span>
               <span class="ov-kv__value">
-                <a href="javascript:void(0)" class="ov-link font-semibold">Dubai Marina, Tower A, Dubai</a>
+                <span [routerLink]="['/edit-property', legalInfo?.property_code]" class="ov-link font-semibold">{{ legalInfo?.property }}</span>
               </span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Unit:</span>
-              <span class="ov-kv__value">
-                <a href="javascript:void(0)" class="ov-link font-semibold">Apartment 402-PR-4</a>
+              <span class="ov-kv__value"> 
+                <span [routerLink]="['/edit-unit', legalInfo?.entity_code]" class="ov-link font-semibold">{{ legalInfo?.unit_code }}</span>
               </span>
             </div>
           </div>
@@ -147,13 +147,13 @@
             <div class="ov-kv items-center">
               <span class="ov-kv__label">Unit Blocked:</span>
               <span class="ov-flag ov-flag--no">
-                False
+                {{legalInfo?.block_unit}}
               </span>
             </div>
             <div class="ov-kv items-center">
               <span class="ov-kv__label">Tenant Blocked:</span>
               <span class="ov-flag ov-flag--no">
-                False
+                {{legalInfo?.block_tenant}}
               </span>
             </div>
           </div>

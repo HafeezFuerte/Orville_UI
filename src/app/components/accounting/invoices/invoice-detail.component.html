@@ -108,7 +108,7 @@
         <h6 class="m-0 text-sm font-bold text-defaulttextcolor">Notes</h6>
       </div>
       <div class="px-4 py-4">
-        <p class="m-0 text-[13px] text-textmuted">No invoice note added</p>
+        <!-- <app-notes-table [selectedTab]="selectedNotesTab"></app-notes-table> -->
       </div>
     </div>
 
@@ -117,7 +117,7 @@
         <h6 class="m-0 text-sm font-bold text-defaulttextcolor">Attachment</h6>
       </div>
       <div class="px-4 py-4">
-        <p class="m-0 text-[13px] text-textmuted">No Attachment</p>
+        <!-- <app-attachments-table [selectedTab]="selectedAttachmentTab"></app-attachments-table> -->
       </div>
     </div>
 
@@ -166,23 +166,33 @@
           </div>
         </div>
         <div class="invd-table-wrap">
-          <table class="invd-table">
-            <thead>
-              <tr>
-                <th *ngFor="let col of visible(chequeCols)">{{ col.label }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of chequeRows">
-                <td *ngFor="let col of visible(chequeCols)" [ngSwitch]="col.key">
-                  <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
-                  <a *ngSwitchCase="'attachment'" class="ov-link" href="javascript:void(0)">{{ row.attachment }}</a>
-                  <span *ngSwitchCase="'status'" class="inv-badge inv-badge--hold">{{ row.status }}</span>
-                  <ng-container *ngSwitchDefault>{{ cell(row, col.key) }}</ng-container>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <app-shared-table [columns]="chequeCols" [data]="receiptslist" [hasActions]="true">
+                  <ng-template #colTemplate let-row="row" let-col="col">
+                    <ng-container [ngSwitch]="col.key">
+                      <ng-container *ngSwitchCase="'amt'">
+                        <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
+                      </ng-container> 
+                      <ng-container *ngSwitchCase="'rcp_no'">
+                        <span [routerLink]="['/accounting/invoices', row?.invoicecode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.rcp_no }}</span>
+                     </ng-container>
+                      <ng-container *ngSwitchCase="'Tenant'">
+                        <span [routerLink]="['/contacts/tenants/edit-tenant', row?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.tenant }}</span>
+                     </ng-container>
+                     <ng-container *ngSwitchCase="'unit_code'">
+                      <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
+                   </ng-container>
+                      <ng-container *ngSwitchCase="'cheque_status'">
+                        <span  [ngClass]="row.cheque_status_class || ''" class="px-2 py-0.5 rounded bg-success/15 text-success text-[10px] font-bold">{{ getArabicLookupName(row,'cheque_status') }}</span>
+                         
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'attachment_path'">
+                        <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
+                          <i class="ri-file-pdf-line"></i> {{ row.attachment_path }}
+                        </a>
+                      </ng-container>
+                    </ng-container>
+                  </ng-template>
+                </app-shared-table>
         </div>
       </div>
     </section>

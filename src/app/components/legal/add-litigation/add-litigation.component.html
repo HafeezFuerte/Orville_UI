@@ -54,14 +54,14 @@
             <!-- Case Date -->
             <div class="flex flex-col">
               <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Date <span class="text-danger">*</span></label>
-              <input type="date" formControlName="caseDate" class="ov-input form-control rounded">
+              <input type="date"   placeholder="YYYY/MM/DD" formControlName="caseDate" class="ov-input form-control rounded">
             </div>
 
             <!-- Claimed Amount -->
             <div class="flex flex-col">
               <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Claimed Amount</label>
               <div class="ov-input-addon">
-                <span class="ov-input-addon__prefix">AED</span>
+                <span class="ov-input-addon__prefix">{{currentUser?.currencyCode}}</span>
                 <input type="number" formControlName="claimedAmount" class="ov-input" placeholder="0.00">
               </div>
             </div>
@@ -70,7 +70,7 @@
             <div class="flex flex-col">
               <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Collected Amount</label>
               <div class="ov-input-addon">
-                <span class="ov-input-addon__prefix">AED</span>
+                <span class="ov-input-addon__prefix">{{currentUser?.currencyCode}}</span>
                 <input type="number" formControlName="collectedAmount" class="ov-input" placeholder="0.00">
               </div>
             </div>
@@ -80,15 +80,50 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col">
                   <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Property</label>
-                  <ng-select formControlName="property" [items]="properties" placeholder="Select Property" class="ov-select w-full" appendTo="body"></ng-select>
+                  <ng-select #propSelect [items]="propertiesList"  bindValue="code"
+                 formControlName="selectedProperty" (change)="onPropertyChange($event)"
+                  [searchable]="true"
+                [clearable]="true" 
+             placeholder="Select Property"
+                  class="ov-select w-full">
+                  <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-defaultborder">
+                      <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                       (input)="onSearch($any($event.target).value,'properties')" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                  <ng-template ng-label-tmp let-item="item">
+                    {{ item.code }} - {{ item.name }}
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  {{ item.code }} - {{ item.name }}
+              </ng-template>
+                </ng-select>
                 </div>
                 <div class="flex flex-col">
                   <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Unit</label>
-                  <ng-select formControlName="unit" [items]="units" placeholder="Select Unit" class="ov-select w-full" appendTo="body"></ng-select>
+                  <ng-select #unitSelect formControlName="unit"   [searchable]="true"
+                  [clearable]="true"  (change)="onUnitChange($event)" [items]="unitsList" bindLabel="unit" bindValue="code" placeholder="Select Unit" class="ov-select w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-defaultborder">
+                      <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                        (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                  </ng-select>
                 </div>
                 <div class="flex flex-col col-span-1 md:col-span-2">
                   <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Lease</label>
-                  <ng-select formControlName="lease" [items]="leases" placeholder="Select Lease" class="ov-select w-full" appendTo="body"></ng-select>
+                  <ng-select #leaseSelect formControlName="lease"  [items]="leasesList" 
+                  bindValue="lease_code" bindLabel="lease"
+                   placeholder="Select Lease" class="ov-select w-full" appendTo="body">
+                    <ng-template ng-header-tmp>
+                      <div class="p-1.5 border-b border-defaultborder">
+                        <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                          (input)="leaseSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </div>
               </div>
             </div>
@@ -120,7 +155,7 @@
         <div class="ov-card__body">
           <div class="flex flex-col">
             <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">Case Status</label>
-            <ng-select formControlName="caseStatus" [items]="statuses" placeholder="Select Status" class="ov-select w-full" appendTo="body"></ng-select>
+            <ng-select formControlName="caseStatus" bindValue="id"    bindLabel="name" [items]="statuses" placeholder="Select Status" class="ov-select w-full" appendTo="body"></ng-select>
           </div>
         </div>
       </div>

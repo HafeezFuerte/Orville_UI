@@ -210,7 +210,13 @@
           </div> 
         
         </div>
+      
       </div>
+      <ng-container
+      *ngIf="paymentMethod== 169"
+      [ngTemplateOutlet]="chequeDetails"
+      [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }">
+    </ng-container>
       <div class="flex justify-end mt-4">
         <button type="button" (click)="generatePayments()" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
           {{ 'web.leases.lblGeneratePayment' | translate }}
@@ -289,24 +295,11 @@
           <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"  />
         </div> 
       </div>
-      <div *ngIf="addpaymentbloc.PaymentTypeid==169" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-4"> 
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cheque No</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.cheque_no"    class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Cheque Date</label>
-          <input type="date" [(ngModel)]="addpaymentbloc.cheque_date"   class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Bank</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.bank"   class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Held By</label>
-          <ng-select [(ngModel)]="addpaymentbloc.held_by" bindValue="id"  placeholder="Held By"  bindLabel="name" [items]="heldByList"  class="ng-select-sm w-full"></ng-select>
-        </div>
-      </div>
+      <ng-container
+      *ngIf="addpaymentbloc.PaymentTypeid == 169"
+      [ngTemplateOutlet]="chequeDetails"
+      [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }">
+    </ng-container>
       <div class="box-body md:grid-cols-1" *ngIf="addpaymentbloc.isSecurityDeposit==0">
 
         <app-file-upload
@@ -578,7 +571,60 @@
     </div>
   </div>
 </div>
+<ng-template #chequeDetails let-payment>
 
+  <div class="grid   md:grid-cols-4 gap-4 text-xs mb-4">
+
+    <div>
+      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
+        Cheque No
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="payment.cheque_no"
+        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
+      />
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
+        Cheque Date
+      </label>
+      <input
+        type="date"
+        [(ngModel)]="payment.cheque_date"
+        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
+      />
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
+        Bank
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="payment.bank"
+        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
+      />
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
+        Held By
+      </label>
+      <ng-select
+        [(ngModel)]="payment.held_by"
+        [items]="heldByList"
+        bindValue="id"
+        bindLabel="name"
+        placeholder="Held By"
+        class="ng-select-sm w-full">
+      </ng-select>
+    </div>
+
+  </div>
+
+</ng-template>
 <!-- Fixed Floating Form Actions Bottom Bar -->
 <div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
   <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95 flex items-center gap-1.5">
