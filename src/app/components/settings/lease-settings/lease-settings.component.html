@@ -1,0 +1,598 @@
+<div class="ls-page">
+  <header class="ls-header">
+    <h1 class="ls-title">Lease Settings</h1>
+    <p class="ls-sub">
+      Configure renewal notices, penalties, checklists, fixed payments, and lease behavior defaults.
+    </p>
+  </header>
+
+  <!-- Renewal Notice -->
+  <section class="ls-card" aria-labelledby="ls-renewal-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/bell-ringing.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-renewal-title" class="ls-card__title">Lease Renewal Notice</h2>
+        <p class="ls-card__sub">Day intervals for renewal reminder emails (e.g. 30-60-90-120).</p>
+      </div>
+    </div>
+
+    <label class="ls-check">
+      <input type="checkbox" [(ngModel)]="model.ccManagersOnEmail" />
+      <span>CC Managers on email?</span>
+    </label>
+
+    <div class="ls-grid">
+      <div class="ls-field">
+        <label class="ov-label" for="ls-res-notice">Residential Renewal Notice</label>
+        <input
+          id="ls-res-notice"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="model.residentialRenewalNotice"
+          placeholder="30-60-90-120" />
+      </div>
+      <div class="ls-field">
+        <label class="ov-label" for="ls-com-notice">Commercial Renewal Notice</label>
+        <input
+          id="ls-com-notice"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="model.commercialRenewalNotice"
+          placeholder="30-60-90-120" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Early Termination -->
+  <section class="ls-card" aria-labelledby="ls-penalty-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/file-alert.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-penalty-title" class="ls-card__title">Early Termination Penalty</h2>
+        <p class="ls-card__sub">Default account and amount when a lease ends early.</p>
+      </div>
+    </div>
+
+    <div class="ls-grid">
+      <div class="ls-field">
+        <label class="ov-label" for="ls-penalty-account">Penalty Account</label>
+        <div class="relative">
+          <select
+            id="ls-penalty-account"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="model.earlyTerminationAccountId">
+            <option value="">Select account</option>
+            <option *ngFor="let a of accounts" [ngValue]="a.id">{{ a.name }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+      <div class="ls-field">
+        <label class="ov-label" for="ls-penalty-amount">Penalty Amount</label>
+        <div class="ls-amount">
+          <span class="ls-amount__currency" aria-hidden="true">AED</span>
+          <input
+            id="ls-penalty-amount"
+            type="number"
+            min="0"
+            step="0.01"
+            class="ov-input ls-amount__input"
+            placeholder="0.00"
+            [(ngModel)]="model.earlyTerminationAmount" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Due dates -->
+  <section class="ls-card" aria-labelledby="ls-due-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/calendar-event.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-due-title" class="ls-card__title">Due Date Settings for Auto-Generated Schedules</h2>
+        <p class="ls-card__sub">Day of the month used when schedules and cheques are auto-generated (1–28).</p>
+      </div>
+    </div>
+
+    <div class="ls-grid">
+      <div class="ls-field">
+        <label class="ov-label" for="ls-schedule-due">Schedule due date of the month</label>
+        <div class="relative">
+          <select
+            id="ls-schedule-due"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="model.scheduleDueDate">
+            <option value="">Select day</option>
+            <option *ngFor="let d of dayOptions" [ngValue]="d">{{ d }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+        <p class="ls-help">Accepts a value from 1 to 28.</p>
+      </div>
+      <div class="ls-field">
+        <label class="ov-label" for="ls-cheque-due">Cheque due date of the month</label>
+        <div class="relative">
+          <select
+            id="ls-cheque-due"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="model.chequeDueDate">
+            <option value="">Select day</option>
+            <option *ngFor="let d of dayOptions" [ngValue]="d">{{ d }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+        <p class="ls-help">Accepts a value from 1 to 28.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Checklists -->
+  <section class="ls-card" aria-labelledby="ls-checklists-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/list-details.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-checklists-title" class="ls-card__title">Checklists</h2>
+        <p class="ls-card__sub">Move out, move in, and renewal checklist templates.</p>
+      </div>
+    </div>
+
+    <div class="ls-checklist-grid">
+      <article class="ls-panel">
+        <div class="ls-panel__head">
+          <h3 class="ls-panel__title">Move Out Checklist</h3>
+          <button type="button" class="ls-link" (click)="openChecklistModal('moveOut')">Add Checklist</button>
+        </div>
+        <ul class="ls-list" *ngIf="model.moveOutChecklists.length; else emptyMoveOut">
+          <li *ngFor="let item of model.moveOutChecklists" class="ls-list__row">
+            <span>{{ item.name }}</span>
+            <span class="ls-list__actions">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChecklistModal('moveOut', item)" aria-label="Edit">
+                <img src="./assets/images/settings/pencil.svg" alt="" width="16" height="16" />
+              </button>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeChecklist('moveOut', item.id)" aria-label="Delete">
+                <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+              </button>
+            </span>
+          </li>
+        </ul>
+        <ng-template #emptyMoveOut><p class="ls-empty-inline">No checklists yet.</p></ng-template>
+      </article>
+
+      <article class="ls-panel">
+        <div class="ls-panel__head">
+          <h3 class="ls-panel__title">Move In Checklist</h3>
+          <button type="button" class="ls-link" (click)="openChecklistModal('moveIn')">Add Checklist</button>
+        </div>
+        <ul class="ls-list" *ngIf="model.moveInChecklists.length; else emptyMoveIn">
+          <li *ngFor="let item of model.moveInChecklists" class="ls-list__row">
+            <span>{{ item.name }}</span>
+            <span class="ls-list__actions">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChecklistModal('moveIn', item)" aria-label="Edit">
+                <img src="./assets/images/settings/pencil.svg" alt="" width="16" height="16" />
+              </button>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeChecklist('moveIn', item.id)" aria-label="Delete">
+                <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+              </button>
+            </span>
+          </li>
+        </ul>
+        <ng-template #emptyMoveIn><p class="ls-empty-inline">No checklists yet.</p></ng-template>
+      </article>
+
+      <article class="ls-panel">
+        <div class="ls-panel__head">
+          <h3 class="ls-panel__title">Renewal Checklist</h3>
+          <button type="button" class="ls-link" (click)="openChecklistModal('renewal')">Add Checklist</button>
+        </div>
+        <ul class="ls-list" *ngIf="model.renewalChecklists.length; else emptyRenewal">
+          <li *ngFor="let item of model.renewalChecklists" class="ls-list__row">
+            <span>{{ item.name }}</span>
+            <span class="ls-list__actions">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChecklistModal('renewal', item)" aria-label="Edit">
+                <img src="./assets/images/settings/pencil.svg" alt="" width="16" height="16" />
+              </button>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeChecklist('renewal', item.id)" aria-label="Delete">
+                <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+              </button>
+            </span>
+          </li>
+        </ul>
+        <ng-template #emptyRenewal><p class="ls-empty-inline">No checklists yet.</p></ng-template>
+      </article>
+    </div>
+  </section>
+
+  <!-- Fixed payments -->
+  <section class="ls-card" aria-labelledby="ls-payments-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/hand-dollar.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <h2 id="ls-payments-title" class="ls-card__title">Lease Fixed Payments</h2>
+        <p class="ls-card__sub">Recurring or fixed charges applied on leases by default.</p>
+      </div>
+      <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="openPaymentModal()">
+        Add Payment
+      </button>
+    </div>
+
+    <div class="ls-table-wrap" *ngIf="model.fixedPayments.length; else emptyPayments">
+      <table class="ls-table">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of model.fixedPayments">
+            <td>{{ row.account }}</td>
+            <td>{{ row.amount }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.description || '—' }}</td>
+            <td class="text-right">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openPaymentModal(row)" aria-label="Edit payment">
+                <img src="./assets/images/settings/pencil.svg" alt="" width="16" height="16" />
+              </button>
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removePayment(row.id)" aria-label="Delete payment">
+                <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #emptyPayments>
+      <p class="ls-empty-inline">No fixed payments added yet.</p>
+    </ng-template>
+  </section>
+
+  <!-- Money Held -->
+  <section class="ls-card" aria-labelledby="ls-money-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/wallet.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-money-title" class="ls-card__title">Money Held</h2>
+        <p class="ls-card__sub">{{ moneyHeldHelp }}</p>
+      </div>
+    </div>
+
+    <div class="ls-field ls-field--narrow">
+      <label class="ov-label" for="ls-money-held">Money held by</label>
+      <div class="relative">
+        <select
+          id="ls-money-held"
+          class="ov-input cursor-pointer appearance-none pr-8"
+          [(ngModel)]="model.moneyHeldBy">
+          <option *ngFor="let o of moneyHeldOptions" [ngValue]="o">{{ o }}</option>
+        </select>
+        <img
+          src="./assets/images/settings/chevron-down.svg"
+          alt=""
+          width="12"
+          height="12"
+          class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Lease Terms -->
+  <section class="ls-card" aria-labelledby="ls-terms-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/contract.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <h2 id="ls-terms-title" class="ls-card__title">Lease Terms</h2>
+        <p class="ls-card__sub">Standard terms attached to new leases.</p>
+      </div>
+      <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="openTermModal()">
+        Add Lease Term
+      </button>
+    </div>
+
+    <div *ngIf="model.leaseTerms.length; else emptyTerms" class="ls-terms">
+      <article *ngFor="let term of model.leaseTerms" class="ls-term">
+        <div class="min-w-0">
+          <h3 class="ls-term__title">{{ term.title }}</h3>
+        </div>
+        <span class="ls-list__actions">
+          <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openTermModal(term)" aria-label="Edit term">
+            <img src="./assets/images/settings/pencil.svg" alt="" width="16" height="16" />
+          </button>
+          <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeTerm(term.id)" aria-label="Delete term">
+            <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+          </button>
+        </span>
+      </article>
+    </div>
+    <ng-template #emptyTerms>
+      <div class="ls-empty">
+        <img src="./assets/images/settings/contract.svg" alt="" width="40" height="40" />
+        <p class="ls-empty__title">No Lease Terms Found</p>
+        <p class="ls-empty__sub">Add standard lease terms to reuse across new leases.</p>
+        <button type="button" class="ov-btn ov-btn-primary ov-btn--sm" (click)="openTermModal()">
+          Add Lease Term
+        </button>
+      </div>
+    </ng-template>
+  </section>
+
+  <!-- Other settings -->
+  <section class="ls-card" aria-labelledby="ls-other-title">
+    <div class="ls-card__head">
+      <span class="ls-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/settings-gear.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ls-other-title" class="ls-card__title">Other Settings</h2>
+        <p class="ls-card__sub">Lease behavior options for create, renew, and activate flows.</p>
+      </div>
+    </div>
+
+    <div class="ls-toggles">
+      <label class="ls-toggle" *ngFor="let item of toggles" [class.is-on]="getToggle(item.key)">
+        <span class="ls-toggle__label">{{ item.label }}</span>
+        <input
+          type="checkbox"
+          class="ls-switch"
+          [checked]="getToggle(item.key)"
+          (change)="setToggle(item.key, $any($event.target).checked)"
+          [attr.aria-label]="item.label" />
+      </label>
+    </div>
+  </section>
+
+  <div class="ls-footer">
+    <p class="ls-footer__note">Updates apply to new leases after you save. Existing leases are unchanged.</p>
+    <div class="ls-footer__actions">
+      <span *ngIf="saved" class="ls-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist modal (Move Out / Move In / Renewal) -->
+<div
+  *ngIf="checklistModalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeChecklistModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[480px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ls-checklist-title"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeChecklistModal()">
+      <img src="./assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="ls-checklist-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ checklistEditingId != null ? 'Edit Checklist' : 'Add Checklist' }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">Enter a new checklist item.</p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="p-5">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="ls-checklist-item">Checklist Item</label>
+          <textarea
+            id="ls-checklist-item"
+            class="ov-input ls-textarea"
+            rows="4"
+            [(ngModel)]="checklistDraft"
+            placeholder="Enter checklist item"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeChecklistModal()">
+          Cancel
+        </button>
+        <button type="button" class="ov-btn ov-btn-primary ov-btn--sm" (click)="saveChecklist()">
+          {{ checklistEditingId != null ? 'Save' : 'Add' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fixed payment modal -->
+<div
+  *ngIf="paymentModalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closePaymentModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[560px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ls-payment-title"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closePaymentModal()">
+      <img src="./assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="ls-payment-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ paymentEditingId != null ? 'Edit Payment' : 'Add Payment' }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">Enter the payment details below.</p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="p-5">
+        <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="flex min-w-0 flex-col gap-2">
+              <label class="ov-label" for="ls-pay-account">
+                Account <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="ls-pay-account"
+                  class="ov-input cursor-pointer appearance-none pr-8"
+                  [(ngModel)]="paymentDraft.account">
+                  <option value="">Select an account</option>
+                  <option *ngFor="let a of paymentAccounts" [ngValue]="a.name">{{ a.name }}</option>
+                </select>
+                <img
+                  src="./assets/images/settings/chevron-down.svg"
+                  alt=""
+                  width="12"
+                  height="12"
+                  class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+              </div>
+            </div>
+            <div class="flex min-w-0 flex-col gap-2">
+              <label class="ov-label" for="ls-pay-type">
+                Type <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="ls-pay-type"
+                  class="ov-input cursor-pointer appearance-none pr-8"
+                  [(ngModel)]="paymentDraft.type">
+                  <option *ngFor="let t of paymentTypes" [ngValue]="t">{{ t }}</option>
+                </select>
+                <img
+                  src="./assets/images/settings/chevron-down.svg"
+                  alt=""
+                  width="12"
+                  height="12"
+                  class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="ls-pay-amount">
+              Amount <span class="text-danger">*</span>
+            </label>
+            <div class="ls-amount">
+              <span class="ls-amount__currency" aria-hidden="true">AED</span>
+              <input
+                id="ls-pay-amount"
+                type="number"
+                min="0"
+                step="0.01"
+                class="ov-input ls-amount__input"
+                placeholder="Enter amount"
+                [(ngModel)]="paymentDraft.amount" />
+            </div>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="ls-pay-desc">Description</label>
+            <textarea
+              id="ls-pay-desc"
+              class="ov-input ls-textarea"
+              rows="3"
+              [(ngModel)]="paymentDraft.description"
+              placeholder="Enter description"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closePaymentModal()">
+          Cancel
+        </button>
+        <button type="button" class="ov-btn ov-btn-primary ov-btn--sm" (click)="savePayment()">
+          {{ paymentEditingId != null ? 'Save' : 'Add' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lease term modal -->
+<div
+  *ngIf="termModalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeTermModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[480px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ls-term-modal-title"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeTermModal()">
+      <img src="./assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="ls-term-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ termEditingId != null ? 'Edit Lease Term' : 'Add Lease Term' }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">Enter a new lease term.</p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="p-5">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="ls-term-title">
+            Term <span class="text-danger">*</span>
+          </label>
+          <input
+            id="ls-term-title"
+            type="text"
+            class="ov-input"
+            [(ngModel)]="termDraft.title"
+            placeholder="Enter lease term" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeTermModal()">
+          Cancel
+        </button>
+        <button type="button" class="ov-btn ov-btn-primary ov-btn--sm" (click)="saveTerm()">
+          {{ termEditingId != null ? 'Save' : 'Add' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

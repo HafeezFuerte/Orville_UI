@@ -12,7 +12,28 @@
     </a>
   </div>
 
-  <div>
+  <div class="orville-sidebar-body" [class.is-settings]="isSettingsMode">
+    <!-- Static (non-scrolling) settings chrome — not position:fixed -->
+    <div class="orville-settings-chrome" *ngIf="isSettingsMode">
+      <div class="orville-settings-search">
+        <input
+          type="search"
+          class="orville-settings-search__input ov-input"
+          placeholder="Search settings..."
+          [ngModel]="settingsSearchQuery"
+          (ngModelChange)="onSettingsSearchChange($event)"
+          aria-label="Search settings"
+        />
+      </div>
+      <a
+        class="side-menu__item orville-settings-back"
+        routerLink="/insights"
+        (click)="restoreMainMenu(); menuOpen()">
+        <i class="side-menu__icon bx bx-arrow-back"></i>
+        <span class="side-menu__label">Back to Main Menu</span>
+      </a>
+    </div>
+
     <ngx-simplebar [options]="options" class="main-sidebar" id="sidebar-scroll">
       <nav class="main-menu-container nav nav-pills flex-column sub-open">
         <div class="slide-left" id="slide-left">
@@ -24,17 +45,6 @@
             <img src="./assets/images/nav/plus.svg" alt="" width="14" height="14">
             <span class="orville-create-label">Create</span>
           </button>
-        </div>
-
-        <div class="orville-settings-search" *ngIf="isSettingsMode">
-          <input
-            type="search"
-            class="orville-settings-search__input"
-            placeholder="Search settings..."
-            [ngModel]="settingsSearchQuery"
-            (ngModelChange)="onSettingsSearchChange($event)"
-            aria-label="Search settings"
-          />
         </div>
 
         <ul class="main-menu" [class.orville-settings-menu]="isSettingsMode">

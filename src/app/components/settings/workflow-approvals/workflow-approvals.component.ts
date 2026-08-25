@@ -15,10 +15,12 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    TranslateModule,NgSelectModule
+    TranslateModule,
+    NgSelectModule,
+    DragDropModule,
   ],
   templateUrl: './workflow-approvals.component.html',
-  styleUrls: []
+  styleUrl: './workflow-approvals.component.scss',
 })
 export class WorkflowApprovalsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -27,26 +29,29 @@ export class WorkflowApprovalsComponent implements OnInit {
   private commonService = inject(CommonService);
   private common_TabsService = inject(Common_TabsService);
   workflowType: string = 'simple';
+  selectedScreen: string | null = null;
   currentUser = this.commonService.getCurrentUser();
   screens = ['Leases', 'Workorder', 'Property'];
   users: any[] = [];
+  saved = false;
+  private savedTimer: ReturnType<typeof setTimeout> | null = null;
 
   simpleWorkflowData = {
-    userId: null,
+    userId: null as string | number | null,
     isNotificationEnabled: true,
     notificationEmail: true,
-    notificationSms: false
+    notificationSms: false,
   };
 
   workflowLevels: any[] = [];
 
-  
   ngOnInit() {
     this.fetchUsers();
     this.fetchSavedWorkflow();
   }
-  onscreenChange(ev:any){
-    console.log(ev);
+
+  onscreenChange(ev: any) {
+    this.selectedScreen = ev ?? this.selectedScreen;
   }
   fetchUsers() {
     this.common_TabsService.getMasterByType({
@@ -153,74 +158,16 @@ export class WorkflowApprovalsComponent implements OnInit {
   }
 
   onCancel() {
-    console.log('Workflow configuration cancelled.');
-    // Logic to reset or navigate back
+    this.fetchSavedWorkflow();
   }
 
   onSave() {
-  //   if (this.workflowType === 'simple') {
-  //     const payload = {
-  //       companyid: 1,
-  //       userid: this.currentUser?.userId || 120,
-  //       workflow_type: 1,
-  //       screen: "pay_runs",
-  //       approvals: []
-  //     };
-
-  //     this.payrollService.saveWorkflow(payload).subscribe({
-  //       next: (res: any) => {
-  //         if (res && res.statusCode === "200") {
-  //           this.toastr.success(res.message || this.translate.instant('web.common.msgSaveSuccessSimple'));
-  //         } else {
-  //           this.toastr.error(res.message || this.translate.instant('web.common.msgSaveError'));
-  //         }
-  //       },
-  //       error: (err: any) => {
-  //         console.error('API Error saving workflow:', err);
-  //         this.toastr.error(this.translate.instant('web.common.msgSaveFailed'));
-  //       }
-  //     });
-  //   } else {
-  //     // Multiple Workflow Save Logic
-  //     if (this.workflowLevels.length === 0) {
-  //       this.toastr.warning(this.translate.instant('web.common.msgAtLeastOneLevel'));
-  //       return;
-  //     }
-
-  //     // Check if all levels have a user selected
-  //     const allUsersSelected = this.workflowLevels.every(level => level.userId);
-  //     if (!allUsersSelected) {
-  //       this.toastr.warning(this.translate.instant('web.common.msgSelectApproverForAll'));
-  //       return;
-  //     }
-
-  //     const payload = {
-  //       companyid: 1,
-  //       userid: this.payrollService.currentUserId || 120,
-  //       workflow_type: 2,
-  //       screen: "pay_runs",
-  //       approvals: this.workflowLevels.map((level, index) => ({
-  //         level_no: index,
-  //         user_id: level.userId,
-  //         is_notification_enabled: level.isNotificationEnabled ? 1 : 0,
-  //         notification_email: level.notificationEmail,
-  //         notification_sms: level.notificationSms
-  //       }))
-  //     };
-
-  //     this.payrollService.saveWorkflow(payload).subscribe({
-  //       next: (res: any) => {
-  //         if (res && res.statusCode === "200") {
-  //           this.toastr.success(res.message || this.translate.instant('web.common.msgSaveSuccessMultiple'));
-  //         } else {
-  //           this.toastr.error(res.message || this.translate.instant('web.common.msgSaveError'));
-  //         }
-  //       },
-  //       error: (err: any) => {
-  //         console.error('API Error saving workflow:', err);
-  //         this.toastr.error(this.translate.instant('web.common.msgSaveFailed'));
-  //       }
-  //     });
-  //   }
+    this.saved = true;
+    if (this.savedTimer) {
+      clearTimeout(this.savedTimer);
+    }
+    this.savedTimer = setTimeout(() => {
+      this.saved = false;
+    }, 2500);
   }
 }

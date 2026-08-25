@@ -1003,21 +1003,11 @@ export class SidebarComponent {
   switchToSettingsMenu() {
     this.isSettingsMode = true;
     this.settingsSearchQuery = '';
-    if (!this.allSettingsMenuItems.length) {
-      this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
-      this.settingsMenuItems = [...this.allSettingsMenuItems];
-    }
-    this.menuItems = [
-      {
-        title: 'Back to Main Menu',
-        type: 'link',
-        path: '/insights',
-        icon: 'bx-arrow-back',
-        active: false,
-        selected: false
-      },
-      ...this.settingsMenuItems
-    ];
+    // Always rebuild so menu paths stay in sync with settings-menu.data.ts
+    this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
+    this.settingsMenuItems = [...this.allSettingsMenuItems];
+    // Back link lives in fixed chrome — keep it out of the scrolling list
+    this.menuItems = [...this.settingsMenuItems];
   }
 
   onSettingsSearchChange(query: string) {
@@ -1048,15 +1038,7 @@ export class SidebarComponent {
       this.settingsMenuItems = filtered;
     }
 
-    const backItem: Menu = {
-      title: 'Back to Main Menu',
-      type: 'link',
-      path: '/insights',
-      icon: 'bx-arrow-back',
-      active: false,
-      selected: false
-    };
-    this.menuItems = [backItem, ...this.settingsMenuItems];
+    this.menuItems = [...this.settingsMenuItems];
   }
 
   restoreMainMenu() {

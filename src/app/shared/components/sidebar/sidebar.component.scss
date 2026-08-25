@@ -2,6 +2,14 @@
   --orville-accent: 189 151 89;
   --orville-nav-active-bg: 238 238 245;
   font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
+  display: block;
+  height: 100%;
+}
+
+:host .app-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .orville-sidebar-logo {
@@ -45,29 +53,111 @@
   padding: 12px 10px 8px;
 }
 
+.orville-sidebar-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+/* Settings: chrome static above; list fills remaining height and scrolls */
+.orville-sidebar-body.is-settings {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 4rem;
+}
+
+.orville-settings-chrome {
+  flex: 0 0 auto;
+  padding: 4px 0 6px;
+  /* Match sidebar / menu list background (no separate white band) */
+  background: transparent;
+  border-bottom: 1px solid rgb(var(--default-border, 228 228 236));
+}
+
+.orville-settings-back {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  margin: 0 10px 4px;
+  padding: 0 8px !important;
+  border-radius: 8px;
+  color: rgb(var(--default-text-color, 37 37 54));
+  font-size: 13px;
+  font-weight: 500;
+
+  .side-menu__icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+}
+
+.orville-settings-back:hover {
+  background: rgb(var(--primary-rgb, 38 38 79) / 0.06);
+}
+
+:host ::ng-deep .orville-sidebar-body.is-settings .main-sidebar {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  padding-bottom: 1.25rem;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .orville-sidebar-body.is-settings .simplebar-wrapper {
+  height: 100% !important;
+  max-height: 100%;
+}
+
+:host ::ng-deep .orville-sidebar-body.is-settings .simplebar-mask,
+:host ::ng-deep .orville-sidebar-body.is-settings .simplebar-offset,
+:host ::ng-deep .orville-sidebar-body.is-settings .simplebar-content-wrapper {
+  height: 100% !important;
+  max-height: 100%;
+}
+
+:host ::ng-deep .orville-sidebar-body.is-settings .simplebar-content-wrapper {
+  overflow: auto !important;
+}
+
 .orville-settings-search {
   padding: 8px 10px 6px;
 }
 
 .orville-settings-search__input {
+  display: block;
   width: 100%;
+  min-height: 40px;
   height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--default-border, #e4e4ec);
-  border-radius: 8px;
-  background: var(--body-bg, #f8f8fb);
-  color: var(--default-text-color, #252536);
+  padding: 12px 16px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 0.5rem;
+  /* Same fill as .ov-input form fields */
+  background: rgb(var(--default-background));
+  color: rgb(var(--default-text-color));
   font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
   font-size: 14px;
   font-weight: 400;
+  line-height: 1.25;
   outline: none;
 
   &::placeholder {
-    color: var(--text-muted, #6b6b7d);
+    color: rgb(var(--text-muted));
+    opacity: 1;
+  }
+
+  &:hover:not(:focus):not(:disabled) {
+    border-color: rgb(var(--text-muted) / 0.55);
   }
 
   &:focus {
-    border-color: rgb(var(--primary-rgb, 38 38 79) / 0.35);
+    border-color: rgb(var(--primary));
+    outline: none;
+    box-shadow: 0 0 0 1px rgb(var(--primary) / 0.2);
+    background: rgb(var(--default-background));
   }
 }
 
@@ -372,13 +462,31 @@
 :host-context([data-menu-styles='dark']),
 :host-context([data-menu-styles='color']),
 :host-context([data-menu-styles='gradient']) {
+  .orville-settings-chrome {
+    border-bottom-color: rgb(255 255 255 / 0.1);
+    background: transparent;
+  }
+
+  .orville-settings-back {
+    color: rgb(255 255 255 / 0.85);
+
+    &:hover {
+      background: rgb(255 255 255 / 0.08);
+    }
+  }
+
   .orville-settings-search__input {
     border-color: rgb(255 255 255 / 0.12);
-    background: rgb(255 255 255 / 0.06);
-    color: #fff;
+    background: rgb(var(--default-background));
+    color: rgb(var(--default-text-color));
 
     &::placeholder {
-      color: rgb(255 255 255 / 0.45);
+      color: rgb(var(--text-muted));
+    }
+
+    &:focus {
+      border-color: rgb(var(--primary));
+      background: rgb(var(--default-background));
     }
   }
 

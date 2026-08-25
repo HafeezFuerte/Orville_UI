@@ -103,7 +103,17 @@ export const content: Routes = [
       },
       {
         path: 'workflow-approvals',
-        loadComponent: () => import('../../components/settings/workflow-approvals/workflow-approvals.component').then(m => m.WorkflowApprovalsComponent)
+        loadComponent: () =>
+          import('../../components/settings/workflow-approvals/workflow-approvals.component').then(
+            (m) => m.WorkflowApprovalsComponent
+          ),
+      },
+      {
+        path: 'approvals',
+        loadComponent: () =>
+          import('../../components/settings/workflow-approvals/workflow-approvals.component').then(
+            (m) => m.WorkflowApprovalsComponent
+          ),
       },
       {
         path: 'regional-settings',
@@ -249,6 +259,41 @@ export const content: Routes = [
           import(
             '../../components/settings/discount-profiles/discount-profiles.component'
           ).then((m) => m.DiscountProfilesComponent),
+      },
+      {
+        path: 'tax-profiles',
+        loadComponent: () =>
+          import('../../components/settings/tax-profiles/tax-profiles.component').then(
+            (m) => m.TaxProfilesComponent
+          ),
+      },
+      {
+        path: 'bank-accounts',
+        loadComponent: () =>
+          import('../../components/settings/bank-accounts/bank-accounts.component').then(
+            (m) => m.BankAccountsComponent
+          ),
+      },
+      {
+        path: 'invoice-settings',
+        loadComponent: () =>
+          import('../../components/settings/payment-settings/payment-settings.component').then(
+            (m) => m.PaymentSettingsComponent
+          ),
+      },
+      {
+        path: 'cheques',
+        loadComponent: () =>
+          import('../../components/settings/cheques/cheques-settings.component').then(
+            (m) => m.ChequesSettingsComponent
+          ),
+      },
+      {
+        path: 'lease-settings',
+        loadComponent: () =>
+          import('../../components/settings/lease-settings/lease-settings.component').then(
+            (m) => m.LeaseSettingsComponent
+          ),
       },
       ...SETTINGS_PLACEHOLDER_ROUTES.filter((r) => !r.path.includes('/')).map((r) => ({
         path: r.path,

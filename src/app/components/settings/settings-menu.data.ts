@@ -107,11 +107,6 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
 
 /** Flat list of settings paths that use the shared placeholder (existing pages excluded). */
 export const SETTINGS_PLACEHOLDER_ROUTES: { path: string; title: string }[] = [
-  { path: 'tax-profiles', title: 'Tax Profiles' },
-  { path: 'bank-accounts', title: 'Bank Accounts' },
-  { path: 'invoice-settings', title: 'Invoice Settings' },
-  { path: 'cheques', title: 'Cheques' },
-  { path: 'lease-settings', title: 'Lease Settings' },
   { path: 'management-fee-configuration', title: 'Management Fee Configuration' },
   { path: 'work-order-settings', title: 'Work Order Settings' },
   { path: 'maintenance-categories', title: 'Maintenance Categories' },
@@ -125,7 +120,6 @@ export const SETTINGS_PLACEHOLDER_ROUTES: { path: string; title: string }[] = [
   { path: 'property-types', title: 'Property Types' },
   { path: 'property-amenities', title: 'Property Amenities' },
   { path: 'custom-fields', title: 'Custom Fields' },
-  { path: 'approvals', title: 'Approvals' },
   { path: 'internal-statuses', title: 'Internal Statuses' },
   { path: 'email-settings', title: 'Email settings' },
   { path: 'email-templates', title: 'Email Templates' },

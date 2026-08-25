@@ -1,0 +1,243 @@
+<div class="ps-page">
+  <header class="ps-header">
+    <div class="ps-header__copy">
+      <p class="ps-eyebrow">Invoices &amp; Payments</p>
+      <h1 class="ps-title">Invoice Settings</h1>
+      <p class="ps-sub">
+        Control reminder timing, deposit accounts, and how invoices collect payments.
+      </p>
+    </div>
+    <div class="ps-header__stats" aria-label="Settings summary">
+      <div class="ps-stat">
+        <span class="ps-stat__val">{{ model.delayedRentDays.length }}</span>
+        <span class="ps-stat__lbl">Overdue notices</span>
+      </div>
+      <div class="ps-stat">
+        <span class="ps-stat__val">{{ model.upcomingPaymentDays.length }}</span>
+        <span class="ps-stat__lbl">Upcoming notices</span>
+      </div>
+      <div class="ps-stat">
+        <span class="ps-stat__val">{{ enabledToggleCount }}</span>
+        <span class="ps-stat__lbl">Options on</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Payment Reminders -->
+  <section class="ps-card" aria-labelledby="ps-notices-title">
+    <div class="ps-card__head">
+      <span class="ps-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/bell-ringing.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="ps-notices-title" class="ps-card__title">Payment Reminders</h2>
+        <p class="ps-card__sub">
+          Add day intervals as chips. Reminder emails send on each day you choose.
+        </p>
+      </div>
+    </div>
+
+    <div class="ps-reminders">
+      <article class="ps-reminder">
+        <div class="ps-reminder__top">
+          <div>
+            <h3 class="ps-reminder__title">Delayed Rent Notice</h3>
+            <p class="ps-reminder__desc">
+              Remind tenants after rent becomes overdue.
+            </p>
+          </div>
+          <span class="ps-reminder__badge">Overdue</span>
+        </div>
+        <div class="ps-chips" role="list" aria-label="Delayed rent days">
+          <span class="ps-chip" role="listitem" *ngFor="let day of model.delayedRentDays">
+            Day {{ day }}
+            <button
+              type="button"
+              class="ps-chip__remove"
+              [attr.aria-label]="'Remove day ' + day"
+              (click)="removeDay('delayedRentDays', day)">
+              ×
+            </button>
+          </span>
+          <span *ngIf="model.delayedRentDays.length === 0" class="ps-chips__empty">
+            No days added yet
+          </span>
+        </div>
+        <div class="ps-add">
+          <input
+            type="number"
+            min="1"
+            step="1"
+            class="ov-input ps-add__input"
+            placeholder="Add day"
+            [(ngModel)]="draftDay.delayedRentDays"
+            (keydown)="onDayKeydown($event, 'delayedRentDays')"
+            aria-label="Add delayed rent day" />
+          <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="addDay('delayedRentDays')">
+            Add
+          </button>
+        </div>
+      </article>
+
+      <article class="ps-reminder">
+        <div class="ps-reminder__top">
+          <div>
+            <h3 class="ps-reminder__title">Upcoming Payment Notice</h3>
+            <p class="ps-reminder__desc">
+              Remind tenants before a payment is due.
+            </p>
+          </div>
+          <span class="ps-reminder__badge ps-reminder__badge--info">Upcoming</span>
+        </div>
+        <div class="ps-chips" role="list" aria-label="Upcoming payment days">
+          <span class="ps-chip" role="listitem" *ngFor="let day of model.upcomingPaymentDays">
+            Day {{ day }}
+            <button
+              type="button"
+              class="ps-chip__remove"
+              [attr.aria-label]="'Remove day ' + day"
+              (click)="removeDay('upcomingPaymentDays', day)">
+              ×
+            </button>
+          </span>
+          <span *ngIf="model.upcomingPaymentDays.length === 0" class="ps-chips__empty">
+            No days added yet
+          </span>
+        </div>
+        <div class="ps-add">
+          <input
+            type="number"
+            min="1"
+            step="1"
+            class="ov-input ps-add__input"
+            placeholder="Add day"
+            [(ngModel)]="draftDay.upcomingPaymentDays"
+            (keydown)="onDayKeydown($event, 'upcomingPaymentDays')"
+            aria-label="Add upcoming payment day" />
+          <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="addDay('upcomingPaymentDays')">
+            Add
+          </button>
+        </div>
+      </article>
+
+      <article class="ps-reminder">
+        <div class="ps-reminder__top">
+          <div>
+            <h3 class="ps-reminder__title">Bounced Cheque Replacement</h3>
+            <p class="ps-reminder__desc">
+              Request a replacement cheque after a bounce.
+            </p>
+          </div>
+          <span class="ps-reminder__badge ps-reminder__badge--warn">Cheques</span>
+        </div>
+        <div class="ps-chips" role="list" aria-label="Bounced cheque days">
+          <span class="ps-chip" role="listitem" *ngFor="let day of model.bouncedChequeDays">
+            Day {{ day }}
+            <button
+              type="button"
+              class="ps-chip__remove"
+              [attr.aria-label]="'Remove day ' + day"
+              (click)="removeDay('bouncedChequeDays', day)">
+              ×
+            </button>
+          </span>
+          <span *ngIf="model.bouncedChequeDays.length === 0" class="ps-chips__empty">
+            No days added yet
+          </span>
+        </div>
+        <div class="ps-add">
+          <input
+            type="number"
+            min="1"
+            step="1"
+            class="ov-input ps-add__input"
+            placeholder="Add day"
+            [(ngModel)]="draftDay.bouncedChequeDays"
+            (keydown)="onDayKeydown($event, 'bouncedChequeDays')"
+            aria-label="Add bounced cheque day" />
+          <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="addDay('bouncedChequeDays')">
+            Add
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="ps-grid">
+    <!-- Deposit account -->
+    <section class="ps-card" aria-labelledby="ps-account-title">
+      <div class="ps-card__head">
+        <span class="ps-card__icon" aria-hidden="true">
+          <img src="./assets/images/settings/wallet.svg" alt="" width="18" height="18" />
+        </span>
+        <div class="min-w-0">
+          <h2 id="ps-account-title" class="ps-card__title">Online Payments Account</h2>
+          <p class="ps-card__sub">
+            Where online payments are deposited. Defaults to Cash - Checking if empty.
+          </p>
+        </div>
+      </div>
+
+      <div class="ps-field">
+        <label class="ov-label" for="ps-account">Receiving account</label>
+        <div class="relative">
+          <select
+            id="ps-account"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="model.onlinePaymentsAccountId">
+            <option value="">Select Account</option>
+            <option *ngFor="let a of accounts" [ngValue]="a.id">{{ a.name }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+        <div class="ps-account-preview">
+          <img src="./assets/images/settings/cash-banknote.svg" alt="" width="16" height="16" />
+          <span>Active deposit: <strong>{{ selectedAccountName }}</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other settings -->
+    <section class="ps-card" aria-labelledby="ps-other-title">
+      <div class="ps-card__head">
+        <span class="ps-card__icon" aria-hidden="true">
+          <img src="./assets/images/settings/settings-gear.svg" alt="" width="18" height="18" />
+        </span>
+        <div class="min-w-0">
+          <h2 id="ps-other-title" class="ps-card__title">Invoice &amp; Collection Options</h2>
+          <p class="ps-card__sub">Turn features on or off for day-to-day billing.</p>
+        </div>
+      </div>
+
+      <div class="ps-toggles">
+        <label class="ps-toggle" *ngFor="let item of toggles" [class.is-on]="getToggle(item.key)">
+          <span class="ps-toggle__text">
+            <span class="ps-toggle__label">{{ item.label }}</span>
+            <span class="ps-toggle__desc">{{ item.description }}</span>
+          </span>
+          <input
+            type="checkbox"
+            class="ps-switch"
+            [checked]="getToggle(item.key)"
+            (change)="setToggle(item.key, $any($event.target).checked)"
+            [attr.aria-label]="item.label" />
+        </label>
+      </div>
+    </section>
+  </div>
+
+  <div class="ps-footer">
+    <p class="ps-footer__note">Changes apply to new invoices and reminders after you save.</p>
+    <div class="ps-footer__actions">
+      <span *ngIf="saved" class="ps-saved" role="status">Settings saved</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">
+        Save Settings
+      </button>
+    </div>
+  </div>
+</div>

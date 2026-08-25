@@ -1,0 +1,81 @@
+<div class="cq-page">
+  <header class="cq-header">
+    <div class="cq-header__copy">
+      <h1 class="cq-title">Bounced Cheques</h1>
+      <p class="cq-sub">
+        Default penalty account and fixed penalty amount for bounced cheques.
+      </p>
+    </div>
+  </header>
+
+  <section class="cq-card" aria-labelledby="cq-penalty-title">
+    <div class="cq-card__head">
+      <span class="cq-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/file-alert.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="cq-penalty-title" class="cq-card__title">Penalty defaults</h2>
+        <p class="cq-card__sub">
+          Applied when a cheque is marked as bounced.
+        </p>
+      </div>
+      <span class="cq-badge">Cheques</span>
+    </div>
+
+    <div class="cq-grid">
+      <div class="cq-field">
+        <label class="ov-label" for="cq-account">Penalty Account</label>
+        <div class="relative">
+          <select
+            id="cq-account"
+            class="ov-input cursor-pointer appearance-none pr-8"
+            [(ngModel)]="model.penaltyAccountId">
+            <option value="">Select account</option>
+            <option *ngFor="let a of accounts" [ngValue]="a.id">{{ a.name }}</option>
+          </select>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+        <div class="cq-preview">
+          <img src="./assets/images/settings/cash-banknote.svg" alt="" width="16" height="16" />
+          <span>Posting to: <strong>{{ selectedAccountName }}</strong></span>
+        </div>
+      </div>
+
+      <div class="cq-field">
+        <label class="ov-label" for="cq-amount">Penalty Fixed Amount</label>
+        <div class="cq-amount">
+          <span class="cq-amount__currency" aria-hidden="true">AED</span>
+          <input
+            id="cq-amount"
+            type="number"
+            min="0"
+            step="0.01"
+            class="ov-input cq-amount__input"
+            placeholder="0.00"
+            [(ngModel)]="model.penaltyFixedAmount"
+            aria-describedby="cq-amount-help" />
+        </div>
+        <p id="cq-amount-help" class="cq-help">
+          Amount charged when a cheque is marked as bounced.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cq-footer">
+    <p class="cq-footer__note">
+      Penalty defaults apply the next time a cheque is marked bounced.
+    </p>
+    <div class="cq-footer__actions">
+      <span *ngIf="saved" class="cq-saved" role="status">Settings saved</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
