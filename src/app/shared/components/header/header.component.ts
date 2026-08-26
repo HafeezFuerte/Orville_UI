@@ -26,8 +26,74 @@ export class HeaderComponent {
   selectedBuilding: string | null = null;
 
   cartItemCount: number = 5;
-  notificationCount: number = 5;
   public isCollapsed = true;
+
+  notifications: Array<{
+    id: string;
+    title: string;
+    titleAccent?: string;
+    body: string;
+    icon: string;
+    tone: 'primary' | 'info' | 'pink' | 'warning' | 'success';
+    time: string;
+    unread: boolean;
+  }> = [
+    {
+      id: 'not1',
+      title: 'Your Order Has Been Shipped',
+      body: 'Order No: 123456 Has Shipped To Your Delivery Address',
+      icon: 'ti ti-gift',
+      tone: 'primary',
+      time: '2m',
+      unread: true,
+    },
+    {
+      id: 'not2',
+      title: 'Discount Available',
+      body: 'Discount Available On Selected Products',
+      icon: 'ti ti-discount-2',
+      tone: 'info',
+      time: '18m',
+      unread: true,
+    },
+    {
+      id: 'not3',
+      title: 'Account Has Been Verified',
+      body: 'Your Account Has Been Verified Sucessfully',
+      icon: 'ti ti-user-check',
+      tone: 'pink',
+      time: '1h',
+      unread: true,
+    },
+    {
+      id: 'not4',
+      title: 'Order Placed',
+      titleAccent: 'ID: #1116773',
+      body: 'Order Placed Successfully',
+      icon: 'ti ti-circle-check',
+      tone: 'warning',
+      time: '3h',
+      unread: true,
+    },
+    {
+      id: 'not5',
+      title: 'Order Delayed',
+      titleAccent: 'ID: 7731116',
+      body: 'Order Delayed Unfortunately',
+      icon: 'ti ti-clock',
+      tone: 'success',
+      time: 'Yesterday',
+      unread: true,
+    },
+  ];
+
+  get notificationCount(): number {
+    return this.notifications.filter((n) => n.unread).length;
+  }
+
+  get isNotifyEmpty(): boolean {
+    return this.notifications.length === 0;
+  }
   public user: User | null = null;
   currentUser: AuthPayload | null = null;
   selectedLanguage: any;
@@ -256,7 +322,6 @@ export class HeaderComponent {
     return this.text, this.menuItems;
   }
   isCartEmpty: boolean = false;
-  isNotifyEmpty: boolean = false;
 
   removeRow(rowId: string) {
     const rowElement = document.getElementById(rowId);
@@ -276,15 +341,12 @@ export class HeaderComponent {
 
     }
   }
-  removeNotify(rowId: string) {
-    const rowElement = document.getElementById(rowId);
-    if (rowElement) {
-      rowElement.remove();
+  removeNotify(id: string): void {
+    this.notifications = this.notifications.filter((item) => item.id !== id);
+  }
 
-
-    }
-    this.notificationCount--;
-    this.isNotifyEmpty = this.notificationCount === 0;
+  markAllNotificationsRead(): void {
+    this.notifications = this.notifications.map((item) => ({ ...item, unread: false }));
   }
   handleCardClick(event: MouseEvent) {
     // Prevent the click event from propagating to the container

@@ -1,9 +1,10 @@
 <div class="wa-page">
   <header class="wa-header">
-    <h1 class="wa-title">Approvals</h1>
-    <p class="wa-sub">
-      Configure simple or multi-level approval workflows per screen.
-    </p>
+    <div class="wa-header__copy">
+      <p class="wa-eyebrow">{{ 'web.common.lblConfigurations' | translate }}</p>
+      <h1 class="wa-title">{{ 'web.common.lblApprovals' | translate }}</h1>
+      <p class="wa-sub">{{ 'web.common.lblApprovalsSub' | translate }}</p>
+    </div>
   </header>
 
   <!-- Screen + type -->
@@ -13,48 +14,52 @@
         <img src="./assets/images/settings/gavel.svg" alt="" width="18" height="18" />
       </span>
       <div class="min-w-0">
-        <h2 id="wa-setup-title" class="wa-card__title">Workflow setup</h2>
-        <p class="wa-card__sub">Choose the screen and how approvals should run.</p>
+        <h2 id="wa-setup-title" class="wa-card__title">{{ 'web.common.lblWorkflowSetup' | translate }}</h2>
+        <p class="wa-card__sub">{{ 'web.common.lblWorkflowSetupSub' | translate }}</p>
       </div>
     </div>
 
     <div class="wa-grid">
       <div class="wa-field">
         <label class="ov-label" for="wa-screen">
-          Screen <span class="text-danger">*</span>
+          {{ 'web.common.lblScreen' | translate }} <span class="text-danger">*</span>
         </label>
         <ng-select
           id="wa-screen"
           [items]="screens"
           [(ngModel)]="selectedScreen"
           (change)="onscreenChange($event)"
-          placeholder="Select screen"
+          [placeholder]="'web.common.phSelectScreen' | translate"
           [clearable]="false"
+          [class.is-invalid]="screenError"
           class="wa-select">
         </ng-select>
+        <p class="wa-field-error" *ngIf="screenError" role="alert">
+          {{ 'web.common.msgSelectScreen' | translate }}
+        </p>
       </div>
 
       <div class="wa-field">
-        <span class="ov-label">Workflow type</span>
-        <div class="wa-seg" role="radiogroup" aria-label="Workflow type">
-          <label class="wa-seg__btn" [class.is-active]="workflowType === 'simple'">
-            <input
-              type="radio"
-              name="workflowType"
-              value="simple"
-              [(ngModel)]="workflowType"
-              class="wa-sr" />
+        <span class="ov-label">{{ 'web.common.lblWorkflowType' | translate }}</span>
+        <div class="wa-seg" role="radiogroup" [attr.aria-label]="'web.common.lblWorkflowType' | translate">
+          <button
+            type="button"
+            class="wa-seg__btn"
+            role="radio"
+            [attr.aria-checked]="workflowType === 'simple'"
+            [class.is-active]="workflowType === 'simple'"
+            (click)="setWorkflowType('simple')">
             {{ 'web.common.lblSimpleWorkflow' | translate }}
-          </label>
-          <label class="wa-seg__btn" [class.is-active]="workflowType === 'multiple'">
-            <input
-              type="radio"
-              name="workflowType"
-              value="multiple"
-              [(ngModel)]="workflowType"
-              class="wa-sr" />
+          </button>
+          <button
+            type="button"
+            class="wa-seg__btn"
+            role="radio"
+            [attr.aria-checked]="workflowType === 'multiple'"
+            [class.is-active]="workflowType === 'multiple'"
+            (click)="setWorkflowType('multiple')">
             {{ 'web.common.lblMultipleWorkflow' | translate }}
-          </label>
+          </button>
         </div>
       </div>
     </div>
@@ -67,8 +72,8 @@
         <img src="./assets/images/settings/user-square.svg" alt="" width="18" height="18" />
       </span>
       <div class="min-w-0">
-        <h2 id="wa-simple-title" class="wa-card__title">Simple workflow</h2>
-        <p class="wa-card__sub">One approver with optional email and SMS notifications.</p>
+        <h2 id="wa-simple-title" class="wa-card__title">{{ 'web.common.lblSimpleWorkflow' | translate }}</h2>
+        <p class="wa-card__sub">{{ 'web.common.lblSimpleWorkflowSub' | translate }}</p>
       </div>
     </div>
 
@@ -103,7 +108,7 @@
         [class.is-on]="simpleWorkflowData.isNotificationEnabled">
         <span class="wa-toggle__text">
           <span class="wa-toggle__label">{{ 'web.common.lblNotifications' | translate }}</span>
-          <span class="wa-toggle__desc">Enable notifications for this approver.</span>
+          <span class="wa-toggle__desc">{{ 'web.common.lblEnableNotificationsDesc' | translate }}</span>
         </span>
         <input
           type="checkbox"
@@ -119,7 +124,7 @@
         [class.is-disabled]="!simpleWorkflowData.isNotificationEnabled">
         <span class="wa-toggle__text">
           <span class="wa-toggle__label">{{ 'web.common.lblEmail' | translate }}</span>
-          <span class="wa-toggle__desc">Send approval updates by email.</span>
+          <span class="wa-toggle__desc">{{ 'web.common.lblEmailNotifyDesc' | translate }}</span>
         </span>
         <input
           type="checkbox"
@@ -135,7 +140,7 @@
         [class.is-disabled]="!simpleWorkflowData.isNotificationEnabled">
         <span class="wa-toggle__text">
           <span class="wa-toggle__label">{{ 'web.common.lblSMS' | translate }}</span>
-          <span class="wa-toggle__desc">Send approval updates by SMS.</span>
+          <span class="wa-toggle__desc">{{ 'web.common.lblSmsNotifyDesc' | translate }}</span>
         </span>
         <input
           type="checkbox"
@@ -155,7 +160,7 @@
       </span>
       <div class="min-w-0 flex-1">
         <h2 id="wa-multi-title" class="wa-card__title">{{ 'web.common.lblMultipleWorkflow' | translate }}</h2>
-        <p class="wa-card__sub">Add approval levels in order. Drag rows to reorder.</p>
+        <p class="wa-card__sub">{{ 'web.common.lblMultipleWorkflowSub' | translate }}</p>
       </div>
       <button
         type="button"
@@ -166,89 +171,109 @@
       </button>
     </div>
 
-    <div class="wa-table-wrap" *ngIf="workflowLevels.length; else emptyLevels">
-      <table class="wa-table">
-        <thead>
-          <tr>
-            <th>{{ 'web.common.lblLevelNo' | translate }}</th>
-            <th>{{ 'web.common.lblApproverUser' | translate }}</th>
-            <th class="text-center">{{ 'web.common.lblNotifications' | translate }}</th>
-            <th class="text-center">{{ 'web.common.lblEmail' | translate }}</th>
-            <th class="text-center">{{ 'web.common.lblSMS' | translate }}</th>
-            <th class="text-right">{{ 'web.common.lblAction' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody
-          cdkDropList
-          [cdkDropListData]="workflowLevels"
-          (cdkDropListDropped)="drop($event)">
-          <tr
-            *ngFor="let level of workflowLevels; let i = index"
-            cdkDrag
-            class="wa-row">
-            <td>
-              <span class="wa-level">{{ i + 1 }}</span>
-            </td>
-            <td>
-              <ng-select
-                [items]="users"
-                bindValue="code"
-                [(ngModel)]="level.userId"
-                [searchable]="true"
-                [clearable]="false"
-                [placeholder]="'web.common.phSelectUser' | translate"
-                appendTo="body"
-                class="wa-select">
-                <ng-template ng-label-tmp let-item="item">
-                  {{ item.code }} - {{ item.name }}
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  {{ item.code }} - {{ item.name }}
-                </ng-template>
-              </ng-select>
-            </td>
-            <td class="text-center">
+    <ng-container *ngIf="workflowLevels.length; else emptyLevels">
+      <div class="wa-path" *ngIf="workflowLevels.length" aria-live="polite">
+        <span class="wa-path__label">{{ 'web.common.lblApprovalPath' | translate }}</span>
+        <ol class="wa-path__steps">
+          <li *ngFor="let label of approvalPathLabels; let last = last" class="wa-path__step">
+            <span class="wa-path__chip">{{ label }}</span>
+            <span class="wa-path__arrow" *ngIf="!last" aria-hidden="true">→</span>
+          </li>
+        </ol>
+      </div>
+
+      <p class="wa-reorder-hint">{{ 'web.common.lblReorderHint' | translate }}</p>
+
+      <div
+        class="wa-levels"
+        cdkDropList
+        [cdkDropListData]="workflowLevels"
+        (cdkDropListDropped)="drop($event)">
+        <article
+          *ngFor="let level of workflowLevels; let i = index"
+          cdkDrag
+          class="wa-level-card">
+          <button
+            type="button"
+            class="wa-drag"
+            cdkDragHandle
+            [attr.aria-label]="'web.common.lblReorderHint' | translate">
+            <img src="./assets/images/settings/grip-vertical.svg" alt="" width="16" height="16" />
+          </button>
+
+          <span class="wa-level" [attr.aria-label]="('web.common.lblLevelNo' | translate) + ' ' + (i + 1)">
+            {{ i + 1 }}
+          </span>
+
+          <div class="wa-level-card__main">
+            <label class="ov-label wa-level-card__label" [attr.for]="'wa-level-user-' + i">
+              {{ 'web.common.lblApproverUser' | translate }}
+            </label>
+            <ng-select
+              [id]="'wa-level-user-' + i"
+              [items]="users"
+              bindValue="code"
+              [(ngModel)]="level.userId"
+              [searchable]="true"
+              [clearable]="false"
+              [placeholder]="'web.common.phSelectUser' | translate"
+              appendTo="body"
+              class="wa-select">
+              <ng-template ng-label-tmp let-item="item">
+                {{ item.code }} - {{ item.name }}
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                {{ item.code }} - {{ item.name }}
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <div class="wa-level-card__toggles">
+            <label class="wa-mini-toggle">
+              <span>{{ 'web.common.lblNotifications' | translate }}</span>
               <input
                 type="checkbox"
                 class="wa-switch wa-switch--sm"
                 [(ngModel)]="level.isNotificationEnabled"
                 (change)="toggleNotifications(level)"
                 [attr.aria-label]="'web.common.lblNotifications' | translate" />
-            </td>
-            <td class="text-center">
+            </label>
+            <label class="wa-mini-toggle" [class.is-disabled]="!level.isNotificationEnabled">
+              <span>{{ 'web.common.lblEmail' | translate }}</span>
               <input
                 type="checkbox"
                 class="wa-switch wa-switch--sm"
                 [(ngModel)]="level.notificationEmail"
                 [disabled]="!level.isNotificationEnabled"
                 [attr.aria-label]="'web.common.lblEmail' | translate" />
-            </td>
-            <td class="text-center">
+            </label>
+            <label class="wa-mini-toggle" [class.is-disabled]="!level.isNotificationEnabled">
+              <span>{{ 'web.common.lblSMS' | translate }}</span>
               <input
                 type="checkbox"
                 class="wa-switch wa-switch--sm"
                 [(ngModel)]="level.notificationSms"
                 [disabled]="!level.isNotificationEnabled"
                 [attr.aria-label]="'web.common.lblSMS' | translate" />
-            </td>
-            <td class="text-right">
-              <button
-                type="button"
-                class="ov-icon-btn ov-icon-btn--bare"
-                (click)="removeLevel(i)"
-                [disabled]="workflowLevels.length <= 1"
-                [attr.aria-label]="'web.common.btnDelete' | translate">
-                <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            class="ov-icon-btn ov-icon-btn--bare wa-level-card__delete"
+            (click)="removeLevel(i)"
+            [disabled]="workflowLevels.length <= 1"
+            [attr.aria-label]="'web.common.btnDelete' | translate">
+            <img src="./assets/images/settings/trash.svg" alt="" width="16" height="16" />
+          </button>
+        </article>
+      </div>
+    </ng-container>
+
     <ng-template #emptyLevels>
       <div class="wa-empty">
-        <p class="wa-empty__title">No approval levels yet</p>
-        <p class="wa-empty__sub">Add at least one level for a multi-step workflow.</p>
+        <p class="wa-empty__title">{{ 'web.common.lblNoLevelsYet' | translate }}</p>
+        <p class="wa-empty__sub">{{ 'web.common.lblNoLevelsSub' | translate }}</p>
         <button type="button" class="ov-btn ov-btn-primary ov-btn--sm" (click)="addLevel()">
           {{ 'web.common.lblAddLevel' | translate }}
         </button>
@@ -257,9 +282,9 @@
   </section>
 
   <div class="wa-footer">
-    <p class="wa-footer__note">Changes apply to new approval requests after you save.</p>
+    <p class="wa-footer__note">{{ 'web.common.lblSaveNote' | translate }}</p>
     <div class="wa-footer__actions">
-      <span *ngIf="saved" class="wa-saved" role="status">Settings saved</span>
+      <span *ngIf="saved" class="wa-saved" role="status">{{ 'web.common.lblSettingsSaved' | translate }}</span>
       <button type="button" class="ov-btn ov-btn-ghost" (click)="onCancel()">
         {{ 'web.common.btnCancel' | translate }}
       </button>

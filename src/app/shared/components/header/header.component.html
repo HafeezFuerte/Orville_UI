@@ -292,169 +292,74 @@
             <span class="orville-icon-btn">
               <img src="./assets/images/nav/bell.svg" alt="" width="18" height="18">
             </span>
-            <span class="orville-notify-badge" id="notification-icon-badge">{{ notificationCount }}</span>
+            <span *ngIf="notificationCount > 0" class="orville-notify-badge" id="notification-icon-badge">{{ notificationCount }}</span>
           </button>
           <div
-            class="main-header-dropdown !-mt-3 !p-0 hs-dropdown-menu ti-dropdown-menu bg-white !w-[22rem] border-0 border-defaultborder hidden !m-0"
+            class="main-header-dropdown ov-notify-panel hs-dropdown-menu ti-dropdown-menu hidden !m-0 !-mt-3 !p-0"
             aria-labelledby="dropdown-notification">
 
-            <div class="ti-dropdown-header !m-0 !p-4 !bg-transparent flex justify-between items-center">
-              <p
-                class="mb-0 text-[1.0625rem] text-defaulttextcolor font-semibold dark:text-[#8c9097] dark:text-white/50">
-                Notifications</p>
-              <span
-                class="text-[0.75em] py-[0.25rem/2] px-[0.45rem] font-[600] rounded-sm bg-secondary/10 text-secondary"
-                id="notifiation-data">{{ notificationCount }} Unread</span>
+            <div class="ov-notify-panel__head">
+              <div class="ov-notify-panel__head-text">
+                <p class="ov-notify-panel__title">Notifications</p>
+                <span
+                  *ngIf="notificationCount > 0"
+                  class="ov-notify-panel__badge"
+                  id="notifiation-data">{{ notificationCount }} Unread</span>
+              </div>
+              <button
+                *ngIf="notificationCount > 0"
+                type="button"
+                class="ov-notify-panel__mark"
+                (click)="markAllNotificationsRead()">
+                Mark all read
+              </button>
             </div>
-            <div class="dropdown-divider"></div>
-            <ul class="list-none !m-0 !p-0 end-0" id="header-notification-scroll" (click)="handleCardClick($event)">
-              <li class="ti-dropdown-item dropdown-item " id="not1">
-                <div class="flex items-start">
-                  <div class="pe-2">
-                    <span
-                      class="inline-flex text-primary justify-center items-center !w-[2.5rem] !h-[2.5rem] !leading-[2.5rem] !text-[0.8rem] !bg-primary/10 !rounded-[50%]"><i
-                        class="ti ti-gift text-[1.125rem]"></i></span>
-                  </div>
-                  <div class="grow flex items-center justify-between">
-                    <div>
-                      <p
-                        class="mb-0 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50 text-[0.8125rem] font-semibold">
-                        <a href="javascript:void(0);">Your Order Has Been Shipped</a>
-                      </p>
-                      <span
-                        class="text-[#8c9097] dark:text-white/50 font-normal text-[0.75rem] header-notification-text">Order
-                        No: 123456
-                        Has Shipped To Your Delivery Address</span>
-                    </div>
-                    <div>
-                      <a aria-label="anchor" (click)="removeNotify('not1')"
-                        class="min-w-fit text-[#8c9097] dark:text-white/50 me-1 dropdown-item-close1"><i
-                          class="ti ti-x text-[1rem]"></i></a>
-                    </div>
-                  </div>
+
+            <ul
+              *ngIf="!isNotifyEmpty"
+              class="ov-notify-panel__list"
+              id="header-notification-scroll"
+              (click)="handleCardClick($event)">
+              <li
+                *ngFor="let item of notifications"
+                class="ov-notify-item"
+                [class.ov-notify-item--unread]="item.unread"
+                [id]="item.id">
+                <span class="ov-notify-item__icon" [attr.data-tone]="item.tone" aria-hidden="true">
+                  <i [class]="item.icon"></i>
+                </span>
+                <div class="ov-notify-item__body">
+                  <a href="javascript:void(0);" class="ov-notify-item__title">
+                    {{ item.title }}
+                    <span *ngIf="item.titleAccent" class="ov-notify-item__accent" [attr.data-tone]="item.tone">
+                      {{ item.titleAccent }}
+                    </span>
+                  </a>
+                  <p class="ov-notify-item__text header-notification-text">{{ item.body }}</p>
                 </div>
-              </li>
-              <li class="ti-dropdown-item dropdown-item !flex-none" id="not2">
-                <div class="flex items-start">
-                  <div class="pe-2">
-                    <span
-                      class="inline-flex text-secondary justify-center items-center !w-[2.5rem] !h-[2.5rem] !leading-[2.5rem] !text-[0.8rem]  bg-secondary/10 rounded-[50%]"><i
-                        class="ti ti-discount-2 text-[1.125rem]"></i></span>
-                  </div>
-                  <div class="grow flex items-center justify-between">
-                    <div>
-                      <p
-                        class="mb-0 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50 text-[0.8125rem]  font-semibold">
-                        <a href="javascript:void(0);">Discount Available</a>
-                      </p>
-                      <span
-                        class="text-[#8c9097] dark:text-white/50 font-normal text-[0.75rem] header-notification-text">Discount
-                        Available On Selected Products</span>
-                    </div>
-                    <div>
-                      <a aria-label="anchor" (click)="removeNotify('not2')"
-                        class="min-w-fit  text-[#8c9097] dark:text-white/50 me-1 dropdown-item-close1"><i
-                          class="ti ti-x text-[1rem]"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li class="ti-dropdown-item dropdown-item" id="not3">
-                <div class="flex items-start">
-                  <div class="pe-2">
-                    <span
-                      class="inline-flex text-pink justify-center items-center !w-[2.5rem] !h-[2.5rem] !leading-[2.5rem] !text-[0.8rem]  bg-pink/10 rounded-[50%]"><i
-                        class="ti ti-user-check text-[1.125rem]"></i></span>
-                  </div>
-                  <div class="grow flex items-center justify-between">
-                    <div>
-                      <p
-                        class="mb-0 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50 text-[0.8125rem]  font-semibold">
-                        <a href="javascript:void(0);">Account Has Been Verified</a>
-                      </p>
-                      <span
-                        class="text-[#8c9097] dark:text-white/50 font-normal text-[0.75rem] header-notification-text">Your
-                        Account Has
-                        Been Verified Sucessfully</span>
-                    </div>
-                    <div>
-                      <a aria-label="anchor" (click)="removeNotify('not3')"
-                        class="min-w-fit text-[#8c9097] dark:text-white/50 me-1 dropdown-item-close1"><i
-                          class="ti ti-x text-[1rem]"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li class="ti-dropdown-item dropdown-item" id="not4">
-                <div class="flex items-start">
-                  <div class="pe-2">
-                    <span
-                      class="inline-flex text-warning justify-center items-center !w-[2.5rem] !h-[2.5rem] !leading-[2.5rem] !text-[0.8rem]  bg-warning/10 rounded-[50%]"><i
-                        class="ti ti-circle-check text-[1.125rem]"></i></span>
-                  </div>
-                  <div class="grow flex items-center justify-between">
-                    <div>
-                      <p
-                        class="mb-0 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50  text-[0.8125rem]  font-semibold">
-                        <a href="javascript:void(0);">Order Placed <span class="text-warning">ID: #1116773</span></a>
-                      </p>
-                      <span
-                        class="text-[#8c9097] dark:text-white/50 font-normal text-[0.75rem] header-notification-text">Order
-                        Placed
-                        Successfully</span>
-                    </div>
-                    <div>
-                      <a aria-label="anchor" (click)="removeNotify('not4')"
-                        class="min-w-fit text-[#8c9097] dark:text-white/50 me-1 dropdown-item-close1"><i
-                          class="ti ti-x text-[1rem]"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li class="ti-dropdown-item dropdown-item" id="not5">
-                <div class="flex items-start">
-                  <div class="pe-2">
-                    <span
-                      class="inline-flex text-success justify-center items-center !w-[2.5rem] !h-[2.5rem] !leading-[2.5rem] !text-[0.8rem]  bg-success/10 rounded-[50%]"><i
-                        class="ti ti-clock text-[1.125rem]"></i></span>
-                  </div>
-                  <div class="grow flex items-center justify-between">
-                    <div>
-                      <p
-                        class="mb-0 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50  text-[0.8125rem]  font-semibold">
-                        <a href="javascript:void(0);">Order Delayed <span class="text-success">ID: 7731116</span></a>
-                      </p>
-                      <span
-                        class="text-[#8c9097] dark:text-white/50 font-normal text-[0.75rem] header-notification-text">Order
-                        Delayed
-                        Unfortunately</span>
-                    </div>
-                    <div>
-                      <a aria-label="anchor" (click)="removeNotify('not5')"
-                        class="min-w-fit text-[#8c9097] dark:text-white/50 me-1 dropdown-item-close1"><i
-                          class="ti ti-x text-[1rem]"></i></a>
-                    </div>
-                  </div>
+                <div class="ov-notify-item__meta">
+                  <span class="ov-notify-item__time">{{ item.time }}</span>
+                  <button
+                    type="button"
+                    class="ov-notify-item__close"
+                    aria-label="Dismiss notification"
+                    (click)="removeNotify(item.id)">
+                    <i class="ti ti-x"></i>
+                  </button>
                 </div>
               </li>
             </ul>
-            @if(!isNotifyEmpty){
 
-            <div class="p-4 empty-header-item1 border-t mt-2">
-              <div class="grid">
-                <a href="javascript:void(0);" class="ti-btn ti-btn-primary-full !m-0 w-full p-2">View All</a>
-              </div>
+            <div *ngIf="!isNotifyEmpty" class="ov-notify-panel__foot">
+              <a href="javascript:void(0);" class="ov-btn ov-btn-primary w-full">View All</a>
             </div>
-            }
-            <div class="p-[3rem] empty-item1 " [class.hidden]="!isNotifyEmpty">
-              <div class="text-center">
-                <span
-                  class="!h-[4rem]  !w-[4rem] avatar !leading-[4rem] !rounded-full !bg-secondary/10 !text-secondary">
-                  <i class="ri-notification-off-line text-[2rem]  "></i>
-                </span>
-                <h6 class="font-semibold mt-3 text-defaulttextcolor dark:text-[#8c9097] dark:text-white/50 text-[1rem]">
-                  No New Notifications</h6>
-              </div>
+
+            <div *ngIf="isNotifyEmpty" class="ov-notify-panel__empty">
+              <span class="ov-notify-panel__empty-icon" aria-hidden="true">
+                <i class="ri-notification-off-line"></i>
+              </span>
+              <h6 class="ov-notify-panel__empty-title">No New Notifications</h6>
+              <p class="ov-notify-panel__empty-sub">You're all caught up for now.</p>
             </div>
           </div>
         </div>
@@ -633,7 +538,7 @@
             <ul class="text-defaulttextcolor font-medium dark:text-[#8c9097] dark:text-white/50">
               <li>
                 <a class="w-full ti-dropdown-item !text-[0.8125rem] !gap-x-0  !p-[0.65rem] !inline-flex"
-                  href="javascript:void(0);">
+                  routerLink="/profile">
                   <i class="ti ti-user-circle text-[1.125rem] me-2 opacity-[0.7]"></i>Profile
                 </a>
               </li>

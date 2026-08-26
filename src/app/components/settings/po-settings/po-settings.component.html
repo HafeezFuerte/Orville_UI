@@ -1,0 +1,54 @@
+<div class="po-page">
+  <header class="po-header">
+    <h1 class="po-title">PO Settings</h1>
+    <p class="po-sub">
+      Configure the default terms and conditions applied to your purchase orders.
+    </p>
+  </header>
+
+  <section class="po-card" aria-labelledby="po-terms-title">
+    <div class="po-card__head">
+      <span class="po-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/file-invoice.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="po-terms-title" class="po-card__title">Terms &amp; Conditions</h2>
+        <p class="po-card__sub">Add default terms and conditions to your purchase orders.</p>
+      </div>
+    </div>
+
+    <label class="po-option" [class.is-on]="model.addTermsAndConditions">
+      <input
+        type="checkbox"
+        class="po-checkbox"
+        [(ngModel)]="model.addTermsAndConditions"
+        aria-label="Add terms and conditions" />
+      <span class="po-option__text">
+        <span class="po-option__label">Add terms and conditions</span>
+        <span class="po-option__desc">
+          It will allow you to add terms and conditions in purchase orders.
+        </span>
+      </span>
+    </label>
+
+    <div class="po-field" *ngIf="model.addTermsAndConditions">
+      <label class="ov-label" for="po-terms">Terms &amp; Conditions</label>
+      <textarea
+        id="po-terms"
+        class="ov-input po-textarea"
+        rows="8"
+        placeholder="Terms &amp; Conditions"
+        [(ngModel)]="model.termsAndConditions"></textarea>
+    </div>
+  </section>
+
+  <div class="po-footer">
+    <p class="po-footer__note">
+      Updates apply to new purchase orders after you save.
+    </p>
+    <div class="po-footer__actions">
+      <span *ngIf="saved" class="po-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>

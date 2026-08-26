@@ -54,6 +54,7 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
 
   section('Leases and Contracts');
   link('Lease Settings', '/settings/lease-settings', 'contract');
+  link('Contract Settings', '/settings/contract-settings', 'contract');
   link('Management Fee Configuration', '/settings/management-fee-configuration', 'hand-dollar');
 
   section('Types and Amenities');
@@ -68,6 +69,7 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
   section('Helpdesk and Units');
   link('Tickets Settings', '/settings/tickets-settings', 'ticket');
   link('Unit Types', '/settings/unit-types', 'home');
+  link('Room Types', '/settings/room-types', 'layout-grid');
   link('Property Types', '/settings/property-types', 'building-estate-2');
   link('Property Amenities', '/settings/property-amenities', 'list-details');
 
@@ -79,10 +81,13 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
   section('Communication');
   link('Email settings', '/settings/email-settings', 'send');
   link('Email Templates', '/settings/email-templates', 'file-invoice');
-  link('Notification Settings', '/settings/notification-settings', 'bell-ringing');
+  link('Notification/Email Settings', '/settings/notification-settings', 'bell-ringing');
 
   section('Custom links');
   link('Custom links', '/settings/custom-links', 'external-link');
+
+  section('Mobile App Configuration');
+  link('Mobile App Configuration', '/settings/mobile-app-configuration', 'users');
 
   section('App Integrations');
   link('Payment Gateways', '/settings/payment-gateways', 'wallet');
@@ -92,7 +97,9 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
   link('Maintenance Categories', '/settings/servicehub/maintenance-categories', 'list');
   link('Quotation Categories', '/settings/servicehub/quotation-categories', 'file-invoice');
   link('PO Settings', '/settings/servicehub/po-settings', 'settings-gear');
+  link('Promotion Categories', '/settings/servicehub/promotion-categories', 'speakerphone');
   link('Inventory Categories', '/settings/servicehub/inventory-categories', 'layout-grid');
+  link('Asset Categories', '/settings/servicehub/asset-categories', 'analyze');
   link('Tickets Settings', '/settings/servicehub/tickets-settings', 'ticket');
   link('Visiting Slots', '/settings/servicehub/visiting-slots', 'calendar-event');
 
@@ -100,39 +107,12 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
   link('Broadcast Configuration', '/settings/broadcast-configuration', 'speakerphone');
 
   section('Snaplist');
-  link('Snaplist Preference', '/settings/snaplist-preference', 'search');
+  link('Snaglist Preference', '/settings/snaplist-preference', 'search');
 
   return items;
 }
 
 /** Flat list of settings paths that use the shared placeholder (existing pages excluded). */
 export const SETTINGS_PLACEHOLDER_ROUTES: { path: string; title: string }[] = [
-  { path: 'management-fee-configuration', title: 'Management Fee Configuration' },
-  { path: 'work-order-settings', title: 'Work Order Settings' },
-  { path: 'maintenance-categories', title: 'Maintenance Categories' },
-  { path: 'quotation-categories', title: 'Quotation Categories' },
-  { path: 'po-settings', title: 'PO Settings' },
-  { path: 'promotion-categories', title: 'Promotion Categories' },
-  { path: 'inventory-categories', title: 'Inventory Categories' },
-  { path: 'asset-categories', title: 'Asset Categories' },
-  { path: 'tickets-settings', title: 'Tickets Settings' },
-  { path: 'unit-types', title: 'Unit Types' },
-  { path: 'property-types', title: 'Property Types' },
-  { path: 'property-amenities', title: 'Property Amenities' },
-  { path: 'custom-fields', title: 'Custom Fields' },
-  { path: 'internal-statuses', title: 'Internal Statuses' },
-  { path: 'email-settings', title: 'Email settings' },
-  { path: 'email-templates', title: 'Email Templates' },
-  { path: 'notification-settings', title: 'Notification Settings' },
-  { path: 'custom-links', title: 'Custom links' },
   { path: 'payment-gateways', title: 'Payment Gateways' },
-  { path: 'servicehub/work-order-settings', title: 'Work Order Settings' },
-  { path: 'servicehub/maintenance-categories', title: 'Maintenance Categories' },
-  { path: 'servicehub/quotation-categories', title: 'Quotation Categories' },
-  { path: 'servicehub/po-settings', title: 'PO Settings' },
-  { path: 'servicehub/inventory-categories', title: 'Inventory Categories' },
-  { path: 'servicehub/tickets-settings', title: 'Tickets Settings' },
-  { path: 'servicehub/visiting-slots', title: 'Visiting Slots' },
-  { path: 'broadcast-configuration', title: 'Broadcast Configuration' },
-  { path: 'snaplist-preference', title: 'Snaplist Preference' },
 ];

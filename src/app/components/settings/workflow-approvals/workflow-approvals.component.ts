@@ -1,19 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+
 @Component({
   selector: 'app-workflow-approvals',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     FormsModule,
     TranslateModule,
     NgSelectModule,
@@ -23,13 +22,14 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
   styleUrl: './workflow-approvals.component.scss',
 })
 export class WorkflowApprovalsComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private toastr = inject(ToastrService);
-  private http = inject(HttpClient);
   private commonService = inject(CommonService);
   private common_TabsService = inject(Common_TabsService);
-  workflowType: string = 'simple';
+  private translate = inject(TranslateService);
+
+  workflowType: 'simple' | 'multiple' = 'simple';
   selectedScreen: string | null = null;
+  screenError = false;
   currentUser = this.commonService.getCurrentUser();
   screens = ['Leases', 'Workorder', 'Property'];
   users: any[] = [];
@@ -52,7 +52,48 @@ export class WorkflowApprovalsComponent implements OnInit {
 
   onscreenChange(ev: any) {
     this.selectedScreen = ev ?? this.selectedScreen;
+    if (this.selectedScreen) {
+      this.screenError = false;
+    }
   }
+
+  setWorkflowType(type: 'simple' | 'multiple') {
+    if (type === this.workflowType) {
+      return;
+    }
+
+    if (this.hasUnsavedWorkflowEdits()) {
+      const message = this.translate.instant('web.common.msgConfirmSwitchWorkflow');
+      if (!window.confirm(message)) {
+        return;
+      }
+    }
+
+    this.workflowType = type;
+    if (type === 'multiple' && this.workflowLevels.length === 0) {
+      this.addLevel();
+    }
+  }
+
+  private hasUnsavedWorkflowEdits(): boolean {
+    if (this.workflowType === 'simple') {
+      return this.simpleWorkflowData.userId != null;
+    }
+    return this.workflowLevels.some((level) => level.userId != null);
+  }
+
+  getUserLabel(userId: string | number | null | undefined): string {
+    if (userId == null || userId === '') {
+      return this.translate.instant('web.common.phSelectUser');
+    }
+    const user = this.users.find((item) => String(item.code) === String(userId));
+    return user?.name || String(userId);
+  }
+
+  get approvalPathLabels(): string[] {
+    return this.workflowLevels.map((level) => this.getUserLabel(level.userId));
+  }
+
   fetchUsers() {
     this.common_TabsService.getMasterByType({
       typeId: 19,
@@ -70,8 +111,7 @@ export class WorkflowApprovalsComponent implements OnInit {
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
       }
-    }); 
-     
+    });
   }
 
   fetchSavedWorkflow() {
@@ -158,10 +198,33 @@ export class WorkflowApprovalsComponent implements OnInit {
   }
 
   onCancel() {
+    this.screenError = false;
     this.fetchSavedWorkflow();
   }
 
   onSave() {
+    this.screenError = !this.selectedScreen;
+    if (this.screenError) {
+      this.toastr.error(this.translate.instant('web.common.msgSelectScreen'));
+      return;
+    }
+
+    if (this.workflowType === 'simple') {
+      if (this.simpleWorkflowData.userId == null || this.simpleWorkflowData.userId === '') {
+        this.toastr.error(this.translate.instant('web.common.msgSelectApprover'));
+        return;
+      }
+    } else {
+      if (!this.workflowLevels.length) {
+        this.toastr.error(this.translate.instant('web.common.msgAtLeastOneLevel'));
+        return;
+      }
+      if (this.workflowLevels.some((level) => level.userId == null || level.userId === '')) {
+        this.toastr.error(this.translate.instant('web.common.msgSelectApproverForAll'));
+        return;
+      }
+    }
+
     this.saved = true;
     if (this.savedTimer) {
       clearTimeout(this.savedTimer);

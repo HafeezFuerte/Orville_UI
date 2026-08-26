@@ -1,0 +1,48 @@
+<div class="mf-page">
+  <header class="mf-header">
+    <h1 class="mf-title">Management Fee Configuration</h1>
+    <p class="mf-sub">Configure how management fees are calculated and invoiced.</p>
+  </header>
+
+  <section class="mf-card" aria-labelledby="mf-settings-title">
+    <div class="mf-card__head">
+      <span class="mf-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/hand-dollar.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="mf-settings-title" class="mf-card__title">Management Fee Settings</h2>
+        <p class="mf-card__sub">
+          Control the calculation and invoicing behaviour for management fees.
+        </p>
+      </div>
+    </div>
+
+    <div class="mf-toggles">
+      <label
+        class="mf-toggle"
+        *ngFor="let item of toggles"
+        [class.is-on]="getToggle(item.key)">
+        <span class="mf-toggle__text">
+          <span class="mf-toggle__label">{{ item.label }}</span>
+          <span class="mf-toggle__desc">{{ item.description }}</span>
+        </span>
+        <input
+          type="checkbox"
+          class="mf-switch"
+          [checked]="getToggle(item.key)"
+          (change)="setToggle(item.key, $any($event.target).checked)"
+          [attr.aria-label]="item.label" />
+      </label>
+    </div>
+  </section>
+
+  <div class="mf-footer">
+    <p class="mf-footer__note">
+      Updates apply to new management fee invoices after you save.
+    </p>
+    <div class="mf-footer__actions">
+      <span *ngIf="saved" class="mf-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="flex flex-col gap-5 py-4 font-hanken">
+  <div class="flex min-w-0 flex-col gap-1.5">
+    <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">Email Settings</h1>
+    <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+      Configure the SMTP account used to send emails on your behalf.
+    </p>
+  </div>
+
+  <section
+    class="es-card w-full dark:bg-bodybg"
+    aria-labelledby="es-smtp-heading">
+    <h2 id="es-smtp-heading" class="sr-only">SMTP account</h2>
+
+    <label class="es-enable">
+      <input
+        type="checkbox"
+        class="form-checkbox es-enable__check h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+        [(ngModel)]="model.enableSmtp"
+        aria-describedby="es-enable-help" />
+      <span class="es-enable__copy">
+        <span class="es-enable__label">Enable SMTP</span>
+        <span id="es-enable-help" class="es-enable__help">
+          Enable SMTP to send emails through the configured address. (Only enable this if you have
+          successfully received the test email.)
+        </span>
+      </span>
+    </label>
+
+    <div class="es-fields" [class.is-disabled]="!model.enableSmtp">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="ov-label !mb-0" for="es-email">
+          SMTP Email <span class="text-danger">*</span>
+        </label>
+        <input
+          id="es-email"
+          type="email"
+          class="ov-input"
+          autocomplete="username"
+          [disabled]="!model.enableSmtp"
+          [(ngModel)]="model.smtpEmail" />
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-2">
+        <label class="ov-label !mb-0" for="es-password">SMTP Password</label>
+        <div class="es-password">
+          <input
+            id="es-password"
+            class="ov-input es-password__input"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="new-password"
+            placeholder="Leave blank to keep current password"
+            [disabled]="!model.enableSmtp"
+            [(ngModel)]="model.smtpPassword" />
+          <button
+            type="button"
+            class="es-password__toggle"
+            [disabled]="!model.enableSmtp"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            (click)="togglePasswordVisibility()">
+            {{ showPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <p class="es-note m-0">
+          Note: If you have enabled Two-Factor Authentication (2FA), you will need to enter your app
+          password here.
+        </p>
+      </div>
+
+      <div class="es-server">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label !mb-0" for="es-address">
+            SMTP Address <span class="text-danger">*</span>
+          </label>
+          <input
+            id="es-address"
+            type="text"
+            class="ov-input"
+            autocomplete="off"
+            [disabled]="!model.enableSmtp"
+            [(ngModel)]="model.smtpAddress" />
+        </div>
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label !mb-0" for="es-port">
+            SMTP Port <span class="text-danger">*</span>
+          </label>
+          <input
+            id="es-port"
+            type="text"
+            inputmode="numeric"
+            class="ov-input"
+            autocomplete="off"
+            [disabled]="!model.enableSmtp"
+            [(ngModel)]="model.smtpPort" />
+        </div>
+      </div>
+    </div>
+
+    <div class="es-actions">
+      <span *ngIf="testSent" class="es-feedback" role="status">Test email queued</span>
+      <span *ngIf="saved" class="es-feedback" role="status">Settings updated</span>
+      <button
+        type="button"
+        class="ov-btn ov-btn-ghost"
+        [disabled]="!model.enableSmtp"
+        (click)="testEmail()">
+        Test Email
+      </button>
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary"
+        [disabled]="!canUpdate"
+        (click)="save()">
+        Update
+      </button>
+    </div>
+  </section>
+</div>

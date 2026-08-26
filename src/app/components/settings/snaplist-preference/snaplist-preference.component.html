@@ -1,0 +1,115 @@
+<div class="sp-page font-hanken">
+  <header class="sp-header">
+    <h1 class="sp-title">Snaglist Preference</h1>
+    <p class="sp-sub">
+      Configure snaglist item limits, inspection notices, and report email settings.
+    </p>
+  </header>
+
+  <section class="sp-card" aria-labelledby="sp-pref-title">
+    <div class="sp-card__head">
+      <h2 id="sp-pref-title" class="sp-card__title">Snaglist Preference</h2>
+      <p class="sp-card__sub">These settings will affect the snaglist module and mobile App.</p>
+    </div>
+
+    <div class="sp-fields">
+      <div class="sp-field">
+        <label class="ov-label" for="sp-photos-limit">Snaglist item photos limit</label>
+        <input
+          id="sp-photos-limit"
+          type="text"
+          inputmode="numeric"
+          class="ov-input"
+          [(ngModel)]="model.photosLimit"
+          autocomplete="off" />
+      </div>
+
+      <div class="sp-field">
+        <label class="ov-label" for="sp-delayed">Delayed Inspection Notice</label>
+        <p class="sp-help">
+          Reminder emails for delayed inspections will be sent at the following intervals. Please
+          enter numbers separated by commas, e.g. 1,7,10.
+        </p>
+        <input
+          id="sp-delayed"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="model.delayedInspectionNotice"
+          autocomplete="off" />
+      </div>
+
+      <div class="sp-field">
+        <label class="ov-label" for="sp-upcoming">Upcoming Inspection Notice</label>
+        <p class="sp-help">
+          Reminder emails for upcoming inspections will be sent at the following intervals. Please
+          enter numbers separated by commas, e.g. 1,7,10.
+        </p>
+        <input
+          id="sp-upcoming"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="model.upcomingInspectionNotice"
+          autocomplete="off" />
+      </div>
+
+      <label class="sp-option" [class.is-on]="model.showCompanyContactInfo">
+        <input
+          type="checkbox"
+          class="form-checkbox sp-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.showCompanyContactInfo" />
+        <span class="sp-option__text">
+          <span class="sp-option__label">Show Company Contact Information?</span>
+          <span class="sp-option__desc">
+            If activated, company contact information will be displayed in snaglist reports.
+          </span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <section class="sp-card" aria-labelledby="sp-email-title">
+    <div class="sp-card__head">
+      <h2 id="sp-email-title" class="sp-card__title">Snaglist Email Setting</h2>
+      <p class="sp-card__sub">
+        Automatically send the snaglist report to the tenant and landlord upon inspector's report
+        printing.
+      </p>
+    </div>
+
+    <div class="sp-options">
+      <label class="sp-option" [class.is-on]="model.emailReportToTenant">
+        <input
+          type="checkbox"
+          class="form-checkbox sp-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.emailReportToTenant" />
+        <span class="sp-option__text">
+          <span class="sp-option__label">Email Snaglist Report To The Tenant?</span>
+          <span class="sp-option__desc">
+            If activated, the snaglist report will be emailed to the tenant.
+          </span>
+        </span>
+      </label>
+
+      <label class="sp-option" [class.is-on]="model.emailReportToLandlord">
+        <input
+          type="checkbox"
+          class="form-checkbox sp-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.emailReportToLandlord" />
+        <span class="sp-option__text">
+          <span class="sp-option__label">Email Snaglist Report To The Landlord?</span>
+          <span class="sp-option__desc">
+            If activated, the snaglist report will be emailed to the landlord.
+          </span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <div class="sp-footer">
+    <p class="sp-footer__note">Changes apply after you save.</p>
+    <div class="sp-footer__actions">
+      <span *ngIf="saved" class="sp-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>
