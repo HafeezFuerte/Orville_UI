@@ -398,23 +398,35 @@
             <div class="ld-fin__body">
               <div class="ld-fin__grid">
                 <div class="ld-fin__balance">
-                  <div class="ld-fin__balance-orb" aria-hidden="true"></div>
+                  <img
+                    class="ld-fin__balance-orb"
+                    src="assets/images/leases/balance-orb.svg"
+                    alt=""
+                    width="123"
+                    height="123"
+                    aria-hidden="true" />
                   <div class="ld-fin__balance-inner">
                     <div class="ld-fin__balance-top">
                       <span class="ld-fin__label ld-fin__label--on-dark">Current Balance</span>
                       <h4 class="ld-fin__balance-amt">
                         {{ currentUser?.currencyCode || 'AED' }}
-                        {{ invoiceData.length>0 ? (invoiceData[0].total_amount | number:'1.2-2') : totalPrice | number:'1.2-2' }}
+                        {{ ((invoiceData.length > 0 ? invoiceData[0].total_amount : totalPrice) || 0) | number:'1.2-2' }}
                       </h4>
                     </div>
                     <div class="ld-fin__balance-row">
                       <div class="ld-fin__balance-cell">
                         <span class="ld-fin__label ld-fin__label--on-dark">Total Income</span>
-                        <span class="ld-fin__balance-sub">{{ currentUser?.currencyCode || 'AED' }} {{ leaseInfo?.income_amt }}</span>
+                        <span class="ld-fin__balance-sub">
+                          {{ currentUser?.currencyCode || 'AED' }}
+                          {{ (leaseInfo?.income_amt || 0) | number:'1.2-2' }}
+                        </span>
                       </div>
                       <div class="ld-fin__balance-cell">
                         <span class="ld-fin__label ld-fin__label--on-dark">Security Deposit</span>
-                        <span class="ld-fin__balance-sub">{{ currentUser?.currencyCode || 'AED' }} {{ leaseInfo?.security_income_amt }}</span>
+                        <span class="ld-fin__balance-sub">
+                          {{ currentUser?.currencyCode || 'AED' }}
+                          {{ (leaseInfo?.security_income_amt || 0) | number:'1.2-2' }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -452,7 +464,7 @@
                 </div>
                 <div class="ld-fin__metric">
                   <span class="ld-fin__label">Refundable Amount</span>
-                  <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ leaseInfo?.security_income_amt }}</span>
+                  <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ (leaseInfo?.security_income_amt || 0) | number:'1.2-2' }}</span>
                 </div>
                 <div class="ld-fin__metric">
                   <span class="ld-fin__label">Pending Adjustments</span>
@@ -527,7 +539,7 @@
                       <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-semibold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'cheque_status'">
-                      <span [ngClass]="row.cheque_status_class || ''" class="ov-status ov-status--success">{{ getArabicLookupName(row,'cheque_status') }}</span>
+                      <span [ngClass]="chequeStatusClass(row)">{{ getArabicLookupName(row,'cheque_status') }}</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'attachment_path'">
                       <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
@@ -596,7 +608,7 @@
                 <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-semibold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
              </ng-container>
                 <ng-container *ngSwitchCase="'cheque_status'">
-                  <span [ngClass]="row.cheque_status_class || ''" class="ov-status ov-status--success">{{ getArabicLookupName(row,'cheque_status') }}</span>
+                  <span [ngClass]="chequeStatusClass(row)">{{ getArabicLookupName(row,'cheque_status') }}</span>
                 </ng-container>
                 <ng-container *ngSwitchCase="'attachment_path'">
                   <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">

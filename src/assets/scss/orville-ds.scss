@@ -10,11 +10,14 @@
   --link: 96 165 250;
   --link-hover: 147 197 253;
   /* Live CSS path (orville-ds) — _variables.scss is not compiled by ng serve */
+  --body-bg: 26 28 30;
   --default-background: 37 39 41;
   --dark-bg: 37 39 41;
   --default-border: 55 58 62;
+  --default-text-color: 255 255 255;
   --text-muted: 156 156 172;
   --form-control-bg: 37 39 41;
+  --light: 43 46 49;
 }
 
 .ov-sr {
@@ -1357,6 +1360,25 @@ html.dark .ov-inline-search input[type='text'],
   text-decoration: underline;
 }
 
+/* Keep "View more/less details" + chevron on one line (Tailwind Preflight makes img display:block) */
+.ov-more-toggle {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+
+  > img,
+  > i {
+    display: inline-block !important;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+}
+
 /* Beat text-info / text-primary / inline --info on actual link text (not buttons, not badges) */
 .main-content td a:not([class*="btn"]):not([class*="w-7"]):not([class*="rounded-md"]),
 .main-content td .text-primary.cursor-pointer:not([class*="btn"]):not([class*="w-7"]):not([class*="rounded-md"]),
@@ -1464,6 +1486,26 @@ html.dark .ov-inline-search input[type='text'],
 .dark .fin__badge--paid {
   background: rgb(62 111 168 / 0.2);
   color: #8eb4e0;
+}
+
+/* Unit / Room analytics cards — hard-coded #fff in component SCSS */
+.dark .ov-unit-analytics__card {
+  background: rgb(var(--dark-bg)) !important;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .ov-unit-stat,
+.dark .ov-unit-tile {
+  background: rgb(var(--body-bg)) !important;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .ov-unit-stat__badge {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.dark .ov-unit-chart__bar.is-empty {
+  background: rgb(255 255 255 / 0.08);
 }
 
 .dark .ld-fin__metric,
@@ -2594,6 +2636,12 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   border-bottom: 1px solid rgb(var(--default-border));
 }
 
+/* Decorative section “…” on detail cards — hide on all detail pages (keep table row actions) */
+.ov-detail-panel__head > .ov-icon-btn,
+button.ov-icon-btn[aria-label="More"] {
+  display: none !important;
+}
+
 .ov-detail-panel__title {
   margin: 0;
   font-size: 16px;
@@ -2799,27 +2847,38 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   font-style: italic;
   font-weight: 400;
   line-height: 18px;
-  color: #bfbfc0;
+  color: rgb(var(--text-muted));
 }
 
-/* Unit detail Yes/No + status chips — Figma 1637:103590 */
+/* Unit detail Yes/No + status chips — Figma 1637:103590 (14px to match ov-table / ov-status) */
 .ov-flag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 20px;
-  padding: 5px 10px;
+  height: 24px;
+  padding: 3px 10px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
+  letter-spacing: 0.28px;
   line-height: 1;
   color: #fff;
-  background: rgb(var(--default-text-color));
+  background: #252536;
   white-space: nowrap;
+}
+
+.dark .ov-flag {
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
 }
 
 .ov-flag--no {
   background: rgb(var(--danger));
+}
+
+.dark .ov-flag--no {
+  background: rgb(var(--danger));
+  color: #fff;
 }
 
 .ov-prop-type {
@@ -4027,6 +4086,11 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   border-color: rgb(var(--success) / 0.45);
 }
 
+.inv-badge--deposited {
+  color: #bd9759;
+  border-color: rgb(189 151 89 / 0.45);
+}
+
 .inv-badge--navy {
   background: rgb(var(--primary));
   border-color: rgb(var(--primary));
@@ -4334,5 +4398,81 @@ html.dark .ov-col-menu {
   .hover\:bg-gray-50:hover,
   .hover\:bg-gray-100:hover {
     background-color: rgb(255 255 255 / 0.08) !important;
+  }
+
+  /* Detail chips — were #fff + white text after --default-text-color flip */
+  .ov-detail-chip {
+    background: rgb(255 255 255 / 0.1) !important;
+    border-color: rgb(255 255 255 / 0.15) !important;
+    color: rgb(var(--default-text-color)) !important;
+  }
+
+  .ov-detail-chip--danger {
+    background: rgb(var(--danger) / 0.2) !important;
+    border-color: rgb(var(--danger) / 0.45) !important;
+    color: #f0a0a0 !important;
+  }
+
+  /* Finance / maintenance summary cards */
+  .ov-finance-summary,
+  .ov-finance-summary__status,
+  .ov-finance-summary__tile {
+    background: rgb(var(--dark-bg)) !important;
+    border-color: rgb(255 255 255 / 0.1) !important;
+  }
+
+  /* Status pills that used --default-text-color as fill (now white) */
+  .asset-status,
+  .sd-approval:not([data-approval]),
+  .sd-approval[data-approval="Approved"],
+  .wo-badge--dark {
+    background: rgb(255 255 255 / 0.18) !important;
+    color: #fff !important;
+  }
+
+  /* Email / muted icons under detail titles */
+  .ov-detail-side__email img,
+  .ov-card-sub img {
+    filter: brightness(0) invert(1);
+    opacity: 0.65;
+  }
+
+  /* Force readable kv text if a parent still pins light-mode color */
+  .ov-kv__label,
+  .asset-kv__label,
+  .wo-kv__label,
+  .bc-kv__label,
+  .bc-side .ov-kv__label {
+    color: rgb(var(--text-muted)) !important;
+  }
+
+  .ov-kv__value,
+  .asset-kv__value,
+  .wo-kv__value,
+  .bc-kv__value,
+  .bc-side .ov-kv__value {
+    color: rgb(var(--default-text-color)) !important;
+  }
+
+  .ov-detail-side__email,
+  .ov-detail-side__email span {
+    color: rgb(var(--text-muted)) !important;
+  }
+
+  /* Email subscriptions drawer surfaces */
+  .ov-email-sub-drawer__panel {
+    background: rgb(var(--dark-bg)) !important;
+    border-left-color: rgb(255 255 255 / 0.1) !important;
+  }
+
+  .ov-email-sub-drawer__row,
+  .ov-email-sub-drawer__global-card {
+    background: rgb(var(--body-bg)) !important;
+    border-color: rgb(255 255 255 / 0.1) !important;
+  }
+
+  .ov-email-sub-drawer__footer {
+    background: rgb(var(--body-bg)) !important;
+    border-top-color: rgb(255 255 255 / 0.1) !important;
   }
 }

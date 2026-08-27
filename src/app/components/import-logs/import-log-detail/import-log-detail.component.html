@@ -1,0 +1,71 @@
+<!-- Import Log Details — screenshot SoT; no payment banner -->
+<div class="import-log-detail-page font-hanken" *ngIf="detail">
+  <div class="page-header !py-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex items-start gap-4 min-w-0">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Import Logs">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div class="min-w-0">
+        <h3 class="ov-page-title">Import Log Details</h3>
+        <div class="ild-meta">
+          <span class="ild-meta__code">#{{ detail.code }}</span>
+          <span class="ild-meta__dot" aria-hidden="true">·</span>
+          <span>{{ detail.importType }}</span>
+          <span class="ild-meta__dot" aria-hidden="true">·</span>
+          <span [class]="statusClass(detail.status)">{{ detail.status }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="ild-toolbar">
+      <div class="ov-search ild-search">
+        <i class="ti ti-search ov-search__icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="ov-input ov-search__input"
+          placeholder="Search excel row, info, or record id..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()" />
+      </div>
+      <div class="ild-kpis">
+        <span class="ild-kpi">
+          <span class="ild-kpi__label">File</span>
+          <span class="ild-kpi__value" [title]="detail.file">{{ detail.file }}</span>
+        </span>
+        <span class="ild-kpi">
+          <span class="ild-kpi__label">Records</span>
+          <span class="ild-kpi__value">{{ detail.totalRecords }}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="px-5 pb-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="pagedLines"
+        [hasActions]="false"
+        [emptyMessage]="'No import detail rows found'"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNo"
+        [pageSizeOptions]="pageSizeOptions"
+        (pageChange)="onSharedTablePageChange($event)">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <ng-container *ngSwitchCase="'info'">
+              <div class="ild-info">
+                <span class="ild-info__type" [attr.data-tone]="infoTone(row.infoType)">{{ row.infoType }}</span>
+                <span class="ild-info__value">{{ row.infoValue }}</span>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'recordId'">
+              <span class="ild-record">{{ row.recordId }}</span>
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>

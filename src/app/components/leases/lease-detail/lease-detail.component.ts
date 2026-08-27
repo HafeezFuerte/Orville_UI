@@ -523,6 +523,22 @@ export class LeaseDetailComponent implements OnInit {
   getArabicLookupName(row: any, key: string) {
     return row[(localStorage.getItem("selectedLang") == "EN" ? key : key + '_ar')];
   }
+
+  /** Shared Paid / Unpaid chip styles for Cheques + Receipts tables */
+  chequeStatusClass(row: any): string {
+    const status = (this.getArabicLookupName(row, 'cheque_status') || row?.cheque_status || '').toLowerCase();
+    if (status.includes('unpaid') || status.includes('overdue') || status.includes('bounce')) {
+      return 'ov-outline-chip ov-outline-chip--danger';
+    }
+    if (status.includes('partial') || status.includes('pending') || status.includes('hold')) {
+      return 'ov-outline-chip ov-outline-chip--warning';
+    }
+    if (status.includes('paid') || status.includes('cleared') || status.includes('deposit')) {
+      return 'ov-outline-chip ov-outline-chip--success';
+    }
+    return 'ov-outline-chip ov-outline-chip--muted';
+  }
+
   getLeaseDetails() {
     this.commontabservice.getMasterByType({
       typeId: 22,

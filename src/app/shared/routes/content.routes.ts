@@ -211,6 +211,13 @@ export const content: Routes = [
                 (m) => m.UserAddComponent
               ),
           },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../components/settings/users-and-admins/user-detail.component').then(
+                (m) => m.UserDetailComponent
+              ),
+          },
         ],
       },
       {

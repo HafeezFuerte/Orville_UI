@@ -58,9 +58,13 @@ export class VendorContractDetailComponent implements OnInit {
 
   contractCycle = '';
   paymentVia = '';
+  feeType = '';
   noOfPayments = 0;
   createdDate = '';
   modifiedDate = '';
+  remark = '';
+  partyEmail = '';
+  partyPhone = '';
 
   properties: ContractPropertyRow[] = [];
   units: ContractUnitRow[] = [];
@@ -185,9 +189,13 @@ export class VendorContractDetailComponent implements OnInit {
 
           this.contractCycle = detail.contract_cycle || '';
           this.paymentVia = detail.payment_type_nm || '';
+          this.feeType = detail.management_fee_type || detail.fee_type || '';
           this.noOfPayments = detail.no_of_payments || 0;
           this.createdDate = this.formatDateString(detail.created_date) || '';
           this.modifiedDate = this.formatDateString(detail.modified_date) || '';
+          this.remark = detail.remark || detail.remarks || '';
+          this.partyEmail = detail.vendor_email || detail.email || '';
+          this.partyPhone = detail.vendor_phone || detail.phone || '';
 
           const getFileName = (url: string) => {
             if (!url) return '';

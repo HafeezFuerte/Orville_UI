@@ -1,0 +1,92 @@
+<!-- Import Logs — screenshot SoT (no Figma node); no payment banner -->
+<div class="import-logs-page font-hanken">
+  <div class="page-header !py-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h3 class="ov-page-title">Import Logs</h3>
+      <p class="ov-page-sub">Track and monitor all file import processes across your organization.</p>
+    </div>
+    <div class="relative" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="il-actions-btn"
+        (click)="toggleActions($event)"
+        [attr.aria-expanded]="showActions"
+        [class.is-open]="showActions">
+        <i class="ti ti-file-spreadsheet il-actions-btn__lead" aria-hidden="true"></i>
+        <span class="il-actions-btn__label">Actions</span>
+      </button>
+      <div *ngIf="showActions" class="il-actions-menu" role="menu">
+        <button
+          type="button"
+          class="il-actions-menu__item"
+          role="menuitem"
+          *ngFor="let item of actionImports"
+          (click)="onImportAction(item)">
+          {{ item }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="px-5 pb-5 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="pagedRows"
+        [hasActions]="false"
+        [emptyMessage]="'No import logs found'"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNo"
+        [pageSizeOptions]="pageSizeOptions"
+        (pageChange)="onSharedTablePageChange($event)">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <ng-container *ngSwitchCase="'importedAt'">
+              <span class="il-imported">
+                <i class="ti ti-circle-check-filled il-imported__ico" aria-hidden="true"></i>
+                {{ row.importedAt }}
+              </span>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'jobId'">
+              <a class="il-jobid ov-link" [routerLink]="['/imports', row.id]" [title]="row.jobId">{{ row.jobId }}</a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'file'">
+              <a href="javascript:void(0)" class="il-file ov-link" (click)="openFile(row, $event)">
+                {{ row.file }}
+                <i class="ti ti-external-link" aria-hidden="true"></i>
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'status'">
+              <span [class]="statusClass(row.status)">{{ row.status }}</span>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'actions'">
+              <div class="il-row-actions">
+                <button
+                  type="button"
+                  class="il-icon-btn il-icon-btn--retry"
+                  (click)="retryImport(row)"
+                  aria-label="Retry import"
+                  title="Retry">
+                  <i class="ti ti-refresh"></i>
+                </button>
+                <button
+                  type="button"
+                  class="il-icon-btn"
+                  (click)="viewImport(row)"
+                  aria-label="View import"
+                  title="View">
+                  <i class="ti ti-eye"></i>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>

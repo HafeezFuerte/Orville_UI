@@ -69,13 +69,17 @@ export class FinancialsComponent implements OnInit, OnChanges {
 
   getReceiptStatusClass(row: any): string {
     const status = (this.getArabicLookupName(row, 'cheque_status') || row?.cheque_status || '').toLowerCase();
-    if (status.includes('paid') || status.includes('cleared')) {
-      return 'fin__badge--paid';
+    // Check unpaid before paid — "unpaid".includes("paid") is true
+    if (status.includes('unpaid') || status.includes('overdue') || status.includes('bounce')) {
+      return 'ov-outline-chip ov-outline-chip--danger';
     }
-    if (status.includes('unpaid') || status.includes('pending')) {
-      return 'fin__badge--unpaid';
+    if (status.includes('partial') || status.includes('pending') || status.includes('hold')) {
+      return 'ov-outline-chip ov-outline-chip--warning';
     }
-    return 'fin__badge--cleared';
+    if (status.includes('paid') || status.includes('cleared') || status.includes('deposit')) {
+      return 'ov-outline-chip ov-outline-chip--success';
+    }
+    return 'ov-outline-chip ov-outline-chip--muted';
   }
 
   openRecordReceipt(): void {

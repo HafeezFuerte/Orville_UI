@@ -503,6 +503,11 @@ export class SidebarComponent {
     'Activity Logs': '/activity-logs',
     'Activity Log': '/activity-logs',
     'ActivityLogs': '/activity-logs',
+    'Imports': '/imports',
+    'Import': '/imports',
+    'Import Logs': '/imports',
+    'Import Log': '/imports',
+    'ImportLogs': '/imports',
     'Mobile Stats': '/mobile-stats',
     'Mobile Stat': '/mobile-stats',
     'MobileStats': '/mobile-stats',
@@ -670,6 +675,13 @@ export class SidebarComponent {
         path: '/activity-logs',
         iconKey: 'activity logs',
         fallbackIcon: './assets/images/nav/activity-logs.svg',
+      },
+      {
+        key: 'imports',
+        title: 'Imports',
+        path: '/imports',
+        iconKey: 'imports',
+        fallbackIcon: './assets/images/nav/imports.svg',
       },
       {
         key: 'mobile stats',
@@ -1377,6 +1389,11 @@ export class SidebarComponent {
       decorated.title = 'Activity Logs';
       decorated.path = decorated.path || '/activity-logs';
       decorated.icon = this.getFigmaIcon('activity logs') || decorated.icon;
+    }
+    if (key === 'imports') {
+      decorated.title = 'Imports';
+      decorated.path = decorated.path || '/imports';
+      decorated.icon = this.getFigmaIcon('imports') || decorated.icon;
     }
     if (key === 'mobile stats') {
       decorated.title = 'Mobile Stats';

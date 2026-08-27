@@ -9,6 +9,9 @@ import { DownloadDetailComponent } from '../download-center/download-detail/down
 import { ArchivesComponent } from '../archives/archives-list/archives.component';
 import { EmailLogsComponent } from '../email-logs/email-logs-list/email-logs.component';
 import { ActivityLogsComponent } from '../activity-logs/activity-logs-list/activity-logs.component';
+import { ImportLogsComponent } from '../import-logs/import-logs-list/import-logs.component';
+import { ImportLogDetailComponent } from '../import-logs/import-log-detail/import-log-detail.component';
+import { NotificationsComponent } from '../notifications/notifications-list/notifications.component';
 import { MobileStatsComponent } from '../mobile-stats/mobile-stats-list/mobile-stats.component';
 import { FeedbacksComponent } from '../feedbacks/feedbacks-list/feedbacks.component';
 import { TrackedActionsComponent } from '../tracked-actions/tracked-actions-list/tracked-actions.component';
@@ -40,6 +43,12 @@ export const admin: Routes = [
 { path: 'archives', component: ArchivesComponent },
 { path: 'email-logs', component: EmailLogsComponent },
 { path: 'activity-logs', component: ActivityLogsComponent },
+{ path: 'imports', component: ImportLogsComponent },
+{ path: 'imports/:id', component: ImportLogDetailComponent },
+{ path: 'import-logs', component: ImportLogsComponent },
+{ path: 'import-logs/:id', component: ImportLogDetailComponent },
+{ path: 'notifications', component: NotificationsComponent },
+{ path: 'my-notifications', component: NotificationsComponent },
 { path: 'mobile-stats', component: MobileStatsComponent },
 { path: 'feedbacks', component: FeedbacksComponent },
 { path: 'tracked-actions', component: TrackedActionsComponent },

@@ -74,7 +74,7 @@
         </div>
         <div class="ov-detail-side__actions">
           <button type="button" class="ov-detail-side__action">View Activity</button>
-          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub (8/37)</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub ({{ subscriptionSubscribedCount }}/{{ subscriptions.length }})</button>
         </div>
       </div>
 
@@ -379,46 +379,13 @@
   </div>
 </div>
 
-<!-- Email Subscriptions Modal Overlay -->
-<div *ngIf="showSubscriptionsModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-  <div class="ov-modal ov-modal--sm">
-    <div class="ov-modal__header">
-      <div>
-        <h4 class="ov-modal__title">Email Subscriptions</h4>
-        <p class="ov-modal__sub">Choose which automated email notifications should be sent to this Tenant.</p>
-      </div>
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-      </button>
-    </div>
-
-    <div class="ov-modal__body flex flex-col gap-4">
-      <div class="flex items-center justify-between gap-3 p-3 rounded-lg border border-defaultborder">
-        <div class="flex-grow min-w-0 pr-3">
-          <span class="text-[14px] font-semibold text-defaulttextcolor block">Global Email Settings Allowed?</span>
-          <span class="ov-modal__hint mt-1 block leading-tight">Email functionality is enabled. Emails will be sent only for active subscriptions. <a href="javascript:void(0)" class="ov-link font-semibold">View Settings</a></span>
-        </div>
-        <span class="ov-detail-chip">Yes</span>
-      </div>
-
-      <div class="ov-modal__check-list">
-        <label class="ov-modal__check">
-          <input type="checkbox" [checked]="allSubscriptionsSelected" (change)="toggleAllSubscriptions($event)">
-          <span>Select All</span>
-        </label>
-        <label *ngFor="let sub of subscriptions" class="ov-modal__check">
-          <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed">
-          <span>{{ sub.name }}</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="ov-modal__footer">
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-ghost">Clear</button>
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-primary">Close</button>
-    </div>
-  </div>
-</div>
+<!-- Email Subscriptions — Figma 1467:58437 (filter-style right drawer) -->
+<app-email-subscriptions-drawer
+  [(isOpen)]="showSubscriptionsModal"
+  [subscriptions]="subscriptions"
+  [globalAllowed]="true"
+  subtitle="Choose which automated email notifications should be sent.">
+</app-email-subscriptions-drawer>
 
 <!-- Modal 1: Add Lease Popup -->
 <div *ngIf="showAddLeaseModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">

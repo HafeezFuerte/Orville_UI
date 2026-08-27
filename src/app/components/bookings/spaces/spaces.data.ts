@@ -223,6 +223,80 @@ export const SPACE_ATTACHMENTS: SpaceAttachment[] = [
   }
 ];
 
+export interface SpaceReservation {
+  id: string;
+  reserver: string;
+  bookingDate: string;
+  time: string;
+  status: string;
+  approval: 'Approved' | 'Pending' | 'Rejected' | '';
+  email: string;
+  lease: string;
+}
+
+export const SPACE_RESERVATIONS: SpaceReservation[] = [
+  {
+    id: '315',
+    reserver: 'Test Reservation',
+    bookingDate: '2026-07-14',
+    time: '11:00 - 12:00',
+    status: '',
+    approval: 'Approved',
+    email: 'Reservation@mail.com',
+    lease: '',
+  },
+  {
+    id: '316',
+    reserver: 'Olivia Green',
+    bookingDate: '2026-07-15',
+    time: '09:00 - 10:00',
+    status: 'Confirmed',
+    approval: 'Approved',
+    email: 'olivia@orville.ae',
+    lease: '73778',
+  },
+  {
+    id: '317',
+    reserver: 'James Wilson',
+    bookingDate: '2026-07-16',
+    time: '14:00 - 15:00',
+    status: '',
+    approval: 'Pending',
+    email: 'james@orville.ae',
+    lease: '',
+  },
+  {
+    id: '318',
+    reserver: 'Sara Al Maktoum',
+    bookingDate: '2026-07-18',
+    time: '10:00 - 11:00',
+    status: 'Cancelled',
+    approval: 'Rejected',
+    email: 'sara@orville.ae',
+    lease: '44120',
+  },
+  {
+    id: '319',
+    reserver: 'Hafeez Hafeez',
+    bookingDate: '2026-07-20',
+    time: '16:00 - 17:00',
+    status: 'Confirmed',
+    approval: 'Approved',
+    email: 'hafeez@orville.ae',
+    lease: '',
+  },
+];
+
+export const DEFAULT_SPACE_SCHEDULE: SpaceScheduleRow[] = [
+  { day: 'Mon', hours: '09:00 – 17:00' },
+  { day: 'Tue', hours: '09:00 – 17:00' },
+  { day: 'Wed', hours: '09:00 – 17:00' },
+  { day: 'Thu', hours: '09:00 – 17:00' },
+  { day: 'Fri', hours: 'Unavailable', closed: true },
+  { day: 'Sat', hours: '09:00 – 17:00' },
+  { day: 'Sun', hours: '09:00 – 17:00' },
+];
+
 export function getSpaceDetail(id: string | null): SpaceRow {
   return SPACE_ROWS.find((row) => row.id === id) || SPACE_ROWS[0];
 }

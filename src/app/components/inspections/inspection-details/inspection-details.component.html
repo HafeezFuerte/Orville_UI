@@ -5,159 +5,142 @@
     </a>
     <div>
       <h3 class="ov-page-title">Inspection Details</h3>
-      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']">Home</a></li>
-        <li class="px-2">/</li>
-        <li><a [routerLink]="['/inspections/list']">Inspections</a></li>
-        <li class="px-2">/</li>
-        <li class="font-semibold text-defaulttextcolor">Inspection Details</li>
-      </ol>
+      <p class="ov-page-sub mt-1">
+        Inspection / <span class="ov-page-sub__current">Inspection Details</span>
+      </p>
     </div>
   </div>
-  <div class="flex flex-wrap items-center gap-2 relative">
-    <button type="button" (click)="isActionDropdownOpen = !isActionDropdownOpen" class="ov-btn ov-btn-ghost">
+  <div class="ov-action-wrap">
+    <button type="button" class="ov-btn ov-btn-ghost"
+      (click)="toggleActionMenu($event)"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="showActionMenu">
       Action
       <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
     </button>
-    
-    <!-- Figma Actions dropdown menu panel -->
-    <div *ngIf="isActionDropdownOpen"
-      class="absolute end-0 top-11 z-30 flex min-w-[180px] flex-col gap-1 rounded-lg border border-defaultborder bg-white p-1.5 shadow-lg dark:bg-bodybg">
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-pencil-line text-[14px]"></i> Edit Work order
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-file-text-line text-[14px]"></i> Add Invoice
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-question-answer-line text-[14px]"></i> Request Feedback
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-download-2-line text-[14px]"></i> Download Report
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-mail-line text-[14px]"></i> Send Email
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded border-0 bg-transparent text-start">
-        <i class="ri-history-line text-[14px]"></i> View activity
-      </button>
-      <button type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-danger hover:bg-danger/10 rounded border-0 bg-transparent text-start">
-        <i class="ri-archive-line text-[14px]"></i> Archive
-      </button>
+    <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
+      <div class="ov-action-menu__list">
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('edit')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
+          </span>
+          <span>Edit Work order</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('invoice')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/file-invoice.svg" alt="" width="14" height="14">
+          </span>
+          <span>Add Invoice</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('feedback')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/message.svg" alt="" width="14" height="14">
+          </span>
+          <span>Request Feedback</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('report')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
+          </span>
+          <span>Download Report</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('email')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/mail.svg" alt="" width="14" height="14">
+          </span>
+          <span>Send Email</span>
+        </button>
+        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('activity')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
+          </span>
+          <span>View activity</span>
+        </button>
+      </div>
+      <div class="ov-action-menu__footer">
+        <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger"
+          (click)="onAction('archive')">
+          <span class="ov-action-menu__icon-box">
+            <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
+          </span>
+          <span>Archive</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="ov-detail-layout flex flex-col lg:flex-row gap-5">
-  
-  <!-- Left Side Summary Panel (Merged Single Box - matching Template Details) -->
-  <div class="w-full lg:w-[320px] flex flex-col gap-4">
-    
-    <!-- Single Unified Box -->
-    <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none flex flex-col gap-4">
-
-      <!-- Top Title & Status Header with border-b divider -->
-      <div class="flex justify-between items-start pb-3 border-b border-defaultborder">
-        <div>
-          <h5 class="text-[16px] font-semibold text-defaulttextcolor mb-0.5">Move out</h5>
-          <span class="text-xs text-textmuted">Inspection #31658</span>
+<div class="ov-detail-layout pb-16">
+  <aside class="ov-detail-layout__left">
+    <div class="insp-side">
+      <div class="insp-side__hero">
+        <div class="insp-side__title-row">
+          <div class="insp-side__titles">
+            <h4 class="insp-side__title">Move out</h4>
+            <p class="insp-side__sub">Inspection #31658</p>
+          </div>
+          <span class="insp-side__status">Completed</span>
         </div>
-        <span class="inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[11px] font-semibold leading-none" style="background-color: rgb(233, 237, 241);">
-          Completed
-        </span>
+        <button type="button" class="insp-side__cta">View Activity</button>
       </div>
 
-      <!-- View Activity button -->
-      <button type="button" class="ov-btn ov-btn-ghost w-full text-xs py-1.5">View Activity</button>
+      <div class="insp-side__rule" aria-hidden="true"></div>
 
-      <!-- Information label inside the box -->
-      <span class="text-xs font-bold text-defaulttextcolor uppercase tracking-wider">Information</span>
+      <h5 class="insp-side__heading">Information</h5>
 
-      <!-- Subsection: Inspection Details -->
-      <div class="border border-defaultborder rounded-xl p-4 bg-white">
-        <h6 class="text-[13px] font-bold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">Inspection Details</h6>
-        <div class="flex flex-col gap-3 text-xs">
-          <div class="ov-kv">
-            <span class="ov-kv__label">ID:</span>
-            <span class="ov-kv__value font-semibold">31658</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Type:</span>
-            <span class="ov-kv__value">Move out</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Scope:</span>
-            <span class="ov-kv__value">Unit</span>
-          </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Scheduled:</span>
-            <span class="inline-flex items-center justify-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-white bg-[#1b222c]">Yes</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Date Time:</span>
-            <span class="ov-kv__value">10-07-2026</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Note:</span>
-            <span class="ov-kv__value leading-normal">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-          </div>
+      <section class="insp-block">
+        <h6>Inspection Details</h6>
+        <div class="insp-rows">
+          <p><span>ID:</span> <b>31658</b></p>
+          <p><span>Type:</span> <b>Move out</b></p>
+          <p><span>Scope:</span> <b>Unit</b></p>
+          <p class="is-center">
+            <span>Scheduled:</span>
+            <span class="insp-pill">Open</span>
+          </p>
+          <p><span>Date Time:</span> <b>10-07-2026</b></p>
+          <p><span>Note:</span> <b>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</b></p>
         </div>
-      </div>
+      </section>
 
-      <!-- Subsection: Property & Unit -->
-      <div class="border border-defaultborder rounded-xl p-4 bg-white">
-        <h6 class="text-[13px] font-bold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">Property &amp; Unit</h6>
-        <div class="flex flex-col gap-3 text-xs">
-          <div class="ov-kv">
-            <span class="ov-kv__label">Property:</span>
-            <span class="ov-kv__value">
-              <a href="javascript:void(0)" class="ov-link font-semibold">Dubai Marina, Tower A, Dubai</a>
-            </span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Unit:</span>
-            <span class="ov-kv__value">
-              <a href="javascript:void(0)" class="ov-link font-semibold">Apartment 402-PR-4</a>
-            </span>
-          </div>
+      <section class="insp-block">
+        <h6>Property &amp; Unit</h6>
+        <div class="insp-rows insp-rows--loose">
+          <p>
+            <span>Property:</span>
+            <a href="javascript:void(0)" class="ov-link">Dubai Marina, Tower A, Dubai</a>
+          </p>
+          <p>
+            <span>Unit:</span>
+            <a href="javascript:void(0)" class="ov-link">Apartment 402-PR-4</a>
+          </p>
         </div>
-      </div>
+      </section>
 
-      <!-- Subsection: Personnel -->
-      <div class="border border-defaultborder rounded-xl p-4 bg-white">
-        <h6 class="text-[13px] font-bold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">Personnel</h6>
-        <div class="flex flex-col gap-3 text-xs">
-          <div class="ov-kv">
-            <span class="ov-kv__label">Inspector:</span>
-            <span class="ov-kv__value">
-              <a href="javascript:void(0)" class="ov-link font-semibold">Salman Mukadam Inspector</a>
-            </span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Phone:</span>
-            <span class="ov-kv__value">+971564832562</span>
-          </div>
+      <section class="insp-block">
+        <h6>Personnel</h6>
+        <div class="insp-rows insp-rows--loose">
+          <p>
+            <span>Inspector:</span>
+            <a href="javascript:void(0)" class="ov-link">Salman Mukadam Inspector</a>
+          </p>
+          <p><span>Phone:</span> <b>+971564832562</b></p>
         </div>
-      </div>
+      </section>
 
-      <!-- Subsection: Summary -->
-      <div class="border border-defaultborder rounded-xl p-4 bg-white">
-        <h6 class="text-[13px] font-bold text-defaulttextcolor border-b border-defaultborder pb-2 mb-3">Summary</h6>
-        <div class="flex flex-col gap-3 text-xs text-textmuted">
-          <div>Inspector Signatory: -</div>
-          <div>Tenant Signatory: -</div>
-          <div>Maintenance Comments: -</div>
+      <section class="insp-block">
+        <h6>Summary</h6>
+        <div class="insp-rows insp-rows--loose">
+          <p><span>Inspector Signatory:</span> <b>—</b></p>
+          <p><span>Tenant Signatory:</span> <b>—</b></p>
+          <p><span>Maintenance Comments:</span> <b>—</b></p>
         </div>
-      </div>
-
+      </section>
     </div>
-  </div>
+  </aside>
 
-  <!-- Right Inspection Items list Panel -->
-  <div class="flex-1 flex flex-col gap-0">
-    
-    <!-- Title is outside of the box -->
-    <h6 class="text-[15px] font-bold text-defaulttextcolor mb-3">
+  <section class="ov-detail-layout__right flex min-w-0 flex-col gap-0">
+    <h6 class="mb-3 text-[16px] font-bold text-defaulttextcolor">
       Inspection items
     </h6>
 
@@ -169,13 +152,14 @@
         </div>
         
         <div class="relative">
-          <button type="button" (click)="isColumnDropdownOpen = !isColumnDropdownOpen" class="ov-btn ov-btn-toolbar">
+          <button type="button" (click)="$event.stopPropagation(); isColumnDropdownOpen = !isColumnDropdownOpen; showActionMenu = false" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" /> Column
           </button>
           
           <!-- Column popup drawer box with close and footer actions matching screenshot -->
           <div *ngIf="isColumnDropdownOpen"
-            class="absolute end-0 z-30 mt-1.5 flex min-w-[200px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+            class="absolute end-0 z-30 mt-1.5 flex min-w-[200px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg"
+            (click)="$event.stopPropagation()">
             <div class="flex justify-between items-center pb-2 mb-1 border-b border-defaultborder">
               <span class="text-[12px] font-bold text-defaulttextcolor uppercase">Column</span>
               <button type="button" (click)="isColumnDropdownOpen = false" class="border-0 bg-transparent text-textmuted hover:text-defaulttextcolor p-0">
@@ -267,8 +251,7 @@
       </app-shared-table>
     </div>
 
-    <!-- Title is outside of the box -->
-    <h6 class="text-[15px] font-bold text-defaulttextcolor mb-3">
+    <h6 class="mb-3 text-[16px] font-bold text-defaulttextcolor">
       Inspection Media
     </h6>
 
@@ -281,8 +264,7 @@
       </div>
     </div>
 
-    <!-- Title is outside of the box -->
-    <h6 class="text-[15px] font-bold text-defaulttextcolor mb-3">
+    <h6 class="mb-3 text-[16px] font-bold text-defaulttextcolor">
       Signature
     </h6>
 
@@ -304,7 +286,7 @@
       </div>
     </div>
 
-  </div>
+  </section>
 </div>
 
 <!-- Lightbox Carousel Popup Modal -->

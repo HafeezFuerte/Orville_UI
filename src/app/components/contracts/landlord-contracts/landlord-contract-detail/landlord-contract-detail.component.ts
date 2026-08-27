@@ -65,6 +65,9 @@ export class LandlordContractDetailComponent implements OnInit {
   annualRent = 0;
   percentage = 0;
   pmaType = '';
+  remark = '';
+  partyEmail = '';
+  partyPhone = '';
 
   properties: ContractPropertyRow[] = [];
   units: ContractUnitRow[] = [];
@@ -196,6 +199,9 @@ export class LandlordContractDetailComponent implements OnInit {
           this.annualRent = detail.annual_rent || 0;
           this.percentage = detail.percentage || 0;
           this.pmaType = detail.pma_type_nm || '';
+          this.remark = detail.remark || detail.remarks || '';
+          this.partyEmail = detail.landlord_email || detail.email || '';
+          this.partyPhone = detail.landlord_phone || detail.phone || '';
 
           const getFileName = (url: string) => {
             if (!url) return '';

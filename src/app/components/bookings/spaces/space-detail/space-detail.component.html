@@ -1,48 +1,49 @@
-<div class="pb-16">
-  <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-    <div class="flex items-start gap-4">
+<div class="space-detail-page font-hanken">
+  <div class="ov-add-header page-header sd-page-header">
+    <div class="ov-add-header__start">
       <button type="button" class="ov-back" (click)="goBack()" title="Back to Spaces">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
         <h3 class="ov-page-title">Space Details</h3>
-        <p class="ov-page-sub mt-1">Booking / Space / <span class="ov-page-sub__current">Details</span></p>
+        <p class="ov-page-sub">Manage space details and operations.</p>
       </div>
     </div>
-    <div class="ov-action-wrap">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
-        [attr.aria-expanded]="showActionMenu">
-        Action
-        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+    <div class="ov-add-header__actions relative" (click)="$event.stopPropagation()">
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleActionMenu($event)" [attr.aria-expanded]="showActionMenu">
+        <i class="ti ti-dots-vertical" aria-hidden="true"></i>
+        Actions
       </button>
-      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
-        <div class="ov-action-menu__list">
-          <ng-container *ngFor="let option of actionOptions">
-            <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
-              (click)="onAction(option.label)">
-              <span class="ov-action-menu__icon-box">
-                <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
-              </span>
-              <span>{{ option.label }}</span>
-            </button>
-          </ng-container>
-        </div>
-        <div class="ov-action-menu__footer">
-          <ng-container *ngFor="let option of actionOptions">
-            <button *ngIf="option.danger" type="button" role="menuitem"
-              class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
-              <span class="ov-action-menu__icon-box">
-                <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
-              </span>
-              <span>{{ option.label }}</span>
-            </button>
-          </ng-container>
-        </div>
+      <div *ngIf="showActionMenu" class="sd-actions-menu" role="menu">
+        <ng-container *ngFor="let option of actionOptions">
+          <button
+            *ngIf="!option.danger"
+            type="button"
+            role="menuitem"
+            class="sd-actions-menu__item"
+            (click)="onAction(option.label)">
+            <i class="ti" [ngClass]="option.icon" aria-hidden="true"></i>
+            {{ option.label }}
+          </button>
+        </ng-container>
+        <div class="sd-actions-menu__divider" role="separator"></div>
+        <ng-container *ngFor="let option of actionOptions">
+          <button
+            *ngIf="option.danger"
+            type="button"
+            role="menuitem"
+            class="sd-actions-menu__item sd-actions-menu__item--danger"
+            (click)="onAction(option.label)">
+            <i class="ti" [ngClass]="option.icon" aria-hidden="true"></i>
+            {{ option.label }}
+          </button>
+        </ng-container>
       </div>
     </div>
   </div>
 
   <div class="ov-detail-layout !mt-0">
+    <!-- LEFT (original design) -->
     <aside class="ov-detail-layout__left flex flex-col gap-3">
       <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
         <div class="flex items-start justify-between gap-3">
@@ -109,10 +110,17 @@
             <span class="ov-kv__value">{{ detail.phone }}</span>
           </div>
 
-          <div class="my-1 text-center">
-            <button type="button" class="ov-link text-[12px] font-semibold" (click)="showMore = !showMore">
-              {{ showMore ? 'View less details' : 'View more details' }}
-              <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" [class.rotate-180]="showMore" />
+          <div class="my-1 flex justify-center">
+            <button
+              type="button"
+              class="ov-link sd-more-toggle text-[12px] font-semibold"
+              (click)="showMore = !showMore">
+              <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
+              <i
+                class="ti shrink-0"
+                [class.ti-chevron-up]="showMore"
+                [class.ti-chevron-down]="!showMore"
+                aria-hidden="true"></i>
             </button>
           </div>
 
@@ -134,11 +142,11 @@
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Start Date:</span>
-              <span class="ov-kv__value">14-07-2026</span>
+              <span class="ov-kv__value">{{ startDate }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">End Date:</span>
-              <span class="ov-kv__value">22-07-2026</span>
+              <span class="ov-kv__value">{{ endDate }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Slot Duration:</span>
@@ -178,167 +186,309 @@
       </div>
     </aside>
 
-    <section class="ov-detail-layout__right min-w-0">
+    <!-- RIGHT -->
+    <section class="ov-detail-layout__right min-w-0 sd-main">
       <div class="mb-4">
         <p class="m-0 text-[23px] font-semibold leading-[23px] text-defaulttextcolor">Space Details</p>
         <p class="mb-0 mt-1.5 text-sm text-textmuted">Manage space details and operations</p>
       </div>
 
-      <div class="ov-detail-tabs mb-4 rounded-lg border border-defaultborder bg-white dark:bg-bodybg">
-        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'reservations'" (click)="setTab('reservations')">Reservations</button>
-        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'attachments'" (click)="setTab('attachments')">Attachments</button>
-      </div>
+      <div class="sd-shell">
+        <nav class="sd-tabnav" aria-label="Space detail sections">
+          <button
+            type="button"
+            class="sd-tabnav__btn"
+            [class.is-active]="activeTab === 'reservations'"
+            (click)="setTab('reservations')">
+            Reservations
+          </button>
+          <button
+            type="button"
+            class="sd-tabnav__btn"
+            [class.is-active]="activeTab === 'attachments'"
+            (click)="setTab('attachments')">
+            Attachments
+          </button>
+        </nav>
 
-      <div class="box ov-card !mb-0 overflow-hidden" *ngIf="activeTab === 'reservations'">
-        <div class="flex flex-col gap-3 border-b border-defaultborder px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
-          <div class="flex items-center gap-3">
-            <div class="flex h-[30px] min-w-[49px] items-center justify-center rounded-md bg-light px-1.5 text-xs font-semibold">
-              Jul 14
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <p class="m-0 text-[26px] font-bold leading-8 text-defaulttextcolor">July 2026</p>
-                <span class="inline-flex h-[17px] items-center rounded-sm bg-light px-1.5 text-[11px] font-medium text-textmuted">3 events</span>
+        <div class="sd-shell__body">
+          <!-- Reservations list (calendar removed) -->
+          <section *ngIf="activeTab === 'reservations'" class="sd-panel">
+            <div class="sd-panel__head">
+              <div>
+                <h4 class="sd-panel__title">Reservations</h4>
+                <p class="sd-panel__sub">All reservations booked for this space.</p>
               </div>
-              <p class="mb-0 mt-0.5 text-xs text-textmuted">Jul 1, 2026 - Jul 31, 2026</p>
+              <button type="button" class="ov-btn ov-btn-primary" (click)="onAction('Add Reservation')">
+                <i class="ti ti-plus" aria-hidden="true"></i>
+                Add Reservation
+              </button>
             </div>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="ov-seg">
-              <button type="button" class="ov-seg__btn" *ngFor="let mode of calendarModes"
-                [class.is-active]="calendarView === mode" (click)="setCalendarView(mode)">{{ mode }}</button>
+
+            <div class="sd-toolbar">
+              <div class="ov-search sd-search">
+                <i class="ti ti-search ov-search__icon" aria-hidden="true"></i>
+                <input
+                  id="space-reservation-search"
+                  type="text"
+                  class="ov-input ov-search__input"
+                  [(ngModel)]="reservationSearch"
+                  (ngModelChange)="onReservationSearch()"
+                  placeholder="Search reservations..." />
+              </div>
             </div>
-            <button type="button" class="ov-btn ov-btn-ghost !h-9">All Calendars</button>
-            <button type="button" class="ov-btn ov-btn-primary">
-              <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
-              New Booking
-            </button>
-          </div>
-        </div>
-        <div class="overflow-x-auto p-5">
-          <div class="grid grid-cols-7 text-center text-xs font-semibold text-textmuted">
-            <span class="py-3" *ngFor="let day of weekdays">{{ day }}</span>
-          </div>
-          <div class="grid grid-cols-7 border-l border-t border-defaultborder">
-            <div *ngFor="let cell of calendarCells"
-              class="min-h-[140px] border-b border-r border-defaultborder p-3"
-              [class.bg-light]="cell.muted">
-              <span class="inline-flex size-6 items-center justify-center rounded-full text-sm"
-                [class.text-textmuted]="cell.muted"
-                [class.bg-info]="cell.selected"
-                [class.text-white]="cell.selected">{{ cell.day }}</span>
-              <div class="mt-2 flex flex-col gap-1">
-                <div *ngFor="let event of cell.events" class="rounded-sm bg-light px-2 py-1.5">
-                  <p class="m-0 flex items-center gap-1.5 text-[11px] text-textmuted">
-                    <span class="size-1.5 rounded-full bg-info"></span>{{ event.time }}
-                  </p>
-                  <p class="mb-0 mt-1 truncate text-xs font-medium text-defaulttextcolor">{{ event.title }}</p>
+
+            <div class="sd-table-wrap">
+              <app-shared-table
+                [columns]="reservationColumns"
+                [data]="pagedReservations"
+                [loading]="false"
+                [hasActions]="false"
+                [showPaginator]="false"
+                [emptyMessage]="'No reservations found for this space.'"
+                [totalRecords]="reservationTotal"
+                [pageSize]="reservationPageSize"
+                [pageIndex]="reservationPageIndex">
+                <ng-template #colTemplate let-row="row" let-col="col">
+                  <ng-container [ngSwitch]="col.key">
+                    <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)" (click)="viewReservation(row)">
+                      {{ row.id }}
+                    </a>
+
+                    <ng-container *ngSwitchCase="'status'">
+                      <span *ngIf="row.status" class="sd-status">{{ row.status }}</span>
+                      <span *ngIf="!row.status" class="sd-empty-cell">-</span>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'approval'">
+                      <span
+                        *ngIf="row.approval"
+                        class="sd-approval"
+                        [attr.data-approval]="row.approval">
+                        {{ row.approval }}
+                      </span>
+                      <span *ngIf="!row.approval" class="sd-empty-cell">-</span>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'lease'">
+                      <span *ngIf="row.lease">{{ row.lease }}</span>
+                      <span *ngIf="!row.lease" class="sd-empty-cell">-</span>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'actions'">
+                      <div
+                        class="sd-row-actions relative"
+                        [class.is-open]="showRowMenuId === row.id"
+                        (click)="$event.stopPropagation()">
+                        <button
+                          type="button"
+                          class="sd-more"
+                          (click)="toggleRowMenu(row.id, $event)"
+                          aria-label="Reservation actions">
+                          <i class="ti ti-dots"></i>
+                        </button>
+                        <div *ngIf="showRowMenuId === row.id" class="sd-row-menu">
+                          <button type="button" class="sd-row-menu__item" (click)="viewReservation(row)">
+                            <i class="ti ti-eye" aria-hidden="true"></i>
+                            View
+                          </button>
+                          <button type="button" class="sd-row-menu__item" (click)="editReservation(row)">
+                            <i class="ti ti-pencil" aria-hidden="true"></i>
+                            Edit
+                          </button>
+                          <div class="sd-row-menu__divider" role="separator"></div>
+                          <button type="button" class="sd-row-menu__item sd-row-menu__item--danger" (click)="deleteReservation(row)">
+                            <i class="ti ti-trash" aria-hidden="true"></i>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <span *ngSwitchDefault>{{ row[col.key] }}</span>
+                  </ng-container>
+                </ng-template>
+              </app-shared-table>
+            </div>
+
+            <div class="ov-page">
+              <div class="ov-page__meta">
+                <span class="ov-page__label">Show</span>
+                <div class="ov-page__size">
+                  <select [(ngModel)]="reservationPageSize" (change)="onReservationPageSizeChange()">
+                    <option [ngValue]="5">5</option>
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="25">25</option>
+                    <option [ngValue]="50">50</option>
+                  </select>
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+                </div>
+                <span>Showing {{ reservationStart }} to {{ reservationEnd }} of {{ reservationTotal }} records</span>
+              </div>
+              <div class="ov-page__nav">
+                <span class="ov-page__label">Page {{ reservationPageIndex + 1 }} of {{ reservationPages || 1 }}</span>
+                <div class="ov-page__btns">
+                  <button
+                    type="button"
+                    class="ov-page__btn"
+                    (click)="previousReservationPage()"
+                    [disabled]="reservationPageIndex <= 0"
+                    aria-label="Previous page">
+                    <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+                  </button>
+                  <ng-container *ngFor="let item of reservationPager">
+                    <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+                    <button
+                      *ngIf="item !== '...'"
+                      type="button"
+                      class="ov-page__btn"
+                      [class.is-active]="item === reservationPageIndex + 1"
+                      (click)="goToReservationPage(+item)">
+                      {{ item }}
+                    </button>
+                  </ng-container>
+                  <button
+                    type="button"
+                    class="ov-page__btn"
+                    (click)="nextReservationPage()"
+                    [disabled]="reservationPageIndex + 1 >= reservationPages"
+                    aria-label="Next page">
+                    <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </section>
 
-      <div class="box ov-card !mb-0 overflow-hidden" *ngIf="activeTab === 'attachments'">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-4">
-          <p class="m-0 text-base font-bold text-defaulttextcolor">Attachments</p>
-          <button type="button" class="ov-btn ov-btn-primary">Add Attachment</button>
-        </div>
-        <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
-          <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
-            <label class="sr-only" for="space-attachment-search">Search</label>
-            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-            <input id="space-attachment-search" type="text" class="ov-input ov-search__input"
-              [(ngModel)]="attachmentSearch" (keyup.enter)="onAttachmentSearch()" placeholder="Search">
-          </div>
-          <div class="ov-toolbar__btns">
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleAttachmentColumns($event)">
-                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-                Column
+          <!-- Attachments -->
+          <section *ngIf="activeTab === 'attachments'" class="sd-panel">
+            <div class="sd-panel__head">
+              <div>
+                <h4 class="sd-panel__title">Attachments</h4>
+                <p class="sd-panel__sub">Documents linked to this space.</p>
+              </div>
+              <button type="button" class="ov-btn ov-btn-primary">
+                <i class="ti ti-plus" aria-hidden="true"></i>
+                Add Attachment
               </button>
-              <app-column-menu
-                *ngIf="showAttachmentColumns"
-                [columns]="attachmentColumns"
-                (toggle)="toggleAttachmentColumn($event)"
-                (toggleAll)="toggleAllAttachmentColumns($event)"
-                (closed)="showAttachmentColumns = false">
-              </app-column-menu>
             </div>
-          </div>
-        </div>
-        <div class="overflow-x-auto px-5 pb-0 pt-5">
-          <app-shared-table
-            [columns]="visibleAttachmentColumns"
-            [data]="pagedAttachments"
-            [loading]="false"
-            [hasActions]="false"
-            [showPaginator]="false"
-            [totalRecords]="attachmentTotal"
-            [pageSize]="attachmentPageSize"
-            [pageIndex]="attachmentPageIndex">
-            <ng-template #colTemplate let-row="row" let-col="col">
-              <ng-container [ngSwitch]="col.key">
-                <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
-                <span *ngSwitchCase="'fileType'">{{ row.fileType }}</span>
-                <span *ngSwitchCase="'uploadedBy'">{{ row.uploadedBy }}</span>
-                <span *ngSwitchCase="'createdAt'">{{ row.createdAt }}</span>
-                <span *ngSwitchCase="'updatedAt'">{{ row.updatedAt }}</span>
-                <span *ngSwitchCase="'status'"
-                  class="inline-flex h-6 items-center rounded-sm px-2.5 text-xs font-bold text-white"
-                  [class.bg-primary]="row.status === 'Active'"
-                  [class.bg-success]="row.status === 'Verified'">{{ row.status }}</span>
-                <span *ngSwitchCase="'files'"
-                  class="inline-flex h-6 items-center rounded-sm border border-defaultborder px-2.5 text-xs font-semibold">{{ row.files }}</span>
-                <span *ngSwitchCase="'shareLandlord'"
-                  class="inline-flex h-6 min-w-[42px] items-center justify-center rounded-sm px-2.5 text-xs font-bold text-white"
-                  [class.bg-primary]="row.shareLandlord === 'Yes'"
-                  [class.bg-light]="row.shareLandlord !== 'Yes'"
-                  [class.text-defaulttextcolor]="row.shareLandlord !== 'Yes'">{{ row.shareLandlord }}</span>
-                <span *ngSwitchCase="'shareTenant'"
-                  class="inline-flex h-6 min-w-[42px] items-center justify-center rounded-sm px-2.5 text-xs font-bold text-white"
-                  [class.bg-primary]="row.shareTenant === 'Yes'"
-                  [class.bg-light]="row.shareTenant !== 'Yes'"
-                  [class.text-defaulttextcolor]="row.shareTenant !== 'Yes'">{{ row.shareTenant }}</span>
-                <button *ngSwitchCase="'action'" type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions">
-                  <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+
+            <div class="sd-toolbar">
+              <div class="ov-search sd-search">
+                <i class="ti ti-search ov-search__icon" aria-hidden="true"></i>
+                <input
+                  id="space-attachment-search"
+                  type="text"
+                  class="ov-input ov-search__input"
+                  [(ngModel)]="attachmentSearch"
+                  (ngModelChange)="onAttachmentSearch()"
+                  placeholder="Search attachments..." />
+              </div>
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleAttachmentColumns($event)">
+                  <i class="ti ti-columns" aria-hidden="true"></i>
+                  Columns
                 </button>
-                <span *ngSwitchDefault>{{ row[col.key] }}</span>
-              </ng-container>
-            </ng-template>
-          </app-shared-table>
-        </div>
-        <div class="ov-page">
-          <div class="ov-page__meta">
-            <span class="ov-page__label">Show</span>
-            <div class="ov-page__size">
-              <select [(ngModel)]="attachmentPageSize" (change)="onAttachmentPageSizeChange()">
-                <option [ngValue]="5">5</option>
-                <option [ngValue]="10">10</option>
-                <option [ngValue]="25">25</option>
-                <option [ngValue]="50">50</option>
-              </select>
-              <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+                <app-column-menu
+                  *ngIf="showAttachmentColumns"
+                  [columns]="attachmentColumns"
+                  (toggle)="toggleAttachmentColumn($event)"
+                  (toggleAll)="toggleAllAttachmentColumns($event)"
+                  (closed)="showAttachmentColumns = false">
+                </app-column-menu>
+              </div>
             </div>
-            <span>Showing {{ attachmentStart }} to {{ attachmentEnd }} of {{ attachmentTotal }} records</span>
-          </div>
-          <div class="ov-page__nav">
-            <span class="ov-page__label">Page {{ attachmentPageIndex + 1 }} of {{ attachmentPages || 1 }}</span>
-            <div class="ov-page__btns">
-              <button type="button" class="ov-page__btn" (click)="previousAttachmentPage()" [disabled]="attachmentPageIndex <= 0" aria-label="Previous page">
-                <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-              </button>
-              <ng-container *ngFor="let item of attachmentPager">
-                <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-                <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-                  [class.is-active]="item === attachmentPageIndex + 1" (click)="goToAttachmentPage(+item)">{{ item }}</button>
-              </ng-container>
-              <button type="button" class="ov-page__btn" (click)="nextAttachmentPage()" [disabled]="attachmentPageIndex + 1 >= attachmentPages" aria-label="Next page">
-                <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-              </button>
+
+            <div class="sd-table-wrap">
+              <app-shared-table
+                [columns]="visibleAttachmentColumns"
+                [data]="pagedAttachments"
+                [loading]="false"
+                [hasActions]="false"
+                [showPaginator]="false"
+                [emptyMessage]="'No attachments found.'"
+                [totalRecords]="attachmentTotal"
+                [pageSize]="attachmentPageSize"
+                [pageIndex]="attachmentPageIndex">
+                <ng-template #colTemplate let-row="row" let-col="col">
+                  <ng-container [ngSwitch]="col.key">
+                    <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)">{{ row.id }}</a>
+                    <span
+                      *ngSwitchCase="'status'"
+                      class="sd-approval"
+                      [attr.data-approval]="row.status === 'Verified' ? 'Approved' : 'Pending'">
+                      {{ row.status }}
+                    </span>
+                    <span *ngSwitchCase="'files'" class="sd-status">{{ row.files }}</span>
+                    <span
+                      *ngSwitchCase="'shareLandlord'"
+                      class="sd-pill"
+                      [class.sd-pill--muted]="row.shareLandlord !== 'Yes'">
+                      {{ row.shareLandlord }}
+                    </span>
+                    <span
+                      *ngSwitchCase="'shareTenant'"
+                      class="sd-pill"
+                      [class.sd-pill--muted]="row.shareTenant !== 'Yes'">
+                      {{ row.shareTenant }}
+                    </span>
+                    <button *ngSwitchCase="'action'" type="button" class="sd-more" aria-label="Attachment actions">
+                      <i class="ti ti-dots"></i>
+                    </button>
+                    <span *ngSwitchDefault>{{ row[col.key] }}</span>
+                  </ng-container>
+                </ng-template>
+              </app-shared-table>
             </div>
-          </div>
+
+            <div class="ov-page">
+              <div class="ov-page__meta">
+                <span class="ov-page__label">Show</span>
+                <div class="ov-page__size">
+                  <select [(ngModel)]="attachmentPageSize" (change)="onAttachmentPageSizeChange()">
+                    <option [ngValue]="5">5</option>
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="25">25</option>
+                    <option [ngValue]="50">50</option>
+                  </select>
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+                </div>
+                <span>Showing {{ attachmentStart }} to {{ attachmentEnd }} of {{ attachmentTotal }} records</span>
+              </div>
+              <div class="ov-page__nav">
+                <span class="ov-page__label">Page {{ attachmentPageIndex + 1 }} of {{ attachmentPages || 1 }}</span>
+                <div class="ov-page__btns">
+                  <button
+                    type="button"
+                    class="ov-page__btn"
+                    (click)="previousAttachmentPage()"
+                    [disabled]="attachmentPageIndex <= 0"
+                    aria-label="Previous page">
+                    <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+                  </button>
+                  <ng-container *ngFor="let item of attachmentPager">
+                    <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+                    <button
+                      *ngIf="item !== '...'"
+                      type="button"
+                      class="ov-page__btn"
+                      [class.is-active]="item === attachmentPageIndex + 1"
+                      (click)="goToAttachmentPage(+item)">
+                      {{ item }}
+                    </button>
+                  </ng-container>
+                  <button
+                    type="button"
+                    class="ov-page__btn"
+                    (click)="nextAttachmentPage()"
+                    [disabled]="attachmentPageIndex + 1 >= attachmentPages"
+                    aria-label="Next page">
+                    <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </section>

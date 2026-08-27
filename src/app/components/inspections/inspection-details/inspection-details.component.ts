@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -10,24 +10,22 @@ import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ReusableModalComponent],
   templateUrl: './inspection-details.component.html',
-  styleUrls: []
+  styleUrl: './inspection-details.component.scss'
 })
 export class InspectionDetailsComponent implements OnInit {
   isLoading = false;
   showModal = false;
   imageIndex = 0;
-  
-  // Carousel images
+
   imagesList = [
-    'assets/images/common/img-placeholder.png', // Fallback local placeholder
+    'assets/images/common/img-placeholder.png',
     'assets/images/common/img-placeholder.png',
     'assets/images/common/img-placeholder.png'
   ];
 
   isColumnDropdownOpen = false;
-  isActionDropdownOpen = false;
+  showActionMenu = false;
 
-  // Grid Columns config
   inspectionItemsColumns = [
     { key: 'item', label: 'Item', visible: true, useTemplate: true },
     { key: 'cleanliness', label: 'Cleanliness', visible: true, useTemplate: true },
@@ -46,6 +44,22 @@ export class InspectionDetailsComponent implements OnInit {
   ];
 
   ngOnInit() {}
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showActionMenu = false;
+    this.isColumnDropdownOpen = false;
+  }
+
+  toggleActionMenu(event: Event): void {
+    event.stopPropagation();
+    this.isColumnDropdownOpen = false;
+    this.showActionMenu = !this.showActionMenu;
+  }
+
+  onAction(_action: string): void {
+    this.showActionMenu = false;
+  }
 
   get visibleColumns() {
     return this.inspectionItemsColumns.filter(c => c.visible !== false);

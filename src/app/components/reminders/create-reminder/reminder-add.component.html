@@ -1,0 +1,164 @@
+<form class="ov-add-form reminder-add font-hanken" (ngSubmit)="save()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" class="ov-back" (click)="cancel()" title="Back to Reminders">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title">New Reminder</h3>
+        <p class="ov-page-sub">Create a reminder for you or your team.</p>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
+      <button type="submit" class="ov-btn ov-btn-primary">Create Reminder</button>
+    </div>
+  </div>
+
+  <div class="ov-add-body reminder-add__body">
+    <div class="reminder-add__main mx-auto flex w-full max-w-[840px] flex-col gap-4">
+      <section class="ov-card reminder-add__card">
+        <div class="reminder-add__card-head">
+          <span class="reminder-add__icon" data-tone="primary"><i class="ti ti-bell"></i></span>
+          <div>
+            <h4 class="reminder-add__card-title">Reminder Details</h4>
+            <p class="reminder-add__card-sub">Basic task info and assignee configuration.</p>
+          </div>
+        </div>
+        <div class="ov-card__body !pt-0">
+          <div class="ov-fields">
+            <div class="ov-fields__full">
+              <label class="ov-label">Assign to <span class="text-danger">*</span></label>
+              <div class="reminder-add__chips ov-input">
+                <span *ngFor="let user of assignees" class="reminder-add__chip">
+                  {{ user }}
+                  <button type="button" class="reminder-add__chip-x" (click)="removeAssignee(user)">×</button>
+                </span>
+                <input class="reminder-add__chip-input" [(ngModel)]="assigneeQuery" name="assigneeQuery"
+                  (keydown.enter)="$event.preventDefault(); addAssignee()" placeholder="Select users" />
+              </div>
+              <div *ngIf="assigneeQuery.trim() && filteredUserOptions.length" class="reminder-add__suggest">
+                <button type="button" *ngFor="let opt of filteredUserOptions" class="reminder-add__suggest-item" (click)="pickAssignee(opt)">{{ opt }}</button>
+              </div>
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">Title <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" name="title" [(ngModel)]="form.title" placeholder="Enter reminder title" />
+            </div>
+            <div class="ov-fields__full">
+              <label class="ov-label">To do</label>
+              <textarea class="ov-input reminder-add__textarea" name="todo" rows="4" [(ngModel)]="form.todo"
+                placeholder="Enter what needs to be done..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card reminder-add__card">
+        <div class="reminder-add__card-head">
+          <span class="reminder-add__icon" data-tone="info"><i class="ti ti-calendar"></i></span>
+          <div>
+            <h4 class="reminder-add__card-title">Date &amp; Status</h4>
+            <p class="reminder-add__card-sub">Schedule when the reminder should trigger.</p>
+          </div>
+        </div>
+        <div class="ov-card__body !pt-0">
+          <div class="ov-fields ov-fields--2">
+            <div class="ov-fields__full">
+              <label class="ov-label">Reminder date &amp; time <span class="text-danger">*</span></label>
+              <div class="reminder-add__datetime">
+                <input type="text" class="ov-input" name="date" [(ngModel)]="form.date" placeholder="DD/MM/YYYY" />
+                <input type="text" class="ov-input" name="time" [(ngModel)]="form.time" placeholder="--:-- --" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Priority</label>
+              <ng-select [(ngModel)]="form.priority" name="priority" [items]="priorityOptions" [clearable]="false"
+                class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Status</label>
+              <ng-select [(ngModel)]="form.status" name="status" [items]="statusOptions" [clearable]="false"
+                class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card reminder-add__card">
+        <div class="reminder-add__card-head">
+          <span class="reminder-add__icon" data-tone="success"><i class="ti ti-refresh"></i></span>
+          <div>
+            <h4 class="reminder-add__card-title">Recurrence &amp; Automation</h4>
+            <p class="reminder-add__card-sub">Configure recurring schedules and pause controls.</p>
+          </div>
+        </div>
+        <div class="ov-card__body !pt-0">
+          <div class="reminder-add__toggles">
+            <label class="reminder-add__toggle">
+              <span class="reminder-add__toggle-text">
+                <span class="reminder-add__toggle-title">Recurring reminder</span>
+                <span class="reminder-add__toggle-sub">Automatically repeat this reminder on a schedule.</span>
+              </span>
+              <span class="reminder-add__switch" [class.is-on]="form.recurring">
+                <input type="checkbox" class="sr-only" [(ngModel)]="form.recurring" name="recurring" />
+                <span class="reminder-add__switch-knob"></span>
+              </span>
+            </label>
+            <label class="reminder-add__toggle">
+              <span class="reminder-add__toggle-text">
+                <span class="reminder-add__toggle-title">Pause reminder</span>
+                <span class="reminder-add__toggle-sub">Temporarily disable notifications for this reminder.</span>
+              </span>
+              <span class="reminder-add__switch" [class.is-on]="form.paused">
+                <input type="checkbox" class="sr-only" [(ngModel)]="form.paused" name="paused" />
+                <span class="reminder-add__switch-knob"></span>
+              </span>
+            </label>
+          </div>
+          <div *ngIf="form.recurring" class="ov-fields ov-fields--2 mt-4">
+            <div>
+              <label class="ov-label">Repeat Every</label>
+              <ng-select [(ngModel)]="form.repeatEvery" name="repeatEvery" [items]="repeatOptions" [clearable]="true"
+                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Interval</label>
+              <input type="text" class="ov-input" name="interval" [(ngModel)]="form.interval" placeholder="1" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ov-card reminder-add__card">
+        <div class="reminder-add__card-head">
+          <span class="reminder-add__icon" data-tone="warning"><i class="ti ti-paperclip"></i></span>
+          <div>
+            <h4 class="reminder-add__card-title">Attachments</h4>
+            <p class="reminder-add__card-sub">You can add files here.</p>
+          </div>
+        </div>
+        <div class="ov-card__body !pt-0">
+          <input #fileInput type="file" class="hidden" multiple (change)="onFilesSelected($event)" />
+          <div class="reminder-add__drop" (click)="fileInput.click()">
+            <i class="ti ti-cloud-upload reminder-add__drop-ico"></i>
+            <p class="reminder-add__drop-title">Drag &amp; drop files here, or click to browse</p>
+            <p class="reminder-add__drop-hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="$event.stopPropagation(); fileInput.click()">Select Files</button>
+          </div>
+          <ul *ngIf="selectedFiles.length" class="reminder-add__files">
+            <li *ngFor="let file of selectedFiles" class="reminder-add__file">
+              <span>{{ file }}</span>
+              <button type="button" (click)="removeFile(file)">×</button>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="ov-add-footer reminder-add__footer">
+    <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
+    <button type="submit" class="ov-btn ov-btn-primary">Create Reminder</button>
+  </div>
+</form>

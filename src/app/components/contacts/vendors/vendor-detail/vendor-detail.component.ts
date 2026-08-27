@@ -10,11 +10,12 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
 @Component({
   selector: 'app-vendor-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, FilterDrawerComponent, EmailSubscriptionsDrawerComponent],
   templateUrl: './vendor-detail.component.html',
   styleUrl: './vendor-detail.component.scss'
 })
@@ -324,13 +325,21 @@ export class VendorDetailComponent implements OnInit {
     }
   }
 
-  // Mock subscriptions
+  // Vendor email subscriptions — same drawer UI as landlord/tenant; vendor-specific names
   subscriptions = [
-    { name: 'Cheque Due Reminder Email', subscribed: true },
-    { name: 'Contract Auto Renewal', subscribed: true },
-    { name: 'Contract Ending', subscribed: true },
-    { name: 'Contract Send For Signature', subscribed: true }
+    { name: 'Contract Ending', subscribed: false },
+    { name: 'Delayed PPM Reminder email', subscribed: true },
+    { name: 'Download HappyTenant Plus App Reminder', subscribed: true },
+    { name: 'Maintenance requests status email', subscribed: true },
+    { name: 'New request for quotation email', subscribed: true },
+    { name: 'Quotation Status', subscribed: true },
+    { name: 'Upcoming PPM Reminder email', subscribed: true },
+    { name: 'Welcome to HappyMaintenance app email', subscribed: true }
   ];
+
+  get subscriptionSubscribedCount(): number {
+    return this.subscriptions.filter((s) => s.subscribed).length;
+  }
 
   get allSubscriptionsSelected(): boolean {
     return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);

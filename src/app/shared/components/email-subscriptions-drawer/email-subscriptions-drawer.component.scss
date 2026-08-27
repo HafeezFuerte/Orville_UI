@@ -1,0 +1,391 @@
+.ov-email-sub-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0.25s;
+
+  &.active {
+    pointer-events: auto;
+    visibility: visible;
+  }
+}
+
+.ov-email-sub-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+
+  .active & {
+    opacity: 1;
+  }
+}
+
+.ov-email-sub-drawer__panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 450px;
+  max-width: 100vw;
+  background: #fff;
+  border-left: 1px solid rgb(var(--default-border));
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  /* 2D translate — translate3d + will-change keeps a GPU layer that blurs text */
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  isolation: isolate;
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+
+  .active & {
+    transform: none;
+  }
+}
+
+:host-context(.dark) .ov-email-sub-drawer__panel {
+  background: rgb(var(--dark-bg, 37 39 41));
+  border-left-color: rgb(255 255 255 / 0.1);
+}
+
+.ov-email-sub-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgb(var(--default-border));
+}
+
+:host-context(.dark) .ov-email-sub-drawer__header {
+  border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.ov-email-sub-drawer__title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ov-email-sub-drawer__bell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: rgb(var(--light));
+}
+
+:host-context(.dark) .ov-email-sub-drawer__bell {
+  background: rgb(255 255 255 / 0.08);
+}
+
+:host-context(.dark) .ov-email-sub-drawer__bell img {
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.ov-email-sub-drawer__titles {
+  min-width: 0;
+}
+
+.ov-email-sub-drawer__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-email-sub-drawer__sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-email-sub-drawer__global {
+  padding: 16px 20px 12px;
+  flex-shrink: 0;
+}
+
+.ov-email-sub-drawer__global-card {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgb(var(--default-background));
+}
+
+:host-context(.dark) .ov-email-sub-drawer__global-card {
+  background: rgb(var(--body-bg));
+}
+
+.ov-email-sub-drawer__global-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ov-email-sub-drawer__global-label {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.28px;
+  line-height: 18px;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-email-sub-drawer__global-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: rgb(var(--success));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24px;
+  line-height: 1;
+}
+
+.ov-email-sub-drawer__global-badge--no {
+  background: rgb(var(--danger));
+}
+
+.ov-email-sub-drawer__global-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-email-sub-drawer__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px 12px;
+  flex-shrink: 0;
+}
+
+.ov-email-sub-drawer__select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+}
+
+.ov-email-sub-drawer__checkbox {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  accent-color: rgb(var(--primary));
+  cursor: pointer;
+}
+
+.ov-email-sub-drawer__filter {
+  width: 150px;
+  min-width: 80px;
+}
+
+/* Compact 32px filter — default .ov-select is 40px with a 38px arrow that clips "All" → "A." */
+:host ::ng-deep .ov-email-sub-drawer__filter.ng-select.ov-select {
+  .ng-select-container {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding-left: 12px !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+
+  .ng-value-container {
+    padding-left: 0 !important;
+    border-top: 0 !important;
+  }
+
+  .ng-value,
+  .ng-value-label {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: rgb(var(--text-muted)) !important;
+  }
+
+  .ng-arrow-wrapper {
+    width: 28px !important;
+    height: 32px !important;
+    padding-right: 10px !important;
+  }
+
+  .ng-arrow-wrapper::after {
+    width: 18px;
+    height: 18px;
+    background-size: 18px 18px;
+  }
+}
+
+:host-context(.dark) ::ng-deep .ov-email-sub-drawer__filter.ng-select.ov-select .ng-select-container {
+  background: rgb(var(--body-bg)) !important;
+}
+
+.ov-email-sub-drawer__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ov-email-sub-drawer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 20px;
+  border: 1px solid #eeeef5;
+  border-radius: 8px;
+  background: #fff;
+  /* Keep card edges crisp (avoid soft/halo borders) */
+  outline: none;
+  box-shadow: none;
+}
+
+.ov-email-sub-drawer__row.is-subscribed {
+  border-color: rgb(var(--success));
+}
+
+:host-context(.dark) .ov-email-sub-drawer__row {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+:host-context(.dark) .ov-email-sub-drawer__row.is-subscribed {
+  border-color: rgb(var(--success));
+}
+
+.ov-email-sub-drawer__row-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ov-email-sub-drawer__row-name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: rgb(var(--text-muted));
+  word-break: break-word;
+}
+
+.ov-email-sub-drawer__row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.ov-email-sub-drawer__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 24px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: rgb(var(--success));
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24px;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+
+  > img {
+    display: block;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.ov-email-sub-drawer__chip--subscribed {
+  background: rgb(var(--danger));
+}
+
+.ov-email-sub-drawer__row-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  > img {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.ov-email-sub-drawer__empty {
+  margin: 24px 0;
+  text-align: center;
+  font-size: 14px;
+  color: rgb(var(--text-muted));
+}
+
+.ov-email-sub-drawer__footer {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 16px;
+  border-top: 1px solid rgb(var(--default-border));
+  background: rgb(var(--default-background));
+}
+
+:host-context(.dark) .ov-email-sub-drawer__footer {
+  background: rgb(var(--body-bg));
+  border-top-color: rgb(255 255 255 / 0.1);
+}
+
+@media (max-width: 480px) {
+  .ov-email-sub-drawer__panel {
+    width: 100%;
+  }
+}

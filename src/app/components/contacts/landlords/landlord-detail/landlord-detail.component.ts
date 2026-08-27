@@ -9,11 +9,12 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
 @Component({
   selector: 'app-landlord-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent],
   templateUrl: './landlord-detail.component.html',
   styleUrl: './landlord-detail.component.scss'
 })
@@ -335,18 +336,45 @@ export class LandlordDetailComponent implements OnInit {
     }
   }
 
-  // Email subscriptions list
+  // Email subscriptions list — Figma 1727:155289 (mostly unsubscribed; a few subscribed)
   subscriptions = [
-    { name: 'Cheque Due Reminder Email', subscribed: true },
-    { name: 'Contract Auto Renewal', subscribed: true },
-    { name: 'Contract Ending', subscribed: true },
-    { name: 'Contract Send For Signature', subscribed: true },
-    { name: 'Download HappyTenant Plus App Reminder', subscribed: true },
-    { name: 'Facility Request Approved and New Work Order', subscribed: true },
-    { name: 'Happy Birthday email', subscribed: true },
-    { name: 'Hold Payment', subscribed: true },
-    { name: 'Invoice Cleared', subscribed: false }
+    { name: 'Cheque Due Reminder Email', subscribed: false },
+    { name: 'Contract Auto Renewal', subscribed: false },
+    { name: 'Contract Ending', subscribed: false },
+    { name: 'Contract Send For Signature', subscribed: false },
+    { name: 'Download HappyTenant Plus App Reminder', subscribed: false },
+    { name: 'Facility Request Approved and New Work Order', subscribed: false },
+    { name: 'Happy Birthday email', subscribed: false },
+    { name: 'Hold Payment', subscribed: false },
+    { name: 'Invoice Cleared', subscribed: true },
+    { name: 'Landlord Invoice Payment Received email', subscribed: false },
+    { name: 'Landlord Lease Completed', subscribed: false },
+    { name: 'Landlord Request Update', subscribed: false },
+    { name: 'Landlord Snaglist Report', subscribed: false },
+    { name: 'Late Fee Notice', subscribed: false },
+    { name: 'Late Payment Notice', subscribed: false },
+    { name: 'Lease Completed', subscribed: true },
+    { name: 'Lease Ending Reminder Email', subscribed: false },
+    { name: 'Lease Renewal', subscribed: false },
+    { name: 'Lease Send for Sign in Bulk email', subscribed: true },
+    { name: 'Lease Start', subscribed: false },
+    { name: 'New Broadcast Email', subscribed: false },
+    { name: 'New Request for Approval', subscribed: false },
+    { name: 'New Ticket email', subscribed: false },
+    { name: 'Payment Completed', subscribed: false },
+    { name: 'Quotation Status', subscribed: false },
+    { name: 'SPA Lease Send for Signature email', subscribed: false },
+    { name: 'Send Lease for Landlord Signature email', subscribed: false },
+    { name: 'Ticket Approval email', subscribed: false },
+    { name: 'Welcome to HappyLandlord app email', subscribed: false },
+    { name: 'Write Off Invoice', subscribed: false },
+    { name: 'Partial Payment Received', subscribed: false },
+    { name: 'Bounced cheque replacement reminder', subscribed: false }
   ];
+
+  get subscriptionSubscribedCount(): number {
+    return this.subscriptions.filter((s) => s.subscribed).length;
+  }
 
   get allSubscriptionsSelected(): boolean {
     return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);
