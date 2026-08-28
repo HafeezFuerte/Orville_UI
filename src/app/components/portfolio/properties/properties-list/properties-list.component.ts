@@ -10,6 +10,7 @@ import { PropertiesService } from '../../services/properties.service';
 import { PortfolioService } from '../../services/portfolio.service';
 
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { portfolioStatusClass } from '../../portfolio-status.util';
 
 @Component({
   selector: 'app-properties-list',
@@ -19,6 +20,7 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
   styleUrl: './properties-list.component.scss'
 })
 export class PropertiesListComponent implements OnInit {
+  readonly portfolioStatusClass = portfolioStatusClass;
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Units' | 'Rooms' = 'All';
   searchQuery: string = '';

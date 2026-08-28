@@ -1,71 +1,84 @@
-<div class="block justify-between page-header md:flex mb-2">
-  <!-- Left Section (Back button and breadcrumbs) -->
-  <div class="flex items-center gap-3">
-    <a routerLink="/rooms" class="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-sm" [title]="'web.rooms.lblRooms' | translate">
-      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    </a>
-    <div>
-      <h3 class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 text-[1.5rem] font-semibold mb-1">
-        {{ isEditMode ? ('web.rooms.lblEditRoom' | translate) : ('web.rooms.lblNewRooms' | translate) }}
-      </h3>
-      <ol class="flex items-center whitespace-nowrap text-[0.75rem] text-gray-500">
-        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">{{ 'web.common.lblHome' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/portfolio/properties" class="hover:text-primary cursor-pointer">{{ 'web.common.lblPortfolio' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/portfolio/rooms" class="hover:text-primary cursor-pointer">{{ 'web.rooms.lblRooms' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor dark:text-white/70">{{ isEditMode ? ('web.rooms.lblEditRoom' | translate) : ('web.rooms.lblNewRooms' | translate) }}</li>
-      </ol>
+<!-- Figma 730:7838 — Portfolio > add Rooms -->
+<form class="ov-form ov-add-form" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <a routerLink="/rooms" class="ov-back" [title]="'web.rooms.lblRooms' | translate">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </a>
+      <div>
+        <h3 class="ov-page-title">
+          {{ isEditMode ? ('web.rooms.lblEditRoom' | translate) : ('web.rooms.lblNewRooms' | translate) }}
+        </h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/portfolio/properties">{{ 'web.common.lblPortfolio' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/portfolio/rooms">{{ 'web.rooms.lblRooms' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor">
+            {{ isEditMode ? ('web.rooms.lblEditRoom' | translate) : ('web.rooms.lblNewRooms' | translate) }}
+          </li>
+        </ol>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" routerLink="/rooms" class="ov-btn ov-btn-ghost">
+        {{ 'web.common.btnCancel' | translate }}
+      </button>
+      <button type="submit" class="ov-btn ov-btn-primary">
+        {{ isEditMode ? ('web.rooms.lblUpdateRoom' | translate) : ('web.rooms.lblSaveRoom' | translate) }}
+      </button>
     </div>
   </div>
-</div>
 
-<form [formGroup]="roomForm" (ngSubmit)="onSubmit()">
-  <div class="grid grid-cols-12 gap-y-2 gap-x-3 pb-20">
-    <!-- Left Column: Main form segments -->
-    <div class="col-span-12 xl:col-span-8 flex flex-col gap-y-2 gap-x-3">
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
 
       <!-- 1. Room Landlord -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
+      <div class="ov-card">
+        <div class="ov-card__head ov-card__head--row">
           <div>
-            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.rooms.lblRoomLandlord' | translate }}</h6>
-            <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.rooms.lblRoomLandlordDesc' | translate }}</p>
+            <h6 class="ov-card-title">{{ 'web.rooms.lblRoomLandlord' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.rooms.lblRoomLandlordDesc' | translate }}</p>
           </div>
-          <button type="button" (click)="createNewLandlord()" class="text-primary hover:text-primary-focus font-semibold text-xs flex items-center gap-1">
-            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.rooms.lblCreateNewLandlord' | translate }}
+          <button type="button" (click)="createNewLandlord()" class="ov-link-info">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            {{ 'web.rooms.lblCreateNewLandlord' | translate }}
           </button>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <div class="relative">
-            <div class="flex gap-2">
-              <div class="relative flex-grow">
-                <span class="absolute inset-y-0 start-0 flex items-center ps-3 text-gray-400">
-                  <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" />
-                </span>
-                <input type="text" [(ngModel)]="landlordSearchQuery" [ngModelOptions]="{standalone: true}" (input)="searchLandlords()"
-                  class="form-control w-full !rounded-md text-xs py-2" style="padding-left: 2.25rem !important;" [placeholder]="'web.rooms.phLandlordSearch' | translate">
+            <div class="ov-landlord-search">
+              <div class="ov-landlord-search__field">
+                <img class="ov-landlord-search__icon" src="assets/images/work-orders/search.svg" alt="" width="15" height="15" />
+                <input
+                  type="text"
+                  [(ngModel)]="landlordSearchQuery"
+                  [ngModelOptions]="{standalone: true}"
+                  (input)="searchLandlords()"
+                  class="ov-input ov-landlord-search__input"
+                  [placeholder]="'web.rooms.phLandlordSearch' | translate">
               </div>
-              <button type="button" class="bg-primary text-white p-2 rounded-md hover:bg-primary-focus flex items-center justify-center w-9 h-9">
+              <button type="button" class="ov-landlord-search__add" (click)="createNewLandlord()">
                 <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
               </button>
             </div>
 
-            <!-- Landlord Search Dropdown results -->
-            <div *ngIf="showLandlordDropdown && filteredLandlords.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
-              <div *ngFor="let landlord of filteredLandlords" (click)="selectLandlord(landlord)"
-                class="px-4 py-2 text-xs hover:bg-gray-50 cursor-pointer text-gray-700">
+            <div *ngIf="showLandlordDropdown && filteredLandlords.length > 0" class="ov-landlord-dropdown">
+              <div
+                *ngFor="let landlord of filteredLandlords"
+                (click)="selectLandlord(landlord)"
+                class="ov-landlord-dropdown__item">
                 {{ landlord.name }}
               </div>
             </div>
           </div>
 
-          <!-- Selected Landlords tags list -->
-          <div *ngIf="selectedLandlords.length > 0" class="flex flex-wrap gap-2 mt-3">
-            <div *ngFor="let selected of selectedLandlords" class="flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-full">
+          <div *ngIf="selectedLandlords.length > 0" class="ov-landlord-tags">
+            <div *ngFor="let selected of selectedLandlords" class="ov-landlord-tag">
               <span>{{ selected.name }}</span>
-              <button type="button" (click)="removeLandlord(selected.id)" class="text-gray-400 hover:text-danger flex items-center justify-center">
+              <button type="button" (click)="removeLandlord(selected.id)">
                 <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x" />
               </button>
             </div>
@@ -74,17 +87,16 @@
       </div>
 
       <!-- 2. Room Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.rooms.lblRoomDetails' | translate }}</h6>
-          <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.rooms.lblRoomDetailsDesc' | translate }}</p>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.rooms.lblRoomDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.rooms.lblRoomDetailsDesc' | translate }}</p>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <div class="grid grid-cols-12 gap-4">
 
-            <!-- Category -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblCategory' | translate }} <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.common.lblCategory' | translate }} <span class="text-danger">*</span></label>
               <ng-select
                 #catSelect
                 formControlName="category"
@@ -94,18 +106,16 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectCategory' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="catSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
 
-            <!-- Property -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
               <ng-select
                 #propSelect
                 formControlName="propertyCode"
@@ -116,18 +126,16 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectProperty' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
-            
-            <!-- Unit -->
+
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblUnits' | translate }} <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.common.lblUnits' | translate }} <span class="text-danger">*</span></label>
               <ng-select
                 #unitSelect
                 formControlName="unitCode"
@@ -137,18 +145,16 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectUnit' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
 
-            <!-- Room Type -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblRoomType' | translate }} <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.common.lblRoomType' | translate }} <span class="text-danger">*</span></label>
               <ng-select
                 #roomTypeSelect
                 formControlName="roomType"
@@ -158,30 +164,26 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectRoomType' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="roomTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="roomTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
 
-            <!-- Room Code -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblRoomCode' | translate }} <span class="text-danger">*</span></label>
-              <input type="text" formControlName="roomCode" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.rooms.phRoomCode' | translate">
+              <label class="ov-label">{{ 'web.rooms.lblRoomCode' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" formControlName="roomCode" class="ov-input" [placeholder]="'web.rooms.phRoomCode' | translate">
             </div>
 
-            <!-- Room Number -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblRoomNumber' | translate }} <span class="text-danger">*</span></label>
-              <input type="text" formControlName="roomNumber" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.rooms.phRoomNumber' | translate">
+              <label class="ov-label">{{ 'web.rooms.lblRoomNumber' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" formControlName="roomNumber" class="ov-input" [placeholder]="'web.rooms.phRoomNumber' | translate">
             </div>
 
-            <!-- Beds -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblBeds' | translate }}</label>
+              <label class="ov-label">{{ 'web.common.lblBeds' | translate }}</label>
               <ng-select
                 #bedsSelect
                 formControlName="beds"
@@ -191,119 +193,111 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectBeds' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="bedsSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="bedsSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
 
-            <!-- Parking Spaces -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblParkingSpaces' | translate }}</label>
-              <input type="number" formControlName="parkingSpaces" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.rooms.lblParkingSpaces' | translate }}</label>
+              <input type="number" formControlName="parkingSpaces" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Floor Number -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblFloorNumber' | translate }}</label>
-              <input type="text" formControlName="floorNumber" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.rooms.phFloorNumber' | translate">
+              <label class="ov-label">{{ 'web.common.lblFloorNumber' | translate }}</label>
+              <input type="text" formControlName="floorNumber" class="ov-input" [placeholder]="'web.rooms.phFloorNumber' | translate">
             </div>
 
-            <!-- Reserved Amount -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblReservedAmount' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="reservedAmount" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.rooms.lblReservedAmount' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="reservedAmount" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Property Reserve Value -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblPropertyReserveValue' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="propertyReserveValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.rooms.lblPropertyReserveValue' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="propertyReserveValue" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Baths -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblBaths' | translate }}</label>
-              <input type="number" formControlName="baths" class="form-control w-full !rounded-md text-xs py-2" placeholder="0">
+              <label class="ov-label">{{ 'web.rooms.lblBaths' | translate }}</label>
+              <input type="number" formControlName="baths" class="ov-input" placeholder="0">
             </div>
 
-            <!-- Electricity No. -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblElectricityNo' | translate }}</label>
-              <input type="text" formControlName="electricityNo" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.rooms.lblElectricityNo' | translate }}</label>
+              <input type="text" formControlName="electricityNo" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Gas No. -->
             <div class="col-span-12 md:col-span-3">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.rooms.lblGasNo' | translate }}</label>
-              <input type="text" formControlName="gasNo" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.rooms.lblGasNo' | translate }}</label>
+              <input type="text" formControlName="gasNo" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
- 
-            <!-- Tags -->
+
             <div class="col-span-12">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.contacts.lblTags' | translate }}</label>
-              <input type="text" formControlName="tags" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.contacts.lblTags' | translate }}</label>
+              <input type="text" formControlName="tags" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Checkboxes grid -->
-            <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="landlordIsResident" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs text-gray-700">{{ 'web.Unit.lblLandlordIsResident' | translate }}</span>
+            <div class="col-span-12 ov-checks">
+              <label class="ov-check">
+                <input type="checkbox" formControlName="landlordIsResident" class="form-check-input">
+                <span>{{ 'web.Unit.lblLandlordIsResident' | translate }}</span>
               </label>
 
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="furnished" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs text-gray-700">{{ 'web.Unit.lblFurnished' | translate }}</span>
+              <label class="ov-check">
+                <input type="checkbox" formControlName="furnished" class="form-check-input">
+                <span>{{ 'web.Unit.lblFurnished' | translate }}</span>
               </label>
 
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="smokingAllowed" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs text-gray-700">{{ 'web.Unit.lblSmokingAllowed' | translate }}</span>
+              <label class="ov-check">
+                <input type="checkbox" formControlName="smokingAllowed" class="form-check-input">
+                <span>{{ 'web.Unit.lblSmokingAllowed' | translate }}</span>
               </label>
 
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="guestAllowed" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs text-gray-700">{{ 'web.Unit.lblGuest' | translate }}</span>
+              <label class="ov-check">
+                <input type="checkbox" formControlName="guestAllowed" class="form-check-input">
+                <span>{{ 'web.Unit.lblGuest' | translate }}</span>
               </label>
 
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="accommodation" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs text-gray-700">{{ 'web.Unit.lblAccommodation' | translate }}</span>
+              <label class="ov-check">
+                <input type="checkbox" formControlName="accommodation" class="form-check-input">
+                <span>{{ 'web.Unit.lblAccommodation' | translate }}</span>
               </label>
 
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="isUnderRenovation" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
+              <label class="ov-check">
+                <input type="checkbox" formControlName="isUnderRenovation" class="form-check-input">
                 <div>
-                  <span class="text-xs text-gray-700 block leading-tight">{{ 'web.Unit.lblUnderRenovation' | translate }}</span>
-                  <small class="text-[10px] text-gray-400">{{ 'web.rooms.lblRoomRenovationDesc' | translate }}</small>
+                  <span>{{ 'web.Unit.lblUnderRenovation' | translate }}</span>
+                  <small>{{ 'web.rooms.lblRoomRenovationDesc' | translate }}</small>
                 </div>
               </label>
 
-              <label class="flex items-start gap-2 cursor-pointer col-span-1 md:col-span-2">
-                <input type="checkbox" formControlName="hidePrice" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                <div>
-                  <span class="text-xs text-gray-700 block leading-tight">{{ 'web.Unit.lblHidePrice' | translate }}</span>
-                  <small class="text-[10px] text-gray-400">{{ 'web.rooms.lblHideRoomPriceDesc' | translate }}</small>
-                </div>
-              </label>
+              <div class="ov-checks__row">
+                <label class="ov-check">
+                  <input type="checkbox" formControlName="hidePrice" class="form-check-input">
+                  <div>
+                    <span>{{ 'web.Unit.lblHidePrice' | translate }}</span>
+                    <small>{{ 'web.rooms.lblHideRoomPriceDesc' | translate }}</small>
+                  </div>
+                </label>
 
-              <label class="flex items-start gap-2 cursor-pointer col-span-1 md:col-span-2">
-                <input type="checkbox" formControlName="securityDepositInWallet" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300 mt-0.5">
-                <div>
-                  <span class="text-xs text-gray-700 block leading-tight">{{ 'web.Unit.lblSecurityDeposit' | translate }}</span>
-                  <small class="text-[10px] text-gray-400">{{ 'web.Unit.lblSecurityDepositDesc' | translate }}</small>
-                </div>
-              </label>
+                <label class="ov-check">
+                  <input type="checkbox" formControlName="securityDepositInWallet" class="form-check-input">
+                  <div>
+                    <span>{{ 'web.Unit.lblSecurityDeposit' | translate }}</span>
+                    <small>{{ 'web.Unit.lblSecurityDepositDesc' | translate }}</small>
+                  </div>
+                </label>
+              </div>
             </div>
 
           </div>
@@ -311,17 +305,16 @@
       </div>
 
       <!-- 3. Rent & Service Charges -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.Unit.lblRentServiceCharges' | translate }}</h6>
-          <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.Unit.lblRentServiceChargesDesc' | translate }}</p>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblRentServiceCharges' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.Unit.lblRentServiceChargesDesc' | translate }}</p>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <div class="grid grid-cols-12 gap-4">
 
-            <!-- Rent Type -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblRentType' | translate }}</label>
+              <label class="ov-label">{{ 'web.common.lblRentType' | translate }}</label>
               <ng-select
                 #rentTypeSelect
                 formControlName="rentType"
@@ -331,77 +324,68 @@
                 [searchable]="true"
                 [clearable]="true"
                 [placeholder]="'web.rooms.phSelectRentType' | translate"
-                class="w-full !rounded-md text-xs">
+                class="ov-select w-full"
+                appendTo="body">
                 <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-gray-100">
-                    <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="rentTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
+                  <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="rentTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </ng-template>
               </ng-select>
             </div>
 
-            <!-- Deposit -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblDeposit' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="deposit" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.common.lblDeposit' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="deposit" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Market Value -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblMarketValue' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="marketValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblMarketValue' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="marketValue" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Threshold Value -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblThresholdValue' | translate }}</label>
-              <input type="number" formControlName="thresholdValue" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.Unit.lblThresholdValue' | translate }}</label>
+              <input type="number" formControlName="thresholdValue" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Agency Fee -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblAgencyFee' | translate }}</label>
-              <input type="number" formControlName="agencyFee" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.Unit.lblAgencyFee' | translate }}</label>
+              <input type="number" formControlName="agencyFee" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Market Rent -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblMarketRent' | translate }}</label>
-              <input type="number" formControlName="marketRent" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.common.lblMarketRent' | translate }}</label>
+              <input type="number" formControlName="marketRent" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- Rent Per Area -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblRentPerArea' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="rentPerArea" class="form-control w-full rounded-none text-xs py-2" placeholder="0.00">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-s-0 rounded-e-md text-[10px] text-gray-400">/Sqft</span>
+              <label class="ov-label">{{ 'web.Unit.lblRentPerArea' | translate }}</label>
+              <div class="ov-input-addon ov-input-addon--dual">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="rentPerArea" class="ov-input" placeholder="0.00">
+                <span class="ov-input-addon__suffix">/Sqft</span>
               </div>
             </div>
 
-            <!-- Service Charges Per Area -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblServiceChargesPerArea' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="serviceChargesPerArea" class="form-control w-full rounded-none text-xs py-2" placeholder="0.00">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-s-0 rounded-e-md text-[10px] text-gray-400">/Sqft</span>
+              <label class="ov-label">{{ 'web.Unit.lblServiceChargesPerArea' | translate }}</label>
+              <div class="ov-input-addon ov-input-addon--dual">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="serviceChargesPerArea" class="ov-input" placeholder="0.00">
+                <span class="ov-input-addon__suffix">/Sqft</span>
               </div>
             </div>
 
-            <!-- Total Service Charges -->
             <div class="col-span-12">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblTotalServiceCharges' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="totalServiceCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.common.lblTotalServiceCharges' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="totalServiceCharges" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
@@ -410,97 +394,87 @@
       </div>
 
       <!-- 4. Cost -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.Unit.lblCost' | translate }}</h6>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblCost' | translate }}</h6>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <div class="grid grid-cols-12 gap-4">
 
-            <!-- Lease Cost -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblLeaseCost' | translate }}</label>
-              <input type="text" formControlName="leaseCost" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.Unit.lblLeaseCost' | translate }}</label>
+              <input type="text" formControlName="leaseCost" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
 
-            <!-- DEWA -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblDewa' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="dewa" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblDewa' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="dewa" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Lift AMC -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblLiftAmc' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="liftAmc" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblLiftAmc' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="liftAmc" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Firefighting -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblFirefighting' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="firefighting" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblFirefighting' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="firefighting" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Garbage Charges -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblGarbageCharges' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="garbageCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblGarbageCharges' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="garbageCharges" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- DCD -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblDcd' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="dcd" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblDcd' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="dcd" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Pest Control -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblPestControl' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="pestControl" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblPestControl' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="pestControl" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Watchman / Cleaner Charges -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblWatchmanCleanerCharges' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="cleanerCharges" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblWatchmanCleanerCharges' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="cleanerCharges" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Swimming Pool -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblSwimmingPool' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="swimmingPoolCost" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblSwimmingPool' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="swimmingPoolCost" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
-            <!-- Gym -->
             <div class="col-span-12 md:col-span-4">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblGym' | translate }}</label>
-              <div class="relative flex">
-                <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-                <input type="number" formControlName="gymCost" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+              <label class="ov-label">{{ 'web.Unit.lblGym' | translate }}</label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+                <input type="number" formControlName="gymCost" class="ov-input" placeholder="0.00">
               </div>
             </div>
 
@@ -509,104 +483,110 @@
       </div>
 
       <!-- 5. Sale Status -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-body p-4 flex justify-between items-center">
-          <div>
-            <h6 class="font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.Unit.lblSaleStatus' | translate }}</h6>
-            <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.rooms.lblSaleStatusDesc' | translate }}</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-600 font-semibold">{{ 'web.rooms.lblThisRoomIsForSale' | translate }}</span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" formControlName="isForSale" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+      <div class="ov-card">
+        <div class="ov-card__body">
+          <div class="ov-sale-row">
+            <div>
+              <h6 class="ov-card-title mb-0.5">{{ 'web.Unit.lblSaleStatus' | translate }}</h6>
+              <p class="ov-card-sub mb-0">{{ 'web.rooms.lblSaleStatusDesc' | translate }}</p>
+            </div>
+            <div class="ov-switch-row">
+              <span class="ov-sale-row__label">{{ 'web.rooms.lblThisRoomIsForSale' | translate }}</span>
+              <div class="form-check form-switch mb-0">
+                <input
+                  formControlName="isForSale"
+                  class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                  type="checkbox">
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 6. Permit & Compliance -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.Unit.lblPermitCompliance' | translate }}</h6>
-          <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.Unit.lblPermitComplianceDesc' | translate }}</p>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblPermitCompliance' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.Unit.lblPermitComplianceDesc' | translate }}</p>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <div class="grid grid-cols-12 gap-4">
-
-            <!-- Trakessi Number -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblTrakessiNumber' | translate }}</label>
-              <input type="text" formControlName="trakessiNumber" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.Unit.lblTrakessiNumber' | translate }}</label>
+              <input type="text" formControlName="trakessiNumber" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
-
-            <!-- Rera Number -->
             <div class="col-span-12 md:col-span-6">
-              <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblReraNumber' | translate }}</label>
-              <input type="text" formControlName="reraNumber" class="form-control w-full !rounded-md text-xs py-2" [placeholder]="'web.property.lblEnter' | translate">
+              <label class="ov-label">{{ 'web.Unit.lblReraNumber' | translate }}</label>
+              <input type="text" formControlName="reraNumber" class="ov-input" [placeholder]="'web.property.lblEnter' | translate">
             </div>
-
-            <!-- Is Verified -->
-            <div class="col-span-12 mt-2">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" formControlName="isVerified" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-                <span class="text-xs font-semibold text-gray-700">{{ 'web.Unit.lblIsItVerified' | translate }}</span>
+            <div class="col-span-12">
+              <label class="ov-check">
+                <input type="checkbox" formControlName="isVerified" class="form-check-input">
+                <span>{{ 'web.Unit.lblIsItVerified' | translate }}</span>
               </label>
             </div>
-
           </div>
         </div>
       </div>
 
       <!-- 7. Room Amenities -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex justify-between items-center">
-          <div>
-            <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.rooms.lblRoomAmenities' | translate }}</h6>
-            <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.rooms.lblRoomAmenitiesDesc' | translate }}</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-600 font-semibold">{{ 'web.Unit.lblIncludeAmenities' | translate }}</span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" formControlName="includeAmenities" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
+      <div class="ov-card ov-amenities">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.rooms.lblRoomAmenities' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.rooms.lblRoomAmenitiesDesc' | translate }}</p>
         </div>
-        
-        <div *ngIf="roomForm.get('includeAmenities')?.value" class="box-body p-4" formGroupName="amenities">
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-            <div *ngFor="let am of amenitiesList" class="flex items-center gap-2">
-              <input type="checkbox" [formControlName]="am.id" [id]="am.id" class="form-checkbox h-4 w-4 text-primary rounded border-gray-300">
-              <label [for]="am.id" class="text-xs text-gray-600 cursor-pointer">{{ am.name }}</label>
+        <div class="ov-card__body">
+          <div class="ov-amenities__include">
+            <div>
+              <label class="ov-label">{{ 'web.Unit.lblIncludeAmenities' | translate }}</label>
+            </div>
+            <div class="form-check form-switch mb-0">
+              <input
+                formControlName="includeAmenities"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                type="checkbox">
+            </div>
+          </div>
+
+          <div *ngIf="roomForm.get('includeAmenities')?.value" class="ov-amenities__list" formGroupName="amenities">
+            <div class="ov-amenities__grid">
+              <div *ngFor="let am of amenitiesList" class="ov-amenities__item">
+                <input type="checkbox" [formControlName]="am.id" [id]="am.id" class="form-check-input">
+                <label [for]="am.id" class="form-check-label cursor-pointer">{{ am.name }}</label>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <!-- 8. Description -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.common.lblDescription' | translate }}</h6>
-          <p class="text-[0.75rem] text-gray-500 mb-0">{{ 'web.rooms.lblAddAdditionalDetails' | translate }}</p>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.common.lblDescription' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.rooms.lblAddAdditionalDetails' | translate }}</p>
         </div>
-        <div class="box-body p-4">
-          <textarea formControlName="description" rows="4" class="form-control w-full !rounded-md text-xs py-2"
+        <div class="ov-card__body">
+          <textarea
+            formControlName="description"
+            rows="4"
+            class="ov-input"
             [placeholder]="'web.rooms.phDescribeRoom' | translate"></textarea>
         </div>
       </div>
 
       <!-- 9. Room Image -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.rooms.lblRoomImage' | translate }}</h6>
+      <div class="ov-card ov-upload">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.rooms.lblRoomImage' | translate }}</h6>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <app-file-upload
             [accept]="'image/*'"
             [multiple]="false"
             [buttonText]="'web.Unit.lblUploadImage' | translate"
             [dropText]="'web.Unit.lblDropImageHereOrBrowse' | translate"
             [browseText]="'web.Unit.lblBrowse' | translate"
+            [buttonClass]="'ov-btn ov-btn-primary'"
             (filesChanged)="onRoomImageSelected($event)">
           </app-file-upload>
         </div>
@@ -614,18 +594,17 @@
 
     </div>
 
-    <!-- Right Column: Sidebar settings -->
-    <div class="col-span-12 xl:col-span-4 flex flex-col gap-y-2 gap-x-3">
+    <!-- Right column -->
+    <aside class="ov-add-layout__aside">
 
       <!-- Status & Publishing -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm">{{ 'web.Unit.lblStatusPublishing' | translate }}</h6>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblStatusPublishing' | translate }}</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-4">
-          <!-- Status select -->
+        <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.common.lblStatus' | translate }} <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.common.lblStatus' | translate }} <span class="text-danger">*</span></label>
             <ng-select
               #statusSelect
               formControlName="status"
@@ -635,40 +614,39 @@
               [searchable]="true"
               [clearable]="false"
               [placeholder]="'web.Unit.lblSelectStatus' | translate"
-              class="w-full !rounded-md text-xs">
+              class="ov-select w-full"
+              appendTo="body">
               <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="statusSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
+                <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="statusSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </ng-template>
             </ng-select>
           </div>
 
-          <hr class="border-gray-100">
+          <hr>
 
-          <!-- Publish switch -->
-          <div class="flex items-start justify-between gap-4">
+          <div class="ov-switch-row">
             <div>
-              <span class="text-xs font-semibold text-gray-700 block mb-0.5">{{ 'web.rooms.lblPublishRoom' | translate }}</span>
-              <small class="text-[10px] text-gray-400 leading-normal block">{{ 'web.rooms.lblPublishRoomDesc' | translate }}</small>
+              <span class="ov-sale-row__label block mb-0.5">{{ 'web.rooms.lblPublishRoom' | translate }}</span>
+              <small class="text-[14px] text-textmuted leading-normal block">{{ 'web.rooms.lblPublishRoomDesc' | translate }}</small>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
-              <input type="checkbox" formControlName="publishRoom" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input
+                formControlName="publishRoom"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                type="checkbox">
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Management Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm">{{ 'web.Unit.lblManagementDetails' | translate }}</h6>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblManagementDetails' | translate }}</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-4">
-          <!-- Fee Type -->
+        <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblFeeType' | translate }}</label>
+            <label class="ov-label">{{ 'web.Unit.lblFeeType' | translate }}</label>
             <ng-select
               #feeTypeSelect
               formControlName="feeType"
@@ -678,134 +656,134 @@
               [searchable]="true"
               [clearable]="false"
               [placeholder]="'web.Unit.lblSelectFeeType' | translate"
-              class="w-full !rounded-md text-xs">
+              class="ov-select w-full"
+              appendTo="body">
               <ng-template ng-header-tmp>
-                <div class="p-1.5 border-b border-gray-100">
-                  <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="feeTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                </div>
+                <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="feeTypeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
               </ng-template>
             </ng-select>
           </div>
 
-          <!-- Purchase Value -->
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblPurchaseValue' | translate }}</label>
-            <div class="relative flex">
-              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">%</span>
-              <input type="number" formControlName="purchaseValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            <label class="ov-label">{{ 'web.Unit.lblPurchaseValue' | translate }}</label>
+            <div class="ov-input-addon">
+              <span class="ov-input-addon__prefix">%</span>
+              <input type="number" formControlName="purchaseValue" class="ov-input" placeholder="0.00">
             </div>
           </div>
         </div>
       </div>
 
       <!-- Finance Details -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-body p-4 flex flex-col gap-4">
-          <!-- Est Street Value -->
+      <div class="ov-card">
+        <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblEstimatedStreetValue' | translate }}</label>
-            <div class="relative flex">
-              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-              <input type="number" formControlName="estimatedStreetValue" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            <label class="ov-label">{{ 'web.Unit.lblEstimatedStreetValue' | translate }}</label>
+            <div class="ov-input-addon">
+              <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+              <input type="number" formControlName="estimatedStreetValue" class="ov-input" placeholder="0.00">
             </div>
           </div>
 
-          <!-- Est Revenue / Year -->
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblEstimatedRevenueYear' | translate }}</label>
-            <div class="relative flex">
-              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-              <input type="number" formControlName="estimatedRevenueYear" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            <label class="ov-label">{{ 'web.Unit.lblEstimatedRevenueYear' | translate }}</label>
+            <div class="ov-input-addon">
+              <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+              <input type="number" formControlName="estimatedRevenueYear" class="ov-input" placeholder="0.00">
             </div>
           </div>
 
-          <!-- Est OPEX / Year -->
           <div>
-            <label class="form-label text-xs font-semibold text-gray-600 mb-1 block">{{ 'web.Unit.lblEstimatedOpexYear' | translate }}</label>
-            <div class="relative flex">
-              <span class="flex items-center px-3 bg-gray-50 border border-gray-200 border-e-0 rounded-s-md text-xs text-gray-500 font-semibold">{{currentUser?.currencyCode}}</span>
-              <input type="number" formControlName="estimatedOpexYear" class="form-control w-full rounded-none rounded-e-md text-xs py-2" placeholder="0.00">
+            <label class="ov-label">{{ 'web.Unit.lblEstimatedOpexYear' | translate }}</label>
+            <div class="ov-input-addon">
+              <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
+              <input type="number" formControlName="estimatedOpexYear" class="ov-input" placeholder="0.00">
             </div>
           </div>
         </div>
       </div>
 
       <!-- Premium Plan Upload -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-          <h6 class="box-title font-semibold text-gray-800 text-sm flex items-center gap-1.5">
-            {{ 'web.Unit.lblPremiumPlan' | translate }} 
-            <i class="ri-question-line text-gray-400 text-sm cursor-pointer" [title]="'web.Unit.lblPremisePlanTooltip' | translate"></i>
+      <div class="ov-card ov-upload">
+        <div class="ov-card__head ov-card__head--row">
+          <h6 class="ov-card-title flex items-center gap-1.5 mb-0">
+            {{ 'web.Unit.lblPremiumPlan' | translate }}
+            <i class="ri-question-line text-textmuted text-sm cursor-pointer" [title]="'web.Unit.lblPremisePlanTooltip' | translate"></i>
           </h6>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <app-file-upload
             [accept]="'image/*'"
             [multiple]="false"
             [buttonText]="'web.Unit.lblUploadPremisePlan' | translate"
             [dropText]="'web.Unit.lblDropImageHereOrBrowse' | translate"
             [browseText]="'web.Unit.lblBrowse' | translate"
+            [buttonClass]="'ov-btn ov-btn-primary'"
             (filesChanged)="onRoomBroucherSelected($event)">
           </app-file-upload>
         </div>
       </div>
+
       <!-- Automation -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100">
-          <h6 class="box-title font-semibold text-gray-800 text-sm">{{ 'web.Unit.lblAutomation' | translate }}</h6>
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.Unit.lblAutomation' | translate }}</h6>
         </div>
-        <div class="box-body p-4 flex flex-col gap-4">
-          <!-- Publish Room -->
-          <div class="flex items-start justify-between gap-4">
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="ov-switch-row">
             <div>
-              <span class="text-xs font-semibold text-gray-700 block mb-0.5">{{ 'web.rooms.lblPublishRoom' | translate }}</span>
-              <small class="text-[10px] text-gray-400 leading-normal block">{{ 'web.rooms.lblPublishRoomAutomationDesc' | translate }}</small>
+              <span class="ov-sale-row__label block mb-0.5">{{ 'web.rooms.lblPublishRoom' | translate }}</span>
+              <small class="text-[14px] text-textmuted leading-normal block">{{ 'web.rooms.lblPublishRoomAutomationDesc' | translate }}</small>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
-              <input type="checkbox" formControlName="automationPublishRoom" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input
+                formControlName="automationPublishRoom"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                type="checkbox">
+            </div>
           </div>
 
-          <hr class="border-gray-100">
+          <hr>
 
-          <!-- Flag -->
-          <div class="flex items-start justify-between gap-4">
+          <div class="ov-switch-row">
             <div>
-              <span class="text-xs font-semibold text-gray-700 block mb-0.5">{{ 'web.Unit.lblFlag' | translate }}</span>
-              <small class="text-[10px] text-gray-400 leading-normal block">{{ 'web.Unit.lblFlagDesc' | translate }}</small>
+              <span class="ov-sale-row__label block mb-0.5">{{ 'web.Unit.lblFlag' | translate }}</span>
+              <small class="text-[14px] text-textmuted leading-normal block">{{ 'web.Unit.lblFlagDesc' | translate }}</small>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
-              <input type="checkbox" formControlName="automationFlag" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input
+                formControlName="automationFlag"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                type="checkbox">
+            </div>
           </div>
 
-          <hr class="border-gray-100">
+          <hr>
 
-          <!-- Disable Maintenance -->
-          <div class="flex items-start justify-between gap-4">
+          <div class="ov-switch-row">
             <div>
-              <span class="text-xs font-semibold text-gray-700 block mb-0.5">{{ 'web.Unit.lblDisableMaintenance' | translate }}</span>
-              <small class="text-[10px] text-gray-400 leading-normal block">{{ 'web.Unit.lblDisableMaintenanceDesc' | translate }}</small>
+              <span class="ov-sale-row__label block mb-0.5">{{ 'web.Unit.lblDisableMaintenance' | translate }}</span>
+              <small class="text-[14px] text-textmuted leading-normal block">{{ 'web.Unit.lblDisableMaintenanceDesc' | translate }}</small>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-0.5">
-              <input type="checkbox" formControlName="automationDisableMaintenance" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+            <div class="form-check form-switch mb-0 shrink-0">
+              <input
+                formControlName="automationDisableMaintenance"
+                class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+                type="checkbox">
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Quickbooks Class Mapping -->
-      <div class="box bg-white rounded-xl shadow-sm border border-gray-100 !mb-2">
-        <div class="box-header p-4 border-b border-gray-100 flex items-center justify-between">
-          <h6 class="box-title font-semibold text-gray-800 text-sm">{{ 'web.Unit.lblQuickbooksClassMapping' | translate }}</h6>
-          <button type="button" class="text-primary hover:text-primary-focus font-semibold text-xs flex items-center gap-1">
+      <div class="ov-card">
+        <div class="ov-card__head ov-card__head--row">
+          <h6 class="ov-card-title mb-0">{{ 'web.Unit.lblQuickbooksClassMapping' | translate }}</h6>
+          <button type="button" class="ov-link-info">
             <i class="ri-refresh-line"></i> {{ 'web.Unit.lblRefresh' | translate }}
           </button>
         </div>
-        <div class="box-body p-4">
+        <div class="ov-card__body">
           <ng-select
             formControlName="quickbooksClass"
             [items]="[
@@ -817,36 +795,35 @@
             [searchable]="true"
             [clearable]="true"
             [placeholder]="'web.Unit.lblSelectQuickbooksClass' | translate"
-            class="w-full !rounded-md text-xs">
+            class="ov-select w-full"
+            appendTo="body">
           </ng-select>
         </div>
       </div>
 
       <!-- Automation ProTip -->
-      <div class="box bg-gray-50 rounded-xl shadow-sm border border-gray-100/50 !mb-2">
-        <div class="box-body p-4 flex gap-3">
-          <div class="text-primary mt-0.5">
-            <i class="ri-lightbulb-line text-xl"></i>
-          </div>
-          <div>
-            <h6 class="text-xs font-semibold text-gray-800 mb-1">{{ 'web.Unit.lblProTip' | translate }}</h6>
-            <p class="text-[0.7rem] text-gray-500 leading-relaxed mb-0">
-              {{ 'web.Unit.lblProTipDesc' | translate }}
-            </p>
+      <div class="ov-card ov-tip">
+        <div class="ov-card__body">
+          <div class="flex items-start gap-3">
+            <i class="ri-information-line shrink-0 text-[24px] text-info"></i>
+            <div>
+              <h6 class="ov-card-title mb-1">{{ 'web.Unit.lblProTip' | translate }}</h6>
+              <p class="ov-card-sub leading-[17px] mb-0">
+                {{ 'web.Unit.lblProTipDesc' | translate }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-    </div>
+    </aside>
   </div>
 
-  <!-- Fixed Floating Form Actions Bottom Bar -->
-  <div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl"
-    [style.right]="showScrollToTop ? '70px' : '20px'">
-    <button type="button" routerLink="/rooms" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95">
+  <div class="ov-add-footer">
+    <button type="button" routerLink="/rooms" class="ov-btn ov-btn-ghost">
       {{ 'web.common.btnCancel' | translate }}
     </button>
-    <button type="submit" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95">
+    <button type="submit" class="ov-btn ov-btn-primary">
       {{ isEditMode ? ('web.rooms.lblUpdateRoom' | translate) : ('web.rooms.lblSaveRoom' | translate) }}
     </button>
   </div>

@@ -1,23 +1,28 @@
-<!-- Start::row -->
+<!-- Start::row — Figma 2104:79970 -->
 <form class="ov-form ov-add-form" [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
-<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
-  <div>
-    <h3 *ngIf="!is_edit" class="ov-page-title">{{ 'web.property.lblNewProperty' | translate }}</h3>
-    <h3 *ngIf="is_edit" class="ov-page-title">
-        {{ 'web.property.lblEditProperty' | translate }}
-    </h3>
-    <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
-        <li class="px-2">/</li>
-        <li><a routerLink="/portfolio/properties">{{ 'web.common.lblPortfolio' | translate }}</a></li>
-        <li class="px-2">/</li>
-        <li><a routerLink="/portfolio/properties">{{ 'web.property.lblProperties' | translate }}</a></li>
-        <li class="px-2">/</li>
-        <li class="font-semibold text-defaulttextcolor" *ngIf="!is_edit">{{ 'web.property.lblNewProperty' | translate }}</li>
-        <li class="font-semibold text-defaulttextcolor" *ngIf="is_edit">{{ property?.name || ('web.property.lblEditProperty' | translate) }}</li>
-    </ol>
+<div class="ov-add-header page-header">
+  <div class="ov-add-header__start">
+    <a routerLink="/properties" class="ov-back" [title]="'web.property.lblProperties' | translate">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </a>
+    <div>
+      <h3 *ngIf="!is_edit" class="ov-page-title">{{ 'web.property.lblNewProperty' | translate }}</h3>
+      <h3 *ngIf="is_edit" class="ov-page-title">
+          {{ 'web.property.lblEditProperty' | translate }}
+      </h3>
+      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/portfolio/properties">{{ 'web.common.lblPortfolio' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/portfolio/properties">{{ 'web.property.lblProperties' | translate }}</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor" *ngIf="!is_edit">{{ 'web.property.lblNewProperty' | translate }}</li>
+          <li class="font-semibold text-defaulttextcolor" *ngIf="is_edit">{{ property?.name || ('web.property.lblEditProperty' | translate) }}</li>
+      </ol>
+    </div>
   </div>
-  <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+  <div class="ov-add-header__actions">
     <button type="button" routerLink="/properties" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
     <button type="submit" class="ov-btn ov-btn-primary">
         {{ is_edit ? ('web.property.lblUpdateProperty' | translate) : ('web.property.lblSaveProperty' | translate) }}

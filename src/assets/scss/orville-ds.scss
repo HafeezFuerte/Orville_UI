@@ -919,6 +919,87 @@ html.dark .ov-inline-search input[type='text'],
   }
 }
 
+/* List / Grid view toggle — Figma 596:15867 rounded-[4px] */
+.ov-view-toggle {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 4px;
+  background: rgb(var(--default-background));
+}
+
+.ov-view-toggle__btn {
+  display: inline-flex;
+  height: 100%;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+
+  > img {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+
+  & + & {
+    border-inline-start: 1px solid rgb(var(--default-border));
+    border-radius: 0;
+  }
+
+  &:first-child {
+    border-start-start-radius: 4px;
+    border-end-start-radius: 4px;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  &:last-child {
+    border-start-end-radius: 4px;
+    border-end-end-radius: 4px;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  &:hover {
+    background: rgb(var(--light));
+  }
+
+  &.is-on {
+    background: rgb(var(--primary));
+    color: #fff;
+
+    > img {
+      filter: brightness(0) invert(1);
+    }
+
+    &:hover {
+      background: rgb(var(--primary));
+      opacity: 0.92;
+    }
+  }
+}
+
+.dark .ov-view-toggle {
+  background: rgb(var(--dark-bg));
+  border-color: rgb(255 255 255 / 0.12);
+}
+
+.dark .ov-view-toggle__btn + .ov-view-toggle__btn {
+  border-inline-start-color: rgb(255 255 255 / 0.12);
+}
+
+.dark .ov-view-toggle__btn:hover:not(.is-on) {
+  background: rgb(255 255 255 / 0.06);
+}
+
 .ov-seg {
   display: inline-flex;
   height: 36px;
@@ -1044,6 +1125,7 @@ html.dark .ov-inline-search input[type='text'],
   color: rgb(var(--text-muted));
 }
 
+/* Figma add-page back — primary-light #eeeef5, 46×46, 8px radius */
 .ov-back {
   display: inline-flex;
   height: 46px;
@@ -1054,7 +1136,7 @@ html.dark .ov-inline-search input[type='text'],
   padding: 10px;
   border: 0;
   border-radius: 0.5rem;
-  background: rgb(var(--primary) / 0.08);
+  background: #eeeef5;
   color: rgb(var(--default-text-color));
   cursor: pointer;
 
@@ -1068,6 +1150,11 @@ html.dark .ov-inline-search input[type='text'],
     background: rgb(var(--primary) / 0.14);
     color: rgb(var(--default-text-color));
   }
+}
+
+html.dark .ov-back,
+.dark .ov-back {
+  background: rgb(var(--primary) / 0.16);
 }
 
 .ov-card {
@@ -1225,20 +1312,40 @@ html.dark .ov-inline-search input[type='text'],
   transform: translateY(-50%) rotate(180deg);
 }
 
+/* Category / Type pills — Figma 2104:77236 / 1570:72306 (Residential), 2104:77275 (Commercial) */
 .ov-type-pill {
   display: inline-flex;
   align-items: center;
-  border-radius: 0.375rem;
+  justify-content: center;
+  height: 24px;
   padding: 3px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 18px;
-  background: rgb(var(--info) / 0.12);
-  color: rgb(var(--info));
+  border-radius: 4px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.28px;
+  line-height: 1;
+  white-space: nowrap;
+  background: #e4f0ff;
+  color: #2563eb;
 }
 
 .ov-type-pill--commercial {
-  background: rgb(var(--light));
+  background: #eeeef5;
+  border: 1px solid rgb(var(--default-border));
+  color: rgb(var(--default-text-color));
+}
+
+html.dark .ov-type-pill,
+.dark .ov-type-pill {
+  background: rgb(var(--info) / 0.16);
+  color: rgb(var(--info));
+}
+
+html.dark .ov-type-pill--commercial,
+.dark .ov-type-pill--commercial {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.12);
   color: rgb(var(--default-text-color));
 }
 
@@ -1837,7 +1944,7 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   padding: 3px 10px;
   border-radius: 4px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.28px;
   line-height: 1;
   white-space: nowrap;
@@ -1863,6 +1970,10 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
 
 .ov-status--warning {
   background: rgb(var(--warning));
+}
+
+.ov-status--info {
+  background: rgb(var(--info));
 }
 
 .ov-status--success {
@@ -3245,45 +3356,143 @@ button.ov-icon-btn[aria-label="More"] {
   white-space: nowrap;
 }
 
-.ov-grid-card__status {
+/* Portfolio inventory status pills — Figma Units 596:15843 / Rooms 609:2453 — all 4px */
+.ov-portfolio-pill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
+  justify-content: center;
   height: 24px;
-  padding: 5px 15px;
-  border-radius: 25px;
-  border: 1px solid rgb(var(--success));
-  background: #e2fff2;
-  color: rgb(var(--success));
-  font-size: 13px;
-  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.28px;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.ov-grid-card__status-dot {
+/* Occupied / Chargeable — solid primary, white text */
+.ov-portfolio-pill--primary {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+/* Vacant — solid danger, white text */
+.ov-portfolio-pill--danger {
+  background: rgb(var(--danger));
+  color: #fff;
+}
+
+/* Soft tints — Available / Reserved / Maintenance fallbacks */
+.ov-portfolio-pill--success {
+  background: #e2fff2;
+  color: rgb(var(--success));
+}
+
+.ov-portfolio-pill--accent {
+  background: #f7f1e7;
+  color: #bd9759;
+}
+
+.ov-portfolio-pill--info {
+  background: #e4f0ff;
+  color: rgb(var(--info));
+}
+
+.ov-portfolio-pill--warning {
+  background: rgb(var(--warning) / 0.12);
+  color: rgb(var(--warning));
+}
+
+.ov-portfolio-pill--muted {
+  background: rgb(var(--default-background));
+  border: 1px solid rgb(var(--default-border));
+  color: rgb(var(--text-muted));
+}
+
+.ov-portfolio-pill--grid {
+  gap: 7px;
+  padding: 5px 15px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--primary {
+  border-color: rgb(var(--primary));
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--danger {
+  border-color: rgb(var(--danger));
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--success {
+  border-color: rgb(var(--success));
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--accent {
+  border-color: #bd9759;
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--info {
+  border-color: rgb(var(--info));
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--warning {
+  border-color: rgb(var(--warning));
+}
+
+.ov-portfolio-pill--grid.ov-portfolio-pill--muted {
+  border-color: rgb(var(--default-border));
+}
+
+.ov-portfolio-pill__dot {
   width: 6px;
   height: 6px;
   border-radius: 9999px;
   background: currentColor;
+  flex-shrink: 0;
 }
 
-.ov-grid-card__status--warn {
-  background: rgb(var(--warning) / 0.12);
-  border-color: rgb(var(--warning));
-  color: rgb(var(--warning));
+html.dark .ov-portfolio-pill--primary,
+.dark .ov-portfolio-pill--primary {
+  background: rgb(var(--primary));
+  color: #fff;
 }
 
-.ov-grid-card__status--muted {
-  background: rgb(var(--default-background));
-  border-color: rgb(var(--default-border));
+html.dark .ov-portfolio-pill--danger,
+.dark .ov-portfolio-pill--danger {
+  background: rgb(var(--danger));
+  color: #fff;
+}
+
+html.dark .ov-portfolio-pill--success,
+.dark .ov-portfolio-pill--success {
+  background: rgb(var(--success) / 0.16);
+}
+
+html.dark .ov-portfolio-pill--accent,
+.dark .ov-portfolio-pill--accent {
+  background: rgb(189 151 89 / 0.16);
+}
+
+html.dark .ov-portfolio-pill--info,
+.dark .ov-portfolio-pill--info {
+  background: rgb(var(--info) / 0.16);
+}
+
+html.dark .ov-portfolio-pill--warning,
+.dark .ov-portfolio-pill--warning {
+  background: rgb(var(--warning) / 0.16);
+}
+
+html.dark .ov-portfolio-pill--muted,
+.dark .ov-portfolio-pill--muted {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.12);
   color: rgb(var(--text-muted));
-}
-
-.ov-grid-card__status--danger {
-  background: rgb(var(--danger) / 0.1);
-  border-color: rgb(var(--danger));
-  color: rgb(var(--danger));
 }
 
 .ov-grid-card__stats {
@@ -4275,7 +4484,9 @@ html.dark .ov-prop-card__btn--ghost:hover,
 }
 
 html.dark .ov-prop-card__status,
-.dark .ov-prop-card__status {
+.dark .ov-prop-card__status,
+html.dark .ov-portfolio-pill--grid.ov-portfolio-pill--success,
+.dark .ov-portfolio-pill--grid.ov-portfolio-pill--success {
   background: rgb(var(--success) / 0.16) !important;
 }
 
