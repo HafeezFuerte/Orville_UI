@@ -6,7 +6,7 @@ export const spacesRoutes: Routes = [
     loadComponent: () => import('./spaces-list/spaces.component').then((m) => m.SpacesComponent)
   },
   {
-    path: 'new',
+    path: 'create',
     loadComponent: () => import('./create-new-space/space-add.component').then((m) => m.SpaceAddComponent)
   },
   {

@@ -13,7 +13,7 @@
     </div>
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
-      <button type="submit" class="ov-btn ov-btn-primary">Save</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
     </div>
   </div>
 
@@ -29,6 +29,7 @@
             <div>
               <label class="ov-label">Vendors</label>
               <ng-select [(ngModel)]="form.vendor" name="vendor" [items]="vendors" [searchable]="true"
+                bindLabel="name" bindValue="code"
                 [clearable]="true" placeholder="Select Vendor" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
@@ -45,6 +46,7 @@
             <div>
               <label class="ov-label">Property</label>
               <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [searchable]="true"
+                bindLabel="name" bindValue="code" (change)="onPropertyChange()"
                 [clearable]="true" placeholder="Select Property" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
@@ -70,12 +72,13 @@
             <div>
               <label class="ov-label">Unit</label>
               <ng-select [(ngModel)]="pendingUnit" name="pendingUnit" [items]="units" [searchable]="true"
+                bindLabel="name" bindValue="code" (change)="addUnit()"
                 [clearable]="true" placeholder="Select Unit" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
           <div class="mt-4 flex flex-col gap-2">
             <div class="llc-chip" *ngFor="let unit of selectedUnits">
-              <span>{{ unit }}</span>
+              <span>{{ unit.name }}</span>
               <button type="button" class="llc-chip__x" (click)="removeUnit(unit)" aria-label="Remove unit">
                 <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
               </button>
@@ -103,12 +106,13 @@
             <div>
               <label class="ov-label">Room</label>
               <ng-select [(ngModel)]="pendingRoom" name="pendingRoom" [items]="rooms" [searchable]="true"
+                bindLabel="name" bindValue="code" (change)="addRoom()"
                 [clearable]="true" placeholder="Select Room" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
           <div class="mt-4 flex flex-col gap-2" *ngIf="selectedRooms.length">
             <div class="llc-chip" *ngFor="let room of selectedRooms">
-              <span>{{ room }}</span>
+              <span>{{ room.name }}</span>
               <button type="button" class="llc-chip__x" (click)="removeRoom(room)" aria-label="Remove room">
                 <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
               </button>
@@ -191,6 +195,7 @@
             <div>
               <label class="ov-label">Payment Via</label>
               <ng-select [(ngModel)]="form.paymentVia" name="paymentVia" [items]="paymentViaOptions" [searchable]="true"
+                bindLabel="name" bindValue="name"
                 [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
@@ -328,13 +333,15 @@
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Attachments</label>
-              <div class="llc-drop">
-                <p>Drop your image here or Browse</p>
-                <button type="button" class="llc-upload">
-                  <i class="ri ri-upload-2-line" aria-hidden="true"></i>
-                  Upload Image
-                </button>
-              </div>
+              <app-file-upload
+                [accept]="'image/*,application/pdf'"
+                [multiple]="true"
+                [buttonText]="'Upload'"
+                [dropText]="'Drop files here or'"
+                [browseText]="'Browse'"
+                [buttonClass]="'ov-btn ov-btn-primary'"
+                (filesChanged)="onFilesSelected($event)">
+              </app-file-upload>
             </div>
           </div>
         </div>
@@ -358,23 +365,20 @@
           <div>
             <p class="m-0 mb-1 text-[13px] text-textmuted">Properties</p>
             <div class="flex flex-wrap gap-2">
-              <span class="llc-chip llc-chip--summary">
-                Marina Height Tower
-                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
+              <span class="llc-chip llc-chip--summary" *ngIf="form.property">
+                {{ form.property }}
               </span>
-              <span class="llc-chip llc-chip--summary">
-                Marina Height..
-                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
-              </span>
+              <span class="llc-chip llc-chip--summary" *ngIf="!form.property">—</span>
             </div>
           </div>
           <div>
             <p class="m-0 mb-1 text-[13px] text-textmuted">Units</p>
             <div class="flex flex-wrap gap-2">
               <span class="llc-chip llc-chip--summary" *ngFor="let unit of selectedUnits">
-                {{ unit }}
-                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x">
+                {{ unit.name }}
+                <img src="assets/images/common/close-plus.svg" alt="" width="14" height="14" class="ov-ico-x" (click)="removeUnit(unit)">
               </span>
+              <span class="llc-chip llc-chip--summary" *ngIf="selectedUnits.length === 0">—</span>
             </div>
           </div>
         </div>
@@ -384,6 +388,6 @@
 
   <div class="ov-add-footer">
     <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
-    <button type="submit" class="ov-btn ov-btn-primary">Save</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
   </div>
 </form>

@@ -58,11 +58,13 @@
             <div>
               <label class="ov-label">Property</label>
               <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [clearable]="true"
+                bindLabel="name" bindValue="code" (change)="onPropertyChange()"
                 placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
               <label class="ov-label">Unit</label>
               <ng-select [(ngModel)]="form.unit" name="unit" [items]="units" [clearable]="true"
+                bindLabel="name" bindValue="code"
                 placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
@@ -153,7 +155,8 @@
             [buttonText]="'Upload'"
             [dropText]="'Drop your image here or'"
             [browseText]="'Browse'"
-            [buttonClass]="'ov-btn ov-btn-primary'">
+            [buttonClass]="'ov-btn ov-btn-primary'"
+            (filesChanged)="onImageSelected($event)">
           </app-file-upload>
         </div>
       </section>

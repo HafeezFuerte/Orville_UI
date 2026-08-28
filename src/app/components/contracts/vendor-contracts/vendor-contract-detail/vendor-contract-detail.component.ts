@@ -327,7 +327,7 @@ export class VendorContractDetailComponent implements OnInit {
   }
 
   goToEdit(): void {
-    this.router.navigate(['/vendor-contracts/create']);
+    this.router.navigate(['/vendor-contracts/create'], { queryParams: { code: this.contract.id } });
   }
 
   onAction(label: string): void {

@@ -1,4 +1,4 @@
-<form class="ov-add-form reminder-add font-hanken" (ngSubmit)="save()">
+<form class="ov-add-form reminder-add font-hanken">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
       <button type="button" class="ov-back" (click)="cancel()" title="Back to Reminders">
@@ -11,7 +11,7 @@
     </div>
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-      <button type="submit" class="ov-btn ov-btn-primary">Create Reminder</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Create Reminder</button>
     </div>
   </div>
 
@@ -29,17 +29,8 @@
           <div class="ov-fields">
             <div class="ov-fields__full">
               <label class="ov-label">Assign to <span class="text-danger">*</span></label>
-              <div class="reminder-add__chips ov-input">
-                <span *ngFor="let user of assignees" class="reminder-add__chip">
-                  {{ user }}
-                  <button type="button" class="reminder-add__chip-x" (click)="removeAssignee(user)">×</button>
-                </span>
-                <input class="reminder-add__chip-input" [(ngModel)]="assigneeQuery" name="assigneeQuery"
-                  (keydown.enter)="$event.preventDefault(); addAssignee()" placeholder="Select users" />
-              </div>
-              <div *ngIf="assigneeQuery.trim() && filteredUserOptions.length" class="reminder-add__suggest">
-                <button type="button" *ngFor="let opt of filteredUserOptions" class="reminder-add__suggest-item" (click)="pickAssignee(opt)">{{ opt }}</button>
-              </div>
+              <ng-select [(ngModel)]="assignees" name="assignees" [items]="userOptions" [searchable]="true"
+                [multiple]="true" bindLabel="name" placeholder="Select users" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Title <span class="text-danger">*</span></label>
@@ -159,6 +150,6 @@
 
   <div class="ov-add-footer reminder-add__footer">
     <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-    <button type="submit" class="ov-btn ov-btn-primary">Create Reminder</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Create Reminder</button>
   </div>
 </form>

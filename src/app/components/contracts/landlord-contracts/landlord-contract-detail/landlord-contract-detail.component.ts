@@ -341,7 +341,7 @@ export class LandlordContractDetailComponent implements OnInit {
   }
 
   goToEdit(): void {
-    this.router.navigate(['/landlord-contracts/create']);
+    void this.router.navigate(['/landlord-contracts/create'], { queryParams: { code: this.contract.id } });
   }
 
   onAction(label: string): void {

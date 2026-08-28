@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, RouterLink } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
@@ -17,6 +17,7 @@ import { CommonService } from '../../../../services/common.service';
     CommonModule,
     FormsModule,
     RouterModule,
+    RouterLink,
     NgSelectModule,
     SharedTableComponent,
     FilterDrawerComponent,
@@ -25,9 +26,11 @@ import { CommonService } from '../../../../services/common.service';
   templateUrl: './spaces.component.html'
 })
 export class SpacesComponent implements OnInit {
-  private router = inject(Router);
-  private commontabservice = inject(Common_TabsService);
-  private commonService = inject(CommonService);
+  constructor(
+    private router: Router,
+    private commontabservice: Common_TabsService,
+    private commonService: CommonService
+  ) {}
 
   searchQuery = '';
   isDrawerOpen = false;
@@ -182,7 +185,7 @@ export class SpacesComponent implements OnInit {
   }
 
   goToAdd(): void {
-    void this.router.navigate(['/bookings/spaces/new']);
+    void this.router.navigate(['/bookings/spaces/create']);
   }
 
   onSearch(): void {

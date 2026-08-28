@@ -227,8 +227,8 @@ export class SpaceDetailComponent implements OnInit {
                 rangeStatus: rawDetail.range_status || rawDetail.rangeStatus || this.detail.rangeStatus,
                 enablePayment:
                   rawDetail.enable_payment === 'Yes' ||
-                  rawDetail.enable_payment === true ||
-                  rawDetail.enablePayment === 'Enabled'
+                    rawDetail.enable_payment === true ||
+                    rawDetail.enablePayment === 'Enabled'
                     ? 'Enabled'
                     : 'Disabled',
                 phone: rawDetail.phone_number || rawDetail.phone || this.detail.phone,
@@ -319,9 +319,7 @@ export class SpaceDetailComponent implements OnInit {
 
   goToEdit(): void {
     this.showActionMenu = false;
-    void this.router.navigate(['/bookings/spaces/new'], {
-      queryParams: { id: this.detail.id },
-    });
+    void this.router.navigate(['/bookings/spaces/create'], { queryParams: { code: this.detail.id } });
   }
 
   onAction(label: string): void {

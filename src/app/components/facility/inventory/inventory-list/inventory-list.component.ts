@@ -233,9 +233,13 @@ export class InventoryListComponent implements OnInit {
     this.rowMenuStyle = null;
   }
 
-  navigateToCreate(): void {
+  navigateToCreate(id?: string): void {
     this.closeRowAction();
-    this.router.navigate(['/facility/inventory/create']);
+    if (id) {
+      void this.router.navigate(['/facility/inventory/create'], { queryParams: { code: id } });
+    } else {
+      void this.router.navigate(['/facility/inventory/create']);
+    }
   }
 
   navigateToDetail(id: string): void {

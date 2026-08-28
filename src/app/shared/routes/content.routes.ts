@@ -79,6 +79,7 @@ export const content: Routes = [
   },
   { path: 'spaces', redirectTo: '/bookings/spaces', pathMatch: 'full' },
   { path: 'spaces/new', redirectTo: '/bookings/spaces/new', pathMatch: 'full' },
+  { path: 'spaces/create', redirectTo: '/bookings/spaces/create', pathMatch: 'full' },
   { path: 'spaces/:id', redirectTo: '/bookings/spaces/:id' },
   {
     path: 'legal',
