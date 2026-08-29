@@ -16,23 +16,33 @@ export const accountingRoutes: Routes = [
   {
     path: 'invoices/edit-invoice/:code',
     loadComponent: () =>
-      import('./invoices/invoices.component').then((m) => m.InvoicesComponent)
+      import('./invoices/add-invoice.component').then((m) => m.AddInvoiceComponent)
   }, 
   {
     path: 'invoices/:id',
     loadComponent: () =>
       import('./invoices/invoice-detail.component').then((m) => m.InvoiceDetailComponent)
-  },
+  }, 
   {
     path: 'expenses/create',
     loadComponent: () =>
       import('./expenses/add-expense.component').then((m) => m.AddExpenseComponent)
   },
   {
+    path: 'expenses/:id',
+    loadComponent: () =>
+      import('./expenses/expense-detail/expense-detail.component').then((m) => m.ExpenseDetailComponent)
+  },
+  {
+    path: 'expenses/edit-expense/:code',
+    loadComponent: () =>
+      import('./expenses/add-expense.component').then((m) => m.AddExpenseComponent)
+  }, 
+  {
     path: 'expenses',
     pathMatch: 'full',
     loadComponent: () =>
-      import('./expenses/expenses.component').then((m) => m.ExpensesComponent)
+      import('./expenses/expense-list/expenses.component').then((m) => m.ExpensesComponent)
   },
   {
     path: 'credit-notes',

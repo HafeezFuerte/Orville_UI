@@ -217,7 +217,7 @@
       [ngTemplateOutlet]="chequeDetails"
       [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }">
     </ng-container>
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-4" *ngIf="leaseInfo?.status==176">
         <button type="button" (click)="generatePayments()" class="px-4 py-1.5 text-xs rounded-md bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
           {{ 'web.leases.lblGeneratePayment' | translate }}
         </button>
@@ -231,8 +231,8 @@
         Select from the different options below to set the payment schedule of the lease. You can set a recurring payment schedule or a one time schedule.
       </p>
   </div>
-    <div class="flex justify-end  gap-3">
-      <button type="button" (click)="showPaymentBlock(0)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
+    <div class="flex justify-end  gap-3" *ngIf="leaseInfo?.status==176">
+      <button  type="button" (click)="showPaymentBlock(0)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
       Add Payment
       </button>
       <button type="button" (click)="showPaymentBlock(1)" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">

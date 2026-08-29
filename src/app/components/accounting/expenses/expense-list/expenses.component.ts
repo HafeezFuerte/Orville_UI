@@ -3,28 +3,29 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
-import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
-import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
-import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
-import { CommonService } from '../../../services/common.service';
-import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import {
-  INVOICE_KPIS, 
-  INVOICE_STATUS_TABS,
-  InvoiceRow,
-  InvoiceStatus
-} from './invoices.data';
+  EXPENSE_KPIS,
+  EXPENSE_ROWS,
+  EXPENSE_STATUS_TABS,
+  ExpenseRow,
+  ExpenseStatus
+} from '../expenses.data';
 
 @Component({
-  selector: 'app-invoices',
+  selector: 'app-expenses',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
-  templateUrl: './invoices.component.html',
-  styleUrl: './invoices.component.scss'
+  templateUrl: './expenses.component.html',
+  styleUrl: './expenses.component.scss'
 })
-export class InvoicesComponent {
+export class ExpensesComponent {
   constructor(private router: Router,
     private commonService: CommonService,
     private commontabservice : Common_TabsService,
@@ -44,9 +45,9 @@ export class InvoicesComponent {
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
   filterTo = '';
-  filterAccount = '';
-  filterStatus: InvoiceStatus | null = null;
-  statusOptions: InvoiceStatus[] = INVOICE_STATUS_TABS.filter((tab): tab is InvoiceStatus => tab !== 'All');
+  filterAccount = '';filterName = '';
+  filterStatus: ExpenseStatus | null = null;
+  statusOptions: ExpenseStatus[] = EXPENSE_STATUS_TABS.filter((tab): tab is ExpenseStatus => tab !== 'All');
   metrics = {
     revenue: 'AED 4.3 M',
     totalLeases: 24183,
@@ -56,26 +57,18 @@ export class InvoicesComponent {
   };
   pageIndex = 0; 
   allRows:any= [];
-
   tableColumns = [
     { key: 'code', label: 'ID', visible: true, useTemplate: true },
+    { key: 'invoice_no', label: 'Bill Number', visible: true },
+    { key: 'unit_code', label: 'Unit / Common Area', visible: true },
+    { key: 'lease', label: 'Lease Details', visible: true }, 
+    { key: 'account_name', label: 'Account', visible: true }, 
+    { key: 'total_amount', label: 'Total Amount', visible: true },
+    { key: 'due_date', label: 'Due Date', visible: true },
+    { key: 'invoice_date', label: 'Issue Date', visible: true },
+    { key: 'paidDate', label: 'Paid Date', visible: true },
+    { key: 'createdBy', label: 'Created By', visible: true },
     { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'Tenant', label: 'To', visible: true, useTemplate: true },
-    { key: 'unit_code', label: 'Unit / Common Area', visible: true , useTemplate: true},
-    { key: 'invoice_no', label: 'Invoice Number', visible: true, useTemplate: true }, 
-    { key: 'invoice_date', label: 'Invoice Date', visible: true },
-    { key: 'invoice_type', label: 'Invoice Type', visible: true },
-    { key: 'account_name', label: 'Account', visible: true },
-    { key: 'currency_symbol', label: 'Currency', visible: true, useTemplate: true },
-    { key: 'property_name', label: 'Property Name', visible: true, useTemplate: true },
-    { key: 'property_code', label: 'Property ID', visible: true },
-    { key: 'lease_id', label: 'Lease ID', visible: true, useTemplate: true },
-    { key: 'lease_status', label: 'Lease Status', visible: true, useTemplate: true }, 
-    { key: 'total_amount', label: 'Amount', visible: true },
-    { key: 'total_amount', label: 'Gross Amount', visible: true },
-    { key: 'paid_amount', label: 'Paid', visible: true },
-    { key: 'payment_type_name', label: 'Payment Via', visible: true },   
-    { key: 'createdby', label: 'Created By', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
@@ -86,6 +79,7 @@ export class InvoicesComponent {
   get allColumnsSelected(): boolean {
     return this.tableColumns.every((col) => col.visible !== false);
   }
+
   getArabicLookupName(row:any,key:string){
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
@@ -101,9 +95,9 @@ export class InvoicesComponent {
       this.pageSize = event.pageSize; 
     this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize; 
-    this.loadinvoices();
+    this.loadexpenses();
   }
-  loadinvoices() {
+  loadexpenses() {
     const filterList: any[] = [];
     if (this.statusFilter && this.statusFilter !== "All") {
       filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
@@ -122,13 +116,13 @@ export class InvoicesComponent {
       pagecount: this.pageSize,
       filter_by: this.statusFilter !== 'All' ? 'status' : '',
       filter_list: JSON.stringify(filterList),
-      featureid: "INVOICES"
+      featureid: "EXPENSES"
     };
 
     this.commontabservice.getCommonGrid(payload).subscribe({
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.allRows = response.objResult.invoices || []; 
+          this.allRows = response.objResult.expenses || []; 
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
@@ -148,7 +142,7 @@ export class InvoicesComponent {
       }
     });
   }
-  get filteredRows(): InvoiceRow[] {
+  get filteredRows(): ExpenseRow[] {
     const q = this.searchQuery.trim().toLowerCase();
     return this.allRows.filter((row:any) => {
       if (this.statusFilter !== 'All' && row.status !== this.statusFilter) {
@@ -175,16 +169,27 @@ export class InvoicesComponent {
       );
     });
   }
+ 
+ 
+  transform(value: number, decimals: number = 2): string {
+    if (value === null || isNaN(value)) return value.toString();
+    if (value < 1000) return value.toString();
 
-  // get totalRecords(): number {
-  //   return this.filteredRows.length;
-  // }
+    // Suffixes mapped by their mathematical tier (powers of 1000)
+    const suffixes = ['', 'K', 'M', 'B', 'T'];
+    const tier = Math.floor(Math.log10(Math.abs(value)) / 3);
 
-  // get totalPages(): number {
-  //   return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  // }
+    // If the tier exceeds our array, default to the highest available suffix
+    const selectedTier = Math.min(tier, suffixes.length - 1);
+    
+    const suffix = suffixes[selectedTier];
+    const scale = Math.pow(10, selectedTier * 3);
+    const scaled = value / scale;
 
-  get paginatedRows(): InvoiceRow[] {
+    // Formats numbers cleanly (e.g., removes redundant .00 trailing zeros)
+    return scaled.toFixed(decimals).replace(/\.00$/, '') + suffix;
+  }
+  get paginatedRows(): ExpenseRow[] {
     const start = this.pageIndex * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
@@ -215,7 +220,7 @@ export class InvoicesComponent {
   setStatusFilter(status: string ): void {
     this.statusFilter = status;
     this.pageIndex = 0;
-    this.loadinvoices();
+    this.loadexpenses();
   }
 
   onSearch(): void {
@@ -246,7 +251,10 @@ export class InvoicesComponent {
       col.visible = !col.visible;
     }
   }
-
+  viewExpense(id: string): void {
+    this.openActionId = null;
+    void this.router.navigate(['/accounting/expenses', id]);
+  }
   toggleAllColumns(checked: boolean): void {
     this.tableColumns.forEach((col) => (col.visible = checked));
   }
@@ -256,12 +264,7 @@ export class InvoicesComponent {
     this.openActionId = this.openActionId === id ? null : id;
   }
 
-  viewInvoice(id: string): void {
-    this.openActionId = null;
-    void this.router.navigate(['/accounting/invoices', id]);
-  }
-
-  statusClass(status: InvoiceStatus): string {
+  statusClass(status: ExpenseStatus): string {
     const map: Record<string, string> = {
       Paid: 'inv-badge inv-badge--paid',
       Unpaid: 'inv-badge inv-badge--rejected',
@@ -270,63 +273,19 @@ export class InvoicesComponent {
       Hold: 'inv-badge inv-badge--pending',
       Void: 'inv-badge inv-badge--draft',
       'Write Off': 'inv-badge inv-badge--draft',
-      Bounced: 'inv-badge inv-badge--rejected',
-      'Pending Approvals': 'inv-badge inv-badge--pending'
+      Bounced: 'inv-badge inv-badge--rejected'
     };
     return map[status] || 'inv-badge inv-badge--draft';
   }
- 
-  
-  previousPage(): void {
-    if (this.pageNo > 0) {
-      this.pageNo--;
-      this.loadinvoices();
-    }
-  }
-  onPageSizeChange(): void {
-    this.pageNo = 0;
-    this.loadinvoices();
-  }
-  nextPage(): void {
-    if (this.displayPage < (this.totalPages || 1)) {
-      this.pageNo++;
-      this.loadinvoices();
-    }
-  }
 
-  goToPage(page: number): void {
-    const target = page - 1;
-    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
-      this.pageNo = target;
-      this.loadinvoices();
-    }
-  }
-  transform(value: number, decimals: number = 2): string {
-    if (value === null || isNaN(value)) return value.toString();
-    if (value < 1000) return value.toString();
-
-    // Suffixes mapped by their mathematical tier (powers of 1000)
-    const suffixes = ['', 'K', 'M', 'B', 'T'];
-    const tier = Math.floor(Math.log10(Math.abs(value)) / 3);
-
-    // If the tier exceeds our array, default to the highest available suffix
-    const selectedTier = Math.min(tier, suffixes.length - 1);
-    
-    const suffix = suffixes[selectedTier];
-    const scale = Math.pow(10, selectedTier * 3);
-    const scaled = value / scale;
-
-    // Formats numbers cleanly (e.g., removes redundant .00 trailing zeros)
-    return scaled.toFixed(decimals).replace(/\.00$/, '') + suffix;
-  }
   ngOnInit() {
     
-    this.loadinvoices(); 
-    this.loadLookup(54, 'tabs', 'lookup_name');
+    this.loadexpenses(); 
+    this.loadLookup(61, 'tabs', 'lookup_name');
   }
   loadLookup(filterId: number, targetProperty: string, nameField: string) {
     this.commontabservice.getMasterByType({
-      typeId: 54,
+      typeId: 61,
       filterId: filterId,
       filterText: '',
       filterText1: ''
@@ -345,28 +304,29 @@ export class InvoicesComponent {
       }
     });
   }
-  // onPageSizeChange(): void {
-  //   this.pageIndex = 0;
-  // }
 
-  // previousPage(): void {
-  //   if (this.pageIndex > 0) {
-  //     this.pageIndex--;
-  //   }
-  // }
+  onPageSizeChange(): void {
+    this.pageIndex = 0;
+  }
 
-  // nextPage(): void {
-  //   if (this.displayPage < this.totalPages) {
-  //     this.pageIndex++;
-  //   }
-  // }
+  previousPage(): void {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+    }
+  }
 
-  // goToPage(page: number): void {
-  //   const target = page - 1;
-  //   if (target >= 0 && target < this.totalPages) {
-  //     this.pageIndex = target;
-  //   }
-  // }
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageIndex++;
+    }
+  }
+
+  goToPage(page: number): void {
+    const target = page - 1;
+    if (target >= 0 && target < this.totalPages) {
+      this.pageIndex = target;
+    }
+  }
 
   @HostListener('document:click')
   onDocumentClick(): void {

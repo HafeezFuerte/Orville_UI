@@ -35,12 +35,16 @@ export interface InvoiceLineItem {
   id: string;
   inclusiveTax: string;
   description: string;
+  baction?: string;
+  code?: string;
   price: number;
   tax: number;
   discount: number;
   discountPct: number;
   paid: number;
   account: string;
+  accountnm: string;
+  statusid: number;
   status: string;
 }
 
@@ -48,10 +52,13 @@ export interface InvoiceCheque {
   id: string;
   chequeNo: string;
   bankName: string;
+  baction?: string;
+  code?: string;
   chequeDate: string;
   amount: number;
   inHand: string;
   status: string;
+  statusid: number;
   attachment: string;
 }
 
@@ -59,13 +66,17 @@ export const INITIAL_LINE_ITEMS: InvoiceLineItem[] = [
   {
     id: '405943',
     inclusiveTax: 'Yes',
+    baction:"New",
+    code:"",
     description: 'Monthly service charge',
     price: 1250,
     tax: 62.5,
     discount: 0,
     discountPct: 0,
     paid: 0,
-    account: 'Rental Income',
+    statusid:0,
+    accountnm: 'Rental Income',
+    account:'90',
     status: 'Unpaid'
   }
 ];
@@ -75,9 +86,12 @@ export const INITIAL_CHEQUES: InvoiceCheque[] = [
     id: '405943',
     chequeNo: 'CH-2531',
     bankName: 'ENBD Bank',
+    baction:"New",
+    code:"",
     chequeDate: '09-07-2026',
     amount: 500,
     inHand: 'Yes',
+    statusid:0,
     status: 'Pending',
     attachment: 'Cheque-image.jpg'
   }

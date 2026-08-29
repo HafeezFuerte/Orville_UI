@@ -34,6 +34,25 @@ private postAPI(url: string, payload: any): Observable<any> {
     : this.commonService.updateHeaders();
   return this.http.post(url, payload, { headers });
 }
+
+  
+loadLookup(typeid :number,filterId: number, targetProperty: string, filterText: string, filterText1: string) {
+  this.getMasterByType({
+    typeId: typeid,
+    filterId: filterId,
+    filterText: filterText,
+    filterText1: filterText1
+  }).subscribe({
+    next: (res: any) => {
+      if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+        (this as any)[targetProperty] = res.objResult.table ;
+      }
+    },
+    error: (err:any) => {
+      console.error(`Error fetching lookup ${filterId}:`, err);
+    }
+  });
+}
 saveAttachment(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/save_documents',

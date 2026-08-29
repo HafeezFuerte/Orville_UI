@@ -160,8 +160,10 @@ export class CreateLeaseComponent implements OnInit {
               this.mapSelectedObjects();
               this.loadLookup(44,0, 'unitsList', this.selectedProperty);
             }
-            if(res.objResult.table1){
-              res.objResult.table1.forEach((element:any,index:number) => {
+
+            var paymentslist=res.objResult.table2 !=null &&res.objResult.table2.length >0 ?res.objResult.table2:res.objResult.table1;
+            if(paymentslist){
+              paymentslist.forEach((element:any,index:number) => {
                 this.paymentSchedules.push({
                   "includetax":element.includetax || false,
                   "Amount":element.amt || 0,
@@ -358,8 +360,7 @@ export class CreateLeaseComponent implements OnInit {
     else{
       this.monthlyRent= Number((this.rentAmount / this.totalPayments).toFixed(2));
       this.paymentSchedules=[];
-      let dueDate=this.startDate;
-      debugger;
+      let dueDate=this.startDate; 
       for (let index = 0; index < this.totalPayments; index++) {
         this.paymentSchedules.push({
         "Amount":Number((this.rentAmount / this.totalPayments).toFixed(2)),

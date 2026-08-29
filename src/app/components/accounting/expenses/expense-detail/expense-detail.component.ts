@@ -2,42 +2,30 @@ import { Component, HostListener, OnInit,inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonService } from '../../../services/common.service';
-import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
-import { NotesComponent } from '../../child-tables/notes/notes.component';
-import { AttachmentsComponent } from '../../child-tables/attachments/attachments.component';
+import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component'; 
+import { EXPENSE_ROWS } from '../expenses.data';
+import { FinancialsComponent } from '../../../child-tables/financials/financials.component';
 import {
-  CHEQUE_COLUMNS,
-  INVOICE_CHEQUE_ROWS,
-  INVOICE_DETAIL,
-  INVOICE_OVERVIEW_ROWS,
-  INVOICE_PENALTY_ROWS,
-  INVOICE_TXN_ROWS,
-  InvoiceChequeRow,
-  InvoiceCol,
-  InvoiceDetail,
-  InvoiceOverviewRow,
-  InvoicePenaltyRow,
-  InvoiceTxnRow,
+  CHEQUE_COLUMNS, 
   OVERVIEW_COLUMNS,
   PENALTY_COLUMNS,
   TXN_COLUMNS
-} from './invoice-detail.data';
-import { INVOICE_ROWS } from './invoices.data';
-import { FinancialsComponent } from '../../child-tables/financials/financials.component';
-
+} from '../../invoices/invoice-detail.data';
 type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
 
 @Component({
-  selector: 'app-invoice-detail',
+  selector: 'app-expense-detail',
   standalone: true,
   imports: [CommonModule,NotesComponent,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
-  templateUrl: './invoice-detail.component.html',
-  styleUrl: './invoice-detail.component.scss'
+  templateUrl: './expense-detail.component.html',
+  styleUrl: './expense-detail.component.scss'
 })
-export class InvoiceDetailComponent implements OnInit {
+export class ExpenseDetailComponent implements OnInit {
   invoice: any={}; 
   Form!: FormGroup;
   loading:boolean=false;
@@ -48,7 +36,7 @@ export class InvoiceDetailComponent implements OnInit {
   attahmentData : any[] = [];
   receiptslist:any=[];
   invoicesList:any=[];
-  overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
+  overviewRows: [] = [];
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
@@ -69,7 +57,7 @@ export class InvoiceDetailComponent implements OnInit {
     danger?: boolean;
     dangerIcon?: boolean;
   }[] = [
-      { label: 'Edit Invoice', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+      { label: 'Edit Expense', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
       // { label: 'Request for Approval', icon: 'ri-checkbox-line' },
       { label: 'Send reminder', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' }, 
       { label: 'Back to list', icon: 'ri-mail-line' },
@@ -178,12 +166,12 @@ export class InvoiceDetailComponent implements OnInit {
   }
   getInvoiceDetails() {
     this.commontabservice.getMasterByType({
-      typeId: 52,
+      typeId: 64,
       filterId: 0,
       filterText: this.invoice_no,
       filterText1: ''
     }).subscribe({
-      next: (res: any) => { 
+      next: (res: any) => {  
         if (res.statusCode == 200 && res.objResult && res.objResult.invoice_dtls) { 
           this.invoicesList= res.objResult.invoice_dtls || [];
           this.invoice=this.invoicesList[0] || {};
@@ -261,15 +249,15 @@ export class InvoiceDetailComponent implements OnInit {
     this.openColumnMenu = null;
   }
 
-  visible(cols: InvoiceCol[]): InvoiceCol[] {
+  visible(cols: any[]): any[] {
     return cols.filter((col) => col.visible);
   }
 
-  allSelected(cols: InvoiceCol[]): boolean {
+  allSelected(cols: any[]): boolean {
     return cols.every((col) => col.visible);
   }
 
-  toggleColumn(cols: InvoiceCol[], key: string): void {
+  toggleColumn(cols: any[], key: string): void {
     const col = cols.find((item) => item.key === key);
     if (col) {
       col.visible = !col.visible;
@@ -288,9 +276,9 @@ export class InvoiceDetailComponent implements OnInit {
   }
   onActionClick(label: string): void {
     this.actionOpen = false;
-    if (label === 'Edit Invoice') {
+    if (label === 'Edit Expense') {
       this.actionOpen = false;
-      this.router.navigate(['/accounting/invoices/edit-invoice', this.invoice?.code]);
+      this.router.navigate(['/accounting/expenses/edit-expense', this.invoice?.code]);
     } 
     else if (label === 'Request for Approval') {
       this.sendForApproval();
@@ -353,12 +341,12 @@ export class InvoiceDetailComponent implements OnInit {
       }
     });
   }
-  toggleAll(cols: InvoiceCol[], event: Event): void {
+  toggleAll(cols: any[], event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     cols.forEach((col) => (col.visible = checked));
   }
 
-  filteredOverview(): InvoiceOverviewRow[] {
+  filteredOverview(): any[] {
     return this.filterRows(this.overviewRows, this.overviewQuery);
   }
 

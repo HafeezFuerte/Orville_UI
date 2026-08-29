@@ -19,20 +19,22 @@
   <div class="exp-status-tabs mb-5 overflow-x-auto" role="tablist" aria-label="Expense status">
     <div class="ov-seg ov-seg--tabs">
       <button
-        type="button"
-        *ngFor="let tab of statusTabs"
-        class="ov-seg__btn"
-        [class.is-active]="statusFilter === tab"
-        (click)="setStatusFilter(tab)">
-        {{ tab }}
-      </button>
+      type="button"
+      *ngFor="let tab of statusTabs"
+      class="ov-seg__btn"
+      [class.is-active]="statusFilter === tab.id"
+      [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+      [class.border-transparent]="statusFilter !== tab.id" 
+      (click)="setStatusFilter(tab.id)">
+      {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+    </button>
     </div>
   </div>
 
   <div class="ov-kpi-row mb-5">
     <div class="ov-kpi" *ngFor="let kpi of kpis">
       <span class="ov-kpi__badge">{{ kpi.label }}</span>
-      <div class="ov-kpi__val">{{ kpi.value }}</div>
+      <div class="ov-kpi__val">{{currentUser?.currencyCode}} {{ kpi.value | number:'1.2-2' }}</div>
       <div class="ov-kpi__sub">{{ kpi.sub }}</div>
     </div>
   </div>
@@ -72,20 +74,50 @@
     </div>
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
-        <ng-template #colTemplate let-row="row" let-col="col">
+      <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="isLoading"
+      [hasActions]="false" [showPaginator]="false"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)">
+      <ng-template #colTemplate let-row="row" let-col="col"> 
           <ng-container [ngSwitch]="col.key">
-            <ng-container *ngSwitchCase="'id'">
-              <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+         
+            <ng-container *ngSwitchCase="'code'">
+              <a [routerLink]="['/accounting/expenses', row.code]" class="ov-link font-semibold">{{ row.code }}</a>
+            </ng-container> 
+            <ng-container *ngSwitchCase="'invoice_no'">
+              <a [routerLink]="['/accounting/expenses', row.code]" class="ov-link font-semibold">{{ row.invoice_no }}</a>
+            </ng-container> 
+  
+  
+            <ng-container *ngSwitchCase="'Tenant'">
+              <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="ov-link font-semibold">{{ row.tenant }}</a>
             </ng-container>
+  
+            <ng-container *ngSwitchCase="'property_name'">
+              <a [routerLink]="['/properties', row.property_code]" class="ov-link font-semibold">{{ row.property_name }}</a>
+            </ng-container>
+  
+            <ng-container *ngSwitchCase="'unit_code'">
+              <a [routerLink]="['/units', row.unitcode]" class="ov-link font-semibold">{{ row.unit_code }}</a>
+            </ng-container>
+  
+            <ng-container *ngSwitchCase="'lease_id'">
+              <a [routerLink]="['/leases/edit-lease', row.lease_id]" class="ov-link font-semibold">{{ row.lease_id }}</a>
+            </ng-container>
+      
+            <ng-container *ngSwitchCase="'invoice_status'"> 
+              <span [class]="statusClass(row.status)">{{ getArabicLookupName(row, 'invoice_status') }}</span>
+            </ng-container>
+   
+  
+            <ng-container *ngSwitchCase="'total_amount'">
+              <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}} {{ row.total_amount | number:'1.2-2' }}</span>
+            </ng-container>
+              <ng-container *ngSwitchCase="'currency_symbol'">
+              <span class="text-[14px] font-semibold text-defaulttextcolor">{{currentUser?.currencyCode}}</span>
+            </ng-container>
+
+
             <ng-container *ngSwitchCase="'status'">
               <span [class]="statusClass(row.status)">{{ row.status }}</span>
             </ng-container>

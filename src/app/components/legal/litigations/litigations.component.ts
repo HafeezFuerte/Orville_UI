@@ -176,9 +176,9 @@ export class LitigationsComponent implements OnInit {
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
       temp = temp.filter(item => 
-        item.name.toLowerCase().includes(q) || 
-        item.id.toLowerCase().includes(q) ||
-        item.legalFirm.toLowerCase().includes(q)
+        item.case_name.toLowerCase().includes(q) || 
+        item.code.toLowerCase().includes(q) ||
+        item.legal_firm.toLowerCase().includes(q)
       );
     }
 

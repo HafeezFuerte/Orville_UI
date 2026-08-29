@@ -2,7 +2,7 @@ import { Component, Input, OnInit,inject } from '@angular/core';
 import { CommonModule,formatDate } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule,Route, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
@@ -25,7 +25,8 @@ export class FinancialsComponent implements OnInit {
   payment_code:any='';
   private commontab_service=inject(Common_TabsService);
   private toast=inject(ToastrService); 
-  private lease_service=inject(LeasesService);
+  private lease_service=inject(LeasesService); 
+  private router=inject(Router);
   showApprovalMenu=false;
   paymentMethods:any=[];
   coa_list:any=[];
@@ -160,6 +161,9 @@ export class FinancialsComponent implements OnInit {
       if(st=="Payment"){
         this.showReceivePayment=true;
       }
+      else if(st=="Edit"){
+        this.router.navigate(['/leases/edit-lease', this.leaseInfo?.code]);
+      }
     } 
     else{
       this.toast.error("Invalid selection");
@@ -178,36 +182,16 @@ export class FinancialsComponent implements OnInit {
     return row[(selectedLang === "EN" ? key : key + '_ar')] || row[key] || '';
   }
 
-  // Helper method to parse status classes
-  getStatusBadgeClass(status: string): string {
-    if (!status) return 'bg-gray-100 text-gray-800 border-gray-200';
-    const s = status.toLowerCase();
-    if (s.includes('paid') && !s.includes('unpaid') && !s.includes('partially')) {
-      return 'bg-success/10 text-success border-success/20';
-    } else if (s.includes('unpaid') || s.includes('overdue')) {
-      return 'bg-danger/10 text-danger border-danger/20';
-    } else {
-      return 'bg-warning/10 text-warning border-warning/20';
-    }
-  }
-
-  // Receipts / breakdown list for each invoice (mocked/mapped from the invoice structure if no separate nested list is provided)
-  getReceiptsForInvoice(invoice: any): any[] {
-    // If the invoice has nested receipts, return them. Otherwise map the invoice fields as the single receipt transaction.
-    if (invoice.receipts && invoice.receipts.length > 0) {
-      return invoice.receipts;
-    }
-
-    const invNo = invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || '';
-
-    // Fallback: Map the invoice fields to a single receipt row to match the columns
-    return [{
-      receiptNo: invNo ? invNo.replace('INV', 'RCP') : 'RCP-001',
-      date: invoice.created_date || invoice.due_date || '-',
-      method: invoice.payment_type || 'Mixed',
-      reference: invoice.cheque_no || invoice.ddRefNo || '-',
-      amount: invoice.amt || 0,
-      status: invoice.cheque_status || invoice.status || 'Cleared'
-    }];
-  }
+  // // Helper method to parse status classes
+  // getStatusBadgeClass(status: string): string {
+  //   if (!status) return 'bg-gray-100 text-gray-800 border-gray-200';
+  //   const s = status.toLowerCase();
+  //   if (s.includes('paid') && !s.includes('unpaid') && !s.includes('partially')) {
+  //     return 'bg-success/10 text-success border-success/20';
+  //   } else if (s.includes('unpaid') || s.includes('overdue')) {
+  //     return 'bg-danger/10 text-danger border-danger/20';
+  //   } else {
+  //     return 'bg-warning/10 text-warning border-warning/20';
+  //   }
+  // } 
 }

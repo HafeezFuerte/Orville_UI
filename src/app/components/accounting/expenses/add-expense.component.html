@@ -1,23 +1,23 @@
-<form class="ov-add-form" (ngSubmit)="$event.preventDefault()">
+<form class="ov-add-form" [formGroup]="expenseForm">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Expenses">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Invoices">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
         <div class="flex items-center gap-2.5">
-          <h3 class="ov-page-title">New Expense</h3>
-          <span class="exp-add__draft">Draft</span>
+          <h3 class="ov-page-title">{{ invoice_no == ''  ? 'New' : 'Edit'}}   Expense</h3>
+          <span class="inv-add__draft">Draft</span>
         </div>
         <p class="ov-page-sub">
-          Accounting / Expenses / <span class="ov-page-sub__current">New Expense</span>
+          Accounting / Expenses / <span class="ov-page-sub__current">{{ invoice_no == ''  ? 'New' : 'Edit'}}   Expense</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
       <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
-      <button type="submit" class="ov-btn ov-btn-primary">Save Expense</button>
+      <button type="submit" class="ov-btn ov-btn-primary"  (click)="onSubmit()">Save Expense</button>
     </div>
   </div>
 
@@ -25,33 +25,75 @@
     <div class="ov-add-layout__main">
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Vendor &amp; Property Details</h6>
+          <h6 class="ov-card-title">Customer &amp; Lease Details</h6>
+          <p class="ov-card-sub">Billing contact, lease selection, and receipt ownership.</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Billed from *</label>
-              <ng-select [(ngModel)]="billedFrom" name="billedFrom" [items]="vendors" [searchable]="true"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <label class="ov-label">Billed From *</label>
+              <ng-select #tenantSelect    [searchable]="true" formControlName="billedFrom" bindValue="code" bindLabel="tenant"
+               [items]="customers"  [searchable]="true"
+                [clearable]="true" placeholder="Select Tenant" class="ov-select ng-select-sm w-full" appendTo="body">
+                  <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                </ng-select>
             </div>
             <div>
-              <label class="ov-label">Property</label>
-              <ng-select [(ngModel)]="property" name="property" [items]="properties" [searchable]="true"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <label class="ov-label">Property *</label>
+              <ng-select #PropertySelect formControlName="property_code"  [searchable]="true" 
+              name="property_code" (change)="onPropertyChange($event)" [items]="properties" [searchable]="true" bindValue="code" bindLabel="name"
+                [clearable]="true" placeholder="Select Lease" class="ov-select ng-select-sm w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="PropertySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                </ng-select>
             </div>
             <div>
-              <label class="ov-label">Unit</label>
-              <ng-select [(ngModel)]="unit" name="unit" [items]="units" [searchable]="true"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <label class="ov-label">Unit *</label>
+              <ng-select #UnitSelect formControlName="unit_code"  [searchable]="true" 
+              name="lease_code" [items]="units" [searchable]="true" bindValue="code" bindLabel="name"
+                [clearable]="true" placeholder="Select unit" class="ov-select ng-select-sm w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="UnitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Common Area</label>
+              <ng-select #commonareaSelect formControlName="commonarea"  [searchable]="true" 
+              name="commonarea" [items]="commonareas" [searchable]="true" bindValue="code" bindLabel="name"
+                [clearable]="true" placeholder="Select common area" class="ov-select ng-select-sm w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="commonareaSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                </ng-select>
             </div>
             <div>
               <label class="ov-label">Payment Via</label>
-              <ng-select [(ngModel)]="paymentVia" name="paymentVia" [items]="paymentViaOptions"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <ng-select formControlName="paymentVia" bindValue="id" bindLabel="name" name="paymentVia" [items]="paymentViaOptions"
+                placeholder="Select Payment Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
-            <div class="ov-fields__full">
-              <label class="ov-label">Common Area</label>
-              <input type="text" class="ov-input" name="commonArea" [(ngModel)]="commonArea" placeholder="Enter">
+            <div>
+              <label class="ov-label">Money Held By</label>
+              <ng-select formControlName="moneyHeldBy"  bindValue="id" bindLabel="name" name="moneyHeldBy" [items]="moneyHeldByOptions"
+                placeholder="Select Money Held" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div class="ov-label">
+              <!-- ov-fields__full -->
+              <label class="ov-label">Lease Account</label>
+              <ng-select formControlName="leaseAccount"  bindValue="id" bindLabel="name" name="leaseAccount" 
+              [items]="coaaccountlist"
+              placeholder="Select Account" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select> 
             </div>
           </div>
         </div>
@@ -60,37 +102,38 @@
       <div class="ov-card">
         <div class="ov-card__head">
           <h6 class="ov-card-title">Invoice Details</h6>
+          <p class="ov-card-sub">Core invoice dates, type, reference, and numbering.</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
               <label class="ov-label">Type *</label>
-              <ng-select [(ngModel)]="type" name="type" [items]="types" placeholder="Select type"
+              <ng-select formControlName="type" name="type" bindValue="id" bindLabel="name" [items]="types" placeholder="Select type"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
               <label class="ov-label">Invoice Number</label>
-              <input type="text" class="ov-input" name="invoiceNumber" [(ngModel)]="invoiceNumber" placeholder="INV-24-000868">
+              <input type="text" readonly="true" class="ov-input" name="invoiceNumber" formControlName="invoiceNumber">
             </div>
             <div>
               <label class="ov-label">Date of Issue *</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-                <input type="text" class="ov-input" name="issueDate" [(ngModel)]="issueDate"
-                  appFlowbiteDatepicker placeholder="DD/MM/YYYY">
+                <input type="date" class="ov-input" name="issueDate" formControlName="issueDate" id="issueDate"
+                    placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div>
               <label class="ov-label">Due Date *</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-                <input type="text" class="ov-input" name="dueDate" [(ngModel)]="dueDate"
-                  appFlowbiteDatepicker placeholder="DD/MM/YYYY">
+                <input type="date" class="ov-input" name="dueDate" formControlName="dueDate"
+                    placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Reference</label>
-              <input type="text" class="ov-input" name="reference" [(ngModel)]="reference" placeholder="PO#253">
+              <input type="text" class="ov-input" name="reference" formControlName="reference" placeholder="PO#253">
             </div>
           </div>
         </div>
@@ -108,8 +151,8 @@
           </button>
         </div>
         <div class="ov-card__body">
-          <div class="exp-add__table-wrap">
-            <table class="exp-add__table">
+          <div class="inv-add__table-wrap">
+            <table class="inv-add__table">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -125,20 +168,21 @@
               </thead>
               <tbody>
                 <tr *ngFor="let row of cheques; let i = index">
-                  <td><a class="ov-link" href="javascript:void(0)">{{ row.id }}</a></td>
+                  <td>{{ i+1 }}</td>
                   <td>{{ row.chequeNo }}</td>
                   <td>{{ row.bankName }}</td>
-                  <td>{{ row.chequeDate }}</td>
+                  <td>{{ row.chequeDate | date:'dd MMM yyyy' || '-' }}</td>
                   <td>{{ formatAed(row.amount) }}</td>
                   <td>{{ row.inHand }}</td>
-                  <td><span class="exp-add__pill exp-add__pill--pending">{{ row.status }}</span></td>
-                  <td><a class="ov-link" href="javascript:void(0)">{{ row.attachment || '—' }}</a></td>
+                  <td><span class="inv-add__pill">{{ row.status }}</span></td> 
+                  <td *ngIf="row.attachment?.includes('https') || row.attachment?.includes('http')"><a href="{{row.attachment}}" target="_blank">View File</a></td>
+                  <td *ngIf="!row.attachment.includes('http')">{{ row.attachment || '—' }}</td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="exp-add__icon-btn" (click)="openChequeModal(i)" aria-label="Edit cheque">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChequeModal(i)" aria-label="Edit cheque">
                         <img src="assets/images/work-order-detail/pencil.svg" alt="" width="16" height="16">
                       </button>
-                      <button type="button" class="exp-add__icon-btn exp-add__icon-btn--del" (click)="removeCheque(i)" aria-label="Delete cheque">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeCheque(i)" aria-label="Delete cheque">
                         <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="16" height="16">
                       </button>
                     </div>
@@ -162,8 +206,8 @@
           </button>
         </div>
         <div class="ov-card__body">
-          <div class="exp-add__table-wrap">
-            <table class="exp-add__table">
+          <div class="inv-add__table-wrap">
+            <table class="inv-add__table">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -183,10 +227,8 @@
               </thead>
               <tbody>
                 <tr *ngFor="let row of lineItems; let i = index">
-                  <td><a class="ov-link" href="javascript:void(0)">{{ row.id }}</a></td>
-                  <td>
-                    <span class="exp-add__pill" [class.exp-add__pill--yes]="row.inclusiveTax === 'Yes'">{{ row.inclusiveTax }}</span>
-                  </td>
+                  <td>{{ i+1 }}</td>
+                  <td><span class="inv-add__pill">{{ row.inclusiveTax }}</span></td>
                   <td>{{ row.description }}</td>
                   <td>{{ formatAed(row.price) }}</td>
                   <td>{{ formatAed(row.tax) }}</td>
@@ -195,14 +237,14 @@
                   <td>{{ formatAed(rowTotal(row)) }}</td>
                   <td>{{ formatAed(row.paid) }}</td>
                   <td>{{ formatAed(rowBalance(row)) }}</td>
-                  <td>{{ row.account }}</td>
-                  <td><span class="exp-add__pill">{{ row.status }}</span></td>
+                  <td>{{ row.accountnm }}</td>
+                  <td>{{ row.status }}</td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="exp-add__icon-btn" (click)="openLineModal(i)" aria-label="Edit line item">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openLineModal(i)" aria-label="Edit line item">
                         <img src="assets/images/work-order-detail/pencil.svg" alt="" width="16" height="16">
                       </button>
-                      <button type="button" class="exp-add__icon-btn exp-add__icon-btn--del" (click)="removeLine(i)" aria-label="Delete line item">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLine(i)" aria-label="Delete line item">
                         <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="16" height="16">
                       </button>
                     </div>
@@ -222,16 +264,19 @@
           <div class="ov-fields">
             <div class="ov-fields__full">
               <label class="ov-label">Notes</label>
-              <textarea class="ov-input min-h-[100px] resize-y" name="notes" [(ngModel)]="notes" placeholder="Enter note here..."></textarea>
+              <textarea class="ov-input min-h-[100px] resize-y" name="notes" formControlName="notes" placeholder="Enter note here..."></textarea>
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Attachments</label>
-              <div class="exp-add__drop">
-                <p>Drop your image here or Browse</p>
-                <button type="button" class="exp-add__upload">
+              <div class="inv-add__drop">
+                <p>{{ invoiceAttachment.name || 'Drop your image here or Browse' }}</p>  
+                <p *ngIf="invoice?.attachment_path"><a href="{{invoice?.attachment_path}}" target="_blank">View File</a></p>  
+                <label class="inv-add__upload">
                   <i class="ri ri-camera-line" aria-hidden="true"></i>
                   Upload Image
-                </button>
+                  <input type="file" class="ov-sr" accept="image/*,.pdf" (change)="onInvoiceAttachment($event)">
+                </label>
+
               </div>
             </div>
           </div>
@@ -244,12 +289,12 @@
         <div class="ov-card__head">
           <p class="m-0 text-sm text-textmuted">Due Amount</p>
           <p class="mt-1.5 mb-2.5 text-[22px] font-bold leading-7 text-defaulttextcolor">{{ formatAed(dueTotal) }}</p>
-          <span class="exp-add__draft">Draft</span>
+          <span class="inv-add__draft">Draft</span>
         </div>
         <div class="ov-card__body flex flex-col gap-3">
           <div class="flex items-center justify-between gap-3 text-sm text-textmuted">
             <span>Subtotal</span>
-            <span>{{ formatAed(subtotal) }}</span>
+            <span>{{ formatAed(lineTotal - taxTotal + discountTotal) }}</span>
           </div>
           <div class="flex items-center justify-between gap-3 text-sm text-textmuted">
             <span>Tax</span>
@@ -269,9 +314,8 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-    <button type="button" class="ov-btn exp-add__gold">Accept Expense</button>
-    <button type="submit" class="ov-btn ov-btn-primary">Save Expense</button>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button> 
+    <button type="submit" class="ov-btn ov-btn-primary" (click)="onSubmit()">Save Expense</button>
   </div>
 </form>
 
@@ -280,7 +324,7 @@
     <div class="ov-modal__header">
       <div>
         <h6 class="ov-modal__title" id="add-line-title">{{ editingLineIndex != null ? 'Edit Line Item' : 'Add Line Item' }}</h6>
-        <p class="ov-modal__sub">Add a charge, tax profile, and account allocation to this invoice.</p>
+        <p class="ov-modal__sub">Add charges, taxes, discounts, and account allocation.</p>
       </div>
       <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="closeLineModal()" aria-label="Close">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
@@ -289,26 +333,32 @@
     <div class="ov-modal__body">
       <div class="ov-fields ov-fields--2">
         <div class="ov-fields__full">
-          <label class="ov-modal__check">
-            <input type="checkbox" [(ngModel)]="inclusiveTaxChecked" name="inclusiveTaxChecked">
-            Inclusive Tax?
-          </label>
+          <label class="ov-label">Description *</label>
+          <input type="text" class="ov-input" name="lineDescription" [(ngModel)]="lineDraft.description" placeholder="Enter">
         </div>
         <div>
-          <label class="ov-label">Amount *</label>
+          <label class="ov-label">Inclusive Tax?</label>
+          <ng-select [(ngModel)]="lineDraft.inclusiveTax" name="inclusiveTax" [items]="['Yes', 'No']"
+            class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Account *</label>
+          <ng-select [(ngModel)]="lineDraft.account" bindValue="id" bindLabel="name" name="lineAccount" [items]="coaaccountlist"
+            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Price *</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="linePrice" [(ngModel)]="lineDraft.price" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Description</label>
-          <input type="text" class="ov-input" name="lineDescription" [(ngModel)]="lineDraft.description" placeholder="Enter Description..">
-        </div>
-        <div>
-          <label class="ov-label">Tax Profile *</label>
-          <ng-select [(ngModel)]="lineDraft.taxProfile" name="taxProfile" [items]="taxProfiles"
-            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+          <label class="ov-label">Tax</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">AED</span>
+            <input type="number" class="ov-input" name="lineTax" [(ngModel)]="lineDraft.tax" placeholder="0.00">
+          </div>
         </div>
         <div>
           <label class="ov-label">Discount</label>
@@ -318,19 +368,28 @@
           </div>
         </div>
         <div>
-          <label class="ov-label">Account *</label>
-          <ng-select [(ngModel)]="lineDraft.account" name="lineAccount" [items]="accounts"
-            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+          <label class="ov-label">Discount %</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">%</span>
+            <input type="number" class="ov-input" name="lineDiscountPct" [(ngModel)]="lineDraft.discountPct" placeholder="0">
+          </div>
+        </div>
+        <div>
+          <label class="ov-label">Paid</label>
+          <div class="ov-input-addon">
+            <span class="ov-input-addon__prefix">AED</span>
+            <input type="number" class="ov-input" name="linePaid" [(ngModel)]="lineDraft.paid" placeholder="0.00">
+          </div>
         </div>
         <div>
           <label class="ov-label">Status</label>
-          <ng-select [(ngModel)]="lineDraft.status" name="lineStatus" [items]="lineStatuses"
-            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+          <ng-select [(ngModel)]="lineDraft.statusid" bindValue="id" bindLabel="name" name="lineStatus" [items]="lineStatuses"
+            class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeLineModal()">Close</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeLineModal()">Cancel</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="saveLineItem()">Save</button>
     </div>
   </div>
@@ -341,7 +400,7 @@
     <div class="ov-modal__header">
       <div>
         <h6 class="ov-modal__title" id="add-cheque-title">{{ editingChequeIndex != null ? 'Edit Cheque' : 'Add Cheque' }}</h6>
-        <p class="ov-modal__sub">Capture cheque details and upload a scanned copy or photo for the invoice record.</p>
+        <p class="ov-modal__sub">Add cheque records when the payment method is cheque.</p>
       </div>
       <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="closeChequeModal()" aria-label="Close">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
@@ -354,16 +413,18 @@
           <input type="text" class="ov-input" name="chequeNo" [(ngModel)]="chequeDraft.chequeNo" placeholder="Enter">
         </div>
         <div>
-          <label class="ov-label">Bank *</label>
+          <label class="ov-label">Bank Name *</label>
+          <input type="text" class="ov-input" name="bankName" [(ngModel)]="chequeDraft.bankName" placeholder="Enter">
+<!-- 
           <ng-select [(ngModel)]="chequeDraft.bankName" name="bankName" [items]="banks"
-            placeholder="Enter Bank Name" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select> -->
         </div>
         <div>
           <label class="ov-label">Cheque Date *</label>
           <div class="ov-date">
             <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-            <input type="text" class="ov-input" name="chequeDate" [(ngModel)]="chequeDraft.chequeDate"
-              appFlowbiteDatepicker placeholder="DD/MM/YYYY">
+            <input type="date" class="ov-input" name="chequeDate" [(ngModel)]="chequeDraft.chequeDate"
+                placeholder="DD/MM/YYYY">
           </div>
         </div>
         <div>
@@ -373,26 +434,31 @@
             <input type="number" class="ov-input" name="chequeAmount" [(ngModel)]="chequeDraft.amount" placeholder="0.00">
           </div>
         </div>
-        <div class="ov-fields__full">
-          <label class="ov-label">Money Held By *</label>
-          <ng-select [(ngModel)]="chequeDraft.moneyHeldBy" name="moneyHeldBy" [items]="moneyHeldByOptions"
+        <div>
+          <label class="ov-label">Cheque In Hand</label>
+          <ng-select [(ngModel)]="chequeDraft.inHand" name="inHand" [items]="chequeInHandOptions"
+            class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Status</label>
+          <ng-select [(ngModel)]="chequeDraft.statusid" bindValue="id" bindLabel="name" name="chequeStatus" [items]="chequeStatuses"
             class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div class="ov-fields__full">
-          <div class="exp-add__drop">
-            <p class="exp-add__drop-title">Drag and drop your file here</p>
-            <p class="exp-add__drop-sub">or browse from your device</p>
-            <label class="exp-add__upload">
-              Browse files
+          <label class="ov-label">Attachment</label>
+          <div class="inv-add__drop">
+            <p>{{ chequeDraft.attachment || 'Drop your image here or Browse' }}</p>
+            <label class="inv-add__upload">
+              <i class="ri ri-camera-line" aria-hidden="true"></i>
+              Upload Image
               <input type="file" class="ov-sr" accept="image/*,.pdf" (change)="onChequeFile($event)">
             </label>
-            <p *ngIf="chequeDraft.attachment" class="exp-add__drop-sub">{{ chequeDraft.attachment }}</p>
           </div>
         </div>
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeChequeModal()">Close</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeChequeModal()">Cancel</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="saveCheque()">Save</button>
     </div>
   </div>
