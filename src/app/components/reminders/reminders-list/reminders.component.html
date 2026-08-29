@@ -94,10 +94,20 @@
               </a>
             </ng-container>
             <ng-container *ngSwitchCase="'priority'">
-              <span class="rem-pill" [attr.data-priority]="row.priority">{{ row.priority }}</span>
+              <span
+                class="ov-status"
+                [class.ov-status--outline]="row.priority === 'Low'"
+                [class.ov-status--active]="row.priority === 'Medium' || row.priority === 'High'">
+                {{ row.priority }}
+              </span>
             </ng-container>
             <ng-container *ngSwitchCase="'status'">
-              <span class="rem-pill" [attr.data-status]="row.status">{{ row.status }}</span>
+              <span
+                class="ov-status"
+                [class.ov-status--warning]="row.status === 'Pending'"
+                [class.ov-status--active]="row.status === 'Completed'">
+                {{ row.status }}
+              </span>
             </ng-container>
             <ng-container *ngSwitchCase="'recurring'">
               {{ row.recurring ? 'Yes' : 'No' }}

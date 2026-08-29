@@ -55,7 +55,14 @@
             <a *ngSwitchCase="'title'" class="ov-link"
               [routerLink]="['/facility/purchase-orders', row.id]"
               (click)="closeRowAction()">{{ row.title }}</a>
-            <span *ngSwitchCase="'status'" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            <span *ngSwitchCase="'status'"
+              class="ov-status"
+              [class.ov-status--outline]="row.status === 'Draft'"
+              [class.ov-status--soft]="row.status === 'Open'"
+              [class.ov-status--active]="row.status === 'Approved'"
+              [class.ov-status--blocked]="row.status === 'Closed' || row.status === 'Rejected'">
+              {{ row.status }}
+            </span>
             <span *ngSwitchCase="'totalAmount'" class="font-semibold text-defaulttextcolor">{{ row.totalAmount }}</span>
             <a *ngSwitchCase="'vendor'" class="ov-link" href="javascript:void(0)">{{ row.vendor }}</a>
             <div *ngSwitchCase="'action'" class="po-action" data-po-action (click)="$event.stopPropagation()">

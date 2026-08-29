@@ -83,19 +83,22 @@
             <a routerLink="/inspections/inspection-details" class="ov-link font-semibold">{{ row.id }}</a>
           </ng-container>
 
-          <!-- Light grey Completed, Solid orange Pending status badges -->
+          <!-- Status badges — Figma Inspection-list 3274:122333 -->
           <ng-container *ngSwitchCase="'status'">
-            <span class="inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[11px] font-semibold leading-none"
-              [ngClass]="row.status === 'Completed' ? 'bg-[rgb(233,237,241)] text-[#1a222c]' : 'bg-[#d97706] text-white'">
+            <span
+              class="ov-status"
+              [class.ov-status--soft]="row.status === 'Completed'"
+              [class.ov-status--warning]="row.status === 'Pending'"
+              [class.ov-status--blocked]="row.status === 'Closed'"
+              [class.ov-status--outline]="row.status === 'Open'"
+              [class.ov-status--active]="row.status === 'Active'">
               {{ row.status }}
             </span>
           </ng-container>
 
-          <!-- Soft grey Type badge -->
+          <!-- Type badge — soft chip -->
           <ng-container *ngSwitchCase="'type'">
-            <span class="inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[11px] font-semibold leading-none bg-[rgb(233,237,241)] text-[#1a222c]">
-              {{ row.type }}
-            </span>
+            <span class="ov-status ov-status--soft">{{ row.type }}</span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'property'">
@@ -106,10 +109,12 @@
             <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.unit }}</a>
           </ng-container>
 
-          <!-- Solid dark Yes, light grey No badges -->
+          <!-- Scheduled: Yes = primary, No = soft -->
           <ng-container *ngSwitchCase="'scheduled'">
-            <span class="inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[11px] font-semibold leading-none"
-              [ngClass]="row.scheduled === 'Yes' ? 'bg-[#1b222c] text-white' : 'bg-[rgb(233,237,241)] text-[#1a222c]'">
+            <span
+              class="ov-status"
+              [class.ov-status--active]="row.scheduled === 'Yes'"
+              [class.ov-status--soft]="row.scheduled !== 'Yes'">
               {{ row.scheduled }}
             </span>
           </ng-container>

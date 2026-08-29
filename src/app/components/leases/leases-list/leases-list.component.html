@@ -134,11 +134,13 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'status_nm'">
-            <span class="ov-status" [class.ov-status--active]="row.status_nm === 'Active'"
+            <span class="ov-status"
+              [class.ov-status--active]="row.status_nm === 'Active'"
               [class.ov-status--muted]="row.status_nm === 'Draft'"
               [class.ov-status--soft]="row.status_nm === 'Completed'"
               [class.ov-status--warning]="row.status_nm === 'Pending' || row.status_nm === 'Pending Approvals'"
-              [ngClass]="row.class_name || ''">
+              [class.ov-status--blocked]="row.status_nm === 'Closed' || row.status_nm === 'Terminated'"
+              [class.ov-status--outline]="row.status_nm === 'Open'">
               {{ getArabicLookupName(row, 'status_nm') }}
             </span>
           </ng-container>

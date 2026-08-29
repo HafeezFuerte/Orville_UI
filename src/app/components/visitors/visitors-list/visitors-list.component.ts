@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
-import { VISITOR_ROWS, VisitorRow, VisitorStatus, VisitorVisitType } from '../visitors.data';
+import { VISITOR_ROWS, VisitorRow } from '../visitors.data';
 
 @Component({
   selector: 'app-visitors-list',
@@ -189,21 +189,6 @@ export class VisitorsListComponent implements OnInit {
   closeRowAction(): void {
     this.openRowActionId = null;
     this.rowMenuStyle = null;
-  }
-
-  statusClass(status: VisitorStatus): string {
-    switch (status) {
-      case 'Checked-in':
-        return 'visitor-chip visitor-chip--success';
-      case 'Checked-out':
-        return 'visitor-chip visitor-chip--info';
-      default:
-        return 'visitor-chip visitor-chip--soft';
-    }
-  }
-
-  visitTypeClass(type: VisitorVisitType): string {
-    return 'visitor-chip visitor-chip--type';
   }
 
   @HostListener('document:click')

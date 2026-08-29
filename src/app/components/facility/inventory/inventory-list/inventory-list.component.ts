@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
-import { InventoryRow, InventoryStockType } from '../inventory.data';
+import { InventoryRow } from '../inventory.data';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 
@@ -205,10 +205,6 @@ export class InventoryListComponent implements OnInit {
   toggleColumnDropdown(event: Event): void {
     event.stopPropagation();
     this.showColumnDropdown = !this.showColumnDropdown;
-  }
-
-  stockTypeClass(type: InventoryStockType): string {
-    return type === 'Non-Stock' ? 'inv-chip inv-chip--soft' : 'inv-chip inv-chip--info';
   }
 
   toggleRowAction(id: string, event: MouseEvent): void {

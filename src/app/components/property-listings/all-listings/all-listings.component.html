@@ -1,0 +1,244 @@
+<div class="pl-page font-hanken">
+  <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="min-w-0">
+      <h3 class="ov-page-title">Property Listings</h3>
+      <p class="ov-page-sub">
+        Units marked for sale or for rent and published to your public listing site.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 shrink-0">
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}
+      </button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="viewPublicWebsite()">
+        View Public Website
+      </button>
+    </div>
+  </div>
+
+  <div class="pl-stats mb-5">
+    <div class="pl-stat">
+      <span class="pl-stat__label">Total listings</span>
+      <span class="pl-stat__val">{{ totalCatalog }}</span>
+      <span class="pl-stat__hint">Across your portfolio</span>
+    </div>
+    <div class="pl-stat">
+      <span class="pl-stat__label">Showing</span>
+      <span class="pl-stat__val">{{ filteredCount }}</span>
+      <span class="pl-stat__hint">Match current filters</span>
+    </div>
+    <div class="pl-stat">
+      <span class="pl-stat__label">Available</span>
+      <span class="pl-stat__val">{{ availableCount }}</span>
+      <span class="pl-stat__hint">Vacant right now</span>
+    </div>
+    <div class="pl-stat">
+      <span class="pl-stat__label">Published</span>
+      <span class="pl-stat__val">{{ publishedCount }}</span>
+      <span class="pl-stat__hint">Live on public site</span>
+    </div>
+  </div>
+
+  <div class="pl-toolbar mb-5">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[420px]">
+      <label class="sr-only" for="listing-search">Search listings</label>
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input
+        id="listing-search"
+        type="text"
+        class="ov-input ov-search__input"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        placeholder="Search by name, unit, or reference" />
+      <button
+        *ngIf="searchQuery"
+        type="button"
+        class="pl-search-clear"
+        (click)="clearSearch()"
+        aria-label="Clear search">
+        ×
+      </button>
+    </div>
+
+    <div class="ov-seg ov-seg--solid overflow-x-auto">
+      <button
+        type="button"
+        class="ov-seg__btn whitespace-nowrap"
+        *ngFor="let tab of offerTabs"
+        [class.is-active]="offerTab === tab"
+        (click)="setOfferTab(tab)">
+        {{ tab }}
+      </button>
+    </div>
+  </div>
+
+  <div class="pl-grid" *ngIf="pageCards.length; else emptyState">
+    <article
+      class="pl-card"
+      *ngFor="let card of pageCards"
+      role="link"
+      tabindex="0"
+      [attr.aria-label]="'View ' + card.title"
+      (click)="openListing(card.id)"
+      (keydown.enter)="openListing(card.id)"
+      (keydown.space)="$event.preventDefault(); openListing(card.id)">
+      <div class="pl-card__media">
+        <img
+          *ngIf="card.imageUrl; else noPhoto"
+          [src]="card.imageUrl"
+          [alt]="card.title"
+          class="pl-card__img" />
+        <ng-template #noPhoto>
+          <div class="pl-card__empty">
+            <img src="assets/images/settings/image.svg" alt="" width="28" height="28" />
+            <span>No photos</span>
+          </div>
+        </ng-template>
+
+        <div class="pl-card__media-top">
+          <span [class]="occupancyClass(card.occupancy)">{{ card.occupancy }}</span>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="pl-card__menu-btn"
+              aria-label="Listing actions"
+              (click)="toggleMenu(card.id, $event)">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="18" height="18" />
+            </button>
+            <div *ngIf="openMenuId === card.id" class="pl-card__menu" role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                class="pl-card__menu-item"
+                (click)="openListing(card.id)">
+                View Details
+              </button>
+              <button type="button" role="menuitem" class="pl-card__menu-item">Edit Listing</button>
+              <button type="button" role="menuitem" class="pl-card__menu-item pl-card__menu-item--danger">
+                Unpublish
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <span class="pl-card__type-pill">{{ card.unitType }}</span>
+      </div>
+
+      <div class="pl-card__body">
+        <div class="pl-card__badges">
+          <span [class]="publishClass(card.publishStatus)">{{ card.publishStatus }}</span>
+          <span [class]="offerClass(card.offer)">{{ card.offer }}</span>
+        </div>
+        <h4 class="pl-card__title" [title]="card.title">{{ card.title }}</h4>
+        <div class="pl-card__footer">
+          <span class="pl-card__price">{{ card.price }}</span>
+          <span class="pl-card__ref">{{ card.ref }}</span>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="pl-empty">
+      <img src="assets/images/work-orders/search.svg" alt="" width="24" height="24" />
+      <h4 class="pl-empty__title">No listings found</h4>
+      <p class="pl-empty__text">Try a different search or clear your filters to see more results.</p>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilters(); clearSearch(); setOfferTab('All')">
+        Reset filters
+      </button>
+    </div>
+  </ng-template>
+
+  <div class="ov-page !px-0 !border-0 !bg-transparent mt-5" *ngIf="filteredCount">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [ngValue]="12">12</option>
+          <option [ngValue]="24">24</option>
+          <option [ngValue]="48">48</option>
+        </select>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+      </div>
+      <span>Showing {{ startRecord }}–{{ endRecord }} of {{ filteredCount }}</span>
+    </div>
+    <div class="ov-page__nav">
+      <div class="ov-page__btns">
+        <button
+          type="button"
+          class="ov-page__btn"
+          (click)="firstPage()"
+          [disabled]="displayPage <= 1"
+          aria-label="First page">
+          «
+        </button>
+        <button
+          type="button"
+          class="ov-page__btn"
+          (click)="previousPage()"
+          [disabled]="displayPage <= 1"
+          aria-label="Previous page">
+          <img
+            src="assets/images/common/chevron-down.svg"
+            alt=""
+            width="14"
+            height="14"
+            class="ov-page__chevron ov-page__chevron--prev" />
+        </button>
+        <span class="ov-page__label px-2">Page {{ displayPage }} of {{ totalPages }}</span>
+        <button
+          type="button"
+          class="ov-page__btn"
+          (click)="nextPage()"
+          [disabled]="displayPage >= totalPages"
+          aria-label="Next page">
+          <img
+            src="assets/images/common/chevron-down.svg"
+            alt=""
+            width="14"
+            height="14"
+            class="ov-page__chevron ov-page__chevron--next" />
+        </button>
+        <button
+          type="button"
+          class="ov-page__btn"
+          (click)="lastPage()"
+          [disabled]="displayPage >= totalPages"
+          aria-label="Last page">
+          »
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+  <div class="flex flex-col gap-4">
+    <div>
+      <label class="ov-label">Offer</label>
+      <select class="ov-input" [(ngModel)]="filterOffer">
+        <option value="">All</option>
+        <option value="For Rent">For Rent</option>
+        <option value="For Sale">For Sale</option>
+      </select>
+    </div>
+    <div>
+      <label class="ov-label">Publish status</label>
+      <select class="ov-input" [(ngModel)]="filterStatus">
+        <option value="">All</option>
+        <option value="Published">Published</option>
+        <option value="Draft">Draft</option>
+        <option value="Unpublished">Unpublished</option>
+      </select>
+    </div>
+    <div>
+      <label class="ov-label">Occupancy</label>
+      <select class="ov-input" [(ngModel)]="filterOccupancy">
+        <option value="">All</option>
+        <option value="Vacant">Vacant</option>
+        <option value="Occupied">Occupied</option>
+      </select>
+    </div>
+  </div>
+</app-filter-drawer>

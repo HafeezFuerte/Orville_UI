@@ -66,8 +66,12 @@
                 [routerLink]="['/visitors', row.id]"
                 (click)="closeRowAction()">{{ row.visitorName }}</a>
             </span>
-            <span *ngSwitchCase="'visitType'" [ngClass]="visitTypeClass(row.visitType)">{{ row.visitType }}</span>
-            <span *ngSwitchCase="'status'" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            <span *ngSwitchCase="'visitType'" class="ov-status ov-status--outline">{{ row.visitType }}</span>
+            <span *ngSwitchCase="'status'"
+              class="ov-status"
+              [class.ov-status--outline]="row.status === 'Not Checked-in'"
+              [class.ov-status--success]="row.status === 'Checked-in'"
+              [class.ov-status--info]="row.status === 'Checked-out'">{{ row.status }}</span>
             <span *ngSwitchCase="'contact'" class="visitor-name-cell">
               <img src="assets/images/create/user-square.svg" alt="" width="16" height="16" class="visitor-name-cell__icon" />
               <span>{{ row.contact }}</span>

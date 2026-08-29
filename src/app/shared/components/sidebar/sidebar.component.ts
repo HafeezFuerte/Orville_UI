@@ -190,6 +190,7 @@ export class SidebarComponent {
         }
 
         this.menuItems = this.ensureVisitorsMenu(this.menuItems);
+        this.menuItems = this.ensurePropertyListingsMenu(this.menuItems);
         this.menuItems = this.ensureMoreMenuDefaults(this.menuItems);
 
         // Figma settings menu (always — independent of API Settings modules)
@@ -288,6 +289,20 @@ export class SidebarComponent {
           children: this.withVisitorsChildren(),
         };
       }
+      if (this.isPropertyListingsParent(normalizedName)) {
+        return {
+          title: 'Property Listings',
+          type: 'sub',
+          selected: false,
+          active: false,
+          icon:
+            this.getFigmaIcon('property listings') ||
+            module.menu_icon ||
+            this.moduleIconMap[normalizedName] ||
+            'bx bx-layer',
+          children: this.withPropertyListingsChildren(),
+        };
+      }
       // Figma: Lease Management is a direct link (no single-item "Leases" submenu).
       if (this.isLeaseModule(normalizedName)) {
         return {
@@ -325,6 +340,9 @@ export class SidebarComponent {
     if (this.isVisitorsParent(normalizedName)) {
       children = this.withVisitorsChildren();
     }
+    if (this.isPropertyListingsParent(normalizedName)) {
+      children = this.withPropertyListingsChildren();
+    }
     // Flatten Lease Management when API only returns a single Leases child (matches Figma).
     if (this.isLeaseModule(normalizedName) && children.length <= 1) {
       const only = children[0];
@@ -343,12 +361,18 @@ export class SidebarComponent {
     }
 
     return {
-      title: this.isVisitorsParent(normalizedName) ? 'Visitors' : module.moduleName,
+      title: this.isPropertyListingsParent(normalizedName)
+        ? 'Property Listings'
+        : this.isVisitorsParent(normalizedName)
+          ? 'Visitors'
+          : module.moduleName,
       type: 'sub',
       selected: false,
       active: false,
       icon:
-        this.getFigmaIcon(normalizedName) ||
+        this.getFigmaIcon(
+          this.isPropertyListingsParent(normalizedName) ? 'property listings' : normalizedName
+        ) ||
         module.menu_icon ||
         this.moduleIconMap[normalizedName] ||
         'bx bx-layer',
@@ -407,6 +431,35 @@ export class SidebarComponent {
         title: 'Check-Out Visitors',
         type: 'link',
         path: '/visitors/check-out',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+    ];
+  }
+
+  private withPropertyListingsChildren(): any[] {
+    return [
+      {
+        title: 'All Listings',
+        type: 'link',
+        path: '/property-listings',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Project Listings',
+        type: 'link',
+        path: '/property-listings/projects',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Property Inquiries',
+        type: 'link',
+        path: '/property-listings/inquiries',
         active: false,
         selected: false,
         exact: true,
@@ -528,6 +581,13 @@ export class SidebarComponent {
     'Landlord Commissions': '/commissions/landlord',
     'Collection Request': '/collection-requests',
     'Collection Requests': '/collection-requests',
+    'Property Listings': '/property-listings',
+    'Property Listing': '/property-listings',
+    'All Listings': '/property-listings',
+    'Project Listings': '/property-listings/projects',
+    'Project Listing': '/property-listings/projects',
+    'Property Inquiries': '/property-listings/inquiries',
+    'Property Inquiry': '/property-listings/inquiries',
     'Visitors': '/visitors',
     'Visitor': '/visitors',
     'Guests': '/visitors',
@@ -630,6 +690,83 @@ export class SidebarComponent {
         active: false,
         selected: false,
         children: this.withVisitorsChildren(),
+      };
+    });
+  }
+
+  private isPropertyListingsParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return (
+      name === 'property listings' ||
+      name === 'property listing' ||
+      name === 'listings' ||
+      name.includes('property listing')
+    );
+  }
+
+  private isPropertyListingsChildTitle(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return (
+      name === 'all listings' ||
+      name === 'project listings' ||
+      name === 'project listing' ||
+      name === 'property inquiries' ||
+      name === 'property inquiry'
+    );
+  }
+
+  private resolvePropertyListingsChildPath(menuName: string): string {
+    const name = (menuName || '').trim().toLowerCase();
+    if (name.includes('project')) {
+      return '/property-listings/projects';
+    }
+    if (name.includes('inquir')) {
+      return '/property-listings/inquiries';
+    }
+    return '/property-listings';
+  }
+
+  /** Force Property Listings submenu: All / Project / Inquiries. */
+  private ensurePropertyListingsMenu(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    let result = items.filter((item) => !this.isPropertyListingsChildTitle(item.title));
+    const hasParent = result.some((item) => this.isPropertyListingsParent(item.title));
+
+    if (!hasParent) {
+      const insertAt = Math.max(
+        0,
+        result.findIndex((item) => (item.title || '').toLowerCase().includes('remind'))
+      );
+      const menuItem: Menu = {
+        title: 'Property Listings',
+        type: 'sub',
+        icon: this.getFigmaIcon('property listings') || './assets/images/nav/listings.svg',
+        active: false,
+        selected: false,
+        children: this.withPropertyListingsChildren(),
+      };
+      if (insertAt >= 0) {
+        result = [...result.slice(0, insertAt), menuItem, ...result.slice(insertAt)];
+      } else {
+        result = [...result, menuItem];
+      }
+      return result;
+    }
+
+    return result.map((item) => {
+      if (!this.isPropertyListingsParent(item.title)) {
+        return item;
+      }
+      return {
+        title: 'Property Listings',
+        type: 'sub',
+        icon: this.getFigmaIcon('property listings') || item.icon,
+        active: false,
+        selected: false,
+        children: this.withPropertyListingsChildren(),
       };
     });
   }
@@ -1040,6 +1177,9 @@ export class SidebarComponent {
     }
     if (this.isVisitorsParent(parentTitle)) {
       return this.resolveVisitorsChildPath(normalizedName);
+    }
+    if (this.isPropertyListingsParent(parentTitle)) {
+      return this.resolvePropertyListingsChildPath(normalizedName);
     }
 
     let path = this.urlNameMap[normalizedName];
@@ -1726,6 +1866,22 @@ export class SidebarComponent {
         const activeChild =
           element.children.find((child) => child.path === currentUrl) ||
           element.children.find((child) => child.path === '/visitors') ||
+          element.children[0];
+        if (activeChild) {
+          this.setMenuHeaders(element, activeChild);
+          return;
+        }
+      }
+    }
+
+    if (currentUrl.startsWith('/property-listings')) {
+      for (const element of this.menuItems) {
+        if (element.title !== 'Property Listings' || element.type !== 'sub' || !element.children?.length) {
+          continue;
+        }
+        const activeChild =
+          element.children.find((child) => child.path === currentUrl) ||
+          element.children.find((child) => child.path === '/property-listings') ||
           element.children[0];
         if (activeChild) {
           this.setMenuHeaders(element, activeChild);

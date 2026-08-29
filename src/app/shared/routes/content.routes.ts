@@ -68,6 +68,13 @@ export const content: Routes = [
       import('../../components/reminders/reminders.routes').then((m) => m.remindersRoutes),
   },
   {
+    path: 'property-listings',
+    loadChildren: () =>
+      import('../../components/property-listings/property-listings.routes').then(
+        (m) => m.propertyListingsRoutes
+      ),
+  },
+  {
     path: 'community',
     loadChildren: () =>
       import('../../components/community/community.routes').then((m) => m.communityRoutes),

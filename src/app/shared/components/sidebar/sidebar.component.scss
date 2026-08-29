@@ -365,6 +365,14 @@
     }
   }
 
+  /* Open + active submenu group: white card on light sidebar */
+  .main-menu > .slide.has-sub.active.open {
+    background-color: #fff !important;
+    border-radius: 4px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
   .orville-parent-item {
     background: transparent !important;
     color: rgb(var(--text-muted)) !important;
@@ -378,6 +386,23 @@
       color: rgb(var(--text-muted)) !important;
       font-weight: 400 !important;
       font-size: 14px !important;
+    }
+  }
+
+  /* Parent stays gold when any child route is active */
+  .main-menu > .slide.active > .orville-parent-item,
+  .orville-parent-item.active {
+    background-color: rgb(var(--orville-nav-active-bg)) !important;
+    color: rgb(var(--orville-accent)) !important;
+    font-weight: 600 !important;
+
+    .side-menu__label,
+    .orville-nav-icon,
+    .side-menu__icon,
+    .side-menu__angle {
+      color: rgb(var(--orville-accent)) !important;
+      fill: rgb(var(--orville-accent)) !important;
+      font-weight: 600 !important;
     }
   }
 
@@ -437,7 +462,7 @@
 
       &.active {
         background-color: rgb(var(--orville-nav-active-bg)) !important;
-        color: rgb(var(--orville-accent)) !important;
+        color: rgb(var(--default-text-color)) !important;
         font-size: 12px !important;
         font-weight: 600 !important;
         min-height: 32px;
@@ -454,7 +479,7 @@
         .side-menu__label {
           font-size: 12px !important;
           font-weight: 600 !important;
-          color: rgb(var(--orville-accent)) !important;
+          color: rgb(var(--default-text-color)) !important;
         }
       }
     }
@@ -521,32 +546,69 @@
       }
 
       &.active {
-        color: rgb(var(--orville-accent)) !important;
+        color: #fff !important;
         background-color: rgb(255 255 255 / 0.08) !important;
 
         .side-menu__label,
         .side-menu__angle {
-          color: rgb(var(--orville-accent)) !important;
+          color: #fff !important;
         }
       }
+    }
+
+    .main-menu > .slide.active > .orville-parent-item,
+    .orville-parent-item.active {
+      background-color: rgb(255 255 255 / 0.08) !important;
+      color: rgb(var(--orville-accent)) !important;
+
+      .side-menu__label,
+      .orville-nav-icon,
+      .side-menu__icon,
+      .side-menu__angle {
+        color: rgb(var(--orville-accent)) !important;
+        fill: rgb(var(--orville-accent)) !important;
+      }
+    }
+
+    .main-menu > .slide.has-sub.active.open {
+      background-color: rgb(255 255 255 / 0.06) !important;
     }
   }
 }
 
-/* Light menu active pill stays gold on dark page theme */
+/* Light menu: parent gold + active sub dark text on dark page theme */
 :host-context(html.dark):host-context([data-menu-styles='light']),
 :host-context(.dark):host-context([data-menu-styles='light']) {
   ::ng-deep {
-    .main-menu > .slide > .side-menu__item.active {
+    .main-menu > .slide > .side-menu__item.active,
+    .main-menu > .slide.active > .orville-parent-item,
+    .orville-parent-item.active {
       background-color: rgb(var(--orville-nav-active-bg)) !important;
       color: rgb(var(--orville-accent)) !important;
 
       .side-menu__label,
       .orville-nav-icon,
-      .side-menu__icon {
+      .side-menu__icon,
+      .side-menu__angle {
         color: rgb(var(--orville-accent)) !important;
         fill: rgb(var(--orville-accent)) !important;
       }
+    }
+
+    .slide-menu .orville-sub-item.active,
+    .slide-menu.child1 .side-menu__item.active,
+    .slide-menu.child2 .side-menu__item.active,
+    .slide-menu.child3 .side-menu__item.active {
+      color: rgb(var(--default-text-color)) !important;
+      background-color: rgb(var(--orville-nav-active-bg)) !important;
+
+      .side-menu__label {
+        color: rgb(var(--default-text-color)) !important;
+      }
+    }
+
+    .main-menu > .slide.has-sub.active.open {
+      background-color: #fff !important;
     }
   }
 }
@@ -665,14 +727,14 @@
     }
 
     &.active {
-      color: rgb(var(--orville-accent)) !important;
-      background-color: rgb(255 255 255 / 0.08) !important;
+      color: #fff !important;
+      background-color: rgb(255 255 255 / 0.14) !important;
       font-weight: 600 !important;
       box-shadow: none !important;
 
       .side-menu__label,
       .side-menu__angle {
-        color: rgb(var(--orville-accent)) !important;
+        color: #fff !important;
         font-weight: 600 !important;
       }
     }
@@ -681,6 +743,24 @@
       display: none !important;
       content: none !important;
     }
+  }
+
+  ::ng-deep .main-menu > .slide.active > .orville-parent-item,
+  ::ng-deep .orville-parent-item.active {
+    background-color: rgb(255 255 255 / 0.14) !important;
+    color: rgb(var(--orville-accent)) !important;
+
+    .side-menu__label,
+    .orville-nav-icon,
+    .side-menu__icon,
+    .side-menu__angle {
+      color: rgb(var(--orville-accent)) !important;
+      fill: rgb(var(--orville-accent)) !important;
+    }
+  }
+
+  ::ng-deep .main-menu > .slide.has-sub.active.open {
+    background-color: rgb(255 255 255 / 0.08) !important;
   }
 }
 

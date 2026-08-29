@@ -1,0 +1,45 @@
+<div class="font-hanken">
+  <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h3 class="ov-page-title">Project Listings</h3>
+      <p class="ov-page-sub">Projects and off-plan inventory published to your listing site.</p>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
+      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
+        <label class="sr-only" for="project-listing-search">Search</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input
+          id="project-listing-search"
+          type="text"
+          class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search projects" />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto px-5 pb-5 pt-5">
+      <app-shared-table
+        [columns]="tableColumns"
+        [data]="paginatedRows"
+        [hasActions]="false"
+        [emptyMessage]="'No project listings found'"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50]"
+        (pageChange)="onSharedTablePageChange($event)">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <span *ngSwitchCase="'name'" class="font-semibold text-defaulttextcolor">{{ row.name }}</span>
+            <span *ngSwitchCase="'status'" [class]="statusClass(row.status)">{{ row.status }}</span>
+            <span *ngSwitchDefault>{{ row[col.key] }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>
