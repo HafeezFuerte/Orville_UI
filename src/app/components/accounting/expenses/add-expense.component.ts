@@ -76,9 +76,7 @@ export class AddExpenseComponent {
     this.route.paramMap.subscribe(params => {
 
       this.invoice_no = params.get('code') ?? '';
-      if (this.invoice_no != '') {
-        this.getInvoiceDetails();
-      }
+     
     });
 
   }
@@ -179,6 +177,10 @@ export class AddExpenseComponent {
           this.expenseForm.patchValue({
             type: 265,
           })
+
+          if (this.invoice_no != '') {
+            this.getInvoiceDetails();
+          }
         }
         else
           this.toastr.error("No record[s] found");
