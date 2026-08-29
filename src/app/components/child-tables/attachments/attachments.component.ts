@@ -34,12 +34,12 @@ export class AttachmentsComponent {
   totalRecords: number = 0;
   columns: any[] = [ 
     { key: 'code', label: 'web.common.lblID', is_editCol: true, useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'document_type_name', label: 'web.property.lblFileType',  useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'doc_no', label: 'web.property.lblDocID', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
-    { key: 'document_status_name', label: 'web.property.lblDocumentStatus', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
-    { key: 'issue_date', label: 'web.property.lblIssueDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'expiry_date', label: 'web.property.lblExpiryDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.property.lblFiles',isLink:true,useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false,   redirect_url: '' },
+    { key: 'document_type_name', label: 'web.portfolio.attachments.lblFileType',  useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'doc_no', label: 'web.portfolio.attachments.lblDocumentNumber', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: false },
+    { key: 'document_status_name', label: 'web.portfolio.attachments.lblDocumentStatus', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
+    { key: 'issue_date', label: 'web.portfolio.attachments.lblIssueDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'expiry_date', label: 'web.portfolio.attachments.lblExpiryDate', useTemplate: false, width: '', isHtml: false, headerClass: '',cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'file_path', label: 'web.portfolio.attachments.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '',cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
      
   ];
   searchQuery: string = '';

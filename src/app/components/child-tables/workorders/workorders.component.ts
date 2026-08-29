@@ -1,7 +1,8 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,7 +14,7 @@ import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/
 @Component({
   selector: 'app-workorders-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule, FilterDrawerComponent],
+  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, OvPaginatorComponent, FilterDrawerComponent],
   templateUrl: './workorders.component.html',
   styleUrls: ['./workorders.component.scss']
 })
@@ -127,6 +128,7 @@ export class WorkordersTableComponent {
   ngOnInit(): void { 
     this.currentUser = this.commonService.getCurrentUser(); 
     this.columns=this.workorderColumns;
+    this.totalRecords = this.totalRecords || this.data?.length || 0;
   } 
   search_with_keyword() {
     let result =this.selectedTab?.data;
@@ -137,6 +139,7 @@ export class WorkordersTableComponent {
     ); 
     }
     this.data=result;
+    this.totalRecords = this.data?.length || 0;
   }
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
@@ -186,6 +189,7 @@ getValueWithCurrency(val:any){
       result = result.filter((p: any) => p.landlord?.toLowerCase().includes(this.filterLandlord.toLowerCase()));
     }
     this.data = result;
+    this.totalRecords = this.data?.length || 0;
   }
 
   clearFilters() {

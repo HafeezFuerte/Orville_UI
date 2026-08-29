@@ -169,18 +169,18 @@ export class WorkOrderListComponent implements OnInit {
   kanbanPriorityClass(priority?: string): string {
     const value = (priority || '').toLowerCase();
     if (value === 'emergency' || value === 'critical' || value === 'urgent') {
-      return 'wo-kanban-card__priority--emergency';
+      return 'ov-kanban-card__priority--emergency';
     }
     if (value === 'high') {
-      return 'wo-kanban-card__priority--high';
+      return 'ov-kanban-card__priority--high';
     }
     if (value === 'medium') {
-      return 'wo-kanban-card__priority--medium';
+      return 'ov-kanban-card__priority--medium';
     }
     if (value === 'low') {
-      return 'wo-kanban-card__priority--low';
+      return 'ov-kanban-card__priority--low';
     }
-    return 'wo-kanban-card__priority--soft';
+    return 'ov-kanban-card__priority--soft';
   }
 
   private normalizeStatus(value?: string): string {

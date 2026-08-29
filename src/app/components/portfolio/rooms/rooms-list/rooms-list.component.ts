@@ -12,6 +12,7 @@ import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { portfolioStatusClass } from '../../portfolio-status.util';
 export interface Room {
   id: number;
   name: string;
@@ -40,6 +41,7 @@ export interface Room {
   styleUrl: './rooms-list.component.scss'
 })
 export class RoomsListComponent implements OnInit {
+  readonly portfolioStatusClass = portfolioStatusClass;
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   searchQuery: string = '';
@@ -144,6 +146,10 @@ export class RoomsListComponent implements OnInit {
 
   getArabicLookupName(row: any, key: string): string {
     return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
+  }
+
+  isCommercialCategory(row: any): boolean {
+    return String(this.getArabicLookupName(row, 'category_name') || '').toLowerCase().includes('commercial');
   }
 
   ngOnInit(): void {
@@ -400,11 +406,6 @@ export class RoomsListComponent implements OnInit {
     if (!this.canLoadMore) return;
     this.pageNo++;
     this.loadRooms(true);
-  }
-
-  isActiveGridStatus(status: string | null | undefined): boolean {
-    const value = (status || '').toLowerCase();
-    return !value || value === 'active' || value.includes('active');
   }
 
   toggleViewMode(): void {

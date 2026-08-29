@@ -1,0 +1,89 @@
+<div class="pi-page font-hanken">
+  <div class="page-header !py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <h3 class="ov-page-title m-0">Property Inquiries</h3>
+    </div>
+
+    <div class="ov-toolbar__btns shrink-0">
+      <button
+        type="button"
+        class="ov-btn ov-btn-toolbar"
+        (click)="isDrawerOpen = true"
+        data-tooltip="Filter">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filter
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="ov-btn ov-btn-toolbar"
+          (click)="toggleColumnDropdown($event)"
+          data-tooltip="Column">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Column
+        </button>
+        <app-column-menu
+          *ngIf="showColumnDropdown"
+          [columns]="tableColumns"
+          (toggle)="toggleColumn($event)"
+          (toggleAll)="toggleAllColumns($event)"
+          (closed)="showColumnDropdown = false">
+        </app-column-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
+    <div class="overflow-x-auto px-5 pb-5 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="paginatedRows"
+        [hasActions]="false"
+        [emptyMessage]="'No inquiries match your search.'"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50]"
+        (pageChange)="onSharedTablePageChange($event)">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <span *ngSwitchCase="'inquiryType'" [class]="inquiryTypeClass(row.inquiryType)">
+              {{ row.inquiryType }}
+            </span>
+            <span *ngSwitchCase="'message'" class="pi-message" [title]="row.message">
+              {{ row.message }}
+            </span>
+            <span *ngSwitchDefault>{{ row[col.key] }}</span>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+  <div class="flex flex-col gap-4">
+    <div>
+      <label class="ov-label">Inquiry Type</label>
+      <select class="ov-input" [(ngModel)]="filterInquiryType">
+        <option value="">All</option>
+        <option value="For Rent">For Rent</option>
+        <option value="For Sale">For Sale</option>
+        <option value="Viewing">Viewing</option>
+        <option value="General">General</option>
+      </select>
+    </div>
+    <div>
+      <label class="ov-label">Unit</label>
+      <input
+        type="text"
+        class="ov-input"
+        [(ngModel)]="filterUnit"
+        (keyup.enter)="applyFilters()"
+        placeholder="e.g. 301-PR-1" />
+    </div>
+  </div>
+</app-filter-drawer>

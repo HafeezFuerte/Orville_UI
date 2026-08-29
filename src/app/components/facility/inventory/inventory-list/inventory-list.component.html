@@ -41,7 +41,7 @@
       <app-shared-table
         [columns]="visibleColumns"
         [data]="paginatedRows"
-        [loading]="false"
+        [loading]="isLoading"
         [hasActions]="false"
         [showPaginator]="false"
         [totalRecords]="totalRecords"
@@ -50,13 +50,13 @@
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
             <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)"
-              (click)="navigateToDetail(row.id)">{{ row.id }}</a>
-            <span *ngSwitchCase="'category'" class="inv-chip inv-chip--soft">{{ row.category }}</span>
+               (click)="navigateToDetail(row.id)">{{ row.id }}</a>
+            <span *ngSwitchCase="'category'" class="ov-status ov-status--soft">{{ row.category }}</span>
             <span *ngSwitchCase="'cost'" class="font-semibold text-defaulttextcolor">{{ row.cost }}</span>
-            <span *ngSwitchCase="'stockType'" class="inv-chip" [ngClass]="stockTypeClass(row.stockType)">{{ row.stockType }}</span>
+            <span *ngSwitchCase="'stockType'" class="ov-status ov-status--outline">{{ row.stockType }}</span>
             <div *ngSwitchCase="'expiration'" class="flex flex-wrap items-center gap-2">
               <span [class.inv-expiring]="row.expiringSoon">{{ row.expiration }}</span>
-              <span *ngIf="row.expiringSoon" class="inv-chip inv-chip--danger">Expiring Soon</span>
+              <span *ngIf="row.expiringSoon" class="ov-status ov-status--blocked">Expiring Soon</span>
             </div>
             <div *ngSwitchCase="'action'" class="inv-action" data-inv-action (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
@@ -81,6 +81,7 @@
             <option [ngValue]="10">10</option>
             <option [ngValue]="25">25</option>
             <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -92,7 +93,11 @@
           <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
-          <button type="button" class="ov-page__btn is-active" (click)="goPage(1)">1</button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn" [class.is-active]="item === displayPage"
+              (click)="goPage(+item)">{{ item }}</button>
+          </ng-container>
           <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
@@ -107,7 +112,7 @@
     data-inv-action
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
-    <button type="button" role="menuitem" class="inv-row-menu__item" (click)="navigateToCreate()">Edit</button>
+    <button type="button" role="menuitem" class="inv-row-menu__item" (click)="navigateToCreate(openRowActionId!)">Edit</button>
     <button type="button" role="menuitem" class="inv-row-menu__item"
       (click)="navigateToDetail(openRowActionId!)">View</button>
   </div>

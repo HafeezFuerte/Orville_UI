@@ -76,6 +76,30 @@ saveInventoryItem(payload: FormData): Observable<any> {
     payload
   );
 }
+saveSpace(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_spaces',
+    payload
+  );
+}
+saveVendorContract(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_vendor_contract',
+    payload
+  );
+}
+saveLandlordContract(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_landlord_contract',
+    payload
+  );
+}
+saveReminder(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_reminders',
+    payload
+  );
+}
 getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/get_masters_by_paging',

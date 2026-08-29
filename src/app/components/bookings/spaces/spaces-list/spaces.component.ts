@@ -1,12 +1,14 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, RouterLink } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
-import { SPACE_ROWS, SpaceAvailability, SpaceRow } from '../spaces.data';
+import { SpaceAvailability, SpaceRow } from '../spaces.data';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-spaces',
@@ -15,6 +17,7 @@ import { SPACE_ROWS, SpaceAvailability, SpaceRow } from '../spaces.data';
     CommonModule,
     FormsModule,
     RouterModule,
+    RouterLink,
     NgSelectModule,
     SharedTableComponent,
     FilterDrawerComponent,
@@ -22,7 +25,13 @@ import { SPACE_ROWS, SpaceAvailability, SpaceRow } from '../spaces.data';
   ],
   templateUrl: './spaces.component.html'
 })
-export class SpacesComponent {
+export class SpacesComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private commontabservice: Common_TabsService,
+    private commonService: CommonService
+  ) {}
+
   searchQuery = '';
   isDrawerOpen = false;
   showColumnDropdown = false;
@@ -31,7 +40,10 @@ export class SpacesComponent {
   availabilityOptions: SpaceAvailability[] = ['Weekdays', 'Weekends', 'Always', 'Closed', 'Custom Days'];
   pageIndex = 0;
   pageSize = 10;
-  allRows = SPACE_ROWS;
+  allRows: SpaceRow[] = [];
+  isLoading = false;
+  totalRecordsCount = 0;
+  totalPagesCount = 0;
 
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px', headerClass: 'text-start sticky left-0 z-[2] bg-white dark:bg-bodybg', cellClass: 'sticky left-0 z-[1] bg-white dark:bg-bodybg' },
@@ -49,41 +61,107 @@ export class SpacesComponent {
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.loadSpaces();
+  }
+
+  formatDateString(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+      const dt = new Date(dateStr);
+      if (isNaN(dt.getTime())) return dateStr;
+      const d = String(dt.getDate()).padStart(2, '0');
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const y = dt.getFullYear();
+      return `${d}-${m}-${y}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  loadSpaces(): void {
+    this.isLoading = true;
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      clientID: currentUser?.clientId || "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageIndex,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      feature: "SPACES",
+      featureid: "SPACES",
+      search_columns: "P.space_name",
+      filter_by: ""
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res && res.statusCode === "200" && res.objResult) {
+          const rawItems = res.objResult.spaces || res.objResult.table || [];
+          this.allRows = rawItems.map((item: any) => ({
+            id: String(item.code || item.id || ''),
+            name: item.space_name || item.name || '',
+            location: item.space_location || item.location || '',
+            availability: (item.availability || 'Always') as SpaceAvailability,
+            slotDuration: item.slots_duration_nm || item.slot_duration || item.slotDuration || '',
+            dateRange: (item.start_date && item.end_date)
+              ? `${this.formatDateString(item.start_date)} - ${this.formatDateString(item.end_date)}`
+              : (item.date_range || item.dateRange || ''),
+            enablePayment: (item.enabled_payment === true || item.enable_payment === true || item.enablePayment === 'Yes' || item.enablePayment === 'Enabled' || item.enablePayment === true) ? 'Enabled' : 'Disabled',
+            phone: item.phone_no || item.phone_number || item.phone || '',
+            email: item.email_address || item.email || '',
+            property: item.property_name || item.property || '',
+            unit: item.unit_no || item.unit_name || item.unit || '',
+            createdAt: item.created_at || item.createdAt || ''
+          }));
+
+          if (res.objResult.rows_info && res.objResult.rows_info[0]) {
+            this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
+            this.totalPagesCount = res.objResult.rows_info[0].noofpages;
+          } else {
+            this.totalRecordsCount = this.allRows.length;
+            this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
+          }
+        } else {
+          this.allRows = [];
+          this.totalRecordsCount = 0;
+          this.totalPagesCount = 0;
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        console.error("Error loading spaces:", err);
+        this.allRows = [];
+        this.totalRecordsCount = 0;
+        this.totalPagesCount = 0;
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
   }
 
   get filteredRows(): SpaceRow[] {
-    const q = this.searchQuery.trim().toLowerCase();
-    return this.allRows.filter((row) => {
-      if (this.filterName && !row.name.toLowerCase().includes(this.filterName.toLowerCase())) {
-        return false;
-      }
-      if (this.filterAvailability && row.availability !== this.filterAvailability) {
-        return false;
-      }
-      if (!q) {
-        return true;
-      }
-      return [row.id, row.name, row.location, row.property, row.unit, row.email].some((value) =>
-        value.toLowerCase().includes(q)
-      );
-    });
+    return this.allRows;
   }
 
   get totalRecords(): number {
-    return this.filteredRows.length;
+    return this.totalRecordsCount;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
+    return Math.max(1, this.totalPagesCount || 1);
   }
 
   get paginatedRows(): SpaceRow[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
+    return this.allRows;
   }
 
   get displayPage(): number {
@@ -107,15 +185,17 @@ export class SpacesComponent {
   }
 
   goToAdd(): void {
-    void this.router.navigate(['/bookings/spaces/new']);
+    void this.router.navigate(['/bookings/spaces/create']);
   }
 
   onSearch(): void {
     this.pageIndex = 0;
+    this.loadSpaces();
   }
 
   applyFilters(): void {
     this.pageIndex = 0;
+    this.loadSpaces();
   }
 
   clearFilters(): void {
@@ -123,6 +203,7 @@ export class SpacesComponent {
     this.filterName = '';
     this.filterAvailability = null;
     this.pageIndex = 0;
+    this.loadSpaces();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -143,24 +224,28 @@ export class SpacesComponent {
 
   onPageSizeChange(): void {
     this.pageIndex = 0;
+    this.loadSpaces();
   }
 
   previousPage(): void {
     if (this.pageIndex > 0) {
       this.pageIndex--;
+      this.loadSpaces();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
       this.pageIndex++;
+      this.loadSpaces();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
+    if (target >= 0 && target < this.totalPages && target !== this.pageIndex) {
       this.pageIndex = target;
+      this.loadSpaces();
     }
   }
 

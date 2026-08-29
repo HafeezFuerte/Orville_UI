@@ -68,6 +68,13 @@ export const content: Routes = [
       import('../../components/reminders/reminders.routes').then((m) => m.remindersRoutes),
   },
   {
+    path: 'property-listings',
+    loadChildren: () =>
+      import('../../components/property-listings/property-listings.routes').then(
+        (m) => m.propertyListingsRoutes
+      ),
+  },
+  {
     path: 'community',
     loadChildren: () =>
       import('../../components/community/community.routes').then((m) => m.communityRoutes),
@@ -79,6 +86,7 @@ export const content: Routes = [
   },
   { path: 'spaces', redirectTo: '/bookings/spaces', pathMatch: 'full' },
   { path: 'spaces/new', redirectTo: '/bookings/spaces/new', pathMatch: 'full' },
+  { path: 'spaces/create', redirectTo: '/bookings/spaces/create', pathMatch: 'full' },
   { path: 'spaces/:id', redirectTo: '/bookings/spaces/:id' },
   {
     path: 'legal',
@@ -103,7 +111,17 @@ export const content: Routes = [
       },
       {
         path: 'workflow-approvals',
-        loadComponent: () => import('../../components/settings/workflow-approvals/workflow-approvals.component').then(m => m.WorkflowApprovalsComponent)
+        loadComponent: () =>
+          import('../../components/settings/workflow-approvals/workflow-approvals.component').then(
+            (m) => m.WorkflowApprovalsComponent
+          ),
+      },
+      {
+        path: 'approvals',
+        loadComponent: () =>
+          import('../../components/settings/workflow-approvals/workflow-approvals.component').then(
+            (m) => m.WorkflowApprovalsComponent
+          ),
       },
       {
         path: 'regional-settings',
@@ -201,6 +219,13 @@ export const content: Routes = [
                 (m) => m.UserAddComponent
               ),
           },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../components/settings/users-and-admins/user-detail.component').then(
+                (m) => m.UserDetailComponent
+              ),
+          },
         ],
       },
       {
@@ -243,6 +268,209 @@ export const content: Routes = [
             '../../components/settings/invoice-receipt-profiles/invoice-receipt-profiles.component'
           ).then((m) => m.InvoiceReceiptProfilesComponent),
       },
+      {
+        path: 'discount-profiles',
+        loadComponent: () =>
+          import(
+            '../../components/settings/discount-profiles/discount-profiles.component'
+          ).then((m) => m.DiscountProfilesComponent),
+      },
+      {
+        path: 'tax-profiles',
+        loadComponent: () =>
+          import('../../components/settings/tax-profiles/tax-profiles.component').then(
+            (m) => m.TaxProfilesComponent
+          ),
+      },
+      {
+        path: 'bank-accounts',
+        loadComponent: () =>
+          import('../../components/settings/bank-accounts/bank-accounts.component').then(
+            (m) => m.BankAccountsComponent
+          ),
+      },
+      {
+        path: 'invoice-settings',
+        loadComponent: () =>
+          import('../../components/settings/payment-settings/payment-settings.component').then(
+            (m) => m.PaymentSettingsComponent
+          ),
+      },
+      {
+        path: 'cheques',
+        loadComponent: () =>
+          import('../../components/settings/cheques/cheques-settings.component').then(
+            (m) => m.ChequesSettingsComponent
+          ),
+      },
+      {
+        path: 'lease-settings',
+        loadComponent: () =>
+          import('../../components/settings/lease-settings/lease-settings.component').then(
+            (m) => m.LeaseSettingsComponent
+          ),
+      },
+      {
+        path: 'contract-settings',
+        loadComponent: () =>
+          import('../../components/settings/contract-settings/contract-settings.component').then(
+            (m) => m.ContractSettingsComponent
+          ),
+      },
+      {
+        path: 'management-fee-configuration',
+        loadComponent: () =>
+          import('../../components/settings/management-fee/management-fee.component').then(
+            (m) => m.ManagementFeeComponent
+          ),
+      },
+      {
+        path: 'work-order-settings',
+        loadComponent: () =>
+          import('../../components/settings/work-order-settings/work-order-settings.component').then(
+            (m) => m.WorkOrderSettingsComponent
+          ),
+      },
+      {
+        path: 'maintenance-categories',
+        loadComponent: () =>
+          import('../../components/settings/maintenance-categories/maintenance-categories.component').then(
+            (m) => m.MaintenanceCategoriesComponent
+          ),
+      },
+      {
+        path: 'quotation-categories',
+        loadComponent: () =>
+          import('../../components/settings/quotation-categories/quotation-categories.component').then(
+            (m) => m.QuotationCategoriesComponent
+          ),
+      },
+      {
+        path: 'po-settings',
+        loadComponent: () =>
+          import('../../components/settings/po-settings/po-settings.component').then(
+            (m) => m.PoSettingsComponent
+          ),
+      },
+      {
+        path: 'promotion-categories',
+        loadComponent: () =>
+          import('../../components/settings/promotion-categories/promotion-categories.component').then(
+            (m) => m.PromotionCategoriesComponent
+          ),
+      },
+      {
+        path: 'inventory-categories',
+        loadComponent: () =>
+          import('../../components/settings/inventory-categories/inventory-categories.component').then(
+            (m) => m.InventoryCategoriesComponent
+          ),
+      },
+      {
+        path: 'asset-categories',
+        loadComponent: () =>
+          import('../../components/settings/asset-categories/asset-categories.component').then(
+            (m) => m.AssetCategoriesComponent
+          ),
+      },
+      {
+        path: 'tickets-settings',
+        loadComponent: () =>
+          import('../../components/settings/tickets-settings/tickets-settings.component').then(
+            (m) => m.TicketsSettingsComponent
+          ),
+      },
+      {
+        path: 'unit-types',
+        loadComponent: () =>
+          import('../../components/settings/unit-types/unit-types.component').then(
+            (m) => m.UnitTypesComponent
+          ),
+      },
+      {
+        path: 'room-types',
+        loadComponent: () =>
+          import('../../components/settings/room-types/room-types.component').then(
+            (m) => m.RoomTypesComponent
+          ),
+      },
+      {
+        path: 'property-types',
+        loadComponent: () =>
+          import('../../components/settings/property-types/property-types.component').then(
+            (m) => m.PropertyTypesComponent
+          ),
+      },
+      {
+        path: 'property-amenities',
+        loadComponent: () =>
+          import('../../components/settings/property-amenities/property-amenities.component').then(
+            (m) => m.PropertyAmenitiesComponent
+          ),
+      },
+      {
+        path: 'custom-fields',
+        loadComponent: () =>
+          import('../../components/settings/custom-fields/custom-fields.component').then(
+            (m) => m.CustomFieldsComponent
+          ),
+      },
+      {
+        path: 'internal-statuses',
+        loadComponent: () =>
+          import('../../components/settings/internal-statuses/internal-statuses.component').then(
+            (m) => m.InternalStatusesComponent
+          ),
+      },
+      {
+        path: 'email-settings',
+        loadComponent: () =>
+          import('../../components/settings/email-settings/email-settings.component').then(
+            (m) => m.EmailSettingsComponent
+          ),
+      },
+      {
+        path: 'email-templates',
+        loadComponent: () =>
+          import('../../components/settings/email-templates/email-templates.component').then(
+            (m) => m.EmailTemplatesComponent
+          ),
+      },
+      {
+        path: 'notification-settings',
+        loadComponent: () =>
+          import('../../components/settings/notification-settings/notification-settings.component').then(
+            (m) => m.NotificationSettingsComponent
+          ),
+      },
+      {
+        path: 'custom-links',
+        loadComponent: () =>
+          import('../../components/settings/custom-links/custom-links.component').then(
+            (m) => m.CustomLinksComponent
+          ),
+      },
+      {
+        path: 'mobile-app-configuration',
+        loadComponent: () =>
+          import('../../components/settings/mobile-app-configuration/mobile-app-configuration.component').then(
+            (m) => m.MobileAppConfigurationComponent
+          ),
+      },
+      {
+        path: 'broadcast-configuration',
+        loadComponent: () =>
+          import('../../components/settings/broadcast-configuration/broadcast-configuration.component').then(
+            (m) => m.BroadcastConfigurationComponent
+          ),
+      },
+      {
+        path: 'snaplist-preference',
+        loadComponent: () =>
+          import('../../components/settings/snaplist-preference/snaplist-preference.component').then(
+            (m) => m.SnaplistPreferenceComponent
+          ),
+      },
       ...SETTINGS_PLACEHOLDER_ROUTES.filter((r) => !r.path.includes('/')).map((r) => ({
         path: r.path,
         loadComponent: () =>
@@ -253,14 +481,79 @@ export const content: Routes = [
       })),
       {
         path: 'servicehub',
-        children: SETTINGS_PLACEHOLDER_ROUTES.filter((r) => r.path.startsWith('servicehub/')).map((r) => ({
-          path: r.path.replace('servicehub/', ''),
-          loadComponent: () =>
-            import('../../components/settings/settings-placeholder/settings-placeholder.component').then(
-              (m) => m.SettingsPlaceholderComponent
-            ),
-          data: { title: r.title },
-        })),
+        children: [
+          {
+            path: 'work-order-settings',
+            loadComponent: () =>
+              import('../../components/settings/work-order-settings/work-order-settings.component').then(
+                (m) => m.WorkOrderSettingsComponent
+              ),
+          },
+          {
+            path: 'maintenance-categories',
+            loadComponent: () =>
+              import('../../components/settings/maintenance-categories/maintenance-categories.component').then(
+                (m) => m.MaintenanceCategoriesComponent
+              ),
+          },
+          {
+            path: 'quotation-categories',
+            loadComponent: () =>
+              import('../../components/settings/quotation-categories/quotation-categories.component').then(
+                (m) => m.QuotationCategoriesComponent
+              ),
+          },
+          {
+            path: 'po-settings',
+            loadComponent: () =>
+              import('../../components/settings/po-settings/po-settings.component').then(
+                (m) => m.PoSettingsComponent
+              ),
+          },
+          {
+            path: 'promotion-categories',
+            loadComponent: () =>
+              import('../../components/settings/promotion-categories/promotion-categories.component').then(
+                (m) => m.PromotionCategoriesComponent
+              ),
+          },
+          {
+            path: 'inventory-categories',
+            loadComponent: () =>
+              import('../../components/settings/inventory-categories/inventory-categories.component').then(
+                (m) => m.InventoryCategoriesComponent
+              ),
+          },
+          {
+            path: 'asset-categories',
+            loadComponent: () =>
+              import('../../components/settings/asset-categories/asset-categories.component').then(
+                (m) => m.AssetCategoriesComponent
+              ),
+          },
+          {
+            path: 'tickets-settings',
+            loadComponent: () =>
+              import('../../components/settings/tickets-settings/tickets-settings.component').then(
+                (m) => m.TicketsSettingsComponent
+              ),
+          },
+          {
+            path: 'visiting-slots',
+            loadComponent: () =>
+              import('../../components/settings/visiting-slots/visiting-slots.component').then(
+                (m) => m.VisitingSlotsComponent
+              ),
+          },
+          ...SETTINGS_PLACEHOLDER_ROUTES.filter((r) => r.path.startsWith('servicehub/')).map((r) => ({
+            path: r.path.replace('servicehub/', ''),
+            loadComponent: () =>
+              import('../../components/settings/settings-placeholder/settings-placeholder.component').then(
+                (m) => m.SettingsPlaceholderComponent
+              ),
+            data: { title: r.title },
+          })),
+        ],
       },
     ]
   }

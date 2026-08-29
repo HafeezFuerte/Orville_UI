@@ -60,32 +60,33 @@
 </div>
 
 <div class="ov-detail-layout pb-20">
-  <div class="ov-detail-layout__left flex flex-col gap-3">
-
-      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+      <div class="ov-detail-side__hero">
         <div>
-          <h4 class="ov-card-title">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name || 'Loading...' }}</h4>
-          <p class="ov-card-sub mt-1 break-all flex items-center gap-2">
-            <img src="assets/images/action-menu/mail.svg" alt="" width="16" height="16" />
+          <h4 class="ov-detail-side__title">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name || 'Loading...' }}</h4>
+          <p class="ov-detail-side__email">
+            <img src="assets/images/action-menu/mail.svg" alt="" width="13" height="13" />
             <span>{{ vendorData?.email_address || vendorData?.email || vendor.email || '' }}</span>
           </p>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 !w-full !text-[13px] !font-semibold">{{ 'web.contacts.lblViewActivity' | translate }}</button>
-          <button type="button" class="ov-btn ov-btn-primary !h-9 !w-full !text-[13px] !font-semibold" (click)="showSubscriptionsModal = true">Email Sub (7/8)</button>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action">{{ 'web.contacts.lblViewActivity' | translate }}</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub ({{ subscriptionSubscribedCount }}/{{ subscriptions.length }})</button>
         </div>
       </div>
 
-      <h6 class="m-0 px-0.5 text-[14px] font-semibold text-defaulttextcolor">Information</h6>
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Information</h6>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Company Information</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Company Information</h6>
           <button type="button" class="ov-icon-btn ov-icon-btn--bare !h-7 !w-7" aria-label="Company actions">
             <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
           </button>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">Name:</span>
             <span class="ov-kv__value">{{ vendorData?.company_name || vendorData?.vendor_name || vendor.name }}</span>
@@ -101,10 +102,10 @@
         </div>
       </div>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
           <div class="flex items-center gap-2 min-w-0">
-            <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Login Information</h6>
+            <h6 class="ov-detail-panel__title">Login Information</h6>
             <span class="ov-detail-chip"
               [class.ov-detail-chip--danger]="(vendorData?.verified_status || 'Not Verified') !== 'Verified'">
               {{ vendorData?.verified_status || 'Not Verified' }}
@@ -114,7 +115,7 @@
             <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
           </button>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">Email:</span>
             <span class="ov-kv__value">{{ vendorData?.email_address || vendor.email || '-' }}</span>
@@ -123,16 +124,17 @@
             <span class="ov-kv__label">Username:</span>
             <span class="ov-kv__value">{{ vendorData?.login_username || vendor.username || '-' }}</span>
           </div>
-          <button *ngIf="(vendorData?.verified_status || 'Not Verified') !== 'Verified'" type="button"
-            class="ov-btn ov-btn-ghost w-full !h-9 mt-1 !text-[13px] !font-semibold">Verify Email</button>
+        </div>
+        <div class="ov-detail-panel__footer" *ngIf="(vendorData?.verified_status || 'Not Verified') !== 'Verified'">
+          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 !text-[13px] !font-semibold">Verify Email</button>
         </div>
       </div>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Personal Details</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Personal Details</h6>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">ID:</span>
             <span class="ov-kv__value">{{ vendorData?.code || vendorData?.vendor_code || vendor.id }}</span>
@@ -150,9 +152,10 @@
             <span class="ov-kv__value">{{ vendorData?.phone_number || vendor.personal.phone }}</span>
           </div>
 
-          <div class="text-center my-1">
-            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails" class="ov-link text-[12px] font-semibold">
-              {{ showPersonalDetails ? 'View less details' : 'View more details' }}
+          <div class="my-1 flex justify-center">
+            <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails"
+              class="ov-link ov-more-toggle text-[12px] font-semibold">
+              <span>{{ showPersonalDetails ? 'View less details' : 'View more details' }}</span>
               <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" [class.rotate-180]="showPersonalDetails" />
             </a>
           </div>
@@ -198,11 +201,11 @@
         </div>
       </div>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Assigned Categories</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Assigned Categories</h6>
         </div>
-        <div class="flex flex-col px-5 py-2">
+        <div class="ov-detail-panel__body !gap-0 !py-2">
           <div *ngFor="let cat of categories"
             class="flex items-center justify-between gap-3 border-b border-defaultborder py-3 last:border-0">
             <span class="text-[14px] text-defaulttextcolor">{{ cat.name }}</span>
@@ -213,18 +216,19 @@
           </div>
         </div>
       </div>
-
+    </div>
   </div>
 
-  <div class="ov-detail-layout__right flex flex-col gap-3">
-
+  <div class="ov-detail-layout__right">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
     <div class="ov-detail-tabs">
       <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
         [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
+    <div class="p-5">
     <!-- TAB: Overview -->
-    <div *ngIf="activeTab === 'Overview'" class="box ov-card flex flex-col gap-5 overflow-hidden p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Overview'" class="flex flex-col gap-5 animate-fade-in">
       <h4 class="ov-card-title m-0">Vendor Overview</h4>
 
       <section class="ov-finance-summary" aria-label="Maintenance Summary">
@@ -306,7 +310,7 @@
     </div>
 
     <!-- TAB: Unit -->
-    <div *ngIf="activeTab === 'Unit'" class="box ov-card flex flex-col gap-3 overflow-hidden p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Unit'" class="flex flex-col gap-3 animate-fade-in">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder pb-3">
         <h5 class="ov-card-title m-0">Vendor Units</h5>
         <div class="ov-toolbar__btns !ms-0">
@@ -359,7 +363,7 @@
     </div>
 
     <!-- TAB: Work Orders -->
-    <div *ngIf="activeTab === 'Work Orders'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Work Orders'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h4 class="ov-card-title m-0">Vendor Work Orders</h4>
         <button type="button" [routerLink]="['/facility/work-orders/create']"
@@ -416,7 +420,7 @@
     </div>
 
     <!-- TAB: Financials -->
-    <div *ngIf="activeTab === 'Financials'" class="box ov-card flex flex-col gap-3 overflow-hidden p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Financials'" class="flex flex-col gap-3 animate-fade-in">
       <div class="ov-seg ov-seg--solid w-fit">
         <button type="button" *ngFor="let sub of financialSubTabs" (click)="setFinancialSubTab(sub)"
           class="ov-seg__btn" [class.is-active]="activeFinancialSubTab === sub">{{ sub }}</button>
@@ -506,12 +510,12 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="box ov-card overflow-hidden p-5 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
       <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Quotations -->
-    <div *ngIf="activeTab === 'Quotations'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Quotations'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h4 class="ov-card-title m-0">Vendor Quotations</h4>
         <button type="button" class="ov-btn ov-btn-primary !h-9"
@@ -577,12 +581,12 @@
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="box ov-card overflow-hidden p-5 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-3 animate-fade-in">
       <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: Users -->
-    <div *ngIf="activeTab === 'Users'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Users'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h4 class="ov-card-title m-0">Vendor Users</h4>
         <button type="button" (click)="showAddUserModal = true"
@@ -631,7 +635,7 @@
     </div>
 
     <!-- TAB: Technicians -->
-    <div *ngIf="activeTab === 'Technicians'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Technicians'" class="flex flex-col gap-4 animate-fade-in">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h4 class="ov-card-title m-0">Vendor Technicians</h4>
         <button type="button" (click)="showAddTechnicianModal = true"
@@ -679,40 +683,18 @@
       </app-shared-table>
     </div>
 
-  </div>
-</div>
-
-<!-- Email Subscriptions Modal Overlay -->
-<div *ngIf="showSubscriptionsModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-  <div class="ov-modal ov-modal--sm">
-    <div class="ov-modal__header">
-      <div>
-        <h6 class="ov-modal__title">Email Subscriptions</h6>
-        <p class="ov-modal__sub">Choose automated email notifications for this Vendor.</p>
-      </div>
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-      </button>
     </div>
-
-    <div class="ov-modal__body">
-      <div class="ov-modal__check-list">
-        <label class="ov-modal__check">
-          <input type="checkbox" [checked]="allSubscriptionsSelected" (change)="toggleAllSubscriptions($event)">
-          <span>Select All</span>
-        </label>
-        <label *ngFor="let sub of subscriptions" class="ov-modal__check">
-          <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed">
-          <span>{{ sub.name }}</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="ov-modal__footer">
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-ghost">Close</button>
     </div>
   </div>
 </div>
+
+<!-- Email Subscriptions — same drawer design as landlord/tenant; vendor-specific list -->
+<app-email-subscriptions-drawer
+  [(isOpen)]="showSubscriptionsModal"
+  [subscriptions]="subscriptions"
+  [globalAllowed]="true"
+  subtitle="Choose which automated email notifications should be sent.">
+</app-email-subscriptions-drawer>
 
 <!-- Modal 1: Add New User Popup -->
 <div *ngIf="showAddUserModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">

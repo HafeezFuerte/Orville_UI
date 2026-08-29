@@ -159,6 +159,10 @@ export class PropertyDetailComponent implements OnInit {
     return 'no tag assigned';
   }
 
+  get currentLang(): string {
+    return this.translate.currentLang || this.translate.defaultLang || 'en';
+  }
+
   get sizeDisplay(): string {
     const size = this.property?.size_sqft;
     if (size == null || size === '') {
@@ -236,13 +240,13 @@ export class PropertyDetailComponent implements OnInit {
 
       {
         key: 'overview',
-        label: 'web.common.lblOverview',
+        label: 'web.property.lblOverview',
         layout: 'content'
       },
 
       {
         key: 'units',
-        label: 'web.common.lblUnits',
+        label: 'web.property.lblUnits',
         layout: 'content',
         data: this.unitsData,
         totalRecords: this.unitsData?.length || 0,
@@ -253,7 +257,7 @@ export class PropertyDetailComponent implements OnInit {
 
       {
         key: 'rooms',
-        label: 'web.common.lblRooms',
+        label: 'web.property.lblRooms',
         layout: 'content',
         data: this.roomsData,
         totalRecords: this.roomsData?.length || 0,
@@ -264,7 +268,7 @@ export class PropertyDetailComponent implements OnInit {
 
       {
         key: 'tenants',
-        label: 'web.common.lblTenantsHistory',
+        label: 'web.property.lblTenantsHistory',
         layout: 'table',
         columns: this.tenantColumns,
         data: this.tenantsData,
@@ -276,7 +280,7 @@ export class PropertyDetailComponent implements OnInit {
       },
       {
         key: 'commonarea',
-        label: 'web.common.lblCommonArea',
+        label: 'web.property.lblCommonArea',
         layout: 'content',
         entity: "property",
         entity_id: this.propertyCode,
@@ -290,7 +294,7 @@ export class PropertyDetailComponent implements OnInit {
       },
       {
         key: 'broadcasts',
-        label: 'web.common.lblBroadcasts',
+        label: 'web.property.lblBroadcasts',
         layout: 'table',
         columns: this.broadCastsColumns,
         data: this.broadCastsData,
@@ -302,7 +306,7 @@ export class PropertyDetailComponent implements OnInit {
       },
       {
         key: 'attachments',
-        label: 'web.common.lblAttachments',
+        label: 'web.property.lblAttachments',
         layout: 'content',
         entity: "property",
         entity_id: this.propertyCode,
@@ -317,7 +321,7 @@ export class PropertyDetailComponent implements OnInit {
       {
 
         key: 'notes',
-        label: 'web.common.lblNotes',
+        label: 'web.property.lblNotes',
         layout: 'content',
         entity: "property",
         entity_id: this.propertyCode,
@@ -331,7 +335,7 @@ export class PropertyDetailComponent implements OnInit {
       },
       {
         key: 'parkings',
-        label: 'web.common.lblParkings',
+        label: 'web.property.lblParkings',
         layout: 'content',
         data: this.parkingData,
         entity_id: this.propertyCode,
@@ -342,7 +346,7 @@ export class PropertyDetailComponent implements OnInit {
       },
       {
         key: 'assets',
-        label: 'web.common.lblAssets',
+        label: 'web.property.lblAssets',
         layout: 'table',
         columns: this.assetsColumns,
         data: this.assetsData,

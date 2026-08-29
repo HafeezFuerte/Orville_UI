@@ -1,0 +1,186 @@
+<div class="cs-page">
+  <header class="cs-header">
+    <div class="cs-header__copy">
+      <p class="cs-eyebrow">Leases and Contracts</p>
+      <h1 class="cs-title">Contract Settings</h1>
+      <p class="cs-sub">Configure how contract renewals are handled.</p>
+    </div>
+    <div class="cs-header__stats" aria-label="Settings summary">
+      <div class="cs-stat">
+        <span class="cs-stat__val">{{ model.renewalNoticeDays.length }}</span>
+        <span class="cs-stat__lbl">Notice days</span>
+      </div>
+      <div class="cs-stat">
+        <span class="cs-stat__val">{{ earliestNotice ?? '—' }}</span>
+        <span class="cs-stat__lbl">Earliest alert</span>
+      </div>
+      <div class="cs-stat">
+        <span class="cs-stat__val">{{ model.enableRenewalEmails ? 'On' : 'Off' }}</span>
+        <span class="cs-stat__lbl">Email reminders</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="cs-grid">
+    <!-- Renewal notice -->
+    <section class="cs-card" aria-labelledby="cs-renewal-title">
+      <div class="cs-card__head">
+        <span class="cs-card__icon" aria-hidden="true">
+          <img src="./assets/images/settings/bell-ringing.svg" alt="" width="18" height="18" />
+        </span>
+        <div class="min-w-0">
+          <h2 id="cs-renewal-title" class="cs-card__title">Contract Renewal Notice</h2>
+          <p class="cs-card__sub">
+            Reminder emails will be sent before a contract ends at these specific time intervals.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-field">
+        <span class="ov-label">
+          Renewal Notice <span class="text-danger">*</span>
+        </span>
+
+        <div
+          class="cs-chips"
+          role="list"
+          aria-label="Renewal notice days"
+          [class.is-invalid]="!!dayError && !model.renewalNoticeDays.length">
+          <span class="cs-chip" role="listitem" *ngFor="let day of model.renewalNoticeDays">
+            {{ day }} days before
+            <button
+              type="button"
+              class="cs-chip__remove"
+              [attr.aria-label]="'Remove ' + day + ' days'"
+              (click)="removeDay(day)">
+              ×
+            </button>
+          </span>
+          <span *ngIf="model.renewalNoticeDays.length === 0" class="cs-chips__empty">
+            No notice days yet — add at least one.
+          </span>
+        </div>
+
+        <div class="cs-add">
+          <input
+            id="cs-add-day"
+            type="number"
+            min="1"
+            step="1"
+            class="ov-input cs-add__input"
+            placeholder="e.g. 45"
+            [(ngModel)]="draftDay"
+            (keydown)="onDayKeydown($event)"
+            aria-label="Add renewal notice day" />
+          <button type="button" class="ov-btn ov-btn-ghost ov-btn--sm" (click)="addDay()">
+            Add day
+          </button>
+        </div>
+
+        <p class="cs-hint">
+          Days before the contract end date. Same values as before:
+          <code class="cs-code">{{ renewalNoticeCsv || '—' }}</code>
+        </p>
+        <p class="cs-field-error" *ngIf="dayError" role="alert">{{ dayError }}</p>
+      </div>
+
+      <div class="cs-presets" aria-label="Quick add common intervals">
+        <span class="cs-presets__label">Quick add</span>
+        <button
+          type="button"
+          class="cs-preset"
+          *ngFor="let day of presets"
+          [class.is-active]="isPresetActive(day)"
+          [disabled]="isPresetActive(day)"
+          (click)="applyPreset(day)">
+          {{ day }} days
+        </button>
+      </div>
+
+      <!-- Timeline preview -->
+      <div class="cs-timeline" *ngIf="sortedDays.length" aria-label="Reminder timeline">
+        <div class="cs-timeline__head">
+          <span class="cs-timeline__title">Reminder path</span>
+          <span class="cs-timeline__sub">From earliest notice to contract end</span>
+        </div>
+        <ol class="cs-timeline__track">
+          <li class="cs-timeline__node" *ngFor="let day of sortedDays; let last = last">
+            <span class="cs-timeline__dot"></span>
+            <span class="cs-timeline__label">{{ day }} days before</span>
+            <span class="cs-timeline__line" *ngIf="!last" aria-hidden="true"></span>
+          </li>
+          <li class="cs-timeline__node cs-timeline__node--end">
+            <span class="cs-timeline__dot"></span>
+            <span class="cs-timeline__label">Contract ends</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Options + tip -->
+    <div class="cs-side">
+      <section class="cs-card" aria-labelledby="cs-options-title">
+        <div class="cs-card__head">
+          <span class="cs-card__icon" aria-hidden="true">
+            <img src="./assets/images/settings/settings-gear.svg" alt="" width="18" height="18" />
+          </span>
+          <div class="min-w-0">
+            <h2 id="cs-options-title" class="cs-card__title">Delivery options</h2>
+            <p class="cs-card__sub">Control who gets renewal reminders.</p>
+          </div>
+        </div>
+
+        <div class="cs-toggles">
+          <label class="cs-toggle" [class.is-on]="model.enableRenewalEmails">
+            <span class="cs-toggle__text">
+              <span class="cs-toggle__label">Email reminders</span>
+              <span class="cs-toggle__desc">Send renewal notices by email at each interval.</span>
+            </span>
+            <input
+              type="checkbox"
+              class="cs-switch"
+              [(ngModel)]="model.enableRenewalEmails"
+              aria-label="Email reminders" />
+          </label>
+
+          <label
+            class="cs-toggle"
+            [class.is-on]="model.includeCcManagers"
+            [class.is-disabled]="!model.enableRenewalEmails">
+            <span class="cs-toggle__text">
+              <span class="cs-toggle__label">CC managers</span>
+              <span class="cs-toggle__desc">Also notify property managers on each reminder.</span>
+            </span>
+            <input
+              type="checkbox"
+              class="cs-switch"
+              [(ngModel)]="model.includeCcManagers"
+              [disabled]="!model.enableRenewalEmails"
+              aria-label="CC managers" />
+          </label>
+        </div>
+      </section>
+
+      <aside class="cs-tip" aria-label="How renewal notices work">
+        <img src="./assets/images/settings/contract.svg" alt="" width="18" height="18" />
+        <div>
+          <p class="cs-tip__title">How it works</p>
+          <p class="cs-tip__body">
+            If a contract ends on 31 Dec and you set 30 and 90, reminders go out on 1 Oct and 1 Dec —
+            counted backward from the end date.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="cs-footer">
+    <p class="cs-footer__note">Changes apply to new contract renewal reminders after you save.</p>
+    <div class="cs-footer__actions">
+      <span *ngIf="saved" class="cs-saved" role="status">Settings saved</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">
+        Save Settings
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,386 @@
+<div class="my-profile-page font-hanken">
+  <div class="page-header !py-4">
+    <h3 class="ov-page-title">My Profile</h3>
+    <p class="ov-page-sub">Manage your account information and preferences</p>
+  </div>
+
+  <div class="ov-seg ov-seg--tabs my-profile-tabs mb-5 overflow-x-auto max-w-full">
+    <button
+      type="button"
+      *ngFor="let tab of tabs"
+      class="ov-seg__btn whitespace-nowrap"
+      [class.is-active]="activeTab === tab.id"
+      (click)="setTab(tab.id)">
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <div class="my-profile-layout">
+    <!-- LEFT — kept on all tabs -->
+    <aside class="my-profile-aside">
+      <div class="mp-card mp-card--identity">
+        <div class="mp-avatar" aria-hidden="true">{{ initials }}</div>
+        <div class="mp-identity__text">
+          <div class="mp-identity__name">{{ displayName }}</div>
+          <div class="mp-identity__meta">User #{{ profile.userId }} · {{ profile.role }}</div>
+        </div>
+        <button type="button" class="mp-subs-btn">
+          Email Subs ({{ profile.emailSubsUsed }}/{{ profile.emailSubsTotal }})
+        </button>
+      </div>
+
+      <div class="mp-card">
+        <h4 class="mp-card__title">Login Information</h4>
+        <dl class="mp-dl">
+          <div><dt>Email</dt><dd>{{ general.email }}</dd></div>
+          <div><dt>Username</dt><dd>{{ general.username }}</dd></div>
+        </dl>
+      </div>
+
+      <div class="mp-card">
+        <h4 class="mp-card__title">Personal Details</h4>
+        <dl class="mp-dl">
+          <div><dt>Full Name</dt><dd>{{ displayName }}</dd></div>
+          <div><dt>Role</dt><dd>{{ profile.role }}</dd></div>
+          <div><dt>Department</dt><dd>{{ profile.department }}</dd></div>
+          <ng-container *ngIf="showPersonalMore">
+            <div><dt>Phone</dt><dd>{{ general.phone || '—' }}</dd></div>
+            <div><dt>Gender</dt><dd>{{ profile.gender }}</dd></div>
+            <div><dt>Nationality</dt><dd>{{ profile.nationality }}</dd></div>
+            <div><dt>Languages</dt><dd>{{ profile.languages }}</dd></div>
+          </ng-container>
+        </dl>
+        <button type="button" class="mp-link" (click)="showPersonalMore = !showPersonalMore">
+          {{ showPersonalMore ? 'See Less' : 'See More' }}
+        </button>
+      </div>
+
+      <div class="mp-card">
+        <h4 class="mp-card__title">Security</h4>
+        <dl class="mp-dl">
+          <div>
+            <dt>Two-Step Authentication</dt>
+            <dd>
+              <span class="mp-pill" [class.mp-pill--on]="security.twoStepAuth">
+                {{ security.twoStepAuth ? 'On' : 'Off' }}
+              </span>
+            </dd>
+          </div>
+          <div><dt>Password changed</dt><dd>{{ profile.passwordChangedAt }}</dd></div>
+        </dl>
+      </div>
+
+      <div class="mp-card">
+        <h4 class="mp-card__title">Team Record</h4>
+        <a href="javascript:void(0)" class="mp-link" (click)="$event.preventDefault()">View my user record</a>
+      </div>
+
+      <div class="mp-card">
+        <h4 class="mp-card__title">Timeline</h4>
+        <dl class="mp-dl">
+          <div><dt>Created</dt><dd>{{ profile.createdAt }}</dd></div>
+          <div><dt>Last Updated</dt><dd>{{ profile.lastUpdatedAt }}</dd></div>
+          <div><dt>Last Sign In</dt><dd>{{ profile.lastSignInAt }}</dd></div>
+        </dl>
+      </div>
+    </aside>
+
+    <!-- RIGHT — changes by tab -->
+    <div class="my-profile-main">
+      <!-- GENERAL -->
+      <ng-container *ngIf="activeTab === 'general'">
+        <section class="mp-panel">
+          <div class="mp-panel__section">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Profile photo</h4>
+              <p class="mp-panel__desc">Upload a square image for your account avatar.</p>
+            </div>
+            <div class="mp-photo-row">
+              <div class="mp-avatar mp-avatar--lg" aria-hidden="true">{{ initials }}</div>
+              <div class="mp-photo-actions">
+                <button type="button" class="ov-btn ov-btn-toolbar" (click)="uploadPhoto()">Upload Photo</button>
+                <span class="mp-photo-hint">PNG or JPG, up to 2 MB</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mp-panel__divider"></div>
+
+          <div class="mp-panel__section">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Basic details</h4>
+              <p class="mp-panel__desc">Your name and contact information.</p>
+            </div>
+            <div class="mp-form-grid">
+              <div class="mp-field">
+                <label class="ov-label" for="mp-first">First Name <span class="text-danger">*</span></label>
+                <input id="mp-first" type="text" class="ov-input" [(ngModel)]="general.firstName" />
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-last">Last Name <span class="text-danger">*</span></label>
+                <input id="mp-last" type="text" class="ov-input" [(ngModel)]="general.lastName" />
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-email">Email</label>
+                <input id="mp-email" type="email" class="ov-input" [(ngModel)]="general.email" />
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-user">Username <span class="text-danger">*</span></label>
+                <input id="mp-user" type="text" class="ov-input" [(ngModel)]="general.username" />
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-country">Country <span class="text-danger">*</span></label>
+                <select id="mp-country" class="ov-input" [(ngModel)]="general.country">
+                  <option *ngFor="let c of countries" [ngValue]="c">{{ c }}</option>
+                </select>
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-phone">Phone</label>
+                <input id="mp-phone" type="text" class="ov-input" [(ngModel)]="general.phone" placeholder="Phone number" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mp-panel__divider"></div>
+
+          <div class="mp-panel__section">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Preferences</h4>
+              <p class="mp-panel__desc">Language, time zone, and notification settings.</p>
+            </div>
+            <div class="mp-form-grid">
+              <div class="mp-field">
+                <label class="ov-label" for="mp-lang">System Language</label>
+                <select id="mp-lang" class="ov-input" [(ngModel)]="general.systemLanguage">
+                  <option *ngFor="let l of languages" [ngValue]="l">{{ l }}</option>
+                </select>
+              </div>
+              <div class="mp-field">
+                <label class="ov-label" for="mp-tz">Time zone</label>
+                <select id="mp-tz" class="ov-input" [(ngModel)]="general.timezone">
+                  <option *ngFor="let t of timezones" [ngValue]="t">{{ t }}</option>
+                </select>
+              </div>
+            </div>
+            <label class="mp-check">
+              <input type="checkbox" class="mp-check__input" [(ngModel)]="general.enableNotificationSound" />
+              <span class="mp-check__body">
+                <span class="mp-check__title">Enable Notification Sound</span>
+                <span class="mp-check__sub">Play a sound when new notifications arrive.</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="mp-panel__divider"></div>
+
+          <div class="mp-panel__section">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Email signature</h4>
+              <p class="mp-panel__desc">Added at the end of emails you send from Orville.</p>
+            </div>
+            <div class="mp-field">
+              <label class="sr-only" for="mp-sig">Email Signature</label>
+              <textarea
+                id="mp-sig"
+                class="ov-input mp-signature"
+                rows="4"
+                [(ngModel)]="general.emailSignature"
+                placeholder="Add a signature for the end of your emails.."></textarea>
+            </div>
+          </div>
+
+          <div class="mp-panel__footer">
+            <button type="button" class="ov-btn ov-btn-primary" (click)="updateProfile()">Update Profile</button>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- SECURITY -->
+      <ng-container *ngIf="activeTab === 'security'">
+        <div class="mp-stack">
+          <section class="mp-panel">
+            <div class="mp-panel__section">
+              <div class="mp-panel__head">
+                <h4 class="mp-panel__title">Password</h4>
+                <p class="mp-panel__desc">You last changed your password on {{ profile.passwordChangedAt }}.</p>
+              </div>
+              <div class="mp-form-grid mp-form-grid--1">
+                <div class="mp-field">
+                  <label class="ov-label" for="mp-cur-pw">Current Password</label>
+                  <div class="mp-pw">
+                    <input
+                      id="mp-cur-pw"
+                      class="ov-input"
+                      [type]="showCurrentPassword ? 'text' : 'password'"
+                      [(ngModel)]="security.currentPassword" />
+                    <button type="button" class="mp-eye" (click)="showCurrentPassword = !showCurrentPassword">
+                      {{ showCurrentPassword ? 'Hide' : 'Show' }}
+                    </button>
+                  </div>
+                </div>
+                <div class="mp-field">
+                  <label class="ov-label" for="mp-new-pw">New Password</label>
+                  <div class="mp-pw">
+                    <input
+                      id="mp-new-pw"
+                      class="ov-input"
+                      [type]="showNewPassword ? 'text' : 'password'"
+                      [(ngModel)]="security.newPassword" />
+                    <button type="button" class="mp-eye" (click)="showNewPassword = !showNewPassword">
+                      {{ showNewPassword ? 'Hide' : 'Show' }}
+                    </button>
+                  </div>
+                </div>
+                <div class="mp-field">
+                  <label class="ov-label" for="mp-conf-pw">Confirm Password</label>
+                  <div class="mp-pw">
+                    <input
+                      id="mp-conf-pw"
+                      class="ov-input"
+                      [type]="showConfirmPassword ? 'text' : 'password'"
+                      [(ngModel)]="security.confirmPassword" />
+                    <button type="button" class="mp-eye" (click)="showConfirmPassword = !showConfirmPassword">
+                      {{ showConfirmPassword ? 'Hide' : 'Show' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mp-panel__footer">
+              <button type="button" class="ov-btn ov-btn-primary" (click)="updatePassword()">Update Password</button>
+            </div>
+          </section>
+
+          <section class="mp-panel">
+            <div class="mp-panel__section">
+              <div class="mp-panel__head mp-panel__head--row">
+                <div>
+                  <h4 class="mp-panel__title">Two-step authentication</h4>
+                  <p class="mp-panel__desc mb-0">Authentication methods</p>
+                </div>
+                <span class="mp-pill" [class.mp-pill--on]="security.twoStepAuth">
+                  {{ security.twoStepAuth ? 'On' : 'Off' }}
+                </span>
+              </div>
+              <p class="mp-copy">
+                After entering your password, verify your identity with an authentication method.
+              </p>
+              <p class="mp-copy mp-copy--strong">
+                Two-step authentication adds a layer of security to your account by using more than just your password to log in.
+              </p>
+              <h5 class="mp-subtitle">How it works</h5>
+              <p class="mp-copy">When you log in to Orville, you'll need to:</p>
+              <ol class="mp-steps">
+                <li>Enter your email and password</li>
+                <li>After login, you'll be required to provide a randomly generated access code</li>
+              </ol>
+            </div>
+            <div class="mp-panel__footer">
+              <button type="button" class="ov-btn ov-btn-primary" (click)="toggleTwoStep()">
+                {{ security.twoStepAuth ? 'Disable two-step authentication' : 'Enable two-step authentication' }}
+              </button>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+
+      <!-- MAILS -->
+      <ng-container *ngIf="activeTab === 'mails'">
+        <section class="mp-panel">
+          <div class="mp-panel__section">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Mails</h4>
+              <p class="mp-panel__desc">Connect your Google account to work with your mailbox inside Orville.</p>
+            </div>
+            <div class="mp-empty">
+              <div class="mp-empty__icon" aria-hidden="true">
+                <img src="assets/images/action-menu/mail.svg" alt="" width="28" height="28" />
+              </div>
+              <h5 class="mp-empty__title">No mails yet</h5>
+              <p class="mp-empty__sub">Connect your email account to get started with your mails.</p>
+              <button type="button" class="ov-btn ov-btn-ghost" (click)="signInGoogle()">
+                <img src="assets/images/action-menu/mail.svg" alt="" width="16" height="16" />
+                Sign in with Google
+              </button>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- ASSIGNED PROPERTIES -->
+      <ng-container *ngIf="activeTab === 'properties'">
+        <section class="mp-panel mp-panel--table">
+          <div class="mp-panel__section !pb-0">
+            <div class="mp-panel__head">
+              <h4 class="mp-panel__title">Assigned Properties</h4>
+              <p class="mp-panel__desc">{{ assignedUnitsLabel }} unit(s) assigned to you.</p>
+            </div>
+            <div class="mp-toolbar">
+              <div class="ov-search flex-1 max-w-none sm:max-w-[220px]">
+                <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+                <input
+                  type="text"
+                  class="ov-input ov-search__input"
+                  placeholder="Filter by Unit No"
+                  [(ngModel)]="unitFilter"
+                  (ngModelChange)="onAssignedSearch()" />
+              </div>
+              <div class="ov-search flex-1 max-w-none sm:max-w-[220px]">
+                <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+                <input
+                  type="text"
+                  class="ov-input ov-search__input"
+                  placeholder="Filter by Property"
+                  [(ngModel)]="propertyFilter"
+                  (ngModelChange)="onAssignedSearch()" />
+              </div>
+              <div class="relative ms-auto" (click)="$event.stopPropagation()">
+                <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
+                  <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+                  Columns
+                </button>
+                <div
+                  *ngIf="showColumnDropdown"
+                  class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+                  <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+                    <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="h-3.5 w-3.5 rounded text-primary" />
+                    Select All
+                  </label>
+                  <label
+                    *ngFor="let col of propertyColumns"
+                    class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
+                    <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)" class="h-3.5 w-3.5 rounded text-primary" />
+                    {{ col.label }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mp-panel__table">
+            <app-shared-table
+              [columns]="visiblePropertyColumns"
+              [data]="pagedAssigned"
+              [hasActions]="false"
+              [emptyMessage]="'No assigned properties found'"
+              [totalRecords]="totalAssigned"
+              [pageSize]="pageSize"
+              [pageIndex]="pageNo"
+              [pageSizeOptions]="pageSizeOptions"
+              (pageChange)="onSharedTablePageChange($event)">
+              <ng-template #colTemplate let-row="row" let-col="col">
+                <ng-container [ngSwitch]="col.key">
+                  <ng-container *ngSwitchCase="'property'">
+                    <a href="javascript:void(0)" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.property }}</a>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'unit'">
+                    <a href="javascript:void(0)" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.unit }}</a>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </app-shared-table>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </div>
+</div>

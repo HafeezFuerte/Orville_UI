@@ -1,0 +1,311 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">Room Types</h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Room Types are used to categorize rooms. You can create as many room types as you need.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New
+    </button>
+  </div>
+
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <label
+      class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+      <img
+        src="./assets/images/settings/search.svg"
+        alt=""
+        width="14"
+        height="14"
+        class="shrink-0" />
+      <input
+        type="search"
+        class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+        placeholder="Search by name"
+        aria-label="Search room types"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()" />
+    </label>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="relative" data-filters-dropdown>
+        <button
+          type="button"
+          class="ov-btn ov-btn-ghost rt-toolbar-btn"
+          [attr.aria-expanded]="showFilters"
+          (click)="toggleFilters()">
+          <img src="./assets/images/work-orders/filter.svg" alt="" width="16" height="16" />
+          <span>Filters{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}</span>
+        </button>
+
+        <div *ngIf="showFilters" class="rt-menu" (click)="$event.stopPropagation()">
+          <p class="rt-menu__label">Category Type</p>
+          <button
+            type="button"
+            class="rt-menu__item"
+            [class.is-active]="filterCategory === ''"
+            (click)="applyFilterCategory('')">
+            All
+          </button>
+          <button
+            type="button"
+            class="rt-menu__item"
+            *ngFor="let t of categoryTypes"
+            [class.is-active]="filterCategory === t"
+            (click)="applyFilterCategory(t)">
+            {{ t }}
+          </button>
+          <div class="rt-menu__footer">
+            <button type="button" class="rt-menu__link" (click)="clearFilters()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative" data-columns-dropdown>
+        <button
+          type="button"
+          class="ov-btn ov-btn-ghost rt-toolbar-btn"
+          [attr.aria-expanded]="showColumns"
+          (click)="toggleColumns()">
+          <img src="./assets/images/work-orders/columns.svg" alt="" width="16" height="16" />
+          <span>Columns</span>
+        </button>
+
+        <div *ngIf="showColumns" class="rt-menu" (click)="$event.stopPropagation()">
+          <div class="border-b border-defaultborder p-2.5">
+            <label
+              class="ov-inline-search h-9 w-full rounded-lg border border-defaultborder bg-white px-3 dark:bg-bodybg">
+              <img
+                src="./assets/images/settings/search.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="shrink-0" />
+              <input
+                type="search"
+                class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
+                placeholder="Search options..."
+                [(ngModel)]="columnSearch" />
+            </label>
+          </div>
+          <div class="rt-menu__list">
+            <label class="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                [checked]="allColumnsSelected"
+                (change)="toggleSelectAllColumns($any($event.target).checked)" />
+              <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+            </label>
+            <label
+              *ngFor="let col of filteredColumns"
+              class="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                [(ngModel)]="col.visible" />
+              <span class="text-sm text-defaulttextcolor">{{ col.label }}</span>
+            </label>
+          </div>
+          <div class="rt-menu__footer">
+            <button type="button" class="rt-menu__link" (click)="clearColumns()">Clear</button>
+            <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
+            <button type="button" class="rt-menu__close" (click)="closeColumns()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    aria-label="Room Types">
+    <div class="w-full overflow-x-auto">
+      <div
+        class="rt-table__row rt-table__row--head"
+        role="row"
+        [style.grid-template-columns]="tableGridTemplate">
+        <div
+          *ngIf="isColumnVisible('id')"
+          class="rt-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="rt-sort" (click)="toggleSort('id')">ID</button>
+        </div>
+        <div
+          *ngIf="isColumnVisible('name')"
+          class="rt-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="rt-sort" (click)="toggleSort('name')">
+            Name
+            <span class="rt-sort__icons" aria-hidden="true">
+              <span [class.is-active]="sortKey === 'name' && sortDir === 'asc'">▲</span>
+              <span [class.is-active]="sortKey === 'name' && sortDir === 'desc'">▼</span>
+            </span>
+          </button>
+        </div>
+        <div
+          *ngIf="isColumnVisible('categoryType')"
+          class="rt-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="rt-sort" (click)="toggleSort('categoryType')">
+            Category Type
+            <span class="rt-sort__icons" aria-hidden="true">
+              <span [class.is-active]="sortKey === 'categoryType' && sortDir === 'asc'">▲</span>
+              <span [class.is-active]="sortKey === 'categoryType' && sortDir === 'desc'">▼</span>
+            </span>
+          </button>
+        </div>
+        <div
+          *ngIf="isColumnVisible('roomsCount')"
+          class="rt-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          Rooms
+        </div>
+        <div
+          *ngIf="isColumnVisible('actions')"
+          class="rt-table__cell rt-table__cell--action text-xs font-semibold text-textmuted"
+          role="columnheader">
+          Actions
+        </div>
+      </div>
+
+      <ng-container *ngIf="pagedRows.length > 0">
+        <div
+          *ngFor="let row of pagedRows"
+          class="rt-table__row"
+          role="row"
+          [style.grid-template-columns]="tableGridTemplate">
+          <div *ngIf="isColumnVisible('id')" class="rt-table__cell" role="cell">
+            <span class="text-sm text-textmuted">{{ row.id }}</span>
+          </div>
+          <div *ngIf="isColumnVisible('name')" class="rt-table__cell" role="cell">
+            <button type="button" class="rt-name-link" (click)="openEdit(row)">
+              {{ row.name }}
+            </button>
+          </div>
+          <div *ngIf="isColumnVisible('categoryType')" class="rt-table__cell" role="cell">
+            <span class="text-sm text-defaulttextcolor">{{ row.categoryType }}</span>
+          </div>
+          <div *ngIf="isColumnVisible('roomsCount')" class="rt-table__cell" role="cell">
+            <span class="rt-count">{{ row.roomsCount }}</span>
+          </div>
+          <div
+            *ngIf="isColumnVisible('actions')"
+            class="rt-table__cell rt-table__cell--action"
+            role="cell">
+            <button
+              type="button"
+              class="ov-icon-btn"
+              aria-label="Edit Room Type"
+              (click)="openEdit(row)">
+              <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+            </button>
+            <button
+              type="button"
+              class="ov-icon-btn ov-icon-btn--danger"
+              aria-label="Delete Room Type"
+              (click)="deleteRow(row)">
+              <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <div *ngIf="pagedRows.length === 0" class="rt-table-empty" role="row">
+        <p class="rt-table-empty__text">No room types match your filters.</p>
+      </div>
+    </div>
+  </div>
+
+  <app-ov-paginator
+    *ngIf="totalFiltered > 0"
+    [totalRecords]="totalFiltered"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[10, 25, 50]"
+    (pageChange)="onPageChange($event)">
+  </app-ov-paginator>
+</div>
+
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[480px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rt-modal-title"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="rt-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ modalTitle }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">
+            Define a room type and its category for portfolio rooms.
+          </p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="flex flex-col gap-4 p-5">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="rt-name">Name</label>
+          <input
+            id="rt-name"
+            type="text"
+            class="ov-input"
+            placeholder="Enter room type name"
+            [(ngModel)]="draft.name" />
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="rt-category">Category Type</label>
+          <div class="relative">
+            <select
+              id="rt-category"
+              class="ov-input cursor-pointer appearance-none pr-8"
+              [(ngModel)]="draft.categoryType">
+              <option *ngFor="let t of categoryTypes" [ngValue]="t">{{ t }}</option>
+            </select>
+            <img
+              src="./assets/images/settings/chevron-down.svg"
+              alt=""
+              width="12"
+              height="12"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary"
+          [disabled]="!canSave"
+          (click)="save()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

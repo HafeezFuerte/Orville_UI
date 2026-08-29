@@ -72,9 +72,83 @@ export class AddSupportTechnicianComponent implements OnInit {
     fileSize: ''
   };
 
+  rolesList = ['Support Technician', 'Manager', 'Administrator', 'Staff'];
+  departmentsList = ['Maintenance', 'Facility Management', 'Operations', 'Customer Support'];
+  timeZonesList = [
+    '(GMT+04:00) Gulf Standard Time (Dubai)',
+    '(GMT+03:00) Riyadh',
+    '(GMT+00:00) UTC',
+    '(GMT+05:30) India Standard Time'
+  ];
+  spokenLanguagesList = ['English', 'Arabic', 'Hindi', 'Urdu', 'French', 'Spanish'];
+
+  selectAllSubscriptions = false;
+
+  emailSubscriptions = [
+    { id: 'agent_assigned_unit', label: 'Agent Assigned to Unit', checked: false },
+    { id: 'contract_ending', label: 'Contract Ending', checked: false },
+    { id: 'delayed_rent_tenant', label: 'Delayed Rent by Tenant', checked: false },
+    { id: 'export_completed', label: 'Export Completed', checked: false },
+    { id: 'landlord_signed_contract', label: 'Landlord have signed Contract', checked: false },
+    { id: 'manager_lease_completed', label: 'Manager Lease Completed', checked: false },
+    { id: 'manager_work_order_reminder', label: 'Manager Work Order Reminder email', checked: false },
+    { id: 'new_landlord_added', label: 'New Landlord Added Email', checked: false },
+    { id: 'new_legal_case_escalated', label: 'New Legal Case Escalated', checked: false },
+    { id: 'new_system_feedback', label: 'New System Feedback Created', checked: false },
+    { id: 'new_unit_added', label: 'New Unit Added Email', checked: false },
+    { id: 'received_new_reservation', label: 'Received new Reservation', checked: false },
+    { id: 'system_feedback_closed', label: 'System Feedback Closed', checked: false },
+    { id: 'upcoming_inspection_reminder', label: 'Upcoming Inspection Reminder Email', checked: false },
+    { id: 'welcome_user_email', label: 'Welcome User Email', checked: false },
+    { id: 'work_order_note_added', label: 'Work Order Note Added Email', checked: false },
+
+    { id: 'assigned_ticket_email', label: 'Assigned Ticket Email', checked: false },
+    { id: 'daily_summary', label: 'Daily summary', checked: false },
+    { id: 'document_expiry_email', label: 'Document Expiry Email', checked: false },
+    { id: 'hold_payment', label: 'Hold Payment', checked: false },
+    { id: 'lease_ending_reminder', label: 'Lease Ending Reminder Email', checked: false },
+    { id: 'manager_lease_end_email', label: 'Manager Lease End Email', checked: false },
+    { id: 'new_approval_request', label: 'New approval request', checked: false },
+    { id: 'new_lead_added', label: 'New Lead Added Email', checked: false },
+    { id: 'new_property_added', label: 'New Property Added Email', checked: false },
+    { id: 'new_task_reminder', label: 'New task reminder email', checked: false },
+    { id: 'po_invoice_reminder', label: 'PO Invoice Reminder', checked: false },
+    { id: 'reminder_notification_email', label: 'Reminder Notification email', checked: false },
+    { id: 'tenant_new_feedback', label: 'Tenant has a new feedback', checked: false },
+    { id: 'upcoming_task_reminder', label: 'Upcoming task reminder email', checked: false },
+    { id: 'work_order_due_reminder', label: 'Work Order Due Reminder', checked: false },
+
+    { id: 'cheque_bounced_notification', label: 'Cheque Bounced Notification', checked: false },
+    { id: 'delayed_inspection_reminder', label: 'Delayed Inspection Reminder Email', checked: false },
+    { id: 'event_join', label: 'Event Join', checked: false },
+    { id: 'inspection_report_email', label: 'Inspection Report Email', checked: false },
+    { id: 'lease_start', label: 'Lease Start', checked: false },
+    { id: 'manager_new_ticket_email', label: 'Manager New Ticket Email', checked: false },
+    { id: 'new_inspection_assigned', label: 'New inspection assigned email', checked: false },
+    { id: 'new_legal_case_created', label: 'New Legal Case Created', checked: false },
+    { id: 'new_reservation', label: 'New Reservation', checked: false },
+    { id: 'new_tenant_added', label: 'New Tenant Added Email', checked: false },
+    { id: 'quotation_submission', label: 'Quotation Submission', checked: false },
+    { id: 'request_approved', label: 'Request Approved', checked: false },
+    { id: 'ticket_note_added', label: 'Ticket Note Added Email', checked: false },
+    { id: 'vendors_quotation_rejection', label: "Vendor's quotation rejection", checked: false },
+    { id: 'work_order_emails', label: 'Work Order Emails', checked: false }
+  ];
+
+  toggleSelectAllSubscriptions(event: any) {
+    const checked = event.target.checked;
+    this.selectAllSubscriptions = checked;
+    this.emailSubscriptions.forEach(sub => sub.checked = checked);
+  }
+
+  updateSelectAllState() {
+    this.selectAllSubscriptions = this.emailSubscriptions.every(sub => sub.checked);
+  }
+
   technicianData = {
     email_address: '',
     username: '',
+    password: '',
     honorific: null as string | null,
     first_name: '',
     last_name: '',
@@ -93,7 +167,12 @@ export class AddSupportTechnicianComponent implements OnInit {
     tax_registration_no: '',
     trade_license: '',
     technician_type: null as string | null,
-    category: null as string | null
+    category: null as string | null,
+    spoken_languages: null as string | null,
+    time_zone: null as string | null,
+    role: 'Support Technician',
+    department: null as string | null,
+    display_all_tenants: false
   };
 
   selectedNationality: any = null;
@@ -438,6 +517,7 @@ export class AddSupportTechnicianComponent implements OnInit {
           this.technicianData = {
             email_address: tech.email || tech.email_address || '',
             username: tech.username || '',
+            password: tech.password || '',
             honorific: tech.honorific || null,
             first_name: tech.first_name || (tech.technician_name ? tech.technician_name.trim().split(/\s+/)[0] : '') || '',
             middle_name: tech.middle_name || (tech.technician_name && tech.technician_name.trim().split(/\s+/).length >= 3 ? tech.technician_name.trim().split(/\s+/)[1] : '') || '',
@@ -456,7 +536,12 @@ export class AddSupportTechnicianComponent implements OnInit {
             tax_registration_no: tech.tax_registration_no || '',
             trade_license: tech.trade_license || '',
             technician_type: tech.technician_type || null,
-            category: tech.category || null
+            category: tech.category || null,
+            spoken_languages: tech.spoken_languages || null,
+            time_zone: tech.time_zone || null,
+            role: tech.role || 'Support Technician',
+            department: tech.department || null,
+            display_all_tenants: tech.display_all_tenants || false
           };
           this.technicianDbId = Number(tech.id) || 0;
           this.displayAsCompany = tech.display_as_company || false;

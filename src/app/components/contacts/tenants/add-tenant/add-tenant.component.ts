@@ -45,9 +45,26 @@ export class AddTenantComponent implements OnInit {
   cities: any[] = [];
   states: any[] = [];
   daysOfMonth = Array.from({length: 31}, (_, i) => i + 1);
+  docTypes = ['Passport', 'Trade License', 'Visa', 'Emirates ID'];
 
   selectedNationality: any = null;
   existingTenants: any[] = [];
+  isAddDocModalOpen = false;
+  uploadedDocuments: any[] = [];
+  docForm = {
+    document_type: null as string | null,
+    document_no: '',
+    issue_date: '',
+    expiry_date: '',
+    issuing_authority: '',
+    share_with_tenant: false,
+    share_with_landlord: false,
+    visible_for: 'None',
+    file: null as File | null,
+    fileName: '',
+    fileSize: '',
+    fileExt: ''
+  };
 
   get selectedCountryObj() {
     return this.countries.find(c => c.id === Number(this.tenantData.country_id)) || null;
@@ -638,5 +655,89 @@ export class AddTenantComponent implements OnInit {
         this.toastr.error('An error occurred while saving the tenant.', 'Error');
       }
     });
+  }
+
+  toggleDocModal(state: boolean): void {
+    this.isAddDocModalOpen = state;
+    if (!state) {
+      this.resetDocForm();
+    }
+  }
+
+  onDocFileSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.docForm.file = file;
+      this.docForm.fileName = file.name;
+      this.docForm.fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      const parts = file.name.split('.');
+      this.docForm.fileExt = (parts.length > 1 ? parts.pop() : 'FILE')!.toUpperCase();
+    }
+  }
+
+  clearDocFile(): void {
+    this.docForm.file = null;
+    this.docForm.fileName = '';
+    this.docForm.fileSize = '';
+    this.docForm.fileExt = '';
+  }
+
+  private resolveDocVisibleFor(): string {
+    const t = this.docForm.share_with_tenant;
+    const l = this.docForm.share_with_landlord;
+    if (t && l) return 'Tenant, Landlord';
+    if (t) return 'Tenant';
+    if (l) return 'Landlord';
+    return 'None';
+  }
+
+  private resetDocForm(): void {
+    this.docForm = {
+      document_type: null,
+      document_no: '',
+      issue_date: '',
+      expiry_date: '',
+      issuing_authority: '',
+      share_with_tenant: false,
+      share_with_landlord: false,
+      visible_for: 'None',
+      file: null,
+      fileName: '',
+      fileSize: '',
+      fileExt: ''
+    };
+  }
+
+  saveDocument(): void {
+    if (!this.docForm.document_type) {
+      this.toastr.error('Document Type is required.', 'Validation Error');
+      return;
+    }
+    if (!this.docForm.file) {
+      this.toastr.error('Please attach a file.', 'Validation Error');
+      return;
+    }
+
+    this.docForm.visible_for = this.resolveDocVisibleFor();
+    this.uploadedDocuments.push({
+      document_type: this.docForm.document_type,
+      document_no: this.docForm.document_no,
+      issue_date: this.docForm.issue_date,
+      expiry_date: this.docForm.expiry_date,
+      issuing_authority: this.docForm.issuing_authority,
+      visible_for: this.docForm.visible_for,
+      fileName: this.docForm.fileName,
+      fileSize: this.docForm.fileSize,
+      file: this.docForm.file
+    });
+
+    this.resetDocForm();
+    this.isAddDocModalOpen = false;
+    this.toastr.success('Document attached successfully.');
+  }
+
+  removeDocument(index: number): void {
+    this.uploadedDocuments.splice(index, 1);
+    this.toastr.success('Document removed successfully.');
   }
 }

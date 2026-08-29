@@ -1,0 +1,53 @@
+<!-- Notifications — screenshot SoT; no payment banner -->
+<div class="notifications-page font-hanken">
+  <div class="page-header !py-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h3 class="ov-page-title">Notifications</h3>
+      <p class="ov-page-sub">{{ unreadLabel }}</p>
+    </div>
+    <button
+      type="button"
+      class="nt-mark-all"
+      [disabled]="unreadCount === 0"
+      (click)="markAllAsRead()">
+      Mark all as read
+    </button>
+  </div>
+
+  <div class="nt-layout">
+    <aside class="nt-types box ov-card !mb-0">
+      <h4 class="nt-types__title">Types</h4>
+      <nav class="nt-types__list" aria-label="Notification types">
+        <button
+          type="button"
+          class="nt-type"
+          *ngFor="let type of types"
+          [class.is-active]="activeType === type.id"
+          (click)="setType(type.id)">
+          <span class="nt-type__label">{{ type.label }}</span>
+          <span class="nt-type__count" *ngIf="typeCount(type.id) > 0">{{ typeCount(type.id) }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <section class="nt-feed">
+      <article
+        class="nt-card"
+        *ngFor="let item of filteredRows"
+        [class.is-unread]="item.unread"
+        (click)="markOneRead(item)">
+        <div class="nt-card__main">
+          <h5 class="nt-card__title">{{ item.title }}</h5>
+          <p class="nt-card__body">{{ item.body }}</p>
+        </div>
+        <span class="nt-card__time">{{ item.time }}</span>
+      </article>
+
+      <div class="nt-empty" *ngIf="filteredRows.length === 0">
+        <i class="ti ti-bell-off" aria-hidden="true"></i>
+        <p class="nt-empty__title">No notifications</p>
+        <p class="nt-empty__sub">Nothing in this type right now.</p>
+      </div>
+    </section>
+  </div>
+</div>

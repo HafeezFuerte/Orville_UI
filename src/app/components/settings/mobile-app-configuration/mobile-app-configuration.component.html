@@ -1,0 +1,53 @@
+<div class="mac-page font-hanken">
+  <header class="mac-header">
+    <h1 class="mac-title">Mobile App Configuration</h1>
+    <p class="mac-sub">Configure the tenant, landlord, and vendor mobile apps.</p>
+  </header>
+
+  <div
+    class="ov-seg ov-seg--tabs w-full overflow-x-auto"
+    role="tablist"
+    aria-label="Mobile app audience">
+    <button
+      type="button"
+      class="ov-seg__btn"
+      *ngFor="let tab of tabs"
+      role="tab"
+      [attr.aria-selected]="activeTab === tab.id"
+      [class.is-active]="activeTab === tab.id"
+      (click)="setTab(tab.id)">
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <section class="mac-card" [attr.aria-labelledby]="'mac-pref-title-' + activeTab">
+    <div class="mac-card__head">
+      <h2 [id]="'mac-pref-title-' + activeTab" class="mac-card__title">
+        {{ activeTabMeta.preferencesTitle }}
+      </h2>
+      <p class="mac-card__sub">{{ activeTabMeta.preferencesSub }}</p>
+    </div>
+
+    <label class="mac-option" [class.is-on]="model[activeTab].disableChats">
+      <input
+        type="checkbox"
+        class="form-checkbox mac-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+        [(ngModel)]="model[activeTab].disableChats"
+        [attr.aria-describedby]="'mac-chat-help-' + activeTab" />
+      <span class="mac-option__text">
+        <span class="mac-option__label">{{ activeTabMeta.optionLabel }}</span>
+        <span [id]="'mac-chat-help-' + activeTab" class="mac-option__desc">
+          {{ activeTabMeta.optionDesc }}
+        </span>
+      </span>
+    </label>
+  </section>
+
+  <div class="mac-footer">
+    <p class="mac-footer__note">Updates apply to the selected mobile app after you save.</p>
+    <div class="mac-footer__actions">
+      <span *ngIf="saved" class="mac-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>

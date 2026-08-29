@@ -26,6 +26,7 @@ export interface Parking {
 }
 
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { parkingCycleClass, parkingTypeClass, portfolioStatusClass } from '../../portfolio-status.util';
 
 @Component({
   selector: 'app-parkings-list',
@@ -35,6 +36,9 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
   styleUrl: './parkings-list.component.scss'
 })
 export class ParkingsListComponent implements OnInit {
+  readonly portfolioStatusClass = portfolioStatusClass;
+  readonly parkingTypeClass = parkingTypeClass;
+  readonly parkingCycleClass = parkingCycleClass;
   viewMode: 'list' | 'grid' = 'list';
   searchQuery: string = '';
   

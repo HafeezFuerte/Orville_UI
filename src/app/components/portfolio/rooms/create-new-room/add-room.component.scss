@@ -1,60 +1,441 @@
-// Custom layout and animation overrides for the add room screen
-.box {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: #ffffff;
-
-  .box-header {
-    border-bottom: 1px solid #f3f4f6;
-  }
+/* Figma 730:7838 — Portfolio > add Rooms (match add-unit layout) */
+.ov-add-form {
+  display: flex !important;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: none;
 }
 
-// Input styles to match clean look
-.form-control {
-  border-color: #e5e7eb !important;
-  color: #374151 !important;
-  font-weight: 500;
-  transition: all 0.2s ease;
-
-  &:focus {
-    border-color: rgb(var(--primary)) !important;
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1) !important;
-  }
-
-  &::placeholder {
-    color: #9ca3af;
-    font-weight: 400;
-  }
+.ov-add-header {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 20px 0 16px !important;
+  border-bottom: 1px solid rgb(var(--default-border));
 }
 
-// Prefix styling inside input groups
-.input-group-text {
-  background-color: #f9fafb;
-  border-color: #e5e7eb;
-  color: #6b7280;
+.ov-add-header__start {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.ov-add-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.ov-add-header .ov-btn {
+  padding-inline: 20px;
   font-weight: 600;
+  letter-spacing: 0.28px;
 }
 
-// Custom dropdown results styling for landlord search
-.absolute.z-10 {
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.ov-add-header .ov-btn-ghost {
+  border-color: transparent;
+  color: rgb(var(--text-muted));
+}
 
-  div {
-    transition: background 0.15s ease;
-    &:not(:last-child) {
-      border-bottom: 1px solid #f3f4f6;
+.ov-add-body {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 400px !important;
+  column-gap: 20px;
+  width: 100%;
+  max-width: 1188px;
+  margin-inline: auto;
+}
+
+.ov-add-layout__main {
+  grid-column: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ov-add-layout__aside {
+  grid-column: 2;
+  display: flex;
+  width: 400px;
+  max-width: 400px;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 84px;
+  align-self: start;
+}
+
+@media (max-width: 767px) {
+  .ov-add-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .ov-add-layout__aside {
+    grid-column: 1;
+    width: 100%;
+    max-width: none;
+    position: static;
+  }
+}
+
+.ov-card__head--row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ov-link-info {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 17px;
+  color: rgb(var(--info)) !important;
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) saturate(100%) invert(42%) sepia(24%) saturate(1086%) hue-rotate(172deg) brightness(93%) contrast(88%);
+  }
+
+  &:hover {
+    color: rgb(var(--info)) !important;
+    opacity: 0.85;
+  }
+}
+
+.ov-landlord-search {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+.ov-landlord-search__field {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ov-landlord-search__icon {
+  pointer-events: none;
+  position: absolute;
+  inset-inline-start: 1.25rem;
+  top: 50%;
+  z-index: 1;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
+}
+
+.ov-landlord-search__input {
+  padding-inline-start: 2.75rem !important;
+}
+
+.ov-landlord-search__add {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: rgb(var(--primary));
+  color: #fff;
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+  }
+
+  &:hover {
+    opacity: 0.92;
+  }
+}
+
+.ov-landlord-dropdown {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 0.5rem;
+  background: rgb(var(--default-background));
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+}
+
+.dark .ov-landlord-dropdown {
+  background: rgb(var(--dark-bg));
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.ov-landlord-dropdown__item {
+  padding: 0.625rem 1rem;
+  font-size: 14px;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--primary) / 0.06);
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgb(var(--default-border));
+  }
+}
+
+.ov-landlord-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ov-landlord-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 4px;
+  background: rgb(var(--light));
+  font-size: 13px;
+  color: rgb(var(--default-text-color));
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.55;
+
+    &:hover {
+      opacity: 1;
     }
   }
 }
 
-// Checkboxes customized style
-.form-checkbox {
-  border-color: #d1d5db;
-  border-radius: 4px;
-  color: rgb(var(--primary));
+.ov-checks {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px 20px;
+  margin-top: 4px;
+}
 
-  &:focus {
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+@media (min-width: 768px) {
+  .ov-checks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ov-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  cursor: pointer;
+
+  input {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    color: rgb(var(--default-text-color));
+  }
+
+  small {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 17px;
+    color: rgb(var(--text-muted));
+  }
+}
+
+.ov-check--wide {
+  @media (min-width: 768px) {
+    grid-column: span 1;
+  }
+}
+
+.ov-checks__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px 20px;
+
+  @media (min-width: 768px) {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 246px) minmax(0, 1fr);
+  }
+}
+
+.ov-sale-row,
+.ov-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ov-sale-row__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-input-addon--dual .ov-input-addon__suffix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 52px;
+  padding: 0 12px;
+  border-inline-start: 1px solid rgb(var(--default-border));
+  background: rgb(var(--light));
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+  white-space: nowrap;
+}
+
+.dark .ov-input-addon--dual .ov-input-addon__suffix {
+  background: rgb(255 255 255 / 0.06);
+  border-inline-start-color: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.7);
+}
+
+.ov-amenities .ov-card__head {
+  padding: 20px;
+}
+
+.ov-amenities .ov-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 20px 24px;
+}
+
+.ov-amenities__include {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+}
+
+.ov-amenities__include .ov-label {
+  margin-bottom: 0;
+}
+
+.ov-amenities__include .ov-card-sub {
+  margin-top: 10px;
+}
+
+.ov-amenities__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ov-amenities__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 20px;
+  row-gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .ov-amenities__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .ov-amenities__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ov-amenities__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 30px;
+  margin: 0;
+}
+
+.ov-tip {
+  background: #eeeef5;
+  border-color: transparent;
+}
+
+.dark .ov-tip {
+  background: rgb(var(--primary) / 0.12);
+  border-color: rgb(255 255 255 / 0.08);
+}
+
+:host ::ng-deep .ov-form {
+  .ov-input,
+  .ng-select.ov-select .ng-select-container {
+    background: rgb(var(--default-background)) !important;
+  }
+
+  textarea.ov-input {
+    background: rgb(var(--default-background)) !important;
+  }
+}
+
+:host ::ng-deep .ov-upload {
+  .border-dashed {
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: rgb(var(--light));
+  }
+
+  .ti-btn.bg-warning {
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: rgb(var(--primary)) !important;
+    padding: 0 1rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff !important;
+    box-shadow: none;
   }
 }

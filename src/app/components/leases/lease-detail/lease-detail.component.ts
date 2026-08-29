@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -38,6 +38,7 @@ export class LeaseDetailComponent implements OnInit {
   ApprovalModalText="Approve";
   currentUser = this.commonService.getCurrentUser();
   activeTab: string = 'Overview';
+  showMoreLeaseInfo = false;
   showInvoiceModal: boolean = false;
   showInspectionModal: boolean = false;
   showProgressPopover: boolean = false;
@@ -75,12 +76,32 @@ export class LeaseDetailComponent implements OnInit {
   //   }
   // ];
 
-  toggleProgressPopover(): void {
+  toggleProgressPopover(event?: Event): void {
+    event?.stopPropagation();
+    this.showActionMenu = false;
+    this.showApprovalMenu = false;
     this.showProgressPopover = !this.showProgressPopover;
-    if (this.showProgressPopover) {
-      this.showActionMenu = false;
-      this.showApprovalMenu = false;
-    }
+  }
+
+  toggleActionMenu(event: Event): void {
+    event.stopPropagation();
+    this.showApprovalMenu = false;
+    this.showProgressPopover = false;
+    this.showActionMenu = !this.showActionMenu;
+  }
+
+  toggleApprovalMenu(event: Event): void {
+    event.stopPropagation();
+    this.showActionMenu = false;
+    this.showProgressPopover = false;
+    this.showApprovalMenu = !this.showApprovalMenu;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showActionMenu = false;
+    this.showApprovalMenu = false;
+    this.showProgressPopover = false;
   }
 
   sendApprovalReminder(): void {
@@ -502,6 +523,22 @@ export class LeaseDetailComponent implements OnInit {
   getArabicLookupName(row: any, key: string) {
     return row[(localStorage.getItem("selectedLang") == "EN" ? key : key + '_ar')];
   }
+
+  /** Shared Paid / Unpaid chip styles for Cheques + Receipts tables */
+  chequeStatusClass(row: any): string {
+    const status = (this.getArabicLookupName(row, 'cheque_status') || row?.cheque_status || '').toLowerCase();
+    if (status.includes('unpaid') || status.includes('overdue') || status.includes('bounce')) {
+      return 'ov-outline-chip ov-outline-chip--danger';
+    }
+    if (status.includes('partial') || status.includes('pending') || status.includes('hold')) {
+      return 'ov-outline-chip ov-outline-chip--warning';
+    }
+    if (status.includes('paid') || status.includes('cleared') || status.includes('deposit')) {
+      return 'ov-outline-chip ov-outline-chip--success';
+    }
+    return 'ov-outline-chip ov-outline-chip--muted';
+  }
+
   getLeaseDetails() {
     this.commontabservice.getMasterByType({
       typeId: 22,

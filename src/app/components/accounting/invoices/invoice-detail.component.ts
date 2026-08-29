@@ -384,6 +384,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   get dueCardClass(): string {
+    const status = this.invoice.invoice_status || this.invoice.status;
     const map: Record<string, string> = {
       Paid: 'invd-due--paid',
       Draft: 'invd-due--draft',
@@ -397,11 +398,12 @@ export class InvoiceDetailComponent implements OnInit {
       Overdue: 'invd-due--rejected',
       Bounced: 'invd-due--rejected'
     };
-    return map[this.invoice.status] || 'invd-due--draft';
+    return map[status] || 'invd-due--draft';
   }
 
   get showDeposited(): boolean {
-    return this.invoice.status === 'Draft' || this.invoice.status === 'Pending' || this.invoice.status === 'Hold';
+    const status = this.invoice.invoice_status || this.invoice.status;
+    return status === 'Draft' || status === 'Pending' || status === 'Hold';
   }
 
   private filterRows<T extends object>(rows: T[], query: string): T[] {

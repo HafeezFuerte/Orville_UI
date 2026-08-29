@@ -1,100 +1,100 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="ov-page-title">Rooms</h3>
-    <p class="ov-page-sub">{{ metrics.total || 0 }} rooms under management</p>
+    <h3 class="ov-page-title">{{ 'web.rooms.lblRooms' | translate }}</h3>
+    <p class="ov-page-sub">{{ metrics.total || 0 }} {{ 'web.rooms.lblRoomsUnderManagement' | translate }}</p>
     <p class="sr-only">Manage your property inventory — create, organize, and track all rooms across your portfolio with precision.</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-      Export
+      {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Import">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.rooms.lblImport' | translate">
       <i class="ri-upload-2-line text-[18px]"></i>
-      Import
+      {{ 'web.rooms.lblImport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" routerLink="/broadcasts" data-tooltip="Broadcast">
-      <i class="ri-megaphone-line text-[18px]"></i>
-      Send Broadcast
+    <button type="button" class="ov-btn ov-btn-ghost" routerLink="/broadcasts" [attr.data-tooltip]="'web.rooms.lblSendBroadcast' | translate">
+      <i class="ti ti-speakerphone text-[18px]" aria-hidden="true"></i>
+      {{ 'web.rooms.lblSendBroadcast' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" routerLink="/add-room" data-tooltip="Add">
+    <button type="button" class="ov-btn ov-btn-primary" routerLink="/add-room" [attr.data-tooltip]="'web.rooms.lblAddRoom' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-      Add Room
+      {{ 'web.rooms.lblAddRoom' | translate }}
     </button>
   </div>
 </div>
 
 <div class="ov-kpi-row mb-5">
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Total Rooms</span>
+    <span class="ov-kpi__badge">{{ 'web.rooms.lblTotalRooms' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.total }}</div>
-    <div class="ov-kpi__sub">Portfolio Rooms</div>
+    <div class="ov-kpi__sub">{{ 'web.rooms.lblPortfolioRooms' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Vacant Rooms</span>
+    <span class="ov-kpi__badge">{{ 'web.rooms.lblVacantRooms' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.vacant }}</div>
-    <div class="ov-kpi__sub">Available for lease</div>
+    <div class="ov-kpi__sub">{{ 'web.Unit.lblAvailableForLease' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Occupied Rooms</span>
+    <span class="ov-kpi__badge">{{ 'web.rooms.lblOccupiedRooms' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.occupied }}</div>
-    <div class="ov-kpi__sub">Active tenant contracts</div>
+    <div class="ov-kpi__sub">{{ 'web.Unit.lblActiveTenantContracts' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Maintenance Rooms</span>
+    <span class="ov-kpi__badge">{{ 'web.rooms.lblMaintenanceRooms' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.maintenance }}</div>
-    <div class="ov-kpi__sub">Under repair / blocked</div>
+    <div class="ov-kpi__sub">{{ 'web.Unit.lblUnderRepairBlocked' | translate }}</div>
   </div>
 </div>
 
 <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
     <div class="flex flex-wrap items-center gap-3">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Room List</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.rooms.lblRoomList' | translate }}</h5>
       <p class="sr-only">{{ 'web.common.lblSearchCriteria' | translate }}</p>
-      <div class="inline-flex h-9 items-center overflow-hidden rounded-lg border border-defaultborder">
-        <button type="button" (click)="setViewMode('list')" class="ov-icon-btn !h-9 !w-10 rounded-none border-0"
+      <div class="ov-view-toggle">
+        <button type="button" (click)="setViewMode('list')" class="ov-view-toggle__btn"
           [class.is-on]="viewMode === 'list'"
-          [attr.data-tooltip]="'Switch to List'">
-          <img src="assets/images/work-orders/list-details.svg" alt="" width="18" height="18" />
+          [attr.data-tooltip]="'web.Unit.lblSwitchToList' | translate">
+          <img src="assets/images/common/list-details.svg" alt="" width="20" height="20" />
         </button>
-        <button type="button" (click)="setViewMode('grid')" class="ov-icon-btn !h-9 !w-10 rounded-none border-0 border-s border-defaultborder"
+        <button type="button" (click)="setViewMode('grid')" class="ov-view-toggle__btn"
           [class.is-on]="viewMode === 'grid'"
-          [attr.data-tooltip]="'Switch to Grid'">
-          <img src="assets/images/work-orders/board.svg" alt="" width="18" height="18" />
+          [attr.data-tooltip]="'web.Unit.lblSwitchToGrid' | translate">
+          <img src="assets/images/common/layout-grid.svg" alt="" width="20" height="20" />
         </button>
       </div>
     </div>
     <div class="ov-seg ov-seg--solid">
       <button type="button" (click)="setCategoryFilter('All')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'All'">{{ 'web.common.lblAll' | translate }}</button>
-      <button type="button" (click)="setCategoryFilter('Residential')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Residential'">Residential</button>
-      <button type="button" (click)="setCategoryFilter('Commercial')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Commercial'">Commercial</button>
+      <button type="button" (click)="setCategoryFilter('Residential')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Residential'">{{ 'web.property.lblResidential' | translate }}</button>
+      <button type="button" (click)="setCategoryFilter('Commercial')" class="ov-seg__btn" [class.is-active]="categoryFilter === 'Commercial'">{{ 'web.property.lblCommercial' | translate }}</button>
     </div>
   </div>
 
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="room-search">Search Room</label>
+        <label class="sr-only" for="room-search">{{ 'web.rooms.lblSearchRoom' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="room-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Filter items by Room No">
+          (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.rooms.phFilterByRoomNo' | translate">
       </div>
-      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.common.lblSearch' | translate">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
     <div class="ov-toolbar__btns">
       <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
-        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        [attr.data-tooltip]="'web.common.lblFilter' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.contacts.lblFilter' | translate }}
       </button>
       <div class="relative">
         <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contacts.lblColumn' | translate }}
         </button>
         <div *ngIf="showColumnDropdown" class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
           <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
@@ -107,8 +107,8 @@
           </label>
         </div>
       </div>
-      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" title="Reset Filters">
-        Clear
+      <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost hidden" [title]="'web.Unit.lblResetFilters' | translate">
+        {{ 'web.Unit.lblClear' | translate }}
       </button>
     </div>
   </div>
@@ -130,7 +130,8 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'category'">
-          <span class="ov-type-pill" [class.ov-type-pill--commercial]="row.category_name === 'Commercial'">
+          <span class="ov-type-pill"
+            [class.ov-type-pill--commercial]="isCommercialCategory(row)">
             {{getArabicLookupName(row, 'category_name')}}
           </span>
         </ng-container>
@@ -177,7 +178,8 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'room_status_name'">
-          <span class="badge rounded px-2 py-1 text-[10px] font-bold uppercase" [ngClass]="row.class_name">
+          <span class="ov-portfolio-pill"
+            [ngClass]="portfolioStatusClass(getArabicLookupName(row, 'room_status_name'), 'room')">
             {{getArabicLookupName(row,'room_status_name')}}
           </span>
         </ng-container>
@@ -190,11 +192,11 @@
             </button>
             <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="viewRoom(row.code)">View</button>
+                (click)="viewRoom(row.code)">{{ 'web.Unit.lblView' | translate }}</button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="editRoom(row.code)">Edit</button>
+                (click)="editRoom(row.code)">{{ 'web.contacts.lblEditRealEstate' | translate }}</button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null">Delete</button>
+                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.rooms.lblDelete' | translate }}</button>
             </div>
           </div>
         </ng-container>
@@ -209,7 +211,7 @@
         <img [src]="unit.room_image" [alt]="unit.unitcode || unit.unit_code" class="ov-grid-card__img">
         <span class="ov-grid-card__badge">
           <img src="assets/images/property-grid/home-badge.svg" alt="" width="16" height="16">
-          {{ unit.category_name || 'Residential' }}
+          {{ (unit.category_name === 'Commercial' ? 'web.property.lblCommercial' : 'web.property.lblResidential') | translate }}
         </span>
       </div>
 
@@ -227,9 +229,9 @@
               </p>
             </div>
           </div>
-          <span class="ov-grid-card__status"
-            [class.ov-grid-card__status--muted]="!isActiveGridStatus(getArabicLookupName(unit, 'room_status_name'))">
-            <span class="ov-grid-card__status-dot"></span>
+          <span class="ov-portfolio-pill ov-portfolio-pill--grid"
+            [ngClass]="portfolioStatusClass(getArabicLookupName(unit, 'room_status_name'), 'room')">
+            <span class="ov-portfolio-pill__dot"></span>
             {{ getArabicLookupName(unit, 'room_status_name') }}
           </span>
         </div>
@@ -237,34 +239,34 @@
         <div class="ov-grid-card__stats ov-grid-card__stats--4">
           <div class="ov-grid-card__stat">
             <span class="ov-grid-card__stat-val">{{ unit.beds !== 'N/A' ? unit.beds : '0' }}</span>
-            <span class="ov-grid-card__stat-lbl">Beds</span>
+            <span class="ov-grid-card__stat-lbl">{{ 'web.Unit.lblBeds' | translate }}</span>
           </div>
           <div class="ov-grid-card__stat">
             <span class="ov-grid-card__stat-val">{{ unit.baths || 0 }}</span>
-            <span class="ov-grid-card__stat-lbl">Baths</span>
+            <span class="ov-grid-card__stat-lbl">{{ 'web.Unit.lblBaths' | translate }}</span>
           </div>
           <div class="ov-grid-card__stat">
             <span class="ov-grid-card__stat-val">{{ unit.area || 0 }}</span>
-            <span class="ov-grid-card__stat-lbl">Area</span>
+            <span class="ov-grid-card__stat-lbl">{{ 'web.Unit.lblArea' | translate }}</span>
           </div>
           <div class="ov-grid-card__stat">
             <span class="ov-grid-card__stat-val">{{ unit.floor_no || 0 }}</span>
-            <span class="ov-grid-card__stat-lbl">Floor</span>
+            <span class="ov-grid-card__stat-lbl">{{ 'web.Unit.lblFloor' | translate }}</span>
           </div>
         </div>
 
         <div class="ov-grid-card__meta">
-          <span>Management fee</span>
+          <span>{{ 'web.Unit.lblManagementFee' | translate }}</span>
           <span class="ov-grid-card__meta-fee">{{ currentUser?.currencyCode }} {{ unit.management_fee }}</span>
         </div>
       </div>
 
       <div class="ov-grid-card__footer">
-        <span class="ov-grid-card__added">Added {{ unit.created_date | date:'MMM d, yyyy' }}</span>
+        <span class="ov-grid-card__added">{{ 'web.Unit.lblAdded' | translate }} {{ unit.created_date | date:'MMM d, yyyy' }}</span>
         <div class="ov-grid-card__actions">
-          <a [routerLink]="['/edit-room', unit.code]" class="ov-grid-card__btn ov-grid-card__btn--ghost">Manage Room</a>
+          <a [routerLink]="['/edit-room', unit.code]" class="ov-grid-card__btn ov-grid-card__btn--ghost">{{ 'web.rooms.lblManageRoom' | translate }}</a>
           <a [routerLink]="['/rooms', unit.code]" class="ov-grid-card__btn ov-grid-card__btn--primary">
-            View Room
+            {{ 'web.rooms.lblViewRoom' | translate }}
             <img src="assets/images/property-grid/arrow.svg" alt="" width="16" height="8">
           </a>
         </div>
@@ -274,24 +276,24 @@
 
   <div class="ov-grid-loadmore" *ngIf="viewMode === 'grid' && canLoadMore">
     <button type="button" class="ov-btn ov-btn-ghost ov-grid-loadmore__btn" (click)="loadMore()">
-      Load more
+      {{ 'web.Unit.lblLoadMore' | translate }}
       <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
     </button>
   </div>
 
   <div class="ov-page" *ngIf="viewMode === 'list'">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.Unit.lblShowing' | translate }} {{ startRecord }} {{ 'web.Unit.lblTo' | translate }} {{ endRecord }} {{ 'web.Unit.lblOf' | translate }} {{ totalRecords }} {{ 'web.Unit.lblRecords' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.Unit.lblPage' | translate }} {{ displayPage }} {{ 'web.Unit.lblOf' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
@@ -325,7 +327,7 @@
     <div class="flex flex-col">
       <label class="ov-label">{{ 'web.Unit.lblCategory' | translate }}</label>
       <ng-select class="ov-select w-full" [(ngModel)]="selectedCategory"
-        (change)="onSearch()" placeholder="All Categories" [items]="categories"
+        (change)="onSearch()" [placeholder]="'web.common.lblAll' | translate" [items]="categories"
         bindLabel="name" bindValue="id" [searchable]="true" [clearable]="true" appendTo="body">
       </ng-select>
     </div>
@@ -333,21 +335,21 @@
     <div class="flex flex-col">
       <label class="ov-label">{{ 'web.Unit.lblStatus' | translate }}</label>
       <ng-select [(ngModel)]="selectedStatus" [items]="statuses" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Status"
+        (change)="onSearch()" bindLabel="name" bindValue="id" [placeholder]="'web.common.lblAll' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
     <div class="flex flex-col">
       <label class="ov-label">{{ 'web.Unit.lblBeds' | translate }}</label>
       <ng-select [(ngModel)]="selectedBeds" [items]="bedsOptions" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="id" placeholder="All Beds"
+        (change)="onSearch()" bindLabel="name" bindValue="id" [placeholder]="'web.common.lblAll' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
 
     <div class="flex flex-col">
-      <label class="ov-label">Property</label>
+      <label class="ov-label">{{ 'web.leases.lblProperty' | translate }}</label>
       <ng-select [(ngModel)]="selectedPropertyCode" [items]="propertiesList" [searchable]="true" [clearable]="true"
-        (change)="onSearch()" bindLabel="name" bindValue="code" placeholder="All Properties"
+        (change)="onSearch()" bindLabel="name" bindValue="code" [placeholder]="'web.rooms.lblAllProperties' | translate"
         class="ov-select w-full" appendTo="body"></ng-select>
     </div>
   </div>

@@ -12,7 +12,28 @@
     </a>
   </div>
 
-  <div>
+  <div class="orville-sidebar-body" [class.is-settings]="isSettingsMode">
+    <!-- Static (non-scrolling) settings chrome — not position:fixed -->
+    <div class="orville-settings-chrome" *ngIf="isSettingsMode">
+      <div class="orville-settings-search">
+        <input
+          type="search"
+          class="orville-settings-search__input ov-input"
+          placeholder="Search settings..."
+          [ngModel]="settingsSearchQuery"
+          (ngModelChange)="onSettingsSearchChange($event)"
+          aria-label="Search settings"
+        />
+      </div>
+      <a
+        class="side-menu__item orville-settings-back"
+        routerLink="/insights"
+        (click)="restoreMainMenu(); menuOpen()">
+        <i class="side-menu__icon bx bx-arrow-back"></i>
+        <span class="side-menu__label">Back to Main Menu</span>
+      </a>
+    </div>
+
     <ngx-simplebar [options]="options" class="main-sidebar" id="sidebar-scroll">
       <nav class="main-menu-container nav nav-pills flex-column sub-open">
         <div class="slide-left" id="slide-left">
@@ -26,53 +47,75 @@
           </button>
         </div>
 
-        <div class="orville-settings-search" *ngIf="isSettingsMode">
-          <input
-            type="search"
-            class="orville-settings-search__input"
-            placeholder="Search settings..."
-            [ngModel]="settingsSearchQuery"
-            (ngModelChange)="onSettingsSearchChange($event)"
-            aria-label="Search settings"
-          />
-        </div>
-
         <ul class="main-menu" [class.orville-settings-menu]="isSettingsMode">
           <li *ngFor="let menuItem of menuItems" class="slide" [ngClass]="{
               'has-sub': menuItem.type === 'sub',
               open: menuItem.active,
               active: menuItem.selected,
-              'orville-settings-heading': menuItem.type === 'heading'
+              'orville-settings-heading': menuItem.type === 'heading' && isSettingsMode,
+              'orville-nav-heading-slide': menuItem.type === 'heading' && !isSettingsMode,
+              'orville-addon-slide': menuItem.menutype === 'addons',
+              'orville-more-slide': menuItem.menutype === 'more'
             }">
-            <!-- section heading (settings) -->
-            <div *ngIf="menuItem.type === 'heading'" class="orville-settings-heading__label">
+            <!-- section heading (settings or main Add-ons / More) -->
+            <div *ngIf="menuItem.type === 'heading' && isSettingsMode" class="orville-settings-heading__label">
               {{ menuItem.title }}
+            </div>
+            <div *ngIf="menuItem.type === 'heading' && !isSettingsMode" class="orville-nav-heading"
+              [class.orville-nav-heading--addons]="isAddOnsHeading(menuItem)">
+              <span class="orville-nav-heading__label">{{ menuItem.title }}</span>
+              <img *ngIf="isAddOnsHeading(menuItem)"
+                class="orville-nav-heading__gear"
+                src="./assets/images/nav/settings.svg"
+                alt=""
+                width="14"
+                height="14" />
             </div>
 
             <!-- link -->
             <a *ngIf="menuItem.type === 'link' && menuItem.path" class="side-menu__item" [routerLink]="menuItem.path"
               routerLinkActive="active" [routerLinkActiveOptions]="{ exact: menuItem.exact ?? true }"
               (click)="setNavActive(menuItem); menuOpen()">
-              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+              <span *ngIf="isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')"
+                class="orville-addon-icon"
+                [style.background-color]="menuItem.iconPlate || '#26264F'">
+                <img [src]="menuItem.icon" alt="" width="14" height="14" />
+              </span>
+              <span *ngIf="!isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
                 [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
               <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
+              <span *ngIf="menuItem.badgeText" class="orville-nav-badge">{{ menuItem.badgeText }}</span>
             </a>
             <a *ngIf="menuItem.type === 'link' && !menuItem.path" class="side-menu__item" href="javascript:void(0)"
               (click)="$event.preventDefault()">
-              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+              <span *ngIf="isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')"
+                class="orville-addon-icon"
+                [style.background-color]="menuItem.iconPlate || '#26264F'">
+                <img [src]="menuItem.icon" alt="" width="14" height="14" />
+              </span>
+              <span *ngIf="!isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
                 [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
               <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
+              <span *ngIf="menuItem.badgeText" class="orville-nav-badge">{{ menuItem.badgeText }}</span>
             </a>
  
             <!-- submenu -->
-            <a *ngIf="menuItem.type === 'sub'" class="side-menu__item orville-parent-item" href="javascript:void(0)"
+            <a *ngIf="menuItem.type === 'sub'" class="side-menu__item orville-parent-item"
+              [class.active]="menuItem.selected"
+              href="javascript:void(0)"
               (click)="toggleNavActive(menuItem)">
-              <span *ngIf="menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
+              <span *ngIf="isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')"
+                class="orville-addon-icon"
+                [style.background-color]="menuItem.iconPlate || '#26264F'">
+                <img [src]="menuItem.icon" alt="" width="14" height="14" />
+              </span>
+              <span *ngIf="!isAddOnItem(menuItem) && menuItem.icon && menuItem.icon.endsWith('.svg')" class="orville-nav-icon"
                 [style.--orville-icon]="'url(' + menuItem.icon + ')'"></span>
               <i *ngIf="menuItem.icon && !menuItem.icon.endsWith('.svg')" class="side-menu__icon bx {{ menuItem.icon }}"></i>
               <span class="side-menu__label">{{ menuItem.title }}</span>
+              <span *ngIf="menuItem.badgeText" class="orville-nav-badge">{{ menuItem.badgeText }}</span>
               <i class="fe fe-chevron-right side-menu__angle"></i>
             </a>
 

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -7,11 +7,12 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import {
-  LANDLORD_CONTRACT_ROWS,
   LANDLORD_CONTRACT_STATUS_TABS,
   LandlordContractRow,
   LandlordContractStatus
 } from '../landlord-contracts.data';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-landlord-contracts-list',
@@ -20,7 +21,11 @@ import {
   templateUrl: './landlord-contracts-list.component.html',
   styleUrl: './landlord-contracts-list.component.scss'
 })
-export class LandlordContractsListComponent {
+export class LandlordContractsListComponent implements OnInit {
+  private router = inject(Router);
+  private commontabservice = inject(Common_TabsService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   statusFilter: 'All' | LandlordContractStatus = 'All';
   statusTabs = LANDLORD_CONTRACT_STATUS_TABS;
@@ -35,7 +40,10 @@ export class LandlordContractsListComponent {
 
   pageNo = 0;
   pageSize = 10;
-  allRows = LANDLORD_CONTRACT_ROWS;
+  allRows: LandlordContractRow[] = [];
+  isLoading = false;
+  totalRecordsCount = 0;
+  totalPagesCount = 0;
 
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -52,7 +60,71 @@ export class LandlordContractsListComponent {
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.loadContracts();
+  }
+
+  loadContracts(): void {
+    this.isLoading = true;
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      clientID: currentUser?.clientId || "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      feature: "LANDLORD_CONTRACTS",
+      featureid: "LANDLORD_CONTRACTS",
+      search_columns: "P.name",
+      filter_by: ""
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res && res.statusCode === "200" && res.objResult) {
+          const rawItems = res.objResult.landlord_contracts || res.objResult.contracts || res.objResult.table || [];
+          this.allRows = rawItems.map((item: any) => ({
+            id: String(item.code || item.id || ''),
+            landlord: item.landlord_name || item.landlord || '',
+            name: item.name || '',
+            properties: item.properties || item.property || '',
+            unitsRooms: item.units_rooms || item.unitsRooms || '',
+            startDate: item.start_date || item.startDate || '',
+            endDate: item.end_date || item.endDate || '',
+            createDate: item.create_date || item.createDate || '',
+            status: (item.status || 'Draft') as LandlordContractStatus,
+            value: String(item.value || item.contract_value || ''),
+            daysLeft: String(item.days_left || item.daysLeft || '')
+          }));
+
+          if (res.objResult.rows_info && res.objResult.rows_info[0]) {
+            this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
+            this.totalPagesCount = res.objResult.rows_info[0].noofpages;
+          } else {
+            this.totalRecordsCount = this.allRows.length;
+            this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
+          }
+        } else {
+          this.allRows = [];
+          this.totalRecordsCount = 0;
+          this.totalPagesCount = 0;
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        console.error("Error loading landlord contracts:", err);
+        this.allRows = [];
+        this.totalRecordsCount = 0;
+        this.totalPagesCount = 0;
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
@@ -63,43 +135,19 @@ export class LandlordContractsListComponent {
   }
 
   get filteredRows(): LandlordContractRow[] {
-    const q = this.searchQuery.trim().toLowerCase();
-    return this.allRows.filter((row) => {
-      if (this.statusFilter !== 'All' && row.status !== this.statusFilter) {
-        return false;
-      }
-      if (this.filterLandlord && !row.landlord.toLowerCase().includes(this.filterLandlord.toLowerCase())) {
-        return false;
-      }
-      if (this.filterProperty && !row.properties.toLowerCase().includes(this.filterProperty.toLowerCase())) {
-        return false;
-      }
-      if (this.filterStatus && row.status !== this.filterStatus) {
-        return false;
-      }
-      if (!q) {
-        return true;
-      }
-      return (
-        row.id.includes(q) ||
-        row.landlord.toLowerCase().includes(q) ||
-        row.name.toLowerCase().includes(q) ||
-        row.properties.toLowerCase().includes(q)
-      );
-    });
+    return this.allRows;
   }
 
   get totalRecords(): number {
-    return this.filteredRows.length;
+    return this.totalRecordsCount;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
+    return Math.max(1, this.totalPagesCount || 1);
   }
 
   get paginatedRows(): LandlordContractRow[] {
-    const start = this.pageNo * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
+    return this.allRows;
   }
 
   get displayPage(): number {
@@ -128,10 +176,12 @@ export class LandlordContractsListComponent {
   setStatusFilter(status: 'All' | LandlordContractStatus): void {
     this.statusFilter = status;
     this.pageNo = 0;
+    this.loadContracts();
   }
 
   onSearch(): void {
     this.pageNo = 0;
+    this.loadContracts();
   }
 
   clearFilters(): void {
@@ -141,6 +191,7 @@ export class LandlordContractsListComponent {
     this.filterStatus = null;
     this.statusFilter = 'All';
     this.pageNo = 0;
+    this.loadContracts();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -174,24 +225,28 @@ export class LandlordContractsListComponent {
 
   onPageSizeChange(): void {
     this.pageNo = 0;
+    this.loadContracts();
   }
 
   previousPage(): void {
     if (this.pageNo > 0) {
       this.pageNo--;
+      this.loadContracts();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
       this.pageNo++;
+      this.loadContracts();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
+    if (target >= 0 && target < this.totalPages && target !== this.pageNo) {
       this.pageNo = target;
+      this.loadContracts();
     }
   }
 

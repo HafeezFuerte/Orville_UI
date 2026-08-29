@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -28,16 +28,8 @@ import { CommonService } from '../../../../services/common.service';
 export class AddRoomComponent implements OnInit {
   public roomForm!: FormGroup;
   public isLoading = false;
-  
-  // Floating buttons state
   public showScrollToTop = false;
 
-  @HostListener("window:scroll", [])
-  onWindowScroll() {
-    const number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    this.showScrollToTop = number > 600;
-  }
-  
   // File attachments state
   roomImageFile: File | null = null;
   roomBroucherFile: File | null = null;
@@ -343,10 +335,11 @@ export class AddRoomComponent implements OnInit {
   searchLandlords() {
     if (!this.landlordSearchQuery.trim()) {
       this.filteredLandlords = [...this.landlordsList];
-      return;
+    } else {
+      const q = this.landlordSearchQuery.toLowerCase();
+      this.filteredLandlords = this.landlordsList.filter(l => l.name.toLowerCase().includes(q));
     }
-    const q = this.landlordSearchQuery.toLowerCase();
-    this.filteredLandlords = this.landlordsList.filter(l => l.name.toLowerCase().includes(q));
+    this.showLandlordDropdown = true;
   }
 
   selectLandlord(landlord: any) {
@@ -362,12 +355,7 @@ export class AddRoomComponent implements OnInit {
   }
 
   createNewLandlord() {
-   // this.toastr.info('Create new landlord feature coming soon.', 'Info');
    window.location.href='/contacts/landlords/add-landlord';
-  }
-
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onSubmit() {

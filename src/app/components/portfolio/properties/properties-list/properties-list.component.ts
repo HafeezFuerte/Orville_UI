@@ -10,6 +10,7 @@ import { PropertiesService } from '../../services/properties.service';
 import { PortfolioService } from '../../services/portfolio.service';
 
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { portfolioStatusClass } from '../../portfolio-status.util';
 
 @Component({
   selector: 'app-properties-list',
@@ -19,6 +20,7 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
   styleUrl: './properties-list.component.scss'
 })
 export class PropertiesListComponent implements OnInit {
+  readonly portfolioStatusClass = portfolioStatusClass;
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Units' | 'Rooms' = 'All';
   searchQuery: string = '';
@@ -46,16 +48,16 @@ export class PropertiesListComponent implements OnInit {
 
   // Table Columns Definition
   tableColumns = [
-    { key: 'code', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'type_name', label: 'Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'internal Status', label: 'Internal Status', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'total_leases', label: 'Leases', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'contracts', label: 'Contracts', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'total_units', label: 'Occupied/ Total Units', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'occupancy_rate', label: 'Occupancy Rate', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'code', label: 'web.common.lblID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'name', label: 'web.common.lblName', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'type_name', label: 'web.property.lblType', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'internal Status', label: 'web.property.lblInternalStatus', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'tags', label: 'web.property.lblTags', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'total_leases', label: 'web.property.lblLeases', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'contracts', label: 'web.property.lblContracts', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'total_units', label: 'web.property.lblOccupiedTotalUnits', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'occupancy_rate', label: 'web.property.lblOccupancyRate', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'web.property.lblAction', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   openActionCode: string | number | null = null;

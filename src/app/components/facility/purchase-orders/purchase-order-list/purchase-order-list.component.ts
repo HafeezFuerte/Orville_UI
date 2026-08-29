@@ -6,8 +6,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import {
   PURCHASE_ORDER_ROWS,
-  PurchaseOrderRow,
-  PurchaseOrderStatus
+  PurchaseOrderRow
 } from '../purchase-orders.data';
 
 @Component({
@@ -134,21 +133,6 @@ export class PurchaseOrderListComponent {
   toggleColumnDropdown(event: Event): void {
     event.stopPropagation();
     this.showColumnDropdown = !this.showColumnDropdown;
-  }
-
-  statusClass(status: PurchaseOrderStatus): string {
-    switch (status) {
-      case 'Open':
-        return 'po-chip po-chip--info';
-      case 'Approved':
-        return 'po-chip po-chip--success';
-      case 'Closed':
-        return 'po-chip po-chip--soft';
-      case 'Rejected':
-        return 'po-chip po-chip--danger';
-      default:
-        return 'po-chip po-chip--soft';
-    }
   }
 
   toggleRowAction(id: string, event: MouseEvent): void {

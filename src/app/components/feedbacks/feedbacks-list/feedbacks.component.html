@@ -1,0 +1,131 @@
+<!-- Feedbacks — screenshot SoT (no payment banner); 10 rows per page -->
+<div class="feedbacks-page">
+  <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
+    <div>
+      <h3 class="ov-page-title">Feedbacks</h3>
+      <p class="ov-page-sub">Monitor tenant feedback and responses ({{ totalLabel }} total).</p>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
+      <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export" (click)="onExport()">
+        <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
+        Export
+      </button>
+      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleDrawer(true)" data-tooltip="Filters">
+        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+        Filters
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="ov-btn ov-btn-toolbar"
+          (click)="toggleColumnDropdown($event)"
+          data-tooltip="Columns">
+          <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
+          Columns
+        </button>
+        <div
+          *ngIf="showColumnDropdown"
+          class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+          <label
+            class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <input
+              type="checkbox"
+              [checked]="allColumnsSelected"
+              (change)="toggleAllColumns($event)"
+              class="h-3.5 w-3.5 rounded text-primary" />
+            Select All
+          </label>
+          <label
+            *ngFor="let col of tableColumns"
+            class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor"
+            [class.hidden]="col.key === 'action'">
+            <input
+              type="checkbox"
+              [checked]="col.visible !== false"
+              (change)="toggleColumn(col.key)"
+              class="h-3.5 w-3.5 rounded text-primary" />
+            {{ col.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box mb-5 rounded-2xl overflow-visible bg-white dark:bg-bodybg border border-defaultborder shadow-none">
+    <div
+      class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
+      <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
+        <label class="sr-only" for="feedbacks-search">Filter by comment or keyword</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input
+          id="feedbacks-search"
+          type="text"
+          class="ov-input ov-search__input"
+          placeholder="Filter by comment or keyword"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()" />
+      </div>
+    </div>
+
+    <div class="px-5 pb-5 pt-5">
+      <app-shared-table
+        [columns]="visibleColumns"
+        [data]="pagedRows"
+        [hasActions]="false"
+        [emptyMessage]="'No feedbacks found'"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNo"
+        [pageSizeOptions]="pageSizeOptions"
+        (pageChange)="onSharedTablePageChange($event)">
+        <ng-template #colTemplate let-row="row" let-col="col">
+          <ng-container [ngSwitch]="col.key">
+            <ng-container *ngSwitchCase="'id'">
+              <a href="javascript:void(0)" class="ov-link font-semibold" (click)="$event.preventDefault(); viewFeedback(row)">
+                {{ row.id }}
+              </a>
+            </ng-container>
+            <ng-container *ngSwitchCase="'propertyUnit'">
+              <span class="fb-ellipsis" [title]="row.propertyUnit">{{ row.propertyUnit }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'response'">
+              <span *ngIf="row.response; else noResponse" [class]="responseClass(row.response)">
+                <span class="fb-response__dot" aria-hidden="true"></span>
+                {{ row.response }}
+              </span>
+              <ng-template #noResponse>
+                <span class="text-textmuted">—</span>
+              </ng-template>
+            </ng-container>
+            <ng-container *ngSwitchCase="'comment'">
+              <span class="fb-ellipsis" [title]="row.comment">{{ row.comment }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'action'">
+              <div class="relative inline-flex" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  class="ov-icon-btn ov-icon-btn--bare"
+                  (click)="toggleActionMenu(row.id, $event)"
+                  aria-label="Actions">
+                  <img src="assets/images/common/dots-vertical.svg" alt="" width="16" height="16" />
+                </button>
+                <div
+                  *ngIf="openActionId === row.id"
+                  class="absolute end-0 z-30 mt-1 min-w-[120px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                  <button
+                    type="button"
+                    class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[13px] text-defaulttextcolor hover:bg-light"
+                    (click)="viewFeedback(row)">
+                    View
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </app-shared-table>
+    </div>
+  </div>
+</div>
+
+<app-filter-drawer [(isOpen)]="showFilterDrawer" (apply)="onSearch()"></app-filter-drawer>

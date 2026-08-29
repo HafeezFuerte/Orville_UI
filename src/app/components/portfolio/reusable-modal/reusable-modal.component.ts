@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-reusable-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './reusable-modal.component.html'
 })
 export class ReusableModalComponent {

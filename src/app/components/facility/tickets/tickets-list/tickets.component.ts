@@ -399,15 +399,15 @@ export class FacilityTicketsComponent {
   kanbanPriorityClass(priority: TicketPriority): string {
     switch (priority) {
       case 'Emergency':
-        return 'tk-kanban-card__priority--emergency';
+        return 'ov-kanban-card__priority--emergency';
       case 'High':
-        return 'tk-kanban-card__priority--high';
+        return 'ov-kanban-card__priority--high';
       case 'Medium':
-        return 'tk-kanban-card__priority--medium';
+        return 'ov-kanban-card__priority--medium';
       case 'Low':
-        return 'tk-kanban-card__priority--low';
+        return 'ov-kanban-card__priority--low';
       default:
-        return '';
+        return 'ov-kanban-card__priority--soft';
     }
   }
 

@@ -1,0 +1,250 @@
+<div class="flex w-full flex-col gap-4 py-4 font-hanken">
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Broadcast Configuration
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Broadcast Types are used to categorize broadcast messages. You can create as many broadcast
+        types as you need.
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New
+    </button>
+  </div>
+
+  <div class="flex w-full flex-wrap items-center justify-between gap-3">
+    <label
+      class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+      <img
+        src="./assets/images/settings/search.svg"
+        alt=""
+        width="14"
+        height="14"
+        class="shrink-0" />
+      <input
+        type="search"
+        class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+        placeholder="Filter broadcast types by name"
+        aria-label="Filter broadcast types by name"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()" />
+    </label>
+
+    <div class="relative" data-columns-dropdown>
+      <button
+        type="button"
+        class="ov-btn ov-btn-ghost bc-toolbar-btn"
+        [attr.aria-expanded]="showColumns"
+        (click)="toggleColumns()">
+        <img src="./assets/images/work-orders/columns.svg" alt="" width="16" height="16" />
+        <span>Columns</span>
+      </button>
+
+      <div *ngIf="showColumns" class="bc-menu" (click)="$event.stopPropagation()">
+        <div class="border-b border-defaultborder p-2.5">
+          <label
+            class="ov-inline-search h-9 w-full rounded-lg border border-defaultborder bg-white px-3 dark:bg-bodybg">
+            <img
+              src="./assets/images/settings/search.svg"
+              alt=""
+              width="12"
+              height="12"
+              class="shrink-0" />
+            <input
+              type="search"
+              class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
+              placeholder="Search options..."
+              [(ngModel)]="columnSearch" />
+          </label>
+        </div>
+        <div class="bc-menu__list">
+          <label class="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5">
+            <input
+              type="checkbox"
+              class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+              [checked]="allColumnsSelected"
+              (change)="toggleSelectAllColumns($any($event.target).checked)" />
+            <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+          </label>
+          <label
+            *ngFor="let col of filteredColumns"
+            class="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5">
+            <input
+              type="checkbox"
+              class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+              [(ngModel)]="col.visible" />
+            <span class="text-sm text-defaulttextcolor">{{ col.label }}</span>
+          </label>
+        </div>
+        <div class="bc-menu__footer">
+          <button type="button" class="bc-menu__link" (click)="clearColumns()">Clear</button>
+          <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
+          <button type="button" class="bc-menu__close" (click)="closeColumns()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+    role="table"
+    aria-label="Broadcast types">
+    <div class="w-full overflow-x-auto">
+      <div
+        class="bc-table__row bc-table__row--head"
+        role="row"
+        [style.grid-template-columns]="tableGridTemplate">
+        <div
+          *ngIf="isColumnVisible('type')"
+          class="bc-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="bc-sort" (click)="toggleSort('type')">
+            Type
+            <span class="bc-sort__icons" aria-hidden="true">
+              <span [class.is-active]="sortKey === 'type' && sortDir === 'asc'">▲</span>
+              <span [class.is-active]="sortKey === 'type' && sortDir === 'desc'">▼</span>
+            </span>
+          </button>
+        </div>
+        <div
+          *ngIf="isColumnVisible('isAdminCategory')"
+          class="bc-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="bc-sort" (click)="toggleSort('isAdminCategory')">
+            Is Admin Category?
+            <span class="bc-sort__icons" aria-hidden="true">
+              <span [class.is-active]="sortKey === 'isAdminCategory' && sortDir === 'asc'">▲</span>
+              <span [class.is-active]="sortKey === 'isAdminCategory' && sortDir === 'desc'">▼</span>
+            </span>
+          </button>
+        </div>
+        <div
+          *ngIf="isColumnVisible('actions')"
+          class="bc-table__cell bc-table__cell--action text-xs font-semibold text-textmuted"
+          role="columnheader">
+          Actions
+        </div>
+      </div>
+
+      <ng-container *ngIf="pagedRows.length > 0">
+        <div
+          *ngFor="let row of pagedRows"
+          class="bc-table__row"
+          role="row"
+          [style.grid-template-columns]="tableGridTemplate">
+          <div *ngIf="isColumnVisible('type')" class="bc-table__cell" role="cell">
+            <button type="button" class="bc-name-link" (click)="openEdit(row)">
+              {{ row.type }}
+            </button>
+          </div>
+          <div *ngIf="isColumnVisible('isAdminCategory')" class="bc-table__cell" role="cell">
+            <span
+              class="bc-badge"
+              [class.bc-badge--yes]="row.isAdminCategory"
+              [class.bc-badge--no]="!row.isAdminCategory">
+              {{ row.isAdminCategory ? 'Yes' : 'No' }}
+            </span>
+          </div>
+          <div
+            *ngIf="isColumnVisible('actions')"
+            class="bc-table__cell bc-table__cell--action"
+            role="cell">
+            <button
+              type="button"
+              class="ov-icon-btn"
+              aria-label="Edit broadcast type"
+              (click)="openEdit(row)">
+              <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+            </button>
+            <button
+              type="button"
+              class="ov-icon-btn ov-icon-btn--danger"
+              aria-label="Delete broadcast type"
+              (click)="deleteRow(row)">
+              <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <div *ngIf="pagedRows.length === 0" class="bc-table-empty" role="row">
+        <p class="bc-table-empty__text">{{ emptyMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+  <app-ov-paginator
+    *ngIf="totalFiltered > 0"
+    [totalRecords]="totalFiltered"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[10, 25, 50]"
+    (pageChange)="onPageChange($event)">
+  </app-ov-paginator>
+</div>
+
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[480px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bc-modal-title"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="bc-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ modalTitle }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">
+            Create a new broadcast type to categorize broadcast messages.
+          </p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="flex flex-col gap-4 p-5">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="bc-type">
+            Type <span class="text-danger">*</span>
+          </label>
+          <input
+            id="bc-type"
+            type="text"
+            class="ov-input"
+            placeholder="Enter broadcast type name"
+            [(ngModel)]="draft.type" />
+        </div>
+      </div>
+
+      <div
+        class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary"
+          [disabled]="!canSave"
+          (click)="save()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

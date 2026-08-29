@@ -1,0 +1,126 @@
+<div class="ov-email-sub-drawer" [class.active]="isOpen">
+  <div class="ov-email-sub-drawer__backdrop" (click)="closeDrawer()" aria-hidden="true"></div>
+
+  <aside
+    class="ov-email-sub-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Email Subscriptions">
+
+    <header class="ov-email-sub-drawer__header">
+      <div class="ov-email-sub-drawer__title-row">
+        <span class="ov-email-sub-drawer__bell" aria-hidden="true">
+          <img src="assets/images/nav/bell.svg" alt="" width="16" height="16" />
+        </span>
+        <div class="ov-email-sub-drawer__titles">
+          <h5 class="ov-email-sub-drawer__title">Email Subscriptions</h5>
+          <p class="ov-email-sub-drawer__sub">{{ subtitle }}</p>
+        </div>
+      </div>
+      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="closeDrawer()" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+      </button>
+    </header>
+
+    <div class="ov-email-sub-drawer__global">
+      <div class="ov-email-sub-drawer__global-card">
+        <div class="ov-email-sub-drawer__global-top">
+          <span class="ov-email-sub-drawer__global-label">Global Email Settings Allowed?</span>
+          <span
+            class="ov-email-sub-drawer__global-badge"
+            [class.ov-email-sub-drawer__global-badge--no]="!globalAllowed">
+            {{ globalAllowed ? 'Yes' : 'No' }}
+          </span>
+        </div>
+        <p class="ov-email-sub-drawer__global-hint">
+          Email functionality is enabled. Emails will be sent only for active subscriptions.
+          <a href="javascript:void(0)" class="ov-link font-semibold">View Settings</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="ov-email-sub-drawer__toolbar">
+      <label class="ov-email-sub-drawer__select-all">
+        <input
+          type="checkbox"
+          class="ov-email-sub-drawer__checkbox"
+          [checked]="allSelected"
+          [disabled]="!globalAllowed"
+          (change)="toggleAll($event)" />
+        <span>Select All</span>
+      </label>
+      <ng-select
+        class="ov-select ov-email-sub-drawer__filter"
+        [items]="filterOptions"
+        [(ngModel)]="listFilter"
+        [clearable]="false"
+        [searchable]="false"
+        appendTo="body">
+      </ng-select>
+    </div>
+
+    <div class="ov-email-sub-drawer__list">
+      <div
+        *ngFor="let sub of visibleSubscriptions"
+        class="ov-email-sub-drawer__row"
+        [class.is-subscribed]="sub.subscribed">
+        <label class="ov-email-sub-drawer__row-check">
+          <input
+            type="checkbox"
+            class="ov-email-sub-drawer__checkbox"
+            [checked]="sub.subscribed"
+            [disabled]="!globalAllowed"
+            (change)="toggleOne(sub)" />
+          <span class="ov-email-sub-drawer__row-name">{{ sub.name }}</span>
+        </label>
+        <div class="ov-email-sub-drawer__row-actions">
+          <button
+            type="button"
+            class="ov-email-sub-drawer__chip"
+            [class.ov-email-sub-drawer__chip--subscribed]="sub.subscribed"
+            [disabled]="!globalAllowed"
+            (click)="toggleOne(sub)">
+            <img
+              *ngIf="!sub.subscribed"
+              src="assets/images/email-subscriptions/check-white.svg"
+              alt=""
+              width="12"
+              height="12" />
+            <img
+              *ngIf="sub.subscribed"
+              src="assets/images/email-subscriptions/x-white.svg"
+              alt=""
+              width="12"
+              height="12" />
+            Subscribe
+          </button>
+          <button
+            type="button"
+            class="ov-email-sub-drawer__row-status"
+            [disabled]="!globalAllowed"
+            (click)="toggleOne(sub)"
+            [attr.aria-label]="sub.subscribed ? 'Unsubscribe ' + sub.name : 'Dismiss ' + sub.name">
+            <img
+              *ngIf="!sub.subscribed"
+              src="assets/images/email-subscriptions/x-muted.svg"
+              alt=""
+              width="20"
+              height="20" />
+            <img
+              *ngIf="sub.subscribed"
+              src="assets/images/email-subscriptions/check-success.svg"
+              alt=""
+              width="20"
+              height="20" />
+          </button>
+        </div>
+      </div>
+      <p *ngIf="visibleSubscriptions.length === 0" class="ov-email-sub-drawer__empty">No subscriptions in this filter.</p>
+    </div>
+
+    <footer class="ov-email-sub-drawer__footer">
+      <button type="button" class="ov-btn ov-btn-ghost flex-1" [disabled]="!globalAllowed" (click)="clearAll()">Clear</button>
+      <button type="button" class="ov-btn ov-btn-ghost flex-1" (click)="closeDrawer()">Close</button>
+    </footer>
+  </aside>
+</div>

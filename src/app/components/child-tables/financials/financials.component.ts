@@ -1,4 +1,4 @@
-import { Component, Input, OnInit,inject } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, inject, HostListener } from '@angular/core';
 import { CommonModule,formatDate } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -16,10 +16,12 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
   templateUrl: './financials.component.html',
   styleUrls: ['./financials.component.scss']
 })
-export class FinancialsComponent implements OnInit {
+export class FinancialsComponent implements OnInit, OnChanges {
   @Input() invoices: any[] = [];
   @Input() receipts: any[] = [];
   @Input() leaseInfo: any = {};
+  /** 'overview' keeps Invoice & Receipts title; 'tab' uses parent Lease Financials header */
+  @Input() variant: 'overview' | 'tab' = 'overview';
   attachedFile:any='';
   isLoading:boolean=false;
   payment_code:any='';
@@ -28,6 +30,7 @@ export class FinancialsComponent implements OnInit {
   private lease_service=inject(LeasesService); 
   private router=inject(Router);
   showApprovalMenu=false;
+  openMenuReceiptKey: string | null = null;
   paymentMethods:any=[];
   coa_list:any=[];
   receivepayment:any= { receivefull:1, Amount:0,paiddate:null,payment_via:0,account:'',notes:'',reciept_file:null}
@@ -48,24 +51,85 @@ export class FinancialsComponent implements OnInit {
     { key: 'status', label: 'Status' }
   ];
 
-  showActionMenu(selectedrow:any){
-    this.showApprovalMenu =!this.showApprovalMenu;
+  get paymentProgressPct(): number {
+    const total = Number(this.invoice?.total_amount) || 0;
+    const paid = Number(this.invoice?.paid_amount) || 0;
+    if (total <= 0) {
+      return (this.invoice?.cheque_status === 'Paid' || this.invoice?.status === 'Paid') ? 100 : 0;
+    }
+    return Math.min(100, Math.max(0, (paid / total) * 100));
+  }
+
+  private receiptKey(row: any): string {
+    return String(row?.code ?? row?.rcp_no ?? row?.id ?? '');
+  }
+
+  isMenuOpen(row: any): boolean {
+    return this.showApprovalMenu && this.openMenuReceiptKey === this.receiptKey(row);
+  }
+
+  getReceiptStatusClass(row: any): string {
+    const status = (this.getArabicLookupName(row, 'cheque_status') || row?.cheque_status || '').toLowerCase();
+    // Check unpaid before paid — "unpaid".includes("paid") is true
+    if (status.includes('unpaid') || status.includes('overdue') || status.includes('bounce')) {
+      return 'ov-outline-chip ov-outline-chip--danger';
+    }
+    if (status.includes('partial') || status.includes('pending') || status.includes('hold')) {
+      return 'ov-outline-chip ov-outline-chip--warning';
+    }
+    if (status.includes('paid') || status.includes('cleared') || status.includes('deposit')) {
+      return 'ov-outline-chip ov-outline-chip--success';
+    }
+    return 'ov-outline-chip ov-outline-chip--muted';
+  }
+
+  openRecordReceipt(): void {
+    if (this.receipts?.length) {
+      this.selectedReceipt = this.receipts[0];
+      this.receivepayment.Amount = this.selectedReceipt.amt;
+      this.receivepayment.paiddate = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+    }
+    this.showApprovalMenu = false;
+    this.openMenuReceiptKey = null;
+    this.showReceivePayment = true;
+  }
+
+  showActionMenu(selectedrow:any, event?: Event){
+    event?.stopPropagation();
+    const key = this.receiptKey(selectedrow);
+    if (this.showApprovalMenu && this.openMenuReceiptKey === key) {
+      this.showApprovalMenu = false;
+      this.openMenuReceiptKey = null;
+      return;
+    }
+    this.showApprovalMenu = true;
+    this.openMenuReceiptKey = key;
     this.selectedReceipt=selectedrow;
     this.receivepayment.Amount=this.selectedReceipt.amt; 
     this.receivepayment.paiddate=formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
   }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showApprovalMenu = false;
+    this.openMenuReceiptKey = null;
+  }
   ngOnInit(): void { 
     this.loadLookup(2,23, 'paymentMethods', '');
     this.loadLookup(2,1003, 'coa_list', ''); 
-    if (this.invoices && this.invoices.length > 0) {
-      // Expand the first invoice by default
-      this.invoice=this.invoices[0];
-      this.expandedInvoiceId = this.invoices[0].invoicecode || this.invoices[0].id || 0;
+    this.syncInvoice();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['invoices']) {
+      this.syncInvoice();
     }
-    if(this.invoices.length==0){
-      setTimeout(() => {
-        this.invoice=this.invoices[0];
-      }, 500);
+  }
+
+  private syncInvoice(): void {
+    if (this.invoices && this.invoices.length > 0) {
+      this.invoice = this.invoices[0];
+      this.expandedInvoiceId = this.invoices[0].invoicecode || this.invoices[0].id || 0;
     }
   }
   onRadioChange(){
@@ -157,6 +221,7 @@ export class FinancialsComponent implements OnInit {
   }
   OnApproveClick(st:string){
     this.showApprovalMenu=false;
+    this.openMenuReceiptKey = null;
     if(this.selectedReceipt && this.selectedReceipt.status!=250){
       if(st=="Payment"){
         this.showReceivePayment=true;

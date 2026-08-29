@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -28,15 +28,7 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
 export class AddUnitComponent implements OnInit {
   public unitForm!: FormGroup;
   public isLoading = false;
-  
-  // Floating buttons state
   public showScrollToTop = false;
-
-  @HostListener("window:scroll", [])
-  onWindowScroll() {
-    const number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    this.showScrollToTop = number > 600;
-  }
   currentUser: AuthPayload | null = null;
   // File attachments state
   unitImageFile: File | null = null;

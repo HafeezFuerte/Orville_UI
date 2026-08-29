@@ -1,15 +1,16 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import {
-  INVENTORY_DETAIL,
   InventoryDetail,
   InventoryLineDraft,
   InventoryLineRow,
   InventoryStockType
 } from '../inventory.data';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 type DetailTab = 'details' | 'lines' | 'attachments' | 'notes';
 
@@ -20,9 +21,11 @@ type DetailTab = 'details' | 'lines' | 'attachments' | 'notes';
   templateUrl: './inventory-detail.component.html',
   styleUrl: './inventory-detail.component.scss'
 })
-export class InventoryDetailComponent {
+export class InventoryDetailComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   activeTab: DetailTab = 'details';
   showLineModal = false;
@@ -33,10 +36,27 @@ export class InventoryDetailComponent {
   rowMenuStyle: Record<string, string> | null = null;
 
   item: InventoryDetail = {
-    ...INVENTORY_DETAIL,
-    id: this.route.snapshot.paramMap.get('id') || INVENTORY_DETAIL.id
+    id: '',
+    itemName: '',
+    partNumber: '',
+    category: '',
+    subcategory: '',
+    stockType: 'Non-Stock',
+    description: '',
+    itemCost: '',
+    itemQuantity: '',
+    quantityThreshold: '',
+    sameCost: false,
+    placedDate: '',
+    expirationDate: '',
+    created: '',
+    lastUpdated: '',
+    images: [],
+    notes: '',
+    attachments: [],
+    lines: []
   };
-  lines: InventoryLineRow[] = [...INVENTORY_DETAIL.lines];
+  lines: InventoryLineRow[] = [];
 
   lineColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px' },
@@ -58,6 +78,76 @@ export class InventoryDetailComponent {
     availableQty: '',
     minimumQty: ''
   };
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      const code = params.get('id') || '';
+      if (code) {
+        this.loadDetail(code);
+      }
+    });
+  }
+
+  loadDetail(code: string): void {
+    const currentUser = this.commonService.getCurrentUser();
+    this.portfolioService.getMasterByType({
+      typeId: 40,
+      filterId: 0,
+      filterText: code,
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    }).subscribe({
+      next: (res: any) => {
+        if (res && res.statusCode === "200" && res.objResult) {
+          const detail = res.objResult.inventory?.[0] || res.objResult.table?.[0] || {};
+          const rawLines = res.objResult.lines || res.objResult.table1 || [];
+          const rawDocs = res.objResult.documents || res.objResult.table2 || [];
+
+          this.item = {
+            id: String(detail.code || detail.id || code),
+            itemName: detail.item_name || detail.itemName || '',
+            partNumber: detail.part_no || detail.partNumber || '',
+            category: detail.category_name || detail.category || '',
+            subcategory: detail.subcategory_name || detail.subcategory || 'N/A',
+            stockType: detail.stock_type || detail.stockType || 'Non-Stock',
+            description: detail.description || '',
+            itemCost: detail.item_cost || detail.cost || '0.00',
+            itemQuantity: detail.item_qty || detail.quantity || '0',
+            quantityThreshold: detail.qty_threshold || detail.threshold || 'N/A',
+            sameCost: !!detail.same_cost,
+            placedDate: detail.placed_date || '',
+            expirationDate: detail.expiry_date || '',
+            created: detail.created_date || '',
+            lastUpdated: detail.modified_date || '',
+            images: detail.images || [],
+            notes: detail.notes || '',
+            attachments: rawDocs.map((doc: any) => ({
+              name: doc.name || doc.document_name || '',
+              size: doc.size || doc.document_size || '',
+              type: doc.type || doc.document_type || ''
+            })),
+            lines: []
+          };
+
+          this.lines = rawLines.map((line: any) => ({
+            id: String(line.code || line.id || ''),
+            location: line.location || '',
+            area: line.area || '',
+            status: line.status || '',
+            availableQty: line.available_qty || line.availableQty || '0 Qty',
+            minimumQty: line.minimum_qty || line.minimumQty || '-',
+            barcode: line.barcode || '',
+            cost: line.cost || '0.00'
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error("Error loading inventory detail:", err);
+      }
+    });
+  }
 
   get filteredLines(): InventoryLineRow[] {
     const q = this.lineSearch.trim().toLowerCase();

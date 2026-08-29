@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -7,11 +7,12 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import {
-  VENDOR_CONTRACT_ROWS,
   VENDOR_CONTRACT_STATUS_TABS,
   VendorContractRow,
   VendorContractStatus
 } from '../vendor-contracts.data';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-vendor-contracts-list',
@@ -20,7 +21,11 @@ import {
   templateUrl: './vendor-contracts-list.component.html',
   styleUrl: './vendor-contracts-list.component.scss'
 })
-export class VendorContractsListComponent {
+export class VendorContractsListComponent implements OnInit {
+  private router = inject(Router);
+  private commontabservice = inject(Common_TabsService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   statusFilter: 'All' | VendorContractStatus = 'All';
   statusTabs = VENDOR_CONTRACT_STATUS_TABS;
@@ -35,7 +40,10 @@ export class VendorContractsListComponent {
 
   pageIndex = 0;
   pageSize = 10;
-  allRows = VENDOR_CONTRACT_ROWS;
+  allRows: VendorContractRow[] = [];
+  isLoading = false;
+  totalRecordsCount = 0;
+  totalPagesCount = 0;
 
   tableColumns = [
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
@@ -52,7 +60,71 @@ export class VendorContractsListComponent {
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.loadContracts();
+  }
+
+  loadContracts(): void {
+    this.isLoading = true;
+    const currentUser = this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      clientID: currentUser?.clientId || "74BB6922",
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageIndex,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      feature: "VENDOR_CONTRACTS",
+      featureid: "VENDOR_CONTRACTS",
+      search_columns: "P.name",
+      filter_by: ""
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res && res.statusCode === "200" && res.objResult) {
+          const rawItems = res.objResult.vendor_contracts || res.objResult.contracts || res.objResult.table || [];
+          this.allRows = rawItems.map((item: any) => ({
+            id: String(item.code || item.id || ''),
+            vendor: item.vendor_name || item.vendor || '',
+            name: item.name || '',
+            properties: item.properties || item.property || '',
+            unitsRooms: item.units_rooms || item.unitsRooms || '',
+            startDate: item.start_date || item.startDate || '',
+            endDate: item.end_date || item.endDate || '',
+            createDate: item.create_date || item.createDate || '',
+            status: (item.status || 'Draft') as VendorContractStatus,
+            value: String(item.value || item.contract_value || ''),
+            daysLeft: String(item.days_left || item.daysLeft || '')
+          }));
+
+          if (res.objResult.rows_info && res.objResult.rows_info[0]) {
+            this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
+            this.totalPagesCount = res.objResult.rows_info[0].noofpages;
+          } else {
+            this.totalRecordsCount = this.allRows.length;
+            this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
+          }
+        } else {
+          this.allRows = [];
+          this.totalRecordsCount = 0;
+          this.totalPagesCount = 0;
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        console.error("Error loading vendor contracts:", err);
+        this.allRows = [];
+        this.totalRecordsCount = 0;
+        this.totalPagesCount = 0;
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
@@ -63,43 +135,19 @@ export class VendorContractsListComponent {
   }
 
   get filteredRows(): VendorContractRow[] {
-    const q = this.searchQuery.trim().toLowerCase();
-    return this.allRows.filter((row) => {
-      if (this.statusFilter !== 'All' && row.status !== this.statusFilter) {
-        return false;
-      }
-      if (this.filterVendor && !row.vendor.toLowerCase().includes(this.filterVendor.toLowerCase())) {
-        return false;
-      }
-      if (this.filterProperty && !row.properties.toLowerCase().includes(this.filterProperty.toLowerCase())) {
-        return false;
-      }
-      if (this.filterStatus && row.status !== this.filterStatus) {
-        return false;
-      }
-      if (!q) {
-        return true;
-      }
-      return (
-        row.id.includes(q) ||
-        row.vendor.toLowerCase().includes(q) ||
-        row.name.toLowerCase().includes(q) ||
-        row.properties.toLowerCase().includes(q)
-      );
-    });
+    return this.allRows;
   }
 
   get totalRecords(): number {
-    return this.filteredRows.length;
+    return this.totalRecordsCount;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
+    return Math.max(1, this.totalPagesCount || 1);
   }
 
   get paginatedRows(): VendorContractRow[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
+    return this.allRows;
   }
 
   get displayPage(): number {
@@ -128,14 +176,17 @@ export class VendorContractsListComponent {
   setStatusFilter(status: 'All' | VendorContractStatus): void {
     this.statusFilter = status;
     this.pageIndex = 0;
+    this.loadContracts();
   }
 
   onSearch(): void {
     this.pageIndex = 0;
+    this.loadContracts();
   }
 
   applyFilters(): void {
     this.pageIndex = 0;
+    this.loadContracts();
   }
 
   clearFilters(): void {
@@ -145,6 +196,7 @@ export class VendorContractsListComponent {
     this.filterStatus = null;
     this.statusFilter = 'All';
     this.pageIndex = 0;
+    this.loadContracts();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -178,24 +230,28 @@ export class VendorContractsListComponent {
 
   onPageSizeChange(): void {
     this.pageIndex = 0;
+    this.loadContracts();
   }
 
   previousPage(): void {
     if (this.pageIndex > 0) {
       this.pageIndex--;
+      this.loadContracts();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
       this.pageIndex++;
+      this.loadContracts();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
+    if (target >= 0 && target < this.totalPages && target !== this.pageIndex) {
       this.pageIndex = target;
+      this.loadContracts();
     }
   }
 

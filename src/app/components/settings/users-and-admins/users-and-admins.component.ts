@@ -133,9 +133,7 @@ export class UsersAndAdminsComponent {
   }
 
   openEdit(row: SettingsUserRow): void {
-    this.router.navigate(['/settings/users-and-admins/new'], {
-      queryParams: { type: row.kind, id: row.id },
-    });
+    this.router.navigate(['/settings/users-and-admins', row.id]);
   }
 
   toggleBlock(row: SettingsUserRow): void {

@@ -1,7 +1,8 @@
 import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,7 +14,7 @@ import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/
 @Component({
   selector: 'app-broadcasts-table',
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, MatPaginatorModule, FilterDrawerComponent],
+  imports: [CommonModule,RouterModule, FormsModule,TranslateModule, OvPaginatorComponent, FilterDrawerComponent],
   templateUrl: './broadcasts.component.html',
   styleUrls: ['./broadcasts.component.scss']
 })
@@ -116,7 +117,8 @@ export class BroadcastsTableComponent {
 
   ngOnInit(): void {  
     this.currentUser = this.commonService.getCurrentUser(); 
-    this.data = this.selectedTab?.data;
+    this.data = this.selectedTab?.data || [];
+    this.totalRecords = this.totalRecords || this.data.length;
     this.columns=this.broadcastsColumns;
   } 
   search_with_keyword() {
@@ -127,6 +129,7 @@ export class BroadcastsTableComponent {
     ); 
     }
     this.data=result;
+    this.totalRecords = this.data?.length || 0;
   }
   onPageChange(event: PageEvent) {
     this.pageChange.emit(event);
@@ -176,6 +179,7 @@ getValueWithCurrency(val:any){
       result = result.filter((p: any) => p.landlord?.toLowerCase().includes(this.filterLandlord.toLowerCase()));
     }
     this.data = result;
+    this.totalRecords = this.data?.length || 0;
   }
 
   clearFilters() {

@@ -60,27 +60,32 @@
 </div>
 
 <div class="ov-detail-layout pb-20">
-  <div class="ov-detail-layout__left flex flex-col gap-3">
-
-      <!-- Landlord Name Header Box -->
-      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+      <div class="ov-detail-side__hero">
         <div>
-          <h4 class="ov-card-title">{{ landlordData?.landlord || landlordData?.name || landlord.name || 'Loading...' }}</h4>
-          <p class="ov-card-sub mt-1 break-all">{{ landlordData?.email_address || landlordData?.email || landlord.email || '' }}</p>
+          <h4 class="ov-detail-side__title">{{ landlordData?.landlord || landlordData?.name || landlord.name || 'Loading...' }}</h4>
+          <p class="ov-detail-side__email">
+            <img src="assets/images/action-menu/mail.svg" alt="" width="13" height="13" />
+            <span>{{ landlordData?.email_address || landlordData?.email || landlord.email || '' }}</span>
+          </p>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]">{{ 'web.contacts.lblViewActivity' | translate }}</button>
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 text-[12px]" (click)="showSubscriptionsModal = true">Email Sub (3/30)</button>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action">{{ 'web.contacts.lblViewActivity' | translate }}</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub ({{ subscriptionSubscribedCount }}/{{ subscriptions.length }})</button>
         </div>
       </div>
 
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Information</h6>
+
       <!-- Login Information -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between gap-2">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblLoginInformation' | translate }}</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblLoginInformation' | translate }}</h6>
           <span class="ov-detail-chip ov-detail-chip--danger">Not Verified</span>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.contacts.lblEmail' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.email }}</span>
@@ -89,16 +94,18 @@
             <span class="ov-kv__label">{{ 'web.contacts.lblUsername' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.username }}</span>
           </div>
-          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 mt-1 text-[12px]">{{ 'web.contacts.lblVerifyEmail' | translate }}</button>
+        </div>
+        <div class="ov-detail-panel__footer">
+          <button type="button" class="ov-btn ov-btn-ghost w-full !h-9 text-[12px]">{{ 'web.contacts.lblVerifyEmail' | translate }}</button>
         </div>
       </div>
 
       <!-- Personal Details -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblPersonalDetails' | translate }}</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblPersonalDetails' | translate }}</h6>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.contacts.lblID' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.personal.id }}</span>
@@ -116,10 +123,10 @@
             <span class="ov-kv__value">{{ landlord.personal.phone }}</span>
           </div>
 
-          <div class="text-center my-1">
+          <div class="my-1 flex justify-center">
             <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails"
-              class="ov-link text-[12px] font-semibold">
-              {{ showPersonalDetails ? 'View less details' : 'View more details' }}
+              class="ov-link ov-more-toggle text-[12px] font-semibold">
+              <span>{{ showPersonalDetails ? 'View less details' : 'View more details' }}</span>
               <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" [class.rotate-180]="showPersonalDetails" />
             </a>
           </div>
@@ -166,11 +173,11 @@
       </div>
 
       <!-- Wallet Configuration -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblWalletConfiguration' | translate }}</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblWalletConfiguration' | translate }}</h6>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.contacts.lblOpeningBalance' | translate }}:</span>
             <span class="ov-kv__value">AED {{ landlord.wallet.openingBalance }}</span>
@@ -228,11 +235,11 @@
       </div>
 
       <!-- Banking Details -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblBankingDetails' | translate }}</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblBankingDetails' | translate }}</h6>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.contacts.lblBankName' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.bank.name }}</span>
@@ -261,11 +268,11 @@
       </div>
 
       <!-- Signature -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.contacts.lblSignature' | translate }}</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblSignature' | translate }}</h6>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="flex justify-between items-center gap-3 py-1">
             <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblAutoSign' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
@@ -281,7 +288,7 @@
             </div>
           </div>
 
-          <div class="border border-dashed border-defaultborder rounded-lg p-5 flex flex-col items-center justify-center gap-2 mt-1 text-center">
+          <div class="ov-detail-panel__empty !mx-0 !mb-0">
             <i class="ri-image-line text-2xl text-textmuted"></i>
             <span class="text-[12px] text-textmuted font-medium">No signature uploaded</span>
             <span class="text-[11px] text-textmuted">Signature image will appear here when uploaded</span>
@@ -290,15 +297,15 @@
       </div>
 
       <!-- Emergency Contact -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Emergency Contact</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Emergency Contact</h6>
           <button type="button" (click)="showAddEmergencyContactModal = true"
             class="ov-icon-btn !h-7 !w-7 !rounded-md bg-primary text-white border-0" aria-label="Add emergency contact">
             <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
           </button>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
+        <div class="ov-detail-panel__body">
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.contacts.lblEmail' | translate }}:</span>
             <span class="ov-kv__value">zaidrahman&#64;gmail.com</span>
@@ -323,24 +330,25 @@
       </div>
 
       <!-- Custom Fields -->
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Custom Fields</h6>
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Custom Fields</h6>
         </div>
-        <div class="ov-kv-empty px-5 py-6 text-center">No custom fields configured yet. Custom fields will appear here when configured.</div>
+        <div class="ov-detail-panel__empty">No custom fields configured yet. Custom fields will appear here when configured.</div>
       </div>
-
+    </div>
   </div>
 
-  <div class="ov-detail-layout__right flex flex-col gap-3">
-
+  <div class="ov-detail-layout__right">
+    <div class="box ov-card overflow-visible shadow-none !mb-0">
     <div class="ov-detail-tabs">
       <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
         [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
     </div>
 
+    <div class="p-5">
     <!-- TAB: Wallet -->
-    <div *ngIf="activeTab === 'Wallet'" class="box ov-card flex flex-col gap-5 overflow-hidden p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Wallet'" class="flex flex-col gap-5 animate-fade-in">
       <h4 class="ov-card-title m-0">Landlord Overview</h4>
 
       <!-- Financial Summary (Figma 1467:56820) -->
@@ -446,7 +454,7 @@
     </div>
 
     <!-- TAB: Units -->
-    <div *ngIf="activeTab === 'Units'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Units'" class="flex flex-col gap-4 animate-fade-in">
       <h4 class="ov-card-title m-0">{{ 'web.contacts.lblLandlordUnits' | translate }}</h4>
 
       <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
@@ -510,8 +518,7 @@
     </div>
 
     <!-- TAB: Due Payment -->
-    <!-- TAB: Due Payment -->
-    <div *ngIf="activeTab === 'Due Payment'" class="box ov-card flex flex-col gap-4 overflow-visible p-5 animate-fade-in">
+    <div *ngIf="activeTab === 'Due Payment'" class="flex flex-col gap-4 animate-fade-in">
       <h4 class="ov-card-title m-0">{{ 'web.contacts.lblLandlordDuePayments' | translate }}</h4>
 
       <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
@@ -563,7 +570,7 @@
     </div>
 
     <!-- TAB: Agreement -->
-    <div *ngIf="activeTab === 'Agreement'" class="box ov-card flex flex-col gap-3 overflow-hidden p-4 animate-fade-in">
+    <div *ngIf="activeTab === 'Agreement'" class="flex flex-col gap-3 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordAgreement' | translate }}</h6>
         <div class="flex gap-2">
@@ -596,7 +603,7 @@
     </div>
 
     <!-- TAB: Chat -->
-    <div *ngIf="activeTab === 'Chat'" class="box ov-card overflow-hidden p-4 animate-fade-in">
+    <div *ngIf="activeTab === 'Chat'" class="animate-fade-in">
       <div class="grid grid-cols-12 gap-3 min-h-[450px]">
 
         <!-- Left Side: Messages list (4 cols) -->
@@ -670,17 +677,17 @@
     </div>
 
     <!-- TAB: Attachments -->
-    <div *ngIf="activeTab === 'Attachments'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Attachments'" class="flex flex-col gap-3 animate-fade-in">
        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
     </div>
 
     <!-- TAB: Notes -->
-    <div *ngIf="activeTab === 'Notes'" class="box ov-card p-4 flex flex-col gap-3 animate-fade-in">
+    <div *ngIf="activeTab === 'Notes'" class="flex flex-col gap-3 animate-fade-in">
        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
     </div>
 
     <!-- TAB: User -->
-    <div *ngIf="activeTab === 'User'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
+    <div *ngIf="activeTab === 'User'" class="flex flex-col gap-3 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUsers' | translate }}</h6>
         <button type="button" (click)="showAddUserModal = true"
@@ -729,7 +736,7 @@
     </div>
 
     <!-- TAB: Emergency Contact -->
-    <div *ngIf="activeTab === 'Emergency Contact'" class="box ov-card flex flex-col gap-3 p-4 animate-fade-in">
+    <div *ngIf="activeTab === 'Emergency Contact'" class="flex flex-col gap-3 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}</h6>
         <button type="button" (click)="showAddEmergencyContactModal = true"
@@ -781,50 +788,19 @@
       </app-shared-table>
     </div>
 
+    </div>
+    </div>
   </div>
 
 </div>
 
-<!-- Email Subscriptions Modal Overlay -->
-<div *ngIf="showSubscriptionsModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-  <div class="ov-modal ov-modal--sm">
-    <div class="ov-modal__header">
-      <div>
-        <h4 class="ov-modal__title">Email Subscriptions</h4>
-        <p class="ov-modal__sub">Choose which automated email notifications should be sent.</p>
-      </div>
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-      </button>
-    </div>
-
-    <div class="ov-modal__body flex flex-col gap-4">
-      <div class="flex items-center justify-between gap-3 p-3 rounded-lg border border-defaultborder">
-        <div class="flex-grow min-w-0 pr-3">
-          <span class="text-[14px] font-semibold text-defaulttextcolor block">Global Email Settings Allowed?</span>
-          <span class="ov-modal__hint mt-1 block leading-tight">Email functionality is enabled. Emails will be sent only for active subscriptions. <a href="javascript:void(0)" class="ov-link font-semibold">View Settings</a></span>
-        </div>
-        <span class="ov-detail-chip">Yes</span>
-      </div>
-
-      <div class="ov-modal__check-list">
-        <label class="ov-modal__check">
-          <input type="checkbox" [checked]="allSubscriptionsSelected" (change)="toggleAllSubscriptions($event)">
-          <span>Select All</span>
-        </label>
-        <label *ngFor="let sub of subscriptions" class="ov-modal__check">
-          <input type="checkbox" [checked]="sub.subscribed" (change)="sub.subscribed = !sub.subscribed">
-          <span>{{ sub.name }}</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="ov-modal__footer">
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-ghost">Clear</button>
-      <button type="button" (click)="showSubscriptionsModal = false" class="ov-btn ov-btn-primary">Close</button>
-    </div>
-  </div>
-</div>
+<!-- Email Subscriptions — Figma 1727:155289 (filter-style right drawer) -->
+<app-email-subscriptions-drawer
+  [(isOpen)]="showSubscriptionsModal"
+  [subscriptions]="subscriptions"
+  [globalAllowed]="true"
+  subtitle="Choose which automated email notifications should be sent.">
+</app-email-subscriptions-drawer>
 
 <!-- Modal 1: Inflow Popup -->
 <div *ngIf="showInflowModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">

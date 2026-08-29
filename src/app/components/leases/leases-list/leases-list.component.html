@@ -69,10 +69,9 @@
         <input id="lease-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()" (input)="applyFilters()" placeholder="Search leases..." />
       </div>
-      <button type="button" (click)="onSearch()"
-        class="px-4 py-2 text-xs rounded-lg bg-primary text-white hover:bg-primary-hover font-semibold transition-all shadow-xs flex items-center gap-1.5 flex-shrink-0 cursor-pointer">
-        <img src="assets/images/work-orders/search.svg" alt="" width="14" height="14" class="brightness-0 invert" />
-
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !min-h-10 !w-10 !px-0 shrink-0"
+        title="Search" aria-label="Search">
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="brightness-0 invert" />
       </button>
     </div>
     <div class="ov-toolbar__btns">
@@ -135,11 +134,13 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'status_nm'">
-            <span class="ov-status" [class.ov-status--active]="row.status_nm === 'Active'"
+            <span class="ov-status"
+              [class.ov-status--active]="row.status_nm === 'Active'"
               [class.ov-status--muted]="row.status_nm === 'Draft'"
               [class.ov-status--soft]="row.status_nm === 'Completed'"
               [class.ov-status--warning]="row.status_nm === 'Pending' || row.status_nm === 'Pending Approvals'"
-              [ngClass]="row.class_name || ''">
+              [class.ov-status--blocked]="row.status_nm === 'Closed' || row.status_nm === 'Terminated'"
+              [class.ov-status--outline]="row.status_nm === 'Open'">
               {{ getArabicLookupName(row, 'status_nm') }}
             </span>
           </ng-container>

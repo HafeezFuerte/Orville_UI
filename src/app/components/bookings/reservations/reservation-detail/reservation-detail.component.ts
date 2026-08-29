@@ -7,7 +7,8 @@ import { getReservationDetail, ReservationRow } from '../reservations.data';
   selector: 'app-reservation-detail',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './reservation-detail.component.html'
+  templateUrl: './reservation-detail.component.html',
+  styleUrls: ['./reservation-detail.component.scss'],
 })
 export class ReservationDetailComponent implements OnInit {
   detail: ReservationRow = getReservationDetail('31658');

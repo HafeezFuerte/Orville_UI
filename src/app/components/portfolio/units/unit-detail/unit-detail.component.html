@@ -1,14 +1,14 @@
 <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
   <div class="flex items-start gap-4">
-    <a [routerLink]="['/units']" class="ov-back" title="Back to Units">
+    <a [routerLink]="['/units']" class="ov-back" [title]="'web.Unit.lblUnits' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </a>
     <div>
-      <h3 class="ov-page-title">{{unit?.name || 'Details'}}</h3>
+      <h3 class="ov-page-title">{{unit?.name || ('web.property.lblDetail' | translate)}}</h3>
       <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
         <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li><a [routerLink]="['/units']">{{ 'web.common.lblUnits' | translate }}</a></li>
+        <li><a [routerLink]="['/units']">{{ 'web.Unit.lblUnits' | translate }}</a></li>
         <li class="px-2">/</li>
         <li><a [routerLink]="['/units', unitId]">{{unit?.name}}</a></li>
         <li class="px-2">/</li>
@@ -28,13 +28,13 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
             </span>
-            <span>Edit</span>
+            <span>{{ 'web.contacts.lblEditRealEstate' | translate }}</span>
           </a>
           <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
             </span>
-            <span>Quotation PDF</span>
+            <span>{{ 'web.Unit.lblQuotationPDF' | translate }}</span>
           </button>
           <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
             <span class="ov-action-menu__icon-box">
@@ -48,12 +48,12 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
             </span>
-            <span>Archive</span>
+            <span>{{ 'web.Unit.lblArchive' | translate }}</span>
           </button>
         </div>
       </div>
     </div>
-    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/edit-unit', unitId]">Edit Unit</button>
+    <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/edit-unit', unitId]">{{ 'web.property.lblEditUnit' | translate }}</button>
   </div>
 </div>
 
@@ -67,25 +67,25 @@
           <span class="ov-card-sub mt-1.5 flex items-center gap-1.5 !text-[13px]">
             <img src="assets/images/work-orders/map-pin.svg" alt="" width="13" height="13" /> {{ unit?.propertyAddress || unit?.location }}
           </span>
-      </div>
+        </div>
 
         <div class="flex flex-wrap items-center gap-4">
           <span class="inline-flex w-fit items-center gap-1.5 rounded-full bg-info/10 px-[15px] py-1 h-7 text-[13px] font-medium tracking-[0.26px] text-info">
             <i class="ri-home-4-line text-[15px]"></i>
-            {{ unit?.category || 'Residential' }}
+            {{ (unit?.category === 'Commercial' ? 'web.property.lblCommercial' : 'web.property.lblResidential') | translate }}
           </span>
           <span class="inline-flex w-fit items-center justify-center rounded-full px-[15px] py-1 h-7 text-[13px] font-medium tracking-[0.26px] text-white"
                 [ngClass]="unit?.status === 'Occupied' ? 'bg-success text-white' : 'bg-primary text-white'">
             {{ unit?.status || 'Occupied' }}
           </span>
-      </div>
+        </div>
 
         <div class="flex gap-5">
           <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
             {{ 'web.property.lblViewActivity' | translate }}
           </button>
           <a [routerLink]="['/edit-unit', unitId]" class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
-            Edit Unit
+            {{ 'web.property.lblEditUnit' | translate }}
             <i class="ri-arrow-right-line text-[14px]"></i>
           </a>
         </div>
@@ -96,7 +96,7 @@
 
       <div class="ov-card py-5 ov-contact-popover-anchor">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Landlord ({{ landlordCount }})</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblLandlord' | translate }} ({{ landlordCount }})</h5>
         </div>
         <div class="px-5 mt-5">
           <a
@@ -114,36 +114,36 @@
           <div class="ov-contact-popover__header">
             <span class="ov-contact-popover__icon" aria-hidden="true">
               <i class="ri-user-line"></i>
-          </span>
-            <h5 class="ov-contact-popover__title">Contact Details</h5>
+            </span>
+            <h5 class="ov-contact-popover__title">{{ 'web.Unit.lblContactDetails' | translate }}</h5>
             <button type="button" class="ov-contact-popover__view" (click)="viewLandlordDetail($event)">
-              View <i class="ri-arrow-right-line"></i>
+              {{ 'web.Unit.lblView' | translate }} <i class="ri-arrow-right-line"></i>
             </button>
-        </div>
+          </div>
           <div class="ov-contact-popover__body">
             <div>
               <h4 class="ov-contact-popover__name">{{ unit?.landlord || '-' }}</h4>
               <span class="ov-contact-popover__badge">{{ unit?.landlordTypeBadge || 'Individual' }}</span>
-        </div>
+            </div>
             <div class="ov-contact-popover__rows">
               <div class="ov-contact-popover__row">
                 <span class="ov-contact-popover__row-icon" aria-hidden="true"><img src="assets/images/action-menu/mail.svg" alt="" width="16" height="16" /></span>
                 <div class="ov-contact-popover__row-text">
-                  <span class="ov-contact-popover__label">Email</span>
+                  <span class="ov-contact-popover__label">{{ 'web.Unit.lblEmail' | translate }}</span>
                   <span class="ov-contact-popover__value">{{ unit?.landlordEmail || '-' }}</span>
-        </div>
-        </div>
+                </div>
+              </div>
               <div class="ov-contact-popover__row">
                 <span class="ov-contact-popover__row-icon" aria-hidden="true"><i class="ri-phone-line"></i></span>
                 <div class="ov-contact-popover__row-text">
-                  <span class="ov-contact-popover__label">Phone</span>
+                  <span class="ov-contact-popover__label">{{ 'web.Unit.lblPhone' | translate }}</span>
                   <span class="ov-contact-popover__value">{{ unit?.landlordPhone || '-' }}</span>
                 </div>
               </div>
               <div class="ov-contact-popover__row">
                 <span class="ov-contact-popover__row-icon" aria-hidden="true"><i class="ri-user-line"></i></span>
                 <div class="ov-contact-popover__row-text">
-                  <span class="ov-contact-popover__label">Landlord Type</span>
+                  <span class="ov-contact-popover__label">{{ 'web.Unit.lblLandlordType' | translate }}</span>
                   <span class="ov-contact-popover__value">{{ unit?.landlordType || '-' }}</span>
                 </div>
               </div>
@@ -154,10 +154,10 @@
 
       <div class="ov-card overflow-hidden py-5">
         <div class="flex items-center justify-between px-5">
-          <h5 class="ov-card-title m-0">Unit Details</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblUnitDetails' | translate }}</h5>
           <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
             <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
-        </button>
+          </button>
         </div>
         <div class="flex flex-col gap-4 px-5 mt-5">
           <div class="ov-kv">
@@ -165,7 +165,7 @@
             <span class="ov-kv__value">{{ unit?.id || unit?.code || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Unit No:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnitNumber' | translate }}:</span>
             <span class="ov-kv__value">{{ unitNo }}</span>
           </div>
           <div class="ov-kv">
@@ -173,19 +173,19 @@
             <span class="ov-kv__value">{{ unit?.name || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Property Name:</span>
+            <span class="ov-kv__label">{{ 'web.property.lblPropertyName' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.property || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Beds:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblBeds' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.beds || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Baths:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblBaths' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.baths || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Parking:</span>
+            <span class="ov-kv__label">{{ 'web.property.lblParking' | translate }}:</span>
             <span class="ov-kv__value">{{ parkingDisplay }}</span>
           </div>
           <div class="ov-kv items-center">
@@ -204,43 +204,43 @@
         </button>
         <div *ngIf="showMoreDetails" class="flex flex-col gap-4 px-5 mt-5">
           <div class="ov-kv">
-            <span class="ov-kv__label">Created By:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblCreatedBy' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.createdBy || '-' }}</span>
-      </div>
+          </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Floor:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblFloor' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.floor || '-' }}</span>
-    </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Auto Assign:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.autoAssign">{{ unit?.autoAssign ? 'Yes' : 'No' }}</span>
-        </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Furnished:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.furnished">{{ unit?.furnished ? 'Yes' : 'No' }}</span>
-        </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Smoking:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.smoking">{{ unit?.smoking ? 'Yes' : 'No' }}</span>
-        </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">For Sale:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.saleStatus">{{ unit?.saleStatus ? 'Yes' : 'No' }}</span>
-        </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Under Dispute:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.underDispute">{{ unit?.underDispute ? 'Yes' : 'No' }}</span>
-        </div>
-          <div class="ov-kv items-center">
-            <span class="ov-kv__label">Electricity No:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasElectricity">{{ unit?.hasElectricity ? 'Yes' : 'No' }}</span>
           </div>
           <div class="ov-kv items-center">
-            <span class="ov-kv__label">Gas No:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasGas">{{ unit?.hasGas ? 'Yes' : 'No' }}</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblAutoAssign' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.autoAssign">{{ (unit?.autoAssign ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblFurnished' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.furnished">{{ (unit?.furnished ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblSmoking' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.smoking">{{ (unit?.smoking ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblForSale' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.saleStatus">{{ (unit?.saleStatus ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnderDispute' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.underDispute">{{ (unit?.underDispute ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblElectricityNo' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasElectricity">{{ (unit?.hasElectricity ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
+          <div class="ov-kv items-center">
+            <span class="ov-kv__label">{{ 'web.Unit.lblGasNo' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.hasGas">{{ (unit?.hasGas ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Property Address:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblPropertyAddress' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.propertyAddress || '-' }}</span>
           </div>
           <div class="ov-kv">
@@ -251,8 +251,8 @@
             <span class="ov-kv__label">{{ 'web.property.lblLastUpdate' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.lastUpdate || '-' }}</span>
           </div>
+        </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="px-5">
@@ -263,19 +263,19 @@
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.Unit.lblMarketRent' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.marketRent || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.Unit.lblDeposit' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.deposit || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.Unit.lblRentType' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.rentType || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.Unit.lblRentPerSqft' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.rentPerSqft || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.Unit.lblTotalServiceCharges' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.totalServiceCharges || '-' }}</span>
@@ -285,11 +285,11 @@
             <span class="ov-kv__value">{{ unit?.serviceCharges || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Sale Price:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblSalePrice' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.salePrice || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Threshold Value:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblThresholdValue' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.thresholdValue || '-' }}</span>
           </div>
           <div class="ov-kv">
@@ -297,53 +297,53 @@
             <span class="ov-kv__value">{{ unit?.managementFee || '-' }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Fee Type:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblFeeType' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.managementFeeType || '-' }}</span>
           </div>
+        </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">{{ 'web.Property.lblServiceRequest' | translate }}</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.property.lblServiceRequest' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder mt-[18px]"></div>
         <div class="flex flex-col gap-4 px-5 mt-5">
           <div class="ov-kv items-center">
-            <span class="ov-kv__label">Service Disabled:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.serviceDisabled">{{ unit?.serviceDisabled ? 'Yes' : 'No' }}</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblServiceDisabled' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.serviceDisabled">{{ (unit?.serviceDisabled ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Alert Message:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblAlertMessage' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.alertMessage || '-' }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Permit Information</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblPermitCompliance' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder mt-[18px]"></div>
         <div class="flex flex-col gap-4 px-5 mt-5">
           <div class="ov-kv">
-            <span class="ov-kv__label">Trakessi Number:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblTrakessiNumber' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.trakessiNumber || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">RERA Number:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblReraNumber' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.reraNumber || '-' }}</span>
           </div>
           <div class="ov-kv items-center">
-            <span class="ov-kv__label">Permit Verified:</span>
-            <span class="ov-flag" [class.ov-flag--no]="!unit?.isVerified">{{ unit?.isVerified ? 'Yes' : 'No' }}</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblPermitVerified' | translate }}:</span>
+            <span class="ov-flag" [class.ov-flag--no]="!unit?.isVerified">{{ (unit?.isVerified ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="flex items-center justify-between px-5">
-          <h5 class="ov-card-title m-0">Marketing Information</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblMarketingInformation' | translate }}</h5>
           <button type="button" class="ov-icon-btn ov-icon-btn--bare !w-9 !h-9" aria-label="More">
             <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
           </button>
@@ -351,28 +351,28 @@
         <div class="border-t border-defaultborder mt-[18px]"></div>
         <div class="flex flex-col gap-4 px-5 mt-5">
           <div class="ov-kv">
-            <span class="ov-kv__label">Unit Details:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnitDetails' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.unitDetailsText || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Marketing Title:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblMarketingTitle' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.marketingTitle || '-' }}</span>
-        </div>
+          </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Marketing Description:</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblMarketingDescription' | translate }}:</span>
             <span class="ov-kv__value">{{ unit?.marketingDescription || '-' }}</span>
-      </div>
+          </div>
           <div class="flex flex-col items-center justify-center gap-1.5 rounded bg-bodybg px-[15px] py-5 text-center">
             <i class="ri-image-line text-[30px] text-textmuted"></i>
-            <span class="text-[14px] font-semibold text-textmuted">No photos or images</span>
-            <span class="text-[12px] text-textmuted">Photos and featured images will appear here when uploaded</span>
+            <span class="text-[14px] font-semibold text-textmuted">{{ 'web.Unit.lblNoPhotos' | translate }}</span>
+            <span class="text-[12px] text-textmuted">{{ 'web.Unit.lblNoPhotosDesc' | translate }}</span>
           </div>
+        </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Amenities</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblAmenities' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder mt-[18px]"></div>
         <div class="flex flex-wrap gap-2.5 px-5 pt-4">
@@ -380,53 +380,53 @@
             <i class="ri-check-line text-[16px]"></i>
             {{ amenity }}
           </span>
+        </div>
       </div>
-    </div>
 
       <div class="ov-card overflow-hidden py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Custom Fields</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.Unit.lblCustomFields' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder mt-[18px]"></div>
         <div class="flex flex-col gap-4 px-5 mt-5">
           <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Unit Electricity No:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Unit Gas Number:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Under renovation:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Under dispute (legal case):</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Permit Number / Trakheesi Number:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Unit Municipality:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Parking No:</span>
-            <span class="ov-kv-empty">No value set</span>
-        </div>
-          <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Monthly Rent:</span>
-            <span class="ov-kv-empty">No value set</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnitElectricityNo' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
           </div>
           <div class="flex flex-col gap-1">
-            <span class="ov-kv__label">Flat No:</span>
-            <span class="ov-kv-empty">No value set</span>
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnitGasNumber' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnderRenovation' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnderDisputeLegalCase' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblPermitTrakheesiNumber' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblUnitMunicipality' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblParkingNumber' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblMonthlyRent' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="ov-kv__label">{{ 'web.Unit.lblFlatNumber' | translate }}:</span>
+            <span class="ov-kv-empty">{{ 'web.Unit.lblNoValueSet' | translate }}</span>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </ng-template>
 
@@ -434,41 +434,41 @@
     <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 py-0 mb-4 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-        <input [(ngModel)]="tabSearchQuery" type="text" class="ov-input ov-search__input" placeholder="Search">
-          </div>
+        <input [(ngModel)]="tabSearchQuery" type="text" class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate">
+      </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.common.lblFilter' | translate">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
-              </button>
+          {{ 'web.contacts.lblFilter' | translate }}
+        </button>
         <div class="relative">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown()"
             [attr.data-tooltip]="'web.common.lblColumns' | translate">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
-            </button>
+            {{ 'web.contacts.lblColumn' | translate }}
+          </button>
           <div *ngIf="isColumnDropdownOpen"
             class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
             <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
-              Select All
+              {{ 'web.contacts.lblSelectAll' | translate }}
             </label>
             <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
-              ID
+              {{ 'web.contacts.lblID' | translate }}
             </label>
             <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
-              Name
+              {{ 'web.contacts.lblName' | translate }}
             </label>
             <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
-              Status
+              {{ 'web.contacts.lblStatus' | translate }}
             </label>
             <label class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary" checked>
-              Action
+              {{ 'web.contacts.lblAction' | translate }}
             </label>
           </div>
         </div>
@@ -480,8 +480,8 @@
       <ng-template #overview>
       <div class="flex flex-col gap-5">
         <div>
-          <h4 class="ov-card-title m-0">Unit Overview</h4>
-          <p class="ov-card-sub m-0 mt-1">Lease and tenant agreement listings associated with this unit.</p>
+          <h4 class="ov-card-title m-0">{{ 'web.Unit.lblUnitOverview' | translate }}</h4>
+          <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblUnitOverviewDesc' | translate }}</p>
         </div>
         <ng-container *ngTemplateOutlet="unitTabToolbar"></ng-container>
 
@@ -490,27 +490,27 @@
           <table class="ov-table min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Case</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Rent (AED)</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Start Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">End Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Renewed?</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Multi Unit?</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Remarks</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Actions</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblLegalCase' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUnit' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblProperty' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblRentAED' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblStartDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblEndDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblRenewed' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblMultiUnit' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblCreated' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblRemarks' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCreatedBy' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInternalStatus' | translate }}</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="leases.length === 0">
-                <td colspan="15" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="15" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let lease of leases" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -540,10 +540,10 @@
                 </td>
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">
                       <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.contacts.lblEditRealEstate' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </div>
@@ -559,88 +559,87 @@
             [pageIndex]="0"
             [pageSizeOptions]="[50]">
         </app-ov-paginator>
-
         <div class="ov-unit-analytics">
-          <h4 class="ov-unit-analytics__title">Analytics</h4>
+          <h4 class="ov-unit-analytics__title">{{ 'web.Unit.lblAnalytics' | translate }}</h4>
 
           <section class="ov-unit-analytics__card">
             <header class="ov-unit-analytics__head">
-              <h5 class="ov-card-title m-0">Landlord Rent Collection</h5>
-              <p class="ov-card-sub m-0">Total rent received and 12-month trend for each landlord</p>
+              <h5 class="ov-card-title m-0">{{ 'web.Unit.lblLandlordRentCollection' | translate }}</h5>
+              <p class="ov-card-sub m-0">{{ 'web.Unit.lblRentCollectionDesc' | translate }}</p>
             </header>
             <div class="ov-unit-analytics__body">
               <div class="ov-unit-stat-row ov-unit-stat-row--end">
                 <article class="ov-unit-stat">
                   <div class="ov-unit-stat__copy">
-                    <span class="ov-unit-stat__badge">Total Rent Received</span>
+                    <span class="ov-unit-stat__badge">{{ 'web.Unit.lblTotalRentReceived' | translate }}</span>
                     <div class="ov-unit-stat__value">AED -</div>
                     <div class="ov-unit-stat__meta">{{ unit?.landlord || '-' }}</div>
-          </div>
+                  </div>
                   <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
                 </article>
-        </div>
+              </div>
               <div class="ov-unit-chart ov-unit-chart--rent">
                 <div class="ov-unit-chart__yaxis">
                   <span *ngFor="let tick of chartTicks">{{ tick }}</span>
-            </div>
+                </div>
                 <div class="ov-unit-chart__plot">
                   <div class="ov-unit-chart__grid" aria-hidden="true">
                     <span *ngFor="let tick of chartTicks"></span>
-              </div>
+                  </div>
                   <div class="ov-unit-chart__bars">
                     <div *ngFor="let bar of monthBars" class="ov-unit-chart__col">
                       <span class="ov-unit-chart__bar" [class.is-empty]="bar.empty" [style.height.px]="bar.h"></span>
                       <span class="ov-unit-chart__lbl">{{ bar.m }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              </div>
-              </div>
-              </div>
-              </div>
+            </div>
           </section>
 
           <section class="ov-unit-analytics__card">
             <header class="ov-unit-analytics__head">
-              <h5 class="ov-card-title m-0">Monthly Revenue &amp; Expenses</h5>
-              <p class="ov-card-sub m-0">Income vs expenses comparison for the last 12 months</p>
+              <h5 class="ov-card-title m-0">{{ 'web.Unit.lblMonthlyRevenueExpenses' | translate }}</h5>
+              <p class="ov-card-sub m-0">{{ 'web.Unit.lblRevExpDesc' | translate }}</p>
             </header>
             <div class="ov-unit-analytics__body">
               <div class="ov-unit-stat-row">
                 <article class="ov-unit-stat">
                   <div class="ov-unit-stat__copy">
-                    <span class="ov-unit-stat__badge">Total Revenue</span>
+                    <span class="ov-unit-stat__badge">{{ 'web.Unit.lblTotalRevenue' | translate }}</span>
                     <div class="ov-unit-stat__value">AED -</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">{{ 'web.Unit.lblTotalExpenses' | translate }}</span>
+                    <div class="ov-unit-stat__value">AED -</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
+                <article class="ov-unit-stat">
+                  <div class="ov-unit-stat__copy">
+                    <span class="ov-unit-stat__badge">{{ 'web.Unit.lblNetProfit' | translate }}</span>
+                    <div class="ov-unit-stat__value">AED -</div>
+                  </div>
+                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
+                </article>
               </div>
-                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
-                </article>
-                <article class="ov-unit-stat">
-                  <div class="ov-unit-stat__copy">
-                    <span class="ov-unit-stat__badge">Total Expenses</span>
-                    <div class="ov-unit-stat__value">AED -</div>
-            </div>
-                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
-                </article>
-                <article class="ov-unit-stat">
-                  <div class="ov-unit-stat__copy">
-                    <span class="ov-unit-stat__badge">Net Profit</span>
-                    <div class="ov-unit-stat__value">AED -</div>
-          </div>
-                  <img class="ov-unit-stat__icon" src="assets/images/unit-detail/chart-infographic.svg" alt="" width="60" height="60">
-                </article>
-            </div>
               <div class="ov-unit-chart ov-unit-chart--rev">
                 <div class="ov-unit-chart__yaxis">
                   <span *ngFor="let tick of chartTicks">{{ tick }}</span>
-            </div>
+                </div>
                 <div class="ov-unit-chart__plot">
                   <div class="ov-unit-chart__grid" aria-hidden="true">
                     <span *ngFor="let tick of chartTicks"></span>
-          </div>
+                  </div>
                   <div class="ov-unit-chart__bars">
                     <div *ngFor="let bar of monthBars" class="ov-unit-chart__col">
                       <span class="ov-unit-chart__bar" [class.is-empty]="bar.empty" [style.height.px]="bar.h"></span>
                       <span class="ov-unit-chart__lbl">{{ bar.m }}</span>
-              </div>
-                </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -648,40 +647,40 @@
 
           <section class="ov-unit-analytics__card ov-unit-fin">
             <header class="ov-unit-analytics__head">
-              <h5 class="ov-card-title m-0">Financial Summary</h5>
+              <h5 class="ov-card-title m-0">{{ 'web.contacts.lblFinancialSummary' | translate }}</h5>
             </header>
             <div class="ov-unit-fin__grid">
               <article class="ov-unit-cash">
                 <img class="ov-unit-cash__glow" src="assets/images/unit-detail/cash-glow.svg" alt="" width="123" height="123">
                 <div class="ov-unit-cash__top">
-                  <span class="ov-unit-cash__label">Cash Balance</span>
+                  <span class="ov-unit-cash__label">{{ 'web.contacts.lblCashBalance' | translate }}</span>
                   <span class="ov-unit-cash__value">AED -</span>
-              </div>
+                </div>
                 <div class="ov-unit-cash__row">
                   <div class="ov-unit-cash__cell">
-                    <span class="ov-unit-cash__label">Total Income</span>
+                    <span class="ov-unit-cash__label">{{ 'web.Unit.lblTotalIncome' | translate }}</span>
                     <span class="ov-unit-cash__sub">AED -</span>
-              </div>
+                  </div>
                   <div class="ov-unit-cash__cell">
-                    <span class="ov-unit-cash__label">Wallet Deposit</span>
+                    <span class="ov-unit-cash__label">{{ 'web.Unit.lblWalletDeposit' | translate }}</span>
                     <span class="ov-unit-cash__sub">AED -</span>
-              </div>
-            </div>
+                  </div>
+                </div>
               </article>
               <div class="ov-unit-fin__tiles">
                 <article class="ov-unit-tile">
-                  <span class="ov-unit-tile__label">Unit Expense</span>
+                  <span class="ov-unit-tile__label">{{ 'web.Unit.lblUnitExpense' | translate }}</span>
                   <span class="ov-unit-tile__value">AED -</span>
                 </article>
                 <article class="ov-unit-tile">
-                  <span class="ov-unit-tile__label">Landlord Distribution</span>
+                  <span class="ov-unit-tile__label">{{ 'web.contacts.lblLandlordDistribution' | translate }}</span>
                   <span class="ov-unit-tile__value">AED -</span>
                 </article>
                 <article class="ov-unit-tile ov-unit-tile--wide">
-                  <span class="ov-unit-tile__label">Unit Performance</span>
+                  <span class="ov-unit-tile__label">{{ 'web.Unit.lblUnitPerformance' | translate }}</span>
                   <span class="ov-unit-tile__value">AED -</span>
                 </article>
-          </div>
+              </div>
             </div>
           </section>
         </div>
@@ -694,12 +693,12 @@
       <div class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="ov-card-title m-0">Unit Financials</h4>
-            <p class="ov-card-sub m-0 mt-1">Manage and track invoices and payments associated with this unit.</p>
+            <h4 class="ov-card-title m-0">{{ 'web.Unit.lblUnitFinancials' | translate }}</h4>
+            <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblUnitFinancialsDesc' | translate }}</p>
           </div>
-          <button type="button" (click)="showAddInvoiceModal = true" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Invoice'">
+          <button type="button" (click)="showAddInvoiceModal = true" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddInvoice' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Invoice
+            {{ 'web.Unit.lblAddInvoice' | translate }}
           </button>
         </div>
 
@@ -710,44 +709,44 @@
           <table class="table ov-table whitespace-nowrap min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">To</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit / Common Area</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Number</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque no</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Invoice Type</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Currency</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property Name</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Lease Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Note</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Work Order</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Gross Amount</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Payment Via</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Money Held By</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">DD Ref No</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Bank Name</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Archived</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Paid Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Cheque(s)</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Days</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Write Amount Off</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created By</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblToHeader' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUnitCommonArea' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInvoiceNumber' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblChequeNo' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInvoiceDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInvoiceType' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAccount' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblCurrency' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.property.lblPropertyName' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblPropertyID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblLeaseID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblLeaseStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.common.lblNote' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblWorkOrder' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAmount' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblGrossAmount' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblPaid' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblPaymentVia' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblMoneyHeldBy' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDdRefNo' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblBankName' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInternalStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblArchived' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDueDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblPaidDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCheques' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDays' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblWriteAmountOff' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCreatedBy' | translate }}</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="financials.length === 0">
-                <td colspan="9" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="32" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let fin of financials" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -790,10 +789,10 @@
                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{fin.createdBy}}</td>
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">
                       <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.contacts.lblEditRealEstate' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </div>
@@ -829,12 +828,12 @@
       <div class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="ov-card-title m-0">Work Orders</h4>
-            <p class="ov-card-sub m-0 mt-1">Manage and track maintenance work orders associated with this unit.</p>
+            <h4 class="ov-card-title m-0">{{ 'web.Unit.lblWorkOrders' | translate }}</h4>
+            <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblWorkOrdersDesc' | translate }}</p>
           </div>
-          <button type="button" [routerLink]="['/facility/work-orders/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Work Order'">
+          <button type="button" [routerLink]="['/facility/work-orders/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddWorkOrder' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Work Order
+            {{ 'web.Unit.lblAddWorkOrder' | translate }}
           </button>
         </div>
 
@@ -845,27 +844,27 @@
           <table class="table ov-table whitespace-nowrap min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Title</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Closing Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Internal Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Priority</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Property</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Vendor</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Tags</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Maintenance Category</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Responsible Person(s)</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblTitle' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblclosingStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblInternalStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDueDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblPriority' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblProperty' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblVendor' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUser' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblTags' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblMaintenanceCategory' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblResponsiblePerson' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUpdatedAt' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblCreatedAt' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="workOrders.length === 0">
-                <td colspan="10" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="15" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let wo of workOrders" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -929,12 +928,12 @@
       <div class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="ov-card-title m-0">Legal Cases</h4>
-            <p class="ov-card-sub m-0 mt-1">Track and view litigation files for this unit.</p>
+            <h4 class="ov-card-title m-0">{{ 'web.Unit.lblLegalCases' | translate }}</h4>
+            <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblLegalCasesDesc' | translate }}</p>
           </div>
-          <button type="button" [routerLink]="['/legal/add-litigation']"  class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Legal Case'">
+          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddLegalCase' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Legal Case
+            {{ 'web.Unit.lblAddLegalCase' | translate }}
           </button>
         </div>
 
@@ -944,19 +943,19 @@
           <table class="table ov-table whitespace-nowrap min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Details</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Legal Firm</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Case Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblName' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.property.lblDetails' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblLegalFirm' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCaseDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="legalCases.length === 0">
-                <td colspan="7" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="7" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let lc of legalCases" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -972,10 +971,10 @@
                 </td>
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">
                       <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.contacts.lblEditRealEstate' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </div>
@@ -1017,12 +1016,12 @@
       <div class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="ov-card-title m-0">Broadcasts</h4>
-            <p class="ov-card-sub m-0 mt-1">Manage communication broadcasts sent to unit tenants.</p>
+            <h4 class="ov-card-title m-0">{{ 'web.property.lblSendBroadcast' | translate }}</h4>
+            <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblBroadcastsDesc' | translate }}</p>
           </div>
-          <button type="button" [routerLink]="['/broadcasts/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Broadcasts'">
+          <button type="button" [routerLink]="['/broadcasts/create']" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddBroadcasts' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Broadcasts
+            {{ 'web.Unit.lblAddBroadcasts' | translate }}
           </button>
         </div>
 
@@ -1032,24 +1031,24 @@
           <table class="table ov-table whitespace-nowrap min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Subject</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Preview</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Broadcast Type</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sendable</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">People Count</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Created At</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Updated At</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblSubject' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblPreview' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblBroadcastType' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblSendable' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblPeopleCount' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblScheduled' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblNoteDate' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblCreatedAt' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUpdatedAt' | translate }}</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="broadcasts.length === 0">
-                <td colspan="6" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="12" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let bc of broadcasts" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -1076,10 +1075,10 @@
                 <td class="py-3 px-4 font-medium text-gray-500 text-xs">{{bc.updatedAt}}</td>
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">
                       <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.contacts.lblEditRealEstate' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </div>
@@ -1105,12 +1104,12 @@
       <div class="flex flex-col gap-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div>
-            <h4 class="ov-card-title m-0">Unit Inspection</h4>
-            <p class="ov-card-sub m-0 mt-1">Manage and track property inspections for this unit.</p>
+            <h4 class="ov-card-title m-0">{{ 'web.Unit.lblUnitInspection' | translate }}</h4>
+            <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblInspectionsDesc' | translate }}</p>
           </div>
-          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'Add Inspection'">
+          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddInspection' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Inspection
+            {{ 'web.Unit.lblAddInspection' | translate }}
           </button>
         </div>
 
@@ -1120,23 +1119,23 @@
           <table class="table ov-table whitespace-nowrap min-w-full">
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Inspection ID</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Company Id</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Name</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Status</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Type</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Unit</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Scheduled</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Date/Time</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">User Id</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Environment</th>
-                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">Action</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblInspectionID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCompanyID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblName' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblFileType' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUnit' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblScheduled' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDateTime' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblUserID' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblEnvironment' | translate }}</th>
+                <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="inspections.length === 0">
-                <td colspan="9" class="text-center py-6 bg-gray-50/30">
-                  <span class="text-gray-500 italic text-sm">No records found</span>
+                <td colspan="11" class="text-center py-6 bg-light/40 dark:bg-black/20">
+                  <span class="text-textmuted italic text-sm">{{ 'web.common.lblNoRecordsFound' | translate }}</span>
                 </td>
               </tr>
               <tr *ngFor="let ins of inspections" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
@@ -1158,10 +1157,10 @@
                 <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.environment}}</td>
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="View">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">
                       <img src="assets/images/auth/eye.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" title="Edit">
+                    <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.contacts.lblEditRealEstate' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </div>
@@ -1187,25 +1186,25 @@
 <!-- Add New Invoice Modal -->
 <app-reusable-modal
     *ngIf="showAddInvoiceModal"
-    title="Add New Invoice"
-    subtitle="Create an invoice for this lease."
-    saveText="Save Invoice"
-    cancelText="Close"
+    [title]="'web.Unit.lblAddNewInvoice' | translate"
+    [subtitle]="'web.Unit.lblCreateInvoiceDesc' | translate"
+    [saveText]="'web.Unit.lblSaveInvoice' | translate"
+    [cancelText]="'web.contacts.lblCancel' | translate"
     (save)="showAddInvoiceModal = false"
     (close)="showAddInvoiceModal = false">
     
     <div class="space-y-6">
         <!-- Invoice Details Section -->
         <div class="border border-gray-200 rounded-md p-4 bg-white relative">
-            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">Invoice Details</div>
+            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">{{ 'web.contacts.lblInvoiceDetails' | translate }}</div>
             <div class="absolute -top-3 right-3 bg-white px-2 text-xs font-semibold text-gray-600 flex items-center gap-1">
-                <input type="checkbox" class="form-checkbox text-primary rounded border-gray-300 w-3 h-3"> Inclusive Tax?
+                <input type="checkbox" class="form-checkbox text-primary rounded border-gray-300 w-3 h-3"> {{ 'web.Unit.lblInclusiveTax' | translate }}
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <!-- Amount -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Amount <span class="text-danger">*</span></label>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.contacts.lblAmount' | translate }} <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-gray-50 !text-xs text-gray-500 border-e-0 font-medium">AED</span>
                         <input type="number" class="form-control form-control-sm !text-xs border-s-0" placeholder="0.00">
@@ -1213,14 +1212,14 @@
                 </div>
                 <!-- Account -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Account <span class="text-danger">*</span></label>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.contacts.lblAccount' | translate }} <span class="text-danger">*</span></label>
                     <select class="form-select form-select-sm !text-xs w-full text-gray-500">
-                        <option value="">Select Account</option>
+                        <option value="">{{ 'web.Unit.lblSelectAccount' | translate }}</option>
                     </select>
                 </div>
                 <!-- Due On -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Due On <span class="text-danger">*</span></label>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.Unit.lblDueOn' | translate }} <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-gray-50 !text-xs text-gray-500 border-e-0"><img src="assets/images/myday/calendar.svg" alt="" width="16" height="16" /></span>
                         <input type="text" class="form-control form-control-sm !text-xs border-s-0" placeholder="DD/MM/YYYY">
@@ -1228,29 +1227,29 @@
                 </div>
                 <!-- Invoice Number -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Invoice Number</label>
-                    <input type="text" class="form-control form-control-sm !text-xs w-full" placeholder="Enter">
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.contacts.lblInvoiceNumber' | translate }}</label>
+                    <input type="text" class="form-control form-control-sm !text-xs w-full" [placeholder]="'web.Unit.lblEnter' | translate">
                 </div>
             </div>
         </div>
 
         <!-- Payment Setup Section -->
         <div class="border border-gray-200 rounded-md p-4 bg-white relative mt-2">
-            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">Payment Setup</div>
+            <div class="absolute -top-3 left-3 bg-white px-2 text-xs font-semibold text-gray-700">{{ 'web.Unit.lblPaymentSetup' | translate }}</div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <!-- Recurring Cycle -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Recurring Cycle <span class="text-danger">*</span></label>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.Unit.lblRecurringCycle' | translate }} <span class="text-danger">*</span></label>
                     <select class="form-select form-select-sm !text-xs w-full text-gray-500">
-                        <option value="">Select</option>
+                        <option value="">{{ 'web.Unit.lblSelect' | translate }}</option>
                     </select>
                 </div>
                 <!-- Tax Profile -->
                 <div>
-                    <label class="block text-[11px] font-medium text-gray-700 mb-1">Tax Profile</label>
+                    <label class="block text-[11px] font-medium text-gray-700 mb-1">{{ 'web.Unit.lblTaxProfile' | translate }}</label>
                     <select class="form-select form-select-sm !text-xs w-full text-gray-500">
-                        <option value="">Select Account</option>
+                        <option value="">{{ 'web.Unit.lblSelectAccount' | translate }}</option>
                     </select>
                 </div>
             </div>
@@ -1265,39 +1264,39 @@
   
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
-      <label class="ov-label">Filter by Tags</label>
-      <input type="text" class="ov-input" placeholder="Filter by Tags">
-      </div>
-    <div class="flex flex-col">
-      <label class="ov-label">Filter by Area (sqft)</label>
-      <input type="text" class="ov-input" placeholder="Filter by Area (sqft)">
+      <label class="ov-label">{{ 'web.Unit.lblFilterByTags' | translate }}</label>
+      <input type="text" class="ov-input" [placeholder]="'web.Unit.lblFilterByTags' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label">Filter by ID</label>
-      <input type="text" class="ov-input" placeholder="Filter by ID">
-      </div>
-    <div class="flex flex-col">
-      <label class="ov-label">Filter by Reference no</label>
-      <input type="text" class="ov-input" placeholder="Filter by Reference no">
+      <label class="ov-label">{{ 'web.Unit.lblFilterByArea' | translate }}</label>
+      <input type="text" class="ov-input" [placeholder]="'web.Unit.lblFilterByArea' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label">Off Plan Status</label>
+      <label class="ov-label">{{ 'web.Unit.lblFilterByID' | translate }}</label>
+      <input type="text" class="ov-input" [placeholder]="'web.Unit.lblFilterByID' | translate">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label">{{ 'web.Unit.lblFilterByRefNo' | translate }}</label>
+      <input type="text" class="ov-input" [placeholder]="'web.Unit.lblFilterByRefNo' | translate">
+    </div>
+    <div class="flex flex-col">
+      <label class="ov-label">{{ 'web.Unit.lblOffPlanStatus' | translate }}</label>
       <select class="ov-input">
-        <option value="">Off Plan Status</option>
-        <option>Yes</option>
-        <option>No</option>
+        <option value="">{{ 'web.Unit.lblOffPlanStatus' | translate }}</option>
+        <option>{{ 'web.contacts.lblYes' | translate }}</option>
+        <option>{{ 'web.contacts.lblNo' | translate }}</option>
       </select>
     </div>
     <div class="flex flex-col">
-      <label class="ov-label">Filter by Landlord</label>
-      <input type="text" class="ov-input" placeholder="Filter by Landlord">
-      </div>
+      <label class="ov-label">{{ 'web.Unit.lblFilterByLandlord' | translate }}</label>
+      <input type="text" class="ov-input" [placeholder]="'web.Unit.lblFilterByLandlord' | translate">
+    </div>
     <div class="flex flex-col">
-      <label class="ov-label">Internal Status</label>
+      <label class="ov-label">{{ 'web.contacts.lblInternalStatus' | translate }}</label>
       <select class="ov-input">
-        <option value="">Internal Status</option>
-        <option>Active</option>
-        <option>Inactive</option>
+        <option value="">{{ 'web.contacts.lblInternalStatus' | translate }}</option>
+        <option>{{ 'web.contacts.lblActive' | translate }}</option>
+        <option>{{ 'web.contacts.lblBlocked' | translate }}</option>
       </select>
     </div>
   </div>

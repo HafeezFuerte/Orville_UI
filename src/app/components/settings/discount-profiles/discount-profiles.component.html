@@ -1,0 +1,268 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        Discount Profiles
+      </h1>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Manage and reuse discount configurations ({{ totalCount }} total)
+      </p>
+    </div>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      Add New
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="rows.length === 0" class="dp-empty">
+    <div class="dp-empty__icon" aria-hidden="true">
+      <img src="./assets/images/settings/percent.svg" alt="" width="22" height="22" />
+    </div>
+    <h2 class="dp-empty__title">No discount profiles yet</h2>
+    <p class="dp-empty__sub">
+      Create your first discount profile to quickly apply discounts to invoices and receipts.
+    </p>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
+      Create Discount Profile
+    </button>
+  </div>
+
+  <!-- List -->
+  <ng-container *ngIf="rows.length > 0">
+    <div class="flex w-full flex-wrap items-center justify-between gap-3">
+      <label
+        class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
+        <img
+          src="./assets/images/settings/search.svg"
+          alt=""
+          width="14"
+          height="14"
+          class="shrink-0" />
+        <input
+          type="search"
+          class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
+          placeholder="Search profiles..."
+          aria-label="Search discount profiles"
+          [(ngModel)]="searchQuery" />
+      </label>
+      <span
+        class="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
+        {{ countLabel }}
+      </span>
+    </div>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
+      role="table"
+      aria-label="Discount profiles">
+      <div class="w-full overflow-x-auto">
+        <div class="dp-table__head" role="row">
+          <div class="dp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
+            Name
+          </div>
+          <div class="dp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
+            Type
+          </div>
+          <div class="dp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
+            Value
+          </div>
+          <div class="dp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
+            Default
+          </div>
+          <div class="dp-table__cell dp-table__cell--action text-xs font-semibold text-textmuted" role="columnheader">
+            Action
+          </div>
+        </div>
+
+        <div *ngFor="let row of filteredRows" class="dp-table__row" role="row">
+          <div class="dp-table__cell" role="cell">
+            <button
+              type="button"
+              class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
+              (click)="openEdit(row)">
+              {{ row.name }}
+            </button>
+          </div>
+          <div class="dp-table__cell text-sm text-defaulttextcolor" role="cell">
+            {{ row.discountType }}
+          </div>
+          <div class="dp-table__cell text-sm text-defaulttextcolor" role="cell">
+            {{ formatValue(row) }}
+          </div>
+          <div class="dp-table__cell" role="cell">
+            <span
+              *ngIf="row.isDefault"
+              class="inline-flex items-center rounded-md bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+              Default
+            </span>
+            <button
+              *ngIf="!row.isDefault"
+              type="button"
+              class="border-0 bg-transparent p-0 text-xs font-medium text-link"
+              (click)="setDefault(row)">
+              Set default
+            </button>
+          </div>
+          <div class="dp-table__cell dp-table__cell--action" role="cell">
+            <button
+              type="button"
+              class="ov-icon-btn"
+              aria-label="Edit profile"
+              (click)="openEdit(row)">
+              <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+            </button>
+            <button
+              type="button"
+              class="ov-icon-btn ov-icon-btn--danger"
+              aria-label="Delete profile"
+              (click)="deleteProfile(row)">
+              <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="filteredRows.length === 0"
+        class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+        No discount profiles match your search.
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Add / Edit modal — matches Mandatory Documents modal chrome -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-[1050] flex items-center justify-center bg-[rgba(37,37,54,0.45)] p-4"
+  (click)="closeModal()"
+  role="presentation">
+  <div
+    class="flex w-full max-w-[600px] flex-col items-end gap-2.5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dp-modal-title"
+    (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="ov-modal-close"
+      aria-label="Close"
+      (click)="closeModal()">
+      <img
+        src="./assets/images/common/close-plus.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="ov-ico-x" />
+    </button>
+
+    <div
+      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      <div class="flex flex-col gap-[18px] px-5 pt-5">
+        <div class="flex flex-col gap-1.5">
+          <h2 id="dp-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
+            {{ modalTitle }}
+          </h2>
+          <p class="m-0 text-[13px] font-normal text-textmuted">{{ modalSubtitle }}</p>
+        </div>
+        <div class="h-px w-full bg-defaultborder"></div>
+      </div>
+
+      <div class="p-5">
+        <div class="overflow-hidden py-0">
+          <div>
+            <p class="m-0 text-sm font-semibold leading-normal text-defaulttextcolor">
+              Discount Profile
+            </p>
+          </div>
+          <div class="mt-4 h-px w-full bg-defaultborder"></div>
+          <div class="flex flex-col gap-4 pt-4">
+            <div class="flex min-w-0 flex-col gap-2">
+              <label class="ov-label" for="dp-name">
+                Name <span class="text-danger">*</span>
+              </label>
+              <input
+                id="dp-name"
+                type="text"
+                class="ov-input"
+                placeholder="Enter name"
+                [(ngModel)]="draft.name" />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="flex min-w-0 flex-col gap-2">
+                <label class="ov-label" for="dp-type">
+                  Discount Type <span class="text-danger">*</span>
+                </label>
+                <div class="relative">
+                  <select
+                    id="dp-type"
+                    class="ov-input cursor-pointer appearance-none pr-8"
+                    [(ngModel)]="draft.discountType"
+                    (ngModelChange)="onTypeChange($event)">
+                    <option *ngFor="let t of discountTypes" [ngValue]="t">{{ t }}</option>
+                  </select>
+                  <img
+                    src="./assets/images/settings/chevron-down.svg"
+                    alt=""
+                    width="12"
+                    height="12"
+                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              <div class="flex min-w-0 flex-col gap-2">
+                <label class="ov-label" for="dp-value">{{ valueLabel }}</label>
+                <div class="dp-affix">
+                  <span class="dp-affix__prefix">{{ valuePrefix }}</span>
+                  <input
+                    id="dp-value"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="ov-input dp-affix__input"
+                    [(ngModel)]="draft.value" />
+                </div>
+              </div>
+            </div>
+
+            <label class="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-defaultborder text-primary"
+                [(ngModel)]="draft.isDefault" />
+              <span class="flex min-w-0 flex-col gap-0.5">
+                <span class="text-sm font-medium text-defaulttextcolor">Default</span>
+                <span class="text-xs font-normal text-textmuted">
+                  Make this the default discount profile.
+                </span>
+              </span>
+            </label>
+
+            <div class="flex flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
+              <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+              <p class="m-0 text-xs font-normal text-textmuted">
+                Default profiles are pre-selected when creating invoices and receipts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
+        <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
+          Close
+        </button>
+        <button
+          type="button"
+          class="ov-btn ov-btn-primary ov-btn--sm"
+          [disabled]="!canSave"
+          (click)="save()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

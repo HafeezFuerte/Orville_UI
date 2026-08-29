@@ -17,14 +17,14 @@
         <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.common.lblFilter' | translate">
             <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-            Filter
+            {{ 'web.common.lblFilter' | translate }}
         </button>
         <div class="relative">
             <button type="button" class="ov-btn ov-btn-toolbar"
                 (click)="toggleColumnDropdown()"
                 [attr.data-tooltip]="'web.common.lblColumns' | translate">
                 <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-                Column
+                {{ 'web.common.lblColumns' | translate }}
             </button>
             <div *ngIf="isColumnDropdownOpen"
                 class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -45,7 +45,7 @@
 </div>
 <div class="table-responsive table-vertical-scroll w-full">
     <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-        <thead class="bg-info/10">
+        <thead class="ov-table__head">
             <tr class="border-b border-defaultborder">
                 <th scope="col" [class]="col.headerClass || 'text-start'" *ngFor="let col of visibleColumns"
                     [style.width]="col.width" [style.min-width]="col.width">
@@ -64,7 +64,7 @@
         <tbody>
             <!-- Empty State -->
             <tr *ngIf="data.length === 0 && !loading">
-                <td [attr.colspan]="visibleColumns.length + (hasActions ? 1 : 0)" class="text-center py-6 bg-gray-50/30">
+                <td [attr.colspan]="visibleColumns.length + (hasActions ? 1 : 0)" class="text-center py-6 ov-table__empty">
                     <ng-container *ngIf="emptyTemplate; else defaultEmpty">
                         <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
                     </ng-container>
@@ -162,7 +162,7 @@
 
     <!-- Loading Spinner -->
     <div *ngIf="loading"
-        class="flex flex-col items-center justify-center py-12 bg-gray-50/10 border-b border-x border-defaultborder">
+        class="flex flex-col items-center justify-center py-12 ov-table__empty">
         <div class="ti-spinner text-primary !w-8 !h-8 mb-2" role="status"></div>
         <span class="text-xs text-gray-500 font-medium tracking-wide">{{ 'web.common.lblLoading' | translate }}</span>
     </div>

@@ -1,5 +1,21 @@
 export type CollectionRequestStatus = 'Pending' | 'Received' | 'Processed' | 'Rejected';
 
+/** Status badges — Figma 2559:66426 (solid fill, 4px, white text) */
+export function collectionRequestStatusClass(status: CollectionRequestStatus | string): string {
+  switch (status) {
+    case 'Pending':
+      return 'ov-status--warning';
+    case 'Received':
+      return 'ov-status--active';
+    case 'Processed':
+      return 'ov-status--info';
+    case 'Rejected':
+      return 'ov-status--blocked';
+    default:
+      return 'ov-status--muted';
+  }
+}
+
 export interface CollectionRequestRow {
   id: string;
   collector: string;

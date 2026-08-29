@@ -1,0 +1,134 @@
+<div class="wos-page">
+  <header class="wos-header">
+    <h1 class="wos-title">Work Order Settings</h1>
+    <p class="wos-sub">
+      Configure how work orders and tickets are assigned, vendor-tenant communication, and reminder
+      timing.
+    </p>
+  </header>
+
+  <!-- Participants -->
+  <section class="wos-card" aria-labelledby="wos-participants-title">
+    <div class="wos-card__head">
+      <span class="wos-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/users.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="wos-participants-title" class="wos-card__title">Participants</h2>
+        <p class="wos-card__sub">
+          Selected users will be assigned to every new work order in a round-robin fashion.
+        </p>
+      </div>
+    </div>
+
+    <div class="wos-field wos-field--narrow">
+      <label class="ov-label" for="wos-participants">Participants</label>
+      <div class="relative">
+        <select
+          id="wos-participants"
+          class="ov-input cursor-pointer appearance-none pr-8"
+          [(ngModel)]="draftParticipantId"
+          (ngModelChange)="addParticipant()"
+          [disabled]="availableUsers.length === 0">
+          <option value="">Select users</option>
+          <option *ngFor="let u of availableUsers" [value]="u.id">{{ u.name }}</option>
+        </select>
+        <img
+          src="./assets/images/settings/chevron-down.svg"
+          alt=""
+          width="12"
+          height="12"
+          class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+      </div>
+
+      <div
+        *ngIf="model.participantIds.length"
+        class="wos-chips"
+        role="list"
+        aria-label="Selected participants">
+        <span class="wos-chip" role="listitem" *ngFor="let id of model.participantIds">
+          {{ userName(id) }}
+          <button
+            type="button"
+            class="wos-chip__remove"
+            [attr.aria-label]="'Remove ' + userName(id)"
+            (click)="removeParticipant(id)">
+            ×
+          </button>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Assignment & Communication -->
+  <section class="wos-card" aria-labelledby="wos-assignment-title">
+    <div class="wos-card__head">
+      <span class="wos-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/settings-gear.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="wos-assignment-title" class="wos-card__title">Assignment &amp; Communication</h2>
+        <p class="wos-card__sub">Control automatic distribution and vendor-tenant messaging.</p>
+      </div>
+    </div>
+
+    <div class="wos-options">
+      <label
+        class="wos-option"
+        *ngFor="let item of options"
+        [class.is-on]="getOption(item.key)">
+        <input
+          type="checkbox"
+          class="wos-checkbox"
+          [checked]="getOption(item.key)"
+          (change)="setOption(item.key, $any($event.target).checked)"
+          [attr.aria-label]="item.label" />
+        <span class="wos-option__text">
+          <span class="wos-option__label">{{ item.label }}</span>
+          <span class="wos-option__desc">{{ item.description }}</span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Work Order Notice Days -->
+  <section class="wos-card" aria-labelledby="wos-notice-title">
+    <div class="wos-card__head">
+      <span class="wos-card__icon" aria-hidden="true">
+        <img src="./assets/images/settings/bell-ringing.svg" alt="" width="18" height="18" />
+      </span>
+      <div class="min-w-0">
+        <h2 id="wos-notice-title" class="wos-card__title">Work Order Notice Days</h2>
+        <p class="wos-card__sub">
+          Reminder emails will be sent for work orders with open status before their due date at
+          these specific time intervals.
+        </p>
+      </div>
+    </div>
+
+    <div class="wos-field wos-field--narrow">
+      <label class="ov-label" for="wos-notice-days">Notice days</label>
+      <input
+        id="wos-notice-days"
+        type="text"
+        class="ov-input"
+        [(ngModel)]="model.noticeDays"
+        placeholder="e.g., 10,5,1"
+        autocomplete="off" />
+      <p class="wos-help">
+        Enter comma-separated numbers (e.g., 10,5,1) to send reminders 10 days, 5 days, and 1 day
+        before the due date.
+      </p>
+    </div>
+  </section>
+
+  <div class="wos-footer">
+    <p class="wos-footer__note">
+      Updates apply to new work orders and tickets after you save.
+    </p>
+    <div class="wos-footer__actions">
+      <span *ngIf="saved" class="wos-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>

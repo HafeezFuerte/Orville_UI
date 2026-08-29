@@ -123,10 +123,11 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'workOrder'">
-          <span class="inline-flex items-center justify-center rounded bg-primary px-2 py-1 text-[10px] font-bold text-white"
-            *ngIf="(row.workOrder || row.work_order) === 'Yes'">{{ 'web.contacts.lblYes' | translate }}</span>
-          <span class="inline-flex items-center justify-center rounded bg-bodybg px-2 py-1 text-[10px] font-bold text-textmuted"
-            *ngIf="(row.workOrder || row.work_order) !== 'Yes'">{{ 'web.contacts.lblNo' | translate }}</span>
+          <span
+            class="ov-flag"
+            [class.ov-flag--no]="(row.workOrder || row.work_order) !== 'Yes'">
+            {{ ((row.workOrder || row.work_order) === 'Yes' ? 'web.contacts.lblYes' : 'web.contacts.lblNo') | translate }}
+          </span>
         </ng-container>
 
         <ng-container *ngIf="col.key === 'action'">

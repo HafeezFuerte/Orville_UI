@@ -1,0 +1,190 @@
+<div class="ns-page font-hanken">
+  <header class="ns-header">
+    <h1 class="ns-title">Notification/Email Settings</h1>
+    <p class="ns-sub">
+      Manage support email addresses, notifications, and automated email preferences.
+    </p>
+  </header>
+
+  <!-- Email Configuration -->
+  <section class="ns-card" aria-labelledby="ns-email-title">
+    <h2 id="ns-email-title" class="ns-card__title">Email Configuration</h2>
+
+    <div class="ns-grid">
+      <div class="ns-field">
+        <label class="ov-label" for="ns-company-email">Company Email</label>
+        <input
+          id="ns-company-email"
+          type="email"
+          class="ov-input"
+          [(ngModel)]="model.companyEmail"
+          autocomplete="email" />
+        <p class="ns-help">This email will be used for all company support emails</p>
+      </div>
+
+      <div class="ns-field">
+        <label class="ov-label" for="ns-finance-email">Finance Email</label>
+        <input
+          id="ns-finance-email"
+          type="email"
+          class="ov-input"
+          placeholder="Enter finance email"
+          [(ngModel)]="model.financeEmail"
+          autocomplete="email" />
+        <p class="ns-help">This email will be used for all financial related emails</p>
+      </div>
+
+      <div class="ns-field">
+        <label class="ov-label" for="ns-maintenance-email">Maintenance Email</label>
+        <input
+          id="ns-maintenance-email"
+          type="email"
+          class="ov-input"
+          [(ngModel)]="model.maintenanceEmail"
+          autocomplete="email" />
+        <p class="ns-help">This email will be used for all maintenance related emails</p>
+      </div>
+
+      <div class="ns-field">
+        <label class="ov-label" for="ns-reply-email">Reply To Email</label>
+        <input
+          id="ns-reply-email"
+          type="email"
+          class="ov-input"
+          [(ngModel)]="model.replyToEmail"
+          autocomplete="email" />
+        <p class="ns-help">This email will be used for all replies to emails</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notification Configuration -->
+  <section class="ns-card" aria-labelledby="ns-notify-title">
+    <h2 id="ns-notify-title" class="ns-card__title">Notification Configuration</h2>
+
+    <div class="ns-options">
+      <label class="ns-option" [class.is-on]="model.enableMaintenanceUpdates">
+        <input
+          type="checkbox"
+          class="form-checkbox ns-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.enableMaintenanceUpdates" />
+        <span class="ns-option__text">
+          <span class="ns-option__label">Enable Maintenance Updates</span>
+          <span class="ns-option__desc">
+            You have the option to enable or disable the pop-up notifications for maintenance
+            updates when a new message is received for any maintenance request
+          </span>
+        </span>
+      </label>
+
+      <label class="ns-option" [class.is-on]="model.enableWebNotifications">
+        <input
+          type="checkbox"
+          class="form-checkbox ns-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.enableWebNotifications" />
+        <span class="ns-option__text">
+          <span class="ns-option__label">Enable Web Notifications</span>
+          <span class="ns-option__desc">
+            You can enable or disable the web notification for all users
+          </span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Automated Emails -->
+  <section class="ns-card" aria-labelledby="ns-auto-title">
+    <div class="ns-card__head">
+      <h2 id="ns-auto-title" class="ns-card__title">Automated Emails</h2>
+      <p class="ns-card__sub">
+        You can control transactional emails sent to the tenants and landlords
+      </p>
+    </div>
+
+    <div class="ns-checks">
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.allowEmailsCrmUsers" />
+        <span>Allow emails to CRM Users / Agents</span>
+      </label>
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.allowEmailsTenants" />
+        <span>Allow emails to Tenants</span>
+      </label>
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.allowEmailsLandlords" />
+        <span>Allow emails to Landlords</span>
+      </label>
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.allowEmailsVendors" />
+        <span>Allow emails to Vendors</span>
+      </label>
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.allowEmailsUsers" />
+        <span>Allow emails to Users</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Receipt and Invoice Email Attachments -->
+  <section class="ns-card" aria-labelledby="ns-attach-title">
+    <div class="ns-card__head">
+      <h2 id="ns-attach-title" class="ns-card__title">Receipt and Invoice Email Attachments</h2>
+      <p class="ns-card__sub">You can control receipt and invoice emails sent to the tenants</p>
+    </div>
+
+    <div class="ns-checks">
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.sendReceiptAttachment" />
+        <span>Send receipt as an email attachment?</span>
+      </label>
+      <label class="ns-check">
+        <input
+          type="checkbox"
+          class="form-checkbox h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
+          [(ngModel)]="model.sendInvoiceAttachment" />
+        <span>Send invoice as an email attachment?</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Maintenance Rejection default note -->
+  <section class="ns-card" aria-labelledby="ns-reject-title">
+    <h2 id="ns-reject-title" class="ns-card__title">Maintenance Rejection default note</h2>
+
+    <div class="ns-field">
+      <label class="ov-label" for="ns-reject-note">Default Reject Note</label>
+      <textarea
+        id="ns-reject-note"
+        class="ov-input ns-textarea"
+        rows="5"
+        placeholder="Enter default rejection note..."
+        [(ngModel)]="model.defaultRejectNote"></textarea>
+    </div>
+  </section>
+
+  <div class="ns-footer">
+    <p class="ns-footer__note">Changes apply after you save.</p>
+    <div class="ns-footer__actions">
+      <span *ngIf="saved" class="ns-saved" role="status">Settings updated</span>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,8 @@ export interface Menu {
   path?: string;
   title?: string;
   icon?: string;
+  /** Colored plate background for Add-ons circular icons (presentation only). */
+  iconPlate?: string;
   type?: string;
   badgeValue?: string;
   badgeClass?: string;

@@ -10,7 +10,8 @@ import {
   COLLECTION_REQUEST_ROWS,
   COLLECTION_STATUS_TABS,
   CollectionRequestRow,
-  CollectionRequestStatus
+  CollectionRequestStatus,
+  collectionRequestStatusClass
 } from '../collection-requests.data';
 
 @Component({
@@ -28,6 +29,7 @@ import {
   templateUrl: './collection-requests.component.html'
 })
 export class CollectionRequestsComponent {
+  readonly statusBadgeClass = collectionRequestStatusClass;
   searchQuery = '';
   statusFilter: 'All' | CollectionRequestStatus = 'All';
   statusTabs = COLLECTION_STATUS_TABS;

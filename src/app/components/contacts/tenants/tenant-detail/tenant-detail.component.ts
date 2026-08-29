@@ -8,11 +8,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
+import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent],
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })
@@ -210,17 +211,53 @@ export class TenantDetailComponent implements OnInit {
     else if (label === 'Send Email') this.showSendEmailModal = true;
   }
 
+  // Email subscriptions — Figma 1467:58437 (mostly unsubscribed; Welcome subscribed)
   subscriptions = [
-    { name: 'Document Expiry Email', subscribed: true },
-    { name: 'Lease Expiry Reminder Email', subscribed: true },
-    { name: 'Tenant Session Report', subscribed: true },
-    { name: 'Delayed Rent Reminder email', subscribed: true },
-    { name: 'Invoice Cleared via Cheque', subscribed: true },
-    { name: 'Confirmed Reservation', subscribed: true },
-    { name: 'Happy Birthday email', subscribed: true },
-    { name: 'Invoice Cleared', subscribed: true },
-    { name: 'Welcome to Tenant agreement', subscribed: false }
+    { name: 'Document Expiry Email', subscribed: false },
+    { name: 'Lease Ending Reminder Email', subscribed: false },
+    { name: 'Tenant Snaglist Report', subscribed: false },
+    { name: 'Delayed Rent Reminder email', subscribed: false },
+    { name: 'Invoice Cleared via Cheque', subscribed: false },
+    { name: 'Confirmed Reservation', subscribed: false },
+    { name: 'Happy Birthday email', subscribed: false },
+    { name: 'Invoice Cleared', subscribed: false },
+    { name: 'Welcome to Orville app email', subscribed: true },
+    { name: 'Tenant E-sign lease email', subscribed: false },
+    { name: 'Bounced cheque email', subscribed: false },
+    { name: 'New invoice added', subscribed: false },
+    { name: 'Download HappyTenant Plus App Reminder', subscribed: false },
+    { name: 'Tenant Work Order Reminder email', subscribed: false },
+    { name: 'Tenant Request Update', subscribed: false },
+    { name: 'Welcome to Tenant agreement', subscribed: false },
+    { name: 'New Broadcast Email', subscribed: false },
+    { name: 'Payment Completed', subscribed: false },
+    { name: 'Late Payment Notice', subscribed: false },
+    { name: 'Lease Start', subscribed: false },
+    { name: 'Lease Renewal', subscribed: false },
+    { name: 'Hold Payment', subscribed: false },
+    { name: 'Partial Payment Received', subscribed: false },
+    { name: 'Write Off Invoice', subscribed: false },
+    { name: 'Bounced cheque replacement reminder', subscribed: false },
+    { name: 'Cheque Due Reminder Email', subscribed: false },
+    { name: 'Contract Ending', subscribed: false },
+    { name: 'Facility Request Approved and New Work Order', subscribed: false },
+    { name: 'New Ticket email', subscribed: false },
+    { name: 'Ticket Approval email', subscribed: false },
+    { name: 'Quotation Status', subscribed: false },
+    { name: 'Lease Completed', subscribed: false },
+    { name: 'Lease Send for Sign in Bulk email', subscribed: false },
+    { name: 'New Request for Approval', subscribed: false },
+    { name: 'Contract Auto Renewal', subscribed: false },
+    { name: 'Contract Send For Signature', subscribed: false },
+    { name: 'SPA Lease Send for Signature email', subscribed: false },
+    { name: 'Send Lease for Landlord Signature email', subscribed: false },
+    { name: 'Welcome to HappyTenant Plus App', subscribed: false },
+    { name: 'Late Fee Notice', subscribed: false }
   ];
+
+  get subscriptionSubscribedCount(): number {
+    return this.subscriptions.filter((s) => s.subscribed).length;
+  }
 
   get allSubscriptionsSelected(): boolean {
     return this.subscriptions.length > 0 && this.subscriptions.every(s => s.subscribed);

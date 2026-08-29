@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './template-details.component.html',
-  styleUrls: []
+  styleUrl: './template-details.component.scss'
 })
 export class TemplateDetailsComponent implements OnInit {
   // Area accordions state tracker

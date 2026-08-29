@@ -157,7 +157,11 @@ export class SidebarComponent {
               title: page.menuName,
               type: 'link',
               path: path,
-              icon: page.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
+              icon:
+                this.getFigmaIcon(normalizedName) ||
+                page.menu_icon ||
+                this.moduleIconMap[normalizedName] ||
+                'bx bx-circle',
               active: false,
               selected: false,
             };
@@ -186,6 +190,8 @@ export class SidebarComponent {
         }
 
         this.menuItems = this.ensureVisitorsMenu(this.menuItems);
+        this.menuItems = this.ensurePropertyListingsMenu(this.menuItems);
+        this.menuItems = this.ensureMoreMenuDefaults(this.menuItems);
 
         // Figma settings menu (always — independent of API Settings modules)
         this.settingsMenuItems = buildFigmaSettingsMenuItems();
@@ -200,6 +206,9 @@ export class SidebarComponent {
           active: false,
           selected: false
         });
+
+        // Presentation-only Add-ons / More grouping (does not drop API modules)
+        this.menuItems = this.applyMainMenuPresentation(this.menuItems);
 
         this.originalMenuItems = [...this.menuItems];
 
@@ -262,7 +271,11 @@ export class SidebarComponent {
           type: 'sub',
           selected: false,
           active: false,
-          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
+          icon:
+            this.getFigmaIcon(normalizedName) ||
+            module.menu_icon ||
+            this.moduleIconMap[normalizedName] ||
+            'bx bx-layer',
           children: this.withCommissionsAllChild([]),
         };
       }
@@ -276,23 +289,33 @@ export class SidebarComponent {
           children: this.withVisitorsChildren(),
         };
       }
-      const path = this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases';
-      if (this.isLeaseModule(normalizedName)) {
+      if (this.isPropertyListingsParent(normalizedName)) {
         return {
-          title: module.moduleName,
+          title: 'Property Listings',
           type: 'sub',
           selected: false,
           active: false,
-          icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
-          children: [
-            {
-              title: 'Leases',
-              type: 'link',
-              path,
-              active: false,
-              selected: false,
-            },
-          ],
+          icon:
+            this.getFigmaIcon('property listings') ||
+            module.menu_icon ||
+            this.moduleIconMap[normalizedName] ||
+            'bx bx-layer',
+          children: this.withPropertyListingsChildren(),
+        };
+      }
+      // Figma: Lease Management is a direct link (no single-item "Leases" submenu).
+      if (this.isLeaseModule(normalizedName)) {
+        return {
+          title: module.moduleName,
+          type: 'link',
+          path: this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
+          icon:
+            this.getFigmaIcon(normalizedName) ||
+            module.menu_icon ||
+            this.moduleIconMap[normalizedName] ||
+            'bx bx-layer',
+          active: false,
+          selected: false,
         };
       }
 
@@ -300,7 +323,11 @@ export class SidebarComponent {
         title: module.moduleName,
         type: 'link',
         path: this.resolveMenuPath(normalizedName, undefined, module.url) || '',
-        icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-circle',
+        icon:
+          this.getFigmaIcon(normalizedName) ||
+          module.menu_icon ||
+          this.moduleIconMap[normalizedName] ||
+          'bx bx-circle',
         active: false,
         selected: false,
       };
@@ -313,13 +340,42 @@ export class SidebarComponent {
     if (this.isVisitorsParent(normalizedName)) {
       children = this.withVisitorsChildren();
     }
+    if (this.isPropertyListingsParent(normalizedName)) {
+      children = this.withPropertyListingsChildren();
+    }
+    // Flatten Lease Management when API only returns a single Leases child (matches Figma).
+    if (this.isLeaseModule(normalizedName) && children.length <= 1) {
+      const only = children[0];
+      return {
+        title: module.moduleName,
+        type: 'link',
+        path: only?.path || this.resolveMenuPath(normalizedName, undefined, module.url) || '/leases',
+        icon:
+          this.getFigmaIcon(normalizedName) ||
+          module.menu_icon ||
+          this.moduleIconMap[normalizedName] ||
+          'bx bx-layer',
+        active: false,
+        selected: false,
+      };
+    }
 
     return {
-      title: this.isVisitorsParent(normalizedName) ? 'Visitors' : module.moduleName,
+      title: this.isPropertyListingsParent(normalizedName)
+        ? 'Property Listings'
+        : this.isVisitorsParent(normalizedName)
+          ? 'Visitors'
+          : module.moduleName,
       type: 'sub',
       selected: false,
       active: false,
-      icon: module.menu_icon || this.moduleIconMap[normalizedName] || 'bx bx-layer',
+      icon:
+        this.getFigmaIcon(
+          this.isPropertyListingsParent(normalizedName) ? 'property listings' : normalizedName
+        ) ||
+        module.menu_icon ||
+        this.moduleIconMap[normalizedName] ||
+        'bx bx-layer',
       children,
     };
   }
@@ -375,6 +431,35 @@ export class SidebarComponent {
         title: 'Check-Out Visitors',
         type: 'link',
         path: '/visitors/check-out',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+    ];
+  }
+
+  private withPropertyListingsChildren(): any[] {
+    return [
+      {
+        title: 'All Listings',
+        type: 'link',
+        path: '/property-listings',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Project Listings',
+        type: 'link',
+        path: '/property-listings/projects',
+        active: false,
+        selected: false,
+        exact: true,
+      },
+      {
+        title: 'Property Inquiries',
+        type: 'link',
+        path: '/property-listings/inquiries',
         active: false,
         selected: false,
         exact: true,
@@ -459,9 +544,32 @@ export class SidebarComponent {
     'Reports': '/reports',
     'Documents': '/documents',
     'Document Center': '/documents',
+    'Documents Center': '/documents',
     'Download': '/downloads',
     'Downloads': '/downloads',
     'Download Center': '/downloads',
+    'Archives': '/archives',
+    'Archive': '/archives',
+    'Email Logs': '/email-logs',
+    'Email Log': '/email-logs',
+    'EmailLogs': '/email-logs',
+    'Activity Logs': '/activity-logs',
+    'Activity Log': '/activity-logs',
+    'ActivityLogs': '/activity-logs',
+    'Imports': '/imports',
+    'Import': '/imports',
+    'Import Logs': '/imports',
+    'Import Log': '/imports',
+    'ImportLogs': '/imports',
+    'Mobile Stats': '/mobile-stats',
+    'Mobile Stat': '/mobile-stats',
+    'MobileStats': '/mobile-stats',
+    'Mobile Statistics': '/mobile-stats',
+    'Feedbacks': '/feedbacks',
+    'Feedback': '/feedbacks',
+    'Tracked Actions': '/tracked-actions',
+    'Tracked Action': '/tracked-actions',
+    'TrackedActions': '/tracked-actions',
     'Invoices': '/accounting/invoices',
     'Invoice': '/accounting/invoices',
     'Expenses': '/accounting/expenses',
@@ -473,6 +581,13 @@ export class SidebarComponent {
     'Landlord Commissions': '/commissions/landlord',
     'Collection Request': '/collection-requests',
     'Collection Requests': '/collection-requests',
+    'Property Listings': '/property-listings',
+    'Property Listing': '/property-listings',
+    'All Listings': '/property-listings',
+    'Project Listings': '/property-listings/projects',
+    'Project Listing': '/property-listings/projects',
+    'Property Inquiries': '/property-listings/inquiries',
+    'Property Inquiry': '/property-listings/inquiries',
     'Visitors': '/visitors',
     'Visitor': '/visitors',
     'Guests': '/visitors',
@@ -577,6 +692,173 @@ export class SidebarComponent {
         children: this.withVisitorsChildren(),
       };
     });
+  }
+
+  private isPropertyListingsParent(parentTitle?: string): boolean {
+    const name = (parentTitle || '').trim().toLowerCase();
+    return (
+      name === 'property listings' ||
+      name === 'property listing' ||
+      name === 'listings' ||
+      name.includes('property listing')
+    );
+  }
+
+  private isPropertyListingsChildTitle(title?: string): boolean {
+    const name = (title || '').trim().toLowerCase();
+    return (
+      name === 'all listings' ||
+      name === 'project listings' ||
+      name === 'project listing' ||
+      name === 'property inquiries' ||
+      name === 'property inquiry'
+    );
+  }
+
+  private resolvePropertyListingsChildPath(menuName: string): string {
+    const name = (menuName || '').trim().toLowerCase();
+    if (name.includes('project')) {
+      return '/property-listings/projects';
+    }
+    if (name.includes('inquir')) {
+      return '/property-listings/inquiries';
+    }
+    return '/property-listings';
+  }
+
+  /** Force Property Listings submenu: All / Project / Inquiries. */
+  private ensurePropertyListingsMenu(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    let result = items.filter((item) => !this.isPropertyListingsChildTitle(item.title));
+    const hasParent = result.some((item) => this.isPropertyListingsParent(item.title));
+
+    if (!hasParent) {
+      const insertAt = Math.max(
+        0,
+        result.findIndex((item) => (item.title || '').toLowerCase().includes('remind'))
+      );
+      const menuItem: Menu = {
+        title: 'Property Listings',
+        type: 'sub',
+        icon: this.getFigmaIcon('property listings') || './assets/images/nav/listings.svg',
+        active: false,
+        selected: false,
+        children: this.withPropertyListingsChildren(),
+      };
+      if (insertAt >= 0) {
+        result = [...result.slice(0, insertAt), menuItem, ...result.slice(insertAt)];
+      } else {
+        result = [...result, menuItem];
+      }
+      return result;
+    }
+
+    return result.map((item) => {
+      if (!this.isPropertyListingsParent(item.title)) {
+        return item;
+      }
+      return {
+        title: 'Property Listings',
+        type: 'sub',
+        icon: this.getFigmaIcon('property listings') || item.icon,
+        active: false,
+        selected: false,
+        children: this.withPropertyListingsChildren(),
+      };
+    });
+  }
+
+  /** Ensure More-section links exist even when API omits them. */
+  private ensureMoreMenuDefaults(items: Menu[]): Menu[] {
+    if (!items) {
+      return items;
+    }
+
+    const defaults: { key: string; title: string; path: string; iconKey: string; fallbackIcon: string }[] = [
+      {
+        key: 'document center',
+        title: 'Document Center',
+        path: '/documents',
+        iconKey: 'document center',
+        fallbackIcon: './assets/images/nav/documents.svg',
+      },
+      {
+        key: 'download center',
+        title: 'Download Center',
+        path: '/downloads',
+        iconKey: 'download center',
+        fallbackIcon: './assets/images/nav/download.svg',
+      },
+      {
+        key: 'archives',
+        title: 'Archives',
+        path: '/archives',
+        iconKey: 'archives',
+        fallbackIcon: './assets/images/nav/archives.svg',
+      },
+      {
+        key: 'email logs',
+        title: 'Email Logs',
+        path: '/email-logs',
+        iconKey: 'email logs',
+        fallbackIcon: './assets/images/nav/email-logs.svg',
+      },
+      {
+        key: 'activity logs',
+        title: 'Activity Logs',
+        path: '/activity-logs',
+        iconKey: 'activity logs',
+        fallbackIcon: './assets/images/nav/activity-logs.svg',
+      },
+      {
+        key: 'imports',
+        title: 'Imports',
+        path: '/imports',
+        iconKey: 'imports',
+        fallbackIcon: './assets/images/nav/imports.svg',
+      },
+      {
+        key: 'mobile stats',
+        title: 'Mobile Stats',
+        path: '/mobile-stats',
+        iconKey: 'mobile stats',
+        fallbackIcon: './assets/images/nav/mobile-stats.svg',
+      },
+      {
+        key: 'feedbacks',
+        title: 'Feedbacks',
+        path: '/feedbacks',
+        iconKey: 'feedbacks',
+        fallbackIcon: './assets/images/nav/feedbacks.svg',
+      },
+      {
+        key: 'tracked actions',
+        title: 'Tracked Actions',
+        path: '/tracked-actions',
+        iconKey: 'tracked actions',
+        fallbackIcon: './assets/images/nav/tracked-actions.svg',
+      },
+    ];
+
+    let result = [...items];
+    for (const def of defaults) {
+      const exists = result.some((item) => this.matchMoreKey(item.title) === def.key);
+      if (exists) {
+        continue;
+      }
+      result.push({
+        title: def.title,
+        type: 'link',
+        path: def.path,
+        icon: this.getFigmaIcon(def.iconKey) || def.fallbackIcon,
+        active: false,
+        selected: false,
+      });
+    }
+    return result;
   }
 
   private isHelpDeskMenu(title?: string): boolean {
@@ -896,6 +1178,9 @@ export class SidebarComponent {
     if (this.isVisitorsParent(parentTitle)) {
       return this.resolveVisitorsChildPath(normalizedName);
     }
+    if (this.isPropertyListingsParent(parentTitle)) {
+      return this.resolvePropertyListingsChildPath(normalizedName);
+    }
 
     let path = this.urlNameMap[normalizedName];
     if (!path) {
@@ -966,6 +1251,38 @@ export class SidebarComponent {
     'download': './assets/images/nav/download.svg',
     'downloads': './assets/images/nav/download.svg',
     'download center': './assets/images/nav/download.svg',
+    'archives': './assets/images/nav/archives.svg',
+    'archive': './assets/images/nav/archives.svg',
+    'email logs': './assets/images/nav/email-logs.svg',
+    'email log': './assets/images/nav/email-logs.svg',
+    'activity logs': './assets/images/nav/activity-logs.svg',
+    'activity log': './assets/images/nav/activity-logs.svg',
+    'mobile stats': './assets/images/nav/mobile-stats.svg',
+    'feedbacks': './assets/images/nav/feedbacks.svg',
+    'feedback': './assets/images/nav/feedbacks.svg',
+    'tracked actions': './assets/images/nav/tracked-actions.svg',
+    'tracked action': './assets/images/nav/tracked-actions.svg',
+    'imports': './assets/images/nav/imports.svg',
+    'ai chats': './assets/images/nav/ai-chats.svg',
+    'ai chat': './assets/images/nav/ai-chats.svg',
+    'marketplace': './assets/images/nav/marketplace.svg',
+    'help center': './assets/images/nav/help-center.svg',
+    "what's new": './assets/images/nav/whats-new.svg',
+    'whats new': './assets/images/nav/whats-new.svg',
+    'berto.ai crm': './assets/images/nav/addons/berto.svg',
+    'berto.ai': './assets/images/nav/addons/berto.svg',
+    'spacehub': './assets/images/nav/addons/spacehub.svg',
+    'space hub': './assets/images/nav/addons/spacehub.svg',
+    'guestflow': './assets/images/nav/addons/guestflow.svg',
+    'guest flow': './assets/images/nav/addons/guestflow.svg',
+    'snaglist': './assets/images/nav/addons/snaglist.svg',
+    'snaplist': './assets/images/nav/addons/snaglist.svg',
+    'engagehub': './assets/images/nav/addons/engagehub.svg',
+    'engage hub': './assets/images/nav/addons/engagehub.svg',
+    'servicehub': './assets/images/nav/addons/servicehub.svg',
+    'service hub': './assets/images/nav/addons/servicehub.svg',
+    'reportstudio': './assets/images/nav/addons/reportstudio.svg',
+    'report studio': './assets/images/nav/addons/reportstudio.svg',
     'setting': './assets/images/nav/settings.svg',
     'settings': './assets/images/nav/settings.svg',
   };
@@ -987,25 +1304,290 @@ export class SidebarComponent {
     return null;
   }
 
+  /** Presentation grouping: primary → Add-ons → More → Settings. Never drops API items. */
+  private applyMainMenuPresentation(items: Menu[]): Menu[] {
+    if (!items?.length) {
+      return items;
+    }
+
+    const settings: Menu[] = [];
+    const primary: Menu[] = [];
+    const addons: Menu[] = [];
+    const more: Menu[] = [];
+
+    for (const item of items) {
+      if (item.type === 'heading') {
+        primary.push(item);
+        continue;
+      }
+      const titleKey = this.normalizeNavKey(item.title);
+      if (titleKey === 'settings') {
+        settings.push({ ...item, menutype: 'settings' });
+        continue;
+      }
+
+      const addOnKey = this.matchAddOnKey(item.title);
+      if (addOnKey) {
+        addons.push(this.decorateAddOnItem(item, addOnKey));
+        continue;
+      }
+
+      const moreKey = this.matchMoreKey(item.title);
+      if (moreKey) {
+        // One entry per More key (e.g. hide primary "Documents Center" duplicate)
+        if (more.some((m) => this.matchMoreKey(m.title) === moreKey)) {
+          continue;
+        }
+        more.push(this.decorateMoreItem(item, moreKey));
+        continue;
+      }
+
+      primary.push({
+        ...item,
+        icon: this.getFigmaIcon(item.title) || item.icon,
+        menutype: 'primary',
+      });
+    }
+
+    const result: Menu[] = [...primary];
+
+    if (addons.length) {
+      result.push({
+        title: 'Add-ons',
+        type: 'heading',
+        menutype: 'addons-heading',
+      });
+      result.push(...this.sortByPreferredOrder(addons, this.addOnsOrder));
+    }
+
+    if (more.length) {
+      result.push({
+        title: 'More',
+        type: 'heading',
+        menutype: 'more-heading',
+      });
+      result.push(...this.sortByPreferredOrder(more, this.moreOrder));
+    }
+
+    if (settings.length) {
+      result.push({
+        title: 'Settings',
+        type: 'heading',
+        menutype: 'settings-heading',
+      });
+      result.push(...settings);
+    }
+
+    return result;
+  }
+
+  private readonly addOnsOrder: string[] = [
+    'berto.ai crm',
+    'spacehub',
+    'guestflow',
+    'snaglist',
+    'engagehub',
+    'servicehub',
+    'reportstudio',
+  ];
+
+  private readonly moreOrder: string[] = [
+    'document center',
+    'download center',
+    'archives',
+    'email logs',
+    'activity logs',
+    'mobile stats',
+    'feedbacks',
+    'tracked actions',
+    'imports',
+    'ai chats',
+    'marketplace',
+    'help center',
+    "what's new",
+  ];
+
+  private readonly addOnChrome: {
+    [key: string]: { plate: string; icon: string };
+  } = {
+    'berto.ai crm': { plate: '#4B2E83', icon: './assets/images/nav/addons/berto.svg' },
+    spacehub: { plate: '#C084FC', icon: './assets/images/nav/addons/spacehub.svg' },
+    guestflow: { plate: '#5BA3E0', icon: './assets/images/nav/addons/guestflow.svg' },
+    snaglist: { plate: '#F08A3C', icon: './assets/images/nav/addons/snaglist.svg' },
+    engagehub: { plate: '#1E3A8A', icon: './assets/images/nav/addons/engagehub.svg' },
+    servicehub: { plate: '#1E40AF', icon: './assets/images/nav/addons/servicehub.svg' },
+    reportstudio: { plate: '#2563EB', icon: './assets/images/nav/addons/reportstudio.svg' },
+  };
+
+  private normalizeNavKey(title?: string): string {
+    return (title || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[’']/g, "'")
+      .replace(/\s+/g, ' ');
+  }
+
+  private matchAddOnKey(title?: string): string | null {
+    const n = this.normalizeNavKey(title);
+    if (!n) {
+      return null;
+    }
+    if (n.includes('berto')) {
+      return 'berto.ai crm';
+    }
+    if (n === 'spacehub' || n === 'space hub' || n.includes('spacehub')) {
+      return 'spacehub';
+    }
+    if (n === 'guestflow' || n === 'guest flow' || n.includes('guestflow')) {
+      return 'guestflow';
+    }
+    if (n === 'snaglist' || n === 'snaplist' || n === 'snag list' || n.includes('snaglist') || n.includes('snaplist')) {
+      return 'snaglist';
+    }
+    if (n === 'engagehub' || n === 'engage hub' || n.includes('engagehub')) {
+      return 'engagehub';
+    }
+    if (n === 'servicehub' || n === 'service hub' || n.includes('servicehub')) {
+      return 'servicehub';
+    }
+    if (n === 'reportstudio' || n === 'report studio' || n === 'reports studio' || n.includes('reportstudio')) {
+      return 'reportstudio';
+    }
+    return null;
+  }
+
+  private matchMoreKey(title?: string): string | null {
+    const n = this.normalizeNavKey(title);
+    if (!n) {
+      return null;
+    }
+    const pairs: [RegExp | string, string][] = [
+      [/^documents?\s*center$|^documents?$/, 'document center'],
+      [/^downloads?\s*center$|^downloads?$/, 'download center'],
+      [/^archives?$/, 'archives'],
+      [/^email logs?$/, 'email logs'],
+      [/^activity logs?$/, 'activity logs'],
+      [/^mobile stats?$|^mobile statistics$/, 'mobile stats'],
+      [/^feedbacks?$/, 'feedbacks'],
+      [/^tracked actions?$/, 'tracked actions'],
+      [/^imports?$/, 'imports'],
+      [/^ai chats?$/, 'ai chats'],
+      [/^marketplace$/, 'marketplace'],
+      [/^help center$/, 'help center'],
+      [/^what's new$|^whats new$/, "what's new"],
+    ];
+    for (const [test, key] of pairs) {
+      if (typeof test === 'string') {
+        if (n === test) {
+          return key;
+        }
+      } else if (test.test(n)) {
+        return key;
+      }
+    }
+    return null;
+  }
+
+  private decorateAddOnItem(item: Menu, key: string): Menu {
+    const chrome = this.addOnChrome[key];
+    return {
+      ...item,
+      menutype: 'addons',
+      icon: chrome?.icon || this.getFigmaIcon(item.title) || item.icon,
+      iconPlate: chrome?.plate || '#26264F',
+    };
+  }
+
+  private decorateMoreItem(item: Menu, key: string): Menu {
+    const decorated: Menu = {
+      ...item,
+      menutype: 'more',
+      icon: this.getFigmaIcon(item.title) || item.icon,
+    };
+    // Prefer screenshot / Figma labels under More
+    if (key === 'document center') {
+      decorated.title = 'Document Center';
+      decorated.path = decorated.path || '/documents';
+      decorated.icon = this.getFigmaIcon('document center') || decorated.icon;
+    }
+    if (key === 'download center') {
+      decorated.title = 'Download Center';
+      decorated.path = decorated.path || '/downloads';
+      decorated.icon = this.getFigmaIcon('download center') || decorated.icon;
+    }
+    if (key === 'archives') {
+      decorated.title = 'Archives';
+      decorated.path = decorated.path || '/archives';
+      decorated.icon = this.getFigmaIcon('archives') || decorated.icon;
+    }
+    if (key === 'email logs') {
+      decorated.title = 'Email Logs';
+      decorated.path = decorated.path || '/email-logs';
+      decorated.icon = this.getFigmaIcon('email logs') || decorated.icon;
+    }
+    if (key === 'activity logs') {
+      decorated.title = 'Activity Logs';
+      decorated.path = decorated.path || '/activity-logs';
+      decorated.icon = this.getFigmaIcon('activity logs') || decorated.icon;
+    }
+    if (key === 'imports') {
+      decorated.title = 'Imports';
+      decorated.path = decorated.path || '/imports';
+      decorated.icon = this.getFigmaIcon('imports') || decorated.icon;
+    }
+    if (key === 'mobile stats') {
+      decorated.title = 'Mobile Stats';
+      decorated.path = decorated.path || '/mobile-stats';
+      decorated.icon = this.getFigmaIcon('mobile stats') || decorated.icon;
+    }
+    if (key === 'feedbacks') {
+      decorated.title = 'Feedbacks';
+      decorated.path = decorated.path || '/feedbacks';
+      decorated.icon = this.getFigmaIcon('feedbacks') || decorated.icon;
+    }
+    if (key === 'tracked actions') {
+      decorated.title = 'Tracked Actions';
+      decorated.path = decorated.path || '/tracked-actions';
+      decorated.icon = this.getFigmaIcon('tracked actions') || decorated.icon;
+    }
+    if (key === 'marketplace') {
+      decorated.badgeText = 'New';
+    }
+    return decorated;
+  }
+
+  private sortByPreferredOrder(items: Menu[], order: string[]): Menu[] {
+    const rank = (title?: string): number => {
+      const addOnKey = this.matchAddOnKey(title);
+      const moreKey = this.matchMoreKey(title);
+      const key = addOnKey || moreKey || this.normalizeNavKey(title);
+      const idx = order.indexOf(key);
+      return idx === -1 ? 999 : idx;
+    };
+    return [...items].sort((a, b) => rank(a.title) - rank(b.title));
+  }
+
+  isAddOnsHeading(item: Menu): boolean {
+    return item?.type === 'heading' && item?.menutype === 'addons-heading';
+  }
+
+  isNavHeading(item: Menu): boolean {
+    return item?.type === 'heading';
+  }
+
+  isAddOnItem(item: Menu): boolean {
+    return item?.menutype === 'addons';
+  }
+
 
   switchToSettingsMenu() {
     this.isSettingsMode = true;
     this.settingsSearchQuery = '';
-    if (!this.allSettingsMenuItems.length) {
-      this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
-      this.settingsMenuItems = [...this.allSettingsMenuItems];
-    }
-    this.menuItems = [
-      {
-        title: 'Back to Main Menu',
-        type: 'link',
-        path: '/insights',
-        icon: 'bx-arrow-back',
-        active: false,
-        selected: false
-      },
-      ...this.settingsMenuItems
-    ];
+    // Always rebuild so menu paths stay in sync with settings-menu.data.ts
+    this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
+    this.settingsMenuItems = [...this.allSettingsMenuItems];
+    // Back link lives in fixed chrome — keep it out of the scrolling list
+    this.menuItems = [...this.settingsMenuItems];
   }
 
   onSettingsSearchChange(query: string) {
@@ -1036,15 +1618,7 @@ export class SidebarComponent {
       this.settingsMenuItems = filtered;
     }
 
-    const backItem: Menu = {
-      title: 'Back to Main Menu',
-      type: 'link',
-      path: '/insights',
-      icon: 'bx-arrow-back',
-      active: false,
-      selected: false
-    };
-    this.menuItems = [backItem, ...this.settingsMenuItems];
+    this.menuItems = [...this.settingsMenuItems];
   }
 
   restoreMainMenu() {
@@ -1292,6 +1866,22 @@ export class SidebarComponent {
         const activeChild =
           element.children.find((child) => child.path === currentUrl) ||
           element.children.find((child) => child.path === '/visitors') ||
+          element.children[0];
+        if (activeChild) {
+          this.setMenuHeaders(element, activeChild);
+          return;
+        }
+      }
+    }
+
+    if (currentUrl.startsWith('/property-listings')) {
+      for (const element of this.menuItems) {
+        if (element.title !== 'Property Listings' || element.type !== 'sub' || !element.children?.length) {
+          continue;
+        }
+        const activeChild =
+          element.children.find((child) => child.path === currentUrl) ||
+          element.children.find((child) => child.path === '/property-listings') ||
           element.children[0];
         if (activeChild) {
           this.setMenuHeaders(element, activeChild);

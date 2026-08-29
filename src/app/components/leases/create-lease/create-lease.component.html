@@ -1,191 +1,210 @@
-<div class="ov-add-header page-header mb-6">
-  <div class="ov-add-header__start">
-    <a (click)="goBack()" class="ov-back cursor-pointer" [attr.title]="'web.leases.lblLeaseManagement' | translate">
-      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
-    </a>
-    <div>
-      <h3 *ngIf="leaseId===''" class="ov-page-title">{{ 'web.leases.lblNewLease' | translate }}</h3>
-      <h3 *ngIf="leaseId!==''" class="ov-page-title">{{ 'web.leases.lblEditLease' | translate }}</h3>
-      <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">{{ 'web.common.lblHome' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ 'web.leases.lblLeaseManagement' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li><a (click)="goBack()" class="hover:text-primary cursor-pointer">{{ 'web.common.lblLeases' | translate }}</a></li>
-        <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor" *ngIf="leaseId===''">{{ 'web.leases.lblNewLease' | translate }}</li>
-        <li class="font-semibold text-defaulttextcolor" *ngIf="leaseId!==''">{{ leaseInfo?.active_lease || ('web.leases.lblEditLease' | translate) }}</li>
-      </ol>
+<div class="ov-form ov-add-form">
+  <div class="ov-add-header page-header">
+    <div class="ov-add-header__start">
+      <button type="button" (click)="goBack()" class="ov-back" [attr.title]="'web.leases.lblLeaseManagement' | translate">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div>
+        <h3 class="ov-page-title" *ngIf="leaseId===''">{{ 'web.leases.lblNewLease' | translate }}</h3>
+        <h3 class="ov-page-title" *ngIf="leaseId!==''">{{ 'web.leases.lblEditLease' | translate }}</h3>
+        <p class="ov-page-sub">
+          {{ 'web.leases.lblLeaseManagement' | translate }} /
+          <span class="ov-page-sub__current" *ngIf="leaseId===''">{{ 'web.leases.lblNewLease' | translate }}</span>
+          <span class="ov-page-sub__current" *ngIf="leaseId!==''">{{ leaseInfo?.active_lease || ('web.leases.lblEditLease' | translate) }}</span>
+        </p>
+        <ol class="ov-sr">
+          <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
+          <li><a (click)="goBack()" class="cursor-pointer">{{ 'web.leases.lblLeaseManagement' | translate }}</a></li>
+          <li><a (click)="goBack()" class="cursor-pointer">{{ 'web.common.lblLeases' | translate }}</a></li>
+          <li *ngIf="leaseId===''">{{ 'web.leases.lblNewLease' | translate }}</li>
+          <li *ngIf="leaseId!==''">{{ leaseInfo?.active_lease || ('web.leases.lblEditLease' | translate) }}</li>
+        </ol>
+      </div>
+    </div>
+    <div class="ov-add-header__actions">
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
+      <button type="button" (click)="saveLease()" class="ov-btn ov-btn-primary">
+        {{ leaseId=='' ? ('web.leases.lblSaveLease'| translate ) :  ('web.leases.lblUpdateLease'| translate )}}
+      </button>
     </div>
   </div>
-</div>
 
-<div class="grid grid-cols-12 gap-6 mt-4 pb-16">
-  <!-- LEFT COLUMN: Selection Details -->
-  <div class="col-span-12 lg:col-span-8 flex flex-col gap-4">
-    <!-- Selection Details Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblSelectionDetails' | translate }}</h6>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblTenant' | translate }} *</label>
-          <ng-select #tenantSelect [(ngModel)]="selectedTenant" 
-          [items]="tenantsList"  
-          bindValue="code" 
-          (change)="onTenantChange($event)"   [searchable]="true"
-          [clearable]="leaseId === ''"
-          [readonly]="leaseId !== ''"
-           placeholder="{{ 'web.leases.lblTenant' | translate }}" class="ng-select-sm w-full">
-           <ng-template ng-header-tmp>
-            <div class="p-1.5 border-b border-gray-100">
-              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'tenants')" (click)="$event.stopPropagation()">
-            </div>
-          </ng-template>
-          <ng-template ng-label-tmp let-item="item">
-            {{ item.code }} - {{ item.name }}
-        </ng-template>
-        <ng-template ng-option-tmp let-item="item">
-          {{ item.code }} - {{ item.name }}
-      </ng-template>
-        </ng-select>
+  <div class="ov-add-body">
+    <div class="ov-add-layout__main">
+
+      <!-- Selection Details -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.leases.lblSelectionDetails' | translate }}</h6>
         </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblProperty' | translate }} *</label>
-          <ng-select #propSelect [(ngModel)]="selectedProperty" [items]="propertiesList" 
-            bindValue="code"
-            (change)="onPropertyChange($event)" 
-            [searchable]="true"
-            [clearable]="leaseId === ''"
-            [readonly]="leaseId !== ''"
-            placeholder="{{ 'web.leases.lblProperty' | translate }}" 
-            class="ng-select-sm w-full">
-            <ng-template ng-header-tmp>
-              <div class="p-1.5 border-b border-gray-100">
-                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'properties')" (click)="$event.stopPropagation()">
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblTenant' | translate }} <span class="text-danger">*</span></label>
+              <ng-select #tenantSelect [(ngModel)]="selectedTenant"
+                [items]="tenantsList"
+                bindValue="code"
+                (change)="onTenantChange($event)"
+                [searchable]="true"
+                [clearable]="leaseId === ''"
+                [readonly]="leaseId !== ''"
+                placeholder="Select Tenant"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="onSearch($any($event.target).value,'tenants')" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
+              <ng-select #propSelect [(ngModel)]="selectedProperty" [items]="propertiesList"
+                bindValue="code"
+                (change)="onPropertyChange($event)"
+                [searchable]="true"
+                [clearable]="leaseId === ''"
+                [readonly]="leaseId !== ''"
+                placeholder="Select Property"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="onSearch($any($event.target).value,'properties')" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblUnit' | translate }} <span class="text-danger">*</span></label>
+              <ng-select #unitSelect [(ngModel)]="selectedUnit"
+                [items]="unitsList"
+                bindValue="code"
+                bindLabel="unit"
+                (change)="onUnitChange($event)"
+                [searchable]="true"
+                [clearable]="leaseId === ''"
+                [readonly]="leaseId !== ''"
+                placeholder="Select Unit"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="onSearch($any($event.target).value,'units')" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblRoom' | translate }}</label>
+              <ng-select [(ngModel)]="selectedRoom" [items]="roomsList"
+                [searchable]="true"
+                [clearable]="true"
+                bindLabel="room"
+                (change)="onChangeSelect($event,'selectedRoom')"
+                bindValue="code"
+                placeholder="Select Room"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="onSearch($any($event.target).value,'rooms')" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lease Agent Assignment -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Lease Agent Assignment</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--1">
+            <div>
+              <label class="ov-label">Assigned Lease Agent</label>
+              <ng-select [(ngModel)]="selectedAgent"
+                [items]="agentsList"
+                bindValue="code"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Select Lease Agent"
+                class="ov-select w-full">
+                <ng-template ng-header-tmp>
+                  <div class="p-1.5 border-b border-defaultborder">
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                      (input)="onSearch($any($event.target).value,'agentsList')" (click)="$event.stopPropagation()">
+                  </div>
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lease Details -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.leases.lblLeaseDetails' | translate }}</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <label class="lease-check">
+            <input type="checkbox" [(ngModel)]="isShortTerm" id="isShortTerm" />
+            <span>Is this a short term lease?</span>
+          </label>
+
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblLeaseType' | translate }}</label>
+              <ng-select [(ngModel)]="selectedLeaseType" (change)="onChangeSelect($event,'selectedLeaseType')"
+                bindLabel="name" [items]="leaseTypes" placeholder="Select" class="ov-select w-full"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
+              <ng-select [(ngModel)]="selectedLeaseCategory" (change)="onChangeSelect($event,'selectedLeaseCategory')"
+                bindLabel="name" [items]="leaseCategories" placeholder="Select" class="ov-select w-full"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblStartDate' | translate }} <span class="text-danger">*</span></label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                <input type="date" [(ngModel)]="startDate" (change)="calculatemonths()" class="ov-input" />
               </div>
-            </ng-template>
-            <ng-template ng-label-tmp let-item="item">
-              {{ item.code }} - {{ item.name }}
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item">
-            {{ item.code }} - {{ item.name }}
-        </ng-template>
-
-          </ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblUnit' | translate }} *</label>
-          <ng-select #unitSelect  [(ngModel)]="selectedUnit" 
-          [items]="unitsList"  
-           bindValue="code" 
-           bindLabel="unit"
-          (change)="onUnitChange($event)" 
-          [searchable]="true"
-          [clearable]="leaseId === ''"
-          [readonly]="leaseId !== ''"
-          placeholder="{{ 'web.leases.lblUnit' | translate }}" 
-          class="ng-select-sm w-full">
-          <ng-template ng-header-tmp>
-            <div class="p-1.5 border-b border-gray-100">
-              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'units')" (click)="$event.stopPropagation()">
             </div>
-          </ng-template>
-       
-    </ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRoom' | translate }}</label>
-          <ng-select [(ngModel)]="selectedRoom" [items]="roomsList"
-          [searchable]="true"
-          [clearable]="true"
-           bindLabel="room"
-           (change)="onChangeSelect($event,'selectedRoom')"
-           bindValue="code" 
-           placeholder="{{ 'web.leases.lblRoom' | translate }}" class="ng-select-sm w-full">
-           <ng-template ng-header-tmp>
-            <div class="p-1.5 border-b border-gray-100">
-              <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'rooms')" (click)="$event.stopPropagation()">
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblEndDate' | translate }}</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                <input type="date" [(ngModel)]="endDate" (change)="calculatemonths()" class="ov-input" />
+              </div>
+              <p class="lease-field-hint">Dates overlapping is allowed in settings</p>
             </div>
-          </ng-template>
-       
-          </ng-select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Agent Assignment Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblAgentAssignment' | translate }}</h6>
-      <div class="text-xs">
-        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblAgentAssignment' | translate }}</label>
-        <ng-select #tenantSelect [(ngModel)]="selectedAgent" 
-        [items]="agentsList"  
-        bindValue="code"   [searchable]="true"
-        [clearable]="true" 
-         placeholder="{{ 'web.leases.lblAgentAssignment' | translate }}" class="ng-select-sm w-full">
-         <ng-template ng-header-tmp>
-          <div class="p-1.5 border-b border-gray-100">
-            <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="onSearch($any($event.target).value,'agentsList')" (click)="$event.stopPropagation()">
+            <div>
+              <label class="ov-label">Months</label>
+              <input type="number" [(ngModel)]="months" (change)="calculateEndDate()" class="ov-input" placeholder="Enter" />
+            </div>
           </div>
-        </ng-template>
-        <ng-template ng-label-tmp let-item="item">
-          {{ item.code }} - {{ item.name }}
-      </ng-template>
-      <ng-template ng-option-tmp let-item="item">
-        {{ item.code }} - {{ item.name }}
-    </ng-template>
-      </ng-select>
-  </div>
-    </div>
 
-    <!-- Lease Details Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblLeaseDetails' | translate }}</h6>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseType' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseType"      (change)="onChangeSelect($event,'selectedLeaseType')"  placeholder="Lease Type"  bindLabel="name"   [items]="leaseTypes" placeholder="{{ 'web.leases.lblLeaseType' | translate }}" class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
-          <ng-select [(ngModel)]="selectedLeaseCategory"   (change)="onChangeSelect($event,'selectedLeaseCategory')"  placeholder="Lease Category"  bindLabel="name" [items]="leaseCategories" placeholder="{{ 'web.leases.lblLeaseCategory' | translate }}" class="ng-select-sm w-full"></ng-select>
-        </div>
-      
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-4"> 
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblStartDate' | translate }} *</label>
-          <input type="date" [(ngModel)]="startDate" (change)="calculatemonths()"  class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Months</label>
-          <input type="number" [(ngModel)]="months" (change)="calculateEndDate()" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div class="grid-cols-3">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblEndDate' | translate }}</label>
-          <input type="date" [(ngModel)]="endDate" (change)="calculatemonths()"  class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-      </div>
-      <div class="flex items-center gap-2 mt-2">
-        <input type="checkbox" [(ngModel)]="isShortTerm" id="isShortTerm" class="form-checkbox h-3.5 w-3.5 text-primary rounded" />
-        <label for="isShortTerm" class="text-xs text-gray-600 cursor-pointer">{{ 'web.leases.lblShortTerm' | translate }}</label>
-      </div>
-    </div>
-
-    <!-- Rent & Payments Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4">{{ 'web.leases.lblRentPayments' | translate }}</h6>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblRent' | translate }} *</label>
-          <div class="input-group">
-            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
-            <input type="number" [(ngModel)]="rentAmount" (change)="calculateRentDetails()"  class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
+          <div class="lease-duration">
+            Total Duration: {{ months ? (months + ' month' + (months === 1 ? '' : 's')) : 'N/A' }}
           </div>
         </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblTotalPayments' | translate }}</label>
-          <input type="number" [(ngModel)]="totalPayments" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
+      </div>
+
+      <!-- Rent & Payments (kept — existing form; hidden in some Figma frames) -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.leases.lblRentPayments' | translate }}</h6>
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
@@ -252,385 +271,397 @@
               type="checkbox">
 
       </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
-      
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Amount*</label>
-          <div class="input-group">
-            <span class="input-group-text bg-gray-100 border-gray-200 text-gray-500 text-xs">{{currentUser?.currencyCode}}</span>
-            <input type="number" [(ngModel)]="addpaymentbloc.Amount"   class="form-control form-control-sm !text-xs border-gray-200" placeholder="0.00" />
-          </div>
-        </div> 
-        <div >
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Due On*</label>
-          <input type="date" [(ngModel)]="addpaymentbloc.DueDate" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Account*</label>
-          <ng-select [(ngModel)]="addpaymentbloc.AccountCode" bindValue="id"  placeholder="Account"  bindLabel="name" [items]="coaList"  class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Memo</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.Memo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" placeholder="If left blank,will show 'rent'" />
-        </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Recurrence Cycle<em>*</em></label>
-          <ng-select [(ngModel)]="addpaymentbloc.Recurrence_id"  bindValue="id"    placeholder="Recurrence Cycle"  bindLabel="name"    [items]="recurringList"   class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Tax Profile</label>
-          <ng-select [(ngModel)]="addpaymentbloc.TaxProfileId"    bindValue="id" placeholder="Tax Profile" bindLabel="name"   [items]="taxProfilesList"  class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
-          <ng-select [(ngModel)]="addpaymentbloc.money_held_by_id"  bindValue="id"    bindLabel="name" [items]="moneyHeldOptions" placeholder="{{ 'web.leases.lblMoneyHeldBy' | translate }}" class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPaymentVia' | translate }}</label>
-          <ng-select [(ngModel)]="addpaymentbloc.PaymentTypeid"    bindValue="id"  bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
-        </div>
-        <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Invoice Number</label>
-          <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"  />
-        </div> 
-      </div>
-      <ng-container
-      *ngIf="addpaymentbloc.PaymentTypeid == 169"
-      [ngTemplateOutlet]="chequeDetails"
-      [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }">
-    </ng-container>
-      <div class="box-body md:grid-cols-1" *ngIf="addpaymentbloc.isSecurityDeposit==0">
-
-        <app-file-upload
-            [accept]="'image/*'" 
-            (filesChanged)="onFilesSelected($event)"
-            [buttonText]="'web.property.lblUploadImage' | translate"
-            [dropText]="'web.property.lblDropYourImageHereOr' | translate"
-            [browseText]="'web.property.lblBrowse' | translate"
-            >
-        </app-file-upload>
-
-    </div>
-      <div class="flex justify-end mt-4 gap-3">
-        <button type="button" (click)="savePayments()" class="px-4 py-1.5 text-xs rounded-md bg-success text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-          Save
-        </button>
-        <button type="button" (click)="showPaymentBlock(0)" class="px-4 py-1.5 text-xs rounded-md bg-warning text-white border-0 hover:bg-[#131b2e] transition-all font-semibold shadow-sm">
-          Cancel
-        </button>
-      </div>
-    </div>
-    <div *ngIf="paymentSchedules.length > 0" class="table-responsive border border-gray-100 rounded-lg overflow-x-auto">
-      <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
-        <thead class="bg-info/10">
-          <tr class="border-b border-defaultborder">
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Amount ({{currentUser?.currencyCode}}) </th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Advance  ({{currentUser?.currencyCode}}) </th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Account</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Due Date</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Recurrence</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Payment Via</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Attachment</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th>
-            <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">#</th> 
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="paymentSchedules.length === 0">
-            <td colspan="10" class="text-center py-6 bg-gray-50/30">
-              <span class="text-gray-500 italic text-sm">No records found</span>
-            </td>
-          </tr>
-          <tr *ngFor="let wo of paymentSchedules" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
-            <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{wo.Amount}}</td>
-            <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{wo.AdvAmt}}</td> 
-            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.Account}}</td> 
-            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.DueDate}}</td>
-            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.Recurrence}}</td>
-            <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{wo.PaymentType}}</td> 
-            <td><a>{{wo.attachmentName}}</a></td><td>
-              <div class="flex gap-1">
-                <button (click)="edit_action(wo,'edit')"
-                    class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200"
-                    data-tooltip="Edit">
-                    <i class="ri-edit-line text-xs"></i>
-                </button> 
+        <div class="ov-card__body flex flex-col gap-5">
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblRent' | translate }} <span class="text-danger">*</span></label>
+              <div class="ov-input-addon">
+                <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode || 'AED' }}</span>
+                <input type="number" [(ngModel)]="rentAmount" (change)="calculateRentDetails()" class="ov-input" placeholder="0.00" />
+              </div>
             </div>
-
-            </td><td>
-              <div>
-              <button (click)="edit_action(wo,'delete')"
-              class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200"
-              data-tooltip="Delete">
-              <i class="ri-delete-bin-line text-xs"></i>
-          </button>
-            </div></td><td>-</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-    <!-- Additional Information -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h6 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-4 flex items-center gap-1.5">
-        {{ 'web.leases.lblAdditionalInfo' | translate }}
-        <i class="ri-information-line text-gray-400 text-[13px] cursor-pointer" [attr.data-tooltip]="'Additional lease details and audit logs'"></i>
-      </h6>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblNoOfPerson' | translate }}</label>
-          <input type="number" [(ngModel)]="additionalbloc.no_of_persons" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblCreatedBy' | translate }}</label>
-          <input type="text" [(ngModel)]="additionalbloc.created_by" class="form-control form-control-sm !text-xs bg-gray-100 border-gray-200 text-gray-500" disabled />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Created At</label>
-          <input type="date" [(ngModel)]="additionalbloc.created_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblMoveInDate' | translate }}</label>
-          <input type="date" [(ngModel)]="additionalbloc.move_in_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.leases.lblPayingDate' | translate }}</label>
-          <input type="date" [(ngModel)]="additionalbloc.paying_date" class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200" />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN: Selection Summary (Sticky Sidebar) -->
-  <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
-    <!-- Tenants Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.contacts.lblTenants' | translate }}</h5>
-      </div>
-      <div class="p-5 flex flex-col gap-4">
-        <!-- Selected Tenant summary -->
-        <div *ngIf="selectedTenantObj" class="p-3.5 rounded-lg bg-[#1f2b45]/5 border border-[#1f2b45]/10 flex items-center justify-between text-xs">
-          <div>
-            <p class="font-bold text-[#1f2b45] m-0">{{ selectedTenantObj.name }}</p>
-            <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ selectedTenantObj.phone }} | {{ selectedTenantObj.email }}</p>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblTotalPayments' | translate }}</label>
+              <input type="number" [(ngModel)]="totalPayments" class="ov-input" placeholder="Select" />
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
+              <ng-select [(ngModel)]="moneyHeldBy" bindValue="id" bindLabel="name" [items]="moneyHeldOptions"
+                placeholder="Select" class="ov-select w-full"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblPaymentVia' | translate }}</label>
+              <ng-select [(ngModel)]="paymentMethod" bindValue="id" bindLabel="name" [items]="paymentMethods"
+                placeholder="Select" class="ov-select w-full"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblAnnualRent' | translate }}</label>
+              <input type="number" [(ngModel)]="annualRent" class="ov-input" placeholder="Enter" />
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblMonthlyRent' | translate }}</label>
+              <input type="number" [(ngModel)]="monthlyRent" class="ov-input" placeholder="Enter" />
+            </div>
           </div>
-          <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1f2b45] text-white">Primary</span>
-        </div>
-        <p *ngIf="!selectedTenantObj" class="text-xs text-gray-400 italic">No tenant selected</p>
-
-        <!-- Occupants section -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Occupants</span>
-            <button (click)="openOccupantsModal()" type="button" class="w-6 h-6 rounded bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center justify-center border-0 shadow-sm" title="Add Occupant">
-              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+          <div class="flex justify-end">
+            <button type="button" (click)="generatePayments()" class="ov-btn ov-btn-primary">
+              {{ 'web.leases.lblGeneratePayment' | translate }}
             </button>
           </div>
-          <!-- Occupant list items -->
-          <div *ngIf="occupants.length > 0" class="flex flex-col gap-2">
-            <div *ngFor="let occ of occupants; let idx = index" class="p-3 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between text-xs">
+        </div>
+      </div>
+
+      <!-- Payment Schedule -->
+      <div class="ov-card">
+        <div class="ov-card__head lease-sched-head">
+          <h6 class="ov-card-title">Payment Schedule</h6>
+          <div class="lease-sched-links">
+            <button type="button" class="lease-sched-link" (click)="showPaymentBlock(0)">Add Payment</button>
+            <button type="button" class="lease-sched-link" (click)="showPaymentBlock(1)">Add Security Deposit</button>
+            <button type="button" *ngIf="paymentSchedules.length>0" class="lease-sched-link lease-sched-link--danger"
+              (click)="showPaymentBlock(3)">Delete Schedules</button>
+          </div>
+        </div>
+        <div class="ov-card__body flex flex-col gap-5">
+          <p class="lease-sched-desc mb-0">
+            Select from the options below to set a recurring or one-time payment schedule.
+          </p>
+
+          <div *ngIf="showAddPayment" class="flex flex-col gap-5">
+            <label class="lease-check">
+              <input type="checkbox" [(ngModel)]="addpaymentbloc.includetax" />
+              <span>Inclusive Tax?</span>
+            </label>
+
+            <div class="ov-fields ov-fields--2">
               <div>
-                <p class="font-bold text-gray-700 m-0">{{ occ.name }}</p>
-                <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ occ.phone }}</p>
+                <label class="ov-label">Amount <span class="text-danger">*</span></label>
+                <div class="ov-input-addon">
+                  <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode || 'AED' }}</span>
+                  <input type="number" [(ngModel)]="addpaymentbloc.Amount" class="ov-input" placeholder="0.00" />
+                </div>
               </div>
-              <div class="flex gap-1.5">
-                <button (click)="editOccupant(idx)" class="w-6 h-6 rounded bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all" title="Edit"><img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" /></button>
-                <button (click)="removeOccupant(idx)" class="w-6 h-6 rounded bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all" title="Delete"><img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" /></button>
+              <div>
+                <label class="ov-label">Due On <span class="text-danger">*</span></label>
+                <div class="ov-date">
+                  <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                  <input type="date" [(ngModel)]="addpaymentbloc.DueDate" class="ov-input" />
+                </div>
+              </div>
+              <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
+                <label class="ov-label">Account <span class="text-danger">*</span></label>
+                <ng-select [(ngModel)]="addpaymentbloc.AccountCode" bindValue="id" bindLabel="name" [items]="coaList"
+                  placeholder="Select" class="ov-select w-full"></ng-select>
+              </div>
+              <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
+                <label class="ov-label">Memo</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.Memo" class="ov-input"
+                  placeholder="If left blank, will show 'rent'" />
+              </div>
+              <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
+                <label class="ov-label">Recurrence Cycle <span class="text-danger">*</span></label>
+                <ng-select [(ngModel)]="addpaymentbloc.Recurrence_id" bindValue="id" bindLabel="name"
+                  [items]="recurringList" placeholder="Select" class="ov-select w-full"></ng-select>
+              </div>
+              <div>
+                <label class="ov-label">Tax Profile</label>
+                <ng-select [(ngModel)]="addpaymentbloc.TaxProfileId" bindValue="id" bindLabel="name"
+                  [items]="taxProfilesList" placeholder="Select" class="ov-select w-full"></ng-select>
+              </div>
+              <div>
+                <label class="ov-label">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
+                <ng-select [(ngModel)]="addpaymentbloc.money_held_by_id" bindValue="id" bindLabel="name"
+                  [items]="moneyHeldOptions" placeholder="Select" class="ov-select w-full"></ng-select>
+              </div>
+              <div>
+                <label class="ov-label">{{ 'web.leases.lblPaymentVia' | translate }} <span class="text-danger">*</span></label>
+                <ng-select [(ngModel)]="addpaymentbloc.PaymentTypeid" bindValue="id" bindLabel="name"
+                  [items]="paymentMethods" placeholder="Select" class="ov-select w-full"></ng-select>
+              </div>
+              <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
+                <label class="ov-label">Invoice Number</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="ov-input" placeholder="Enter" />
+              </div>
+            </div>
+
+            <div *ngIf="addpaymentbloc.PaymentTypeid==169" class="ov-fields ov-fields--4">
+              <div>
+                <label class="ov-label">Cheque No</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.cheque_no" class="ov-input" />
+              </div>
+              <div>
+                <label class="ov-label">Cheque Date</label>
+                <div class="ov-date">
+                  <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                  <input type="date" [(ngModel)]="addpaymentbloc.cheque_date" class="ov-input" />
+                </div>
+              </div>
+              <div>
+                <label class="ov-label">Bank</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.bank" class="ov-input" />
+              </div>
+              <div>
+                <label class="ov-label">Held By</label>
+                <ng-select [(ngModel)]="addpaymentbloc.held_by" bindValue="id" bindLabel="name" [items]="heldByList"
+                  placeholder="Held By" class="ov-select w-full"></ng-select>
+              </div>
+            </div>
+
+            <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
+              <app-file-upload
+                [accept]="'image/*'"
+                (filesChanged)="onFilesSelected($event)"
+                [buttonText]="'web.property.lblUploadImage' | translate"
+                [dropText]="'web.property.lblDropYourImageHereOr' | translate"
+                [browseText]="'web.property.lblBrowse' | translate">
+              </app-file-upload>
+            </div>
+
+            <div class="flex justify-end gap-3">
+              <button type="button" (click)="showPaymentBlock(2)" class="ov-btn ov-btn-ghost">Cancel</button>
+              <button type="button" (click)="savePayments()" class="ov-btn ov-btn-primary">Save</button>
+            </div>
+          </div>
+
+          <div *ngIf="paymentSchedules.length > 0" class="lease-table-wrap">
+            <table class="lease-table">
+              <thead>
+                <tr>
+                  <th>Amount ({{ currentUser?.currencyCode }})</th>
+                  <th>Advance ({{ currentUser?.currencyCode }})</th>
+                  <th>Account</th>
+                  <th>Due Date</th>
+                  <th>Recurrence</th>
+                  <th>Payment Via</th>
+                  <th>Attachment</th>
+                  <th class="text-center">#</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let wo of paymentSchedules">
+                  <td class="font-semibold">{{ wo.Amount }}</td>
+                  <td>{{ wo.AdvAmt }}</td>
+                  <td>{{ wo.Account }}</td>
+                  <td>{{ wo.DueDate }}</td>
+                  <td>{{ wo.Recurrence }}</td>
+                  <td>{{ wo.PaymentType }}</td>
+                  <td><a class="ov-link">{{ wo.attachmentName }}</a></td>
+                  <td>
+                    <div class="flex items-center justify-center gap-1">
+                      <button type="button" (click)="edit_action(wo,'edit')" class="ov-icon-btn" title="Edit">
+                        <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
+                      </button>
+                      <button type="button" (click)="edit_action(wo,'delete')" class="ov-icon-btn" title="Delete">
+                        <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Information -->
+      <div class="ov-card">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">{{ 'web.leases.lblAdditionalInfo' | translate }}</h6>
+        </div>
+        <div class="ov-card__body">
+          <div class="ov-fields ov-fields--3">
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblNoOfPerson' | translate }}</label>
+              <input type="number" [(ngModel)]="additionalbloc.no_of_persons" class="ov-input" placeholder="Enter" />
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblCreatedBy' | translate }}</label>
+              <input type="text" [(ngModel)]="additionalbloc.created_by" class="ov-input" disabled />
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblMoveInDate' | translate }}</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                <input type="date" [(ngModel)]="additionalbloc.move_in_date" class="ov-input" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">Created Date</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                <input type="date" [(ngModel)]="additionalbloc.created_date" class="ov-input" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblPayingDate' | translate }}</label>
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
+                <input type="date" [(ngModel)]="additionalbloc.paying_date" class="ov-input" />
               </div>
             </div>
           </div>
-          <p *ngIf="occupants.length === 0" class="text-xs text-gray-400 italic">No occupants added</p>
         </div>
       </div>
+
     </div>
 
-    <!-- Units Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.leases.lblUnit' | translate }}s</h5>
-      </div>
-      <div class="p-5 flex flex-col gap-3 text-xs">
-        <div *ngIf="selectedUnitObj" class="p-3.5 rounded-lg bg-success/5 border border-success/10 flex items-center justify-between">
+    <!-- Selection Summary -->
+    <aside class="ov-add-layout__aside">
+      <div class="ov-card lease-summary">
+        <div class="ov-card__head">
+          <h6 class="ov-card-title">Selection Summary</h6>
+        </div>
+        <div class="ov-card__body flex flex-col gap-4">
+          <div class="lease-summary__block">
+            <p class="lease-summary__label">Tenants</p>
+            <div *ngIf="selectedTenantObj" class="lease-summary__pill">
+              <span class="lease-summary__pill-text">{{ selectedTenantObj.name }}</span>
+              <span class="lease-summary__badge">Primary</span>
+            </div>
+            <div *ngIf="!selectedTenantObj" class="lease-summary__empty">No tenant selected</div>
+          </div>
+
+          <div class="lease-summary__block">
+            <div class="lease-summary__row">
+              <p class="lease-summary__label mb-0">Occupants</p>
+              <button type="button" (click)="openOccupantsModal()" class="lease-summary__add" title="Add Occupant">
+                <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="brightness-0 invert" />
+              </button>
+            </div>
+            <div *ngFor="let occ of occupants; let idx = index" class="lease-summary__pill">
+              <span class="lease-summary__pill-text">{{ occ.name }}</span>
+            </div>
+            <div *ngIf="occupants.length === 0" class="lease-summary__empty">No occupants added</div>
+          </div>
+
+          <div class="lease-summary__block">
+            <p class="lease-summary__label">Units</p>
+            <div *ngIf="selectedUnitObj" class="lease-summary__pill">
+              <span class="lease-summary__pill-text">{{ selectedUnitObj.name || selectedUnitObj.unit || selectedUnit }}</span>
+              <span class="lease-summary__badge">Primary</span>
+            </div>
+            <div *ngIf="!selectedUnitObj" class="lease-summary__empty">
+              {{ selectedProperty ? 'Select a unit' : 'Select a property first' }}
+            </div>
+          </div>
+
+          <hr class="lease-summary__rule" />
+
           <div>
-            <p class="font-bold text-success m-0">{{ selectedUnitObj.name }}</p>
-            <p class="text-gray-500 text-[10px] m-0 mt-0.5">{{ selectedPropertyObj?.name }}</p>
+            <p class="lease-summary__details-title">Lease Details</p>
+            <div class="lease-summary__kv">
+              <div class="lease-summary__kv-row">
+                <span class="lease-summary__k">Type:</span>
+                <span class="lease-summary__v">{{ isShortTerm ? 'Short Term' : 'Long Term' }}</span>
+              </div>
+              <div class="lease-summary__kv-row">
+                <span class="lease-summary__k">Lease Type:</span>
+                <span class="lease-summary__v">{{ selectedLeaseType?.name || '—' }}</span>
+              </div>
+              <div class="lease-summary__kv-row">
+                <span class="lease-summary__k">Category:</span>
+                <span class="lease-summary__v">{{ selectedLeaseCategory?.name || '—' }}</span>
+              </div>
+            </div>
           </div>
-          <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-success text-white">Primary</span>
         </div>
-        <p *ngIf="!selectedUnitObj" class="text-xs text-gray-400 italic">Select a unit to see summary</p>
       </div>
-    </div>
+    </aside>
+  </div>
 
-    <!-- Lease Details Card -->
-    <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h5 class="text-xs font-bold text-gray-600 m-0 uppercase tracking-wider">{{ 'web.leases.lblLeaseDetails' | translate }}</h5>
-      </div>
-      <div class="p-5 flex flex-col gap-[2px] text-xs">
-        <div class="flex gap-2">
-          <span class="text-gray-500 w-28 shrink-0">Type:</span>
-          <span class="text-gray-800 font-bold">{{ isShortTerm ? 'Short Term' : 'Long Term' }}</span>
-        </div>
-        <div class="flex gap-2">
-          <span class="text-gray-500 w-28 shrink-0">Lease Type:</span>
-          <span class="text-gray-800 font-bold">{{ selectedLeaseType?.name }}</span>
-        </div>
-        <div class="flex gap-2">
-          <span class="text-gray-500 w-28 shrink-0">Category:</span>
-          <span class="text-[#1f2b45] font-bold">{{ selectedLeaseCategory?.name }}</span>
-        </div>
-      </div>
-    </div>
+  <div class="ov-add-footer">
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
+    <button type="button" (click)="saveLease()" class="ov-btn ov-btn-primary">
+      {{ leaseId=='' ? ('web.leases.lblSaveLease'| translate ) :  ('web.leases.lblUpdateLease'| translate )}}
+    </button>
   </div>
 </div>
 
-<!-- Add Occupant Modal Overlay -->
-<div *ngIf="showOccupantsModal" class="fixed inset-0 z-[150] overflow-y-auto bg-black/50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in border border-gray-100">
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-      <div>
-        <h6 class="font-bold text-gray-800 text-sm m-0">Occupants</h6>
-        <p class="text-[10px] text-gray-400 m-0 mt-0.5">Add people who will live in this unit during the lease period.</p>
-      </div>
-      <button (click)="closeOccupantsModal()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0" [attr.data-tooltip]="'web.contacts.lblCancel' | translate"><img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" /></button>
-    </div>
+<!-- Add Occupants Modal — Figma 1406:22499 -->
+<div *ngIf="showOccupantsModal" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="lease-occupants-title">
+  <div class="ov-modal-stack lease-occupant-stack">
+    <button type="button" class="ov-modal__float-close" (click)="closeOccupantsModal()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
 
-    <!-- Body containing Form and List -->
-    <div class="p-6 flex flex-col gap-4 text-xs max-h-[450px] overflow-y-auto">
-      <!-- Input fields row -->
-      <div>
-        <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.contacts.lblName' | translate }} *</label>
-        <input type="text" [(ngModel)]="occupantName" placeholder="Enter full name" class="form-control form-control-sm !text-xs border-gray-200" />
+    <div class="ov-modal lease-occupant-modal">
+      <div class="lease-occupant-modal__head">
+        <h6 class="lease-occupant-modal__title" id="lease-occupants-title">Occupants</h6>
+        <p class="lease-occupant-modal__sub">Add people who will live in this unit during the lease period.</p>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Phone on Lease</label>
-          <div class="flex">
-            <span class="input-group-text bg-gray-50 border-gray-200 text-gray-500 !text-xs px-2 flex items-center gap-1"><span class="flag-icon flag-icon-ae">🇦🇪</span></span>
-            <input type="text" [(ngModel)]="occupantPhone" placeholder="Enter" class="form-control form-control-sm !text-xs border-gray-200 border-s-0 rounded-s-none" />
+
+      <div class="lease-occupant-modal__body">
+        <div class="lease-occupant-modal__fields">
+          <div>
+            <label class="ov-label">Name <span class="text-danger">*</span></label>
+            <input type="text" [(ngModel)]="occupantName" placeholder="Enter full name" class="ov-input" />
           </div>
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">{{ 'web.contacts.lblEmail' | translate }}</label>
-          <input type="email" [(ngModel)]="occupantEmail" placeholder="Email" class="form-control form-control-sm !text-xs border-gray-200" />
-        </div>
-      </div>
 
-      <!-- Add Occupant trigger button inside popup -->
-      <button type="button" (click)="addOccupant()" [attr.data-tooltip]="(editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate" class="w-full py-2 border border-dashed border-primary/40 text-primary bg-primary/5 hover:bg-primary/10 transition-all rounded font-semibold flex items-center justify-center gap-1.5 mt-2">
-        <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ (editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate }}
-      </button>
-
-      <hr class="border-gray-100 my-1" />
-
-      <!-- List of Added Occupants inside popup -->
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Added occupants</span>
-          <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[10px] text-gray-500 font-semibold">{{ occupants.length }} added</span>
-        </div>
-        
-        <div *ngIf="occupants.length > 0" class="flex flex-col gap-2">
-          <div *ngFor="let occ of occupants; let idx = index" class="p-3.5 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between">
-            <div class="grid grid-cols-3 gap-2 w-full pr-4 text-[11px]">
-              <div>
-                <p class="text-gray-400 font-medium m-0">Name</p>
-                <p class="font-bold text-gray-700 m-0">{{ occ.name }}</p>
-              </div>
-              <div>
-                <p class="text-gray-400 font-medium m-0">Phone</p>
-                <p class="font-semibold text-gray-600 m-0">{{ occ.phone || '-' }}</p>
-              </div>
-              <div>
-                <p class="text-gray-400 font-medium m-0">Email</p>
-                <p class="font-semibold text-gray-600 m-0 truncate" title="{{ occ.email }}">{{ occ.email || '-' }}</p>
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Phone on Lease</label>
+              <div class="ov-phone">
+                <span class="ov-phone__code">
+                  <img src="https://flagcdn.com/w20/ae.png" class="w-4 h-3" alt="" />
+                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+                </span>
+                <input type="text" [(ngModel)]="occupantPhone" placeholder="Enter" class="ov-input" />
               </div>
             </div>
-            <div class="flex gap-1.5 shrink-0">
-              <button type="button" (click)="editOccupant(idx)" [attr.data-tooltip]="'Edit'" class="w-7 h-7 rounded border border-gray-200 bg-white hover:bg-primary/5 hover:text-primary transition-all flex items-center justify-center text-gray-500 shadow-sm"><img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" /></button>
-              <button type="button" (click)="removeOccupant(idx)" [attr.data-tooltip]="'Delete'" class="w-7 h-7 rounded border border-gray-200 bg-white hover:bg-danger/5 hover:text-danger transition-all flex items-center justify-center text-gray-500 shadow-sm"><img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" /></button>
+            <div>
+              <label class="ov-label">Email</label>
+              <input type="email" [(ngModel)]="occupantEmail" placeholder="Email" class="ov-input" />
             </div>
           </div>
+
+          <button type="button" (click)="addOccupant()" class="lease-occupant-add"
+            [attr.data-tooltip]="(editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
+            {{ (editingOccupantIndex !== null ? 'web.leases.lblEditOccupant' : 'web.leases.lblAddOccupant') | translate }}
+          </button>
         </div>
-        <p *ngIf="occupants.length === 0" class="text-xs text-gray-400 italic text-center py-4 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">No occupants added yet</p>
+
+        <div class="lease-occupant-list">
+          <div class="lease-occupant-list__head">
+            <h6 class="lease-occupant-list__title">Added occupants</h6>
+            <span class="lease-occupant-list__count">{{ occupants.length }} added</span>
+          </div>
+
+          <div class="lease-occupant-list__body">
+            <div *ngFor="let occ of occupants; let idx = index" class="lease-occupant-row">
+              <div class="lease-occupant-row__cols">
+                <div>
+                  <p class="lease-occupant-row__k">Name</p>
+                  <p class="lease-occupant-row__v">{{ occ.name }}</p>
+                </div>
+                <div>
+                  <p class="lease-occupant-row__k">Phone</p>
+                  <p class="lease-occupant-row__v">{{ occ.phone || '-' }}</p>
+                </div>
+                <div>
+                  <p class="lease-occupant-row__k">Email</p>
+                  <p class="lease-occupant-row__v truncate" [title]="occ.email">{{ occ.email || '-' }}</p>
+                </div>
+              </div>
+              <div class="lease-occupant-row__actions">
+                <button type="button" (click)="editOccupant(idx)" class="lease-occupant-icon-btn" title="Edit">
+                  <img src="assets/images/action-menu/pencil.svg" alt="" width="16" height="16" />
+                </button>
+                <button type="button" (click)="removeOccupant(idx)" class="lease-occupant-icon-btn" title="Delete">
+                  <img src="assets/images/work-order-detail/trash.svg" alt="" width="16" height="16" />
+                </button>
+              </div>
+            </div>
+
+            <p *ngIf="occupants.length === 0" class="lease-occupant-list__empty">No occupants added yet</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lease-occupant-modal__footer">
+        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--close">Close</button>
+        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--save">Save</button>
       </div>
     </div>
-
-    <!-- Footer actions -->
-    <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 text-xs">
-      <button (click)="closeOccupantsModal()" type="button" [attr.data-tooltip]="'Close'" class="px-4 py-1.5 rounded bg-white border border-gray-200 text-gray-500 hover:bg-gray-100 transition-all font-semibold flex items-center gap-1 shadow-sm">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" /> Close
-      </button>
-      <button (click)="closeOccupantsModal()" type="button" [attr.data-tooltip]="'Save'" class="px-4 py-1.5 rounded bg-[#1f2b45] text-white border-0 hover:bg-[#131b2e] transition-all font-semibold flex items-center gap-1 shadow-sm">
-        <i class="ri-save-line"></i> Save
-      </button>
-    </div>
   </div>
-</div>
-<ng-template #chequeDetails let-payment>
-
-  <div class="grid   md:grid-cols-4 gap-4 text-xs mb-4">
-
-    <div>
-      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
-        Cheque No
-      </label>
-      <input
-        type="text"
-        [(ngModel)]="payment.cheque_no"
-        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
-      />
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
-        Cheque Date
-      </label>
-      <input
-        type="date"
-        [(ngModel)]="payment.cheque_date"
-        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
-      />
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
-        Bank
-      </label>
-      <input
-        type="text"
-        [(ngModel)]="payment.bank"
-        class="form-control form-control-sm !text-xs bg-gray-50 border-gray-200"
-      />
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
-        Held By
-      </label>
-      <ng-select
-        [(ngModel)]="payment.held_by"
-        [items]="heldByList"
-        bindValue="id"
-        bindLabel="name"
-        placeholder="Held By"
-        class="ng-select-sm w-full">
-      </ng-select>
-    </div>
-
-  </div>
-
-</ng-template>
-<!-- Fixed Floating Form Actions Bottom Bar -->
-<div class="fixed bottom-5 z-[99] flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg border border-gray-100/80 transition-all duration-300 hover:shadow-xl right-[20px]">
-  <button type="button" (click)="goBack()" class="ti-btn ti-btn-light btn-wave px-5 py-2 !text-xs font-semibold !rounded-full border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 active:scale-95 flex items-center gap-1.5">
-    <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" /> {{ 'web.contacts.lblCancel' | translate }}
-  </button>
-  <button type="button" (click)="saveLease()" class="ti-btn ti-btn-primary btn-wave px-6 py-2 !text-xs font-semibold !rounded-full shadow-sm hover:bg-primary-focus hover:shadow-md transition-all duration-200 active:scale-95 flex items-center gap-1.5">
-    <i class="ri-save-line"></i>   {{ leaseId=='' ? ('web.leases.lblSaveLease'| translate ) :  ('web.leases.lblUpdateLease'| translate )}}
-  </button>
 </div>

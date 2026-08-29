@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CollectionRequestDetail, getCollectionRequestDetail } from '../collection-requests.data';
+import { CollectionRequestDetail, collectionRequestStatusClass, getCollectionRequestDetail } from '../collection-requests.data';
 
 @Component({
   selector: 'app-collection-request-detail',
@@ -10,6 +10,7 @@ import { CollectionRequestDetail, getCollectionRequestDetail } from '../collecti
   templateUrl: './collection-request-detail.component.html'
 })
 export class CollectionRequestDetailComponent implements OnInit {
+  readonly statusBadgeClass = collectionRequestStatusClass;
   detail: CollectionRequestDetail = getCollectionRequestDetail('31');
 
   constructor(

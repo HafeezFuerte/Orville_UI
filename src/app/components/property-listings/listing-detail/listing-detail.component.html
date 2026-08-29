@@ -1,0 +1,329 @@
+<!-- Property Listing Details — Orville DS -->
+<div class="ld-page pb-16 font-hanken">
+  <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex items-start gap-4 min-w-0">
+      <button type="button" class="ov-back" (click)="goBack()" title="Back to Property Listings" aria-label="Back">
+        <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+      </button>
+      <div class="min-w-0">
+        <h3 class="ov-page-title">Property Listing Details</h3>
+        <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
+          <li><a routerLink="/insights">Home</a></li>
+          <li class="px-2">/</li>
+          <li><a routerLink="/property-listings">Property Listings</a></li>
+          <li class="px-2">/</li>
+          <li class="font-semibold text-defaulttextcolor truncate">{{ detail.name }}</li>
+        </ol>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 shrink-0">
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="ov-btn ov-btn-ghost"
+          (click)="showActionMenu = !showActionMenu"
+          [attr.aria-expanded]="showActionMenu">
+          Action
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </button>
+        <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+          <div class="ov-action-menu__list">
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14" />
+              </span>
+              <span>View Activity</span>
+            </button>
+            <button type="button" role="menuitem" class="ov-action-menu__item" (click)="showActionMenu = false">
+              <span class="ov-action-menu__icon-box">
+                <img class="ov-action-menu__icon" src="assets/images/action-menu/send.svg" alt="" width="14" height="14" />
+              </span>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="showActionMenu = false">
+        Edit
+      </button>
+    </div>
+  </div>
+
+  <div class="ov-detail-layout">
+    <aside class="ov-detail-layout__left flex flex-col gap-4">
+      <!-- Identity -->
+      <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
+        <div class="flex flex-col gap-3.5">
+          <div>
+            <p class="ld-eyebrow m-0">{{ detail.unitType }} · {{ detail.unitNo }}</p>
+            <h4 class="ov-card-title mt-1.5">{{ detail.name }}</h4>
+            <span class="ov-card-sub mt-1.5 flex items-center gap-1.5 !text-[13px]">
+              <img src="assets/images/work-orders/map-pin.svg" alt="" width="13" height="13" />
+              {{ detail.property }}{{ detail.city ? ', ' + detail.city : '' }}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span [class]="occupancyClass(detail.occupancy)">{{ detail.occupancy }}</span>
+            <span [class]="publishClass(detail.publishStatus)">{{ detail.publishStatus }}</span>
+            <span [class]="offerClass(detail.offer)">{{ detail.offer }}</span>
+          </div>
+
+          <div class="ld-price-hero">
+            <span class="ld-price-hero__label">{{ primaryPriceLabel }}</span>
+            <span class="ld-price-hero__value">{{ primaryPrice }}</span>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold">
+              View Activity
+            </button>
+            <button type="button" class="flex-1 ov-btn ov-btn-primary !h-9 !text-[13px] !font-semibold">
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-defaultborder"></div>
+        <h5 class="ov-card-title m-0">Listing details</h5>
+
+        <div class="ld-kv-list">
+          <div class="ov-kv">
+            <span class="ov-kv__label">ID:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.listingId }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit No:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.unitNo }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Name:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.name }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Property:</span>
+            <a href="javascript:void(0)" class="ov-link font-semibold">{{ detail.property }}</a>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Location:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.location || '—' }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Unit Type:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.unitType }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Beds:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.beds }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Baths:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.baths }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Size:</span>
+            <span class="ov-kv__value font-semibold">{{ detail.size }}</span>
+          </div>
+        </div>
+
+        <div class="ld-more-wrap">
+          <div class="border-t border-defaultborder"></div>
+          <button
+            type="button"
+            (click)="toggleMoreDetails()"
+            class="ov-link ov-more-toggle !text-[13px] font-semibold border-0 bg-transparent p-0 w-full">
+            <span>{{ showMoreDetails ? 'View less details' : 'View more details' }}</span>
+            <img
+              src="assets/images/common/chevron-down.svg"
+              alt=""
+              width="14"
+              height="14"
+              [class.rotate-180]="showMoreDetails" />
+          </button>
+          <div *ngIf="showMoreDetails" class="ld-kv-list">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Community:</span>
+              <span class="ov-kv__value font-semibold">{{ detail.community || '—' }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">City:</span>
+              <span class="ov-kv__value font-semibold">{{ detail.city }}</span>
+            </div>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">For Sale:</span>
+              <span [class]="yesNoClass(detail.forSale)">{{ detail.forSale ? 'Yes' : 'No' }}</span>
+            </div>
+            <div class="ov-kv items-center">
+              <span class="ov-kv__label">Published:</span>
+              <span [class]="yesNoClass(detail.published)">{{ detail.published ? 'Yes' : 'No' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="box ov-card overflow-hidden !mb-0">
+        <div class="ld-section-head">
+          <h6 class="ld-section-head__title">Pricing</h6>
+        </div>
+        <div class="ld-pricing">
+          <div class="ld-pricing__row ld-pricing__row--primary">
+            <span class="ld-pricing__label">{{ primaryPriceLabel }}</span>
+            <span class="ld-pricing__value">{{ primaryPrice }}</span>
+          </div>
+          <div class="ld-pricing__row" *ngIf="secondaryPrice && secondaryPrice !== 'N/A'">
+            <span class="ld-pricing__label">{{ secondaryPriceLabel }}</span>
+            <span class="ld-pricing__value ld-pricing__value--muted">{{ secondaryPrice }}</span>
+          </div>
+          <div class="ld-pricing__row" *ngIf="!secondaryPrice || secondaryPrice === 'N/A'">
+            <span class="ld-pricing__label">{{ secondaryPriceLabel }}</span>
+            <span class="ov-status ov-status--outline">N/A</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="ov-detail-layout__right min-w-0 flex flex-col gap-4">
+      <!-- Media strip (light — not a status hero) -->
+      <div class="box ov-card overflow-hidden !mb-0">
+        <div class="ld-media" [class.ld-media--has-img]="!!detail.imageUrl">
+          <img
+            *ngIf="detail.imageUrl; else noPhoto"
+            [src]="detail.imageUrl"
+            [alt]="detail.name"
+            class="ld-media__img" />
+          <ng-template #noPhoto>
+            <div class="ld-media__empty">
+              <span class="ld-media__icon" aria-hidden="true">
+                <i class="ri-image-add-line"></i>
+              </span>
+              <p class="ld-media__title">No photos yet</p>
+              <p class="ld-media__hint">Add listing photos so public viewers see the unit clearly.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Unit videos -->
+      <div class="box ov-card overflow-hidden !mb-0">
+        <div class="ld-empty-row">
+          <span class="ld-empty-row__icon" aria-hidden="true">
+            <i class="ri-video-line"></i>
+          </span>
+          <div class="min-w-0">
+            <h6 class="ld-empty-row__title">Unit videos</h6>
+            <p class="ld-empty-row__text">Unit videos not added yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="box ov-card overflow-visible shadow-none !mb-0">
+        <div class="ov-detail-tabs" role="tablist">
+          <button
+            type="button"
+            *ngFor="let tab of tabs"
+            role="tab"
+            class="ov-detail-tabs__btn"
+            [class.is-active]="activeTab === tab.key"
+            [attr.aria-selected]="activeTab === tab.key"
+            (click)="setTab(tab.key)">
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <div class="p-5 sm:p-6" *ngIf="activeTab === 'overview'" role="tabpanel">
+          <h5 class="ov-card-title m-0 mb-4">Property details</h5>
+          <div class="ld-stats">
+            <div class="ld-stat">
+              <span class="ld-stat__icon" aria-hidden="true"><i class="ri-hotel-bed-line"></i></span>
+              <span class="ld-stat__val">{{ detail.beds }}</span>
+              <span class="ld-stat__label">Bedrooms</span>
+            </div>
+            <div class="ld-stat">
+              <span class="ld-stat__icon" aria-hidden="true"><i class="ri-drop-line"></i></span>
+              <span class="ld-stat__val">{{ detail.baths }}</span>
+              <span class="ld-stat__label">Bathrooms</span>
+            </div>
+            <div class="ld-stat">
+              <span class="ld-stat__icon" aria-hidden="true"><i class="ri-ruler-line"></i></span>
+              <span class="ld-stat__val">{{ detail.size }}</span>
+              <span class="ld-stat__label">Size</span>
+            </div>
+            <div class="ld-stat">
+              <span class="ld-stat__icon" aria-hidden="true"><i class="ri-home-4-line"></i></span>
+              <span class="ld-stat__val">{{ detail.unitType }}</span>
+              <span class="ld-stat__label">Type</span>
+            </div>
+          </div>
+
+          <div class="ld-desc mt-6">
+            <h5 class="ov-card-title m-0 mb-2">Description</h5>
+            <p *ngIf="detail.description; else noDesc" class="ld-desc__text">
+              {{ detail.description }}
+            </p>
+            <ng-template #noDesc>
+              <div class="ld-inline-empty">
+                <i class="ri-file-text-line" aria-hidden="true"></i>
+                <span>No description available for this listing.</span>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="p-5 sm:p-6" *ngIf="activeTab === 'amenities'" role="tabpanel">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <h5 class="ov-card-title m-0">Amenities</h5>
+            <span *ngIf="detail.amenities.length" class="ld-count">{{ detail.amenities.length }}</span>
+          </div>
+          <ul *ngIf="detail.amenities.length; else noAmenities" class="ld-amenities">
+            <li *ngFor="let item of detail.amenities" class="ld-amenities__item">
+              <span class="ld-amenities__check" aria-hidden="true">
+                <i class="ri-check-line"></i>
+              </span>
+              {{ item }}
+            </li>
+          </ul>
+          <ng-template #noAmenities>
+            <div class="ld-inline-empty">
+              <i class="ri-list-check-2" aria-hidden="true"></i>
+              <span>No amenities listed for this unit.</span>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="p-5 sm:p-6" *ngIf="activeTab === 'location'" role="tabpanel">
+          <h5 class="ov-card-title m-0 mb-4">Location</h5>
+          <div class="ld-location-meta">
+            <div class="ld-location-chip">
+              <i class="ri-building-line" aria-hidden="true"></i>
+              <div>
+                <span class="ld-location-chip__label">Property</span>
+                <span class="ld-location-chip__value">{{ detail.property }}</span>
+              </div>
+            </div>
+            <div class="ld-location-chip">
+              <i class="ri-map-pin-line" aria-hidden="true"></i>
+              <div>
+                <span class="ld-location-chip__label">City</span>
+                <span class="ld-location-chip__value">{{ detail.city }}</span>
+              </div>
+            </div>
+            <div class="ld-location-chip">
+              <i class="ri-landscape-line" aria-hidden="true"></i>
+              <div>
+                <span class="ld-location-chip__label">Community</span>
+                <span class="ld-location-chip__value">{{ detail.community || '—' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="ld-map mt-4">
+            <span class="ld-map__icon" aria-hidden="true"><i class="ri-map-2-line"></i></span>
+            <p class="ld-map__title">Map preview not available</p>
+            <p class="ld-map__hint">Location will appear here once map data is connected.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
