@@ -1,16 +1,20 @@
 import { Component, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CommonModule,formatDate } from '@angular/common';
+import { FormsModule,FormBuilder } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
-import {
-  CREDIT_NOTE_ACCOUNTS,
-  CREDIT_NOTE_ROWS,
-  CREDIT_NOTE_TENANTS,
+import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
+import { AccountingService } from '../accounting.service'; 
+import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+
+import {  
   CreditNoteRow
 } from './credit-notes.data';
 
@@ -25,7 +29,8 @@ import {
     FlowbiteDatepickerDirective,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,
+    DeleteConfirmationComponent
   ],
   templateUrl: './credit-notes.component.html',
   styleUrl: './credit-notes.component.scss'
@@ -34,33 +39,38 @@ export class CreditNotesComponent {
   searchQuery = '';
   isDrawerOpen = false;
   showColumnDropdown = false;
+  deleteModal:boolean=false;
   openActionId: string | null = null;
   modalOpen = false;
-  editingId: string | null = null;
-
+  editingId: any = null; 
   filterContact = '';
   filterAccount = '';
   filterCreatedBy = '';
-
-  tenants = CREDIT_NOTE_TENANTS;
-  accounts = CREDIT_NOTE_ACCOUNTS;
-
-  pageIndex = 0;
-  pageSize = 5;
-  allRows: CreditNoteRow[] = [...CREDIT_NOTE_ROWS];
+  currentUser = this.commonservice.getCurrentUser();
+  tenants :any=[];
+  accounts :any=[];
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
 
   draft = this.emptyDraft();
-
+  constructor(  private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService, private fb: FormBuilder,public translate: TranslateService,
+    public accountingService:AccountingService) { }
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'date', label: 'Date', visible: true },
-    { key: 'contact', label: 'Contact', visible: true },
-    { key: 'account', label: 'Account', visible: true },
-    { key: 'amount', label: 'Amount', visible: true },
-    { key: 'remainingCredit', label: 'Remaining Credit', visible: true, useTemplate: true },
-    { key: 'notes', label: 'Notes', visible: true },
-    { key: 'createdBy', label: 'Created By', visible: true },
-    { key: 'created', label: 'Created', visible: true },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true },
+    { key: 'note_date', label: 'Date', visible: true },
+    { key: 'tenant', label: 'Contact', visible: true, useTemplate: true },
+    { key: 'account_name', label: 'Account', visible: true },
+    { key: 'amount', label: 'Amount', visible: true, useTemplate: true },
+    { key: 'remainingamt', label: 'Remaining Credit', visible: true, useTemplate: true },
+    { key: 'details', label: 'Notes', visible: true },
+    { key: 'createdby', label: 'Created By', visible: true },
+    { key: 'created_date', label: 'Created', visible: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
@@ -97,13 +107,7 @@ export class CreditNotesComponent {
     });
   }
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
+   
 
   get paginatedRows(): CreditNoteRow[] {
     const start = this.pageIndex * this.pageSize;
@@ -185,14 +189,14 @@ export class CreditNotesComponent {
     this.openActionId = null;
   }
 
-  openEditModal(row: CreditNoteRow): void {
-    this.editingId = row.id;
+  openEditModal(row: any): void {
+    this.editingId = row.code;
     this.draft = {
-      tenant: row.contact,
-      account: row.account,
+      tenant: row.tenant_code,
+      account: row.account_code,
       amount: this.parseAmount(row.amount),
-      noteDate: row.date,
-      note: row.notes
+      noteDate: formatDate((row.created_date), 'yyyy-MM-dd', 'en-US'),
+      note: row.details
     };
     this.modalOpen = true;
     this.openActionId = null;
@@ -201,51 +205,162 @@ export class CreditNotesComponent {
   closeModal(): void {
     this.modalOpen = false;
     this.editingId = null;
+    this.deleteModal=false;
   }
+  ngOnInit() {
+    
+    this.loadcreditnotes(); 
+    this.loadLookup(65,0, 'tenants', 'T');
+    this.loadLookup(2,1003, 'accounts', '');
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          if(Typeid==66){
+              this.toastr.success("Successfully marked as inactive");
+              this.editingId='';
+              this.loadcreditnotes();
+          }else
+          (this as any)[targetProperty] = res.objResult.table;
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  loadcreditnotes() {
+    const filterList: any[] = [];
+    // if (this.statusFilter && this.statusFilter !== "All") {
+    //   filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    // } 
+ 
 
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by:   '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "CREDITNOTES"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.creditnotes || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
   saveCreditNote(): void {
-    if (!this.draft.tenant || this.draft.amount == null) {
+    if (this.draft.tenant=="" || this.draft.tenant == null) {
+      this.toastr.error("Invalid tenant selection")
       return;
     }
-    const amountLabel = this.formatAed(Number(this.draft.amount) || 0);
-    const dateLabel = this.draft.noteDate || this.todayLabel();
-    if (this.editingId) {
-      this.allRows = this.allRows.map((row) =>
-        row.id === this.editingId
-          ? {
-              ...row,
-              date: dateLabel,
-              contact: this.draft.tenant,
-              account: this.draft.account,
-              amount: amountLabel,
-              notes: this.draft.note
-            }
-          : row
-      );
-    } else {
-      const row: CreditNoteRow = {
-        id: String(1817900 + (Date.now() % 10000)),
-        date: dateLabel,
-        contact: this.draft.tenant,
-        account: this.draft.account,
-        amount: amountLabel,
-        remainingCredit: amountLabel,
-        notes: this.draft.note,
-        createdBy: 'Manager',
-        created: this.todayLabel()
-      };
-      this.allRows = [row, ...this.allRows];
+    if (this.draft.amount==null || this.draft.amount == 0) {
+      this.toastr.error("Invalid tenant selection")
+      return;
     }
-    this.closeModal();
-    this.pageIndex = 0;
+    // const amountLabel = this.formatAed(Number(this.draft.amount) || 0);
+    // const dateLabel = this.draft.noteDate || this.todayLabel(new Date());
+    const payload = {
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
+      source: "web",
+      languageid: 1,
+      code: this.editingId || "", 
+      tenant_code: this.draft.tenant,
+      account_code: this.draft.account,
+      details: this.draft.note || "",
+      invoice_code:'',
+      status: 267, //Pending,
+      note_date:this.draft.noteDate || formatDate((new Date()), 'yyyy-MM-dd', 'en-US'),
+      amount: this.draft.amount || 0, 
+    };
+
+    this.accountingService.save_credit_note(payload).subscribe({
+      next: (response: any) => {
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.toastr.success("Successfully created")
+          this.closeModal();
+          this.pageIndex = 0;
+          this.editingId='';
+          this.loadcreditnotes();
+        }
+      },
+      error: (err: any) => {
+        console.error("Error saving broadcast:", err);
+      }
+    });
+
+    // if (this.editingId) {
+    //   this.allRows = this.allRows.map((row) =>
+    //     row.id === this.editingId
+    //       ? {
+    //           ...row,
+    //           date: dateLabel,
+    //           contact: this.draft.tenant,
+    //           account: this.draft.account,
+    //           amount: amountLabel,
+    //           notes: this.draft.note
+    //         }
+    //       : row
+    //   );
+    // } else {
+    //   const row: CreditNoteRow = {
+    //     id: String(1817900 + (Date.now() % 10000)),
+    //     date: dateLabel,
+    //     contact: this.draft.tenant,
+    //     account: this.draft.account,
+    //     amount: amountLabel,
+    //     remainingCredit: amountLabel,
+    //     notes: this.draft.note,
+    //     createdBy: 'Manager',
+    //     created: this.todayLabel()
+    //   };
+    //   this.allRows = [row, ...this.allRows];
+    // }
+  
   }
 
-  deleteCreditNote(id: string): void {
-    this.allRows = this.allRows.filter((row) => row.id !== id);
-    this.openActionId = null;
-    if (this.pageIndex >= this.totalPages) {
-      this.pageIndex = Math.max(0, this.totalPages - 1);
-    }
+  deleteCreditNote(id: string): void { 
+    this.deleteModal=!this.deleteModal;  
+    this.editingId=id;
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(66,0, '', this.editingId);
   }
 
   onPageSizeChange(): void {
@@ -288,17 +403,16 @@ export class CreditNotesComponent {
   }
 
   private formatAed(value: number): string {
-    return `AED ${value.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${this.currentUser?.currencyCode} ${value!=null && value!=0 ?value.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}`;
   }
 
   private parseAmount(value: string): number {
     return Number(String(value).replace(/[^\d.]/g, '')) || 0;
   }
 
-  private todayLabel(): string {
-    const now = new Date();
-    const dd = String(now.getDate()).padStart(2, '0');
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    return `${dd}-${mm}-${now.getFullYear()}`;
+  private todayLabel(Date:Date): string { 
+    const dd = String(Date.getDate()).padStart(2, '0');
+    const mm = String(Date.getMonth() + 1).padStart(2, '0');
+    return `${dd}-${mm}-${Date.getFullYear()}`;
   }
 }

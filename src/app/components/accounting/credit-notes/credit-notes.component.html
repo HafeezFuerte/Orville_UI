@@ -58,11 +58,17 @@
         [pageIndex]="pageIndex">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <ng-container *ngSwitchCase="'id'">
-              <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+            <ng-container *ngSwitchCase="'code'">
+              <a class="ov-link"  (click)="openEditModal(row)" href="javascript:void(0)">{{ row.code }}</a>
             </ng-container>
-            <ng-container *ngSwitchCase="'remainingCredit'">
-              <span class="cn-remaining">{{ row.remainingCredit }}</span>
+            <ng-container *ngSwitchCase="'tenant'">
+              <a [routerLink]="['/contacts/tenants/edit-tenant', row.tenant_code]" class="ov-link font-semibold">{{ row.tenant }}</a>
+            </ng-container>
+            <ng-container *ngSwitchCase="'remainingamt'">
+              <span class="cn-remaining">{{currentUser?.currencyCode}} {{ row.remainingamt | number:'1.2-2' }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'amount'">
+              <span class="cn-remaining">{{currentUser?.currencyCode}} {{ row.amount | number:'1.2-2' }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'action'">
               <div class="relative inline-flex" (click)="$event.stopPropagation()">
@@ -74,7 +80,7 @@
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                     (click)="openEditModal(row)">Edit Credit note</button>
                   <button type="button" class="cn-delete-action block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
-                    (click)="deleteCreditNote(row.id)">Delete Credit note</button>
+                    (click)="deleteCreditNote(row.code)">Delete Credit note</button>
                 </div>
               </div>
             </ng-container>
@@ -150,12 +156,19 @@
       <div class="ov-fields ov-fields--2">
         <div>
           <label class="ov-label">Tenant *</label>
-          <ng-select [(ngModel)]="draft.tenant" name="cnTenant" [items]="tenants" [searchable]="true"
-            [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+          <ng-select #tenantSelect    [searchable]="true"   [(ngModel)]="draft.tenant" bindValue="code" bindLabel="tenant"
+          [items]="tenants"   [searchable]="true"
+           [clearable]="true" placeholder="Select Tenant" class="ov-select ng-select-sm w-full" appendTo="body">
+             <ng-template ng-header-tmp>
+               <div class="p-1.5 border-b border-gray-100">
+                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+               </div>
+             </ng-template>
+           </ng-select> 
         </div>
         <div>
           <label class="ov-label">Account</label>
-          <ng-select [(ngModel)]="draft.account" name="cnAccount" [items]="accounts" [searchable]="true"
+          <ng-select [(ngModel)]="draft.account"  bindValue="account_code" bindLabel="account_name" name="cnAccount" [items]="accounts" [searchable]="true"
             [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div>
@@ -169,8 +182,8 @@
           <label class="ov-label">Note Date</label>
           <div class="ov-date">
             <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
-            <input type="text" class="ov-input" name="cnNoteDate" [(ngModel)]="draft.noteDate"
-              appFlowbiteDatepicker placeholder="DD/MM/YYYY">
+            <input type="date" class="ov-input" name="cnNoteDate" [(ngModel)]="draft.noteDate"
+                placeholder="DD/MM/YYYY">
           </div>
           <span class="ov-modal__hint">Leaving this empty will select today's date.</span>
         </div>
@@ -186,3 +199,5 @@
     </div>
   </div>
 </div>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

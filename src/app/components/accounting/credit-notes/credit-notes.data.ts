@@ -1,5 +1,5 @@
 export interface CreditNoteRow {
-  id: string;
+  id: string;code?: string;
   date: string;
   contact: string;
   account: string;
