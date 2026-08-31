@@ -15,12 +15,14 @@
   <div class="chq-status-tabs mb-5 overflow-x-auto" role="tablist" aria-label="Cheque status">
     <div class="ov-seg ov-seg--tabs">
       <button
-        type="button"
+         type="button"
         *ngFor="let tab of statusTabs"
         class="ov-seg__btn"
-        [class.is-active]="statusFilter === tab"
-        (click)="setStatusFilter(tab)">
-        {{ tab }}
+        [class.is-active]="statusFilter === tab.id"
+        [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+        [class.border-transparent]="statusFilter !== tab.id" 
+        (click)="setStatusFilter(tab.id)">
+            {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
       </button>
     </div>
   </div>
@@ -28,7 +30,7 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
     <div class="ov-card flex flex-col items-start gap-1.5 p-5" *ngFor="let kpi of kpis">
       <span class="ov-kpi__badge">{{ kpi.label }}</span>
-      <div class="ov-kpi__val">{{ kpi.value }}</div>
+      <div class="ov-kpi__val">{{currentUser?.currencyCode}} {{ kpi.value | number:'1.2-2' }}</div>
       <div class="ov-kpi__sub">{{ kpi.sub }}</div>
     </div>
   </div>
@@ -65,24 +67,18 @@
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
       <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+       (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <ng-container *ngSwitchCase="'id'">
-              <a class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
+            <ng-container *ngSwitchCase="'code'">
+              <a class="ov-link" href="javascript:void(0)">{{ row.code }}</a>
             </ng-container>
-            <ng-container *ngSwitchCase="'status'">
-              <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            <ng-container *ngSwitchCase="'cheque_status'">
+              <span [ngClass]="statusClass(row.cheque_status)">{{ row.cheque_status }}</span>
             </ng-container>
-            <ng-container *ngSwitchCase="'inHand'">
-              <span [ngClass]="yesNoClass(row.inHand)">{{ row.inHand }}</span>
+            <ng-container *ngSwitchCase="'cheque_in_hand'">
+              <span [ngClass]="yesNoClass(row.cheque_in_hand)">{{ row.cheque_in_hand }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'returned'">
               <span [ngClass]="yesNoClass(row.returned)">{{ row.returned }}</span>
@@ -96,12 +92,8 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>

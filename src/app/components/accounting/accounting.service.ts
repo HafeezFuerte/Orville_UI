@@ -28,4 +28,7 @@ export class AccountingService {
      save_credit_note(payload: any): Observable<any> { 
       return this.http.post(environment.apiurl+'api/Accounting/save_update_creditnote', payload, { headers: this.commonservice.updateHeaders() });
      }
+     save_update_coa(payload: any): Observable<any> { 
+      return this.http.post(environment.apiurl+'api/Accounting/save_update_coa', payload, { headers: this.commonservice.updateHeaders() });
+     }
 }

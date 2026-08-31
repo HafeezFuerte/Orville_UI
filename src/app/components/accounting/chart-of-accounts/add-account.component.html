@@ -13,7 +13,7 @@
     </div>
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-      <button type="submit" class="ov-btn ov-btn-primary">Create Account</button>
+      <button type="submit" class="ov-btn ov-btn-primary">{{account_code!='' ? 'Update' : 'Create' }} Account</button>
     </div>
   </div>
 
@@ -38,20 +38,21 @@
 
           <div class="ov-fields__full" *ngIf="isSubAccount">
             <label class="ov-label">Parent account *</label>
-            <ng-select [(ngModel)]="parentAccount" name="parentAccount" [items]="parents" [searchable]="true"
+            <ng-select [(ngModel)]="parentAccount" name="parentAccount" bindValue="id" bindLabel="name" [items]="parents" [searchable]="true"
               [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
           </div>
 
           <div class="ov-fields ov-fields--2 ov-fields__full">
-            <div>
-              <label class="ov-label">Account *</label>
-              <ng-select [(ngModel)]="account" name="account" [items]="accounts" [searchable]="true"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
-            </div>
+          
             <div>
               <label class="ov-label">Account Type *</label>
-              <ng-select [(ngModel)]="accountType" name="accountType" [items]="types"
+              <ng-select [(ngModel)]="accountType" name="accountType"  bindValue="id" bindLabel="name" [items]="types"
                 placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            </div>
+            <div>
+              <label class="ov-label">Account Sub Type*</label>
+              <ng-select [(ngModel)]="accountSubType" name="accountSubType"  bindValue="id" bindLabel="name" [items]="accounts" [searchable]="true"
+                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
 
@@ -81,6 +82,6 @@
 
   <div class="ov-add-footer">
     <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-    <button type="submit" class="ov-btn ov-btn-primary">Create Account</button>
+    <button type="submit" class="ov-btn ov-btn-primary">{{account_code!='' ? 'Update' : 'Create' }} Account</button>
   </div>
 </form>

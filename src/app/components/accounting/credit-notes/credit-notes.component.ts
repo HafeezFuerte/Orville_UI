@@ -195,7 +195,7 @@ export class CreditNotesComponent {
       tenant: row.tenant_code,
       account: row.account_code,
       amount: this.parseAmount(row.amount),
-      noteDate: formatDate((row.created_date), 'yyyy-MM-dd', 'en-US'),
+      noteDate:this.commonservice.formatDateForInput(row.note_date),
       note: row.details
     };
     this.modalOpen = true;
@@ -305,7 +305,7 @@ export class CreditNotesComponent {
       details: this.draft.note || "",
       invoice_code:'',
       status: 267, //Pending,
-      note_date:this.draft.noteDate || formatDate((new Date()), 'yyyy-MM-dd', 'en-US'),
+      note_date:this.commonservice.parseInputDate(this.draft.noteDate) || formatDate((new Date()), 'yyyy-MM-dd', 'en-US'),
       amount: this.draft.amount || 0, 
     };
 
@@ -323,34 +323,7 @@ export class CreditNotesComponent {
         console.error("Error saving broadcast:", err);
       }
     });
-
-    // if (this.editingId) {
-    //   this.allRows = this.allRows.map((row) =>
-    //     row.id === this.editingId
-    //       ? {
-    //           ...row,
-    //           date: dateLabel,
-    //           contact: this.draft.tenant,
-    //           account: this.draft.account,
-    //           amount: amountLabel,
-    //           notes: this.draft.note
-    //         }
-    //       : row
-    //   );
-    // } else {
-    //   const row: CreditNoteRow = {
-    //     id: String(1817900 + (Date.now() % 10000)),
-    //     date: dateLabel,
-    //     contact: this.draft.tenant,
-    //     account: this.draft.account,
-    //     amount: amountLabel,
-    //     remainingCredit: amountLabel,
-    //     notes: this.draft.note,
-    //     createdBy: 'Manager',
-    //     created: this.todayLabel()
-    //   };
-    //   this.allRows = [row, ...this.allRows];
-    // }
+ 
   
   }
 

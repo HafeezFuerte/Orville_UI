@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SharedUrlLinks } from './sharedlinks';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { formatDate } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../components/common/store/login-auth-params/auth.selectors';
 import { AuthPayload } from '../components/common/store/login-auth-params/auth.models';
@@ -31,6 +32,30 @@ export class CommonService {
  }
  getCurrentUser(): AuthPayload | null {
     return this.currentUser;
+  }
+  formatDateForInput(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+      const dt = new Date(dateStr);
+      if (isNaN(dt.getTime())) return dateStr;
+      const d = String(dt.getDate()).padStart(2, '0');
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const y = dt.getFullYear();
+      return `${d}-${m}-${y}`;
+    } catch {
+      return dateStr;
+    }
+  }
+  parseInputDate(dateStr: string): string {
+    if (!dateStr) return formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+    const parts = dateStr.split(/[\/-]/);
+    if (parts.length === 3) {
+      const d = Number(parts[0]);
+      const m = Number(parts[1]) - 1;
+      const y = Number(parts[2]); 
+      return formatDate(new Date(y, m, d), 'yyyy-MM-dd', 'en-US');
+    }
+    return formatDate(new Date(dateStr), 'yyyy-MM-dd', 'en-US');
   }
   getArabicLookupName(row:any,key:string){
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];

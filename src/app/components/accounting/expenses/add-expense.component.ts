@@ -120,9 +120,9 @@ export class AddExpenseComponent {
           this.invoice= res.objResult.invoice_dtls[0] || {}; 
           this.cheques = res.objResult.receipt_dtls || []; 
           this.lineItems=res.objResult.lineitems_dtls || [];  
-          this.selectedProperty = this.properties.filter((item:any)=>item.code=this.invoice.bill_to)[0];
+          this.selectedProperty = this.properties.filter((item:any)=>item.code=this.invoice.property_code)[0];
           if (this.selectedProperty) {
-            this.loadLookup(44, 0, 'units', this.invoice.bill_to, '');
+            this.loadLookup(44, 0, 'units', this.invoice.property_code, '');
           }
 
         setTimeout(() => {
@@ -136,8 +136,8 @@ export class AddExpenseComponent {
             moneyHeldBy:this.invoice.money_held_by || '',
             type: this.invoice.expense_type || '',
             leaseAccount: this.invoice.coa_account || '', 
-            issueDate: formatDate((this.invoice.invoice_date), 'yyyy-MM-dd', 'en-US')  || '',
-            dueDate: formatDate((this.invoice.due_date), 'yyyy-MM-dd', 'en-US')  || '',
+            issueDate: this.commonservice.formatDateForInput((this.invoice.invoice_date))  || '',
+            dueDate: this.commonservice.formatDateForInput((this.invoice.due_date))  || '',
             reference: this.invoice.reference_no || '',
             notes: this.invoice.notes || ''
           })
@@ -423,8 +423,8 @@ validateForm(
         discount:this.discountTotal,
         discountPct:this.discountPerTotal,
         invoiceNumber: form.invoiceNumber || '',
-        issueDate: formatDate(new Date(form.issueDate.split('/').reverse().join('-')), 'yyyy-MM-dd', 'en-US')        ,
-        dueDate:formatDate(new Date(form.dueDate.split('/').reverse().join('-')), 'yyyy-MM-dd', 'en-US') ,
+        issueDate: this.commonservice.parseInputDate(form.issueDate)        ,
+        dueDate:this.commonservice.parseInputDate(form.dueDate) ,
         reference: form.reference || '',
         notes: form.notes,
         cheques:this.cheques,

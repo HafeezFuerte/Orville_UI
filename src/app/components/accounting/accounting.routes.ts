@@ -55,6 +55,11 @@ export const accountingRoutes: Routes = [
       import('./chart-of-accounts/add-account.component').then((m) => m.AddAccountComponent)
   },
   {
+    path: 'chart-of-accounts/edit-account/:code',
+    loadComponent: () =>
+      import('./chart-of-accounts/add-account.component').then((m) => m.AddAccountComponent)
+  },
+  {
     path: 'chart-of-accounts',
     loadComponent: () =>
       import('./chart-of-accounts/chart-of-accounts.component').then(

@@ -67,7 +67,7 @@ export class ExpensesComponent {
     { key: 'due_date', label: 'Due Date', visible: true },
     { key: 'invoice_date', label: 'Issue Date', visible: true },
     { key: 'paidDate', label: 'Paid Date', visible: true },
-    { key: 'createdBy', label: 'Created By', visible: true },
+    { key: 'createdby', label: 'Created By', visible: true },
     { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];

@@ -132,8 +132,8 @@ export class AddInvoiceComponent {
             moneyHeldBy:this.invoice.money_held_by || '',
             type: this.invoice.invoice_type || '',
             leaseAccount: this.invoice.coa_account || '', 
-            issueDate: formatDate((this.invoice.invoice_date), 'yyyy-MM-dd', 'en-US')  || '',
-            dueDate: formatDate((this.invoice.due_date), 'yyyy-MM-dd', 'en-US')  || '',
+            issueDate: this.commonservice.formatDateForInput((this.invoice.invoice_date))  || '',
+            dueDate: this.commonservice.formatDateForInput((this.invoice.due_date))  || '',
             reference: this.invoice.reference_no || '',
             notes: this.invoice.notes || ''
           })
@@ -412,8 +412,8 @@ validateForm(
         discount:this.discountTotal,
         discountPct:this.discountPerTotal,
         invoiceNumber: form.invoiceNumber || '',
-        issueDate: formatDate(new Date(form.issueDate.split('/').reverse().join('-')), 'yyyy-MM-dd', 'en-US')        ,
-        dueDate:formatDate(new Date(form.dueDate.split('/').reverse().join('-')), 'yyyy-MM-dd', 'en-US') ,
+        issueDate:this.commonservice.parseInputDate((form.issueDate)) ,
+        dueDate:this.commonservice.parseInputDate((form.dueDate))  ,
         reference: form.reference || '',
         notes: form.notes,
         cheques:this.cheques,
