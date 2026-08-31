@@ -73,6 +73,11 @@ export class PropertiesService {
    return this.http.post(addPropertyUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
 
+  updatePropertyInfo(payload: any): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/update_property_info';
+    return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
+  }
+
   addUnit(payload: any): Observable<any> {
     const addUnitUrl = environment.apiurl+'api/Masters/save_update_units';
     

@@ -24,7 +24,7 @@
   </div>
   <div class="ov-add-header__actions">
     <button type="button" routerLink="/properties" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
-    <button type="submit" class="ov-btn ov-btn-primary">
+    <button type="submit" class="ov-btn ov-btn-primary" [disabled]="isLoading">
         {{ is_edit ? ('web.property.lblUpdateProperty' | translate) : ('web.property.lblSaveProperty' | translate) }}
     </button>
   </div>
@@ -209,7 +209,8 @@
                 <label class="ov-label">{{ 'web.property.lblTotalUnits' | translate }}</label>
                 <input
                     type="number" formControlName="totalUnits"
-                    class="ov-input"
+                    class="ov-input !bg-gray-100 !cursor-not-allowed text-gray-500"
+                    readonly
                     [placeholder]="'web.property.lblEnter' | translate">
             </div>
             <div>
@@ -425,6 +426,14 @@
 
     <div class="ov-card__body">
 
+        <div *ngIf="existingPropertyImage" class="mb-4 flex items-center gap-3 rounded-lg border border-defaultborder p-3">
+            <img [src]="existingPropertyImage" alt="Property Image" class="h-16 w-16 rounded object-cover">
+            <div class="flex flex-col">
+                <span class="text-xs font-semibold text-defaulttextcolor">Current Image</span>
+                <span class="text-[11px] text-textmuted">Upload a new image below to replace</span>
+            </div>
+        </div>
+
         <app-file-upload
             [accept]="'image/*'"
             [multiple]="false"
@@ -537,7 +546,8 @@
     </button>
     <button
         type="submit"
-        class="ov-btn ov-btn-primary">
+        class="ov-btn ov-btn-primary"
+        [disabled]="isLoading">
         {{ is_edit ? ('web.property.lblUpdateProperty' | translate) : ('web.property.lblSaveProperty' | translate) }}
     </button>
 </div>

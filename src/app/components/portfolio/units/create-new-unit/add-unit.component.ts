@@ -33,11 +33,20 @@ export class AddUnitComponent implements OnInit {
   // File attachments state
   unitImageFile: File | null = null;
   unitBroucherFile: File | null = null;
+  existingUnitImage: string = '';
   
   // Master lists
   categories: any[] = [];
   unitTypes: any[] = [];
-  bedsOptions: any[] = [];
+  bedsOptions: any[] = [
+    { id: 0, name: 'Studio' },
+    { id: 1, name: '1 Bed' },
+    { id: 2, name: '2 Beds' },
+    { id: 3, name: '3 Beds' },
+    { id: 4, name: '4 Beds' },
+    { id: 5, name: '5 Beds' },
+    { id: 6, name: '6+ Beds' }
+  ];
   rentTypes: any[] = [];
   statusOptions: any[] = [];
 
@@ -77,12 +86,7 @@ export class AddUnitComponent implements OnInit {
   propertiesList: any[] = [];
 
   // Landlord Search State
-  landlordsList = [
-    { id: 1, name: 'Mohammed Al Maktoum' },
-    { id: 2, name: 'Sarah Jenkins' },
-    { id: 3, name: 'Abdullah Hassan' },
-    { id: 4, name: 'John Doe' }
-  ];
+  landlordsList: any[] = [];
   filteredLandlords: any[] = [];
   selectedLandlords: any[] = [];
   landlordSearchQuery = '';
@@ -104,8 +108,8 @@ export class AddUnitComponent implements OnInit {
 
   ngOnInit() {
     this.currentUser = this.commonService.getCurrentUser();
-    this.filteredLandlords = [...this.landlordsList];
     this.initForm();
+    this.loadLandlords();
     this.loadProperties();
     this.loadLookup(4, 'categories', 'lookup_name');
     this.loadLookup(3, 'unitTypes', 'lookup_name');
@@ -180,12 +184,14 @@ export class AddUnitComponent implements OnInit {
       }
     }
 
+    this.existingUnitImage = detail.unit_image || detail.image_path || detail.imageUrl || '';
+
     this.unitForm.patchValue({
       category: detail.category ? Number(detail.category) : '',
       unitType: detail.unit_type ? Number(detail.unit_type) : '',
       unitCode: detail.unit_code || detail.code || '',
       unitNumber: detail.unit_no || detail.name || '',
-      beds: detail.beds ? String(detail.beds) : '',
+      beds: detail.beds !== undefined && detail.beds !== null && detail.beds !== '' ? (isNaN(Number(detail.beds)) ? detail.beds : Number(detail.beds)) : (detail.beds_id || detail.beds_code || ''),
       parkingSpaces: detail.no_of_parkings || '',
       floorNumber: detail.floor_no || '',
       reservedAmount: detail.reserved_amt || 0,
@@ -227,7 +233,7 @@ export class AddUnitComponent implements OnInit {
       reraNumber: detail.rera_number || '',
       isVerified: detail.is_it_verified || false,
       includeAmenities: detail.include_amenities || false,
-      description: detail.desc || '',
+      description: detail.desc || detail.description || detail.strdesc || detail.unit_details || '',
       status: detail.unit_status ? Number(detail.unit_status) : 1,
       publishUnit: detail.is_published || false,
       feeType: detail.management_fee_type ? Number(detail.management_fee_type) : 1,
@@ -254,10 +260,41 @@ export class AddUnitComponent implements OnInit {
       }
     }
 
-    if (detail.landlord_codes) {
-      const landlordIds = String(detail.landlord_codes).split(',').map(id => Number(id.trim()));
-      this.selectedLandlords = this.landlordsList.filter(l => landlordIds.includes(l.id));
+    const codes = detail.landlord_codes || detail.landlord || detail.landlords || detail.landlord_id || '';
+    if (codes) {
+      const landlordIds = String(codes).split(',').map(id => id.trim());
+      if (this.landlordsList.length > 0) {
+        this.selectedLandlords = this.landlordsList.filter(l => landlordIds.includes(String(l.id)) || landlordIds.includes(String(l.name)));
+      } else {
+        // Fallback placeholder tag until landlordsList finishes loading
+        this.selectedLandlords = landlordIds.map(id => ({ id: isNaN(Number(id)) ? id : Number(id), name: detail.landlord || detail.landlord_name || ('Landlord ' + id) }));
+      }
     }
+  }
+
+  loadLandlords() {
+    this.portfolioService.getMasterByType({
+      typeId: 28,
+      filterId: 0,
+      filterText: '',
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult) {
+          const list = res.objResult.landlords || res.objResult.table || res.objResult.landlord || [];
+          if (Array.isArray(list)) {
+            this.landlordsList = list.map((l: any) => ({
+              id: l.id || l.code || l.landlord_id,
+              name: l.name || l.landlord_name || l.first_name || l.full_name || l.code || ('Landlord ' + l.id)
+            }));
+            this.filteredLandlords = [...this.landlordsList];
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching landlords list:', err);
+      }
+    });
   }
 
   loadProperties() {
@@ -482,11 +519,11 @@ export class AddUnitComponent implements OnInit {
       security_deposit: !!form.securityDepositInWallet,
       rent_type: Number(form.rentType) || 0,
       deposit_amt: Number(form.deposit) || 0,
-      market_value: Number(form.marketValue) || 0,
+      market_value: Number(form.marketRent) || Number(form.marketValue) || 0,
       threshold_value: Number(form.thresholdValue) || 0,
       area: 0,
       agency_fee: Number(form.agencyFee) || 0,
-      market_rent: Number(form.marketRent) || 0,
+      market_rent: Number(form.marketRent) || Number(form.marketValue) || 0,
       rent_per_area: Number(form.rentPerArea) || 0,
       service_charge_per_area: Number(form.serviceChargesPerArea) || 0,
       total_service_charge: Number(form.totalServiceCharges) || 0,
@@ -556,8 +593,13 @@ export class AddUnitComponent implements OnInit {
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          (this as any)[targetProperty] = res.objResult.table;
+        if (res.statusCode == 200 && res.objResult && res.objResult.table && Array.isArray(res.objResult.table) && res.objResult.table.length > 0) {
+          const mapped = res.objResult.table.map((item: any) => ({
+            ...item,
+            id: item.id ?? item.lookup_id ?? item.code,
+            name: item.name ?? item[nameField] ?? item.lookup_name ?? item.title ?? String(item.id)
+          }));
+          (this as any)[targetProperty] = mapped;
         }
       },
       error: (err) => {

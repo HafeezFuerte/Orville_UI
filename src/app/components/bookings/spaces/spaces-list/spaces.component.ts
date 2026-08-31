@@ -46,8 +46,8 @@ export class SpacesComponent implements OnInit {
   totalPagesCount = 0;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px', headerClass: 'text-start sticky left-0 z-[2] bg-white dark:bg-bodybg', cellClass: 'sticky left-0 z-[1] bg-white dark:bg-bodybg' },
-    { key: 'name', label: 'Space Name', visible: true, useTemplate: true, width: '190px', headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg', cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg' },
+    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px', headerClass: 'text-start' },
+    { key: 'name', label: 'Space Name', visible: true, useTemplate: true, width: '190px', headerClass: 'text-start' },
     { key: 'location', label: 'Space Location', visible: true, useTemplate: true, width: '220px' },
     { key: 'availability', label: 'Availability Option', visible: true, useTemplate: true },
     { key: 'slotDuration', label: 'Slot Duration', visible: true },

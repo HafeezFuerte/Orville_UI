@@ -64,6 +64,33 @@ export class VendorContractsListComponent implements OnInit {
     this.loadContracts();
   }
 
+  formatDateString(dateStr: string): string {
+    if (!dateStr) return '-';
+    try {
+      const dt = new Date(dateStr);
+      if (isNaN(dt.getTime())) return dateStr;
+      const d = String(dt.getDate()).padStart(2, '0');
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const y = dt.getFullYear();
+      return `${d}-${m}-${y}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  calculateDaysLeft(endDateStr: string): string {
+    if (!endDateStr) return '-';
+    try {
+      const end = new Date(endDateStr);
+      const now = new Date();
+      const diffTime = end.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? `${diffDays} days` : '0 days';
+    } catch {
+      return '-';
+    }
+  }
+
   loadContracts(): void {
     this.isLoading = true;
     const currentUser = this.commonService.getCurrentUser();
@@ -89,18 +116,21 @@ export class VendorContractsListComponent implements OnInit {
         this.isLoading = false;
         if (res && res.statusCode === "200" && res.objResult) {
           const rawItems = res.objResult.vendor_contracts || res.objResult.contracts || res.objResult.table || [];
+          if (rawItems.length > 0) {
+            console.log('Vendor contract raw grid item from backend:', rawItems[0]);
+          }
           this.allRows = rawItems.map((item: any) => ({
             id: String(item.code || item.id || ''),
-            vendor: item.vendor_name || item.vendor || '',
-            name: item.name || '',
-            properties: item.properties || item.property || '',
-            unitsRooms: item.units_rooms || item.unitsRooms || '',
-            startDate: item.start_date || item.startDate || '',
-            endDate: item.end_date || item.endDate || '',
-            createDate: item.create_date || item.createDate || '',
-            status: (item.status || 'Draft') as VendorContractStatus,
-            value: String(item.value || item.contract_value || ''),
-            daysLeft: String(item.days_left || item.daysLeft || '')
+            vendor: item.vendor_name || item.vendor || item.name || '-',
+            name: item.name || item.contract_name || '-',
+            properties: item.properties || item.property_name || item.property || item.property_codes || item.property_code || '-',
+            unitsRooms: item.units_rooms || item.units_no || item.units || item.rooms || item.units_codes || item.rooms_codes || item.unit_code || '-',
+            startDate: this.formatDateString(item.start_date || item.startDate),
+            endDate: this.formatDateString(item.end_date || item.endDate),
+            createDate: this.formatDateString(item.create_date || item.created_date || item.created_at || item.createDate || item.start_date),
+            status: (item.status || item.status_nm || 'Active') as VendorContractStatus,
+            value: (item.value !== undefined && item.value !== null && item.value !== '') ? String(item.value) : (item.contract_value ? String(item.contract_value) : '-'),
+            daysLeft: item.days_left || item.daysLeft ? String(item.days_left || item.daysLeft) : this.calculateDaysLeft(item.end_date || item.endDate)
           }));
 
           if (res.objResult.rows_info && res.objResult.rows_info[0]) {

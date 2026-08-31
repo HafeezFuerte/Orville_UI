@@ -28,8 +28,17 @@ export class CreateLandlordContractComponent implements OnInit {
   properties: any[] = [];
   units: any[] = [];
   rooms: any[] = [];
-  cycles = ['Monthly', 'Quarterly', 'Yearly', 'Auto Renewal'];
-  feeTypes = ['Standard', 'Percentage', 'Per service charge'];
+  cycles = [
+    { id: 1, name: 'Monthly' },
+    { id: 2, name: 'Quarterly' },
+    { id: 3, name: 'Yearly' },
+    { id: 4, name: 'Auto Renewal' }
+  ];
+  feeTypes = [
+    { id: 1, name: 'Standard' },
+    { id: 2, name: 'Percentage' },
+    { id: 3, name: 'Per service charge' }
+  ];
   pmaTypes = ['Standard', 'Full management', 'Let only'];
   taxProfiles = ['Standard rated', 'Zero rated', 'Exempt'];
   paymentViaOptions: any[] = [];
@@ -43,15 +52,16 @@ export class CreateLandlordContractComponent implements OnInit {
   selectedRooms: any[] = [];
   schedules: ScheduleRow[] = [];
   contractImages: File[] = [];
+  contractDbId: number = 0;
 
   form = {
     landlord: null as string | null,
     property: null as string | null,
     name: '',
-    cycle: null as string | null,
+    cycle: 1 as number | null,
     startDate: '',
     endDate: '',
-    feeType: null as string | null,
+    feeType: 1 as number | null,
     feeValue: '0.00',
     paymentCount: '',
     pmaType: null as string | null,
@@ -126,19 +136,28 @@ export class CreateLandlordContractComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res && res.objResult && res.objResult.landlords) {
-          this.landlords = res.objResult.landlords.map((l: any) => ({
-            code: l.code || l.id,
-            name: l.company_name || l.contact_name || l.name || l.code || '-'
-          }));
+          this.landlords = res.objResult.landlords.map((l: any) => {
+            const displayName = l.landlord ||
+              (l.first_name ? `${l.first_name} ${l.last_name || ''}`.trim() : '') ||
+              l.name ||
+              l.contact_name ||
+              l.company_name ||
+              l.code || '-';
+            return {
+              code: l.code || l.id,
+              name: displayName
+            };
+          });
         }
       },
       error: (err) => console.error('Error loading landlords:', err)
     });
   }
 
-  loadRooms(): void {
+  loadRooms(unitCodeOverride?: string): void {
     const propertyCode = this.form.property || '';
-    const unitCode = this.pendingUnit || '';
+    const selectedUnitCodes = this.selectedUnits.map(u => u.code).join(',');
+    const unitCode = unitCodeOverride || this.pendingUnit || selectedUnitCodes || '';
     this.portfolioService.getMasterByType({
       typeId: 38,
       filterId: 0,
@@ -149,11 +168,16 @@ export class CreateLandlordContractComponent implements OnInit {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
           this.rooms = res.objResult.table.map((r: any) => ({
             code: r.code || r.room_code || r.id,
-            name: r.room_name || r.room_type || r.code
+            name: r.room_name || r.room_no || r.name || r.room_type || r.code
           }));
+        } else {
+          this.rooms = [];
         }
       },
-      error: (err) => console.error('Error loading rooms:', err)
+      error: (err) => {
+        console.error('Error loading rooms:', err);
+        this.rooms = [];
+      }
     });
   }
 
@@ -222,15 +246,16 @@ export class CreateLandlordContractComponent implements OnInit {
       next: (res: any) => {
         if (res && res.statusCode === "200" && res.objResult) {
           const detail = res.objResult.contract_dtls?.[0] || res.objResult.contract?.[0] || res.objResult.table?.[0] || {};
+          this.contractDbId = Number(detail.id || detail.contract_id) || 0;
           
           this.form = {
             landlord: detail.landlord_code || null,
             property: detail.property_codes || detail.property || null,
             name: detail.name || '',
-            cycle: detail.contract_cycle || null,
+            cycle: this.parseCycleId(detail.contract_cycle),
             startDate: this.formatDateForInput(detail.start_date),
             endDate: this.formatDateForInput(detail.end_date),
-            feeType: detail.management_fee_type || 'Standard',
+            feeType: this.parseFeeTypeId(detail.management_fee_type),
             feeValue: String(detail.value || '0.00'),
             paymentCount: String(detail.no_of_payments || ''),
             pmaType: detail.pma_type_nm || null,
@@ -295,15 +320,45 @@ export class CreateLandlordContractComponent implements OnInit {
   }
 
   parseInputDate(dateStr: string): string {
-    if (!dateStr) return new Date().toISOString();
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-      const d = Number(parts[0]);
-      const m = Number(parts[1]) - 1;
-      const y = Number(parts[2]);
-      return new Date(y, m, d).toISOString();
+    if (!dateStr || !dateStr.trim()) {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
-    return new Date(dateStr).toISOString();
+    try {
+      const cleanStr = dateStr.trim();
+      const parts = cleanStr.split(/[\/\-\.]/);
+      if (parts.length === 3) {
+        let d = Number(parts[0]);
+        let m = Number(parts[1]);
+        let y = Number(parts[2]);
+        if (parts[0].length === 4) {
+          y = Number(parts[0]);
+          m = Number(parts[1]);
+          d = Number(parts[2]);
+        }
+        const yStr = String(y);
+        const mStr = String(m).padStart(2, '0');
+        const dStr = String(d).padStart(2, '0');
+        return `${yStr}-${mStr}-${dStr}`;
+      }
+      const dt = new Date(cleanStr);
+      if (!isNaN(dt.getTime())) {
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+    } catch {
+      // Fallback
+    }
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   onFilesSelected(files: File[]): void {
@@ -318,6 +373,7 @@ export class CreateLandlordContractComponent implements OnInit {
 
   addUnit(): void {
     this.unitMenuOpen = false;
+    const currentUnit = this.pendingUnit;
     if (this.pendingUnit) {
       const match = this.units.find(u => u.code === this.pendingUnit);
       if (match && !this.selectedUnits.some(u => u.code === match.code)) {
@@ -325,16 +381,18 @@ export class CreateLandlordContractComponent implements OnInit {
       }
     }
     this.pendingUnit = null;
-    this.loadRooms();
+    this.loadRooms(currentUnit || undefined);
   }
 
   addAllUnits(): void {
     this.unitMenuOpen = false;
     this.selectedUnits = [...this.units];
+    this.loadRooms();
   }
 
   removeUnit(unit: any): void {
     this.selectedUnits = this.selectedUnits.filter((u) => u.code !== unit.code);
+    this.loadRooms();
   }
 
   toggleRoomMenu(event: Event): void {
@@ -392,13 +450,47 @@ export class CreateLandlordContractComponent implements OnInit {
     void this.router.navigate(['/landlord-contracts']);
   }
 
+  get selectedLandlordName(): string {
+    if (!this.form.landlord) return '—';
+    const match = this.landlords.find(l => l.code === this.form.landlord);
+    return match ? match.name : this.form.landlord;
+  }
+
+  get selectedPropertyName(): string {
+    if (!this.form.property) return '—';
+    const match = this.properties.find(p => p.code === this.form.property);
+    return match ? match.name : this.form.property;
+  }
+
+  parseCycleId(val: any): number {
+    if (typeof val === 'number' && !isNaN(val) && val > 0) return val;
+    if (!val) return 1;
+    const s = String(val).toLowerCase();
+    if (s === '1' || s.includes('month')) return 1;
+    if (s === '2' || s.includes('quarter')) return 2;
+    if (s === '3' || s.includes('year')) return 3;
+    if (s === '4' || s.includes('auto') || s.includes('renew')) return 4;
+    return Number(val) || 1;
+  }
+
+  parseFeeTypeId(val: any): number {
+    if (typeof val === 'number' && !isNaN(val) && val > 0) return val;
+    if (!val) return 1;
+    const s = String(val).toLowerCase();
+    if (s === '1' || s.includes('standard')) return 1;
+    if (s === '2' || s.includes('percent')) return 2;
+    if (s === '3' || s.includes('service')) return 3;
+    return Number(val) || 1;
+  }
+
   save(): void {
     const errors: string[] = [];
     if (!this.form.landlord) errors.push('Landlord is required.');
     if (!this.form.property) errors.push('Property is required.');
-    if (!this.form.name) errors.push('Contract Name is required.');
-    if (!this.form.startDate) errors.push('Start Date is required.');
-    if (!this.form.endDate) errors.push('End Date is required.');
+
+    if (!this.form.name && this.form.landlord) {
+      this.form.name = `${this.selectedLandlordName} - Contract`;
+    }
 
     if (errors.length > 0) {
       this.toastr.error(errors.join('<br>'), 'Validation', {
@@ -410,11 +502,19 @@ export class CreateLandlordContractComponent implements OnInit {
     }
 
     const payment_schedules = this.schedules.map(s => ({
-      account: s.account || '',
-      amount: Number(s.amount.replace(/[^0-9.]/g, '')) || 0,
+      amt: Number(String(s.amount).replace(/[^0-9.]/g, '')) || 0,
+      account_id: 1,
       due_date: this.parseInputDate(s.due),
-      recurrence: s.recurrence || '',
-      payment_via: s.paymentVia || ''
+      invoice_no: '',
+      code: '',
+      recurring_cycle: 1,
+      tax_profile: 1,
+      payment_type: 169,
+      on_interval_of: 1,
+      advance_days: 0,
+      memo: '',
+      inclusive_tax: false,
+      file_paths: ''
     }));
 
     const commission = {
@@ -427,33 +527,44 @@ export class CreateLandlordContractComponent implements OnInit {
     };
 
     const currentUser = this.commonService.getCurrentUser();
+    const userIdVal = Number(localStorage.getItem('userId')) || currentUser?.userId || 1;
+    const companyIdVal = Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1;
+    const propertyVal = this.form.property || '';
+    const landlordVal = this.form.landlord || '';
+    const unitsVal = this.selectedUnits.map(u => u.code).join(',');
+    const roomsVal = this.selectedRooms.map(r => r.code).join(',');
+
     const request = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || '74BB6922',
-      source: 'web',
-      languageid: 1,
       code: this.contractCode || '',
-      landlord_code: this.form.landlord || '',
-      units_codes: this.selectedUnits.map(u => u.code).join(','),
-      rooms_codes: this.selectedRooms.map(r => r.code).join(','),
-      property_codes: this.form.property || '',
-      name: this.form.name,
-      contract_cycle: this.form.cycle || 'Monthly',
+      landlord_code: landlordVal,
+      property_codes: propertyVal,
+      units_codes: unitsVal,
+      rooms_codes: roomsVal,
+      name: this.form.name || '',
+      contract_cycle: this.parseCycleId(this.form.cycle),
       start_date: this.parseInputDate(this.form.startDate),
       end_date: this.parseInputDate(this.form.endDate),
-      management_fee_type: this.form.feeType || 'Standard',
+      management_fee_type: String(this.parseFeeTypeId(this.form.feeType)),
       annual_rent: 0,
       value: Number(this.form.feeValue) || 0,
-      percentage: this.form.feeType === 'Percentage' ? Number(this.form.feeValue) : 0,
+      percentage: this.parseFeeTypeId(this.form.feeType) === 2 ? Number(this.form.feeValue) : 0,
       no_of_payments: Number(this.form.paymentCount) || 1,
-      pma_type: 226, // Default PMA standard type ID
-      payment_type: 169, // Default Cheque type ID
-      tax_profile_id: 1, // Default Tax Profile ID
+      pma_type: 226,
+      payment_type: 169,
+      tax_profile_id: 1,
       notes: this.form.notes || '',
+      contract_uploads: '',
+      payment_uploads: '',
       payment_schedules: payment_schedules,
-      clsC_Commission: commission
+      clsC_Commission: commission,
+      userid: userIdVal,
+      company_id: companyIdVal,
+      clientId: currentUser?.clientId || '74BB6922',
+      source: 'web',
+      languageid: 1
     };
+
+    console.log('Sending saveLandlordContract payload:', request);
 
     const formData = new FormData();
     formData.append('reqObject', JSON.stringify(request));
