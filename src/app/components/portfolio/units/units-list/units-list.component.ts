@@ -108,6 +108,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
     { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'market_rent', label: 'Market Rent', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'unit_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
@@ -125,6 +126,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
       tags:             t('web.property.lblTags'),
       unitType:         t('web.Unit.lblUnitType'),
       floor_no:         t('web.Unit.lblFloorNumber'),
+      market_rent:      t('web.Unit.lblMarketRent') || 'Market Rent',
       management_fee:   t('web.Unit.lblManagementFee'),
       unit_status_name: t('web.Unit.lblStatus'),
       action:           t('web.Unit.lblAction'),

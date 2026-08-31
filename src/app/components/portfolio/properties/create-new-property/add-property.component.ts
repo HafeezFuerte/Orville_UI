@@ -35,125 +35,147 @@ states: any[] = [];
 cities: any = [];
 amenities: any = [];
 accounts: any = [];
-selectedAmenities: number[] = [];
-propertyCode: string = '';
-is_edit:boolean=false;
-commonData: any = [];
-property: any = [];
-constructor(public translate: TranslateService, 
-  private formBuilder: FormBuilder,
-  private propertiesService: PropertiesService,
-  private route: ActivatedRoute,
-  private store: Store,
-  private portfolioService: PortfolioService,
-  private toastr:ToastrService,
-  private router: Router
+  selectedAmenities: number[] = [];
+  existingPropertyImage: string = '';
+  propertyCode: string = '';
+  is_edit:boolean=false;
+  commonData: any = [];
+  property: any = [];
+  constructor(public translate: TranslateService, 
+    private formBuilder: FormBuilder,
+    private propertiesService: PropertiesService,
+    private route: ActivatedRoute,
+    private store: Store,
+    private portfolioService: PortfolioService,
+    private toastr:ToastrService,
+    private router: Router
 
-){}
+  ){}
 
-ngOnInit(){
+  ngOnInit(){
 
-  this.initializeForm();
-  this.loadMasterDataByType(2,1, 'propertyTypes', '','');
-  this.loadMasterDataByType(2,1000, 'countries', '','');
-  this.loadMasterDataByType(2,1003, 'accounts', '','');
-  this.loadMasterDataByType(2,2, 'amenities', '','');
-
-   this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
-  if (this.propertyCode) {
-    this.is_edit=true;
-    this.loadProperty();
-  } else {
-    this.is_edit=false;
     this.initializeForm();
-  } 
-  console.log("r"+this.propertyCode);
-}
-initializeForm(){
- this.propertyForm = this.formBuilder.group({
+    this.loadMasterDataByType(2,1, 'propertyTypes', '','');
+    this.loadMasterDataByType(2,1000, 'countries', '','');
+    this.loadMasterDataByType(2,1003, 'accounts', '','');
+    this.loadMasterDataByType(2,2, 'amenities', '','');
 
-  propertyName: ['', Validators.required],
-  prefix: ['', Validators.required],
-  reference: ['', Validators.required],
+     this.propertyCode = this.route.snapshot.paramMap.get('code') ?? '';
+    if (this.propertyCode) {
+      this.is_edit=true;
+      this.loadProperty();
+    } else {
+      this.is_edit=false;
+      this.initializeForm();
+    } 
+    console.log("r"+this.propertyCode);
+  }
+  initializeForm(){
+   this.propertyForm = this.formBuilder.group({
 
-  address1: ['', Validators.required],
-  address2: [''],
-  country: ['', Validators.required],
-  state:['', Validators.required],
-  city: ['', Validators.required],
+    propertyName: ['', Validators.required],
+    prefix: ['', Validators.required],
+    reference: ['', Validators.required],
 
-  zipCode: ['', Validators.required],
-  latitude: ['', Validators.required],
-  longitude: ['', Validators.required],
-  community: ['', Validators.required],
-  landNo: ['', Validators.required],
+    address1: ['', Validators.required],
+    address2: [''],
+    country: ['', Validators.required],
+    state:['', Validators.required],
+    city: ['', Validators.required],
 
-  floors: [0, Validators.required],
-  totalUnits: [0, Validators.required],
-  parkingSpaces: [0, Validators.required],
+    zipCode: ['', Validators.required],
+    latitude: ['', Validators.required],
+    longitude: ['', Validators.required],
+    community: ['', Validators.required],
+    landNo: ['', Validators.required],
 
-  tags: ['', Validators.required],
-  description: [''],
+    floors: [0, Validators.required],
+    totalUnits: [0],
+    parkingSpaces: [0, Validators.required],
 
-  // Property Fixed Payments
-  selectAccount: ['', Validators.required],
-  selectType: ['', Validators.required],
-  selectAmount: ['', Validators.required],
+    tags: ['', Validators.required],
+    description: [''],
 
-  // Right panel
-  propertyType: ['', Validators.required],
-  purchaseValue: [0, Validators.required],
-
-  serviceRequest: [true],
-  includeAmenities: [false],
-
-  makaniNo: [''],
-  payments: this.formBuilder.array([
-    this.createPaymentRow()
-  ])
-
-});
-}
-createPaymentRow(): FormGroup {
-  return this.formBuilder.group({
+    // Property Fixed Payments
     selectAccount: ['', Validators.required],
     selectType: ['', Validators.required],
-    selectAmount: ['']
+    selectAmount: ['', Validators.required],
+
+    // Right panel
+    propertyType: ['', Validators.required],
+    purchaseValue: [0, Validators.required],
+
+    serviceRequest: [true],
+    includeAmenities: [false],
+
+    makaniNo: [''],
+    payments: this.formBuilder.array([
+      this.createPaymentRow()
+    ])
+
   });
-}
-loadProperty(){
-  this.portfolioService.getMasterByType({
-    typeId:13,
-    filterId: 0,
-    filterText: this.propertyCode,
-    filterText1: ''
-  }).subscribe({next:(res) => {
-      this.isLoading = false;
-          if (res["statusCode"] == "200") {
-             this.property = res.objResult.property[0];
-             console.log("Loaded property details from API:", this.property);
-             this.propertyForm.patchValue({
-                propertyName: this.property.name,
-                prefix: this.property.prefix,
-                reference: this.property.reference,
-                address1: this.property.address_1,
-                address2: this.property.address_2,
-                country: this.property.country_id,
-                state: this.property.state_id,
-                city: this.property.city_id,
-                zipCode: this.property.zip_code,
-                latitude: this.property.lat ?? this.property.latitude ?? '',
-                longitude: this.property.lon ?? this.property.long ?? this.property.longitude ?? '',
-                community: this.property.community ?? '',
-                landNo: this.property.land_no ?? this.property.landNo ?? '',
-                floors: this.property.no_of_floors || this.property.floors || this.property.noOfFloors || 0,
-                totalUnits: this.property.total_units || this.property.totalUnits || 0,
-                parkingSpaces: this.property.parking_spaces || this.property.parking_floors || this.property.parkingSpaces || 0,
-                tags: this.property.tags ?? '',
-                description: this.property.strdesc ?? this.property.description ?? '',
-                propertyType: this.property.property_type ?? this.property.propertyType,
-                purchaseValue: this.property.purchase_value ?? this.property.purchage_value ?? this.property.purchaseValue
-            });
+  }
+  createPaymentRow(): FormGroup {
+    return this.formBuilder.group({
+      selectAccount: ['', Validators.required],
+      selectType: ['', Validators.required],
+      selectAmount: ['']
+    });
+  }
+  loadProperty(){
+    this.portfolioService.getMasterByType({
+      typeId:13,
+      filterId: 0,
+      filterText: this.propertyCode,
+      filterText1: ''
+    }).subscribe({next:(res) => {
+        this.isLoading = false;
+             if (res["statusCode"] == "200") {
+               const prop = res.objResult.property?.[0] || res.objResult.table?.[0] || {};
+               const propInfo = res.objResult.propertyinfo?.[0] || res.objResult.property_info?.[0] || res.objResult.table1?.[0] || {};
+               this.property = { ...propInfo, ...prop };
+               console.log("Loaded property details from API:", res.objResult);
+
+               this.existingPropertyImage = this.property.property_image || this.property.image_path || this.property.imageUrl || this.property.image || '';
+
+               const unitsCountFromList = (res.objResult.units && Array.isArray(res.objResult.units)) ? res.objResult.units.length : ((res.objResult.table2 && Array.isArray(res.objResult.table2)) ? res.objResult.table2.length : 0);
+
+               const totalUnitsVal = Number(
+                 this.property.total_units ||
+                 this.property.totalUnits ||
+                 this.property.no_of_units ||
+                 this.property.units_count ||
+                 this.property.unitsCount ||
+                 propInfo.total_units ||
+                 propInfo.no_of_units ||
+                 (typeof this.property.units === 'number' ? this.property.units : 0) ||
+                 unitsCountFromList ||
+                 0
+               );
+
+               this.propertyForm.patchValue({
+                  propertyName: this.property.name || this.property.propertyName || '',
+                  prefix: this.property.prefix || '',
+                  reference: this.property.reference || '',
+                  address1: this.property.address_1 || this.property.address1 || '',
+                  address2: this.property.address_2 || this.property.address2 || '',
+                  country: this.property.country_id || this.property.country || '',
+                  state: this.property.state_id || this.property.state || '',
+                  city: this.property.city_id || this.property.city || '',
+                  zipCode: this.property.zip_code || this.property.zipcode || '',
+                  latitude: this.property.lat ?? this.property.latitude ?? '',
+                  longitude: this.property.lon ?? this.property.long ?? this.property.longitude ?? '',
+                  community: this.property.community ?? '',
+                  landNo: this.property.land_no ?? this.property.landNo ?? '',
+                  makaniNo: this.property.makani_no ?? this.property.makaniNo ?? this.property.land_no ?? this.property.landNo ?? '',
+                  floors: this.property.no_of_floors || this.property.floors || this.property.noOfFloors || propInfo.no_of_floors || 0,
+                  totalUnits: totalUnitsVal,
+                  parkingSpaces: this.property.parking_spaces || this.property.parking_floors || this.property.parkingSpaces || propInfo.parking_floors || 0,
+                  tags: this.property.tags ?? '',
+                  description: this.property.strdesc ?? this.property.desc ?? this.property.description ?? '',
+                  propertyType: this.property.property_type ?? this.property.propertyType,
+                  purchaseValue: this.property.purchase_value ?? this.property.purchage_value ?? this.property.purchaseValue
+              });
             this.loadMasterDataByType( 2, 1001, 'states', this.property.country_id.toString(), '', () => { this.propertyForm.patchValue({ state: this.property.state_id }); } );
             this.loadMasterDataByType( 2, 1002, 'cities', this.property.state_id.toString(), '', () => { this.propertyForm.patchValue({ city: this.property.city_id }); } );
           
@@ -322,63 +344,53 @@ validatePayments(errors: string[]): void {
 onPropertyImageSelected(files: File[]): void {
   this.propertyImages = files;
 }
-onSubmit() { 
-  const propertyFormLabels = {
-  propertyName: this.translate.instant('web.property.lblPropertyName'),
-  propertyType: this.translate.instant('web.property.lblPropertyType'),
+  onSubmit() {
+    if (this.isLoading) return;
+    this.isLoading = true;
 
-  prefix: this.translate.instant('web.property.lblPrefix'),
-  reference: this.translate.instant('web.property.lblReference'),
+    const propertyFormLabels = {
+      propertyName: this.translate.instant('web.property.lblPropertyName'),
+      propertyType: this.translate.instant('web.property.lblPropertyType'),
+      prefix: this.translate.instant('web.property.lblPrefix'),
+      reference: this.translate.instant('web.property.lblReference'),
+      address1: this.translate.instant('web.property.lblAddress1'),
+      address2: this.translate.instant('web.property.lblAddress2'),
+      country: this.translate.instant('web.property.lblCountry'),
+      state: this.translate.instant('web.property.lblState'),
+      city: this.translate.instant('web.property.lblCity'),
+      zipCode: this.translate.instant('web.property.lblZipCode'),
+      latitude: this.translate.instant('web.property.lblLatitude'),
+      longitude: this.translate.instant('web.property.lblLongitude'),
+      community: this.translate.instant('web.property.lblCommunity'),
+      landNo: this.translate.instant('web.property.lblLandNo'),
+      floors: this.translate.instant('web.property.lblFloors'),
+      totalUnits: this.translate.instant('web.property.lblTotalUnits'),
+      parkingSpaces: this.translate.instant('web.property.lblParkingSpaces'),
+      tags: this.translate.instant('web.property.lblTags'),
+      description: this.translate.instant('web.property.lblDescription'),
+      makaniNo: this.translate.instant('web.property.lblMakaniNo'),
+      purchaseValue: this.translate.instant('web.property.lblPurchaseValue'),
+      serviceRequest: this.translate.instant('web.property.lblServiceRequest'),
+      includeAmenities: this.translate.instant('web.property.lblIncludeAmenities'),
+      propertyImage: this.translate.instant('web.property.lblPropertyImage')
+    };
 
-  address1: this.translate.instant('web.property.lblAddress1'),
-  address2: this.translate.instant('web.property.lblAddress2'),
-  country: this.translate.instant('web.property.lblCountry'),
-  state: this.translate.instant('web.property.lblState'),
-  city: this.translate.instant('web.property.lblCity'),
-  zipCode: this.translate.instant('web.property.lblZipCode'),
-  latitude: this.translate.instant('web.property.lblLatitude'),
-  longitude: this.translate.instant('web.property.lblLongitude'),
-  community: this.translate.instant('web.property.lblCommunity'),
-  landNo: this.translate.instant('web.property.lblLandNo'),
-  floors: this.translate.instant('web.property.lblFloors'),
-  totalUnits: this.translate.instant('web.property.lblTotalUnits'),
-  parkingSpaces: this.translate.instant('web.property.lblParkingSpaces'),
-  tags: this.translate.instant('web.property.lblTags'),
+    const errors: string[] = [];
+    this.validateForm(this.propertyForm, propertyFormLabels, errors);
+    this.validatePayments(errors);
 
-  description: this.translate.instant('web.property.lblDescription'),
-
-  makaniNo: this.translate.instant('web.property.lblMakaniNo'),
-
-  purchaseValue: this.translate.instant('web.property.lblPurchaseValue'),
-
-  serviceRequest: this.translate.instant('web.property.lblServiceRequest'),
-
-  includeAmenities: this.translate.instant('web.property.lblIncludeAmenities'),
-
-  propertyImage: this.translate.instant('web.property.lblPropertyImage')
-};
- const errors: string[] = [];
-
-this.validateForm(this.propertyForm, propertyFormLabels, errors);
-
-this.validatePayments(errors);
-
-if (errors.length > 0) {
-
-  this.toastr.error(
-    errors.join('<br>'),
-    'Validation',
-    {
-      enableHtml: true,
-      timeOut: 5000,
-      positionClass: 'toast-top-right'
+    if (errors.length > 0) {
+      this.isLoading = false;
+      this.toastr.error(errors.join('<br>'), 'Validation', {
+        enableHtml: true,
+        timeOut: 5000,
+        positionClass: 'toast-top-right'
+      });
+      return;
     }
-  );
 
-  return;
-}
     const form = this.propertyForm.value;
-    
+
     const request = {
       userid: Number(localStorage.getItem('userId')) || 1,
       code: this.propertyCode || '',
@@ -386,42 +398,34 @@ if (errors.length > 0) {
       company_id: Number(localStorage.getItem('companyId')) || 1,
       tenantId: '',
       clientId: '74BB6922',
-
       name: form.propertyName,
       prefix: form.prefix,
       reference: form.reference,
-
       address1: form.address1,
       address2: form.address2,
-
       country_id: Number(form.country) || 0,
       state_id: Number(form.state) || 0,
       city_id: Number(form.city) || 0,
       total_units: Number(form.totalUnits) || 0,
       totalUnits: Number(form.totalUnits) || 0,
       zipcode: form.zipCode,
-      lat: form.latitude,
-      lon: form.longitude,
-      long: form.longitude,
-      longitude: form.longitude,
-
+      lat: form.latitude || '',
+      lon: form.longitude || '',
+      long: form.longitude || '',
+      longitude: form.longitude || '',
       community: form.community,
-      land_no: form.landNo,
+      land_no: form.makaniNo || form.landNo || '',
       no_of_floors: Number(form.floors) || 0,
       floors: Number(form.floors) || 0,
       parking_floors: Number(form.parkingSpaces) || 0,
       parking_spaces: Number(form.parkingSpaces) || 0,
       tags: form.tags,
       desc: form.description,
-
       property_type: Number(form.propertyType) || 0,
       purchage_value: Number(form.purchaseValue) || 0,
       purchase_value: Number(form.purchaseValue) || 0,
-
       amenities: this.selectedAmenities.join(','),
-
       id: this.property?.id || 0,
-
       fixedPayments: form.payments.map((payment: any) => ({
         account_id: Number(payment.selectAccount),
         payment_type: payment.selectType,
@@ -430,32 +434,51 @@ if (errors.length > 0) {
     };
 
     const formData = new FormData();
-
-    // JSON goes as ONE field
     formData.append('reqObject', JSON.stringify(request));
     if (this.propertyImages.length > 0) {
       formData.append('property_image', this.propertyImages[0]);
     }
 
-   this.propertiesService.addProperty(formData).subscribe({
-      next: (res) => {
-        this.isLoading = false;
+    this.propertiesService.addProperty(formData).subscribe({
+      next: (res: any) => {
         if (res["statusCode"] == "200") {
-            
-          this.isLoading = false;
-          this.router.navigate(['/properties']); 
-        }
+          const propCode = this.propertyCode || res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.property_code || '';
+          const propertyInfoPayload = {
+            userid: Number(localStorage.getItem('userId')) || 1,
+            company_id: Number(localStorage.getItem('companyId')) || 1,
+            clientId: '74BB6922',
+            property_code: propCode,
+            property_type: Number(form.propertyType) || 0,
+            property_category: 0,
+            size: 0,
+            no_of_floors: Number(form.floors) || 0,
+            parking_floors: Number(form.parkingSpaces) || 0,
+            land_no: form.makaniNo || form.landNo || ''
+          };
 
+          this.propertiesService.updatePropertyInfo(propertyInfoPayload).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.router.navigate(['/properties']);
+            },
+            error: () => {
+              this.isLoading = false;
+              this.router.navigate(['/properties']);
+            }
+          });
+        } else {
+          this.isLoading = false;
+          this.toastr.error(res["message"] || 'Failed to save property');
+        }
       },
       error: (err) => {
         this.isLoading = false;
-      },
+        console.error("Error saving property:", err);
+      }
     });
-  
+  }
 
-    // API call here
-}
-onCountryChange(countryId: any): void {
+  onCountryChange(countryId: any): void {
   if (countryId) { 
     this.loadMasterDataByType(2,1001,'states',countryId.id,'');
   }

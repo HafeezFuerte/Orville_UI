@@ -26,8 +26,17 @@ interface WeekDayRow {
 export class SpaceAddComponent implements OnInit {
   properties: any[] = [];
   units: any[] = [];
-  availabilityOptions: SpaceAvailability[] = ['Weekdays', 'Weekends', 'Always'];
-  slotOptions = ['30 mins', '45 mins', '1 hour', '2 hours'];
+  availabilityOptions = [
+    { id: 1, name: 'Weekdays' },
+    { id: 2, name: 'Weekends' },
+    { id: 3, name: 'Always' }
+  ];
+  slotOptions = [
+    { id: 1, name: '30 mins' },
+    { id: 2, name: '45 mins' },
+    { id: 3, name: '1 hour' },
+    { id: 4, name: '2 hours' }
+  ];
   
   form = {
     name: '',
@@ -37,8 +46,8 @@ export class SpaceAddComponent implements OnInit {
     description: '',
     property: null as string | null,
     unit: null as string | null,
-    availability: 'Weekdays' as SpaceAvailability,
-    slotDuration: null as string | null,
+    availability: 1 as number | null,
+    slotDuration: 1 as number | null,
     startDate: '',
     endDate: '',
     enablePayment: false,
@@ -137,6 +146,27 @@ export class SpaceAddComponent implements OnInit {
     });
   }
 
+  parseAvailabilityId(val: any): number {
+    if (typeof val === 'number' && !isNaN(val) && val > 0) return val;
+    if (!val) return 1;
+    const s = String(val).toLowerCase();
+    if (s === '1' || s.includes('weekday')) return 1;
+    if (s === '2' || s.includes('weekend')) return 2;
+    if (s === '3' || s.includes('always')) return 3;
+    return Number(val) || 1;
+  }
+
+  parseSlotDurationId(val: any): number {
+    if (typeof val === 'number' && !isNaN(val) && val > 0) return val;
+    if (!val) return 1;
+    const s = String(val).toLowerCase();
+    if (s === '1' || s.includes('30')) return 1;
+    if (s === '2' || s.includes('45')) return 2;
+    if (s === '3' || s.includes('1 hour') || s.includes('60')) return 3;
+    if (s === '4' || s.includes('2 hour') || s.includes('120')) return 4;
+    return Number(val) || 1;
+  }
+
   loadSpaceDetails(): void {
     this.portfolioService.getMasterByType({
       typeId: 30,
@@ -155,8 +185,8 @@ export class SpaceAddComponent implements OnInit {
             description: detail.description || '',
             property: detail.property_code || null,
             unit: detail.unit_code || null,
-            availability: detail.availability || 'Weekdays',
-            slotDuration: detail.slots_duration_nm || null,
+            availability: this.parseAvailabilityId(detail.availability || detail.available_days),
+            slotDuration: this.parseSlotDurationId(detail.slot_duration || detail.slots_duration_nm),
             startDate: this.formatDateForInput(detail.start_date),
             endDate: this.formatDateForInput(detail.end_date),
             enablePayment: detail.enabled_payment === true || detail.enabled_payments_for_space === true,
@@ -253,8 +283,8 @@ export class SpaceAddComponent implements OnInit {
     }));
 
     const clsAvailablity_Schedule = {
-      available_days: this.form.availability || 'Weekdays',
-      slot_duration: this.form.slotDuration || '',
+      available_days: this.parseAvailabilityId(this.form.availability),
+      slot_duration: this.parseSlotDurationId(this.form.slotDuration),
       start_date: this.parseInputDate(this.form.startDate),
       end_date: this.parseInputDate(this.form.endDate)
     };
