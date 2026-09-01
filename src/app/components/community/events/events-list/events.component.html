@@ -15,13 +15,15 @@
   <div class="mb-5 overflow-x-auto" role="tablist" aria-label="Event status">
     <div class="ov-seg ov-seg--tabs">
       <button
-        type="button"
-        *ngFor="let tab of statusTabs"
-        class="ov-seg__btn"
-        [class.is-active]="statusFilter === tab"
-        (click)="setStatusFilter(tab)">
-        {{ tab }} ({{ countFor(tab) }})
-      </button>
+      type="button"
+     *ngFor="let tab of statusTabs"
+     class="ov-seg__btn"
+     [class.is-active]="statusFilter === tab.id"
+     [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+     [class.border-transparent]="statusFilter !== tab.id" 
+     (click)="setStatusFilter(tab.id)">
+         {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+   </button>
     </div>
   </div>
 
@@ -56,27 +58,20 @@
 
     <div class="overflow-x-auto px-5 pb-0 pt-5"
       [class.events-table-wrap--menu-open]="!!openRowActionId">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+   <app-shared-table
+   (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+  [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link" [routerLink]="['/community/events', row.id]">{{ row.id }}</a>
-            <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/events', row.id]">{{ row.name }}</a>
-            <span *ngSwitchCase="'status'"
+            <ng-container *ngSwitchCase="'code'">
+              <a class="ov-link" [routerLink]="['/community/events', row.code]" href="javascript:void(0)">{{ row.code }}</a>
+            </ng-container>
+ 
+            <a *ngSwitchCase="'event_name'" class="ov-link" [routerLink]="['/community/events', row.code]">{{ row.event_name }}</a>
+            <span *ngSwitchCase="'status_name'"
               class="inline-flex h-6 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [ngClass]="{
-                'bg-light text-defaulttextcolor': row.status === 'Draft',
-                'bg-primary text-white': row.status === 'Published',
-                'bg-danger/10 text-danger': row.status === 'Cancelled'
-              }">
-              {{ row.status }}
+              [ngClass]="row.class_name">
+              {{ row.status_name }}
             </span>
             <span *ngSwitchCase="'maxAttendance'"
               class="inline-flex h-6 items-center rounded-sm bg-light px-2.5 text-xs font-semibold text-defaulttextcolor">
@@ -90,14 +85,14 @@
               <div *ngIf="openRowActionId === row.id"
                 class="events-row-menu absolute end-0 top-full mt-1 min-w-[148px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/community/events', row.id]"
+                  [routerLink]="['/community/events', row.code]"
                   (click)="openRowActionId = null">View Details</a>
                 <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/community/events/new']"
+                  [routerLink]="['/community/events/edit',row.code]"
                   (click)="openRowActionId = null">Edit Event</a>
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[13px] font-medium text-danger hover:bg-light"
-                  (click)="openRowActionId = null">Delete</button>
+                  (click)="deleteEvent(row.code)">Delete</button>
               </div>
             </div>
             <span *ngSwitchDefault>{{ row[col.key] }}</span>
@@ -110,12 +105,8 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -156,3 +147,6 @@
     </div>
   </app-filter-drawer>
 </div>
+
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

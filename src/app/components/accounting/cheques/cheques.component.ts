@@ -168,15 +168,15 @@ export class ChequesComponent {
   }
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get pagerItems(): (number | string)[] {
@@ -189,12 +189,12 @@ export class ChequesComponent {
 
   setStatusFilter(status: 'All' | ChequeStatus): void {
     this.statusFilter = status;
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadCheques();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadCheques();
   }
 
