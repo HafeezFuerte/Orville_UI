@@ -587,42 +587,6 @@
           </div>
         </div>
 
-        <!-- CHEQUES TAB (overview slot via checkCommonTab) -->
-        <div *ngIf="activeTab === 'Cheques'" class="flex flex-col gap-4 animate-fade-in">
-          <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Cheques</h6>
-            </div>
-            <div class="p-4">
-              <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
-                <ng-template #colTemplate let-row="row" let-col="col">
-                  <ng-container [ngSwitch]="col.key">
-                    <ng-container *ngSwitchCase="'amt'">
-                      <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
-                    </ng-container> 
-                    <ng-container *ngSwitchCase="'rcp_no'">
-                      <span [routerLink]="['/accounting/invoices', row?.invoicecode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.rcp_no }}</span>
-                   </ng-container>
-                    <ng-container *ngSwitchCase="'Tenant'">
-                      <span [routerLink]="['/contacts/tenants/edit-tenant', row?.tenant_code]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.tenant }}</span>
-                   </ng-container>
-                   <ng-container *ngSwitchCase="'unit_code'">
-                    <span [routerLink]="['/edit-unit', row?.unitcode]" class="font-bold text-primary hover:underline cursor-pointer">{{ row.unit_code }}</span>
-                 </ng-container>
-                    <ng-container *ngSwitchCase="'cheque_status'">
-                      <span  [ngClass]="row.cheque_status_class || ''" class="px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider">{{ getArabicLookupName(row,'cheque_status') }}</span>
-                       
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'attachment_path'">
-                      <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
-                        <i class="ri-file-pdf-line"></i> {{ row.attachment_path }}
-                      </a>
-                    </ng-container>
-                  </ng-container>
-                </ng-template>
-              </app-shared-table>
-            </div>
-          </div>
         <!-- CHEQUES TAB -->
         <div *ngIf="activeTab === 'Cheques'" class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
           <div class="ld-fin-tab__head">
@@ -656,7 +620,6 @@
           </app-shared-table>
         </div>
 
-      </div>
       </div>
     </ng-template>
 
@@ -709,31 +672,25 @@
 
     <!-- LEGAL -->
     <ng-template #legalTpl>
-      <div class="flex flex-col gap-4 animate-fade-in text-xs">
-        <div class="box bg-white border border-gray-100 rounded-xl shadow-sm overflow-visible">
-          <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <h6 class="font-bold text-gray-800 text-[11px] uppercase tracking-wider m-0">Lease Legal Cases</h6>
-            <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="px-3 py-1.5 text-[10px] rounded bg-primary text-white border-0 hover:bg-primary-hover font-semibold flex items-center gap-1 shadow-sm">
-              <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
-            </button>
-          </div>
-          <div class="p-4">
-            <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
-              <ng-template #colTemplate let-row="row" let-col="col">
-                <ng-container [ngSwitch]="col.key">
-                  <ng-container *ngSwitchCase="'unitBlocked'">
-                    <span *ngIf="row.unitBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                    <span *ngIf="row.unitBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'tenantBlocked'">
-                    <span *ngIf="row.tenantBlocked === 'Yes'" class="px-2 py-0.5 rounded bg-[#1f2b45] text-white text-[10px] font-bold shadow-sm">Yes</span>
-                    <span *ngIf="row.tenantBlocked === 'No'" class="px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px] font-bold shadow-sm">No</span>
-                  </ng-container>
-                </ng-container>
-              </ng-template>
-            </app-shared-table>
-          </div>
+      <div class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
+        <div class="ld-fin-tab__head">
+          <h5 class="ld-fin-tab__title">Lease Legal Cases</h5>
+          <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="ov-btn ov-btn-primary">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
+          </button>
         </div>
+        <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
+          <ng-template #colTemplate let-row="row" let-col="col">
+            <ng-container [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'unitBlocked'">
+                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.unitBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.unitBlocked === 'No'">{{ row.unitBlocked }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="'tenantBlocked'">
+                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.tenantBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.tenantBlocked === 'No'">{{ row.tenantBlocked }}</span>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </app-shared-table>
       </div>
     </ng-template>
 
@@ -852,58 +809,57 @@
   </div>
 
   <!-- ADD INSPECTION MODAL -->
-  <div *ngIf="showInspectionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[150] p-4">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-xl overflow-hidden animate-fade-in text-xs">
-      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-        <div>
-          <h5 class="text-xs font-bold text-gray-800 m-0">Add Inspection</h5>
-          <p class="text-[10px] text-gray-600 m-0">Schedule an inspection for this lease.</p>
+  <div *ngIf="showInspectionModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="ov-modal-stack" style="max-width: 600px">
+      <button type="button" class="ov-modal__float-close" (click)="closeInspectionModal()" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+      </button>
+      <div class="ov-modal">
+        <div class="ov-modal__header">
+          <h5 class="ov-modal__title">Add Inspection</h5>
+          <p class="ov-modal__sub">Schedule an inspection for this lease.</p>
         </div>
-        <button (click)="closeInspectionModal()" class="text-gray-600 hover:text-gray-600 transition-all">
-          <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-        </button>
-      </div>
-      <div class="p-6 flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection ID *</label>
-            <input type="text" class="form-control text-xs" placeholder="31668">
-          </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Name *</label>
-            <input type="text" class="form-control text-xs" placeholder="Move Out">
-          </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Type *</label>
-            <select class="form-control text-xs">
-              <option>Move Out</option>
-              <option>Move In</option>
-            </select>
-          </div>
-          <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Inspection Date *</label>
-            <input type="date" class="form-control text-xs">
+        <div class="ov-modal__body">
+          <div class="ov-fields ov-fields--2">
+            <div>
+              <label class="ov-label">Inspection ID <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" placeholder="e.g. 31668" />
+            </div>
+            <div>
+              <label class="ov-label">Inspection Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" placeholder="e.g. Move Out" />
+            </div>
+            <div>
+              <label class="ov-label">Inspection Type <span class="text-danger">*</span></label>
+              <select class="ov-input">
+                <option>Move Out</option>
+                <option>Move In</option>
+              </select>
+            </div>
+            <div>
+              <label class="ov-label">Inspection Date <span class="text-danger">*</span></label>
+              <input type="date" class="ov-input" />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-        <button (click)="closeInspectionModal()" class="ti-btn ti-btn-light !py-2 font-bold text-xs rounded-lg shadow-sm">Cancel</button>
-        <button (click)="closeInspectionModal()" class="ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">Save Inspection</button>
+        <div class="ov-modal__footer">
+          <button type="button" class="ov-btn ov-btn-ghost" (click)="closeInspectionModal()">Cancel</button>
+          <button type="button" class="ov-btn ov-btn-primary" (click)="closeInspectionModal()">Save Inspection</button>
+        </div>
       </div>
     </div>
   </div>
   <div *ngIf="showApprovalModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-    <div class="ov-modal">
+    <div class="ov-modal-stack" style="max-width: 520px">
+      <button type="button" class="ov-modal__float-close" (click)="showApprovalModal = false" aria-label="Close">
+        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+      </button>
+      <div class="ov-modal">
       <div class="ov-modal__header">
-        <div>
-          <h4 class="ov-modal__title">{{ApprovalModalText}}</h4>
-          <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
-        </div>
-        <button type="button" (click)="showApprovalModal = false" class="ov-icon-btn ov-icon-btn--bare" aria-label="Close">
-          <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-        </button>
+        <h4 class="ov-modal__title">{{ApprovalModalText}}</h4>
+        <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
       </div>
-      <div class="ov-modal__body flex flex-col gap-4"> 
+      <div class="ov-modal__body flex flex-col gap-4">
         <div>
           <label class="ov-label">Notes</label>
           <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" placeholder="Enter Comments....."></textarea>
@@ -912,6 +868,7 @@
       <div class="ov-modal__footer">
         <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
         <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">Save</button>
+      </div>
       </div>
     </div>
   </div>

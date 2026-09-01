@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="overflow-x-auto px-5 pb-0 pt-5">
+    <div class="overflow-visible px-5 pb-0 pt-5">
       <app-shared-table
         [columns]="visibleColumns"
         [data]="paginatedRows"
@@ -71,12 +71,15 @@
               <span class="cn-remaining">{{currentUser?.currencyCode}} {{ row.amount | number:'1.2-2' }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'action'">
-              <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <div class="inline-flex" (click)="$event.stopPropagation()">
                 <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" aria-label="Row actions">
                   <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
                 </button>
                 <div *ngIf="openActionId === row.id"
-                  class="absolute end-0 z-20 mt-1 min-w-[168px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                  class="fixed z-[9999] min-w-[168px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg"
+                  [style.top.px]="dropdownTop"
+                  [style.right.px]="dropdownRight"
+                  (click)="$event.stopPropagation()">
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                     (click)="openEditModal(row)">Edit Credit note</button>
                   <button type="button" class="cn-delete-action block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
@@ -142,15 +145,14 @@
 </app-filter-drawer>
 
 <div *ngIf="modalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="credit-note-title">
-  <div class="ov-modal ov-modal--lg">
+  <div class="ov-modal-stack" style="max-width: 640px">
+    <button type="button" class="ov-modal__float-close" (click)="closeModal()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
+    </button>
+    <div class="ov-modal ov-modal--lg">
     <div class="ov-modal__header">
-      <div>
-        <h6 class="ov-modal__title" id="credit-note-title">{{ modalTitle }}</h6>
-        <p class="ov-modal__sub">{{ modalSub }}</p>
-      </div>
-      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="closeModal()" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
-      </button>
+      <h6 class="ov-modal__title" id="credit-note-title">{{ modalTitle }}</h6>
+      <p class="ov-modal__sub">{{ modalSub }}</p>
     </div>
     <div class="ov-modal__body">
       <div class="ov-fields ov-fields--2">
@@ -197,6 +199,7 @@
       <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="saveCreditNote()">Save</button>
     </div>
+  </div>
   </div>
 </div>
 <app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">

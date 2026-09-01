@@ -63,20 +63,39 @@
           [(ngModel)]="searchQuery" />
       </label>
 
-      <div class="relative">
-        <select
-          class="ov-input cursor-pointer appearance-none pr-8"
-          [(ngModel)]="roleFilter"
-          aria-label="Filter by role">
-          <option value="">Role</option>
-          <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
-        </select>
-        <img
-          src="./assets/images/settings/chevron-down.svg"
-          alt=""
-          width="12"
-          height="12"
-          class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+      <div class="ov-select" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="ov-select__trigger"
+          [class.is-open]="isRoleDropdownOpen"
+          (click)="isRoleDropdownOpen = !isRoleDropdownOpen"
+          aria-haspopup="listbox"
+          [attr.aria-expanded]="isRoleDropdownOpen">
+          <span [class.ov-select__placeholder]="!roleFilter">{{ roleFilter || 'Role' }}</span>
+          <img
+            src="./assets/images/settings/chevron-down.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="ov-select__chevron" />
+        </button>
+        <div *ngIf="isRoleDropdownOpen" class="ov-select__menu" role="listbox">
+          <button
+            type="button"
+            class="ov-select__option"
+            [class.is-selected]="roleFilter === ''"
+            (click)="roleFilter = ''; isRoleDropdownOpen = false">
+            Role
+          </button>
+          <button
+            type="button"
+            class="ov-select__option"
+            *ngFor="let r of roleOptions"
+            [class.is-selected]="roleFilter === r"
+            (click)="roleFilter = r; isRoleDropdownOpen = false">
+            {{ r }}
+          </button>
+        </div>
       </div>
     </div>
 

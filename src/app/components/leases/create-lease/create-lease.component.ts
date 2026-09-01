@@ -259,11 +259,14 @@ export class CreateLeaseComponent implements OnInit {
   showPaymentBlock(flg:number){
     if(flg==3){
       this.paymentSchedules=[];
+      return;
     }
-    else{
-    this.addpaymentbloc.isSecurityDeposit=flg;
-    this.showAddPayment=!this.showAddPayment;
+    if (this.showAddPayment && this.addpaymentbloc.isSecurityDeposit === flg) {
+      this.showAddPayment = false;
+      return;
     }
+    this.addpaymentbloc.isSecurityDeposit = flg;
+    this.showAddPayment = true;
   }
   onFilesSelected(files: File[]) {
     if (files.length > 0) {
@@ -686,6 +689,39 @@ export class CreateLeaseComponent implements OnInit {
       });
     }
    
+  }
+
+  /** Read-only duration label for lease details (presentation only). */
+  get totalDurationLabel(): string {
+    const m = this.months;
+    if (!m || m <= 0) {
+      return 'N/A';
+    }
+    return m === 1 ? '1 month' : `${m} months`;
+  }
+
+  /** Reset inline payment form fields (presentation only). */
+  clearPaymentForm(): void {
+    this.addpaymentbloc = {
+      includetax: false,
+      isSecurityDeposit: this.addpaymentbloc.isSecurityDeposit,
+      Amount: 0,
+      AdvAmt: 0,
+      attachedFile: null,
+      DueDate: null,
+      Memo: '',
+      money_held_by_id: null,
+      Recurrence_id: null,
+      cheque_no: '',
+      cheque_date: '',
+      bank: '',
+      held_by: null,
+      TaxProfileId: null,
+      AccountCode: null,
+      PaymentTypeid: null,
+      InvoiceNo: '',
+    };
+    this.attachedFile = '';
   }
 
   goBack() {

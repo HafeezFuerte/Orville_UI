@@ -1,26 +1,27 @@
 <div class="ov-modal-backdrop" role="dialog" aria-modal="true" [attr.aria-labelledby]="modalId || 'ov-modal-title'">
-  <div class="ov-modal ov-modal--lg" [attr.id]="modalId || null">
-    <div class="ov-modal__header">
-      <div>
+  <div class="ov-modal-stack" style="max-width: 640px">
+    <button type="button" class="ov-modal__float-close" (click)="close.emit()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <div class="ov-modal ov-modal--lg" [attr.id]="modalId || null">
+      <div class="ov-modal__header">
         <h5 class="ov-modal__title" id="ov-modal-title">{{ title }}</h5>
         <p *ngIf="subtitle" class="ov-modal__sub">{{ subtitle }}</p>
       </div>
-      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="close.emit()" aria-label="Close">
-        <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
-      </button>
-    </div>
 
-    <div class="ov-modal__body">
-      <ng-content></ng-content>
-    </div>
+      <div class="ov-modal__body">
+        <ng-content></ng-content>
+      </div>
 
-    <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="close.emit()">
-        {{ (cancelText === 'Close' || cancelText === 'Cancel' ? 'web.common.lblClose' : cancelText) | translate }}
-      </button>
-      <button *ngIf="saveText" type="button" class="ov-btn ov-btn-primary" (click)="save.emit()">
-        {{ (saveText === 'Save' ? 'web.common.btnSave' : saveText) | translate }}
-      </button>
+      <div class="ov-modal__footer">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="close.emit()">
+          {{ (cancelText === 'Close' || cancelText === 'Cancel' ? 'web.common.lblClose' : cancelText) | translate }}
+        </button>
+        <button *ngIf="saveText" type="button" class="ov-btn ov-btn-primary" (click)="save.emit()">
+          {{ (saveText === 'Save' ? 'web.common.btnSave' : saveText) | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

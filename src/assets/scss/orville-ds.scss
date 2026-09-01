@@ -669,6 +669,10 @@ html.dark .ov-inline-search input[type='text'],
 .dark .ov-btn-ghost {
   background: rgb(var(--body-bg));
   border-color: rgb(255 255 255 / 0.1);
+  /* !important: guards against page-scoped ghost-button overrides (e.g. a
+     light-mode-only `color: rgb(var(--primary))` on a header Action button)
+     leaving text unreadable — navy-on-dark — when dark mode is on. */
+  color: rgb(var(--default-text-color)) !important;
 }
 
 .ov-btn-muted {
@@ -2059,6 +2063,18 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   color: rgb(var(--success));
 }
 
+.ov-outline-chip--info {
+  border-color: rgb(var(--primary) / 0.35);
+  background: rgb(var(--primary) / 0.08);
+  color: rgb(var(--primary));
+}
+
+.dark .ov-outline-chip--info {
+  border-color: rgb(100 149 237 / 0.4);
+  background: rgb(100 149 237 / 0.12);
+  color: rgb(100 149 237);
+}
+
 .ov-outline-chip--muted {
   border-color: transparent;
   background: rgb(var(--default-background));
@@ -2102,6 +2118,106 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
   font-weight: 500;
   letter-spacing: 0.02em;
   color: rgb(var(--text-muted));
+}
+
+/* Custom select dropdown — styled replacement for native <select> */
+.ov-select {
+  position: relative;
+  display: inline-block;
+}
+
+.ov-select__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--default-border));
+  background: rgb(var(--default-background));
+  padding: 0 12px 0 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: rgb(var(--text-muted) / 0.55);
+  }
+
+  &.is-open {
+    border-color: rgb(var(--primary));
+    box-shadow: 0 0 0 1px rgb(var(--primary));
+  }
+
+  .ov-select__chevron {
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+  }
+
+  &.is-open .ov-select__chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.ov-select__placeholder {
+  color: rgb(var(--text-muted));
+}
+
+.ov-select__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  inset-inline-start: 0;
+  z-index: 50;
+  min-width: 180px;
+  background: rgb(var(--default-background));
+  border: 1px solid rgb(var(--default-border));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.1);
+  padding: 4px;
+}
+
+.ov-select__option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  color: rgb(var(--default-text-color));
+  cursor: pointer;
+  line-height: 1.4;
+
+  &:hover {
+    background: rgb(var(--primary) / 0.08);
+    color: rgb(var(--primary));
+  }
+
+  &.is-selected {
+    background: rgb(var(--primary) / 0.1);
+    color: rgb(var(--primary));
+    font-weight: 500;
+  }
+}
+
+.dark .ov-select__trigger {
+  background: rgb(var(--default-background));
+  border-color: rgb(var(--default-border));
+  color: rgb(var(--default-text-color) / 0.85);
+}
+
+.dark .ov-select__menu {
+  background: rgb(var(--body-bg));
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.3);
+}
+
+.dark .ov-select__option {
+  color: rgb(var(--default-text-color) / 0.85);
 }
 
 /* Modal / dialog chrome — Figma form tokens (Add Property / Add Vendor) */
@@ -2407,9 +2523,9 @@ html.dark[data-menu-styles='light'] .app-sidebar .main-menu > .slide > .side-men
 
 .ov-modal__header {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 4px;
   padding: 28px 28px 20px;
   border-bottom: 1px solid rgb(var(--default-border));
 }
@@ -4301,7 +4417,7 @@ html.dark .ov-portfolio-pill--muted,
   align-items: center;
   height: 22px;
   padding: 0 10px;
-  border-radius: 999px;
+  border-radius: 4px;
   border: 1px solid rgb(var(--default-border));
   background: #fff;
   font-size: 12px;
@@ -4365,7 +4481,7 @@ html.dark .ov-portfolio-pill--muted,
   min-height: 24px;
   padding: 4px 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.2;
@@ -4406,7 +4522,7 @@ html.dark .ov-portfolio-pill--muted,
   min-height: 22px;
   padding: 2px 10px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.2;

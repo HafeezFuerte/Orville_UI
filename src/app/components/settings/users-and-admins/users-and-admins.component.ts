@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,6 +23,12 @@ export class UsersAndAdminsComponent {
   statusFilter: StatusFilter = 'all';
   searchQuery = '';
   roleFilter = '';
+  isRoleDropdownOpen = false;
+
+  @HostListener('document:click')
+  closeRoleDropdown() {
+    this.isRoleDropdownOpen = false;
+  }
 
   users: SettingsUserRow[] = [...MOCK_SETTINGS_USERS];
 

@@ -41,6 +41,8 @@ export class CreditNotesComponent {
   showColumnDropdown = false;
   deleteModal:boolean=false;
   openActionId: string | null = null;
+  dropdownTop = 0;
+  dropdownRight = 0;
   modalOpen = false;
   editingId: any = null; 
   filterContact = '';
@@ -179,7 +181,25 @@ export class CreditNotesComponent {
 
   toggleRowAction(id: string, event: Event): void {
     event.stopPropagation();
-    this.openActionId = this.openActionId === id ? null : id;
+    if (this.openActionId === id) {
+      this.openActionId = null;
+      return;
+    }
+    const btn = event.currentTarget as HTMLElement;
+    const rect = btn.getBoundingClientRect();
+    this.dropdownTop = rect.bottom + 4;
+    this.dropdownRight = window.innerWidth - rect.right;
+    this.openActionId = id;
+  }
+
+  @HostListener('document:click')
+  closeRowAction(): void {
+    this.openActionId = null;
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    this.openActionId = null;
   }
 
   openCreateModal(): void {

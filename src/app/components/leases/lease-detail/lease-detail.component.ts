@@ -533,6 +533,9 @@ export class LeaseDetailComponent implements OnInit {
     if (status.includes('partial') || status.includes('pending') || status.includes('hold')) {
       return 'ov-outline-chip ov-outline-chip--warning';
     }
+    if (status.includes('undeposited')) {
+      return 'ov-outline-chip ov-outline-chip--info';
+    }
     if (status.includes('paid') || status.includes('cleared') || status.includes('deposit')) {
       return 'ov-outline-chip ov-outline-chip--success';
     }

@@ -156,20 +156,12 @@
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" /> Column
           </button>
           
-          <!-- Column popup drawer box with close and footer actions matching screenshot -->
           <div *ngIf="isColumnDropdownOpen"
-            class="absolute end-0 z-30 mt-1.5 flex min-w-[200px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg"
+            class="absolute end-0 z-50 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg"
             (click)="$event.stopPropagation()">
-            <div class="flex justify-between items-center pb-2 mb-1 border-b border-defaultborder">
-              <span class="text-[12px] font-bold text-defaulttextcolor uppercase">Column</span>
-              <button type="button" (click)="isColumnDropdownOpen = false" class="border-0 bg-transparent text-textmuted hover:text-defaulttextcolor p-0">
-                <i class="ri-close-line text-[16px]"></i>
-              </button>
-            </div>
-            
-            <label class="mb-1 flex cursor-pointer items-center gap-2 pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
+            <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
               <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary"
-                [checked]="allColumnsVisible" 
+                [checked]="allColumnsVisible"
                 (change)="toggleAllColumns($any($event.target).checked)">
               Select All
             </label>
@@ -179,17 +171,6 @@
                 [checked]="col.visible !== false" (change)="col.visible = !(col.visible !== false)">
               {{ col.label }}
             </label>
-
-            <div class="flex justify-between gap-2 mt-2 pt-2 border-t border-defaultborder">
-              <button type="button" (click)="clearAllColumns()" 
-                class="ov-btn ov-btn-ghost flex-1 !py-1 text-[11px] font-semibold border-0 text-center">
-                Clear
-              </button>
-              <button type="button" (click)="isColumnDropdownOpen = false" 
-                class="ov-btn ov-btn-ghost flex-1 !py-1 text-[11px] font-semibold border-0 text-center">
-                Close
-              </button>
-            </div>
           </div>
         </div>
       </div>
