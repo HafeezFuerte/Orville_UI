@@ -6,7 +6,11 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { EVENT_ROWS, EventRow, EventStatus } from '../events.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 type StatusTab = 'All' | EventStatus;
 
 @Component({
@@ -18,28 +22,35 @@ type StatusTab = 'All' | EventStatus;
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,DeleteConfirmationComponent
   ],
   templateUrl: './events.component.html',
   styleUrl: './events.component.scss'
 })
 export class EventsComponent {
   searchQuery = '';
-  statusFilter: StatusTab = 'All';
-  statusTabs: StatusTab[] = ['All', 'Draft', 'Published', 'Cancelled'];
+  statusFilter: any = 'All';
+  statusTabs: any=[];
   isDrawerOpen = false;
+  deleteModal:boolean=false;
   showColumnDropdown = false;
   filterName = '';
   filterStatus: EventStatus | null = null;
   statusOptions: EventStatus[] = ['Draft', 'Published', 'Cancelled'];
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = EVENT_ROWS;
+  event_code="";
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser(); 
   openRowActionId: string | null = null;
 
   tableColumns = [
     {
-      key: 'id',
+      key: 'code',
       label: 'ID',
       visible: true,
       useTemplate: true,
@@ -48,7 +59,7 @@ export class EventsComponent {
       cellClass: 'sticky left-0 z-[1] bg-white dark:bg-bodybg'
     },
     {
-      key: 'name',
+      key: 'event_name',
       label: 'Event Name',
       visible: true,
       useTemplate: true,
@@ -57,13 +68,14 @@ export class EventsComponent {
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
     { key: 'location', label: 'Location', visible: true, width: '240px' },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'date', label: 'Date', visible: true },
-    { key: 'maxAttendance', label: 'Max Attendance', visible: true, useTemplate: true },
+    { key: 'status_name', label: 'Status', visible: true, useTemplate: true },
+    { key: 'event_date', label: 'Date', visible: true },
+    { key: 'max_attendences', label: 'Max Attendance', visible: true, useTemplate: true },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '80px' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService) {}
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
@@ -89,6 +101,92 @@ export class EventsComponent {
       );
     });
   }
+  ngOnInit() {
+    
+    this.loadEvents();  
+    this.loadLookup(69,41, 'statusTabs', '');
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as inactive");
+            this.event_code='';
+            this.loadEvents();
+        }else{
+          this.statusTabs.push({"id":"All","name":"All"}); 
+          this.statusTabs.push(...res.objResult.table);  
+        }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleteEvent(id: string): void { 
+    this.deleteModal=!this.deleteModal;  
+    this.event_code=id;
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,0, '', this.event_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
+  loadEvents() {
+    const filterList: any[] = [];
+    if (this.statusFilter && this.statusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    } 
+     
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? 'status' : '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "EVENTS"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.events || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
 
   countFor(tab: StatusTab): number {
     if (tab === 'All') {
@@ -99,31 +197,24 @@ export class EventsComponent {
 
   setStatusFilter(tab: StatusTab): void {
     this.statusFilter = tab;
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadEvents();
   }
-
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
-
+ 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get paginatedRows(): EventRow[] {
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
@@ -166,6 +257,7 @@ export class EventsComponent {
     this.filterStatus = null;
     this.statusFilter = 'All';
     this.pageIndex = 0;
+    this.loadEvents();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -184,29 +276,50 @@ export class EventsComponent {
     this.tableColumns.forEach((col) => (col.visible = checked));
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadEvents();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadEvents();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadEvents();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+      this.pageNo++;
+      this.loadEvents();
     }
   }
 
   goToPage(page: number): void {
-    const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadEvents();
     }
+ 
   }
-
   toggleRowAction(id: string, event: Event): void {
     event.stopPropagation();
     this.openRowActionId = this.openRowActionId === id ? null : id;

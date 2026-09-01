@@ -2,7 +2,10 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventRow, getEventById } from '../events.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
@@ -11,7 +14,9 @@ import { EventRow, getEventById } from '../events.data';
   styleUrl: './event-detail.component.scss'
 })
 export class EventDetailComponent implements OnInit, OnDestroy {
-  detail: EventRow = getEventById('658');
+  detail: any = {};// = getEventById('658');
+  attendees:any=[];
+  event_code:any;
   showActionMenu = false;
   showPreview = false;
   openSections: Record<string, boolean> = {
@@ -28,14 +33,59 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService
   ) {}
+  
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
-      this.detail = getEventById(params.get('id'));
+      this.event_code=params.get('code'); 
+      this.getEventDetails(2,41, 'statusTabs', this.event_code);
     });
   }
+ 
+  getEventDetails(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: 69,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table1) {  
+          var temp=res.objResult.table1 [0] || {};
+          this.attendees=res.objResult.table2 || []; 
+          if(temp){
+            this.detail = {
+              id: temp.id,
+              name: temp.event_name,
+              location: temp.location,
+              status: temp.status,
+              event_image_path:temp.event_image_path,
+              status_nm: temp.status_name,
+              date: temp.event_date,
+              maxAttendance: temp.max_attendences,
+              startTime: temp.start_time,
+              endTime: temp.end_time,
+              description: temp.description,
+              email: temp.email_address,
+              phone: temp.phone_no,
+              sendableTo: temp.entity, 
+              attendees: this.attendees.length,
+              createdAt: temp.created_date,
+              createdBy: temp.createdby}
+          }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+
 
   ngOnDestroy(): void {
     this.closePreview();
@@ -46,7 +96,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   }
 
   get eventCity(): string {
-    const parts = this.detail.location.split(',').map((p) => p.trim()).filter(Boolean);
+    const parts = this.detail.location.split(',').map((p:any) => p.trim()).filter(Boolean);
     return parts.length ? parts[parts.length - 1] : '—';
   }
 
@@ -62,7 +112,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   }
 
   goToEdit(): void {
-    void this.router.navigate(['/community/events/new']);
+    void this.router.navigate(['/community/events/edit',this.event_code]);
   }
 
   openPreview(): void {
