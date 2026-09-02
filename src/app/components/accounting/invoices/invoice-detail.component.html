@@ -200,7 +200,7 @@
           <p class="invd-due__value">{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</p>
           <div class="invd-due__badges">
             <span class="inv-badge" [ngClass]="statusBadge(invoice.invoice_status || invoice.status)">{{ getArabicLookupName(invoice,'invoice_status') || invoice.invoice_status || invoice.status || 'Draft' }}</span>
-            <span *ngIf="showDeposited" class="inv-badge inv-badge--deposited">Deposited</span>
+             
           </div>
         </div>
         <div class="invd-due__rows">
@@ -309,9 +309,12 @@
           </div>
         </div>
         <div class="invd-table-wrap">
-          <app-shared-table [columns]="chequeCols" [data]="receiptslist" [hasActions]="true">
+          <app-shared-table [columns]="chequeCols" [data]="receiptslist" [hasActions]="false">
                   <ng-template #colTemplate let-row="row" let-col="col">
                     <ng-container [ngSwitch]="col.key">
+                      <ng-container *ngSwitchCase="'id'">
+                        <span   class="font-bold text-primary hover:underline cursor-pointer">{{ row.code }}</span>
+                     </ng-container>
                       <ng-container *ngSwitchCase="'amt'">
                         <span class="font-bold text-gray-700">{{currentUser?.currencyCode}} {{ row.amt }}</span>
                       </ng-container> 

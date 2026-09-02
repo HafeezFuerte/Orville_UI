@@ -9,10 +9,13 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { LeasesService } from '../../leases/leases.service';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
+import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
+import { CommonService } from '../../../services/common.service';
+import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
   selector: 'app-financials-table',
   standalone: true,
-  imports: [CommonModule,NgSelectModule,FileUploadComponent, FormsModule,TranslateModule, RouterModule],
+  imports: [CommonModule,NgSelectModule,DeleteConfirmationComponent,FlowbiteDatepickerDirective,FileUploadComponent, FormsModule,TranslateModule, RouterModule],
   templateUrl: './financials.component.html',
   styleUrls: ['./financials.component.scss']
 })
@@ -26,16 +29,23 @@ export class FinancialsComponent implements OnInit, OnChanges {
   isLoading:boolean=false;
   payment_code:any='';
   private commontab_service=inject(Common_TabsService);
+  private commonservice=inject(CommonService);
   private toast=inject(ToastrService); 
   private lease_service=inject(LeasesService); 
+  deleteModal:boolean=false;
   private router=inject(Router);
   showApprovalMenu=false;
   openMenuReceiptKey: string | null = null;
   paymentMethods:any=[];
   coa_list:any=[];
+  bounceBlock:any ={bounceDate:'',isPenalty:false,account:'',penaltyAmt:0,due_date:'',reason:'', code:'' }
+  chequeBlock:any= {   Amount:0, AdvAmt:0, attached_image:'',  attachedFile:null, cheque_no:'',cheque_date:'',bank:'',held_by:null,  code:''}
   receivepayment:any= { receivefull:1, Amount:0,paiddate:null,payment_via:0,account:'',notes:'',reciept_file:null}
   showReceivePayment=false;
+  showChequeEdit=false;showChequeBounce=false;
   invoice: any = {};
+  heldByList:any=[];
+  chequeStatus:any=[];
   selectedReceipt:any ={};
   @Input() currentUser: any = null;
 
@@ -115,8 +125,9 @@ export class FinancialsComponent implements OnInit, OnChanges {
     this.openMenuReceiptKey = null;
   }
   ngOnInit(): void { 
-    this.loadLookup(2,23, 'paymentMethods', '');
-    this.loadLookup(2,1003, 'coa_list', ''); 
+    this.loadLookup(2,23, 'paymentMethods', '','');
+    this.loadLookup(2,1003, 'coa_list', '',''); 
+    this.loadLookup(2,38, 'heldByList', '',''); 
     this.syncInvoice();
   }
 
@@ -138,12 +149,26 @@ export class FinancialsComponent implements OnInit, OnChanges {
       this.receivepayment.Amount=this.selectedReceipt.amt;
     } 
   }
+   
   onFilesSelected(files: File[]) {
     if (files.length > 0) {
       this.attachedFile=files[0];
     } else {
       this.attachedFile=null;
     }
+  }
+  onChequeSelected(files: File[]) {
+    if (files.length > 0) {
+      this.chequeBlock.attachedFile=files[0];
+    } else {
+      this.chequeBlock.attachedFile=null;
+    }
+  }
+  
+   
+  ReturnedCheque(){
+    this.deleteModal=false;
+    this.loadLookup(72,0,'', this.selectedReceipt?.code, this.selectedReceipt?.invoice_id);
   }
   save_payment(){
     if(this.receivepayment.Amount==0){
@@ -198,7 +223,124 @@ export class FinancialsComponent implements OnInit, OnChanges {
       });
     }
   }
-  loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string='') {
+  update_bounce_cheque(){
+    if(this.bounceBlock.bounceDate=="" || this.bounceBlock.bounceDate==null){
+      this.toast.error("Invalid bounce date");
+      return;
+    }
+    else if(this.bounceBlock.reason=="" || this.bounceBlock.reason==null){
+      this.toast.error("Invalid reason");
+      return;
+    }
+    else if(this.bounceBlock.isPenalty && (this.bounceBlock.account==null || this.bounceBlock.account=="")){
+      this.toast.error("Invalid account");
+      return;
+    }
+    else if(this.bounceBlock.isPenalty && (this.bounceBlock.penaltyAmt==null || this.bounceBlock.penaltyAmt==0)){
+      this.toast.error("Invalid penalty amount");
+      return;
+    }
+    else if(this.bounceBlock.isPenalty && (this.bounceBlock.due_date==null || this.bounceBlock.due_date=="")){
+      this.toast.error("Invalid due date");
+      return;
+    }
+    else{
+      const request = {
+        userid: this.currentUser?.userId, 
+        source: 'web', 
+        company_id: this.currentUser?.companyId, 
+        clientId: this.currentUser?.clientId, 
+        rcp_no:this.selectedReceipt?.invoice_id,
+        code: this.selectedReceipt?.code,
+        bounceDate: this.commonservice.parseInputDate(this.bounceBlock?.bounceDate),
+        reason:this.bounceBlock?.reason || '',
+        account:this.bounceBlock.isPenalty ? this.bounceBlock.account : '',
+        penaltyAmt: this.bounceBlock.isPenalty ?this.bounceBlock.penaltyAmt : 0,
+        due_date: this.bounceBlock.isPenalty ? this.commonservice.parseInputDate(this.bounceBlock.due_date) : null, 
+      }; 
+ 
+      const formData = new FormData(); 
+    // JSON goes as ONE field
+    formData.append('reqObject', JSON.stringify(request));
+   
+     this.lease_service.update_bounce_cheque(formData).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res["statusCode"] == "200") {
+            this.toast.success('Successfully updated cheque details');
+            this.showChequeBounce=false;
+            setTimeout(() => {
+              window.location.reload()
+            }, 3000);
+          }
+          else{
+            this.toast.error(res['message']);
+            return;
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+        },
+      });
+    }
+  }
+  update_cheque(){
+    if(this.chequeBlock.Amount==0){
+      this.toast.error("Invalid amount");
+      return;
+    }
+    else if(this.chequeBlock.cheque_no==null || this.chequeBlock.cheque_no==""){
+      this.toast.error("Invalid cheque no");
+      return;
+    } 
+    else if(this.chequeBlock.cheque_date==null || this.chequeBlock.cheque_date==""){
+      this.toast.error("Invalid cheque date");
+      return;
+    } 
+    else{ 
+      const request = {
+        userid: this.currentUser?.userId, 
+        source: 'web',
+        baction:"Edit",
+        company_id: this.currentUser?.companyId, 
+        clientId: this.currentUser?.clientId, 
+        rcp_no:this.selectedReceipt?.rcp_no,
+        code: this.selectedReceipt?.code,
+        chequeNo: this.chequeBlock?.cheque_no,
+        chequeDate:this.commonservice.parseInputDate( this.chequeBlock?.cheque_date),
+        bankName: this.chequeBlock?.bank,
+        amount: this.chequeBlock?.Amount,
+        held_by:this.chequeBlock?.held_by
+      }; 
+ 
+      const formData = new FormData(); 
+    // JSON goes as ONE field
+    formData.append('reqObject', JSON.stringify(request));
+    if(this.attachedFile!='')
+      formData.append("attachment", this.attachedFile); 
+   
+     this.lease_service.update_cheque_details(formData).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res["statusCode"] == "200") {
+            this.toast.success('Successfully updated cheque details');
+            this.showChequeEdit=false;
+            setTimeout(() => {
+              window.location.reload()
+            }, 3000);
+          }
+          else{
+            this.toast.error(res['message']);
+            return;
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+        },
+      });
+    }
+  }
+  loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string) {
     this.commontab_service.getMasterByType({
       typeId: typeId,
       filterId: filterId,
@@ -206,12 +348,14 @@ export class FinancialsComponent implements OnInit, OnChanges {
       filterText1: filterText1
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
-            
-            (this as any)[targetProperty] = res.objResult.table;
-            (this as any)['all'+targetProperty]=(this as any)[targetProperty]; 
-        
-           
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {  
+          if(typeId==72){
+            this.toast.success("Successfully returned cheque"); 
+            setTimeout(() => {
+              window.location.reload()
+            }, 3000);
+        }else
+            (this as any)[targetProperty] = res.objResult.table;   
         }
       },
       error: (err:any) => {
@@ -222,12 +366,25 @@ export class FinancialsComponent implements OnInit, OnChanges {
   OnApproveClick(st:string){
     this.showApprovalMenu=false;
     this.openMenuReceiptKey = null;
-    if(this.selectedReceipt && this.selectedReceipt.status!=250){
+    if(this.selectedReceipt && this.selectedReceipt.status!=254){
       if(st=="Payment"){
         this.showReceivePayment=true;
       }
       else if(st=="Edit"){
-        this.router.navigate(['/leases/edit-lease', this.leaseInfo?.code]);
+        this.chequeBlock.cheque_no=this.selectedReceipt.cheque_no;
+        this.chequeBlock.cheque_date=this.commonservice.formatDateForInput(this.selectedReceipt.cheque_date.split('T')[0]);
+        this.chequeBlock.bank=this.selectedReceipt.bank_name;
+        this.chequeBlock.attached_image=this.selectedReceipt.attachment_path;
+        this.chequeBlock.code=this.selectedReceipt.code;
+        this.chequeBlock.held_by=this.selectedReceipt.held_by;
+        this.chequeBlock.Amount=this.selectedReceipt.amt;
+        this.showChequeEdit=true; 
+      }
+      else if (st=="Bounce"){
+        this.showChequeBounce=true;
+      }
+      else if (st=="Return"){
+         this.deleteModal=!this.deleteModal;   
       }
     } 
     else{
@@ -241,7 +398,9 @@ export class FinancialsComponent implements OnInit, OnChanges {
       this.expandedInvoiceId = invoiceId;
     }
   }
-
+  closeModal(){
+    this.deleteModal=false;
+  }
   getArabicLookupName(row: any, key: string): string {
     const selectedLang = localStorage.getItem("selectedLang") || "EN";
     return row[(selectedLang === "EN" ? key : key + '_ar')] || row[key] || '';
