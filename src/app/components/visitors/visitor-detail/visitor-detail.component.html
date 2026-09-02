@@ -35,94 +35,92 @@
   </div>
 
   <div class="ov-detail-layout">
-    <aside class="ov-detail-layout__left flex flex-col gap-4">
-      <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
-        <div>
-          <h4 class="ov-card-title !text-[16px]">{{ detail.visitorName }}</h4>
-          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">{{ detail.propertyLabel }}</p>
-        </div>
-        <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold w-full">
-          View Activity
-        </button>
+    <div class="ov-detail-layout__left">
+      <div class="ov-detail-side">
 
-        <div class="border-t border-defaultborder"></div>
-        <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
-
-        <div class="visitor-info-card">
-          <h6 class="visitor-info-card__title">Visitor Information</h6>
-          <div class="visitor-info-card__body">
-            <div class="ov-kv"><span class="ov-kv__label">ID:</span><span class="ov-kv__value font-bold">{{ detail.id }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Name:</span><span class="ov-kv__value font-bold">{{ detail.visitorName }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value font-bold">{{ detail.email }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value font-bold">{{ detail.phone }}</span></div>
+        <div class="ov-detail-side__hero">
+          <div>
+            <h4 class="ov-detail-side__title">{{ detail.visitorName }}</h4>
+            <p class="ov-detail-side__email">{{ detail.propertyLabel }}</p>
+          </div>
+          <div class="ov-detail-side__actions">
+            <button type="button" class="ov-detail-side__action">View Activity</button>
           </div>
         </div>
+
+        <div class="ov-detail-side__rule"></div>
+        <h6 class="ov-detail-side__section-title">Information</h6>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Visitor Information</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">ID:</span><span class="ov-kv__value">{{ detail.id }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Name:</span><span class="ov-kv__value">{{ detail.visitorName }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value">{{ detail.email }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value">{{ detail.phone }}</span></div>
+          </div>
+        </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Visit</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">Visiting date:</span><span class="ov-kv__value">{{ detail.visitingDate }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Visitors:</span><span class="ov-kv__value">{{ detail.numberOfVisitors }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Duration:</span><span class="ov-kv__value">{{ detail.duration }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Visit type:</span><span class="ov-kv__value">{{ detail.visitType }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">One-time validity:</span><span class="ov-kv__value">{{ detail.oneTimeValidity }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Country:</span><span class="ov-kv__value">{{ detail.country }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Check-in:</span><span class="ov-kv__value">{{ detail.checkIn }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Check-out:</span><span class="ov-kv__value">{{ detail.checkOut }}</span></div>
+          </div>
+        </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Property &amp; Unit</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">Property:</span><a href="javascript:void(0)" class="ov-link">{{ detail.property }}</a></div>
+            <div class="ov-kv"><span class="ov-kv__label">Unit:</span><a href="javascript:void(0)" class="ov-link">{{ detail.unit }}</a></div>
+          </div>
+        </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Status</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv ov-kv--inline"><span class="ov-kv__label">Sent:</span><span class="visitor-tag visitor-tag--soft">{{ detail.sentTag }}</span></div>
+            <div class="ov-kv ov-kv--inline"><span class="ov-kv__label">Code:</span><span class="visitor-tag visitor-tag--outline">{{ detail.codeStatus }}</span></div>
+            <div class="ov-kv ov-kv--inline"><span class="ov-kv__label">Entry:</span><span [ngClass]="statusClass(detail.entryStatus)">{{ detail.entryStatus }}</span></div>
+          </div>
+        </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Relationships</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">Contact:</span><span class="ov-kv__value">{{ detail.contact }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Invited by:</span><span class="ov-kv__value">{{ detail.invitedBy }}</span></div>
+          </div>
+        </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Notes</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Notes:</span><span class="ov-kv__value">{{ detail.notes }}</span></div>
+          </div>
+        </div>
+
       </div>
-
-      <div class="visitor-info-card ov-card !mb-0">
-        <h6 class="visitor-info-card__title">Visit</h6>
-        <div class="visitor-info-card__body visitor-info-card__body--grid">
-          <div class="ov-kv"><span class="ov-kv__label">Visiting date:</span><span class="ov-kv__value font-bold">{{ detail.visitingDate }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Visitors:</span><span class="ov-kv__value font-bold">{{ detail.numberOfVisitors }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Duration:</span><span class="ov-kv__value font-bold">{{ detail.duration }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Visit type:</span><span class="ov-kv__value font-bold">{{ detail.visitType }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">One-time validity:</span><span class="ov-kv__value font-bold">{{ detail.oneTimeValidity }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Country:</span><span class="ov-kv__value font-bold">{{ detail.country }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Check-in:</span><span class="ov-kv__value font-bold">{{ detail.checkIn }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Check-out:</span><span class="ov-kv__value font-bold">{{ detail.checkOut }}</span></div>
-        </div>
-      </div>
-
-      <div class="visitor-info-card ov-card !mb-0">
-        <h6 class="visitor-info-card__title">Property &amp; Unit</h6>
-        <div class="visitor-info-card__body visitor-info-card__body--grid">
-          <div class="ov-kv">
-            <span class="ov-kv__label">Property:</span>
-            <a href="javascript:void(0)" class="ov-link font-bold">{{ detail.property }}</a>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Unit:</span>
-            <a href="javascript:void(0)" class="ov-link font-bold">{{ detail.unit }}</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="visitor-info-card ov-card !mb-0">
-        <h6 class="visitor-info-card__title">Status</h6>
-        <div class="visitor-info-card__body visitor-info-card__body--grid">
-          <div class="ov-kv ov-kv--inline">
-            <span class="ov-kv__label">Sent:</span>
-            <span class="visitor-tag visitor-tag--soft">{{ detail.sentTag }}</span>
-          </div>
-          <div class="ov-kv ov-kv--inline">
-            <span class="ov-kv__label">Code:</span>
-            <span class="visitor-tag visitor-tag--outline">{{ detail.codeStatus }}</span>
-          </div>
-          <div class="ov-kv ov-kv--inline">
-            <span class="ov-kv__label">Entry:</span>
-            <span [ngClass]="statusClass(detail.entryStatus)">{{ detail.entryStatus }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="visitor-info-card ov-card !mb-0">
-        <h6 class="visitor-info-card__title">Relationships</h6>
-        <div class="visitor-info-card__body visitor-info-card__body--grid">
-          <div class="ov-kv"><span class="ov-kv__label">Contact:</span><span class="ov-kv__value font-bold">{{ detail.contact }}</span></div>
-          <div class="ov-kv"><span class="ov-kv__label">Invited by:</span><span class="ov-kv__value font-bold">{{ detail.invitedBy }}</span></div>
-        </div>
-      </div>
-
-      <div class="visitor-info-card ov-card !mb-0">
-        <h6 class="visitor-info-card__title">Notes</h6>
-        <div class="visitor-info-card__body">
-          <div class="ov-kv ov-kv--stack">
-            <span class="ov-kv__label">Notes:</span>
-            <span class="ov-kv__value font-bold">{{ detail.notes }}</span>
-          </div>
-        </div>
-      </div>
-    </aside>
+    </div>
 
     <div class="ov-detail-layout__right min-w-0 flex flex-col gap-4">
       <div class="box ov-card overflow-visible shadow-none !mb-0">

@@ -31,6 +31,8 @@ export class RulesGuidesComponent {
   pageSize = 10;
   allRows = GUIDE_ROWS;
   openRowActionId: string | null = null;
+  openRowActionRow: GuideRow | null = null;
+  rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {
@@ -182,28 +184,67 @@ export class RulesGuidesComponent {
     }
   }
 
-  toggleRowAction(id: string, event: Event): void {
+  toggleRowAction(row: GuideRow, event: Event): void {
+    event.preventDefault();
     event.stopPropagation();
-    this.openRowActionId = this.openRowActionId === id ? null : id;
+    this.showColumnDropdown = false;
+
+    if (this.openRowActionId === row.id) {
+      this.closeRowMenu();
+      return;
+    }
+
+    const target = event.currentTarget as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    const menuWidth = 168;
+    const menuHeight = 130;
+    const gap = 4;
+    const left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8));
+    let top = rect.bottom + gap;
+    if (top + menuHeight > window.innerHeight) {
+      top = Math.max(8, rect.top - gap - menuHeight);
+    }
+
+    this.rowMenuStyle = {
+      top: `${Math.round(top)}px`,
+      left: `${Math.round(left)}px`
+    };
+    this.openRowActionId = row.id;
+    this.openRowActionRow = row;
   }
 
   onRowView(row: GuideRow): void {
-    this.openRowActionId = null;
+    this.closeRowMenu();
     void this.router.navigate(['/community/rules-guides', row.id]);
   }
 
   onRowEdit(): void {
-    this.openRowActionId = null;
+    this.closeRowMenu();
     void this.router.navigate(['/community/rules-guides/new']);
   }
 
   onRowDelete(): void {
+    this.closeRowMenu();
+  }
+
+  closeRowMenu(): void {
     this.openRowActionId = null;
+    this.openRowActionRow = null;
+    this.rowMenuStyle = null;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.closeRowMenu();
   }
 
   @HostListener('document:click')
   onDocumentClick(): void {
     this.showColumnDropdown = false;
-    this.openRowActionId = null;
+    this.closeRowMenu();
   }
 }

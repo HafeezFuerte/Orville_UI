@@ -10,64 +10,68 @@
       </div>
     </div>
     <div class="ov-add-header__actions relative" (click)="$event.stopPropagation()">
-      <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleActionMenu($event)" [attr.aria-expanded]="showActionMenu">
-        <i class="ti ti-dots-vertical" aria-hidden="true"></i>
-        Actions
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)" [attr.aria-expanded]="showActionMenu">
+        Action
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
-      <div *ngIf="showActionMenu" class="sd-actions-menu" role="menu">
-        <ng-container *ngFor="let option of actionOptions">
-          <button
-            *ngIf="!option.danger"
-            type="button"
-            role="menuitem"
-            class="sd-actions-menu__item"
-            (click)="onAction(option.label)">
-            <i class="ti" [ngClass]="option.icon" aria-hidden="true"></i>
-            {{ option.label }}
-          </button>
-        </ng-container>
-        <div class="sd-actions-menu__divider" role="separator"></div>
-        <ng-container *ngFor="let option of actionOptions">
-          <button
-            *ngIf="option.danger"
-            type="button"
-            role="menuitem"
-            class="sd-actions-menu__item sd-actions-menu__item--danger"
-            (click)="onAction(option.label)">
-            <i class="ti" [ngClass]="option.icon" aria-hidden="true"></i>
-            {{ option.label }}
-          </button>
-        </ng-container>
+      <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
+        <div class="ov-action-menu__list">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="!option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item"
+              (click)="onAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
+        <div class="ov-action-menu__footer" *ngIf="hasDangerAction">
+          <ng-container *ngFor="let option of actionOptions">
+            <button *ngIf="option.danger" type="button" role="menuitem"
+              class="ov-action-menu__item ov-action-menu__item--danger"
+              (click)="onAction(option.label)">
+              <span class="ov-action-menu__icon-box">
+                <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
+                <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="ov-detail-layout !mt-0">
-    <!-- LEFT (original design) -->
-    <aside class="ov-detail-layout__left flex flex-col gap-3">
-      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <p class="ov-card-title">{{ detail.name }}</p>
-            <p class="ov-card-sub mt-1">Space #{{ detail.id }}</p>
-          </div>
-          <span class="inline-flex h-7 items-center rounded-sm border border-defaultborder px-2.5 text-xs font-semibold text-defaulttextcolor">
-            {{ detail.availability }}
-          </span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]">View Activity</button>
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]" (click)="goToEdit()">Edit Space</button>
-        </div>
-      </div>
+    <!-- LEFT -->
+    <div class="ov-detail-layout__left">
+      <div class="ov-detail-side">
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Information</h6>
+        <div class="ov-detail-side__hero">
+          <div>
+            <h4 class="ov-detail-side__title">{{ detail.name }}</h4>
+            <p class="ov-detail-side__email">Space #{{ detail.id }}</p>
+            <span class="inline-flex mt-2 h-7 items-center rounded-sm border border-defaultborder px-2.5 text-xs font-semibold text-defaulttextcolor">
+              {{ detail.availability }}
+            </span>
+          </div>
+          <div class="ov-detail-side__actions">
+            <button type="button" class="ov-detail-side__action">View Activity</button>
+            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">Edit Space</button>
+          </div>
         </div>
-        <div class="px-5 py-4">
-          <p class="m-0 mb-3 text-sm font-bold text-defaulttextcolor">Property &amp; Unit</p>
-          <div class="flex flex-col gap-2.5">
+
+        <div class="ov-detail-side__rule"></div>
+        <h6 class="ov-detail-side__section-title">Information</h6>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Property &amp; Unit</h6>
+          </div>
+          <div class="ov-detail-panel__body">
             <div class="ov-kv">
               <span class="ov-kv__label">Property:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.property }}</a>
@@ -78,113 +82,114 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Space Details</h6>
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Space Details</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv">
+              <span class="ov-kv__label">Lease ID:</span>
+              <span class="ov-kv__value">{{ detail.id }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Space Name:</span>
+              <span class="ov-kv__value">{{ detail.name }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Availability:</span>
+              <span class="inline-flex h-5 items-center rounded-sm bg-light px-1.5 text-xs font-semibold">{{ detail.availability }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Reservations Closing In:</span>
+              <span class="inline-flex h-5 items-center rounded-sm bg-primary px-1.5 text-xs font-semibold text-white">{{ detail.bookingClosesIn }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Location:</span>
+              <span class="ov-kv__value">{{ detail.location }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__value">{{ detail.phone }}</span>
+            </div>
+
+            <div class="my-1 flex justify-center">
+              <button
+                type="button"
+                class="ov-link sd-more-toggle text-[12px] font-semibold"
+                (click)="showMore = !showMore">
+                <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
+                <i
+                  class="ti shrink-0"
+                  [class.ti-chevron-up]="showMore"
+                  [class.ti-chevron-down]="!showMore"
+                  aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <ng-container *ngIf="showMore">
+              <div class="ov-kv items-start">
+                <span class="ov-kv__label">Description:</span>
+                <span class="ov-kv__value">{{ detail.description }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Email:</span>
+                <span class="ov-kv__value ov-link">{{ detail.email }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Payment Enabled:</span>
+                <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
+                  [ngClass]="detail.enablePayment === 'Enabled' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">
+                  {{ detail.enablePayment === 'Enabled' ? 'Yes' : 'No' }}
+                </span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Start Date:</span>
+                <span class="ov-kv__value">{{ startDate }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">End Date:</span>
+                <span class="ov-kv__value">{{ endDate }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Slot Duration:</span>
+                <span class="ov-kv__value">{{ detail.slotDuration }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Slot Price:</span>
+                <span class="ov-kv__value">{{ detail.slotPrice }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Rules:</span>
+                <span class="ov-kv__value">{{ detail.rules }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Created:</span>
+                <span class="ov-kv__value">{{ detail.createdAt }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Last Updated:</span>
+                <span class="ov-kv__value">{{ detail.updatedAt }}</span>
+              </div>
+            </ng-container>
+          </div>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
-          <div class="ov-kv">
-            <span class="ov-kv__label">Lease ID:</span>
-            <span class="ov-kv__value">{{ detail.id }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Space Name:</span>
-            <span class="ov-kv__value">{{ detail.name }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Availability:</span>
-            <span class="inline-flex h-5 items-center rounded-sm bg-light px-1.5 text-xs font-semibold">{{ detail.availability }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Reservations Closing In:</span>
-            <span class="inline-flex h-5 items-center rounded-sm bg-primary px-1.5 text-xs font-semibold text-white">{{ detail.bookingClosesIn }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Location:</span>
-            <span class="ov-kv__value">{{ detail.location }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Phone:</span>
-            <span class="ov-kv__value">{{ detail.phone }}</span>
-          </div>
 
-          <div class="my-1 flex justify-center">
-            <button
-              type="button"
-              class="ov-link sd-more-toggle text-[12px] font-semibold"
-              (click)="showMore = !showMore">
-              <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
-              <i
-                class="ti shrink-0"
-                [class.ti-chevron-up]="showMore"
-                [class.ti-chevron-down]="!showMore"
-                aria-hidden="true"></i>
-            </button>
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Weekly Schedule</h6>
           </div>
-
-          <ng-container *ngIf="showMore">
-            <div class="ov-kv items-start">
-              <span class="ov-kv__label">Description:</span>
-              <span class="ov-kv__value">{{ detail.description }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Email:</span>
-              <span class="ov-kv__value ov-link">{{ detail.email }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Payment Enabled:</span>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv" *ngFor="let row of detail.schedule">
+              <span class="ov-kv__label">{{ row.day }}:</span>
               <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
-                [ngClass]="detail.enablePayment === 'Enabled' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">
-                {{ detail.enablePayment === 'Enabled' ? 'Yes' : 'No' }}
-              </span>
+                [ngClass]="row.closed ? 'bg-danger/10 text-danger' : 'bg-light text-defaulttextcolor'">{{ row.hours }}</span>
             </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Start Date:</span>
-              <span class="ov-kv__value">{{ startDate }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">End Date:</span>
-              <span class="ov-kv__value">{{ endDate }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Slot Duration:</span>
-              <span class="ov-kv__value">{{ detail.slotDuration }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Slot Price:</span>
-              <span class="ov-kv__value">{{ detail.slotPrice }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Rules:</span>
-              <span class="ov-kv__value">{{ detail.rules }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">{{ detail.createdAt }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Last Updated:</span>
-              <span class="ov-kv__value">{{ detail.updatedAt }}</span>
-            </div>
-          </ng-container>
-        </div>
-      </div>
-
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Weekly Schedule</h6>
-        </div>
-        <div class="flex flex-col gap-3 px-5 py-4">
-          <div class="ov-kv" *ngFor="let row of detail.schedule">
-            <span class="ov-kv__label">{{ row.day }}:</span>
-            <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
-              [ngClass]="row.closed ? 'bg-danger/10 text-danger' : 'bg-light text-defaulttextcolor'">{{ row.hours }}</span>
           </div>
         </div>
+
       </div>
-    </aside>
+    </div>
 
     <!-- RIGHT -->
     <section class="ov-detail-layout__right min-w-0 sd-main">

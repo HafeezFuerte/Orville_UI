@@ -268,7 +268,7 @@ export class MyInsightsComponent implements OnInit {
         categories: ['Paid', 'Outstanding'],
         axisBorder: { show: false },
         axisTicks: { show: false },
-        labels: { style: { fontFamily: defaultFont, colors: c.muted, fontSize: '14px', fontWeight: 600 } }
+        labels: { rotate: 0, style: { fontFamily: defaultFont, colors: c.muted, fontSize: '12px', fontWeight: 600 } }
       },
       yaxis: {
         min: 0,

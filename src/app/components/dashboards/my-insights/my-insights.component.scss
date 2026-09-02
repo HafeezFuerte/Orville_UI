@@ -14,7 +14,7 @@
   gap: 20px;
   font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
   color: rgb(var(--default-text-color));
-  padding: 24px 0 24px;
+  padding: 0 0 24px;
 }
 
 :host-context(html.dark) .orville-insights,
@@ -33,6 +33,7 @@
   flex-direction: column;
   gap: 2px;
   margin: 0;
+  padding-top: 24px;
 }
 
 .orville-insights__date {
@@ -102,7 +103,12 @@
 
 @media (min-width: 1200px) {
   .orville-hl-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    display: grid;
+    grid-template-columns: repeat(5, minmax(230px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--default-border)) transparent;
   }
 }
 
@@ -302,7 +308,12 @@
   }
 
   .orville-insights__row--4 {
-    grid-template-columns: 2fr 2fr 2fr 1fr;
+    display: grid;
+    grid-template-columns: minmax(340px, 2fr) minmax(340px, 2fr) minmax(340px, 2fr) minmax(160px, 1fr);
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--default-border)) transparent;
   }
 
   .orville-insights__row--4 > .orville-insights-card {
@@ -1938,6 +1949,10 @@
   padding-right: 20px;
 }
 
+.orville-donut-card .orville-stats-bar > div {
+  gap: 4px;
+}
+
 apx-chart {
     display: block;
   max-width: 100%;
@@ -2169,23 +2184,31 @@ apx-chart {
   gap: 25px;
   height: 100%;
   padding: 20px;
+  background: #fff;
+  transition: background 0.15s;
+  cursor: default;
+}
+
+:host-context(html.dark) .orville-unit-stats .orville-stat,
+:host-context(.dark) .orville-unit-stats .orville-stat {
+  background: rgb(var(--body-bg));
+}
+
+.orville-unit-stats .orville-stat:hover {
+  background: rgb(var(--default-background));
 }
 
 .orville-unit-stats .orville-stat--tint {
-  background: rgb(var(--default-background));
+  /* first/featured card — same hover treatment as siblings */
 }
 
 .orville-unit-stats .orville-stat__icon {
   width: 60px;
   height: 60px;
   border-radius: 8px;
-  background: rgb(var(--default-background));
+  background: var(--ins-track);
   color: inherit;
   font-size: inherit;
-}
-
-.orville-unit-stats .orville-stat__icon--track {
-  background: var(--ins-track);
 }
 
 .orville-unit-stats .orville-stat__icon img {
@@ -2432,20 +2455,28 @@ apx-chart {
   gap: 25px;
   height: 100%;
   padding: 20px;
+  background: #fff;
+  transition: background 0.15s;
+  cursor: default;
+}
+
+:host-context(html.dark) .orville-lease-section .orville-stat,
+:host-context(.dark) .orville-lease-section .orville-stat {
+  background: rgb(var(--body-bg));
+}
+
+.orville-lease-section .orville-stat:hover {
+  background: rgb(var(--default-background));
 }
 
 .orville-lease-section .orville-stat--tint {
-  background: rgb(var(--default-background));
+  /* first/featured card — same hover treatment as siblings */
 }
 
 .orville-lease-section .orville-stat__icon {
   width: 60px;
   height: 60px;
   border-radius: 8px;
-  background: rgb(var(--default-background));
-}
-
-.orville-lease-section .orville-stat__icon--track {
   background: var(--ins-track);
 }
 

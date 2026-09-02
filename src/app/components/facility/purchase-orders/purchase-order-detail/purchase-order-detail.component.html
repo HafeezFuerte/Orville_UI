@@ -34,107 +34,71 @@
 </div>
 
 <div class="ov-detail-layout">
-  <aside class="ov-detail-layout__left flex flex-col gap-4">
-    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <h4 class="ov-card-title !text-[16px]">{{ order.title }}</h4>
-          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">PO #{{ order.poRef }}</p>
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+
+      <div class="ov-detail-side__hero">
+        <div>
+          <h4 class="ov-detail-side__title">{{ order.title }}</h4>
+          <p class="ov-detail-side__email">PO #{{ order.poRef }}</p>
         </div>
-        <button type="button" (click)="goEdit()"
-          class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5 shrink-0">
-          Edit Purchase Order
-          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
-        </button>
-      </div>
-
-      <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted w-full">
-        View Activity
-      </button>
-
-      <div class="border-t border-defaultborder"></div>
-      <h5 class="ov-card-title !text-[16px] m-0">Basic Information</h5>
-
-      <div class="po-info-card">
-        <div class="po-info-card__body">
-          <div class="ov-kv">
-            <span class="ov-kv__label">ID:</span>
-            <span class="ov-kv__value">{{ order.id }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Item Name:</span>
-            <span class="ov-kv__value">{{ order.title }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Status:</span>
-            <span [ngClass]="statusClass(order.status)">{{ order.status }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Purchase Order Number:</span>
-            <span class="ov-kv__value">{{ order.poNumber }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Title:</span>
-            <span class="ov-kv__value">{{ order.title }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Category:</span>
-            <span class="ov-kv__value">{{ order.category }}</span>
-          </div>
-          <div class="ov-kv ov-kv--stack">
-            <span class="ov-kv__label">Details:</span>
-            <span class="ov-kv__value">{{ order.details }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Requisitioner:</span>
-            <span class="ov-kv__value">{{ order.requisitioner }}</span>
-          </div>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action">View Activity</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goEdit()">Edit Purchase Order</button>
         </div>
       </div>
+
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Information</h6>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Basic Information</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">ID:</span><span class="ov-kv__value">{{ order.id }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Item Name:</span><span class="ov-kv__value">{{ order.title }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Status:</span><span [ngClass]="statusClass(order.status)">{{ order.status }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Purchase Order Number:</span><span class="ov-kv__value">{{ order.poNumber }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Title:</span><span class="ov-kv__value">{{ order.title }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Category:</span><span class="ov-kv__value">{{ order.category }}</span></div>
+          <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Details:</span><span class="ov-kv__value">{{ order.details }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Requisitioner:</span><span class="ov-kv__value">{{ order.requisitioner }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Vendor</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">Vendor:</span><span class="ov-kv__value">{{ order.vendorName }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Email:</span><a class="ov-link font-semibold" href="javascript:void(0)">{{ order.vendorEmail }}</a></div>
+          <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value">{{ order.vendorPhone }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Location</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">Property:</span><a class="ov-link font-semibold" href="javascript:void(0)">{{ order.property }}</a></div>
+          <div class="ov-kv"><span class="ov-kv__label">Unit:</span><a class="ov-link font-semibold" href="javascript:void(0)">{{ order.unit }}</a></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Custom Fields</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <p class="ov-detail-panel__empty">No value set</p>
+        </div>
+      </div>
+
     </div>
-
-    <div class="ov-card p-5">
-      <h5 class="ov-card-title m-0 mb-4">Vendor</h5>
-      <div class="flex flex-col gap-3">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Vendor:</span>
-          <span class="ov-kv__value">{{ order.vendorName }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Email:</span>
-          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.vendorEmail }}</a>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Phone:</span>
-          <span class="ov-kv__value">{{ order.vendorPhone }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ov-card p-5">
-      <h5 class="ov-card-title m-0 mb-4">Location</h5>
-      <div class="flex flex-col gap-3">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Property:</span>
-          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.property }}</a>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Unit:</span>
-          <a class="ov-link font-semibold" href="javascript:void(0)">{{ order.unit }}</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="ov-card py-5">
-      <div class="px-5">
-        <h5 class="ov-card-title m-0">Custom Fields</h5>
-      </div>
-      <div class="border-t border-defaultborder my-5"></div>
-      <div class="px-5">
-        <p class="ov-kv-empty m-0">No value set</p>
-      </div>
-    </div>
-  </aside>
+  </div>
 
   <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
     <!-- Shipping Information -->

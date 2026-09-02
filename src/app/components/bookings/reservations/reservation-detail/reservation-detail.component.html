@@ -43,31 +43,32 @@
   </div>
 
   <div class="ov-detail-layout !mt-0">
-    <aside class="ov-detail-layout__left flex flex-col gap-3">
-      <div class="box ov-card overflow-hidden p-5 flex flex-col gap-3">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <p class="ov-card-title">{{ detail.name }}</p>
-            <p class="ov-card-sub mt-1">Reservation #{{ detail.id.slice(-3) }}</p>
-          </div>
-          <span class="inline-flex h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-            [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
-            {{ detail.status }}
-          </span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]">View Activity</button>
-          <button type="button" class="ov-btn ov-btn-ghost !h-9 flex-1 text-[12px]" (click)="goToEdit()">Edit Reservation</button>
-        </div>
-      </div>
+    <div class="ov-detail-layout__left">
+      <div class="ov-detail-side">
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Information</h6>
+        <div class="ov-detail-side__hero">
+          <div>
+            <h4 class="ov-detail-side__title">{{ detail.name }}</h4>
+            <p class="ov-detail-side__email">Reservation #{{ detail.id.slice(-3) }}</p>
+            <span class="inline-flex mt-2 h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
+              {{ detail.status }}
+            </span>
+          </div>
+          <div class="ov-detail-side__actions">
+            <button type="button" class="ov-detail-side__action">View Activity</button>
+            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">Edit Reservation</button>
+          </div>
         </div>
-        <div class="px-5 py-4">
-          <p class="m-0 mb-3 text-sm font-bold text-defaulttextcolor">Property &amp; Unit</p>
-          <div class="flex flex-col gap-2.5">
+
+        <div class="ov-detail-side__rule"></div>
+        <h6 class="ov-detail-side__section-title">Information</h6>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Property &amp; Unit</h6>
+          </div>
+          <div class="ov-detail-panel__body">
             <div class="ov-kv">
               <span class="ov-kv__label">Property:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.property }}</a>
@@ -78,84 +79,85 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="box ov-card !mb-0 overflow-hidden">
-        <div class="border-b border-defaultborder px-5 py-3.5">
-          <h6 class="m-0 text-[14px] font-semibold text-defaulttextcolor">Reservation Details</h6>
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Reservation Details</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv">
+              <span class="ov-kv__label">ID:</span>
+              <span class="ov-kv__value">{{ detail.id }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Reservation Name:</span>
+              <span class="ov-kv__value">{{ detail.name }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Reserve:</span>
+              <span class="ov-kv__value">{{ detail.reserve }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Space Name:</span>
+              <span class="ov-kv__value">{{ detail.space }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Lease:</span>
+              <span class="ov-kv__value">{{ detail.lease }}</span>
+            </div>
+            <div class="ov-kv">
+              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__value">{{ detail.phone }}</span>
+            </div>
+
+            <div class="my-1 flex justify-center">
+              <button
+                type="button"
+                class="ov-link sd-more-toggle text-[12px] font-semibold"
+                (click)="showMore = !showMore">
+                <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
+                <i
+                  class="ti shrink-0"
+                  [class.ti-chevron-up]="showMore"
+                  [class.ti-chevron-down]="!showMore"
+                  aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <ng-container *ngIf="showMore">
+              <div class="ov-kv">
+                <span class="ov-kv__label">Email:</span>
+                <span class="ov-kv__value ov-link">{{ detail.email }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Booking Date:</span>
+                <span class="ov-kv__value">{{ detail.bookingDate }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Time:</span>
+                <span class="ov-kv__value">{{ detail.time }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Slot Duration:</span>
+                <span class="ov-kv__value">{{ detail.slotDuration }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Created:</span>
+                <span class="ov-kv__value">{{ detail.createdAt }}</span>
+              </div>
+              <div class="ov-kv">
+                <span class="ov-kv__label">Status:</span>
+                <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
+                  [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
+                  {{ detail.status }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
         </div>
-        <div class="flex flex-col gap-2.5 px-5 py-4">
-          <div class="ov-kv">
-            <span class="ov-kv__label">ID:</span>
-            <span class="ov-kv__value">{{ detail.id }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Reservation Name:</span>
-            <span class="ov-kv__value">{{ detail.name }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Reserve:</span>
-            <span class="ov-kv__value">{{ detail.reserve }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Space Name:</span>
-            <span class="ov-kv__value">{{ detail.space }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Lease:</span>
-            <span class="ov-kv__value">{{ detail.lease }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Phone:</span>
-            <span class="ov-kv__value">{{ detail.phone }}</span>
-          </div>
 
-          <div class="my-1 flex justify-center">
-            <button
-              type="button"
-              class="ov-link sd-more-toggle text-[12px] font-semibold"
-              (click)="showMore = !showMore">
-              <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
-              <i
-                class="ti shrink-0"
-                [class.ti-chevron-up]="showMore"
-                [class.ti-chevron-down]="!showMore"
-                aria-hidden="true"></i>
-            </button>
-          </div>
-
-          <ng-container *ngIf="showMore">
-            <div class="ov-kv">
-              <span class="ov-kv__label">Email:</span>
-              <span class="ov-kv__value ov-link">{{ detail.email }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Booking Date:</span>
-              <span class="ov-kv__value">{{ detail.bookingDate }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Time:</span>
-              <span class="ov-kv__value">{{ detail.time }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Slot Duration:</span>
-              <span class="ov-kv__value">{{ detail.slotDuration }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">{{ detail.createdAt }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">Status:</span>
-              <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
-                [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
-                {{ detail.status }}
-              </span>
-            </div>
-          </ng-container>
-        </div>
       </div>
-    </aside>
+    </div>
 
     <section class="ov-detail-layout__right min-w-0">
       <div class="mb-4">

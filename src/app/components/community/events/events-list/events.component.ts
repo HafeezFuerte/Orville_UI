@@ -47,6 +47,8 @@ export class EventsComponent {
   allRows:any[]=[];
   currentUser = this.commonservice.getCurrentUser(); 
   openRowActionId: string | null = null;
+  openRowActionRow: any = null;
+  rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {
@@ -132,7 +134,8 @@ export class EventsComponent {
       }
     });
   }
-  deleteEvent(id: string): void { 
+  deleteEvent(id: string): void {
+    this.closeRowMenu();
     this.deleteModal=!this.deleteModal;  
     this.event_code=id;
   }
@@ -320,14 +323,53 @@ export class EventsComponent {
     }
  
   }
-  toggleRowAction(id: string, event: Event): void {
+  toggleRowAction(row: any, event: Event): void {
+    event.preventDefault();
     event.stopPropagation();
-    this.openRowActionId = this.openRowActionId === id ? null : id;
+    this.showColumnDropdown = false;
+
+    if (this.openRowActionId === row.id) {
+      this.closeRowMenu();
+      return;
+    }
+
+    const target = event.currentTarget as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    const menuWidth = 148;
+    const menuHeight = 120;
+    const gap = 4;
+    const left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8));
+    let top = rect.bottom + gap;
+    if (top + menuHeight > window.innerHeight) {
+      top = Math.max(8, rect.top - gap - menuHeight);
+    }
+
+    this.rowMenuStyle = {
+      top: `${Math.round(top)}px`,
+      left: `${Math.round(left)}px`
+    };
+    this.openRowActionId = row.id;
+    this.openRowActionRow = row;
+  }
+
+  closeRowMenu(): void {
+    this.openRowActionId = null;
+    this.openRowActionRow = null;
+    this.rowMenuStyle = null;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.closeRowMenu();
   }
 
   @HostListener('document:click')
   onDocumentClick(): void {
     this.showColumnDropdown = false;
-    this.openRowActionId = null;
+    this.closeRowMenu();
   }
 }

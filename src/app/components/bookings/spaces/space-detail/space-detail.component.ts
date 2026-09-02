@@ -43,10 +43,14 @@ export class SpaceDetailComponent implements OnInit {
   showRowMenuId: string | null = null;
 
   actionOptions = [
-    { label: 'Edit Space', icon: 'ti ti-pencil', danger: false },
-    { label: 'Add Reservation', icon: 'ti ti-plus', danger: false },
-    { label: 'Delete Space', icon: 'ti ti-trash', danger: true },
+    { label: 'Edit Space',      icon: 'ti ti-pencil', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { label: 'Add Reservation', icon: 'ti ti-plus',   asset: 'assets/images/action-menu/plus.svg',   danger: false },
+    { label: 'Delete Space',    icon: 'ti ti-trash',  asset: 'assets/images/action-menu/trash.svg',  danger: true  },
   ];
+
+  get hasDangerAction(): boolean {
+    return this.actionOptions.some((o: any) => o.danger);
+  }
 
   reservations: SpaceReservation[] = [...SPACE_RESERVATIONS];
   reservationSearch = '';
@@ -438,6 +442,11 @@ export class SpaceDetailComponent implements OnInit {
     if (target >= 0 && target < this.attachmentPages) {
       this.attachmentPageIndex = target;
     }
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (this.showActionMenu) this.showActionMenu = false;
   }
 
   @HostListener('document:click')

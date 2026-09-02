@@ -22,109 +22,66 @@
     </div>
   </div>
 
-  <div class="ud-layout">
+  <div class="ov-detail-layout">
     <!-- LEFT -->
-    <aside class="ud-aside">
-      <div class="ud-profile">
-        <div class="ud-profile__hero">
+    <div class="ov-detail-layout__left">
+      <div class="ov-detail-side">
+
+        <div class="ov-detail-side__hero ud-hero">
           <div class="ud-avatar" [style.background]="user.avatarColor" aria-hidden="true">{{ user.initials }}</div>
-          <div class="ud-identity__name">{{ user.name }}</div>
-          <div class="ud-identity__meta">
-            <span>User #{{ profile.userId }}</span>
-            <span class="ud-identity__dot" aria-hidden="true"></span>
-            <span class="ud-role">{{ user.role }}</span>
+          <div>
+            <h4 class="ov-detail-side__title">{{ user.name }}</h4>
+            <p class="ov-detail-side__email">User #{{ profile.userId }}</p>
           </div>
-          <button type="button" class="ud-edit-btn" (click)="editUser()">
-            <i class="ti ti-pencil" aria-hidden="true"></i>
-            Edit User
-          </button>
-        </div>
-
-        <div class="ud-profile__section">
-          <div class="ud-section-head">
-            <span class="ud-section-ico" aria-hidden="true">
-              <i class="ti ti-device-mobile"></i>
-            </span>
-            <h4 class="ud-section-title">App Login</h4>
-          </div>
-          <div class="ud-rows">
-            <div class="ud-row">
-              <span class="ud-row__label">Email</span>
-              <span class="ud-row__value" [title]="user.email">{{ user.email }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Username</span>
-              <span class="ud-row__value">{{ user.username }}</span>
-            </div>
+          <div class="ov-detail-side__actions">
+            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="editUser()">Edit User</button>
           </div>
         </div>
 
-        <div class="ud-profile__section">
-          <div class="ud-section-head">
-            <span class="ud-section-ico" aria-hidden="true">
-              <i class="ti ti-user"></i>
-            </span>
-            <h4 class="ud-section-title">Personal Details</h4>
+        <div class="ov-detail-side__rule"></div>
+        <h6 class="ov-detail-side__section-title">Information</h6>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">App Login</h6>
           </div>
-          <div class="ud-rows">
-            <div class="ud-row">
-              <span class="ud-row__label">Full Name</span>
-              <span class="ud-row__value">{{ user.name }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Role</span>
-              <span class="ud-row__value"><span class="ud-role">{{ user.role }}</span></span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Department</span>
-              <span class="ud-row__value">{{ profile.department || dash }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Phone</span>
-              <span class="ud-row__value">{{ user.phone || dash }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Gender</span>
-              <span class="ud-row__value">{{ profile.gender || dash }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Nationality</span>
-              <span class="ud-row__value">{{ profile.nationality || dash }}</span>
-            </div>
-            <div class="ud-row">
-              <span class="ud-row__label">Languages</span>
-              <span class="ud-row__value">{{ profile.languages || dash }}</span>
-            </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value" [title]="user.email">{{ user.email }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Username:</span><span class="ov-kv__value">{{ user.username }}</span></div>
           </div>
         </div>
 
-        <div class="ud-profile__section">
-          <div class="ud-section-head">
-            <span class="ud-section-ico" aria-hidden="true">
-              <i class="ti ti-history"></i>
-            </span>
-            <h4 class="ud-section-title">Timeline</h4>
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Personal Details</h6>
           </div>
-          <div class="ud-rows">
-            <div class="ud-row ud-row--stack">
-              <span class="ud-row__label">Created</span>
-              <span class="ud-row__value">{{ profile.createdAt }}</span>
-            </div>
-            <div class="ud-row ud-row--stack">
-              <span class="ud-row__label">Last Updated</span>
-              <span class="ud-row__value">{{ profile.lastUpdatedAt }}</span>
-            </div>
-            <div class="ud-row ud-row--stack">
-              <span class="ud-row__label">Last Sign In</span>
-              <span class="ud-row__value">{{ profile.lastSignInAt }}</span>
-            </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv"><span class="ov-kv__label">Full Name:</span><span class="ov-kv__value">{{ user.name }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Role:</span><span class="ov-kv__value"><span class="ud-role">{{ user.role }}</span></span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Department:</span><span class="ov-kv__value">{{ profile.department || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value">{{ user.phone || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Gender:</span><span class="ov-kv__value">{{ profile.gender || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Nationality:</span><span class="ov-kv__value">{{ profile.nationality || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Languages:</span><span class="ov-kv__value">{{ profile.languages || dash }}</span></div>
           </div>
         </div>
+
+        <div class="ov-detail-panel">
+          <div class="ov-detail-panel__head">
+            <h6 class="ov-detail-panel__title">Timeline</h6>
+          </div>
+          <div class="ov-detail-panel__body">
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ profile.createdAt }}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ profile.lastUpdatedAt }}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Sign In:</span><span class="ov-kv__value">{{ profile.lastSignInAt }}</span></div>
+          </div>
+        </div>
+
       </div>
-    </aside>
+    </div>
 
     <!-- RIGHT -->
-    <div class="ud-main">
+    <div class="ov-detail-layout__right">
       <div class="ud-shell">
         <nav class="ud-tabnav" aria-label="User detail sections">
           <button

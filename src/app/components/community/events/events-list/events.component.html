@@ -56,8 +56,7 @@
       </div>
     </div>
 
-    <div class="overflow-x-auto px-5 pb-0 pt-5"
-      [class.events-table-wrap--menu-open]="!!openRowActionId">
+    <div class="overflow-x-auto px-5 pb-0 pt-5" (scroll)="closeRowMenu()">
    <app-shared-table
    (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
   [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
@@ -77,23 +76,11 @@
               class="inline-flex h-6 items-center rounded-sm bg-light px-2.5 text-xs font-semibold text-defaulttextcolor">
               {{ row.maxAttendance }}
             </span>
-            <div *ngSwitchCase="'action'" class="relative" (click)="$event.stopPropagation()">
+            <div *ngSwitchCase="'action'" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row, $event)">
                 <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
-              <div *ngIf="openRowActionId === row.id"
-                class="events-row-menu absolute end-0 top-full mt-1 min-w-[148px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
-                <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/community/events', row.code]"
-                  (click)="openRowActionId = null">View Details</a>
-                <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/community/events/edit',row.code]"
-                  (click)="openRowActionId = null">Edit Event</a>
-                <button type="button"
-                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[13px] font-medium text-danger hover:bg-light"
-                  (click)="deleteEvent(row.code)">Delete</button>
-              </div>
             </div>
             <span *ngSwitchDefault>{{ row[col.key] }}</span>
           </ng-container>
@@ -146,6 +133,21 @@
       </div>
     </div>
   </app-filter-drawer>
+
+  <div *ngIf="openRowActionId && openRowActionRow && rowMenuStyle"
+    class="events-row-menu"
+    role="menu"
+    [ngStyle]="rowMenuStyle"
+    (click)="$event.stopPropagation()">
+    <a class="events-row-menu__item" role="menuitem"
+      [routerLink]="['/community/events', openRowActionRow.code]"
+      (click)="closeRowMenu()">View Details</a>
+    <a class="events-row-menu__item" role="menuitem"
+      [routerLink]="['/community/events/edit', openRowActionRow.code]"
+      (click)="closeRowMenu()">Edit Event</a>
+    <button type="button" role="menuitem" class="events-row-menu__item events-row-menu__item--danger"
+      (click)="deleteEvent(openRowActionRow.code)">Delete</button>
+  </div>
 </div>
 
 <app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">

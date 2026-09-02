@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -18,7 +18,7 @@ import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components
   templateUrl: './landlord-detail.component.html',
   styleUrl: './landlord-detail.component.scss'
 })
-export class LandlordDetailComponent implements OnInit {
+export class LandlordDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
@@ -73,6 +73,11 @@ export class LandlordDetailComponent implements OnInit {
     return this.tabsList.find(t => t.key === this.activeTab);
   }
 
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (this.showActionDropdown) this.showActionDropdown = false;
+  }
+
   ngOnInit() {
     this.initializeTabs();
     this.route.params.subscribe(params => {
@@ -82,6 +87,8 @@ export class LandlordDetailComponent implements OnInit {
       }
     });
   }
+
+  ngOnDestroy(): void {}
 
   getLandlordDetails() {
     const payload = {
@@ -285,21 +292,21 @@ export class LandlordDetailComponent implements OnInit {
     danger?: boolean;
     dangerIcon?: boolean;
   }[] = [
-    { label: 'Edit Landlord', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
-    { label: 'Inflow', icon: 'ri-download-line' },
-    { label: 'Outflow', icon: 'ri-upload-line' },
-    { label: 'Landlord Contribution', icon: 'ri-pie-chart-line' },
-    { label: 'Landlord Distribution', icon: 'ri-git-branch-line' },
-    { label: 'Add Notes', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
-    { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
-    { label: 'Add User', icon: 'ri-user-add-line' },
-    { label: 'Add Emergency Contact', icon: 'ri-phone-line' },
-    { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
-    { label: 'Request for Approval', icon: 'ri-checkbox-line' },
-    { label: 'Send Email', icon: 'ri-mail-line' },
-    { label: 'View Activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
-    { label: 'Block Landlord', icon: 'ri-forbid-line', dangerIcon: true },
-    { label: 'Archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
+    { label: 'Edit Landlord',         icon: 'ri-pencil-line',      asset: 'assets/images/action-menu/pencil.svg' },
+    { label: 'Inflow',                 icon: 'ri-download-line',    asset: 'assets/images/action-menu/inflow.svg' },
+    { label: 'Outflow',                icon: 'ri-upload-line',      asset: 'assets/images/action-menu/outflow.svg' },
+    { label: 'Landlord Contribution',  icon: 'ri-pie-chart-line',   asset: 'assets/images/action-menu/contribution.svg' },
+    { label: 'Landlord Distribution',  icon: 'ri-git-branch-line',  asset: 'assets/images/action-menu/distribution.svg' },
+    { label: 'Add Notes',              icon: 'ri-file-text-line',   asset: 'assets/images/action-menu/file-invoice.svg' },
+    { label: 'Add Attachment',         icon: 'ri-attachment-2',     asset: 'assets/images/action-menu/paperclip.svg' },
+    { label: 'Add User',               icon: 'ri-user-add-line',    asset: 'assets/images/action-menu/add-user.svg' },
+    { label: 'Add Emergency Contact',  icon: 'ri-phone-line',       asset: 'assets/images/action-menu/phone.svg' },
+    { label: 'Add Broadcast',          icon: 'ri-broadcast-line',   asset: 'assets/images/action-menu/broadcast.svg' },
+    { label: 'Request for Approval',   icon: 'ri-checkbox-line',    asset: 'assets/images/action-menu/approval.svg' },
+    { label: 'Send Email',             icon: 'ri-mail-line',        asset: 'assets/images/action-menu/mail.svg' },
+    { label: 'View Activity',          icon: 'ri-time-line',        asset: 'assets/images/action-menu/clock.svg' },
+    { label: 'Block Landlord',         icon: 'ri-forbid-line',      asset: 'assets/images/action-menu/block.svg', dangerIcon: true },
+    { label: 'Archive',                icon: 'ri-delete-bin-line',  asset: 'assets/images/action-menu/archive.svg', danger: true }
   ];
 
   get hasDangerAction(): boolean {

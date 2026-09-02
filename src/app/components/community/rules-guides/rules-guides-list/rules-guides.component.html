@@ -41,8 +41,7 @@
       </div>
     </div>
 
-    <div class="overflow-x-auto px-5 pb-0 pt-5"
-      [class.guides-table-wrap--menu-open]="!!openRowActionId">
+    <div class="overflow-x-auto px-5 pb-0 pt-5" (scroll)="closeRowMenu()">
       <app-shared-table
         [columns]="visibleColumns"
         [data]="paginatedRows"
@@ -56,25 +55,11 @@
           <ng-container [ngSwitch]="col.key">
             <a *ngSwitchCase="'id'" class="ov-link" [routerLink]="['/community/rules-guides', row.id]">{{ row.id }}</a>
             <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/rules-guides', row.id]">{{ row.name }}</a>
-            <div *ngSwitchCase="'action'" class="relative" (click)="$event.stopPropagation()">
+            <div *ngSwitchCase="'action'" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row, $event)">
                 <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
-              <div *ngIf="openRowActionId === row.id" class="guides-row-menu" role="menu"
-                (click)="$event.stopPropagation()">
-                <div class="guides-row-menu__list">
-                  <button type="button" role="menuitem" class="guides-row-menu__item"
-                    (click)="onRowView(row)">View Details</button>
-                  <button type="button" role="menuitem" class="guides-row-menu__item"
-                    (click)="onRowEdit()">Edit Guide</button>
-                </div>
-                <div class="guides-row-menu__footer">
-                  <button type="button" role="menuitem"
-                    class="guides-row-menu__item guides-row-menu__item--danger"
-                    (click)="onRowDelete()">Delete</button>
-                </div>
-              </div>
             </div>
             <span *ngSwitchDefault>{{ row[col.key] }}</span>
           </ng-container>
@@ -128,4 +113,22 @@
       </div>
     </div>
   </app-filter-drawer>
+
+  <div *ngIf="openRowActionId && openRowActionRow && rowMenuStyle"
+    class="guides-row-menu"
+    role="menu"
+    [ngStyle]="rowMenuStyle"
+    (click)="$event.stopPropagation()">
+    <div class="guides-row-menu__list">
+      <button type="button" role="menuitem" class="guides-row-menu__item"
+        (click)="onRowView(openRowActionRow!)">View Details</button>
+      <button type="button" role="menuitem" class="guides-row-menu__item"
+        (click)="onRowEdit()">Edit Guide</button>
+    </div>
+    <div class="guides-row-menu__footer">
+      <button type="button" role="menuitem"
+        class="guides-row-menu__item guides-row-menu__item--danger"
+        (click)="onRowDelete()">Delete</button>
+    </div>
+  </div>
 </div>

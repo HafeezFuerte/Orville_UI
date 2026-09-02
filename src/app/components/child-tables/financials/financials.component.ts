@@ -31,6 +31,7 @@ export class FinancialsComponent implements OnInit, OnChanges {
   private router=inject(Router);
   showApprovalMenu=false;
   openMenuReceiptKey: string | null = null;
+  menuPos = { top: 0, right: 0 };
   paymentMethods:any=[];
   coa_list:any=[];
   receivepayment:any= { receivefull:1, Amount:0,paiddate:null,payment_via:0,account:'',notes:'',reciept_file:null}
@@ -102,6 +103,11 @@ export class FinancialsComponent implements OnInit, OnChanges {
       this.openMenuReceiptKey = null;
       return;
     }
+    if (event?.target) {
+      const anchor = (event.target as HTMLElement).closest<HTMLElement>('.fin__actions') ?? (event.target as HTMLElement);
+      const rect = anchor.getBoundingClientRect();
+      this.menuPos = { top: rect.bottom + 6, right: window.innerWidth - rect.right };
+    }
     this.showApprovalMenu = true;
     this.openMenuReceiptKey = key;
     this.selectedReceipt=selectedrow;
@@ -113,6 +119,14 @@ export class FinancialsComponent implements OnInit, OnChanges {
   onDocumentClick(): void {
     this.showApprovalMenu = false;
     this.openMenuReceiptKey = null;
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(): void {
+    if (this.showApprovalMenu) {
+      this.showApprovalMenu = false;
+      this.openMenuReceiptKey = null;
+    }
   }
   ngOnInit(): void { 
     this.loadLookup(2,23, 'paymentMethods', '');

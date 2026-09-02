@@ -17,128 +17,82 @@
 </div>
 
 <div class="ov-detail-layout">
-  <aside class="ov-detail-layout__left flex flex-col gap-4">
-    <div class="box ov-card overflow-visible p-5 flex flex-col gap-4 !mb-0">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <h4 class="ov-card-title !text-[16px]">{{ item.itemName }}</h4>
-          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Order #{{ item.id }}</p>
+  <div class="ov-detail-layout__left">
+    <div class="ov-detail-side">
+
+      <div class="ov-detail-side__hero">
+        <div>
+          <h4 class="ov-detail-side__title">{{ item.itemName }}</h4>
+          <p class="ov-detail-side__email">Order #{{ item.id }}</p>
         </div>
-        <button type="button" (click)="goEdit()"
-          class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5 shrink-0">
-          Edit Item
-          <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" />
-        </button>
-      </div>
-
-      <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted w-full">
-        View Activity
-      </button>
-
-      <div class="border-t border-defaultborder"></div>
-      <h5 class="ov-card-title !text-[16px] m-0">Item Information</h5>
-
-      <div class="inv-info-card">
-        <div class="inv-info-card__head">
-          <h6 class="inv-info-card__title">Basic Information</h6>
-        </div>
-        <div class="inv-info-card__body">
-          <div class="ov-kv">
-            <span class="ov-kv__label">ID:</span>
-            <span class="ov-kv__value">{{ item.id }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Item Name:</span>
-            <span class="ov-kv__value">{{ item.itemName }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Part Number:</span>
-            <span class="ov-kv__value">{{ item.partNumber }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Category:</span>
-            <span class="ov-kv__value">{{ item.category }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Subcategory:</span>
-            <span class="ov-kv__value">{{ item.subcategory }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Stock Type:</span>
-            <span [ngClass]="stockClass(item.stockType)">{{ item.stockType }}</span>
-          </div>
-          <div class="ov-kv ov-kv--stack">
-            <span class="ov-kv__label">Description:</span>
-            <span class="ov-kv__value">{{ item.description }}</span>
-          </div>
+        <div class="ov-detail-side__actions">
+          <button type="button" class="ov-detail-side__action">View Activity</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goEdit()">Edit Item</button>
         </div>
       </div>
+
+      <div class="ov-detail-side__rule"></div>
+      <h6 class="ov-detail-side__section-title">Item Information</h6>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Basic Information</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">ID:</span><span class="ov-kv__value">{{ item.id }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Item Name:</span><span class="ov-kv__value">{{ item.itemName }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Part Number:</span><span class="ov-kv__value">{{ item.partNumber }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Category:</span><span class="ov-kv__value">{{ item.category }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Subcategory:</span><span class="ov-kv__value">{{ item.subcategory }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Stock Type:</span><span [ngClass]="stockClass(item.stockType)">{{ item.stockType }}</span></div>
+          <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Description:</span><span class="ov-kv__value">{{ item.description }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Quantity &amp; Cost</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">Item Cost:</span><span class="ov-kv__value">{{ item.itemCost }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Item Quantity:</span><span class="ov-kv__value">{{ item.itemQuantity }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Quantity Threshold:</span><span class="ov-kv__value">{{ item.quantityThreshold }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Same Cost:</span><span class="ov-kv__value">{{ item.sameCost ? 'Yes' : 'No' }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Dates</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">Placed Date:</span><span class="ov-kv__value">{{ item.placedDate }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Expiration Date:</span><span class="ov-kv__value">{{ item.expirationDate }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Additional Details</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <div class="ov-kv"><span class="ov-kv__label">Category:</span><span class="ov-kv__value">{{ item.category }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ item.created }}</span></div>
+          <div class="ov-kv"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ item.lastUpdated }}</span></div>
+        </div>
+      </div>
+
+      <div class="ov-detail-panel">
+        <div class="ov-detail-panel__head">
+          <h6 class="ov-detail-panel__title">Custom Fields</h6>
+        </div>
+        <div class="ov-detail-panel__body">
+          <p class="ov-detail-panel__empty">No value set</p>
+        </div>
+      </div>
+
     </div>
-
-    <div class="ov-card p-5">
-      <h5 class="ov-card-title m-0 mb-4">Quantity &amp; Cost</h5>
-      <div class="flex flex-col gap-3">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Item Cost:</span>
-          <span class="ov-kv__value">{{ item.itemCost }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Item Quantity:</span>
-          <span class="ov-kv__value">{{ item.itemQuantity }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Quantity Threshold:</span>
-          <span class="ov-kv__value">{{ item.quantityThreshold }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Same Cost:</span>
-          <span class="ov-kv__value">{{ item.sameCost ? 'Yes' : 'No' }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ov-card p-5">
-      <h5 class="ov-card-title m-0 mb-4">Dates</h5>
-      <div class="flex flex-col gap-3">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Placed Date:</span>
-          <span class="ov-kv__value">{{ item.placedDate }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Expiration Date:</span>
-          <span class="ov-kv__value">{{ item.expirationDate }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ov-card p-5">
-      <h5 class="ov-card-title m-0 mb-4">Additional Details</h5>
-      <div class="flex flex-col gap-3">
-        <div class="ov-kv">
-          <span class="ov-kv__label">Category:</span>
-          <span class="ov-kv__value">{{ item.category }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Created:</span>
-          <span class="ov-kv__value">{{ item.created }}</span>
-        </div>
-        <div class="ov-kv">
-          <span class="ov-kv__label">Last Updated:</span>
-          <span class="ov-kv__value">{{ item.lastUpdated }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ov-card py-5">
-      <div class="px-5">
-        <h5 class="ov-card-title m-0">Custom Fields</h5>
-      </div>
-      <div class="border-t border-defaultborder my-5"></div>
-      <div class="px-5">
-        <p class="ov-kv-empty m-0">No value set</p>
-      </div>
-    </div>
-  </aside>
+  </div>
 
   <div class="ov-detail-layout__right flex flex-col gap-4 min-w-0">
     <div class="box ov-card overflow-visible shadow-none !mb-0">
