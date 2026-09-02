@@ -115,7 +115,7 @@
               <td class="fin__muted">{{ receipt.memo || receipt.cheque_no || '-' }}</td>
               <td class="text-end fin__amt">{{ currentUser?.currencyCode || 'AED' }} {{ receipt.amt | number:'1.2-2' }}</td>
               <td>
-                <span [ngClass]="getReceiptStatusClass(receipt)">
+                <span [ngClass]="receipt.cheque_status_class">
                   {{ getArabicLookupName(receipt,'cheque_status') || receipt.cheque_status || '—' }}
                 </span>
               </td>
@@ -136,21 +136,25 @@
                         </span>
                         <span>Receive Payment</span>
                       </button>
-                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Print')">
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Bounce')">
                         <span class="ov-action-menu__icon-box">
-                          <img class="ov-action-menu__icon" src="assets/images/action-menu/printer.svg" alt="" width="14" height="14">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
                         </span>
-                        <span>Print Receipt</span>
+                        <span>Bounce</span>
                       </button>
-                    </div>
-                    <div class="ov-action-menu__footer">
-                      <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="OnApproveClick('Reject')">
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Return')">
+                        <span class="ov-action-menu__icon-box">
+                          <img class="ov-action-menu__icon" src="assets/images/action-menu/send.svg" alt="" width="14" height="14">
+                        </span>
+                        <span>Return Cheque</span>
+                      </button>
+                      <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Print')">
                         <span class="ov-action-menu__icon-box">
                           <img class="ov-action-menu__icon" src="assets/images/action-menu/trash.svg" alt="" width="14" height="14">
                         </span>
-                        <span>Archive</span>
+                        <span>Delete</span>
                       </button>
-                    </div>
+                    </div> 
                   </div>
                 </div>
               </td>
@@ -225,3 +229,110 @@
   </div>
   </div>
 </div>
+<div *ngIf="showChequeEdit" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack" style="max-width: 520px">
+    <button type="button" class="ov-modal__float-close" (click)="showChequeEdit = false" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+    <div class="ov-modal">
+    <div class="ov-modal__header">
+      <h4 class="ov-modal__title">Edit Cheque</h4>
+    </div>
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="ov-fields ov-fields--2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+        <div>
+          <label class="ov-label">Cheque No</label>
+          <input type="text" [(ngModel)]="chequeBlock.cheque_no" class="ov-input" />
+        </div>
+        <div>
+          <label class="ov-label">Cheque Date</label>
+          <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY" [(ngModel)]="chequeBlock.cheque_date" class="ov-input" />
+        </div>
+        <div>
+          <label class="ov-label">Amount</label>
+          <input type="text" [(ngModel)]="chequeBlock.Amount" class="ov-input" />
+        </div>
+        <div>
+          <label class="ov-label">Bank</label>
+          <input type="text" [(ngModel)]="chequeBlock.bank" class="ov-input" />
+        </div>
+        <div>
+          <label class="ov-label">Held By</label>
+          <ng-select [(ngModel)]="chequeBlock.held_by" [items]="heldByList" bindValue="id" bindLabel="name"
+            placeholder="Held By" class="ov-select w-full" appendTo="body"></ng-select>
+        </div>
+      </div>
+ 
+      <div>
+        <label class="ov-label">Upload Cheque</label>
+        <app-file-upload
+          [accept]="'image/*'"
+          (filesChanged)="onChequeSelected($event)"
+          [buttonText]="'web.property.lblUploadImage' | translate"
+          [dropText]="'web.property.lblDropYourImageHereOr' | translate"
+          [browseText]="'web.property.lblBrowse' | translate">
+        </app-file-upload>
+      </div>
+    </div>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showChequeEdit = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="update_cheque()" class="ov-btn ov-btn-primary">Update</button>
+    </div>
+  </div>
+  </div>
+</div>
+<div *ngIf="showChequeBounce" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack" style="max-width: 520px">
+    <button type="button" class="ov-modal__float-close" (click)="showChequeEdit = false" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+    <div class="ov-modal">
+    <div class="ov-modal__header">
+      <h4 class="ov-modal__title">Bounce Cheque</h4>
+    </div>
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div class="ov-fields ov-fields--2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
+        <div>
+          <label class="ov-label">Bounce Date</label>
+          <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY" [(ngModel)]="bounceBlock.bounceDate" class="ov-input" />
+        </div>
+
+        <div class="form-check form-switch">
+          <label class="block text-[11px] font-semibold text-textmuted mb-1.5">Add Penalty
+            <span>This will create a new bounced penalty payment</span>
+          </label>
+          <input [(ngModel)]="bounceBlock.isPenalty"  
+              class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
+              type="checkbox">
+        </div>
+        <div *ngIf="bounceBlock.isPenalty">
+        <div>
+          <label class="ov-label">Account *</label>
+          <ng-select [(ngModel)]="bounceBlock.account" bindValue="account_code" bindLabel="account_name" [items]="coa_list" placeholder="Select" class="ng-select-sm w-full"></ng-select>
+        </div>
+        <div>
+          <label class="ov-label">Penalty Amount *</label>
+          <input type="text" [(ngModel)]="bounceBlock.penaltyAmt" class="ov-input" />
+        </div>
+        <div>
+          <label class="ov-label">Due Date *</label>
+          <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY" [(ngModel)]="bounceBlock.due_date" class="ov-input" />
+        </div>
+      </div>
+        <div>
+          <label class="ov-label">Reason *</label>
+          <input type="text"   placeholder="Enter Reason" [(ngModel)]="bounceBlock.reason" class="ov-input" />
+        </div>
+      </div>
+  
+    </div>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showChequeEdit = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="update_bounce_cheque()" class="ov-btn ov-btn-primary">Update</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="ReturnedCheque()">
+</app-delete-confirmation>

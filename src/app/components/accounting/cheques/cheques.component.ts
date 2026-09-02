@@ -52,7 +52,7 @@ export class ChequesComponent {
     { key: 'returned', label: 'Returned', visible: true, useTemplate: true },
     { key: 'returned_date', label: 'Returned Date', visible: true },
     { key: 'bounce_date', label: 'Bounce Date', visible: true },
-    { key: 'bounse_reason', label: 'Bounce Reason', visible: true },
+    { key: 'bounce_reason', label: 'Bounce Reason', visible: true },
     { key: 'withdrawal_reason', label: 'Withdrawal Reason', visible: true },
     { key: 'Tenant', label: 'Tenant', visible: true, useTemplate: true  }, 
     { key: 'unit_code', label: 'Unit', visible: true, useTemplate: true  },

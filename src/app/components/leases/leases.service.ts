@@ -38,6 +38,18 @@ save_rcp_payment(payload: any): Observable<any> {
     payload
   );
 } 
+update_cheque_details(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Accounting/update_cheque_details',
+    payload
+  );
+} 
+update_bounce_cheque(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Accounting/update_bounce_details',
+    payload
+  );
+} 
 getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/get_masters_by_paging',
