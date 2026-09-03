@@ -105,8 +105,15 @@
               <a [routerLink]="['/leases/edit-lease', row.lease_id]" class="ov-link font-semibold">{{ row.lease_id }}</a>
             </ng-container>
       
-            <ng-container *ngSwitchCase="'invoice_status'"> 
-              <span [class]="statusClass(row.status)">{{ getArabicLookupName(row, 'invoice_status') }}</span>
+            <ng-container *ngSwitchCase="'invoice_status'">
+              <span class="ov-status" 
+                [class.ov-status--active]="row.invoice_status === 'Paid' || row.invoice_status === 'Pending'"
+                [class.ov-status--muted]="row.invoice_status === 'Draft'"
+                [class.ov-status--soft]="row.invoice_status === 'Unpaid' || row.invoice_status === 'Pending Approvals'"
+                [class.ov-status--warning]="row.invoice_status === 'UnPaid'|| row.invoice_status === 'Bounced' || row.invoice_status === 'Hold'"
+                [ngClass]="row.invoice_status_class || ''">
+                {{ getArabicLookupName(row, 'invoice_status') }}
+              </span>
             </ng-container>
    
   

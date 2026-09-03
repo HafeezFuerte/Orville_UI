@@ -56,7 +56,7 @@ export class ChequesComponent {
     { key: 'withdrawal_reason', label: 'Withdrawal Reason', visible: true },
     { key: 'Tenant', label: 'Tenant', visible: true, useTemplate: true  }, 
     { key: 'unit_code', label: 'Unit', visible: true, useTemplate: true  },
-    { key: 'attachment_path', label: 'Attachment', visible: true }
+    { key: 'attachment_path', label: 'Attachment', visible: true , useTemplate: true }
   ];
   constructor(private toastr: ToastrService, private commontabservice: Common_TabsService,
     private commonservice: CommonService,public translate: TranslateService,

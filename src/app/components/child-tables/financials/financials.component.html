@@ -11,7 +11,7 @@
     <div class="fin__inv-top">
       <div class="fin__inv-id">
         <span class="fin__inv-no">
-          Invoice - {{ invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || invoice.invoicecode || invoice.code || '—' }}
+           {{ invoice.rcp_no || invoice.InvoiceNo || invoice.invoice_no || invoice.invno || invoice.invoiceNo || invoice.invoicecode || invoice.code || '—' }}
         </span>
         <span class="fin__badge fin__badge--status">
           {{ getArabicLookupName(invoice, 'invoice_status') || 'Unpaid' }}
@@ -86,7 +86,7 @@
           </div>
           <p class="fin__receipts-sub">Each receipt reduces the invoice balance. Invoice number is shown above only.</p>
         </div>
-        <button type="button" class="ov-btn ov-btn-primary" (click)="openRecordReceipt()">
+        <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/accounting/invoices/create']" >
           <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
           Record Receipt
         </button>
@@ -121,9 +121,10 @@
               </td>
               <td class="text-end">
                 <div class="fin__actions relative">
-                  <button type="button" class="fin__more" (click)="showActionMenu(receipt, $event)" title="View details" aria-label="Actions" [attr.aria-expanded]="isMenuOpen(receipt)">···</button>
+                  <!-- if pending & undeposit then only show action menu -->
+                  <button *ngIf="receipt.status==253 || receipt.status==280" type="button" class="fin__more" (click)="showActionMenu(receipt, $event)" title="View details" aria-label="Actions" [attr.aria-expanded]="isMenuOpen(receipt)">···</button>
                   <div *ngIf="isMenuOpen(receipt)" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()" [style.top.px]="menuPos.top" [style.right.px]="menuPos.right">
-                    <div class="ov-action-menu__list">
+                    <div class="ov-action-menu__list"  >
                       <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Edit')">
                         <span class="ov-action-menu__icon-box">
                           <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
@@ -196,7 +197,8 @@
         </div>
         <div>
           <label class="ov-label">Paid Date</label>
-          <input type="date" class="ov-input" [(ngModel)]="receivepayment.paiddate">
+          <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
+           class="ov-input" [(ngModel)]="receivepayment.paiddate">
         </div>
         <div>
           <label class="ov-label">Payment Via</label>
@@ -334,5 +336,5 @@
   </div>
 </div>
 
-<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="ReturnedCheque()">
+<app-delete-confirmation *ngIf="deleteModal" message="Are you sure want to return cheque" (cancelled)="closeModal()" (confirmed)="ReturnedCheque()">
 </app-delete-confirmation>

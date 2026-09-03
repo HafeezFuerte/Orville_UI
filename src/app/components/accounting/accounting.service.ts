@@ -31,4 +31,12 @@ export class AccountingService {
      save_update_coa(payload: any): Observable<any> { 
       return this.http.post(environment.apiurl+'api/Accounting/save_update_coa', payload, { headers: this.commonservice.updateHeaders() });
      }
+     save_rcp_payment(payload: any): Observable<any> {
+      return this.http.post(environment.apiurl+'api/Accounting/receive_rcp_payment', payload, { headers: this.commonservice.updateHeaders() });
+       
+    }  
+    save_invoice_payment(payload: any): Observable<any> {
+      return this.http.post(environment.apiurl+'api/Accounting/receive_invoice_payment', payload, { headers: this.commonservice.updateHeaders() });
+       
+    } 
 }
