@@ -88,6 +88,23 @@
       </app-shared-table>
     </div>
 
+    <!-- Row-action menu — rendered outside table to escape overflow clipping -->
+    <div *ngIf="openRowActionRow && rowMenuStyle"
+      class="events-row-menu"
+      role="menu"
+      [ngStyle]="rowMenuStyle"
+      (click)="$event.stopPropagation()">
+      <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
+        [routerLink]="['/community/events', openRowActionRow.code]"
+        (click)="closeRowMenu()">View Details</a>
+      <a class="block px-3 py-2 text-[13px] font-medium text-defaulttextcolor no-underline hover:bg-light"
+        [routerLink]="['/community/events/edit', openRowActionRow.code]"
+        (click)="closeRowMenu()">Edit Event</a>
+      <button type="button"
+        class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[13px] font-medium text-danger hover:bg-light"
+        (click)="deleteEvent(openRowActionRow.code)">Delete</button>
+    </div>
+
     <div class="ov-page">
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>

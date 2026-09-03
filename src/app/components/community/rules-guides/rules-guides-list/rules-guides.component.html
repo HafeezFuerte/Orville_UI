@@ -67,6 +67,25 @@
       </app-shared-table>
     </div>
 
+    <!-- Row-action menu — rendered outside table to escape overflow clipping -->
+    <div *ngIf="openRowActionRow && rowMenuStyle"
+      class="guides-row-menu"
+      role="menu"
+      [ngStyle]="rowMenuStyle"
+      (click)="$event.stopPropagation()">
+      <div class="guides-row-menu__list">
+        <button type="button" role="menuitem" class="guides-row-menu__item"
+          (click)="onRowView(openRowActionRow)">View Details</button>
+        <button type="button" role="menuitem" class="guides-row-menu__item"
+          (click)="onRowEdit()">Edit Guide</button>
+      </div>
+      <div class="guides-row-menu__footer">
+        <button type="button" role="menuitem"
+          class="guides-row-menu__item guides-row-menu__item--danger"
+          (click)="onRowDelete()">Delete</button>
+      </div>
+    </div>
+
     <div class="ov-page">
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>

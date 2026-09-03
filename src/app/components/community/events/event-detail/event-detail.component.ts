@@ -19,11 +19,6 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   event_code:any;
   showActionMenu = false;
   showPreview = false;
-  openSections: Record<string, boolean> = {
-    property: true,
-    information: true,
-    settings: true
-  };
 
   actionOptions = [
     { label: 'Edit Event', asset: 'assets/images/action-menu/pencil.svg', danger: false },
@@ -138,10 +133,6 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     if (label === 'Edit Event') {
       this.goToEdit();
     }
-  }
-
-  toggleSection(key: string): void {
-    this.openSections[key] = !this.openSections[key];
   }
 
   @HostListener('document:keydown.escape')

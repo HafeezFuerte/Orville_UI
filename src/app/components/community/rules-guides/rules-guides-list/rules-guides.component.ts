@@ -217,7 +217,8 @@ export class RulesGuidesComponent {
     this.openRowActionRow = row;
   }
 
-  onRowView(row: GuideRow): void {
+  onRowView(row: GuideRow | null): void {
+    if (!row) return;
     this.closeRowMenu();
     void this.router.navigate(['/community/rules-guides', row.id]);
   }

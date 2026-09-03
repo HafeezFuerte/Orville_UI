@@ -38,6 +38,8 @@ export class PromotionsComponent {
   openRowActionId: string | null = null;
   openRowActionRow: PromotionRow | null = null;
   rowMenuStyle: { top: string; left: string } | null = null;
+  openRowActionRow: PromotionRow | null = null;
+  rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {
@@ -244,7 +246,8 @@ export class PromotionsComponent {
     this.openRowActionRow = row;
   }
 
-  onRowView(row: PromotionRow): void {
+  onRowView(row: PromotionRow | null): void {
+    if (!row) return;
     this.closeRowMenu();
     void this.router.navigate(['/community/promotions', row.id]);
   }
