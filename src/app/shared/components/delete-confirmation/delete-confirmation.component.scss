@@ -1,14 +1,95 @@
-/* Add animations if needed */
-.animate-fade-in {
-    animation: fadeIn 0.15s ease-out;
+.ov-confirm {
+  /* Host is body-portaled; keep above other portaled backdrops if stacked */
+  z-index: 10060;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+.ov-confirm__stack {
+  max-width: 420px;
+  width: 100%;
+}
 
-    to {
-        opacity: 1;
-    }
+.ov-confirm__card {
+  position: relative;
+  max-width: 420px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgb(37 37 54 / 0.18);
+}
+
+.ov-confirm__accent {
+  height: 4px;
+  width: 100%;
+  flex-shrink: 0;
+  background: #c94a4a;
+}
+
+.ov-confirm__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px 24px;
+  text-align: center;
+}
+
+.ov-confirm__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: rgb(201 74 74 / 0.1);
+}
+
+.ov-confirm__icon img {
+  filter: invert(27%) sepia(51%) saturate(1845%) hue-rotate(329deg) brightness(95%) contrast(88%);
+}
+
+.ov-confirm__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(var(--default-text-color));
+}
+
+.ov-confirm__message {
+  margin: 0;
+  max-width: 320px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgb(var(--text-muted));
+}
+
+.ov-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.ov-confirm__actions .ov-btn {
+  min-width: 96px;
+  min-height: 40px;
+}
+
+.ov-confirm__yes {
+  border-color: transparent;
+  background: #c94a4a;
+  color: #fff;
+  font-weight: 600;
+}
+
+.ov-confirm__yes:hover {
+  background: #b33f3f;
+  color: #fff;
+}
+
+:host-context(html.dark) .ov-confirm__card,
+:host-context(.dark) .ov-confirm__card {
+  background: rgb(var(--dark-bg, 37 39 41));
 }

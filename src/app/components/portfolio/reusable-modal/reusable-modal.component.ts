@@ -7,10 +7,11 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
+  inject,
 } from '@angular/core';
 
 import { TranslateModule } from '@ngx-translate/core';
+import { OvModalPortalService } from '../../../shared/services/ov-modal-portal.service';
 
 @Component({
   selector: 'app-reusable-modal',
@@ -40,19 +41,14 @@ export class ReusableModalComponent implements OnInit, OnDestroy {
 
   @Output() close = new EventEmitter<void>();
 
-  constructor(
-    private readonly host: ElementRef<HTMLElement>,
-    private readonly renderer: Renderer2,
-  ) {}
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly modalPortal = inject(OvModalPortalService);
 
   ngOnInit(): void {
-    // Render above app-header / sidebar stacking contexts (fixed backdrop
-    // otherwise stays trapped under page chrome when opened from detail panels).
-    this.renderer.appendChild(document.body, this.host.nativeElement);
-    this.renderer.addClass(document.body, 'ov-modal-open');
+    this.modalPortal.portalHost(this.host.nativeElement);
   }
 
   ngOnDestroy(): void {
-    this.renderer.removeClass(document.body, 'ov-modal-open');
+    this.modalPortal.releaseHost();
   }
 }

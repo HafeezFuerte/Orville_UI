@@ -285,7 +285,7 @@
 </div>
 <div *ngIf="showChequeBounce" class="ov-modal-backdrop" role="dialog" aria-modal="true">
   <div class="ov-modal-stack" style="max-width: 520px">
-    <button type="button" class="ov-modal__float-close" (click)="showChequeEdit = false" aria-label="Close">
+    <button type="button" class="ov-modal__float-close" (click)="showChequeBounce = false" aria-label="Close">
       <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
     </button>
     <div class="ov-modal">
@@ -329,12 +329,17 @@
   
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="showChequeEdit = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="showChequeBounce = false" class="ov-btn ov-btn-ghost">Cancel</button>
       <button type="button" (click)="update_bounce_cheque()" class="ov-btn ov-btn-primary">Update</button>
     </div>
   </div>
   </div>
 </div>
 
-<app-delete-confirmation *ngIf="deleteModal" message="Are you sure want to return cheque" (cancelled)="closeModal()" (confirmed)="ReturnedCheque()">
+<app-delete-confirmation
+  *ngIf="deleteModal"
+  title="Return cheque"
+  message="Are you sure you want to return this cheque?"
+  (cancelled)="closeModal()"
+  (confirmed)="ReturnedCheque()">
 </app-delete-confirmation>

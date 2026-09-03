@@ -49,8 +49,6 @@ export class EventsComponent {
   openRowActionId: string | null = null;
   openRowActionRow: any = null;
   rowMenuStyle: { top: string; left: string } | null = null;
-  openRowActionRow: any = null;
-  rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {

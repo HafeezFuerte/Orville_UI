@@ -38,8 +38,6 @@ export class PromotionsComponent {
   openRowActionId: string | null = null;
   openRowActionRow: PromotionRow | null = null;
   rowMenuStyle: { top: string; left: string } | null = null;
-  openRowActionRow: PromotionRow | null = null;
-  rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {
