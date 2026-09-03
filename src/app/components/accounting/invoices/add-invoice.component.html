@@ -7,7 +7,7 @@
       <div>
         <div class="flex items-center gap-2.5">
           <h3 class="ov-page-title">{{ invoice_no == ''  ? 'New' : 'Edit'}} Invoice</h3>
-          <span class="inv-add__draft">Draft</span>
+          <span class="inv-add__draft">{{invoice.invoice_status}}</span>
         </div>
         <p class="ov-page-sub">
           Accounting / Invoice / <span class="ov-page-sub__current">{{ invoice_no == ''  ? 'New' : 'Edit'}} Invoice</span>
@@ -17,7 +17,7 @@
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
       <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
-      <button type="submit" class="ov-btn ov-btn-primary"  (click)="onSubmit()">Save Invoice</button>
+      <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)"  (click)="onSubmit()">Save Invoice</button>
     </div>
   </div>
 
@@ -152,7 +152,7 @@
                   <td>{{ row.inHand }}</td>
                   <td><span class="inv-add__pill">{{ row.status }}</span></td> 
                   <td *ngIf="row.attachment?.includes('https') || row.attachment?.includes('http')"><a href="{{row.attachment}}" target="_blank">View File</a></td>
-                  <td *ngIf="!row.attachment.includes('http')">{{ row.attachment || '—' }}</td>
+                  <td *ngIf="!row.attachment?.includes('http')">{{ row.attachment || '—' }}</td>
                   <td>
                     <div class="flex items-center gap-2">
                       <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChequeModal(i)" aria-label="Edit cheque">
@@ -291,8 +291,9 @@
 
   <div class="ov-add-footer">
     <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-    <!-- <button type="button" class="ov-btn ov-btn-ghost">Accept Invoice</button> -->
-    <button type="submit" class="ov-btn ov-btn-primary" (click)="onSubmit()">Save Invoice</button>
+    <!-- <button type="button" class="ov-btn ov-btn-ghost">Accept Invoice</button> --> 
+    <!--   able to save invoice only if status not in paid/hold/void -->
+    <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">Save Invoice</button>
   </div>
 </form>
 

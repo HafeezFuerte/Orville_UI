@@ -98,7 +98,7 @@ export class FinancialsComponent implements OnInit, OnChanges {
     if (this.receipts?.length) {
       this.selectedReceipt = this.receipts[0];
       this.receivepayment.Amount = this.selectedReceipt.amt;
-      this.receivepayment.paiddate = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+      this.receivepayment.paiddate =this.commonservice.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
     }
     this.showApprovalMenu = false;
     this.openMenuReceiptKey = null;
@@ -122,7 +122,7 @@ export class FinancialsComponent implements OnInit, OnChanges {
     this.openMenuReceiptKey = key;
     this.selectedReceipt=selectedrow;
     this.receivepayment.Amount=this.selectedReceipt.amt; 
-    this.receivepayment.paiddate=formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+    this.receivepayment.paiddate=this.commonservice.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
   }
 
   @HostListener('document:click')
@@ -200,11 +200,11 @@ export class FinancialsComponent implements OnInit, OnChanges {
         source: 'web',
         company_id: this.currentUser?.companyId, 
         clientId: this.currentUser?.clientId, 
-        rcp_code: this.selectedReceipt?.code,
+        rcp_code: this.selectedReceipt?.rcp_code,
         invoice_code: this.selectedReceipt?.invoicecode,
         payment_type: this.receivepayment.payment_via,
         account_code: this.receivepayment.account,
-        payment_date: this.receivepayment.paiddate ==null ? formatDate(new Date(), 'yyyy-MM-dd', 'en-US') : this.receivepayment.paiddate,
+        payment_date: this.receivepayment.paiddate ==null ? formatDate(new Date(), 'yyyy-MM-dd', 'en-US') : this.commonservice.parseInputDate(this.receivepayment.paiddate),
         payment_status: this.receivepayment.receivefull==1 ? 262  : 263, //262-(paid status id), 263- Partial paid id
         amount: this.receivepayment.Amount, 
         notes: this.receivepayment.notes,    

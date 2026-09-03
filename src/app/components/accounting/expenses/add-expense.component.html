@@ -7,7 +7,7 @@
       <div>
         <div class="flex items-center gap-2.5">
           <h3 class="ov-page-title">{{ invoice_no == ''  ? 'New' : 'Edit'}}   Expense</h3>
-          <span class="inv-add__draft">Draft</span>
+          <span class="inv-add__draft">{{invoice.invoice_status}}</span>
         </div>
         <p class="ov-page-sub">
           Accounting / Expenses / <span class="ov-page-sub__current">{{ invoice_no == ''  ? 'New' : 'Edit'}}   Expense</span>
@@ -17,7 +17,7 @@
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
       <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
-      <button type="submit" class="ov-btn ov-btn-primary"  (click)="onSubmit()">Save Expense</button>
+      <button type="submit" class="ov-btn ov-btn-primary"  *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">Save Expense</button>
     </div>
   </div>
 
@@ -315,7 +315,7 @@
 
   <div class="ov-add-footer">
     <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button> 
-    <button type="submit" class="ov-btn ov-btn-primary" (click)="onSubmit()">Save Expense</button>
+    <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">Save Expense</button>
   </div>
 </form>
 

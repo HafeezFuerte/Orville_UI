@@ -248,8 +248,8 @@ export class AddExpenseComponent {
 
   saveLineItem(): void {
     const row = { ...this.lineDraft };
-    row.status= this.lineStatuses.filter((item:any)=>item.id==this.lineDraft.statusid)[0].name || 0;
-    row.accountnm= this.coaaccountlist.filter((item:any)=>item.id==this.lineDraft.account)[0].name || 0;
+    row.status= this.lineStatuses.filter((item:any)=>item.id==this.lineDraft.statusid)[0]?.name || 0;
+    row.accountnm= this.coaaccountlist.filter((item:any)=>item.id==this.lineDraft.account)[0]?.name || 0;
     if (!row.description.trim()) {
       return;
     }

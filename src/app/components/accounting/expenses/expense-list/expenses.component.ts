@@ -59,7 +59,8 @@ export class ExpensesComponent {
   allRows:any= [];
   tableColumns = [
     { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'invoice_no', label: 'Bill Number', visible: true },
+    { key: 'invoice_no', label: 'Bill Number', visible: true , useTemplate: true },
+    { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
     { key: 'unit_code', label: 'Unit / Common Area', visible: true },
     { key: 'lease', label: 'Lease Details', visible: true }, 
     { key: 'account_name', label: 'Account', visible: true }, 
@@ -67,8 +68,7 @@ export class ExpensesComponent {
     { key: 'due_date', label: 'Due Date', visible: true },
     { key: 'invoice_date', label: 'Issue Date', visible: true },
     { key: 'paidDate', label: 'Paid Date', visible: true },
-    { key: 'createdby', label: 'Created By', visible: true },
-    { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
+    { key: 'createdby', label: 'Created By', visible: true }, 
     { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 

@@ -165,7 +165,7 @@ export const OVERVIEW_COLUMNS: InvoiceCol[] = [
 ];
 
 export const CHEQUE_COLUMNS: InvoiceCol[] = [
-  { key: 'id', label: 'web.common.lblID', visible: true },
+  { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
     { key: 'rcp_no', label: 'Receipt No', visible: true, useTemplate: true },
     { key: 'cheque_no', label: 'web.leases.lblChequeNo', visible: true }, 
     { key: 'bank_name', label: 'web.leases.lblBankName', visible: true },

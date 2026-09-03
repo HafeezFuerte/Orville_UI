@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit,inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule,formatDate } from '@angular/common';
 import { FormsModule,FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../services/common.service';
@@ -8,6 +8,9 @@ import { ToastrService } from 'ngx-toastr';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { NotesComponent } from '../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../child-tables/attachments/attachments.component';
+import { AccountingService } from '../accounting.service';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   CHEQUE_COLUMNS,
   INVOICE_CHEQUE_ROWS,
@@ -27,13 +30,13 @@ import {
 } from './invoice-detail.data';
 import { INVOICE_ROWS } from './invoices.data';
 import { FinancialsComponent } from '../../child-tables/financials/financials.component';
-
+import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
+  imports: [CommonModule,FileUploadComponent,NgSelectModule,NotesComponent,TranslateModule,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
   templateUrl: './invoice-detail.component.html',
   styleUrl: './invoice-detail.component.scss'
 })
@@ -42,19 +45,25 @@ export class InvoiceDetailComponent implements OnInit {
   Form!: FormGroup;
   loading:boolean=false;
   invoice_no:string='';
+  attachedFile:any='';
+  isLoading:boolean=false;
   approveComments: string = '';
   notesData : any[] = [];
   leaseInfo:any= {};
   attahmentData : any[] = [];
+  coa_list:any=[];
+  paymentMethods:any=[];
   receiptslist:any=[];
   invoicesList:any=[];
   overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
-   
+  private accountingservice = inject(AccountingService);
+  receivepayment:any= { receivefull:1, Amount:0,paiddate:null,payment_via:0,account:'',notes:'',reciept_file:null}
   showApprovalMenu = false;
   showApprovalModal=false;
+  showReceivePayment=false;
   IsMarkAsPaid=false;
   ApprovalModalText="Approve";
   currentUser = this.commonService.getCurrentUser(); 
@@ -134,6 +143,8 @@ export class InvoiceDetailComponent implements OnInit {
     }
     this.invoice_no=id;  
     this.getInvoiceDetails();
+    this.loadLookup(2,23, 'paymentMethods', '','');
+    this.loadLookup(2,1003, 'coa_list', '',''); 
   }
   get selectedNotesTab(): any | undefined {
     return this.tabs.find((t:any) => t.key === "notes");
@@ -175,6 +186,24 @@ export class InvoiceDetailComponent implements OnInit {
       }, 
     ];
 
+  }
+  
+  loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string) {
+    this.commontabservice.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: filterText1
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {   
+            (this as any)[targetProperty] = res.objResult.table;   
+        }
+      },
+      error: (err:any) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
   }
   getInvoiceDetails() {
     this.commontabservice.getMasterByType({
@@ -241,7 +270,72 @@ export class InvoiceDetailComponent implements OnInit {
     this.ApprovalModalText= "Mark As Paid";
     this.IsMarkAsPaid=true;
   }
-
+  onFilesSelected(files: File[]) {
+    if (files.length > 0) {
+      this.attachedFile=files[0];
+    } else {
+      this.attachedFile=null;
+    }
+  }
+  showPaymentmodal(){
+    this.showReceivePayment=!this.showReceivePayment;
+    this.receivepayment.Amount=this.invoice?.total_amount;
+    this.receivepayment.paiddate =this.commonService.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
+  }
+  save_payment(){
+    if(this.receivepayment.Amount==0){
+      this.toastr.error("Invalid amount");
+      return;
+    }
+    else if(this.receivepayment.payment_via==0){
+      this.toastr.error("Invalid payment type");
+      return;
+    } 
+    else{ 
+      const request = {
+        userid: this.currentUser?.userId,
+        code: this.invoice?.code || '',
+        source: 'web',
+        company_id: this.currentUser?.companyId, 
+        clientId: this.currentUser?.clientId, 
+        rcp_code: '',
+        invoice_type:"Invoice",
+        invoice_code: this.invoice?.code,
+        payment_type: this.receivepayment.payment_via,
+        account_code: this.receivepayment.account,
+        payment_date: this.receivepayment.paiddate ==null ? formatDate(new Date(), 'yyyy-MM-dd', 'en-US') : this.commonService.parseInputDate(this.receivepayment.paiddate),
+        payment_status: 262 , //262-(paid status id), 263- Partial paid id
+        amount: this.receivepayment.Amount, 
+        notes: this.receivepayment.notes,    
+   
+      }; 
+ 
+      const formData = new FormData(); 
+    // JSON goes as ONE field
+    formData.append('reqObject', JSON.stringify(request));
+    if(this.attachedFile!='')
+      formData.append("attachment", this.attachedFile); 
+   
+     this.accountingservice.save_invoice_payment(formData).subscribe({
+        next: (res:any) => {
+          this.isLoading = false;
+          if (res["statusCode"] == "200") {
+            this.toastr.success('Successfully Received Payment');
+            setTimeout(() => {
+              window.location.reload()
+            }, 3000);
+          }
+          else{
+            this.toastr.error(res['message']);
+            return;
+          }
+        },
+        error: (err:any) => {
+          this.isLoading = false;
+        },
+      });
+    }
+  }
 
   toggleAction(event: Event): void {
     event.stopPropagation();
@@ -296,7 +390,7 @@ export class InvoiceDetailComponent implements OnInit {
       this.sendForApproval();
     }  
     else if (label === 'Mark as paid') {
-      this.OnMarkAsPaid();
+      this.showReceivePayment=!this.showReceivePayment;
     }
     else if (label === 'Back to list') { 
       this.router.navigate(['/accounting/invoices']);
@@ -310,7 +404,7 @@ export class InvoiceDetailComponent implements OnInit {
       typeId: !this.IsMarkAsPaid ? 58: 60,
       filterId: 0,
       filterText: this.invoice_no,
-      filterText1: ''
+      filterText1: 'Invoices'
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
@@ -334,7 +428,7 @@ export class InvoiceDetailComponent implements OnInit {
     }
     this.commontabservice.getMasterByType({
       typeId: 59,
-      filterId: 0,
+      filterId: 1,// 1 for invoice 2 for expense
       filterText: this.invoice_no,
       filterText1: this.approveComments
     }).subscribe({
