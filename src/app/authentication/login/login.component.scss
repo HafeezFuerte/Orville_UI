@@ -1,7 +1,8 @@
-/* Login page chrome — Figma 26:80. Local navy panel only; CTA uses theme primary. */
+/* Login page chrome — Figma 6088:103756. Left panel: grey base + Orville blue overlay blend. */
 
 .orville-login {
   --login-navy: #26264f;
+  --login-panel-base: #a6b0b9;
   --login-grey: #6c7278;
   --login-placeholder: #acb5bb;
   --login-stroke: #edf1f3;
@@ -17,7 +18,7 @@
   color: #000;
 }
 
-/* ---- Left panel ---- */
+/* ---- Left panel (Figma: grey base + #26264F mix-blend overlay) ---- */
 .orville-login__panel {
   position: relative;
   display: none;
@@ -26,7 +27,7 @@
   min-height: 100vh;
   overflow: hidden;
   isolation: isolate;
-  background: #a6b0b9;
+  background: var(--login-panel-base);
 }
 
 @media (min-width: 1024px) {
@@ -38,21 +39,15 @@
 .orville-login__panel-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgb(170, 177, 185) 0%,
-    rgb(173, 180, 187) 22%,
-    rgb(171, 178, 185) 44%,
-    rgb(172, 179, 187) 67%,
-    rgb(170, 177, 185) 100%
-  );
+  /* Match illustration background exactly (#A6B0B9) so top/bottom bands are identical */
+  background: var(--login-panel-base);
 }
 
 .orville-login__illustration-wrap {
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(calc(-50% - 12px));
+  top: calc(50% - 25.5px);
+  transform: translateY(-50%);
   width: var(--login-panel-w);
   height: var(--login-panel-w);
 }
