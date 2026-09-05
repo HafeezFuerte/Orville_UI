@@ -40,7 +40,7 @@ export class ReminderDetailComponent implements OnInit {
   onAction(label: string): void {
     this.showActionMenu = false;
     if (label === 'Edit Reminder') {
-      void this.router.navigate(['/reminders']);
+      void this.router.navigate(['/reminders/new'], { queryParams: { code: this.detail.id } });
     }
   }
 

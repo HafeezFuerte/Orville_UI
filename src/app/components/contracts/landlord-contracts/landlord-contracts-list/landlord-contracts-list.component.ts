@@ -91,6 +91,66 @@ export class LandlordContractsListComponent implements OnInit {
     }
   }
 
+  formatProperties(item: any): string {
+    const candidate = item.properties || item.property_name || item.property_names || item.property || item.property_codes || item.property_code || item.prop_name || item.building_name || item.building;
+    if (candidate !== undefined && candidate !== null) {
+      const str = String(candidate).trim();
+      if (str !== '' && str !== 'null' && str !== 'undefined' && str !== '-') {
+        return str;
+      }
+    }
+    return '-';
+  }
+
+  formatUnitsRooms(item: any): string {
+    const directVal = item.units_rooms || item.units_rooms_codes || item.units_no || item.units_rooms_count || item.unitsRooms || item.unit_room;
+    if (directVal !== undefined && directVal !== null) {
+      const directStr = String(directVal).trim();
+      if (directStr !== '' && directStr !== 'null' && directStr !== 'undefined' && directStr !== '-') {
+        return directStr;
+      }
+    }
+
+    const uVal = item.units_codes || item.units || item.unit_code || item.units_name || item.unit_name || item.unit_no || '';
+    const rVal = item.rooms_codes || item.rooms || item.room_code || item.rooms_name || item.room_name || item.room_no || '';
+
+    const uStr = String(uVal).trim();
+    const rStr = String(rVal).trim();
+
+    const validUnits = (uStr && uStr !== 'null' && uStr !== 'undefined' && uStr !== '-') ? uStr : '';
+    const validRooms = (rStr && rStr !== 'null' && rStr !== 'undefined' && rStr !== '-') ? rStr : '';
+
+    if (validUnits && validRooms) {
+      return `${validUnits} / ${validRooms}`;
+    } else if (validUnits) {
+      return validUnits;
+    } else if (validRooms) {
+      return validRooms;
+    }
+
+    const uCount = item.total_units ?? item.units_count ?? item.no_of_units;
+    const rCount = item.total_rooms ?? item.rooms_count ?? item.no_of_rooms;
+    if (uCount !== undefined || rCount !== undefined) {
+      return `${uCount || 0} / ${rCount || 0}`;
+    }
+
+    return '-';
+  }
+
+  formatValue(item: any): string {
+    const val = (item.value !== undefined && item.value !== null && item.value !== '') ? item.value : (item.contract_value || item.annual_rent || item.amount || item.val || item.fee_value);
+    if (val !== undefined && val !== null && val !== '') {
+      const num = Number(val);
+      if (!isNaN(num) && num > 0) {
+        return `AED ${num.toFixed(2)}`;
+      }
+      if (String(val).trim() !== '' && String(val).trim() !== '0') {
+        return String(val);
+      }
+    }
+    return '-';
+  }
+
   loadContracts(): void {
     this.isLoading = true;
     const currentUser = this.commonService.getCurrentUser();
@@ -114,22 +174,22 @@ export class LandlordContractsListComponent implements OnInit {
     this.commontabservice.getCommonGrid(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res && res.statusCode === "200" && res.objResult) {
+        if (res && (res.statusCode === "200" || res.statusCode == 200) && res.objResult) {
           const rawItems = res.objResult.landlord_contracts || res.objResult.contracts || res.objResult.table || [];
           if (rawItems.length > 0) {
             console.log('Landlord contract raw grid item from backend:', rawItems[0]);
           }
           this.allRows = rawItems.map((item: any) => ({
             id: String(item.code || item.id || ''),
-            landlord: item.landlord_name || item.landlord || item.name || '-',
+            landlord: item.landlord_name || item.landlord || item.landlord_code || item.name || '-',
             name: item.name || item.contract_name || '-',
-            properties: item.properties || item.property_name || item.property || item.property_codes || item.property_code || '-',
-            unitsRooms: item.units_rooms || item.units_no || item.units || item.rooms || item.units_codes || item.rooms_codes || item.unit_code || '-',
+            properties: this.formatProperties(item),
+            unitsRooms: this.formatUnitsRooms(item),
             startDate: this.formatDateString(item.start_date || item.startDate),
             endDate: this.formatDateString(item.end_date || item.endDate),
             createDate: this.formatDateString(item.create_date || item.created_date || item.created_at || item.createDate || item.start_date),
             status: (item.status || item.status_nm || 'Active') as LandlordContractStatus,
-            value: (item.value !== undefined && item.value !== null && item.value !== '') ? String(item.value) : (item.contract_value ? String(item.contract_value) : '-'),
+            value: this.formatValue(item),
             daysLeft: item.days_left || item.daysLeft ? String(item.days_left || item.daysLeft) : this.calculateDaysLeft(item.end_date || item.endDate)
           }));
 
@@ -247,6 +307,10 @@ export class LandlordContractsListComponent implements OnInit {
 
   goToCreate(): void {
     this.router.navigate(['/landlord-contracts/create']);
+  }
+
+  goToEdit(id: string): void {
+    this.router.navigate(['/landlord-contracts/create'], { queryParams: { code: id } });
   }
 
   goToDetail(id: string): void {

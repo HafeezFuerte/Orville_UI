@@ -249,8 +249,26 @@ export class SpacesComponent implements OnInit {
     }
   }
 
+  openActionId: string | null = null;
+
+  toggleRowAction(id: string, event: Event): void {
+    event.stopPropagation();
+    this.openActionId = this.openActionId === id ? null : id;
+  }
+
+  goToDetail(id: string): void {
+    this.openActionId = null;
+    void this.router.navigate(['/bookings/spaces', id]);
+  }
+
+  goToEdit(id: string): void {
+    this.openActionId = null;
+    void this.router.navigate(['/bookings/spaces/create'], { queryParams: { code: id } });
+  }
+
   @HostListener('document:click')
   onDocumentClick(): void {
     this.showColumnDropdown = false;
+    this.openActionId = null;
   }
 }

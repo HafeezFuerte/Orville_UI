@@ -92,12 +92,14 @@ export class CreateVendorContractComponent implements OnInit {
     this.loadRooms();
     this.loadPaymentMethods();
 
-    const code = this.route.snapshot.queryParams['code'];
-    if (code) {
-      this.isEdit = true;
-      this.contractCode = code;
-      this.loadContractDetails();
-    }
+    this.route.queryParams.subscribe(params => {
+      const code = params['code'] || params['id'];
+      if (code) {
+        this.isEdit = true;
+        this.contractCode = code;
+        this.loadContractDetails();
+      }
+    });
   }
 
   loadProperties(): void {
@@ -154,7 +156,7 @@ export class CreateVendorContractComponent implements OnInit {
     });
   }
 
-  loadRooms(unitCodeOverride?: string): void {
+  loadRooms(unitCodeOverride?: string, callback?: () => void): void {
     const propertyCode = this.form.property || '';
     const selectedUnitCodes = this.selectedUnits.map(u => u.code).join(',');
     const unitCode = unitCodeOverride || this.pendingUnit || selectedUnitCodes || '';
@@ -173,10 +175,12 @@ export class CreateVendorContractComponent implements OnInit {
         } else {
           this.rooms = [];
         }
+        if (callback) callback();
       },
       error: (err) => {
         console.error('Error loading rooms:', err);
         this.rooms = [];
+        if (callback) callback();
       }
     });
   }
@@ -237,63 +241,100 @@ export class CreateVendorContractComponent implements OnInit {
   }
 
   loadContractDetails(): void {
+    const currentUser = this.commonService.getCurrentUser();
     this.portfolioService.getMasterByType({
       typeId: 25,
       filterId: 0,
       filterText: this.contractCode,
-      filterText1: ''
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res && res.statusCode === "200" && res.objResult) {
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult) {
           const detail = res.objResult.contract_dtls?.[0] || res.objResult.contract?.[0] || res.objResult.table?.[0] || {};
           this.contractDbId = Number(detail.id || detail.contract_id) || 0;
           
+          const vendorCode = detail.vendor_code || detail.vendor || detail.vendor_id || null;
+          const propertyCode = detail.property_codes || detail.property_code || detail.property || null;
+
           this.form = {
-            vendor: detail.vendor_code || null,
-            property: detail.property_codes || detail.property || null,
-            name: detail.name || '',
-            cycle: this.parseCycleId(detail.contract_cycle),
-            startDate: this.formatDateForInput(detail.start_date),
-            endDate: this.formatDateForInput(detail.end_date),
-            feeType: detail.is_per_service_charge ? 3 : this.parseFeeTypeId(detail.management_fee_type),
-            feeValue: String(detail.value || '0.00'),
-            paymentCount: String(detail.no_of_payments || ''),
-            pmaType: detail.pma_type_nm || null,
-            paymentVia: detail.payment_type_nm || null,
-            taxProfile: detail.tax_profile_id || null,
-            chargePayments: '',
-            chargePercent: '0.00',
-            chargeCommission: '0.00',
-            chargeFixed: '0.00',
-            chargeBalance: '0.00',
-            notes: detail.notes || ''
+            vendor: vendorCode ? String(vendorCode) : null,
+            property: propertyCode ? String(propertyCode) : null,
+            name: detail.name || detail.contract_name || '',
+            cycle: this.parseCycleId(detail.contract_cycle || detail.cycle),
+            startDate: this.formatDateForInput(detail.start_date || detail.startDate),
+            endDate: this.formatDateForInput(detail.end_date || detail.endDate),
+            feeType: detail.is_per_service_charge ? 3 : this.parseFeeTypeId(detail.management_fee_type || detail.fee_type),
+            feeValue: String(detail.value !== undefined && detail.value !== null ? detail.value : (detail.fee_value || detail.contract_value || '0.00')),
+            paymentCount: String(detail.no_of_payments || detail.payment_count || ''),
+            pmaType: detail.pma_type_nm || detail.pma_type || null,
+            paymentVia: detail.payment_type_nm || detail.payment_via || detail.payment_type || null,
+            taxProfile: this.parseTaxProfile(detail.tax_profile_id || detail.tax_profile),
+            chargePayments: String(detail.commission_no_of_payments || ''),
+            chargePercent: String(detail.commission_percentage || '0.00'),
+            chargeCommission: String(detail.commission_value || '0.00'),
+            chargeFixed: String(detail.commission_fixed_value || '0.00'),
+            chargeBalance: String(detail.commission_balance || '0.00'),
+            notes: detail.notes || detail.remark || detail.remarks || ''
           };
 
           if (this.form.property) {
-            this.loadUnitsForProperty(this.form.property);
-          }
+            this.loadUnitsForProperty(this.form.property, () => {
+              if (res.objResult.units || res.objResult.table2) {
+                const rawUnits = res.objResult.units || res.objResult.table2 || [];
+                this.selectedUnits = rawUnits.map((u: any) => {
+                  const uCode = String(u.code || u.unit_code || u.id);
+                  const match = this.units.find(x => String(x.code) === uCode);
+                  return {
+                    code: uCode,
+                    name: match ? match.name : (u.unit_code || u.code || uCode)
+                  };
+                });
+              } else if (detail.units_codes || detail.units) {
+                const codesStr = String(detail.units_codes || detail.units);
+                const codesArr = codesStr.split(',').map(s => s.trim()).filter(Boolean);
+                this.selectedUnits = codesArr.map(c => {
+                  const match = this.units.find(x => String(x.code) === c);
+                  return {
+                    code: c,
+                    name: match ? match.name : c
+                  };
+                });
+              }
+            });
 
-          if (res.objResult.units || res.objResult.table2) {
-            const rawUnits = res.objResult.units || res.objResult.table2 || [];
-            this.selectedUnits = rawUnits.map((u: any) => ({
-              code: u.code || u.unit_code || u.id,
-              name: u.unit_code || u.code
-            }));
-          }
-
-          if (res.objResult.rooms || res.objResult.table3) {
-            const rawRooms = res.objResult.rooms || res.objResult.table3 || [];
-            this.selectedRooms = rawRooms.map((r: any) => ({
-              code: r.code || r.room_code || r.id,
-              name: r.room_name || r.code
-            }));
+            this.loadRooms(undefined, () => {
+              if (res.objResult.rooms || res.objResult.table3) {
+                const rawRooms = res.objResult.rooms || res.objResult.table3 || [];
+                this.selectedRooms = rawRooms.map((r: any) => {
+                  const rCode = String(r.code || r.room_code || r.id);
+                  const match = this.rooms.find(x => String(x.code) === rCode);
+                  return {
+                    code: rCode,
+                    name: match ? match.name : (r.room_name || r.room_no || r.code || rCode)
+                  };
+                });
+              } else if (detail.rooms_codes || detail.rooms) {
+                const codesStr = String(detail.rooms_codes || detail.rooms);
+                const codesArr = codesStr.split(',').map(s => s.trim()).filter(Boolean);
+                this.selectedRooms = codesArr.map(c => {
+                  const match = this.rooms.find(x => String(x.code) === c);
+                  return {
+                    code: c,
+                    name: match ? match.name : c
+                  };
+                });
+              }
+            });
           }
 
           if (res.objResult.payment_schedules || res.objResult.table5) {
             const schedules = res.objResult.payment_schedules || res.objResult.table5 || [];
             this.schedules = schedules.map((s: any) => ({
               account: s.account || s.account_name || 'Management Fee',
-              amount: `AED ${(s.amount || 0).toFixed(2)}`,
+              amount: typeof s.amount === 'number' ? `AED ${s.amount.toFixed(2)}` : String(s.amount || 'AED 0.00'),
               due: this.formatDateForInput(s.due_date || s.due),
               recurrence: s.recurrence || 'Once',
               paymentVia: s.payment_via || s.payment_type_nm || ''
@@ -481,6 +522,15 @@ export class CreateVendorContractComponent implements OnInit {
     if (s === '2' || s.includes('percent')) return 2;
     if (s === '3' || s.includes('service')) return 3;
     return Number(val) || 1;
+  }
+
+  parseTaxProfile(val: any): string | null {
+    if (!val) return null;
+    const s = String(val).trim();
+    if (s === '1' || s.toLowerCase().includes('standard')) return 'Standard rated';
+    if (s === '2' || s.toLowerCase().includes('zero')) return 'Zero rated';
+    if (s === '3' || s.toLowerCase().includes('exempt')) return 'Exempt';
+    return s;
   }
 
   save(): void {
