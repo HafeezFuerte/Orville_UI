@@ -80,7 +80,7 @@ export class EventAddComponent {
               selectedImage:null,
               sendableTo: temp.entity,selectedList:''   }
               this.selectedImageName = temp?.event_image_path ?  this.selectedImageName : null;
-              const tt=this.form.sendableTo =='Property' ? 2 : this.selectedType =='All Tenants' ? 1 : 3;
+              const tt=this.form.sendableTo =='Property' ? 2 : this.form.sendableTo =='All Tenants' ? 1 : 3;
               this.loadLookup(70, tt, 'selectedData', '');
              setTimeout(() => {
               this.form.selectedList=temp.selected_list.split(',')

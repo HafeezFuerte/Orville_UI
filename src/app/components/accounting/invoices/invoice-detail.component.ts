@@ -391,6 +391,8 @@ export class InvoiceDetailComponent implements OnInit {
     }  
     else if (label === 'Mark as paid') {
       this.showReceivePayment=!this.showReceivePayment;
+      this.receivepayment.Amount=this.invoice?.total_amount;
+      this.receivepayment.paiddate =this.commonService.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
     }
     else if (label === 'Back to list') { 
       this.router.navigate(['/accounting/invoices']);

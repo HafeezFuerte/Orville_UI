@@ -15,15 +15,15 @@
   <div class="mb-5 overflow-x-auto" role="tablist" aria-label="Promotion status">
     <div class="flex flex-wrap gap-2">
       <button
-        type="button"
-        *ngFor="let tab of statusTabs"
-        class="inline-flex h-9 items-center rounded-full border px-3.5 text-sm font-medium transition-colors"
-        [ngClass]="statusFilter === tab
-          ? 'border-primary bg-primary text-white'
-          : 'border-defaultborder bg-white text-defaulttextcolor hover:bg-light dark:bg-bodybg'"
-        (click)="setStatusFilter(tab)">
-        {{ tab }} ({{ countFor(tab) }})
-      </button>
+      type="button"
+     *ngFor="let tab of statusTabs"
+     class="ov-seg__btn"
+     [class.is-active]="statusFilter === tab.id"
+     [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+     [class.border-transparent]="statusFilter !== tab.id" 
+     (click)="setStatusFilter(tab.id)">
+         {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+   </button>
     </div>
   </div>
 
@@ -58,25 +58,20 @@
 
     <div class="overflow-x-auto px-5 pb-0 pt-5" (scroll)="closeRowMenu()">
       <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+     [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link" [routerLink]="['/community/promotions', row.id]">{{ row.id }}</a>
-            <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/promotions', row.id]">{{ row.name }}</a>
-            <span *ngSwitchCase="'status'"
+            <ng-container *ngSwitchCase="'code'">
+              <a class="ov-link" [routerLink]="['/community/promotions', row.code]" href="javascript:void(0)">{{ row.code }}</a>
+            </ng-container>
+            <ng-container *ngSwitchCase="'promotion_name'">
+              <a class="ov-link" [routerLink]="['/community/promotions', row.code]" href="javascript:void(0)">{{ row.promotion_name }}</a>
+            </ng-container>  
+            <span *ngSwitchCase="'status_name'"
               class="inline-flex h-6 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [ngClass]="{
-                'bg-light text-defaulttextcolor': row.status === 'Draft',
-                'bg-primary text-white': row.status === 'Published'
-              }">
-              {{ row.status }}
+              [ngClass]="row.status_class_name">
+              {{ row.status_name }}
             </span>
             <div *ngSwitchCase="'action'" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
@@ -89,36 +84,14 @@
         </ng-template>
       </app-shared-table>
     </div>
-
-    <!-- Row-action menu — rendered outside table to escape overflow clipping -->
-    <div *ngIf="openRowActionRow && rowMenuStyle"
-      class="promotions-row-menu"
-      role="menu"
-      [ngStyle]="rowMenuStyle"
-      (click)="$event.stopPropagation()">
-      <div class="promotions-row-menu__list">
-        <button type="button" role="menuitem" class="promotions-row-menu__item"
-          (click)="onRowView(openRowActionRow)">View Details</button>
-        <button type="button" role="menuitem" class="promotions-row-menu__item"
-          (click)="onRowEdit()">Edit Promotion</button>
-      </div>
-      <div class="promotions-row-menu__footer">
-        <button type="button" role="menuitem"
-          class="promotions-row-menu__item promotions-row-menu__item--danger"
-          (click)="onRowDelete()">Delete</button>
-      </div>
-    </div>
+ 
 
     <div class="ov-page">
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -166,14 +139,18 @@
     (click)="$event.stopPropagation()">
     <div class="promotions-row-menu__list">
       <button type="button" role="menuitem" class="promotions-row-menu__item"
-        (click)="onRowView(openRowActionRow!)">View Details</button>
+         [routerLink]="['/community/promotions', openRowActionRow.code]">View Details</button>
       <button type="button" role="menuitem" class="promotions-row-menu__item"
-        (click)="onRowEdit()">Edit Promotion</button>
+       [routerLink]="['/community/promotions/edit', openRowActionRow.code]">Edit Promotion</button>  
+
     </div>
     <div class="promotions-row-menu__footer">
       <button type="button" role="menuitem"
         class="promotions-row-menu__item promotions-row-menu__item--danger"
-        (click)="onRowDelete()">Delete</button>
+        (click)="deletePromotion(openRowActionRow.code)">Delete</button>
     </div>
   </div>
 </div>
+
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

@@ -12,7 +12,12 @@ export const promotionsRoutes: Routes = [
       import('./create-promotion/promotion-add.component').then((m) => m.PromotionAddComponent)
   },
   {
-    path: ':id',
+    path: 'edit/:code',
+    loadComponent: () =>
+      import('./create-promotion/promotion-add.component').then((m) => m.PromotionAddComponent)
+  },
+  {
+    path: ':code',
     loadComponent: () =>
       import('./promotion-detail/promotion-detail.component').then((m) => m.PromotionDetailComponent)
   }

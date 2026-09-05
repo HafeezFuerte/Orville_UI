@@ -2,7 +2,10 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PromotionRow, getPromotionById } from '../promotions.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
 @Component({
   selector: 'app-promotion-detail',
   standalone: true,
@@ -11,10 +14,11 @@ import { PromotionRow, getPromotionById } from '../promotions.data';
   styleUrl: './promotion-detail.component.scss'
 })
 export class PromotionDetailComponent implements OnInit, OnDestroy {
-  detail: PromotionRow = getPromotionById('658');
+  detail: any={};
   showActionMenu = false;
   showPreview = false;
   codeCopied = false;
+  event_code:any;
 
   actionOptions = [
     { label: 'Edit Promotion', asset: 'assets/images/action-menu/pencil.svg', danger: false },
@@ -24,14 +28,15 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService
   ) {}
+  
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
-      this.detail = getPromotionById(params.get('id'));
-    });
-    this.route.queryParamMap.subscribe((params) => {
+      this.event_code=params.get('code'); 
+      this.getPromotionDetails(2,41, 'statusTabs', this.event_code);
       if (params.get('preview') === '1') {
         this.openPreview();
         void this.router.navigate([], {
@@ -40,6 +45,54 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
           queryParamsHandling: 'merge',
           replaceUrl: true
         });
+      }
+    });
+  }
+
+  getPromotionDetails(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: 73,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table1) {  
+          var temp=res.objResult.table1 [0] || {};
+       //   this.attendees=res.objResult.table2 || []; 
+          if(temp){
+            this.detail = {
+              id: temp.id, 
+              name:temp.promotion_name,
+              code: temp.promotion_code,
+              category: temp.category_name,
+              status: temp.status_name,
+              startDate:this.commonservice.formatDateForInput(temp.start_date),
+              endDate: this.commonservice.formatDateForInput(temp.end_date),
+              startTime: temp.start_time,
+              endTime: temp.end_time,
+              description:temp.description,
+              offer: '-', 
+              phone: temp.phone_no,
+              property: temp.entity,
+              sendableTo: temp.promotion_name,
+              contacts: temp.selected_tenants,
+              project: '',
+              order: temp.promotion_order,
+              address: temp.address,
+              country: temp.country_name, 
+              city: temp.city_name, 
+              createdAt: temp.created_date,
+              createdBy: temp.createdby,
+              selectedImg :temp.promotion_banner
+            }
+          }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
   }
@@ -61,7 +114,7 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
   }
 
   goToEdit(): void {
-    void this.router.navigate(['/community/promotions/new']);
+    void this.router.navigate(['/community/promotions/edit',this.event_code]);
   }
 
   openPreview(): void {

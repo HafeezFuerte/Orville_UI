@@ -141,7 +141,7 @@ export class EventsComponent {
   }
   deleterecord(){
     this.deleteModal=false;
-    this.loadLookup(71,0, '', this.event_code);
+    this.loadLookup(71,1, '', this.event_code);
   }
   closeModal(){
     this.deleteModal=false;
