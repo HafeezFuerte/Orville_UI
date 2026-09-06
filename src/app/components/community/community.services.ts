@@ -25,4 +25,7 @@ export class CommunityService {
    save_promotion(payload: any): Observable<any> { 
       return this.http.post(environment.apiurl+'api/Application/save_update_promotions', payload, { headers: this.commonservice.updateHeaders() });
      } 
+     save_guide_lines(payload: any): Observable<any> { 
+      return this.http.post(environment.apiurl+'api/Application/save_update_guides', payload, { headers: this.commonservice.updateHeaders() });
+     } 
 }

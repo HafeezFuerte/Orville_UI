@@ -6,7 +6,11 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { GUIDE_ROWS, GuideRow } from '../rules-guides.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
   selector: 'app-rules-guides',
   standalone: true,
@@ -16,7 +20,8 @@ import { GUIDE_ROWS, GuideRow } from '../rules-guides.data';
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,DeleteConfirmationComponent
+
   ],
   templateUrl: './rules-guides.component.html',
   styleUrl: './rules-guides.component.scss'
@@ -27,16 +32,23 @@ export class RulesGuidesComponent {
   showColumnDropdown = false;
   filterName = '';
   filterProperty = '';
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = GUIDE_ROWS;
+  deleteModal:boolean=false;
+  e_code:string='';
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser();  
   openRowActionId: string | null = null;
-  openRowActionRow: GuideRow | null = null;
+  openRowActionRow: any | null = null;
   rowMenuStyle: { top: string; left: string } | null = null;
 
   tableColumns = [
     {
-      key: 'id',
+      key: 'code',
       label: 'ID',
       visible: true,
       useTemplate: true,
@@ -51,17 +63,99 @@ export class RulesGuidesComponent {
       useTemplate: true,
       width: '260px'
     },
-    { key: 'property', label: 'Property', visible: true, width: '240px' },
-    { key: 'date', label: 'Date', visible: true, width: '140px' },
+    { key: 'entity_type', label: 'Entity', visible: true, width: '240px',      useTemplate: true },
+    { key: 'entity_name', label: 'Entity Name', visible: true, width: '240px',      useTemplate: true, },
+    { key: 'created_date', label: 'Date', visible: true, width: '140px' },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '80px' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService) {}
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
   }
+  deleteguideline(id: string): void {
+    this.closeRowMenu();
+    this.deleteModal=!this.deleteModal;  
+    this.e_code=id;
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,3, '', this.e_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
+  ngOnInit() {
+    
+    this.loadGuidlines();   
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as inactive");
+            this.e_code='';
+            this.loadGuidlines();
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  
+  loadGuidlines() {
+    const filterList: any[] = [];
+    
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by:  '',
+      filter_list: '',
+      featureid: "ENTITY_GUIDELINES"
+    };
 
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.entity_guidelines || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
   get filteredRows(): GuideRow[] {
     const q = this.searchQuery.trim().toLowerCase();
     return this.allRows.filter((row) => {
@@ -80,13 +174,7 @@ export class RulesGuidesComponent {
     });
   }
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
+  
 
   get displayPage(): number {
     return this.pageIndex + 1;
@@ -142,7 +230,8 @@ export class RulesGuidesComponent {
     this.searchQuery = '';
     this.filterName = '';
     this.filterProperty = '';
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadGuidlines();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -160,30 +249,49 @@ export class RulesGuidesComponent {
   toggleAllColumns(checked: boolean): void {
     this.tableColumns.forEach((col) => (col.visible = checked));
   }
-
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadGuidlines();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadGuidlines();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadGuidlines();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+      this.pageNo++;
+      this.loadGuidlines();
     }
   }
 
   goToPage(page: number): void {
-    const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadGuidlines();
     }
+ 
   }
-
   toggleRowAction(row: GuideRow, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
@@ -217,15 +325,15 @@ export class RulesGuidesComponent {
     this.openRowActionRow = row;
   }
 
-  onRowView(row: GuideRow | null): void {
+  onRowView(row: any | null): void {
     if (!row) return;
     this.closeRowMenu();
-    void this.router.navigate(['/community/rules-guides', row.id]);
+    void this.router.navigate(['/community/rules-guides', row.code]);
   }
 
-  onRowEdit(): void {
+  onRowEdit(row: any | null): void {
     this.closeRowMenu();
-    void this.router.navigate(['/community/rules-guides/new']);
+    void this.router.navigate(['/community/rules-guides/edit', row.code]);
   }
 
   onRowDelete(): void {
