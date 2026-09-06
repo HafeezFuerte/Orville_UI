@@ -373,7 +373,7 @@ export class RemindersComponent implements OnInit {
   editReminder(row: ReminderRow): void {
     this.showRowMenuId = null;
     void this.router.navigate(['/reminders/new'], {
-      queryParams: { id: row.id },
+      queryParams: { code: row.id, id: row.id },
     });
   }
 

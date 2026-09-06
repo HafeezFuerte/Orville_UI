@@ -65,9 +65,18 @@
             </span>
             <a *ngSwitchCase="'property'" class="ov-link" href="javascript:void(0)">{{ row.property }}</a>
             <a *ngSwitchCase="'unit'" class="ov-link" href="javascript:void(0)">{{ row.unit }}</a>
-            <button *ngSwitchCase="'action'" type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions">
-              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
-            </button>
+            <div *ngSwitchCase="'action'" class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionId === row.id"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="goToDetail(row.id)">View</button>
+                <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="goToEdit(row.id)">Edit</button>
+              </div>
+            </div>
             <div *ngSwitchCase="'dateRange'" class="flex flex-col gap-1">
               <span>{{ row.dateRange }}</span>
               <span *ngIf="row.rangeStatus" class="inline-flex h-6 w-fit items-center rounded-sm px-2.5 text-xs font-bold"

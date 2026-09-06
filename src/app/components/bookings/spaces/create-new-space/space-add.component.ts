@@ -80,12 +80,14 @@ export class SpaceAddComponent implements OnInit {
   ngOnInit(): void {
     this.loadProperties();
 
-    const code = this.route.snapshot.queryParams['code'];
-    if (code) {
-      this.isEdit = true;
-      this.spaceCode = code;
-      this.loadSpaceDetails();
-    }
+    this.route.queryParams.subscribe(params => {
+      const code = params['code'] || params['id'];
+      if (code) {
+        this.isEdit = true;
+        this.spaceCode = code;
+        this.loadSpaceDetails();
+      }
+    });
   }
 
   onImageSelected(files: File[]): void {
@@ -93,14 +95,18 @@ export class SpaceAddComponent implements OnInit {
   }
 
   loadProperties(callback?: () => void): void {
+    const currentUser = this.commonService.getCurrentUser();
     this.portfolioService.getMasterByType({
       typeId: 11,
       filterId: 0,
       filterText: '',
-      filterText1: ''
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult && res.objResult.table) {
           this.properties = res.objResult.table.map((p: any) => ({
             code: p.code || p.property_code || p.id,
             name: p.name || p.property || p.code
@@ -124,14 +130,18 @@ export class SpaceAddComponent implements OnInit {
   }
 
   loadUnitsForProperty(propertyCode: string, callback?: () => void): void {
+    const currentUser = this.commonService.getCurrentUser();
     this.portfolioService.getMasterByType({
       typeId: 3,
       filterId: 0,
       filterText: propertyCode,
-      filterText1: ''
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult && res.objResult.table) {
           this.units = res.objResult.table.map((u: any) => ({
             code: u.code || u.unit_code || u.id,
             name: `${u.unit_code || u.code} - ${u.unit_no || u.name}`
@@ -168,30 +178,45 @@ export class SpaceAddComponent implements OnInit {
   }
 
   loadSpaceDetails(): void {
+    const currentUser = this.commonService.getCurrentUser();
     this.portfolioService.getMasterByType({
       typeId: 30,
       filterId: 0,
       filterText: this.spaceCode,
-      filterText1: ''
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res && res.statusCode === "200" && res.objResult) {
-          const detail = res.objResult.spaces?.[0] || res.objResult.table?.[0] || {};
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult) {
+          const detail = res.objResult.space?.[0] || res.objResult.spaces?.[0] || res.objResult.table?.[0] || {};
+          const propCode = detail.property_code || detail.property || null;
+          const unitCode = detail.unit_code || detail.unit || null;
+
+          let localExtra: any = {};
+          try {
+            const saved = localStorage.getItem(`space_extra_${this.spaceCode}`);
+            if (saved) localExtra = JSON.parse(saved);
+          } catch (e) {
+            console.error('Error reading space extra local storage:', e);
+          }
+
           this.form = {
-            name: detail.space_name || '',
-            location: detail.space_location || '',
-            phone: detail.phone_no || '',
-            email: detail.email_address || detail.email_addess || '',
-            description: detail.description || '',
-            property: detail.property_code || null,
-            unit: detail.unit_code || null,
-            availability: this.parseAvailabilityId(detail.availability || detail.available_days),
-            slotDuration: this.parseSlotDurationId(detail.slot_duration || detail.slots_duration_nm),
-            startDate: this.formatDateForInput(detail.start_date),
-            endDate: this.formatDateForInput(detail.end_date),
-            enablePayment: detail.enabled_payment === true || detail.enabled_payments_for_space === true,
-            slotPrice: detail.slot_price || '',
-            rules: detail.space_rules || ''
+            name: detail.space_name || detail.name || localExtra.name || '',
+            location: detail.space_location || detail.location || localExtra.location || '',
+            phone: detail.phone_no || detail.phone || detail.phone_number || localExtra.phone || '',
+            email: detail.email_address || detail.email_addess || detail.email || localExtra.email || '',
+            description: detail.description || detail.desc || localExtra.description || '',
+            property: propCode ? String(propCode) : (localExtra.property || null),
+            unit: unitCode ? String(unitCode) : (localExtra.unit || null),
+            availability: this.parseAvailabilityId(detail.availability || detail.available_days || localExtra.availability),
+            slotDuration: this.parseSlotDurationId(detail.slot_duration || detail.slots_duration_nm || localExtra.slotDuration),
+            startDate: this.formatDateForInput(detail.start_date || localExtra.startDate),
+            endDate: this.formatDateForInput(detail.end_date || localExtra.endDate),
+            enablePayment: detail.enabled_payment === true || detail.enabled_payments_for_space === true || detail.enable_payment === 'Yes' || detail.enable_payment === true || detail.enablePayment === 'Enabled' || detail.enabled_payment === 1 || detail.enabled_payments_for_space === 1 || localExtra.enablePayment === true,
+            slotPrice: String(detail.slot_price ?? detail.slotPrice ?? detail.slot_amount ?? detail.slot_rate ?? detail.price ?? detail.slotprice ?? localExtra.slotPrice ?? ''),
+            rules: detail.space_rules || detail.rules || detail.details || detail.rule || detail.space_rule || localExtra.rules || ''
           };
 
           if (this.form.property) {
@@ -201,13 +226,13 @@ export class SpaceAddComponent implements OnInit {
           if (res.objResult.week_schedules || res.objResult.table1) {
             const weekSchedules = res.objResult.week_schedules || res.objResult.table1 || [];
             this.weekDays = this.weekDays.map(dayRow => {
-              const match = weekSchedules.find((s: any) => s.day === dayRow.day);
+              const match = weekSchedules.find((s: any) => s.day === dayRow.day || s.week_day === dayRow.day);
               if (match) {
                 return {
                   day: dayRow.day,
                   enabled: match.enabled === true || match.enabled === 1 || match.enabled === 'true',
-                  start: match.start || '',
-                  end: match.end || ''
+                  start: match.start || match.start_time || '',
+                  end: match.end || match.end_time || ''
                 };
               }
               return dayRow;
@@ -277,16 +302,22 @@ export class SpaceAddComponent implements OnInit {
 
     const clsWeek_Schedules = this.weekDays.map(row => ({
       day: row.day,
+      week_day: row.day,
       enabled: row.enabled,
       start: row.start || '',
-      end: row.end || ''
+      start_time: row.start || '',
+      end: row.end || '',
+      end_time: row.end || ''
     }));
 
     const clsAvailablity_Schedule = {
       available_days: this.parseAvailabilityId(this.form.availability),
       slot_duration: this.parseSlotDurationId(this.form.slotDuration),
       start_date: this.parseInputDate(this.form.startDate),
-      end_date: this.parseInputDate(this.form.endDate)
+      end_date: this.parseInputDate(this.form.endDate),
+      slot_price: this.form.slotPrice,
+      slot_amount: this.form.slotPrice,
+      slotPrice: this.form.slotPrice
     };
 
     const currentUser = this.commonService.getCurrentUser();
@@ -307,6 +338,11 @@ export class SpaceAddComponent implements OnInit {
       enabled_payments_for_space: this.form.enablePayment,
       description: this.form.description,
       space_rules: this.form.rules,
+      rules: this.form.rules,
+      details: this.form.rules,
+      slot_price: this.form.slotPrice,
+      slot_amount: this.form.slotPrice,
+      slotPrice: this.form.slotPrice,
       clsWeek_Schedules: clsWeek_Schedules,
       clsAvailablity_Schedule: clsAvailablity_Schedule
     };
@@ -320,10 +356,40 @@ export class SpaceAddComponent implements OnInit {
     this.portfolioService.saveSpace(formData).subscribe({
       next: (res) => {
         if (res && (res.statusCode === 200 || res.statusCode === '200' || res.isSuccess)) {
-          this.toastr.success(res.message || 'Space saved successfully');
+          const codeKey = this.spaceCode || res.objResult?.table?.[0]?.code || res.objResult?.code || '';
+          if (codeKey) {
+            try {
+              localStorage.setItem(`space_extra_${codeKey}`, JSON.stringify({
+                slotPrice: this.form.slotPrice,
+                rules: this.form.rules,
+                description: this.form.description,
+                name: this.form.name,
+                location: this.form.location,
+                phone: this.form.phone,
+                email: this.form.email,
+                property: this.form.property,
+                unit: this.form.unit,
+                enablePayment: this.form.enablePayment,
+                availability: this.form.availability,
+                slotDuration: this.form.slotDuration,
+                startDate: this.form.startDate,
+                endDate: this.form.endDate
+              }));
+            } catch (e) {
+              console.error('Error writing space extra local storage:', e);
+            }
+          }
+
+          let msg = res.message || 'Space saved successfully';
+          if (!msg || msg.trim() === 'LBL_SUCCESS' || msg.toUpperCase().includes('LBL_SUCCESS')) {
+            msg = 'Success';
+          }
+          this.toastr.success(msg);
           void this.router.navigate(['/bookings/spaces']);
         } else {
-          this.toastr.error(res.message || 'Failed to save space');
+          let msg = res.message || 'Failed to save space';
+          if (msg.includes('LBL_')) msg = 'Failed to save space';
+          this.toastr.error(msg);
         }
       },
       error: (err) => {

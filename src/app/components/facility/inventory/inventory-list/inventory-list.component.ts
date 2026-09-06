@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { InventoryRow } from '../inventory.data';
+import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 
@@ -18,6 +19,7 @@ import { CommonService } from '../../../../services/common.service';
 export class InventoryListComponent implements OnInit {
   private router = inject(Router);
   private commontabservice = inject(Common_TabsService);
+  private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
 
   searchQuery = '';
@@ -25,6 +27,7 @@ export class InventoryListComponent implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   allRows: InventoryRow[] = [];
+  propertiesMap: Record<string, string> = {};
   openRowActionId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
   isLoading = false;
@@ -48,7 +51,81 @@ export class InventoryListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.loadProperties();
     this.loadInventory();
+  }
+
+  loadProperties(): void {
+    const currentUser = this.commonService.getCurrentUser();
+    this.portfolioService.getMasterByType({
+      typeId: 11,
+      filterId: 0,
+      filterText: '',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    }).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult && res.objResult.table) {
+          res.objResult.table.forEach((p: any) => {
+            const code = p.code || p.property_code || p.id;
+            const name = p.name || p.property || p.code;
+            if (code) {
+              this.propertiesMap[String(code)] = String(name);
+            }
+          });
+          this.updateLocationsInRows();
+        }
+      },
+      error: (err) => console.error('Error loading properties map:', err)
+    });
+  }
+
+  formatDateString(dateStr: string): string {
+    if (!dateStr || dateStr === 'N/A' || dateStr === '-') return dateStr || '-';
+    try {
+      const dt = new Date(dateStr);
+      if (isNaN(dt.getTime())) return dateStr;
+      const d = String(dt.getDate()).padStart(2, '0');
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const y = dt.getFullYear();
+      return `${d}-${m}-${y}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  resolveLocation(item: any): string {
+    const itemCode = String(item.code || item.id || '');
+    let localExtra: any = {};
+    if (itemCode) {
+      try {
+        const saved = localStorage.getItem(`inventory_extra_${itemCode}`);
+        if (saved) localExtra = JSON.parse(saved);
+      } catch (e) {}
+    }
+
+    const rawLoc = item.location_name || item.property_name || item.unit_name || item.property || item.location || item.locations || localExtra.propertyName || localExtra.locationName || '';
+    if (!rawLoc) return '-';
+
+    if (this.propertiesMap[String(rawLoc)]) {
+      return this.propertiesMap[String(rawLoc)];
+    }
+
+    if (localExtra.propertyName || localExtra.locationName) {
+      return localExtra.propertyName || localExtra.locationName;
+    }
+
+    return String(rawLoc);
+  }
+
+  updateLocationsInRows(): void {
+    if (!this.allRows || !this.allRows.length) return;
+    this.allRows = this.allRows.map(row => ({
+      ...row,
+      locations: this.propertiesMap[row.locations] || row.locations
+    }));
   }
 
   loadInventory(): void {
@@ -74,23 +151,39 @@ export class InventoryListComponent implements OnInit {
     this.commontabservice.getCommonGrid(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res && res.statusCode === "200" && res.objResult) {
+        if (res && (res.statusCode === "200" || res.statusCode == 200) && res.objResult) {
           const rawItems = res.objResult.inventory_items || res.objResult.inventory || res.objResult.table || [];
-          this.allRows = rawItems.map((item: any) => ({
-            id: String(item.code || item.id || ''),
-            itemName: item.item_name || item.itemName || '',
-            partNumber: item.part_no || item.partNumber || '',
-            category: item.category_name || item.category || '',
-            subcategory: item.subcategory_name || item.subcategory || 'N/A',
-            cost: item.item_cost || item.cost || '0.00',
-            threshold: item.qty_threshold || item.threshold || 'N/A',
-            stockType: item.stock_type || item.stockType || 'Non-Stock',
-            placedDate: item.placed_date || item.placedDate || '',
-            expiration: item.expiry_date || item.expiration || 'N/A',
-            expiringSoon: !!item.expiring_soon || !!item.expiringSoon || false,
-            vendor: item.vendor_name || item.vendor || 'N/A',
-            locations: item.location || item.locations || ''
-          }));
+          this.allRows = rawItems.map((item: any) => {
+            const itemCode = String(item.code || item.id || '');
+            let localExtra: any = {};
+            if (itemCode) {
+              try {
+                const saved = localStorage.getItem(`inventory_extra_${itemCode}`);
+                if (saved) localExtra = JSON.parse(saved);
+              } catch (e) {}
+            }
+
+            const expVal = item.expiry_date || item.expiration || localExtra.expirationDate || 'N/A';
+            const placedVal = item.placed_date || item.placedDate || localExtra.placedDate || '-';
+
+            return {
+              id: itemCode,
+              itemName: item.item_name || item.name || item.itemName || localExtra.itemName || '-',
+              partNumber: item.part_no || item.part_number || item.partNumber || localExtra.partNumber || '-',
+              category: item.category_name || item.category || localExtra.category || '-',
+              subcategory: item.subcategory_name || item.subcategory || localExtra.subcategory || 'N/A',
+              cost: (item.item_cost !== undefined || item.cost !== undefined || localExtra.cost !== undefined)
+                ? `AED ${Number(item.item_cost ?? item.cost ?? localExtra.cost ?? 0).toFixed(2)}`
+                : 'AED 0.00',
+              threshold: item.qty_threshold || item.minimum_qty || item.threshold || localExtra.minimumQty || 'N/A',
+              stockType: item.stock_type || item.stockType || item.source || 'Non-Stock',
+              placedDate: this.formatDateString(placedVal),
+              expiration: this.formatDateString(expVal),
+              expiringSoon: !!item.expiring_soon || !!item.expiringSoon || false,
+              vendor: item.vendor_name || item.vendor || item.vendor_code || localExtra.vendor || 'N/A',
+              locations: this.resolveLocation(item)
+            };
+          });
 
           if (res.objResult.rows_info && res.objResult.rows_info[0]) {
             this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;

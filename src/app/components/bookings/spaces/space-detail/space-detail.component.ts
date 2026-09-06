@@ -221,30 +221,39 @@ export class SpaceDetailComponent implements OnInit {
               res.objResult.reservations || res.objResult.table3 || res.objResult.bookings || [];
 
             if (rawDetail) {
+              let localExtra: any = {};
+              try {
+                const saved = localStorage.getItem(`space_extra_${code}`);
+                if (saved) localExtra = JSON.parse(saved);
+              } catch (e) {
+                console.error('Error reading space extra local storage:', e);
+              }
+
               this.detail = {
                 id: String(rawDetail.code || rawDetail.id || code),
-                name: rawDetail.space_name || rawDetail.name || this.detail.name,
-                location: rawDetail.space_location || rawDetail.location || this.detail.location,
-                availability: (rawDetail.availability || this.detail.availability) as SpaceAvailability,
-                slotDuration: rawDetail.slot_duration || rawDetail.slotDuration || this.detail.slotDuration,
+                name: rawDetail.space_name || rawDetail.name || localExtra.name || this.detail.name,
+                location: rawDetail.space_location || rawDetail.location || localExtra.location || this.detail.location,
+                availability: (rawDetail.availability || localExtra.availability || this.detail.availability) as SpaceAvailability,
+                slotDuration: rawDetail.slot_duration || rawDetail.slotDuration || localExtra.slotDuration || this.detail.slotDuration,
                 dateRange: rawDetail.date_range || rawDetail.dateRange || this.detail.dateRange,
                 rangeStatus: rawDetail.range_status || rawDetail.rangeStatus || this.detail.rangeStatus,
                 enablePayment:
                   rawDetail.enable_payment === 'Yes' ||
                     rawDetail.enable_payment === true ||
-                    rawDetail.enablePayment === 'Enabled'
+                    rawDetail.enablePayment === 'Enabled' ||
+                    localExtra.enablePayment === true
                     ? 'Enabled'
                     : 'Disabled',
-                phone: rawDetail.phone_number || rawDetail.phone || this.detail.phone,
-                email: rawDetail.email || this.detail.email,
-                property: rawDetail.property_name || rawDetail.property || this.detail.property,
-                unit: rawDetail.unit_name || rawDetail.unit || this.detail.unit,
+                phone: rawDetail.phone_number || rawDetail.phone || localExtra.phone || this.detail.phone,
+                email: rawDetail.email || localExtra.email || this.detail.email,
+                property: rawDetail.property_name || rawDetail.property || localExtra.property || this.detail.property,
+                unit: rawDetail.unit_name || rawDetail.unit || localExtra.unit || this.detail.unit,
                 createdAt: rawDetail.created_at || rawDetail.createdAt || this.detail.createdAt,
-                description: rawDetail.description || this.detail.description,
+                description: rawDetail.description || localExtra.description || this.detail.description,
                 bookingClosesIn:
                   rawDetail.booking_closes_in || rawDetail.bookingClosesIn || this.detail.bookingClosesIn,
-                slotPrice: rawDetail.slot_price || rawDetail.slotPrice || this.detail.slotPrice,
-                rules: rawDetail.rules || this.detail.rules,
+                slotPrice: rawDetail.slot_price || rawDetail.slotPrice || rawDetail.slot_amount || rawDetail.price || localExtra.slotPrice || this.detail.slotPrice,
+                rules: rawDetail.rules || rawDetail.space_rules || rawDetail.details || localExtra.rules || this.detail.rules,
                 updatedAt: rawDetail.updated_at || rawDetail.updatedAt || this.detail.updatedAt,
                 schedule:
                   rawDetail.schedule?.length > 0

@@ -82,6 +82,7 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
     this.initializeTabs();
     this.route.params.subscribe(params => {
       this.landlordId = params['id'];
+      this.initChatContacts();
       if (this.landlordId) {
         this.getLandlordDetails();
       }
@@ -524,20 +525,129 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
 
   // --- TAB 5: CHAT ---
   chatContacts: any[] = [];
-  selectedContact = this.chatContacts[0];
-
-  chatMessages: any[] = [];
+  selectedContact: any = null;
+  chatSearchQuery = '';
+  chatMessagesMap: { [contactId: number]: any[] } = {};
   newMessageText = '';
 
+  loadPersistedChatMessages(): void {
+    try {
+      const key = this.landlordId ? `chat_messages_landlord_${this.landlordId}` : 'chat_messages_landlord_default';
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        this.chatMessagesMap = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Error loading chat messages from storage:', e);
+    }
+  }
+
+  savePersistedChatMessages(): void {
+    try {
+      const key = this.landlordId ? `chat_messages_landlord_${this.landlordId}` : 'chat_messages_landlord_default';
+      localStorage.setItem(key, JSON.stringify(this.chatMessagesMap));
+    } catch (e) {
+      console.error('Error persisting chat messages to storage:', e);
+    }
+  }
+
+  initChatContacts(): void {
+    const landlordName = this.landlordData?.landlord || this.landlordData?.name || (this.landlord?.name && this.landlord.name !== 'Loading...' ? this.landlord.name : 'Zaid Rahman');
+    
+    const contactsList: any[] = [
+      { id: 1, name: landlordName, role: 'Primary Landlord', active: true }
+    ];
+
+    if (this.emergencyContactData && this.emergencyContactData.length > 0) {
+      this.emergencyContactData.forEach((ec: any, index: number) => {
+        contactsList.push({
+          id: 10 + index,
+          name: ec.name || ec.contact_name || `Emergency Contact ${index + 1}`,
+          role: ec.relation ? `Emergency (${ec.relation})` : 'Emergency Contact',
+          active: true
+        });
+      });
+    }
+
+    contactsList.push(
+      { id: 2, name: 'Property Manager', role: 'Support Team', active: true },
+      { id: 3, name: 'Accounts Officer', role: 'Billing & Finance', active: false }
+    );
+
+    this.chatContacts = contactsList;
+
+    if (!this.selectedContact || !this.selectedContact.name) {
+      this.selectedContact = this.chatContacts[0];
+    }
+
+    this.loadPersistedChatMessages();
+  }
+
+  get currentChatMessages(): any[] {
+    if (!this.selectedContact) return [];
+    const contactId = this.selectedContact.id;
+    if (!this.chatMessagesMap[contactId]) {
+      this.chatMessagesMap[contactId] = [];
+    }
+    return this.chatMessagesMap[contactId];
+  }
+
+  get filteredChatContacts(): any[] {
+    const q = this.chatSearchQuery.trim().toLowerCase();
+    if (!q) return this.chatContacts;
+    return this.chatContacts.filter(c =>
+      c.name.toLowerCase().includes(q) || c.role.toLowerCase().includes(q)
+    );
+  }
+
+  selectContact(contact: any): void {
+    this.selectedContact = contact;
+  }
+
   sendChatMessage() {
-    if (this.newMessageText.trim()) {
-      this.chatMessages.push({
+    if (this.newMessageText && this.newMessageText.trim()) {
+      const text = this.newMessageText.trim();
+      const currentUser = JSON.parse(localStorage.getItem('user_details') || '{}');
+      const nowIso = new Date().toISOString();
+      const contactId = this.selectedContact?.id || 1;
+
+      const payload = {
+        userid: currentUser?.userId || 1,
+        company_id: currentUser?.companyId || 1,
+        clientId: currentUser?.clientId || '74BB6922',
+        source: 'web',
+        languageid: 1,
+        entity: 'Landlord',
+        code: '',
+        entity_id: String(this.landlordId || ''),
+        group_id: '0',
+        sender_id: currentUser?.userId || 1,
+        receiver_id: contactId,
+        message: text,
+        send_on: nowIso,
+        read_on: nowIso,
+        edited_on: nowIso
+      };
+
+      if (!this.chatMessagesMap[contactId]) {
+        this.chatMessagesMap[contactId] = [];
+      }
+
+      this.chatMessagesMap[contactId].push({
         sender: 'You',
-        text: this.newMessageText,
+        text: text,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isSelf: true
       });
       this.newMessageText = '';
+      this.savePersistedChatMessages();
+
+      this.portfolioService.saveChatMessage(payload).subscribe({
+        next: (res: any) => {
+          console.log('Chat message saved successfully:', res);
+        },
+        error: (err: any) => console.error('Error sending chat message:', err)
+      });
     }
   }
 

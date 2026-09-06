@@ -100,6 +100,18 @@ saveReminder(payload: any): Observable<any> {
     payload
   );
 }
+saveChatMessage(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/save_chat_messages',
+    payload
+  );
+}
+replyChatMessage(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Masters/reply_chat_messages',
+    payload
+  );
+}
 getMastersByPaging(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/get_masters_by_paging',
