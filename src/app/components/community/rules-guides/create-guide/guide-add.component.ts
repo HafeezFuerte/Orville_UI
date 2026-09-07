@@ -110,6 +110,9 @@ export class GuideAddComponent {
       }
     });
   }
+  removeFile(name: string): void {
+    this.files = this.files.filter((f:any) => f !== name);
+  }
   cancel(): void {
     void this.router.navigate(['/community/rules-guides']);
   }

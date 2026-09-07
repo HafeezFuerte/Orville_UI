@@ -10,6 +10,7 @@ export interface ReminderRow {
   usersCount?: number;
   priority: ReminderPriority;
   status: ReminderStatus;
+  status_name?:string;
   lastUpdated: string;
   createdOn: string;
   /** ISO-ish display date used for calendar: DD-MMM-YYYY or DD-MM-YYYY */

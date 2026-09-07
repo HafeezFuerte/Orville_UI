@@ -11,7 +11,7 @@
     </div>
     <div class="ov-add-header__actions">
       <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Create Reminder</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{reminderCode=='' || reminderCode==null ? 'Create' : 'Update'}} Reminder</button>
     </div>
   </div>
 
@@ -29,8 +29,14 @@
           <div class="ov-fields">
             <div class="ov-fields__full">
               <label class="ov-label">Assign to <span class="text-danger">*</span></label>
-              <ng-select [(ngModel)]="assignees" name="assignees" [items]="userOptions" [searchable]="true"
-                [multiple]="true" bindLabel="name" placeholder="Select users" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <ng-select #PropertySelect  [(ngModel)]="form.assignees"  bindValue="code"  name="assignees" [items]="userOptions" [searchable]="true"
+                [multiple]="true" bindLabel="name" placeholder="Select users" class="ov-select ng-select-sm w-full" appendTo="body">
+                  <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="PropertySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
+                </ng-select>
             </div>
             <div class="ov-fields__full">
               <label class="ov-label">Title <span class="text-danger">*</span></label>
@@ -58,8 +64,8 @@
             <div class="ov-fields__full">
               <label class="ov-label">Reminder date &amp; time <span class="text-danger">*</span></label>
               <div class="reminder-add__datetime">
-                <input type="text" class="ov-input" name="date" [(ngModel)]="form.date" placeholder="DD/MM/YYYY" />
-                <input type="text" class="ov-input" name="time" [(ngModel)]="form.time" placeholder="--:-- --" />
+                <input type="text" appFlowbiteDatepicker class="ov-input" name="date" [(ngModel)]="form.date" placeholder="DD/MM/YYYY" />
+                <input type="time" class="ov-input" name="time" [(ngModel)]="form.time" placeholder="--:-- --" />
               </div>
             </div>
             <div>
@@ -67,11 +73,11 @@
               <ng-select [(ngModel)]="form.priority" name="priority" [items]="priorityOptions" [clearable]="false"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
-            <div>
+            <!-- <div>
               <label class="ov-label">Status</label>
-              <ng-select [(ngModel)]="form.status" name="status" [items]="statusOptions" [clearable]="false"
+              <ng-select [(ngModel)]="form.status"  name="status" [items]="statusOptions" [clearable]="false"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
-            </div>
+            </div> -->
           </div>
         </div>
       </section>
@@ -110,7 +116,7 @@
           <div *ngIf="form.recurring" class="ov-fields ov-fields--2 mt-4">
             <div>
               <label class="ov-label">Repeat Every</label>
-              <ng-select [(ngModel)]="form.repeatEvery" name="repeatEvery" [items]="repeatOptions" [clearable]="true"
+              <ng-select [(ngModel)]="form.repeatEvery" name="repeatEvery" bindValue="id" bindLabel="name" [items]="repeatOptions" [clearable]="true"
                 placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
@@ -143,6 +149,11 @@
               <button type="button" (click)="removeFile(file)">×</button>
             </li>
           </ul>
+          <ul *ngIf="attachments.length" class="reminder-add__files">
+            <li *ngFor="let file of attachments" class="reminder-add__file">
+              <a href="{{file.file_path}}" target="_blank">View file</a> 
+            </li>
+          </ul>
         </div>
       </section>
     </div>
@@ -150,6 +161,6 @@
 
   <div class="ov-add-footer reminder-add__footer">
     <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Create Reminder</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{reminderCode=='' || reminderCode==null ? 'Create' : 'Update'}} Reminder</button>
   </div>
 </form>

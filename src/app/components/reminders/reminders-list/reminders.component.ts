@@ -16,7 +16,7 @@ import {
 } from '../reminders.data';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../services/common.service';
-
+import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 type StatusTab = 'all' | ReminderStatus;
 type ViewMode = 'list' | 'calendar';
 
@@ -39,6 +39,7 @@ export interface CalendarDay {
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent,
+    DeleteConfirmationComponent
   ],
   templateUrl: './reminders.component.html',
   styleUrls: ['./reminders.component.scss'],
@@ -60,12 +61,19 @@ export class RemindersComponent implements OnInit {
   filterPriority: ReminderPriority | null = null;
   statusOptions: ReminderStatus[] = ['Pending', 'Completed'];
   priorityOptions: ReminderPriority[] = ['Low', 'Medium', 'High'];
-
-  pageIndex = 0;
-  pageSize = 10;
-  allRows: ReminderRow[] = [...REMINDER_ROWS];
+  
   isLoading = false;
   useApiPaging = false;
+  deleteModal=false;
+  e_code:string='';
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonService.getCurrentUser();  
   totalRecordsCount = 0;
   totalPagesCount = 0;
 
@@ -79,17 +87,17 @@ export class RemindersComponent implements OnInit {
   ];
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '80px' },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true, width: '80px' },
     { key: 'title', label: 'Title', visible: true, useTemplate: true },
-    { key: 'todo', label: 'Todo', visible: true },
+    // { key: 'to_do', label: 'Todo', visible: true,useTemplate: true  },
     { key: 'priority', label: 'Priority', visible: true, useTemplate: true, width: '110px' },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true, width: '120px' },
-    { key: 'dueDate', label: 'Due Date', visible: true, width: '170px' },
+    { key: 'status_name', label: 'Status', visible: true, useTemplate: true, width: '120px' },
+    { key: 'reminder_date', label: 'Due Date', visible: true, width: '170px' },
     { key: 'recurring', label: 'Recurring', visible: true, useTemplate: true, width: '100px' },
     { key: 'assignee', label: 'Assignee', visible: true, useTemplate: true },
-    { key: 'users', label: 'Users', visible: true, useTemplate: true, width: '100px' },
-    { key: 'createdOn', label: 'Created', visible: false },
-    { key: 'lastUpdated', label: 'Last Updated', visible: false },
+    { key: 'Users', label: 'Users', visible: true, useTemplate: true, width: '100px' },
+    { key: 'created_date', label: 'Created', visible: false },
+    { key: 'modified_date', label: 'Last Updated', visible: false },
     { key: 'actions', label: '', visible: true, useTemplate: true, width: '56px' },
   ];
 
@@ -98,23 +106,25 @@ export class RemindersComponent implements OnInit {
   }
 
   loadReminders(): void {
-    this.isLoading = true;
-    const currentUser = this.commonService.getCurrentUser();
+    this.isLoading = true; 
+    const filterList: any[] = [];
+    if (this.statusTab && this.statusTab !== "all") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusTab =="Pending" ? 296 : 297 });
+    } 
     const payload = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || '74BB6922',
-      clientID: currentUser?.clientId || '74BB6922',
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || '74BB6922',
+      clientID: this.currentUser?.clientId || '74BB6922',
       source: 'web',
       languageid: 1,
-      page_no: this.pageIndex,
+      page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery || '',
       pagecount: this.pageSize,
-      feature: 'REMINDERS',
       featureid: 'REMINDERS',
-      search_columns: 'P.id',
-      filter_by: '',
+      filter_by: this.statusTab !== 'all' ? 'status' : '',
+      filter_list: JSON.stringify(filterList), 
     };
 
     this.commontabservice.getCommonGrid(payload).subscribe({
@@ -124,7 +134,7 @@ export class RemindersComponent implements OnInit {
           const rawItems = res.objResult.reminders || res.objResult.table || [];
           if (rawItems.length) {
             this.useApiPaging = true;
-            this.allRows = rawItems.map((item: any) => this.mapApiRow(item));
+            this.allRows =rawItems;
             if (res.objResult.rows_info && res.objResult.rows_info[0]) {
               this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
               this.totalPagesCount = res.objResult.rows_info[0].noofpages;
@@ -143,33 +153,36 @@ export class RemindersComponent implements OnInit {
       },
     });
   }
-
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as completed");
+            this.e_code='';
+            this.loadReminders();
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   private useMockData(): void {
     this.useApiPaging = false;
     this.allRows = [...REMINDER_ROWS];
     this.totalRecordsCount = this.filteredRows.length;
     this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
   }
-
-  private mapApiRow(item: any): ReminderRow {
-    return {
-      id: String(item.code || item.id || ''),
-      title: item.title || '',
-      todo: item.todo || item.description || item.notes || '',
-      participants: item.users || item.participants || item.assignee || '',
-      assigneeEmail: item.email || item.assignee_email || '',
-      usersCount: Number(item.users_count || item.user_count || 1),
-      priority: (item.priority || 'Medium') as ReminderPriority,
-      status: (item.status_name || item.status || 'Pending') as ReminderStatus,
-      lastUpdated: item.modified_date || item.lastUpdated || '',
-      createdOn: item.created_date || item.createdOn || '',
-      date: item.reminder_date || item.due_date || item.date || '',
-      dueDate: item.due_date || item.reminder_date || item.date || '',
-      paused: !!item.paused,
-      recurring: !!(item.recurring || item.is_recurring),
-      record: item.record || item.reference || '',
-    };
-  }
+ 
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
@@ -204,17 +217,18 @@ export class RemindersComponent implements OnInit {
       );
     });
   }
-
-  get totalRecords(): number {
-    return this.useApiPaging ? this.totalRecordsCount : this.filteredRows.length;
+  deleteguideline(id: string): void { 
+    this.deleteModal=!this.deleteModal;  
+    this.e_code=id;
   }
-
-  get totalPages(): number {
-    if (this.useApiPaging) {
-      return Math.max(1, this.totalPagesCount || 1);
-    }
-    return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize) || 1);
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,4, '', this.e_code);
   }
+  closeModal(){
+    this.deleteModal=false;
+  }
+   
 
   get paginatedRows(): ReminderRow[] {
     if (this.useApiPaging) {
@@ -284,8 +298,8 @@ export class RemindersComponent implements OnInit {
   }
 
   private buildDay(date: Date, inMonth: boolean, today: Date): CalendarDay {
-    const reminders = this.filteredRows.filter((row) => {
-      const due = parseReminderDate(row.dueDate || row.date);
+    const reminders = this.allRows.filter((row) => {
+      const due = parseReminderDate(row.reminder_date || row.created_date);
       if (!due) {
         return false;
       }
@@ -314,7 +328,8 @@ export class RemindersComponent implements OnInit {
 
   setStatusTab(tab: StatusTab): void {
     this.statusTab = tab;
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadReminders();
   }
 
   onSearch(): void {
@@ -365,22 +380,18 @@ export class RemindersComponent implements OnInit {
     void this.router.navigate(['/reminders/new']);
   }
 
-  openDetail(row: ReminderRow): void {
+  openDetail(row: any): void {
     this.showRowMenuId = null;
-    void this.router.navigate(['/reminders', row.id]);
+    void this.router.navigate(['/reminders', row.code]);
   }
 
-  editReminder(row: ReminderRow): void {
+  editReminder(row: any): void {
     this.showRowMenuId = null;
-    void this.router.navigate(['/reminders/new'], {
-      queryParams: { code: row.id, id: row.id },
-    });
+    void this.router.navigate(['/reminders/edit',row.code]) 
   }
 
-  deleteReminder(row: ReminderRow): void {
-    this.showRowMenuId = null;
-    this.allRows = this.allRows.filter((item) => item.id !== row.id);
-    this.toastr.success('Reminder deleted (presentation only).', 'Reminders');
+  markascomplete(row: any): void {
+    this.loadLookup(71,5, '', row.code);
   }
 
   statusActionLabel(row: ReminderRow): string {
@@ -412,41 +423,49 @@ export class RemindersComponent implements OnInit {
     this.showRowMenuId = this.showRowMenuId === id ? null : id;
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
-    if (this.useApiPaging) {
-      this.loadReminders();
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
     }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadReminders();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadReminders();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
-      if (this.useApiPaging) {
-        this.loadReminders();
-      }
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadReminders();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
-      if (this.useApiPaging) {
-        this.loadReminders();
-      }
+      this.pageNo++;
+      this.loadReminders();
     }
   }
 
   goToPage(page: number): void {
-    const target = page - 1;
-    if (target >= 0 && target < this.totalPages && target !== this.pageIndex) {
-      this.pageIndex = target;
-      if (this.useApiPaging) {
-        this.loadReminders();
-      }
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadReminders();
     }
+ 
   }
-
   prevMonth(): void {
     this.calendarCursor = new Date(
       this.calendarCursor.getFullYear(),
@@ -472,16 +491,22 @@ export class RemindersComponent implements OnInit {
       this.calendarCursor = new Date(y, m - 1, 1);
     }
   }
+  viewDtls(ev:any){
+    if (!ev) {
+      return;
+    } 
+    this.router.navigate(['/reminders',ev.code]);
+  }
 
   openDay(day: CalendarDay): void {
     if (!day.inMonth) {
       return;
-    }
-    void this.router.navigate(['/reminders/new'], {
-      queryParams: {
-        date: `${String(day.day).padStart(2, '0')}-${this.calendarCursor.toLocaleString('en-US', { month: 'short' })}-${this.calendarCursor.getFullYear()}`,
-      },
-    });
+    } 
+    // void this.router.navigate(['/reminders/edit'], {
+    //   queryParams: {
+    //     date: `${String(day.day).padStart(2, '0')}-${this.calendarCursor.toLocaleString('en-US', { month: 'short' })}-${this.calendarCursor.getFullYear()}`,
+    //   },
+    // });
   }
 
   exportList(): void {

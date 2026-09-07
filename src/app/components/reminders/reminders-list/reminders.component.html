@@ -71,25 +71,18 @@
     <!-- LIST VIEW -->
     <div *ngIf="viewMode === 'list'" class="rem-list">
       <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="isLoading"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [emptyMessage]="'No reminders found'"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+     [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <ng-container *ngSwitchCase="'id'">
-              <a class="ov-link font-semibold" [routerLink]="['/reminders', row.id]">{{ row.id }}</a>
+            <ng-container *ngSwitchCase="'code'">
+              <a class="ov-link font-semibold" [routerLink]="['/reminders', row.code]">{{ row.code }}</a>
             </ng-container>
             <ng-container *ngSwitchCase="'title'">
               <a
                 class="ov-link font-semibold rem-title"
                 [class.is-done]="isCompleted(row)"
-                [routerLink]="['/reminders', row.id]">
+                [routerLink]="['/reminders', row.code]">
                 {{ row.title }}
               </a>
             </ng-container>
@@ -101,40 +94,43 @@
                 {{ row.priority }}
               </span>
             </ng-container>
-            <ng-container *ngSwitchCase="'status'">
+            <ng-container *ngSwitchCase="'status_name'">
               <span
                 class="ov-status"
-                [class.ov-status--warning]="row.status === 'Pending'"
-                [class.ov-status--active]="row.status === 'Completed'">
-                {{ row.status }}
+                [class.ov-status--warning]="row.status_name === 'Pending'"
+                [class.ov-status--active]="row.status_name === 'Completed'">
+                {{ row.status_name }}
               </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'to_do'">
+              {{ row.to_do }}
             </ng-container>
             <ng-container *ngSwitchCase="'recurring'">
               {{ row.recurring ? 'Yes' : 'No' }}
             </ng-container>
             <ng-container *ngSwitchCase="'assignee'">
               <div class="rem-assignee">
-                <span class="rem-assignee__name">{{ row.participants }}</span>
-                <span *ngIf="row.assigneeEmail" class="rem-assignee__email">{{ row.assigneeEmail }}</span>
+                <span class="rem-assignee__name">{{ row.assignee }}</span>
+                <!-- <span *ngIf="row.assigneeEmail" class="rem-assignee__email">{{ row.assigneeEmail }}</span> -->
               </div>
             </ng-container>
-            <ng-container *ngSwitchCase="'users'">
+            <ng-container *ngSwitchCase="'Users'">
               <span class="rem-users">{{ row.usersCount || 1 }} user{{ (row.usersCount || 1) === 1 ? '' : 's' }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'actions'">
               <div
                 class="rem-actions relative"
-                [class.is-open]="showRowMenuId === row.id"
+                [class.is-open]="showRowMenuId === row.code"
                 (click)="$event.stopPropagation()">
-                <button type="button" class="rem-more" (click)="toggleRowMenu(row.id, $event)" aria-label="Actions">
+                <button type="button" class="rem-more" (click)="toggleRowMenu(row.code, $event)" aria-label="Actions">
                   <i class="ti ti-dots"></i>
                 </button>
-                <div *ngIf="showRowMenuId === row.id" class="rem-menu">
+                <div *ngIf="showRowMenuId === row.code" class="rem-menu">
                   <button type="button" class="rem-menu__item" (click)="openDetail(row)">
                     <i class="ti ti-eye" aria-hidden="true"></i>
                     View
                   </button>
-                  <button type="button" class="rem-menu__item" (click)="toggleComplete(row)">
+                  <button *ngIf="row.status_name === 'Pending'" type="button" class="rem-menu__item" (click)="markascomplete(row)">
                     <i
                       class="ti"
                       [class.ti-arrow-back-up]="isCompleted(row)"
@@ -146,8 +142,8 @@
                     <i class="ti ti-pencil" aria-hidden="true"></i>
                     Edit
                   </button>
-                  <div class="rem-menu__divider" role="separator"></div>
-                  <button type="button" class="rem-menu__item rem-menu__item--danger" (click)="deleteReminder(row)">
+                  <div class="rem-menu__divider" role="separator" *ngIf="row.status_name === 'Pending'"></div>
+                  <button *ngIf="row.status_name === 'Pending'" type="button" class="rem-menu__item rem-menu__item--danger" (click)="deleteguideline(row.code)">
                     <i class="ti ti-trash" aria-hidden="true"></i>
                     Delete
                   </button>
@@ -162,11 +158,8 @@
         <div class="ov-page__meta">
           <span class="ov-page__label">Show</span>
           <div class="ov-page__size">
-            <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-              <option [ngValue]="10">10</option>
-              <option [ngValue]="20">20</option>
-              <option [ngValue]="25">25</option>
-              <option [ngValue]="50">50</option>
+            <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
             </select>
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
           </div>
@@ -225,15 +218,16 @@
           class="rem-cal__cell"
           [class.is-muted]="!day.inMonth"
           [class.is-today]="day.isToday"
-          (click)="openDay(day)">
+         >  
+         <!-- (click)="openDay(day)" */ -->
           <span class="rem-cal__day" [class.is-today]="day.isToday">{{ day.day }}</span>
           <div class="rem-cal__chips">
             <span
               *ngFor="let item of day.reminders.slice(0, 3)"
               class="rem-cal__chip"
               [attr.data-priority]="item.priority"
-              [class.is-done]="item.status === 'Completed'"
-              [title]="item.title">
+              [class.is-done]="item.status_name === 'Completed'"
+              [title]="item.title" (click)="viewDtls(item)">
               {{ item.title }}
             </span>
             <span *ngIf="day.reminders.length > 3" class="rem-cal__more">+{{ day.reminders.length - 3 }} more</span>
@@ -266,3 +260,5 @@
     </div>
   </div>
 </app-filter-drawer>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>
