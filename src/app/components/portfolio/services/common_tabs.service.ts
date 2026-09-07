@@ -88,12 +88,12 @@ private createPayload(options:any) {
   this.currentUser = this.commonService.getCurrentUser();
   return {
     typeId: options.typeId,
-    filterId: options.filterId,
-    filterText: options.filterText ,
-    filterText1: options.filterText1 ,
-    userId:options.userId ?? this.currentUser?.userId,
-    clientId:options.clientId ?? this.currentUser?.clientId ,
-    companyId:options.companyId ?? this.currentUser?.companyId
+    filterId: options.filterId ?? 0,
+    filterText: options.filterText ?? '',
+    filterText1: options.filterText1 ?? '',
+    userId: options.userId ?? this.currentUser?.userId ?? 1,
+    clientId: options.clientId ?? this.currentUser?.clientId ?? '74BB6922',
+    companyId: options.companyId ?? this.currentUser?.companyId ?? 1
   };
 }
 getMasterByType(options: any): Observable<any> {
@@ -105,5 +105,17 @@ getMasterByType(options: any): Observable<any> {
 getCommonGrid(payload: any): Observable<any> {
   const c = environment.apiurl+'api/Masters/get_masters_by_paging'; 
   return this.http.post(c, payload,  { headers: this.commonService.updateHeaders() });
+}
+saveDocumentTemplate(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Configuration/save_update_document_template',
+    payload
+  );
+}
+savePdfTemplate(payload: any): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Configuration/save_update_pdf_template',
+    payload
+  );
 }
 }
