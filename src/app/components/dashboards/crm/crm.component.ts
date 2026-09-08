@@ -1,21 +1,81 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from '../../../shared/shared.module';
 import { NgChartsModule } from 'ng2-charts';
 import { TranslateService } from '@ngx-translate/core';
 
+export type MydayWidgetId =
+  | 'overdue-invoices'
+  | 'bounced-payments'
+  | 'overdue-leases'
+  | 'expired-landlord-contracts'
+  | 'tenant-expired-documents'
+  | 'tickets'
+  | 'work-orders'
+  | 'overdue-expenses'
+  | 'upcoming-landlord-contracts'
+  | 'upcoming-expiring-documents'
+  | 'upcoming-invoices'
+  | 'ending-leases'
+  | 'upcoming-inspection'
+  | 'visitor-stats'
+  | 'reminders'
+  | 'department-ticket-assignments'
+  | 'booking-snapshot'
+  | 'upcoming-leases'
+  | 'landlords-overview'
+  | 'top-performing-listings'
+  | 'upcoming-birthdays';
+
+export interface MydayWidgetOption {
+  id: MydayWidgetId;
+  title: string;
+}
+
+const MYDAY_WIDGET_STORAGE_KEY = 'orville.myday.widgetVisibility';
+
 @Component({
   selector: 'app-crm',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgApexchartsModule, SharedModule, NgChartsModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgApexchartsModule, SharedModule, NgChartsModule],
   templateUrl: './crm.component.html',
   styleUrl: './crm.component.scss'
 })
 export class CrmComponent implements OnInit {
   public todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   public userName = 'Zaid Rahman';
+
+  public showWidgetMenu = false;
+  public widgetSearch = '';
+
+  public readonly widgetOptions: MydayWidgetOption[] = [
+    { id: 'overdue-invoices', title: 'Overdue Invoices' },
+    { id: 'bounced-payments', title: 'Bounced Payments' },
+    { id: 'overdue-leases', title: 'Overdue Leases' },
+    { id: 'expired-landlord-contracts', title: 'Expired Landlord Contracts' },
+    { id: 'tenant-expired-documents', title: 'Tenant Expired Documents' },
+    { id: 'tickets', title: 'Tickets' },
+    { id: 'work-orders', title: 'Work Orders' },
+    { id: 'overdue-expenses', title: 'Overdue Expenses' },
+    { id: 'upcoming-landlord-contracts', title: 'Upcoming Landlord Contracts' },
+    { id: 'upcoming-expiring-documents', title: 'Upcoming Expiring Documents (30 days)' },
+    { id: 'upcoming-invoices', title: 'Upcoming Invoices' },
+    { id: 'ending-leases', title: 'Ending Leases in 30 Days' },
+    { id: 'upcoming-inspection', title: 'Upcoming Inspection' },
+    { id: 'visitor-stats', title: 'Visitor Stats' },
+    { id: 'reminders', title: 'Reminders' },
+    { id: 'department-ticket-assignments', title: 'Department Ticket Assignments' },
+    { id: 'booking-snapshot', title: 'Booking Snapshot' },
+    { id: 'upcoming-leases', title: 'Upcoming Leases in 30 Days' },
+    { id: 'landlords-overview', title: 'Landlords Overview' },
+    { id: 'top-performing-listings', title: 'Top Performing Listings' },
+    { id: 'upcoming-birthdays', title: 'Upcoming Birthdays' },
+  ];
+
+  public widgetVisibility: Record<MydayWidgetId, boolean> = this.buildDefaultVisibility();
 
   // Toggle states
   public overdueLeasesView: 'list' | 'graph' = 'list';
@@ -264,5 +324,88 @@ export class CrmComponent implements OnInit {
 
   constructor(public translate: TranslateService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.restoreWidgetVisibility();
+  }
+
+  get sectionWidgetOptions(): MydayWidgetOption[] {
+    const q = this.widgetSearch.trim().toLowerCase();
+    if (!q) {
+      return this.widgetOptions;
+    }
+    return this.widgetOptions.filter((w) => w.title.toLowerCase().includes(q));
+  }
+
+  get visibleWidgetCount(): number {
+    return this.widgetOptions.filter((w) => this.isWidgetVisible(w.id)).length;
+  }
+
+  get totalWidgetCount(): number {
+    return this.widgetOptions.length;
+  }
+
+  isWidgetVisible(id: MydayWidgetId): boolean {
+    return this.widgetVisibility[id] !== false;
+  }
+
+  toggleWidgetMenu(event: Event): void {
+    event.stopPropagation();
+    this.showWidgetMenu = !this.showWidgetMenu;
+    if (!this.showWidgetMenu) {
+      this.widgetSearch = '';
+    }
+  }
+
+  onWidgetVisibilityChange(id: MydayWidgetId, checked: boolean): void {
+    this.widgetVisibility = { ...this.widgetVisibility, [id]: checked };
+    this.persistWidgetVisibility();
+  }
+
+  setAllWidgets(visible: boolean): void {
+    const next = { ...this.widgetVisibility };
+    this.widgetOptions.forEach((option) => {
+      next[option.id] = visible;
+    });
+    this.widgetVisibility = next;
+    this.persistWidgetVisibility();
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.showWidgetMenu) {
+      this.showWidgetMenu = false;
+      this.widgetSearch = '';
+    }
+  }
+
+  private buildDefaultVisibility(): Record<MydayWidgetId, boolean> {
+    return this.widgetOptions.reduce((acc, option) => {
+      acc[option.id] = true;
+      return acc;
+    }, {} as Record<MydayWidgetId, boolean>);
+  }
+
+  private restoreWidgetVisibility(): void {
+    try {
+      const raw = localStorage.getItem(MYDAY_WIDGET_STORAGE_KEY);
+      if (!raw) {
+        return;
+      }
+      const saved = JSON.parse(raw) as Partial<Record<MydayWidgetId, boolean>>;
+      this.widgetVisibility = {
+        ...this.buildDefaultVisibility(),
+        ...saved,
+      };
+    } catch {
+      this.widgetVisibility = this.buildDefaultVisibility();
+    }
+  }
+
+  private persistWidgetVisibility(): void {
+    try {
+      localStorage.setItem(MYDAY_WIDGET_STORAGE_KEY, JSON.stringify(this.widgetVisibility));
+    } catch {
+      // Ignore quota / private-mode failures — visibility still works in-session.
+    }
+  }
 }
