@@ -218,7 +218,7 @@ export class RulesGuidesComponent {
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
   applyFilters(): void {

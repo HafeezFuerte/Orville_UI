@@ -71,7 +71,7 @@
             <div>
               <label class="ov-label">Unit</label>
               <ng-select #unitSelect [items]="units" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedUnit" placeholder="Select Unit" class="ov-select w-full">
+                [(ngModel)]="selectedUnit"  (change)="onUnitChange()" placeholder="Select Unit" class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
                     <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
@@ -82,7 +82,7 @@
             </div>
             <div>
               <label class="ov-label">Common Area</label>
-              <ng-select #caSelect [items]="commonAreas" [(ngModel)]="selectedCommonArea" placeholder="Select"
+              <ng-select #caSelect bindLabel="name" bindValue="code" [items]="commonAreas" [(ngModel)]="selectedCommonArea" placeholder="Select"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -94,7 +94,8 @@
             </div>
             <div>
               <label class="ov-label">Floor</label>
-              <ng-select #floorSelect [items]="floors" [(ngModel)]="selectedFloor" placeholder="Select"
+              <input type="text" readonly="true" [(ngModel)]="selectedFloor" placeholder="Enter" class="ov-input" />
+              <!-- <ng-select #floorSelect [items]="floors" [(ngModel)]="selectedFloor" placeholder="Select"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -102,7 +103,7 @@
                       (input)="floorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                   </div>
                 </ng-template>
-              </ng-select>
+              </ng-select> -->
             </div>
           </div>
         </div>
@@ -172,7 +173,7 @@
             <div>
               <label class="ov-label">Visiting Slot</label>
               <ng-select #visitSelect [items]="visitingHours" [(ngModel)]="selectedVisitingHours" placeholder="Select"
-                class="ov-select w-full">
+                class="ov-select w-full" bindValue="id" bindLabel="name">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
                     <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
@@ -183,11 +184,21 @@
             </div>
             <div>
               <label class="ov-label">Due Date</label>
-              <input type="date" [(ngModel)]="dueDate" class="ov-input" />
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="dueDate"
+                appFlowbiteDatepicker  placeholder="DD/MM/YYYY"> 
+              </div>
+
+             
             </div>
             <div>
               <label class="ov-label">Available Date</label>
-              <input type="date" [(ngModel)]="availableDate" class="ov-input" />
+              <div class="ov-date">
+                <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
+                <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="availableDate"
+                appFlowbiteDatepicker  placeholder="DD/MM/YYYY"> 
+              </div> 
             </div>
           </div>
         </div>
@@ -213,6 +224,7 @@
               </button>
               <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
             </div>
+            <ng-container *ngIf="beforeImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: beforeImages, fileType: 'before' }"   ></ng-container> 
           </div>
 
           <div>
@@ -228,6 +240,7 @@
               </button>
               <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
             </div>
+            <ng-container *ngIf="afterImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: afterImages, fileType: 'after' }"   ></ng-container> 
           </div>
 
           <div>
@@ -243,6 +256,7 @@
               </button>
               <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: MP4 · Maximum size: 50 MB</p>
             </div>
+            <ng-container *ngIf="videos.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: videos, fileType: 'video' }"   ></ng-container> 
           </div>
         </div>
       </div>
@@ -260,6 +274,7 @@
           </button>
           <input #attachmentInput type="file" multiple class="hidden" (change)="onFileSelected($event, 'attachment')" />
         </div>
+        
         <div class="ov-card__body">
           <div *ngIf="attachments.length === 0" class="cwo-empty-docs">
             <div class="cwo-empty-docs__icon">
@@ -273,36 +288,35 @@
               Add Document
             </button>
           </div>
-
-          <div class="flex flex-col gap-3 mt-4">
-            <div class="cwo-doc-row">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="cwo-doc-row__icon cwo-doc-row__icon--pdf"><i class="ri-file-pdf-line"></i></div>
-                <div class="min-w-0">
-                  <p class="m-0 text-[14px] font-semibold text-defaulttextcolor truncate">Work order.pdf</p>
-                  <p class="m-0 text-[12px] text-textmuted">Order · PDF · 1.4 MB · Uploaded today</p>
-                </div>
-              </div>
-              <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-[12px]">
-                View <i class="ri-more-fill"></i>
-              </button>
-            </div>
-            <div class="cwo-doc-row">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="cwo-doc-row__icon cwo-doc-row__icon--img"><i class="ri-image-line"></i></div>
-                <div class="min-w-0">
-                  <p class="m-0 text-[14px] font-semibold text-defaulttextcolor truncate">Work order.jpg</p>
-                  <p class="m-0 text-[12px] text-textmuted">Order · JPG · 1.1 MB · Uploaded yesterday</p>
-                </div>
-              </div>
-              <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-[12px]">
-                View <i class="ri-more-fill"></i>
-              </button>
-            </div>
-          </div>
+          <ng-container *ngIf="attachments.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: attachments, fileType: 'attachment' }"   ></ng-container>
         </div>
       </div>
 
+      <div class="ov-card" *ngIf="attachfiles.length>0">
+        <div class="ov-card__head">
+          <div>
+            <h6 class="ov-card-title">Documents</h6> 
+          </div> 
+          <div 
+*ngIf="attachfiles.length">
+<div
+    class="flex items-center justify-between border border-defaultborder rounded-md p-3 mb-2"
+    *ngFor="let file of attachfiles; let i=index">
+    <div class="flex items-center gap-3">
+        <i class="ri-image-line text-primary text-[20px]"></i>
+        <div>
+            <div class="font-medium">
+               <a href="{{file.file_path}}">View file</a>  
+            </div>
+            <small class="text-[#8c9097]">
+                {{ file.document_type_name }}
+            </small>
+        </div>
+    </div> 
+</div>
+</div>
+        </div>
+      </div>
     </div>
 
     <!-- Right column -->
@@ -328,9 +342,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Tenant Details</label>
-              <ng-select #tenantSelect [items]="tenants" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedTenant" (change)="onTenantChange()" placeholder="Select Tenant"
+              <label class="ov-label">Technicians</label>
+              <ng-select #tenantSelect [items]="techincians" bindLabel="name" bindValue="code"
+                [(ngModel)]="selectedTechincian"   placeholder="Select Tenant"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -444,3 +458,30 @@
     <button type="button" class="ov-btn ov-btn-primary" (click)="saveWorkOrder()">Save Work Order</button>
   </div>
 </div>
+<ng-template #selectedFiles let-files="files" let-type="fileType">
+<div
+class="mt-4"
+*ngIf="files.length">
+<div
+    class="flex items-center justify-between border border-defaultborder rounded-md p-3 mb-2"
+    *ngFor="let file of files; let i=index">
+    <div class="flex items-center gap-3">
+        <i class="ri-image-line text-primary text-[20px]"></i>
+        <div>
+            <div class="font-medium">
+                {{file.name}}
+            </div>
+            <small class="text-[#8c9097]">
+                {{ (file.size / 1024) | number:'1.0-0' }} KB
+            </small>
+        </div>
+    </div>
+    <button
+        type="button"
+        class="ti-btn ti-btn-danger-light"
+        (click)="removeFile(i,type)">
+        <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
+    </button>
+</div>
+</div>
+</ng-template>

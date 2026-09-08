@@ -120,7 +120,7 @@ export class WorkOrderListComponent implements OnInit {
     this.commontabService.getMasterByType(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          let  data = res.objResult.table[0]; 
+          let  data = res.objResult.dashboard[0]; 
           if (data) {
             this.metrics = {
               total: data.workorders,

@@ -8,12 +8,12 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, Observable } from 'rxjs';
-
+import { forkJoin, Observable } from 'rxjs'; 
+import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 @Component({
   selector: 'app-create-work-order',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, NgSelectModule],
   templateUrl: './create-work-order.component.html',
   styleUrl: './create-work-order.component.scss'
 })
@@ -43,28 +43,30 @@ export class CreateWorkOrderComponent implements OnInit {
   selectedCommonArea: string | null = null;
   floors = ['Select', '1st Floor'];
   selectedFloor: string | null = null;
-
+  currentUser = this.commonService.getCurrentUser();
   responsiblePeople: any[] = [];
   selectedResponsiblePerson: string | null = null;
   tenants: any[] = [];
   selectedTenant: string | null = null;
+  techincians: any[] = [];
+  selectedTechincian: string | null = null;
   vendors: any[] = [];
   selectedVendor: string | null = null;
 
-  tags: string[] = ['Error'];
+  tags: string[] = [];
   newTag: string = '';
 
   categories: any[] = [];
   selectedCategory: any = null;
   subcategories: any[] = [];
   selectedSubcategory: any = null;
-  priorities = ['Select', 'High', 'Medium', 'Low'];
+  priorities = ['Select', 'Normal', 'High', 'Medium', 'Low'];
   selectedPriority: string | null = null;
   durationTypes = ['Select', 'Hours', 'Days'];
   selectedDurationType: string | null = null;
   duration: string = '';
-  visitingHours = ['Select', '9:00 AM - 5:00 PM'];
-  selectedVisitingHours: string | null = null;
+  visitingHours : any =[];
+  selectedVisitingHours: any =0;
   dueDate: string = '';
   availableDate: string = '';
 
@@ -72,84 +74,29 @@ export class CreateWorkOrderComponent implements OnInit {
   afterImages: File[] = [];
   videos: File[] = [];
   attachments: File[] = [];
+  attachfiles:any=[];
 
   ngOnInit() {
-    this.loadLookup(30, 'categories', 'lookup_name');
-    this.loadResponsiblePeople();
-    this.loadTenants();
-    this.loadVendors();
-
-    // Temporary diagnostic: query actual tenants list to inspect codes
-    this.propertiesService.getTenants({
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 5,
-      filter_by: '',
-      filter_list: '',
-      featureid: 'TENANTS'
-    }).subscribe(res => {
-      console.log('Diagnostic getTenants list response:', res);
+    this.loadmasters(39, 1, '', ''); 
+    this.route.paramMap.subscribe((params) => {
+      this.editId=params.get('code'); 
+      if(this.editId)
+      this.loadWorkOrderDetails();
     });
 
-    this.loadProperties(() => {
-      this.route.params.subscribe(params => {
-        if (params['id']) {
-          this.editId = params['id'];
-          this.loadWorkOrderDetails();
-        }
-      });
-    });
+
   }
-
-  loadProperties(callback?: () => void) {
-    this.portfolioService.getMasterByType({
-      typeId: 11,
-      filterId: 0,
-      filterText: '',
-      filterText1: ''
-    }).subscribe({
-      next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          this.properties = res.objResult.table.map((p: any) => ({
-            code: p.code || p.property_code || p.id,
-            name: p.name || p.property || p.code
-          }));
-        }
-        if (callback) callback();
-      },
-      error: (err) => {
-        console.error('Error loading properties:', err);
-        if (callback) callback();
-      }
-    });
+  onUnitChange() {
+    if (this.selectedUnit) {
+      this.selectedFloor = this.units.filter(item => item.code = this.selectedUnit)[0]?.floor_no || 0;
+    }
   }
 
   onPropertyChange() {
     this.selectedUnit = null;
     this.units = [];
     if (this.selectedProperty) {
-      this.portfolioService.getMasterByType({
-        typeId: 3,
-        filterId: 0,
-        filterText: this.selectedProperty,
-        filterText1: ''
-      }).subscribe({
-        next: (res: any) => {
-          if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-            this.units = res.objResult.table.map((u: any) => ({
-              code: u.code || u.unit_code || u.id,
-              name: `${u.unit_code || u.code} - ${u.unit_no || u.name}`
-            }));
-          }
-        },
-        error: (err) => console.error('Error loading units:', err)
-      });
+      this.loadmasters(44, 0, 'units', this.selectedProperty);
     }
   }
 
@@ -157,40 +104,35 @@ export class CreateWorkOrderComponent implements OnInit {
     this.selectedSubcategory = null;
     this.subcategories = [];
     if (this.selectedCategory) {
-      this.portfolioService.getMasterByType({
-        typeId: 2,
-        filterId: 31,
-        filterText: String(this.selectedCategory),
-        filterText1: ''
-      }).subscribe({
-        next: (res: any) => {
-          if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-            this.subcategories = res.objResult.table.map((item: any) => ({
-              id: item.id,
-              name: item.lookup_name || item.name || ''
-            }));
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching subcategories:', err);
-        }
-      });
+      this.loadmasters(2, 31, 'subcategories',String(this.selectedCategory)); 
     }
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadmasters(typeId: number, filterId: number, targetProperty: string, filterText: string) {
     this.portfolioService.getMasterByType({
-      typeId: 2,
+      typeId: typeId,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          (this as any)[targetProperty] = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item[nameField] || item.lookup_name || item.name || ''
-          }));
+        if (res.statusCode == 200 && res.objResult && res.objResult) {
+          if (typeId == 44) {
+            (this as any)[targetProperty] = res.objResult.table || [];
+            this.commonAreas = res.objResult.table1 || [];
+          } 
+          else  if (typeId == 2) {
+            (this as any)[targetProperty] = res.objResult.table || []; 
+          }
+          else {
+            this.techincians = res.objResult.users || [];
+            this.vendors = res.objResult.vendors || [];
+            this.responsiblePeople = res.objResult.managers || [];
+            this.properties = res.objResult.properties || [];
+            this.categories = res.objResult.categories || [];
+            this.visitingHours = res.objResult.visitingslots || [];
+          }
+          //(this as any)[targetProperty] = res.objResult.table || [];
         }
       },
       error: (err) => {
@@ -204,12 +146,31 @@ export class CreateWorkOrderComponent implements OnInit {
   }
 
   saveWorkOrder() {
-    const currentUser = this.commonService.getCurrentUser();
-    
+    if(this.title== null || this.title==""){
+      this.toastr.error("Invalid Title");
+      return;
+    }
+    else if(this.selectedProperty== null || this.selectedProperty==""){
+      this.toastr.error("Invalid Property");
+      return;
+    } 
+    else if(this.selectedCategory== null || this.selectedCategory==""){
+      this.toastr.error("Invalid Category");
+      return;
+    }
+    else if(this.selectedPriority== null || this.selectedPriority==""){
+      this.toastr.error("Invalid Priority");
+      return;
+    }
+    else if(this.selectedPriority== null || this.selectedPriority==""){
+      this.toastr.error("Invalid Priority");
+      return;
+    }
+
     const payload = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
       source: "web",
       languageid: 1,
       property_code: this.selectedProperty || "",
@@ -226,25 +187,25 @@ export class CreateWorkOrderComponent implements OnInit {
       title: this.title,
       description: this.description,
       priority: this.selectedPriority || "",
-      due_date: this.dueDate ? new Date(this.dueDate).toISOString() : new Date().toISOString(),
-      available_date: this.availableDate ? new Date(this.availableDate).toISOString() : new Date().toISOString(),
-      visiting_slot: this.selectedVisitingHours || "",
+      due_date:this.commonService.parseInputDate(this.dueDate),
+      available_date:this.commonService.parseInputDate(this.availableDate),
+      visiting_slot: this.selectedVisitingHours || 0,
       status: 1,
-      responsible_user: this.selectedResponsiblePerson || "",
-      technician_id: "",
-      vendor_id: this.selectedVendor || "",
+      responsible_user: this.selectedResponsiblePerson || 0,
+      technician_id: this.selectedTechincian || 0,
+      vendor_id: this.selectedVendor || 0,
       tags: this.tags.join(','),
-      assigned_to: 0
+      assigned_to: this.selectedResponsiblePerson 
     };
 
     this.portfolioService.saveWorkOrder(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-          const workOrderCode = res.objResult?.code || res.objResult?.id || this.editId || "";
-          
+          const workOrderCode = res.objResult.table[0]?.code || "";
+
           // Prepare file upload tasks
           const uploadTasks: Observable<any>[] = [];
-          
+
           this.beforeImages.forEach(file => {
             uploadTasks.push(this.uploadFile(file, 'Before Image', workOrderCode));
           });
@@ -265,13 +226,13 @@ export class CreateWorkOrderComponent implements OnInit {
                 this.goBack();
               },
               error: (err) => {
-                console.error("Error uploading files:", err);
+                 
                 this.toastr.warning("Work order saved, but some files failed to upload");
                 this.goBack();
               }
             });
           } else {
-            this.toastr.success(res.message || "Work order saved successfully");
+            this.toastr.success( "Work order saved successfully");
             this.goBack();
           }
         } else {
@@ -279,7 +240,7 @@ export class CreateWorkOrderComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.error("Error saving work order:", err);
+         
         this.toastr.error("An error occurred while saving the work order");
       }
     });
@@ -300,7 +261,7 @@ export class CreateWorkOrderComponent implements OnInit {
       document_type: docTypeInt,
       document_no: 'DOC-' + Math.floor(Math.random() * 1000000),
       issue_date: new Date().toISOString().substring(0, 10),
-      expiry_date: new Date(Date.now() + 365*24*60*60*1000).toISOString().substring(0, 10),
+      expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
       issuing_authority: 'System',
       share_with_tenants: true,
       share_with_landlords: true
@@ -340,124 +301,23 @@ export class CreateWorkOrderComponent implements OnInit {
     }
   }
 
-  removeFile(index: number, type: 'before' | 'after' | 'video' | 'attachment') {
+  removeFile(index: number, type: 'before' | 'after' | 'video' | 'attachment') { 
     if (type === 'before') this.beforeImages.splice(index, 1);
     if (type === 'after') this.afterImages.splice(index, 1);
     if (type === 'video') this.videos.splice(index, 1);
     if (type === 'attachment') this.attachments.splice(index, 1);
   }
 
-  loadResponsiblePeople() {
-    const currentUser = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 19,
-      typeid: 19,
-      filterId: 0,
-      filterText: 's',
-      filterText1: '',
-      userId: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
-      clientId: "74BB6922",
-      companyId: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
-      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1
-    };
-
-    console.log('loadResponsiblePeople (Technicians) Payload:', payload);
-    this.propertiesService.getMasterDetails(payload).subscribe({
-      next: (res: any) => {
-        console.log('loadResponsiblePeople (Technicians) Response:', res);
-        if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
-          if (Array.isArray(list)) {
-            if (list.length > 0) {
-              console.log('Raw Technician First Item:', JSON.stringify(list[0]));
-            }
-            this.responsiblePeople = list.map((item: any) => ({
-              code: item.user_code || item.code || item.Code || item.User_code || item.id || item.Id || '',
-              name: item.column1 || item.name || item.Name || item.lookup_name || item.Lookup_name || item.full_name || item.FullName || item.user_name || item.UserName || item.technician_name || item.Technician_name || item.code || item.Code || '-',
-              id: item.id || item.Id
-            }));
-            console.log('Mapped responsiblePeople:', this.responsiblePeople);
-          }
-        }
-      },
-      error: (err) => console.error('Error loading technicians:', err)
-    });
-  }
-
-  loadTenants() {
-    const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMastersByPaging({
-      userid: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
-      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'TENANTS'
-    }).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          const list = res.objResult.tenants || res.objResult.table || res.objResult;
-          if (Array.isArray(list)) {
-            this.tenants = list.map((item: any) => ({
-              code: item.code || item.id || '',
-              name: item.tenant || item.name || item.code || '-',
-              id: item.id
-            }));
-            console.log('Mapped tenants from paging:', this.tenants);
-          }
-        }
-      },
-      error: (err) => console.error('Error loading tenants:', err)
-    });
-  }
-
-  loadVendors() {
-    const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMastersByPaging({
-      userid: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
-      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'VENDORS'
-    }).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          const list = res.objResult.vendors || res.objResult.table || res.objResult;
-          if (Array.isArray(list)) {
-            this.vendors = list.map((item: any) => ({
-              code: item.code || item.id || '',
-              name: item.company_name || item.contact_name || item.name || item.code || '-',
-              id: item.id
-            }));
-            console.log('Mapped vendors from paging:', this.vendors);
-          }
-        }
-      },
-      error: (err) => console.error('Error loading vendors:', err)
-    });
-  }
 
   loadWorkOrderDetails() {
-    const currentUser = this.commonService.getCurrentUser();
     const payload = {
       typeId: 21,
       filterId: 0,
       filterText: this.editId,
       filterText1: "",
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1
+      userId: this.currentUser?.userId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
+      companyId: this.currentUser?.companyId || 1
     };
 
     this.propertiesService.getMasterDetails(payload).subscribe({
@@ -469,78 +329,45 @@ export class CreateWorkOrderComponent implements OnInit {
             this.title = data.title || "";
             this.description = data.description || "";
             this.selectedProperty = data.property_code || null;
-            
-            if (this.selectedProperty) {
-              this.portfolioService.getMasterByType({
-                typeId: 3,
-                filterId: 0,
-                filterText: this.selectedProperty,
-                filterText1: ''
-              }).subscribe((resUnit: any) => {
-                if (resUnit.statusCode == 200 && resUnit.objResult && resUnit.objResult.table) {
-                  this.units = resUnit.objResult.table.map((u: any) => ({
-                    code: u.code || u.unit_code || u.id,
-                    name: `${u.unit_code || u.code} - ${u.unit_no || u.name}`
-                  }));
-                  this.selectedUnit = data.unit_code || null;
-                }
-              });
-            }
-            
+            this.loadmasters(44, 0, 'units', data.property_code);
+           
+            setTimeout(() => {
+              this.selectedUnit = data.unit_code || null;
+              this.selectedSubcategory = data.maintenance_subcategory || null;
+            }, 500);
+
             this.selectedCommonArea = data.common_area || null;
             this.selectedCategory = data.maintenance_category || null;
-            
-            if (this.selectedCategory) {
-              this.portfolioService.getMasterByType({
-                typeId: 2,
-                filterId: 31,
-                filterText: String(this.selectedCategory),
-                filterText1: ''
-              }).subscribe((resSub: any) => {
-                if (resSub.statusCode == 200 && resSub.objResult && resSub.objResult.table) {
-                  this.subcategories = resSub.objResult.table.map((item: any) => ({
-                    id: item.id,
-                    name: item.lookup_name || item.name || ''
-                  }));
-                  this.selectedSubcategory = data.maintenance_subcategory || null;
-                }
-              });
-            }
-            
+            this.loadmasters(2, 31, 'subcategories',String(this.selectedCategory)); 
+             
+
             this.selectedDurationType = data.estimation_duration_type || null;
             this.duration = data.estimation_duration || "";
-            this.selectedVisitingHours = data.visiting_slot || null;
+            this.selectedVisitingHours =Number(data.visiting_slot) || 0;
+            this.selectedPriority=data.priority || '';
+            this.dueDate =this.commonService.formatDateForInput(data.due_date);
+            this.availableDate =this.commonService.formatDateForInput(data.available_date); 
+
+            this.selectedResponsiblePerson = data.assigned_to || 0;
+            this.selectedTechincian = data.technician_id || 0; 
+
+            this.selectedVendor = data.vendor_id || data.vendor_code || data.vendor;
             
-            if (data.due_date) {
-              this.dueDate = data.due_date.substring(0, 10);
-            }
-            if (data.available_date) {
-              this.availableDate = data.available_date.substring(0, 10);
-            }
-            
-            const respVal = data.responsible_user || data.responsible_user_code || data.responsiblePerson;
-            if (respVal) {
-              const match = this.responsiblePeople.find(r => String(r.code) === String(respVal) || String(r.name) === String(respVal));
-              this.selectedResponsiblePerson = match ? match.code : respVal;
-            }
-            
-            const vendVal = data.vendor_id || data.vendor_code || data.vendor;
-            if (vendVal) {
-              const match = this.vendors.find(v => String(v.code) === String(vendVal) || String(v.name) === String(vendVal));
-              this.selectedVendor = match ? match.code : vendVal;
-            }
-            
-            const tenantVal = data.tenant_code || data.tenant;
-            if (tenantVal) {
-              const match = this.tenants.find(t => String(t.code) === String(tenantVal) || String(t.name) === String(tenantVal));
-              this.selectedTenant = match ? match.code : tenantVal;
-              this.onTenantChange();
-            }
-            
+
+            // const tenantVal = data.tenant_code || data.tenant;
+            // if (tenantVal) {
+            //   const match = this.tenants.find(t => String(t.code) === String(tenantVal) || String(t.name) === String(tenantVal));
+            //   this.selectedTenant = match ? match.code : tenantVal;
+            //   this.onTenantChange();
+            // }
+
             if (data.tags) {
               this.tags = data.tags.split(',').filter((t: string) => t.trim() !== "");
             }
           }
+ 
+          this.attachfiles=res.objResult.table2 || [];
+         
         }
       },
       error: (err: any) => console.error("Error loading work order details:", err)
@@ -549,85 +376,85 @@ export class CreateWorkOrderComponent implements OnInit {
 
   selectedTenantDetails: any = null;
 
-  onTenantChange() {
-    if (!this.selectedTenant) {
-      this.selectedTenantDetails = null;
-      return;
-    }
+  // onTenantChange() {
+  //   if (!this.selectedTenant) {
+  //     this.selectedTenantDetails = null;
+  //     return;
+  //   }
 
-    const selectedItem = this.tenants.find(t => t.code === this.selectedTenant);
-    if (!selectedItem) {
-      this.selectedTenantDetails = null;
-      return;
-    }
+  //   const selectedItem = this.tenants.find(t => t.code === this.selectedTenant);
+  //   if (!selectedItem) {
+  //     this.selectedTenantDetails = null;
+  //     return;
+  //   }
 
-    const queryDetails = (textVal: string) => {
-      const payload = {
-        typeId: 27,
-        filterId: 0,
-        filterText: String(textVal),
-        filterText1: "",
-        userId: Number(localStorage.getItem('userId')) || 1,
-        clientId: "74BB6922",
-        companyId: Number(localStorage.getItem('companyId')) || 1
-      };
-      console.log('Querying typeId 27 for:', textVal, 'with payload:', payload);
-      return this.propertiesService.getMasterDetails(payload);
-    };
+  //   const queryDetails = (textVal: string) => {
+  //     const payload = {
+  //       typeId: 27,
+  //       filterId: 0,
+  //       filterText: String(textVal),
+  //       filterText1: "",
+  //       userId: Number(localStorage.getItem('userId')) || 1,
+  //       clientId: "74BB6922",
+  //       companyId: Number(localStorage.getItem('companyId')) || 1
+  //     };
+     
+  //     return this.propertiesService.getMasterDetails(payload);
+  //   };
 
-    queryDetails(selectedItem.code).subscribe({
-      next: (res: any) => {
-        console.log('typeId 27 Code Response:', res);
-        const hasRecords = res && res.objResult && (
-          (res.objResult.tenant_dtls && res.objResult.tenant_dtls.length > 0) || 
-          (res.objResult.table && res.objResult.table.length > 0)
-        );
+  //   queryDetails(selectedItem.code).subscribe({
+  //     next: (res: any) => {
+  //       console.log('typeId 27 Code Response:', res);
+  //       const hasRecords = res && res.objResult && (
+  //         (res.objResult.tenant_dtls && res.objResult.tenant_dtls.length > 0) ||
+  //         (res.objResult.table && res.objResult.table.length > 0)
+  //       );
 
-        if (hasRecords) {
-          this.mapTenantDetails(res);
-        } else if (selectedItem.id) {
-          console.log('No records found with code. Retrying details query with numeric ID:', selectedItem.id);
-          queryDetails(String(selectedItem.id)).subscribe({
-            next: (resFallback: any) => {
-              console.log('typeId 27 Fallback Response:', resFallback);
-              if (resFallback && resFallback.objResult) {
-                this.mapTenantDetails(resFallback);
-              } else {
-                this.selectedTenantDetails = null;
-              }
-            },
-            error: (err) => {
-              console.error("Error loading tenant details with fallback ID:", err);
-              this.selectedTenantDetails = null;
-            }
-          });
-        } else {
-          console.warn('No records found and no fallback numeric ID available.');
-          this.selectedTenantDetails = null;
-        }
-      },
-      error: (err) => {
-        console.error("Error loading tenant details with code:", err);
-        this.selectedTenantDetails = null;
-      }
-    });
-  }
+  //       if (hasRecords) {
+  //         this.mapTenantDetails(res);
+  //       } else if (selectedItem.id) {
+  //         console.log('No records found with code. Retrying details query with numeric ID:', selectedItem.id);
+  //         queryDetails(String(selectedItem.id)).subscribe({
+  //           next: (resFallback: any) => {
+  //             console.log('typeId 27 Fallback Response:', resFallback);
+  //             if (resFallback && resFallback.objResult) {
+  //               this.mapTenantDetails(resFallback);
+  //             } else {
+  //               this.selectedTenantDetails = null;
+  //             }
+  //           },
+  //           error: (err) => {
+  //             console.error("Error loading tenant details with fallback ID:", err);
+  //             this.selectedTenantDetails = null;
+  //           }
+  //         });
+  //       } else {
+  //         console.warn('No records found and no fallback numeric ID available.');
+  //         this.selectedTenantDetails = null;
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error("Error loading tenant details with code:", err);
+  //       this.selectedTenantDetails = null;
+  //     }
+  //   });
+  // }
 
-  mapTenantDetails(res: any) {
-    const tenantList = res.objResult.tenant_dtls || res.objResult.table || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
-    if (Array.isArray(tenantList) && tenantList.length > 0) {
-      const data = tenantList[0];
-      this.selectedTenantDetails = {
-        name: data.name || data.tenant || data.tenant_name || data.column1 || data.Name || data.Tenant || '-',
-        status: data.status || data.Status || 'Active',
-        email: data.email || data.Email || data.email_address || '-',
-        phone: data.mobile || data.phone || data.Mobile || data.Phone || data.mobile_no || data.phone_number || '-',
-        type: data.tenant_type_name || data.type || data.Tenant_type_name || data.Type || 'Individual Tenant',
-        location: data.address || data.location || data.Address || data.Location || data.address1 || '-'
-      };
-      console.log('Mapped Tenant Details:', this.selectedTenantDetails);
-    }
-  }
+  // mapTenantDetails(res: any) {
+  //   const tenantList = res.objResult.tenant_dtls || res.objResult.table || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
+  //   if (Array.isArray(tenantList) && tenantList.length > 0) {
+  //     const data = tenantList[0];
+  //     this.selectedTenantDetails = {
+  //       name: data.name || data.tenant || data.tenant_name || data.column1 || data.Name || data.Tenant || '-',
+  //       status: data.status || data.Status || 'Active',
+  //       email: data.email || data.Email || data.email_address || '-',
+  //       phone: data.mobile || data.phone || data.Mobile || data.Phone || data.mobile_no || data.phone_number || '-',
+  //       type: data.tenant_type_name || data.type || data.Tenant_type_name || data.Type || 'Individual Tenant',
+  //       location: data.address || data.location || data.Address || data.Location || data.address1 || '-'
+  //     };
+  //     console.log('Mapped Tenant Details:', this.selectedTenantDetails);
+  //   }
+  // }
 
   viewTenant() {
     if (this.selectedTenant) {

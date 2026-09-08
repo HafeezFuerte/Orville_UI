@@ -104,25 +104,10 @@ export class WorkOrderDetailComponent implements OnInit {
   showActionMenu = false;
   showMoreDetails = true;
   activePersonnelPopup: string | null = null;
-  statusOptions = ['Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Escalated', 'Re-Opened'];
+  statusOptions = [];
 
   // Mock Data
-  workOrderDetails = {
-    id: '-',
-    title: '-',
-    priority: '-',
-    category: '-',
-    subcategory: '-',
-    signatures: '-',
-    resolvedDate: '-',
-    createdDate: '-',
-    lastUpdated: '-',
-    closingStatus: '-',
-    tenantRejectReason: '-',
-    tenantRejected: '-',
-    waitingSLA: '-',
-    description: '-'
-  };
+  workOrderDetails :any= {};
 
   personnel = {
     activeTenant: '-',
@@ -249,14 +234,31 @@ export class WorkOrderDetailComponent implements OnInit {
 
   ngOnInit() {
     this.initializeTabs();
+    this.loadlookup(2,29,'statusOptions','');
     this.route.params.subscribe(params => {
-      this.workOrderId = params['id'];
+      this.workOrderId = params['code'];
       if (this.workOrderId) {
         this.getWorkOrderDetails();
       }
     });
   }
-
+  loadlookup(typeId: number, filterId: number, targetProperty: string, filterText: string) {
+    this.commonTabsService.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {
+          (this as any)[targetProperty] = res.objResult.table || [];
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   getWorkOrderDetails() {
     const currentUser = this.commonService.getCurrentUser();
     const payload = {
@@ -277,25 +279,29 @@ export class WorkOrderDetailComponent implements OnInit {
           if (Array.isArray(details) && details.length > 0) {
             const data = details[0];
             this.workOrderDetails = {
-              id: data.id || data.code || this.workOrderId,
+              id:  data.code || this.workOrderId,
               title: data.title || data.workOrder || '-',
               priority: data.priority || '-',
-              category: data.category || '-',
-              subcategory: data.subcategory || '-',
+              category: data.maintenance_name || '-',
+              due_date:this.commonService.formatDateForInput(data.due_date),
+              subcategory: data.maintenance_sub_name || '-',
               signatures: data.signatures || '-',
               resolvedDate: data.resolvedDate || '-',
-              createdDate: data.createdAt || data.createdDate || '-',
-              lastUpdated: data.lastUpdate || data.lastUpdated || '-',
+              createdDate: this.commonService.formatDateForInput(data.created_date)|| '-',
+              lastUpdated: this.commonService.formatDateForInput(data.modified_date)|| '-',
               closingStatus: data.status || '-',
               tenantRejectReason: data.tenantRejectReason || '-',
               tenantRejected: data.tenantRejected || 'No',
               waitingSLA: data.waitingSLA || 'Hold to SLA',
+              visiting_slot:data.visitingslot || '',
+              estimation:data.estimation_duration,
+              estimationtype:data.estimation_duration_type,
               description: data.desc || data.description || data.workOrder || data.title || '-'
             };
             this.personnel = {
               activeTenant: data.tenant || '-',
-              raisedBy: data.createdBy || '-',
-              responsiblePerson: data.responsiblePerson || '-',
+              raisedBy: data.createdby || '-',
+              responsiblePerson: data.reponsibleperson || '-',
               technician: data.technician || '-',
               vendor: data.vendor || '-',
               vendorTechnician: data.vendorTechnician || data.vendor_technician || 'Not Assigned',

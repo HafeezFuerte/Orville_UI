@@ -45,12 +45,12 @@ export const facilityRoutingModule: Routes = [
           import('./work-orders/create-work-order/create-work-order.component').then((m) => m.CreateWorkOrderComponent),
       },
       {
-        path: 'edit/:id',
+        path: 'edit/:code',
         loadComponent: () =>
           import('./work-orders/create-work-order/create-work-order.component').then((m) => m.CreateWorkOrderComponent),
       },
       {
-        path: ':id',
+        path: ':code',
         loadComponent: () =>
           import('./work-orders/work-order-detail/work-order-detail.component').then((m) => m.WorkOrderDetailComponent),
       }
