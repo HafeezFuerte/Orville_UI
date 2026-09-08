@@ -54,8 +54,9 @@
           <select
             id="dt-type"
             class="ov-input cursor-pointer appearance-none pr-8"
-            [(ngModel)]="templateType">
-            <option *ngFor="let t of typeOptions" [value]="t">{{ t }}</option>
+            [ngModel]="templateType"
+            (ngModelChange)="onDocTypeChange($event)">
+            <option *ngFor="let t of typeOptions" [value]="t.id || t.name">{{ t.name }}</option>
           </select>
           <img
             src="./assets/images/settings/chevron-down.svg"
@@ -126,15 +127,16 @@
       </h3>
 
       <div class="flex w-full flex-col gap-2">
+        <div *ngIf="loadingAutofill" class="text-xs text-textmuted py-2">Loading elements...</div>
         <button
           type="button"
           *ngFor="let el of autofillElements"
           class="flex w-full cursor-grab items-center gap-2.5 rounded-lg border-0 bg-[#eeeef5] px-3 py-2.5 text-left active:cursor-grabbing dark:bg-white/10"
           draggable="true"
-          (dragstart)="onAutofillDragStart($event, el)"
-          (click)="insertAutofill(el)">
+          (dragstart)="onAutofillDragStart($event, el.tag)"
+          (click)="insertAutofill(el.tag)">
           <span class="shrink-0 text-xs text-textmuted" aria-hidden="true">⠿</span>
-          <span class="min-w-0 flex-1 text-[13px] font-medium text-defaulttextcolor">{{ el }}</span>
+          <span class="min-w-0 flex-1 text-[13px] font-medium text-defaulttextcolor">{{ el.name }}</span>
         </button>
       </div>
     </aside>

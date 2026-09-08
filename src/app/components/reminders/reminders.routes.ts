@@ -11,7 +11,12 @@ export const remindersRoutes: Routes = [
       import('./create-reminder/reminder-add.component').then((m) => m.ReminderAddComponent),
   },
   {
-    path: ':id',
+    path: 'edit/:code',
+    loadComponent: () =>
+      import('./create-reminder/reminder-add.component').then((m) => m.ReminderAddComponent),
+  },
+  {
+    path: ':code',
     loadComponent: () => import('./reminder-detail/reminder-detail.component').then((m) => m.ReminderDetailComponent),
   },
 ];

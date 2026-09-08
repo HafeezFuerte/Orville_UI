@@ -43,18 +43,13 @@
 
     <div class="overflow-x-auto px-5 pb-0 pt-5" (scroll)="closeRowMenu()">
       <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+     [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link" [routerLink]="['/community/rules-guides', row.id]">{{ row.id }}</a>
-            <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/rules-guides', row.id]">{{ row.name }}</a>
+            <a *ngSwitchCase="'code'" class="ov-link" [routerLink]="['/community/rules-guides', row.code]">{{ row.code }}</a>
+            <a *ngSwitchCase="'name'" class="ov-link" [routerLink]="['/community/rules-guides', row.code]">{{ row.name }}</a>
+            <a *ngSwitchCase="'entity_name'" class="ov-link" [routerLink]="['/community/rules-guides', row.code]">{{ row.name }}</a>
             <div *ngSwitchCase="'action'" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
                 (click)="toggleRowAction(row, $event)">
@@ -67,35 +62,14 @@
       </app-shared-table>
     </div>
 
-    <!-- Row-action menu — rendered outside table to escape overflow clipping -->
-    <div *ngIf="openRowActionRow && rowMenuStyle"
-      class="guides-row-menu"
-      role="menu"
-      [ngStyle]="rowMenuStyle"
-      (click)="$event.stopPropagation()">
-      <div class="guides-row-menu__list">
-        <button type="button" role="menuitem" class="guides-row-menu__item"
-          (click)="onRowView(openRowActionRow)">View Details</button>
-        <button type="button" role="menuitem" class="guides-row-menu__item"
-          (click)="onRowEdit()">Edit Guide</button>
-      </div>
-      <div class="guides-row-menu__footer">
-        <button type="button" role="menuitem"
-          class="guides-row-menu__item guides-row-menu__item--danger"
-          (click)="onRowDelete()">Delete</button>
-      </div>
-    </div>
+  
 
     <div class="ov-page">
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -140,14 +114,16 @@
     (click)="$event.stopPropagation()">
     <div class="guides-row-menu__list">
       <button type="button" role="menuitem" class="guides-row-menu__item"
-        (click)="onRowView(openRowActionRow!)">View Details</button>
+        (click)="onRowView(openRowActionRow)">View Details</button>
       <button type="button" role="menuitem" class="guides-row-menu__item"
-        (click)="onRowEdit()">Edit Guide</button>
+        (click)="onRowEdit(openRowActionRow)">Edit Guide</button>
     </div>
     <div class="guides-row-menu__footer">
       <button type="button" role="menuitem"
         class="guides-row-menu__item guides-row-menu__item--danger"
-        (click)="onRowDelete()">Delete</button>
+        (click)="deleteguideline(openRowActionRow.code)">Delete</button>
     </div>
   </div>
 </div>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

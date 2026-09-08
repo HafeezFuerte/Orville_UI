@@ -57,6 +57,7 @@ export class PromotionAddComponent {
     private commonservice: CommonService,public translate: TranslateService,private communityService: CommunityService
   ) {}
   ngOnInit(): void {
+    this.promotion_code='';
     this.route.paramMap.subscribe((params) => {
       this.promotion_code=params.get('code'); 
       if(this.promotion_code)

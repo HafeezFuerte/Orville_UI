@@ -207,19 +207,19 @@ export class PromotionsComponent {
     });
   }
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get paginatedRows(): PromotionRow[] {
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
@@ -248,11 +248,12 @@ export class PromotionsComponent {
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadPromotions();
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.isDrawerOpen = false;
   }
 
@@ -261,7 +262,8 @@ export class PromotionsComponent {
     this.filterName = '';
     this.filterStatus = null;
     this.statusFilter = 'All';
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadPromotions();
   }
 
   toggleColumnDropdown(event: Event): void {

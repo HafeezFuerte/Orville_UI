@@ -67,12 +67,12 @@
 
         <div class="gd-info-card">
           <div class="gd-info-card__head">
-            <h6 class="gd-info-card__title">Property</h6>
+            <h6 class="gd-info-card__title">{{detail.entity}}</h6>
           </div>
           <div class="gd-info-card__body">
             <div class="ov-kv">
               <span class="ov-kv__label">Property:</span>
-              <span class="ov-kv__value">{{ detail.propertyFull }}</span>
+              <span class="ov-kv__value">{{detail.entity_name}} </span>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@
           <div class="gd-info-card__body">
             <div class="ov-kv">
               <span class="ov-kv__label">ID:</span>
-              <span class="ov-kv__value">{{ detail.id }}</span>
+              <span class="ov-kv__value">{{ detail.code }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Guide Name:</span>
@@ -92,11 +92,11 @@
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">{{ detail.createdAt }}</span>
+              <span class="ov-kv__value">{{ detail.createdAt?.split('T')[0] }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">Updated:</span>
-              <span class="ov-kv__value">{{ detail.updatedAt }}</span>
+              <span class="ov-kv__value">{{ detail.updatedAt?.split('T')[0] }}</span>
             </div>
           </div>
         </div>
@@ -109,12 +109,28 @@
           <h6 class="ov-card-title">Attachments</h6>
         </div>
         <div class="ov-card__body">
-          <div class="guide-attachments-empty">
+          <div class="guide-attachments-empty" *ngIf="attachments.length==0">
             <span class="guide-attachments-empty__icon">
               <i class="ri-attachment-2" aria-hidden="true"></i>
             </span>
             <p class="m-0 text-sm font-semibold text-defaulttextcolor">No attachments found</p>
             <p class="m-0 text-xs text-textmuted">No files are attached to this guide</p>
+          </div>
+          <div *ngIf="attachments.length>0" class="guide-attachments-empty"> 
+            <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
+              <thead class="bg-info/10">
+                <tr class="border-b border-defaultborder">
+                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sno </th>
+                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">File</th> 
+                </tr>
+              </thead>
+              <tbody> 
+                <tr *ngFor="let wo of attachments;let i=index" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
+                  <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{i+1}}</td>
+                  <td class="py-3 px-4 font-semibold text-gray-800 text-xs"><a href="{{wo.file_path}}" target="_blank">Click to view</a></td>   
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

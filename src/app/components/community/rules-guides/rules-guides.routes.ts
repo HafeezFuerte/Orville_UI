@@ -12,7 +12,12 @@ export const rulesGuidesRoutes: Routes = [
       import('./create-guide/guide-add.component').then((m) => m.GuideAddComponent)
   },
   {
-    path: ':id',
+    path: 'edit/:code',
+    loadComponent: () =>
+      import('./create-guide/guide-add.component').then((m) => m.GuideAddComponent)
+  },
+  {
+    path: ':code',
     loadComponent: () =>
       import('./guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent)
   }
