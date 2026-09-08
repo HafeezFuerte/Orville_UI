@@ -8,10 +8,85 @@
       <h1 class="orville-myday__title">Good Morning, <span class="orville-myday__name">{{ userName }}</span></h1>
       <p class="orville-myday__sub">Here's your property management overview for today.</p>
     </div>
-    <button type="button" class="orville-myday__add">
-      <img class="orville-myday__add-icon" src="./assets/images/myday/plus.svg" alt="" width="14" height="14">
-      Add Widget
-    </button>
+    <div class="orville-myday__add-wrap" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="orville-myday__add"
+        [class.is-open]="showWidgetMenu"
+        (click)="toggleWidgetMenu($event)"
+        [attr.aria-expanded]="showWidgetMenu">
+        <span class="orville-myday__add-ico" aria-hidden="true">
+          <img src="./assets/images/myday/plus.svg" alt="" width="14" height="14">
+        </span>
+        <span>Add Widget</span>
+        <span class="orville-myday__add-count">{{ visibleWidgetCount }}/{{ totalWidgetCount }}</span>
+      </button>
+
+      <div *ngIf="showWidgetMenu" class="orville-myday__widget-menu" role="menu">
+        <div class="orville-myday__widget-menu-head">
+          <div class="orville-myday__widget-menu-head-copy">
+            <p class="orville-myday__widget-menu-kicker">Customize</p>
+            <h3 class="orville-myday__widget-menu-title">Dashboard widgets</h3>
+            <p class="orville-myday__widget-menu-sub">
+              {{ visibleWidgetCount }} of {{ totalWidgetCount }} sections visible
+            </p>
+          </div>
+          <div class="orville-myday__widget-menu-ring" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="40" height="40">
+              <circle class="orville-myday__widget-menu-ring-track" cx="20" cy="20" r="16" />
+              <circle
+                class="orville-myday__widget-menu-ring-value"
+                cx="20" cy="20" r="16"
+                [style.stroke-dasharray]="100.53"
+                [style.stroke-dashoffset]="100.53 - (100.53 * visibleWidgetCount / totalWidgetCount)" />
+            </svg>
+            <span>{{ visibleWidgetCount }}</span>
+          </div>
+        </div>
+
+        <div class="orville-myday__widget-menu-tools">
+          <label class="orville-myday__widget-search">
+            <i class="ri-search-line" aria-hidden="true"></i>
+            <input
+              type="search"
+              [(ngModel)]="widgetSearch"
+              placeholder="Search widgets..."
+              autocomplete="off" />
+          </label>
+          <div class="orville-myday__widget-menu-actions">
+            <button type="button" class="orville-myday__widget-link" (click)="setAllWidgets(true)">Show all</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" class="orville-myday__widget-link" (click)="setAllWidgets(false)">Hide all</button>
+          </div>
+        </div>
+
+        <div class="orville-myday__widget-list">
+          <label
+            class="orville-myday__widget-item"
+            *ngFor="let option of sectionWidgetOptions; let i = index"
+            [class.is-on]="isWidgetVisible(option.id)"
+            [style.animation-delay.ms]="i * 18"
+            role="menuitemcheckbox"
+            [attr.aria-checked]="isWidgetVisible(option.id)">
+            <span class="orville-myday__widget-item-main">
+              <span class="orville-myday__widget-dot" aria-hidden="true"></span>
+              <span class="orville-myday__widget-item-title">{{ option.title }}</span>
+            </span>
+            <span class="orville-myday__widget-switch" aria-hidden="true">
+              <input
+                type="checkbox"
+                [checked]="isWidgetVisible(option.id)"
+                (change)="onWidgetVisibilityChange(option.id, $any($event.target).checked)" />
+              <span class="orville-myday__widget-switch-ui"></span>
+            </span>
+          </label>
+
+          <p class="orville-myday__widget-empty" *ngIf="!sectionWidgetOptions.length">
+            No widgets match “{{ widgetSearch }}”
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="orville-myday__kpis">
@@ -63,7 +138,7 @@
   <div class="orville-myday__grid">
 
     <!-- Overdue Invoices -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('overdue-invoices')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Overdue Invoices</h2>
         <div class="orville-widget__tools">
@@ -109,7 +184,7 @@
     </section>
 
     <!-- Bounced Payments -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('bounced-payments')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Bounced Payments</h2>
         <div class="orville-widget__tools">
@@ -147,7 +222,7 @@
     </section>
 
     <!-- Overdue Leases -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('overdue-leases')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Overdue Leases</h2>
         <div class="orville-widget__tools">
@@ -185,7 +260,7 @@
     </section>
 
     <!-- Expired Landlord Contracts -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('expired-landlord-contracts')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Expired Landlord Contracts</h2>
         <div class="orville-widget__tools">
@@ -224,7 +299,7 @@
     </section>
 
     <!-- Tenant Expired Documents -->
-    <section class="orville-widget orville-widget--full">
+    <section class="orville-widget orville-widget--full" *ngIf="isWidgetVisible('tenant-expired-documents')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Tenant Expired Documents</h2>
       </header>
@@ -266,7 +341,7 @@
     </section>
 
     <!-- Tickets -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('tickets')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Tickets</h2>
         <div class="orville-widget__tools">
@@ -304,7 +379,7 @@
     </section>
 
     <!-- Work Orders -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('work-orders')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Work Orders</h2>
         <div class="orville-widget__tools">
@@ -348,7 +423,7 @@
     </section>
 
     <!-- Overdue Expenses -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('overdue-expenses')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Overdue Expenses</h2>
         <div class="orville-widget__tools">
@@ -421,7 +496,7 @@
     </section>
 
     <!-- Upcoming Landlord Contracts -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('upcoming-landlord-contracts')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Landlord Contracts</h2>
         <div class="orville-widget__tools">
@@ -462,7 +537,7 @@
     </section>
 
     <!-- Upcoming Expiring Documents (30 days) -->
-    <section class="orville-widget orville-widget--full">
+    <section class="orville-widget orville-widget--full" *ngIf="isWidgetVisible('upcoming-expiring-documents')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Expiring Documents (30 days)</h2>
       </header>
@@ -504,7 +579,7 @@
     </section>
 
     <!-- Upcoming Invoices -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('upcoming-invoices')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Invoices</h2>
         <div class="orville-widget__tools">
@@ -545,7 +620,7 @@
     </section>
 
     <!-- Ending Leases in 30 Days -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('ending-leases')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Ending Leases in 30 Days</h2>
         <div class="orville-widget__tools">
@@ -588,7 +663,7 @@
     </section>
 
     <!-- Upcoming Inspection -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('upcoming-inspection')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Inspection</h2>
         <div class="orville-widget__tools">
@@ -628,7 +703,7 @@
     </section>
 
     <!-- Visitor Stats -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('visitor-stats')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Visitor Stats</h2>
         <div class="orville-widget__tools">
@@ -665,7 +740,7 @@
     </section>
 
     <!-- Reminders -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('reminders')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Reminders</h2>
         <div class="orville-widget__tools">
@@ -705,7 +780,7 @@
     </section>
 
     <!-- Department Ticket Assignments -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('department-ticket-assignments')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Department Ticket Assignments</h2>
       </header>
@@ -718,7 +793,7 @@
     </section>
 
     <!-- Booking Snapshot -->
-    <section class="orville-widget orville-widget--full">
+    <section class="orville-widget orville-widget--full" *ngIf="isWidgetVisible('booking-snapshot')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Booking Snapshot</h2>
       </header>
@@ -733,7 +808,7 @@
     </section>
 
     <!-- Upcoming Leases in 30 Days -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('upcoming-leases')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Leases in 30 Days</h2>
         <div class="orville-widget__tools">
@@ -774,7 +849,7 @@
     </section>
 
     <!-- Landlords Overview -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('landlords-overview')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Landlords Overview</h2>
       </header>
@@ -799,7 +874,7 @@
     </section>
 
     <!-- Top Performing Listings -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('top-performing-listings')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Top Performing Listings</h2>
         <div class="orville-widget__tools">
@@ -837,7 +912,7 @@
     </section>
 
     <!-- Upcoming Birthdays -->
-    <section class="orville-widget">
+    <section class="orville-widget" *ngIf="isWidgetVisible('upcoming-birthdays')">
       <header class="orville-widget__head">
         <h2 class="orville-widget__title">Upcoming Birthdays</h2>
         <div class="orville-widget__tools">
