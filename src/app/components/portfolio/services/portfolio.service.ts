@@ -52,12 +52,7 @@ saveNotes(payload: any): Observable<any> {
     payload
   );
 }
-saveWorkOrder(payload: any): Observable<any> {
-  return this.postAPI(
-    environment.apiurl + 'api/Application/save_update_workorder',
-    payload
-  );
-}
+
 saveBroadcast(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/save_update_broadcasts',

@@ -39,7 +39,7 @@ export class AttachmentsComponent {
     { key: 'document_status_name', label: 'web.portfolio.attachments.lblDocumentStatus', useTemplate: false, width: '', headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '', isHtml: true },
     { key: 'issue_date', label: 'web.portfolio.attachments.lblIssueDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'expiry_date', label: 'web.portfolio.attachments.lblExpiryDate', useTemplate: false, width: '', isHtml: false, headerClass: '',cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.portfolio.attachments.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '',cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
+    { key: 'file_path', label: 'web.portfolio.attachments.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '',cellClass: '', is_include_currency: false, is_status: false, isLink: true, redirect_url: '' },
      
   ];
   searchQuery: string = '';

@@ -10,7 +10,7 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 import { NotesComponent } from '../../../child-tables/notes/notes.component'; 
 import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
-
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
@@ -24,6 +24,7 @@ export class WorkOrderDetailComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
   private commonService = inject(CommonService);
   private commonTabsService = inject(Common_TabsService);
+  private toastr=inject(ToastrService);
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
@@ -104,11 +105,11 @@ export class WorkOrderDetailComponent implements OnInit {
   showActionMenu = false;
   showMoreDetails = true;
   activePersonnelPopup: string | null = null;
-  statusOptions = [];
+  statusOptions :any= [];
 
   // Mock Data
   workOrderDetails :any= {};
-
+  updatednotes:string='';
   personnel = {
     activeTenant: '-',
     raisedBy: '-',
@@ -211,14 +212,14 @@ export class WorkOrderDetailComponent implements OnInit {
 
   attachments: any[] = [];
 
-  attachmentColumns = [
+  attachmentColumns =[
     { key: 'id', label: 'ID', visible: true, useTemplate: true },
     { key: 'fileType', label: 'File Type', visible: true },
     { key: 'docId', label: 'Doc ID', visible: true },
     { key: 'documentStatus', label: 'Document Status', visible: true, useTemplate: true },
     { key: 'issueDate', label: 'Issue Date', visible: true },
     { key: 'expiryDate', label: 'Expiry Date', visible: true },
-    { key: 'files', label: 'Files', visible: true, useTemplate: true },
+    { key: 'files', label: 'Files', visible: true, useTemplate: true,isLink:true },
     { key: 'ShareLandlord', label: 'Share Landlord', visible: true },
     { key: 'ShareTenant', label: 'Share Tenant ', visible: true },
     { key: 'CreatedAt', label: 'Created At', visible: true },
@@ -234,7 +235,7 @@ export class WorkOrderDetailComponent implements OnInit {
 
   ngOnInit() {
     this.initializeTabs();
-    this.loadlookup(2,29,'statusOptions','');
+    this.loadlookup(2,29,'statusOptions','','');
     this.route.params.subscribe(params => {
       this.workOrderId = params['code'];
       if (this.workOrderId) {
@@ -242,22 +243,34 @@ export class WorkOrderDetailComponent implements OnInit {
       }
     });
   }
-  loadlookup(typeId: number, filterId: number, targetProperty: string, filterText: string) {
+  loadlookup(typeId: number, filterId: number, targetProperty: string, filterText: string, filterText1: string) {
     this.commonTabsService.getMasterByType({
       typeId: typeId,
       filterId: filterId,
       filterText: filterText,
-      filterText1: ''
+      filterText1: filterText1
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult) {
-          (this as any)[targetProperty] = res.objResult.table || [];
+          if(typeId==77){
+            this.toastr.success("Successfully updated the status");
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          }
+          else
+            (this as any)[targetProperty] = res.objResult.table || [];
         }
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
+  }
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
   }
   getWorkOrderDetails() {
     const currentUser = this.commonService.getCurrentUser();
@@ -289,7 +302,8 @@ export class WorkOrderDetailComponent implements OnInit {
               resolvedDate: data.resolvedDate || '-',
               createdDate: this.commonService.formatDateForInput(data.created_date)|| '-',
               lastUpdated: this.commonService.formatDateForInput(data.modified_date)|| '-',
-              closingStatus: data.status || '-',
+              closingStatus: data.status_nm || '-',
+              updatestatusid:data.status,
               tenantRejectReason: data.tenantRejectReason || '-',
               tenantRejected: data.tenantRejected || 'No',
               waitingSLA: data.waitingSLA || 'Hold to SLA',
@@ -307,36 +321,14 @@ export class WorkOrderDetailComponent implements OnInit {
               vendorTechnician: data.vendorTechnician || data.vendor_technician || 'Not Assigned',
               landlord: data.landlord || '-'
             };
-            const noteList = res.objResult.table1 || res.objResult.note || res.objResult.notes || res.objResult.note_dtls;
-            if (Array.isArray(noteList) && noteList.length > 0) {
-              this.notes = noteList.map((n: any) => ({
-                code: n.code || n.id,
-                subject: n.subject || '',
-                description: n.desc || n.description || '',
-                status: n.channel_type || n.status || '',
-                uploaded_date: n.uploaded_date || n.created_date || n.createdAt || '',
-                created_by: n.created_by || n.createdBy || ''
-              }));
-            }
-            const docList = res.objResult.table2 || res.objResult.documents || res.objResult.document || res.objResult.attachments;
-            if (Array.isArray(docList) && docList.length > 0) {
-              this.attachments = docList.map((d: any) => ({
-                code: d.code || d.id,
-                document_type: d.document_type || d.documentType,
-                document_type_name: d.document_type_name || d.fileType || '',
-                doc_no: d.doc_no || d.docId || '',
-                document_status_name: d.document_status_name || d.documentStatus || '',
-                issue_date: d.issue_date || d.issueDate || '',
-                expiry_date: d.expiry_date || d.expiryDate || '',
-                file_path: d.file_path || d.files || ''
-              }));
+            this.notes= res.objResult.table1 || [];
+            this.attachments= res.objResult.table2 || []; 
+            if(this.attachments.length>0){
 
-              // Filter images/videos
-              this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
-              this.afterImages = this.attachments.filter(d => d.document_type == 29 || d.document_type_name === 'After Image');
-              this.videos = this.attachments.filter(d => d.document_type == 27 || d.document_type_name === 'Photo');
+            this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
+            this.afterImages = this.attachments.filter(d => d.document_type == 29 || d.document_type_name === 'After Image');
+            this.videos = this.attachments.filter(d => d.document_type == 28);
             }
-
             // Map Costs if returned by API
             const costList = res.objResult.costs || res.objResult.cost || res.objResult.cost_dtls;
             if (Array.isArray(costList) && costList.length > 0) {
@@ -385,11 +377,8 @@ export class WorkOrderDetailComponent implements OnInit {
               }));
             }
 
-            this.initializeTabs();
-            
-            // Query attachments using the resolved work order ID/code
-            const resolvedId = data.id || data.code || this.workOrderId;
-            this.loadAttachments(resolvedId);
+            this.initializeTabs();  
+           
           }
         }
       },
@@ -399,37 +388,18 @@ export class WorkOrderDetailComponent implements OnInit {
     });
   }
 
-  loadAttachments(resolvedId: string) {
-    this.commonTabsService.getMasterByType({
-      typeId: 34,
-      filterId: 0,
-      filterText: 'workorder',
-      filterText1: resolvedId
-    }).subscribe({
-      next: (res: any) => {
-        if (res && res.statusCode == 200 && res.objResult && res.objResult.table) {
-          const docList = res.objResult.table;
-          if (Array.isArray(docList) && docList.length > 0) {
-            this.attachments = docList.map((d: any) => ({
-              code: d.code || d.id,
-              document_type: d.document_type || d.documentType,
-              document_type_name: d.document_type_name || d.fileType || '',
-              doc_no: d.doc_no || d.docId || '',
-              document_status_name: d.document_status_name || d.documentStatus || '',
-              issue_date: d.issue_date || d.issueDate || '',
-              expiry_date: d.expiry_date || d.expiryDate || '',
-              file_path: d.file_path || d.files || ''
-            }));
-
-            // Filter images/videos using loose type checks
-            this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
-            this.afterImages = this.attachments.filter(d => d.document_type == 29 || d.document_type_name === 'After Image');
-            this.videos = this.attachments.filter(d => d.document_type == 27 || d.document_type_name === 'Photo');
-          }
-        }
-      },
-      error: (err) => console.error("Error loading attachments for work order:", err)
-    });
+  updateworkorder(){
+    if(this.workOrderDetails.updatestatusid==null || this.workOrderDetails.updatestatusid==""){
+      this.toastr.error("Invalid status id");
+      return;
+     }
+    if(this.updatednotes==null || this.updatednotes==""){
+     this.toastr.error("Invalid comments");
+     return;
+    }
+    else{
+      this.loadlookup(77,this.workOrderDetails.updatestatusid,'',this.workOrderId,this.updatednotes);
+    }
   }
 
   @HostListener('document:click')
@@ -449,6 +419,9 @@ export class WorkOrderDetailComponent implements OnInit {
     if (action === 'edit') {
       this.navigateToEdit();
     }
+    else if (action==="invoice"){
+      this.router.navigate(['/accounting/invoices/create']);
+    }
     // invoice / feedback / report / email / activity / archive — UI only (no API)
   }
 
@@ -463,8 +436,9 @@ export class WorkOrderDetailComponent implements OnInit {
     this.activePersonnelPopup = null;
   }
 
-  selectStatus(status: string): void {
-    this.workOrderDetails.closingStatus = status;
+  selectStatus(status: any): void {
+    this.workOrderDetails.closingStatus = status.name;
+    this.workOrderDetails.updatestatusid=status.id;
     this.showStatusDropdown = false;
   }
 
@@ -538,6 +512,14 @@ export class WorkOrderDetailComponent implements OnInit {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isMe: true
       });
+      // this.messages.push({
+      //   sender: 'Me',
+      //   role: 'Admin',
+      //   avatar: 'ME',
+      //   text: "Thank you for contacting ,once support executive is available will contact you",
+      //   time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      //   isMe: false
+      // });
       this.newMessage = '';
     }
   }

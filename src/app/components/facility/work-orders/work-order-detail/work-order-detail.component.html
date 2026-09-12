@@ -118,12 +118,17 @@
             </button>
             <div *ngIf="showStatusDropdown" class="wo-status-menu" (click)="$event.stopPropagation()">
               <button type="button" class="wo-status-menu__item" *ngFor="let s of statusOptions"
-                (click)="selectStatus(s)">{{ s }}</button>
+                (click)="selectStatus(s)">{{ s.name }}</button>
             </div>
           </div>
           <div>
-            <label class="ov-label">Resolved Note</label>
-            <textarea rows="3" placeholder="Enter" class="ov-input wo-textarea"></textarea>
+            <label class="ov-label">Notes*</label>
+            <textarea rows="3" placeholder="Enter" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
+          </div>
+          <div>
+            <button type="button" (click)="updateworkorder()" class="ov-btn ov-btn-primary !h-9 !text-[13px]" aria-label="Send">
+             Update workorder
+            </button>
           </div>
         </div>
       </div>
@@ -215,15 +220,15 @@
               <h6 class="wo-media-col__head">Before Images</h6>
               <p class="wo-media-col__sub">Photos ({{ beforeImages.length }})</p>
               <div class="wo-thumb" *ngFor="let img of beforeImages">
-                <img [src]="img.url" [alt]="img.name" class="wo-thumb__img" />
+                <img [src]="img.file_path" [alt]="img.name" class="wo-thumb__img" />
                 <div class="wo-thumb__meta">
                   <span class="flex items-center gap-1.5">
                     <img src="assets/images/work-order-detail/image-file.svg" alt="" width="14" height="14" />
                     {{ img.name }}
                   </span>
-                  <button type="button" class="border-0 bg-transparent p-0" aria-label="Delete">
+                  <!-- <button type="button" class="border-0 bg-transparent p-0" aria-label="Delete">
                     <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
-                  </button>
+                  </button> -->
                 </div>
               </div>
               <div class="wo-empty" *ngIf="!beforeImages.length">
@@ -235,13 +240,14 @@
 
             <div class="wo-media-col">
               <h6 class="wo-media-col__head">After Images</h6>
+              <p class="wo-media-col__sub">Photos ({{ afterImages.length }})</p>
               <div class="wo-empty" *ngIf="!afterImages.length">
                 <img src="assets/images/work-order-detail/camera.svg" alt="" width="22" height="22" />
                 <p class="wo-empty__title">No after images</p>
                 <p class="wo-empty__sub">After images will appear here when uploaded</p>
               </div>
               <div class="wo-thumb" *ngFor="let img of afterImages">
-                <img [src]="img.url" [alt]="img.name" class="wo-thumb__img" />
+                <img [src]="img.file_path" [alt]="img.name" class="wo-thumb__img" />
                 <div class="wo-thumb__meta">
                   <span class="flex items-center gap-1.5">
                     <img src="assets/images/work-order-detail/image-file.svg" alt="" width="14" height="14" />
@@ -253,13 +259,14 @@
 
             <div class="wo-media-col">
               <h6 class="wo-media-col__head">Videos</h6>
+              <p class="wo-media-col__sub">Videos ({{ videos.length }})</p>
               <div class="wo-empty wo-empty--dashed" *ngIf="!videos.length">
                 <img src="assets/images/work-order-detail/video.svg" alt="" width="22" height="22" />
                 <p class="wo-empty__title">No videos</p>
                 <p class="wo-empty__sub">Videos will appear here when uploaded</p>
               </div>
-              <div class="wo-thumb" *ngFor="let v of videos">
-                <div class="wo-thumb__img wo-thumb__img--video">{{ v.name }}</div>
+              <div class="wo-thumb" *ngFor="let v of videos;let i =index">
+                <div class="wo-thumb__img wo-thumb__img--video"><a href="{{v.file_path}}" target="_blank">View File {{i+1}}</a></div>
               </div>
             </div>
           </div>
@@ -362,10 +369,10 @@
               <h5 class="ov-card-title m-0">Messages</h5>
             </div>
             <button type="button" class="wo-messages__item is-active">
-              <span class="wo-avatar wo-avatar--lg">MZ</span>
+              <span class="wo-avatar wo-avatar--lg"> {{ getInitials(personnel.activeTenant) }}</span>
               <span class="min-w-0 flex-1 text-start">
                 <span class="flex items-center justify-between gap-2">
-                  <span class="text-[13px] font-semibold text-defaulttextcolor">Mohammed Zaid</span>
+                  <span class="text-[13px] font-semibold text-defaulttextcolor">{{ personnel.activeTenant }}</span>
                   <span class="text-[10px] text-textmuted">09:58</span>
                 </span>
                 <span class="block text-[12px] text-textmuted line-clamp-2 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
@@ -375,7 +382,7 @@
           <div class="wo-messages__thread">
             <div class="wo-messages__thread-head">
               <div>
-                <h5 class="ov-card-title m-0">Zaid Rahman</h5>
+                <h5 class="ov-card-title m-0">{{ personnel.activeTenant }}</h5>
                 <span class="text-[12px] text-textmuted">Tenant</span>
               </div>
               <span class="wo-badge wo-badge--success">Active</span>
@@ -414,8 +421,7 @@
       </div>
 
       <!-- NOTES -->
-      <div class="p-5" *ngIf="activeTab === 'Notes'">
-        <h5 class="ov-card-title mb-4">Notes</h5>
+      <div class="p-5" *ngIf="activeTab === 'Notes'"> 
         <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
       </div>
 

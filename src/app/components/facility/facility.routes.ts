@@ -70,12 +70,17 @@ export const facilityRoutingModule: Routes = [
           import('./quotations/create-quotation/create-quotation.component').then((m) => m.CreateQuotationComponent),
       },
       {
+        path: 'edit/:code',
+        loadComponent: () =>
+          import('./quotations/create-quotation/create-quotation.component').then((m) => m.CreateQuotationComponent),
+      },
+      {
         path: 'request',
         loadComponent: () =>
           import('./quotations/request-quotation/request-quotation.component').then((m) => m.RequestQuotationComponent),
       },
       {
-        path: ':id',
+        path: ':code',
         loadComponent: () =>
           import('./quotations/quotation-detail/quotation-detail.component').then((m) => m.QuotationDetailComponent),
       }

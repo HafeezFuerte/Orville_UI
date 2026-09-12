@@ -98,45 +98,19 @@ export const QUOTATION_ROWS: QuotationRow[] = [
 export interface QuotationLineItem {
   id: string;
   title: string;
-  quantity: number;
-  amountPerItem: number;
-  totalAmount: number;
-  category: string;
-  taxProfile: string;
+  qty: number;
+  baction?:string;
+  code?:string;
+  amt: number;
+  total_amt: number;
+  category_id: string;
+  tax_profile: string;
+  category_text?: string;
+  tax_profile_text?: string;
   description: string;
 }
 
-export const QUOTATION_LINE_ITEMS: QuotationLineItem[] = [
-  {
-    id: '1',
-    title: 'Compressor unit — 2.5 ton',
-    quantity: 1,
-    amountPerItem: 3200,
-    totalAmount: 3200,
-    category: 'HVAC Parts',
-    taxProfile: 'VAT 5%',
-    description: 'OEM compressor for tower A rooftop unit.'
-  },
-  {
-    id: '2',
-    title: 'Labor — installation & testing',
-    quantity: 8,
-    amountPerItem: 180,
-    totalAmount: 1440,
-    category: 'Labor',
-    taxProfile: 'VAT 5%',
-    description: 'Technician hours including pressure test.'
-  },
-  {
-    id: '3',
-    title: 'Refrigerant recharge',
-    quantity: 2,
-    amountPerItem: 105,
-    totalAmount: 210,
-    category: 'Consumables',
-    taxProfile: 'VAT 5%',
-    description: 'R-410A top-up after seal check.'
-  }
+export const QUOTATION_LINE_ITEMS: QuotationLineItem[] = [ 
 ];
 
 export const QUOTATION_DETAIL = {

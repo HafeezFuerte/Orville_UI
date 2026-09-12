@@ -1,12 +1,16 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { QUOTATION_ROWS, QuotationRow, QuotationStatus } from '../quotations.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 type StatusTab = 'All' | QuotationStatus;
 
 @Component({
@@ -23,17 +27,21 @@ type StatusTab = 'All' | QuotationStatus;
   templateUrl: './quotations-list.component.html',
   styleUrl: './quotations-list.component.scss'
 })
-export class QuotationsListComponent {
-  private router = inject(Router);
+export class QuotationsListComponent { 
 
   searchQuery = '';
   statusFilter: StatusTab = 'All';
-  statusTabs: StatusTab[] = ['All', 'Pending', 'Approved', 'Rejected', 'Expired'];
+  statusTabs:any=[];
   isDrawerOpen = false;
   showColumnDropdown = false;
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = QUOTATION_ROWS;
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser(); 
   openRowActionId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
 
@@ -42,19 +50,75 @@ export class QuotationsListComponent {
   filterVendor = '';
 
   tableColumns = [
-    { key: 'id', label: 'Quotation ID', visible: true, useTemplate: true, width: '120px' },
-    { key: 'workOrderId', label: 'Work Order ID', visible: true, useTemplate: true, width: '130px' },
+    { key: 'code', label: 'Quotation ID', visible: true, useTemplate: true, width: '120px' },
+    { key: 'workorder_id', label: 'Work Order ID', visible: true, useTemplate: true, width: '130px' },
     { key: 'title', label: 'Quotation Title', visible: true, useTemplate: true, width: '220px' },
-    { key: 'number', label: 'Quotation Number', visible: true, width: '150px' },
-    { key: 'vendor', label: 'Vendor', visible: true, useTemplate: true, width: '200px' },
-    { key: 'category', label: 'Quotation Category Name', visible: true, width: '180px' },
-    { key: 'status', label: 'Quotation Status', visible: true, useTemplate: true, width: '140px' },
-    { key: 'amount', label: 'Quotation Amount', visible: true, width: '140px' },
-    { key: 'date', label: 'Quotation Date', visible: true, width: '130px' },
-    { key: 'validity', label: 'Quotation Validity', visible: true, width: '140px' },
+    { key: 'quotation_no', label: 'Quotation Number', visible: true, width: '150px' },
+    { key: 'selected_vendors', label: 'Vendor', visible: true, useTemplate: true, width: '200px' },
+    { key: 'category_name', label: 'Quotation Category Name', visible: true, width: '180px' },
+    { key: 'status_nm', label: 'Quotation Status', visible: true, useTemplate: true, width: '140px' },
+    { key: 'total_amt', label: 'Quotation Amount', visible: true, width: '140px' },
+    { key: 'created_date', label: 'Quotation Date', visible: true, width: '130px' },
+    { key: 'estimation_date', label: 'Quotation Validity', visible: true, width: '140px' },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
   ];
+  constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService) {}
 
+  ngOnInit() {
+    
+    this.loadQuotations();  
+    this.loadLookup(78,41, 'statusTabs', '');
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as inactive"); 
+            this.loadQuotations();
+        }else{
+          this.statusTabs.push({"id":"All","name":"All"}); 
+          this.statusTabs.push(...res.objResult.table);  
+        }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
+  }
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages;
+    const current = this.displayPage;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const items: (number | string)[] = [1];
+    if (current > 3) {
+      items.push('...');
+    }
+    for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+      items.push(p);
+    }
+    if (current < total - 2) {
+      items.push('...');
+    }
+    items.push(total);
+    return items;
+  }
   get visibleColumns() {
     return this.tableColumns.filter((c) => c.visible !== false);
   }
@@ -88,60 +152,122 @@ export class QuotationsListComponent {
     }
     return rows;
   }
+  loadQuotations() {
+    const filterList: any[] = [];
+    if (this.statusFilter && this.statusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    } 
+     
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? 'status' : '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "QUOTATIONS"
+    };
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.quotations || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
   }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
-  }
-
+   
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get paginatedRows(): QuotationRow[] {
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
   setStatusFilter(tab: StatusTab): void {
     this.statusFilter = tab;
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadQuotations();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadQuotations();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadQuotations();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex -= 1;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadQuotations();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex += 1;
+      this.pageNo++;
+      this.loadQuotations();
     }
   }
 
-  goPage(page: number): void {
-    this.pageIndex = Math.max(0, Math.min(page - 1, this.totalPages - 1));
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadQuotations();
+    }
+ 
   }
+
 
   toggleColumn(key: string): void {
     const col = this.tableColumns.find((c) => c.key === key);
@@ -219,6 +345,9 @@ export class QuotationsListComponent {
 
   navigateToCreate(): void {
     this.router.navigate(['/facility/quotations/create']);
+  }
+  navigateToedit(rowcode:string): void {
+    this.router.navigate(['/facility/quotations/edit',rowcode]);
   }
 
   navigateToRequest(): void {

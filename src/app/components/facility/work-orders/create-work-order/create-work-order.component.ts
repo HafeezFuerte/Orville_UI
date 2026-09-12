@@ -7,6 +7,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import {FacilityService} from '../../facility.service'
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable } from 'rxjs'; 
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
@@ -21,6 +22,7 @@ export class CreateWorkOrderComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private portfolioService = inject(PortfolioService);
+  private facilityService = inject(FacilityService);
   private commonService = inject(CommonService);
   private propertiesService = inject(PropertiesService);
   private toastr = inject(ToastrService);
@@ -198,7 +200,7 @@ export class CreateWorkOrderComponent implements OnInit {
       assigned_to: this.selectedResponsiblePerson 
     };
 
-    this.portfolioService.saveWorkOrder(payload).subscribe({
+    this.facilityService.saveWorkOrder(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
           const workOrderCode = res.objResult.table[0]?.code || "";
@@ -264,6 +266,7 @@ export class CreateWorkOrderComponent implements OnInit {
       expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
       issuing_authority: 'System',
       share_with_tenants: true,
+      status:33,
       share_with_landlords: true
     };
     const formData = new FormData();

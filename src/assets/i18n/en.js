@@ -922,6 +922,7 @@ exports.locale = {
                 "lblAllTypes": "All Types"
             },
             "common": {
+                "lblClose": "Close",
                 "lblShow": "Show",
                 "lblPortfolio": "Portfolio",
                 "lblAmount": "Amount",

@@ -107,6 +107,10 @@
             <span class="ov-kv__label">Created:</span>
             <span class="ov-kv__value">{{ quotation.created }}</span>
           </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Description:</span>
+            <span class="ov-kv__value">{{ quotation.notes }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -146,11 +150,11 @@
               <ng-template #colTemplate let-row="row" let-col="col">
                 <ng-container [ngSwitch]="col.key">
                   <span *ngSwitchCase="'title'" class="font-semibold text-defaulttextcolor">{{ row.title }}</span>
-                  <span *ngSwitchCase="'quantity'">{{ row.quantity }}</span>
-                  <span *ngSwitchCase="'amountPerItem'">{{ formatMoney(row.amountPerItem) }}</span>
-                  <span *ngSwitchCase="'totalAmount'" class="font-semibold">{{ formatMoney(row.totalAmount) }}</span>
-                  <span *ngSwitchCase="'category'" class="text-textmuted">{{ row.category }}</span>
-                  <span *ngSwitchCase="'taxProfile'" class="text-textmuted">{{ row.taxProfile }}</span>
+                  <span *ngSwitchCase="'qty'">{{ row.qty }}</span>
+                  <span *ngSwitchCase="'amt'">{{ formatMoney(row.amt) }}</span>
+                  <span *ngSwitchCase="'total_amt'" class="font-semibold">{{ formatMoney(row.total_amt) }}</span>
+                  <span *ngSwitchCase="'category_text'" class="text-textmuted">{{ row.category_text }}</span>
+                  <span *ngSwitchCase="'tax_profile_text'" class="text-textmuted">{{ row.tax_profile_text }}</span>
                   <div *ngSwitchCase="'action'" class="flex items-center gap-2">
                     <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit line item"
                       (click)="openEditLineItem(row)">
@@ -173,17 +177,11 @@
       </div>
 
       <div *ngIf="activeTab === 'notes'" class="p-5">
-        <h5 class="ov-card-title mb-3 !text-[18px]">Notes</h5>
-        <div class="qd-notes-card">
-          <p class="m-0 text-[14px] leading-[20px] text-textmuted">{{ quotation.notes }}</p>
-        </div>
+        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
       </div>
 
       <div *ngIf="activeTab === 'attachments'" class="p-5">
-        <h5 class="ov-card-title mb-3 !text-[18px]">Attachments</h5>
-        <div class="qd-notes-card">
-          <p class="m-0 text-[14px] text-textmuted italic">No attachments uploaded.</p>
-        </div>
+        <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
       </div>
     </div>
   </div>

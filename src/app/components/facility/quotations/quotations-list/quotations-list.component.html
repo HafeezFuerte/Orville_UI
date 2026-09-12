@@ -27,10 +27,16 @@
 
     <div class="border-b border-defaultborder px-5 py-3 overflow-x-auto">
       <div class="ov-seg ov-seg--solid !w-max max-w-none" role="tablist" aria-label="Quotation status">
-        <button type="button" *ngFor="let tab of statusTabs" class="ov-seg__btn"
-          [class.is-active]="statusFilter === tab" (click)="setStatusFilter(tab)">
-          {{ tab }}
-        </button>
+        <button
+        type="button"
+       *ngFor="let tab of statusTabs"
+       class="ov-seg__btn"
+       [class.is-active]="statusFilter === tab.id"
+       [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+       [class.border-transparent]="statusFilter !== tab.id" 
+       (click)="setStatusFilter(tab.id)">
+           {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+     </button> 
       </div>
     </div>
 
@@ -63,35 +69,29 @@
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
       <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      (notify_edit_action)="handleChildNotification($event)" [columns]="visibleColumns" [data]="allRows" [loading]="false"
+     [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)"
-              (click)="navigateToDetail(row.id)">{{ row.id }}</a>
-            <a *ngSwitchCase="'workOrderId'" class="ov-link" href="javascript:void(0)">{{ row.workOrderId }}</a>
+            <a *ngSwitchCase="'code'" class="ov-link font-semibold" href="javascript:void(0)"
+              (click)="navigateToDetail(row.code)">{{ row.code }}</a>
+            <a *ngSwitchCase="'workorder_id'" class="ov-link" href="javascript:void(0)">{{ row.workorder_id }}</a>
             <a *ngSwitchCase="'title'" class="ov-link" href="javascript:void(0)"
-              (click)="navigateToDetail(row.id)">{{ row.title }}</a>
-            <div *ngSwitchCase="'vendor'" class="flex items-center gap-2">
+              (click)="navigateToDetail(row.code)">{{ row.title }}</a>
+            <div *ngSwitchCase="'selected_vendors'" class="flex items-center gap-2">
               <span class="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
-                {{ row.vendorInitials }}
+                {{ getInitials(row.selected_vendors) }}
               </span>
-              <span class="text-defaulttextcolor">{{ row.vendor }}</span>
+              <span class="text-defaulttextcolor">{{ row.selected_vendors }}</span>
             </div>
-            <span *ngSwitchCase="'status'" class="qt-chip" [ngClass]="statusClass(row.status)">
-              {{ row.status }}
+            <span *ngSwitchCase="'status_nm'" class="qt-chip" [ngClass]="statusClass(row.status)">
+              {{ row.status_nm }}
             </span>
             <div *ngSwitchCase="'action'" class="qt-action" data-qt-action (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                [attr.aria-expanded]="openRowActionId === row.id"
+                [attr.aria-expanded]="openRowActionId === row.code"
                 (mousedown)="$event.stopPropagation()"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row.code, $event)">
                 <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
             </div>
@@ -105,23 +105,24 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
         <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages }}</span>
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
           <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
-          <button type="button" class="ov-page__btn is-active" (click)="goPage(1)">1</button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
           <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
@@ -139,7 +140,7 @@
     <button type="button" role="menuitem" class="qt-row-menu__item"
       (click)="navigateToDetail(openRowActionId!)">View</button>
     <button type="button" role="menuitem" class="qt-row-menu__item"
-      (click)="navigateToCreate()">Edit</button>
+      (click)="navigateToedit(openRowActionId)">Edit</button>
   </div>
 
   <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
@@ -162,3 +163,5 @@
     </div>
   </app-filter-drawer>
 </div>
+<!-- <app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation> -->
