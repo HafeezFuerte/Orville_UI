@@ -10,6 +10,8 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
@@ -22,6 +24,7 @@ export class TenantDetailComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
   @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
   @ViewChild(NotesComponent) notesTable!: NotesComponent;
@@ -30,6 +33,16 @@ export class TenantDetailComponent implements OnInit {
   tenantData: any = null;
   notesForm!: FormGroup;
   attachmentsForm!: FormGroup;
+
+  emergencyForm: any = {
+    email_address: '',
+    name: '',
+    relation: '',
+    phone_no: '',
+    work_phone: '',
+    is_send_alerts: true,
+    is_default: true
+  };
 
   tabsList: any[] = [];
 
@@ -373,5 +386,58 @@ export class TenantDetailComponent implements OnInit {
 
   setTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  saveEmergencyContact(): void {
+    if (!this.emergencyForm.email_address) {
+      this.toastr.error('Please enter email address');
+      return;
+    }
+    const payload = {
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: "74BB6922",
+      source: "web",
+      languageid: 1,
+      code: "",
+      entity: "tenant",
+      entity_id: String(this.tenantId),
+      email_address: this.emergencyForm.email_address,
+      name: this.emergencyForm.name || "",
+      relation: this.emergencyForm.relation || "",
+      phone_no: this.emergencyForm.phone_no || "",
+      work_phone: this.emergencyForm.work_phone || "",
+      is_default: this.emergencyForm.is_default !== false,
+      is_send_alerts: this.emergencyForm.is_send_alerts !== false
+    };
+
+    this.propertiesService.saveEmergencyDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
+          this.toastr.success(res.message || 'Emergency contact saved successfully');
+          this.showAddEmergencyContactModal = false;
+          this.resetEmergencyForm();
+          this.getTenantDetails();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save emergency contact');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error saving emergency contact:', err);
+        this.toastr.error('Failed to save emergency contact');
+      }
+    });
+  }
+
+  resetEmergencyForm(): void {
+    this.emergencyForm = {
+      email_address: '',
+      name: '',
+      relation: '',
+      phone_no: '',
+      work_phone: '',
+      is_send_alerts: true,
+      is_default: true
+    };
   }
 }

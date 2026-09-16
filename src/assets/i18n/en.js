@@ -130,7 +130,6 @@ exports.locale = {
                 "lblLandlordNotes": "Landlord Notes",
                 "lblLandlordUsers": "Landlord Users",
                 "lblLandlordEmergencyContact": "Landlord Emergency Contact",
-                "lblclosingStatus": "Closing Status",
                 "lblPriority": "Priority",
                 "lblVendor": "Vendor",
                 "lblUser": "User",
@@ -224,6 +223,7 @@ exports.locale = {
                 "lblFilters": "Filters"
             },
             "property": {
+                "lblLandlord": "Landlord",
                 "lblOccupied": "Occupied",
                 "lblCurrentlyRunning": "Currently running",
                 "lblPortfolioAvg": "Portfolio average",
@@ -533,6 +533,9 @@ exports.locale = {
 
             },
             "Unit": {
+                "lblclosingStatus": "Closing Status",
+                "lblRoomType": "RoomType",
+                "lblUnitNo": "UnitNo",
                 "lblRentServiceCharges": "Rent & Service Charges",
                 "lblUnitsUnderManagement": "Units Under Management",
                 "lblAvailableForLease": "Available for Lease",
@@ -612,7 +615,7 @@ exports.locale = {
                 "lblPermitCompliance": "Permit Compliance",
                 "lblPermitComplianceDesc": "Official registration and compliance details.",
                 "lblTrakessiNumber": "Trakessi Number",
-                "lblReraNumber": "Rera Number",
+                "lblRERANumber": "Rera Number",
                 "lblIsItVerified": "Is It Verified?",
                 "lblUnitAmenities": "Unit Amenities",
                 "lblUnitAmenitiesDesc": "Features and amenities available in this unit.",
@@ -808,6 +811,7 @@ exports.locale = {
                 "lblPropertyAddress": "Property Address",
                 "lblServiceDisabled": "Service Disabled",
                 "lblAlertMessage": "Alert Message",
+                "lblPermitInformation": "Permit Information",
                 "lblPermitVerified": "Permit Verified",
                 "lblMarketingInformation": "Marketing Information",
                 "lblMarketingTitle": "Marketing Title",
@@ -1466,6 +1470,15 @@ exports.locale = {
                     "lblCreatedBy": "Created By",
                     "lblParkingType": "Parking Type"
 
+                },
+                "inventory": {
+                    "lblAddInventory": "Add Inventory Item",
+                    "lblNewInventoryItem": "New Inventory Item",
+                    "lblItemName": "Item Name",
+                    "lblQty": "Quantity",
+                    "lblLocation": "Location",
+                    "lblExpiryDate": "Expiry Date",
+                    "lblUploadFile": "Upload File"
                 }
             },
             "paginator": {

@@ -417,6 +417,164 @@ export class LeaseDetailComponent implements OnInit {
     }
     else if (label === 'Add User') this.showActionMenu = false;
     else if (label === 'Add Emergency Contact') this.showActionMenu = false;
+    else if (label === 'Print Lease') this.printLease();
+  }
+
+  showPrintModal: boolean = false;
+  leasePrintData: any = null;
+  tenantDataParsed: any = {};
+  landlordDataParsed: any = {};
+
+  parsePrintData(printRecord: any): void {
+    this.leasePrintData = printRecord || {};
+    if (printRecord && typeof printRecord.tenant === 'string') {
+      try {
+        this.tenantDataParsed = JSON.parse(printRecord.tenant);
+      } catch (e) {
+        this.tenantDataParsed = {};
+      }
+    } else if (printRecord?.tenant && typeof printRecord.tenant === 'object') {
+      this.tenantDataParsed = printRecord.tenant;
+    } else {
+      this.tenantDataParsed = {};
+    }
+
+    if (printRecord && typeof printRecord.landlord === 'string') {
+      try {
+        const parsedLL = JSON.parse(printRecord.landlord);
+        this.landlordDataParsed = parsedLL.landlord || parsedLL;
+      } catch (e) {
+        this.landlordDataParsed = {};
+      }
+    } else if (printRecord?.landlord && typeof printRecord.landlord === 'object') {
+      this.landlordDataParsed = printRecord.landlord.landlord || printRecord.landlord;
+    } else {
+      this.landlordDataParsed = {};
+    }
+  }
+
+  numberToWords(num: number): string {
+    if (!num || isNaN(num)) return 'Zero';
+    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const inWords = (n: number): string => {
+      if (n < 20) return a[n];
+      const digit = n % 10;
+      if (n < 100) return b[Math.floor(n / 10)] + (digit ? '-' + a[digit] : ' ');
+      if (n < 1000) return a[Math.floor(n / 100)] + 'Hundred ' + (n % 100 ? inWords(n % 100) : '');
+      if (n < 1000000) return inWords(Math.floor(n / 1000)) + 'Thousand ' + (n % 1000 ? inWords(n % 1000) : '');
+      return n.toString();
+    };
+    return inWords(Math.floor(num)).trim();
+  }
+
+  printLease(): void {
+    if (!this.leaseId) {
+      this.toastr.error('Lease ID is missing');
+      return;
+    }
+    this.commontabservice.getMasterByType({
+      typeId: 80,
+      filterId: 0,
+      filterText: this.leaseId,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200') && res.objResult) {
+          const printRecord = res.objResult.table ? res.objResult.table[0] : res.objResult;
+          this.parsePrintData(printRecord);
+          this.showPrintModal = true;
+          this.toastr.success('Lease agreement details fetched successfully');
+        } else {
+          this.toastr.error('No print record found for this lease');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error fetching lease print details (typeId: 80):', err);
+        this.toastr.error('Failed to fetch lease print details');
+      }
+    });
+  }
+
+  triggerPrint(): void {
+    const printElement = document.querySelector('.printable-lease-receipt-container');
+    if (!printElement) {
+      window.print();
+      return;
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.zIndex = '-9999';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Receipt - ${this.leaseId}</title>
+            <style>
+              @page { size: portrait; margin: 10mm; }
+              body { font-family: Arial, Helvetica, sans-serif; color: #111; background: #fff; margin: 0; padding: 10px; }
+              .printable-lease-receipt-container { display: block; width: 100%; box-sizing: border-box; }
+              .plr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+              .plr-title { font-size: 26px; font-weight: 700; margin: 0 0 10px 0; color: #000; }
+              .plr-meta p { margin: 3px 0; font-size: 12px; color: #333; }
+              .plr-meta p span { font-weight: 600; color: #111; display: inline-block; min-width: 110px; }
+              .plr-logo { display: flex; align-items: center; gap: 8px; }
+              .plr-logo-text { display: flex; flex-direction: column; line-height: 1; }
+              .plr-brand-main { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #b89759; }
+              .plr-brand-sub { font-size: 8px; font-weight: 600; letter-spacing: 1px; color: #777; margin-top: 2px; }
+              .plr-addresses { display: flex; justify-content: space-between; margin-bottom: 28px; gap: 40px; }
+              .plr-from, .plr-to { flex: 1; }
+              .plr-from h4, .plr-to h4 { font-size: 13px; font-weight: 700; margin: 0 0 4px 0; color: #111; }
+              .plr-from h3, .plr-to h3 { font-size: 14px; font-weight: 700; margin: 0 0 6px 0; color: #000; }
+              .plr-from p, .plr-to p { margin: 3px 0; font-size: 12px; color: #444; }
+              .plr-from p span, .plr-to p span { font-weight: 600; }
+              .plr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+              .plr-table th { background: #d8d8d8; color: #111; font-weight: 700; text-align: left; padding: 8px 10px; border: 1px solid #c0c0c0; }
+              .plr-table td { padding: 8px 10px; border: 1px solid #e0e0e0; vertical-align: top; color: #222; }
+              .plr-summary-wrapper { display: flex; justify-content: flex-end; margin-bottom: 25px; }
+              .plr-summary-box { width: 280px; }
+              .plr-sum-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: #222; }
+              .plr-sum-row strong { font-weight: 700; color: #000; }
+              .plr-sum-border { border-top: 1px solid #bbb; padding-top: 6px; margin-top: 4px; }
+              .plr-words-section { margin-bottom: 30px; }
+              .plr-words-label { font-size: 12px; color: #333; margin: 0 0 4px 0; }
+              .plr-words-value { font-size: 14px; font-weight: 700; color: #000; margin: 0; }
+              .plr-divider { border: none; border-top: 1px solid #ddd; margin: 20px 0 15px 0; }
+              .plr-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #777; }
+              .plr-ht-badge { display: inline-flex; align-items: center; gap: 4px; background: #2563eb; color: #fff; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-size: 10px; }
+            </style>
+          </head>
+          <body>
+            ${printElement.outerHTML}
+          </body>
+        </html>
+      `);
+      doc.close();
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 1000);
+      }, 300);
+    }
+  }
+
+  closePrintModal(): void {
+    this.showPrintModal = false;
   }
   get selectedTab(): DetailTab | undefined {
     return this.tabs.find(t => t.key === this.activeTab);

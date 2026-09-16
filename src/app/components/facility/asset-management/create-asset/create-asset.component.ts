@@ -386,26 +386,22 @@ export class CreateAssetComponent implements OnInit {
 
   loadWorkers() {
     const currentUser = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 19,
-      typeid: 19,
-      filterId: 0,
-      filterText: 's',
+    this.portfolioService.getMasterByType({
+      typeId: 70,
+      filterId: 6,
+      filterText: '',
       filterText1: '',
-      userId: Number(localStorage.getItem('userId')) || currentUser?.userId || 1,
-      clientId: "74BB6922",
-      companyId: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1,
-      company_id: Number(localStorage.getItem('companyId')) || currentUser?.companyId || 1
-    };
-
-    this.propertiesService.getMasterDetails(payload).subscribe({
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    }).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find(val => Array.isArray(val)) || [];
+          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
             this.assignWorkers = list.map((item: any) => ({
-              id: item.id || item.Id || item.user_code || item.code || '',
-              name: item.column1 || item.name || item.Name || item.lookup_name || item.full_name || item.user_name || item.technician_name || item.code || '-'
+              id: item.id || item.code || item.user_code || '',
+              name: item.name || item.column1 || item.lookup_name || item.full_name || item.user_name || item.technician_name || item.code || '-'
             }));
           }
         }
@@ -415,26 +411,23 @@ export class CreateAssetComponent implements OnInit {
   }
 
   loadVendors() {
-    this.portfolioService.getMastersByPaging({
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'VENDORS'
+    const currentUser = this.commonService.getCurrentUser();
+    this.portfolioService.getMasterByType({
+      typeId: 70,
+      filterId: 5,
+      filterText: '',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          const list = res.objResult.vendors || res.objResult.table || res.objResult;
+          const list = res.objResult.table || res.objResult.vendors || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
           if (Array.isArray(list)) {
             this.assignVendors = list.map((item: any) => ({
-              id: item.id || item.code,
-              name: item.company_name || item.contact_name || item.name || item.code
+              id: item.id || item.code || item.user_code || '',
+              name: item.name || item.company_name || item.contact_name || item.lookup_name || item.full_name || item.user_name || item.code || '-'
             }));
           }
         }

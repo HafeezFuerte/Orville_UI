@@ -106,5 +106,10 @@ export class PropertiesService {
     const getParkingsUrl = environment.apiurl+'api/Masters/get_masters_by_paging'; 
     return this.http.post(getParkingsUrl, payload,  { headers: this.commonservice.updateHeaders() });
   }
+
+  saveEmergencyDetails(payload: any): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/save_emergency_dtls';
+    return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
+  }
   
 }

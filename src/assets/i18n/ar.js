@@ -131,7 +131,7 @@ exports.locale = {
                 "lblLandlordNotes": "ملاحظات المؤجر",
                 "lblLandlordUsers": "مستخدمي المؤجر",
                 "lblLandlordEmergencyContact": "جهة اتصال الطوارئ للمؤجر",
-                "lblclosingStatus": "حالة الإغلاق",
+                
                 "lblPriority": "الأولوية",
                 "lblVendor": "المورد",
                 "lblUser": "المستخدم",
@@ -224,7 +224,7 @@ exports.locale = {
                 "lblFilters": "الفلاتر"
             },
             "property": {
-
+                "lblLandlord": "المؤجر",
                 "lblOccupied": "مشغول",
                 "lblCurrentlyRunning": "قيد التشغيل حالياً",
                 "lblPortfolioAvg": "متوسط المحفظة",
@@ -535,6 +535,9 @@ exports.locale = {
 
             },
             "Unit": {
+                "lblclosingStatus": "حالة الإغلاق",
+                "lblRoomType": "نوع الغرفة",
+                "lblUnitNo": "رقم الوحدة",
                 "lblRentServiceCharges": "رسوم الخدمة الإيجارية",
                 "lblUnitsUnderManagement": "وحدات تحت الإدارة",
                 "lblAvailableForLease": "متاح للإيجار",
@@ -615,7 +618,7 @@ exports.locale = {
                 "lblPermitCompliance": "التصريح والامتثال",
                 "lblPermitComplianceDesc": "التسجيل الرسمي وتفاصيل التحقق.",
                 "lblTrakessiNumber": "رقم تراخيص",
-                "lblReraNumber": "رقم ريرا",
+                "lblRERANumber": "رقم ريرا",
                 "lblIsItVerified": "هل تم التحقق منها؟",
                 "lblUnitAmenities": "مرافق الوحدة",
                 "lblUnitAmenitiesDesc": "الميزات والمرافق المتاحة في هذه الوحدة.",
@@ -811,6 +814,7 @@ exports.locale = {
                 "lblPropertyAddress": "عنوان العقار",
                 "lblServiceDisabled": "الخدمة معطلة",
                 "lblAlertMessage": "رسالة تنبيه",
+                "lblPermitInformation": "معلومات التصريح",
                 "lblPermitVerified": "التصريح مُتحقق",
                 "lblMarketingInformation": "معلومات التسويق",
                 "lblMarketingTitle": "عنوان التسويق",

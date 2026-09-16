@@ -75,7 +75,7 @@ export class DocumentTemplatesComponent implements OnInit {
       pagecount: 50,
       feature: 'DOCUMENT_TEMPLATES',
       featureid: 'DOCUMENT_TEMPLATES',
-      search_columns: 'P.id',
+      search_columns: 'P.title',
       filter_by: '',
       userId: currentUser?.userId || 1,
       clientId: currentUser?.clientId || '74BB6922',

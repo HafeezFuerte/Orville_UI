@@ -123,33 +123,35 @@ export class CreateLandlordContractComponent implements OnInit {
 
   loadLandlords(): void {
     const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMastersByPaging({
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
+    this.portfolioService.getMasterByType({
+      typeId: 70,
+      filterId: 4,
+      filterText: '',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
       clientId: currentUser?.clientId || "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'LANDLORDS'
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res && res.objResult && res.objResult.landlords) {
-          this.landlords = res.objResult.landlords.map((l: any) => {
-            const displayName = l.landlord ||
-              (l.first_name ? `${l.first_name} ${l.last_name || ''}`.trim() : '') ||
-              l.name ||
-              l.contact_name ||
-              l.company_name ||
-              l.code || '-';
-            return {
-              code: l.code || l.id,
-              name: displayName
-            };
-          });
+        if (res && res.objResult) {
+          const list = res.objResult.table || res.objResult.landlords || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
+          if (Array.isArray(list)) {
+            this.landlords = list.map((l: any) => {
+              const displayName = l.name ||
+                l.landlord ||
+                (l.first_name ? `${l.first_name} ${l.last_name || ''}`.trim() : '') ||
+                l.contact_name ||
+                l.company_name ||
+                l.lookup_name ||
+                l.full_name ||
+                l.user_name ||
+                l.code || '-';
+              return {
+                code: l.code || l.id || l.user_code || '',
+                name: displayName
+              };
+            });
+          }
         }
       },
       error: (err) => console.error('Error loading landlords:', err)

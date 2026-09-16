@@ -123,25 +123,24 @@ export class CreateInventoryComponent implements OnInit {
 
   loadVendors(): void {
     const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMastersByPaging({
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
+    this.portfolioService.getMasterByType({
+      typeId: 70,
+      filterId: 5,
+      filterText: '',
+      filterText1: '',
+      userId: currentUser?.userId || 1,
       clientId: currentUser?.clientId || "74BB6922",
-      source: 'web',
-      languageid: 1,
-      page_no: 0,
-      seqno: 0,
-      search_keyword: '',
-      pagecount: 100,
-      filter_by: '',
-      featureid: 'VENDORS'
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res && res.objResult && res.objResult.vendors) {
-          this.vendors = res.objResult.vendors.map((v: any) => ({
-            code: v.code || v.id,
-            name: v.company_name || v.contact_name || v.name || v.code || '-'
-          }));
+        if (res && res.objResult) {
+          const list = res.objResult.table || res.objResult.vendors || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
+          if (Array.isArray(list)) {
+            this.vendors = list.map((v: any) => ({
+              code: v.code || v.id || v.user_code || '',
+              name: v.name || v.company_name || v.contact_name || v.lookup_name || v.full_name || v.user_name || v.code || '-'
+            }));
+          }
         }
       },
       error: (err) => console.error('Error loading vendors:', err)

@@ -12,6 +12,8 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-vendor-detail',
   standalone: true,
@@ -24,6 +26,7 @@ export class VendorDetailComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
   @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
   @ViewChild(NotesComponent) notesTable!: NotesComponent;
@@ -234,7 +237,7 @@ export class VendorDetailComponent implements OnInit {
   buildings = ['Building 1', 'Building 2'];
 
   activeTab = 'Overview';
-  tabs = ['Overview', 'Unit', 'Work Orders', 'Financials', 'Attachments', 'Quotations', 'Notes', 'Users', 'Technicians'];
+  tabs = ['Overview', 'Unit', 'Work Orders', 'Financials', 'Attachments', 'Quotations', 'Notes', 'Users', 'Technicians', 'Emergency Contact'];
 
   activeFinancialSubTab = 'Bills';
   financialSubTabs = ['Bills', 'Purchase Orders'];
@@ -244,11 +247,22 @@ export class VendorDetailComponent implements OnInit {
   showSubscriptionsModal = false;
   showAddUserModal = false;
   showAddTechnicianModal = false;
+  showAddEmergencyContactModal = false;
   showFilterDrawer = false;
   
   showUnitColumnDropdown = false;
   showBillColumnDropdown = false;
   showPoColumnDropdown = false;
+
+  emergencyForm: any = {
+    email_address: '',
+    name: '',
+    relation: '',
+    phone_no: '',
+    work_phone: '',
+    is_send_alerts: true,
+    is_default: true
+  };
 
   toggleDrawer(show: boolean) {
     this.showFilterDrawer = show;
@@ -276,6 +290,7 @@ export class VendorDetailComponent implements OnInit {
     { label: 'Add Broadcast', icon: 'ri-broadcast-line' },
     { label: 'Add Quotation', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
     { label: 'Add User', icon: 'ri-user-add-line' },
+    { label: 'Add Emergency Contact', icon: 'ri-phone-line', asset: 'assets/images/action-menu/phone.svg' },
     { label: 'Send Email', icon: 'ri-mail-line' },
     { label: 'View Activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
     { label: 'Assign Properties', icon: 'ri-home-4-line' },
@@ -319,10 +334,67 @@ export class VendorDetailComponent implements OnInit {
       this.activeTab = 'Users';
       this.showAddUserModal = true;
     }
+    else if (label === 'Add Emergency Contact') {
+      this.activeTab = 'Emergency Contact';
+      this.showAddEmergencyContactModal = true;
+    }
     else if (label === 'Add Quotation') {
       this.router.navigate(['/facility/quotations/request'], { queryParams: { vendorCode: this.vendorId } });
       return;
     }
+  }
+
+  saveEmergencyContact(): void {
+    if (!this.emergencyForm.email_address) {
+      this.toastr.error('Please enter email address');
+      return;
+    }
+    const payload = {
+      userid: Number(localStorage.getItem('userId')) || 1,
+      company_id: Number(localStorage.getItem('companyId')) || 1,
+      clientId: "74BB6922",
+      source: "web",
+      languageid: 1,
+      code: "",
+      entity: "vendor",
+      entity_id: String(this.vendorId),
+      email_address: this.emergencyForm.email_address,
+      name: this.emergencyForm.name || "",
+      relation: this.emergencyForm.relation || "",
+      phone_no: this.emergencyForm.phone_no || "",
+      work_phone: this.emergencyForm.work_phone || "",
+      is_default: this.emergencyForm.is_default !== false,
+      is_send_alerts: this.emergencyForm.is_send_alerts !== false
+    };
+
+    this.propertiesService.saveEmergencyDetails(payload).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
+          this.toastr.success(res.message || 'Emergency contact saved successfully');
+          this.showAddEmergencyContactModal = false;
+          this.resetEmergencyForm();
+          this.getVendorDetails();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save emergency contact');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error saving emergency contact:', err);
+        this.toastr.error('Failed to save emergency contact');
+      }
+    });
+  }
+
+  resetEmergencyForm(): void {
+    this.emergencyForm = {
+      email_address: '',
+      name: '',
+      relation: '',
+      phone_no: '',
+      work_phone: '',
+      is_send_alerts: true,
+      is_default: true
+    };
   }
 
   // Vendor email subscriptions — same drawer UI as landlord/tenant; vendor-specific names
@@ -561,6 +633,17 @@ export class VendorDetailComponent implements OnInit {
     { key: 'category', label: 'web.contacts.lblCategory', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true }
+  ];
+
+  emergencyContactColumns = [
+    { key: 'user_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
+    { key: 'column1', label: 'web.contacts.lblName', visible: true },
+    { key: 'username', label: 'web.contacts.lblUserName', visible: true },
+    { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true },
+    { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
+    { key: 'role_name', label: 'web.contacts.lblRole', visible: true },
+    { key: 'time_zone', label: 'web.contacts.lblTimezone', visible: true },
+    { key: 'is_active', label: 'web.contacts.lblStatus', visible: true, useTemplate: true }
   ];
 
   technicianData: any[] = [];
