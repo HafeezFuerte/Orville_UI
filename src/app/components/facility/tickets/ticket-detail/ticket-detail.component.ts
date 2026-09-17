@@ -4,7 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 
+import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { NotesComponent } from '../../../child-tables/notes/notes.component'; 
+import { environment } from '../../../../../environments/environment';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
 type DetailTab = 'overview' | 'messages' | 'notes';
 
 interface TicketNoteRow {
@@ -22,29 +29,39 @@ interface TicketNoteRow {
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
   templateUrl: './ticket-detail.component.html',
   styleUrl: './ticket-detail.component.scss'
 })
 export class TicketDetailComponent {
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
-
+  private router = inject(Router); 
+  private commonService = inject(CommonService);
+  private commonTabsService = inject(Common_TabsService);
+  private toastr=inject(ToastrService);
+  currentUser = this.commonService.getCurrentUser(); 
   activeTab: DetailTab = 'overview';
   showActionMenu = false;
   showNoteColumns = false;
-  draftMessage = '';
-  noteSearch = '';
-  notePageSize = 10;
-  notePageIndex = 0;
-
-  ticketId = this.route.snapshot.paramMap.get('id') || '92523';
-
-  ticket = {
+  showStatusDropdown = false;
+  showApprovalModal = false;
+  isAccept =false;
+  ApprovalModalText:string='';
+  approveComments:string='';
+  draftMessage = ''; 
+  attachfiles:any=[];
+  ticketId :any='';
+  notesForm: any = {};
+  attachmentsForm: any = {};
+  tabsList: any[] = [];
+  updatednotes:any='';
+  statusOptions:any=[];
+  ticket :any= {
     title: 'Kitchen Full of Cockroaches',
     id: this.ticketId,
     priority: 'High',
     status: 'Rejected',
+    statusid:'0',
     leaseId: '92523',
     property: 'Dubai Marina, Tower A, Dubai',
     unit: 'Apartment 402-PR-4',
@@ -64,14 +81,7 @@ export class TicketDetailComponent {
     { name: 'IMG_5732.mov', meta: 'Video · 1.8 MB', kind: 'video' as const }
   ];
 
-  recentTickets = [
-    { title: 'Kitchen Full of Cockroaches', date: '11-07-2026', status: 'Rejected' },
-    { title: 'Recurring disturbance due to late-night talking', date: '11-07-2026', status: 'Open' },
-    { title: 'Noise disturbance — Partition Room 404-1', date: '11-07-2026', status: 'Rejected' },
-    { title: 'Kitchen Full of Cockroaches', date: '11-07-2026', status: 'Open' },
-    { title: 'Noise disturbance — Partition Room 404-1', date: '11-07-2026', status: 'Rejected' },
-    { title: 'Recurring disturbance due to late-night talking', date: '11-07-2026', status: 'Closed' }
-  ];
+  recentTickets :any=[];
 
   conversations = [
     {
@@ -116,103 +126,190 @@ export class TicketDetailComponent {
       meta: 'Mohammed Zaid · 10:18'
     }
   ];
-
-  noteColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'subject', label: 'Subject', visible: true, useTemplate: true },
-    { key: 'content', label: 'Content', visible: true, useTemplate: true },
-    { key: 'via', label: 'Via', visible: true, useTemplate: true },
-    { key: 'noteDate', label: 'Note Date', visible: true, useTemplate: true },
-    { key: 'createdBy', label: 'Created By', visible: true, useTemplate: true },
-    { key: 'files', label: 'Files', visible: true, useTemplate: true },
-    { key: 'createdAt', label: 'Created At', visible: true, useTemplate: true },
-    { key: 'updatedAt', label: 'Updated At', visible: true, useTemplate: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
-  ];
-
-  noteRows: TicketNoteRow[] = [
-    {
-      id: '31658',
-      subject: 'Move-in condition',
-      content: 'Tenant reported minor paint marks near the living room window. Schedule touch-up.....',
-      via: 'Portal',
-      noteDate: '12-01-2026',
-      createdBy: 'Admin User',
-      files: 'move-in-photo.jpg',
-      createdAt: '10-01-2026, 09:14',
-      updatedAt: '12-01-2026, 13:06'
-    },
-    {
-      id: '31658',
-      subject: 'Rent reminder',
-      content: 'Friendly reminder sent to tenant regarding upcoming rent payment due on the first wo...',
-      via: 'Email',
-      noteDate: '12-01-2026',
-      createdBy: 'Property Manager',
-      files: 'property-deed.pdf',
-      createdAt: '10-01-2026, 09:14',
-      updatedAt: '12-01-2026, 13:06'
+ 
+activities:any=[];
+  noteRows:any=[];
+  ngOnInit() {
+    this.initializeTabs();
+    this.loadlookup(2,51,'statusOptions','','');
+    this.route.params.subscribe(params => {
+      this.ticketId = params['code'];
+      if (this.ticketId) {
+        this.loadTicketDetails();
+      }
+    });
+  }
+  approveRequest(flg:number){
+    this.isAccept=false;
+    if(flg==1){
+    this.ApprovalModalText="Approve";this.isAccept=true;
     }
-  ];
-
-  get visibleNoteColumns() {
-    return this.noteColumns.filter((c) => c.visible !== false);
+    if(flg==0)
+    this.ApprovalModalText="Reject";
+    this.showApprovalModal=true;
   }
+  loadTicketDetails() {
+    const payload = {
+      typeId: 82,
+      filterId: 0,
+      filterText: this.ticketId,
+      filterText1: "",
+      userId: this.currentUser?.userId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
+      companyId: this.currentUser?.companyId || 1
+    };
 
-  get filteredNotes(): TicketNoteRow[] {
-    const q = this.noteSearch.trim().toLowerCase();
-    if (!q) {
-      return this.noteRows;
+    this.commonTabsService.getMasterByType(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const details = res.objResult.ticketdtls || res.objResult.ticketdtls || res.objResult;
+          if (Array.isArray(details) && details.length > 0) {
+            const data = details[0]; 
+             this.ticket ={
+              title  : data.title || "", 
+              id: data.code,
+              priority: data.priority,
+              status: this.commonService.getArabicLookupName(data,'status_nm'),
+              leaseId: data.active_lease || 'N/A',
+              property: data.property,
+              statusid:data.status,
+              unit: data.unitcode,
+              contact: data.contact,
+              source: this.commonService.getArabicLookupName(data,'source_nm'),
+              department:this.commonService.getArabicLookupName(data,'department_nm'),
+              category: this.commonService.getArabicLookupName(data,'category_nm'),
+              created:this.commonService.formatDateForInput(data.created_date),
+              description: data.description || '',
+              property_code:data.property_code,
+              unit_code:data.unit_code,
+              contact_code:data.contact_code
+             };
+            
+          }
+ 
+          this.attachfiles=res.objResult.documents || [];
+          this.noteRows =res.objResult.notes || []
+          this.activities=res.objResult.activities; 
+          this.recentTickets=res.objResult.recentickets;
+         this.initializeTabs();
+        }
+      },
+      error: (err: any) => console.error("Error loading work order details:", err)
+    });
+  } 
+  initializeTabs() {
+    this.tabsList = [
+      {
+        key: 'Overview',
+        label: 'Overview',
+        layout: 'content',
+        data: []
+      },
+      {
+        key: 'Messages',
+        label: 'Messages',
+        layout: 'content',
+        data: []
+      },
+      {
+        key: 'notes',
+        label: 'Notes',
+        entity: 'Tickets',
+        entity_id: this.ticketId,
+        data: this.noteRows || [],
+        totalRecords: (this.noteRows || []).length,
+        loading: false,
+        hasActions: true,
+        addButtonText: 'Notes',
+        form: this.notesForm,
+        popupType: 'notes'
+      } 
+    ];
+  } 
+  ApproveRejectLease() {
+    if(this.approveComments==null || this.approveComments==""){
+      this.toastr.error(`Invalid  ${this.ApprovalModalText} comments`)
+      return;
     }
-    return this.noteRows.filter(
-      (n) =>
-        n.subject.toLowerCase().includes(q) ||
-        n.content.toLowerCase().includes(q) ||
-        n.createdBy.toLowerCase().includes(q) ||
-        n.id.includes(q)
-    );
+    this.commonTabsService.getMasterByType({
+      typeId: 83,
+      filterId: this.isAccept ? 337 : 336,
+      filterText: this.ticketId,
+      filterText1: this.approveComments
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult) {
+          this.toastr.success("Successfully updated status");
+          this.showApprovalModal=false;
+          setTimeout(() => {
+            this.router.navigate(['/facility/tickets']);
+          }, 2000);
+        }
+        else
+          this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching typeid: 22:`, err);
+      }
+    });
   }
-
-  get noteTotalRecords(): number {
-    return this.filteredNotes.length;
+  loadlookup(typeId: number, filterId: number, targetProperty: string, filterText: string, filterText1: string) {
+    this.commonTabsService.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: filterText1
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {
+          if(typeId==83){
+            this.toastr.success("Successfully updated the status");
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          }
+          else
+            (this as any)[targetProperty] = res.objResult.table || [];
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
   }
-
-  get noteTotalPages(): number {
-    return Math.max(1, Math.ceil(this.noteTotalRecords / this.notePageSize));
-  }
-
-  get noteDisplayPage(): number {
-    return this.notePageIndex + 1;
-  }
-
-  get noteStartRecord(): number {
-    if (!this.noteTotalRecords) {
-      return 0;
+  updateticketstaus(){
+    if(this.ticket.statusid==null || this.ticket.statusid==""){
+      this.toastr.error("Invalid status id");
+      return;
+     }
+    if(this.updatednotes==null || this.updatednotes==""){
+     this.toastr.error("Invalid comments");
+     return;
     }
-    return this.notePageIndex * this.notePageSize + 1;
+    else{
+      this.loadlookup(83,this.ticket.statusid,'',this.ticketId,this.updatednotes);
+    }
   }
-
-  get noteEndRecord(): number {
-    return Math.min((this.notePageIndex + 1) * this.notePageSize, this.noteTotalRecords);
+  selectStatus(status: any): void {
+    this.showStatusDropdown = false;
+    this.ticket.statusid = status.id; 
+    this.ticket.status = status.name; 
   }
-
-  get paginatedNotes(): TicketNoteRow[] {
-    const start = this.notePageIndex * this.notePageSize;
-    return this.filteredNotes.slice(start, start + this.notePageSize);
-  }
-
   setTab(tab: DetailTab): void {
     this.activeTab = tab;
     this.showActionMenu = false;
     this.showNoteColumns = false;
+    this.showStatusDropdown = false;
   }
-
+  get selectedTab(): any {
+    return this.tabsList.find(t => t.key === this.activeTab);
+  }
   goBack(): void {
     this.router.navigate(['/facility/tickets']);
   }
 
   goEdit(): void {
-    this.router.navigate(['/facility/tickets/create']);
+    this.router.navigate(['/facility/tickets/edit',this.ticketId]);
   }
 
   statusClass(status: string): string {
@@ -240,49 +337,10 @@ export class TicketDetailComponent {
     });
     this.draftMessage = '';
   }
-
-  toggleNoteColumn(key: string): void {
-    const col = this.noteColumns.find((c) => c.key === key);
-    if (col && key !== 'action') {
-      col.visible = !col.visible;
-    }
-  }
-
-  toggleAllNoteColumns(visible: boolean): void {
-    this.noteColumns.forEach((col) => {
-      if (col.key !== 'action') {
-        col.visible = visible;
-      }
-    });
-  }
-
-  onNoteSearch(): void {
-    this.notePageIndex = 0;
-  }
-
-  onNotePageSizeChange(): void {
-    this.notePageIndex = 0;
-  }
-
-  previousNotePage(): void {
-    if (this.notePageIndex > 0) {
-      this.notePageIndex -= 1;
-    }
-  }
-
-  nextNotePage(): void {
-    if (this.noteDisplayPage < this.noteTotalPages) {
-      this.notePageIndex += 1;
-    }
-  }
-
-  goNotePage(page: number): void {
-    this.notePageIndex = Math.max(0, Math.min(page - 1, this.noteTotalPages - 1));
-  }
-
+ 
   @HostListener('document:click')
   onDocClick(): void {
-    this.showActionMenu = false;
-    this.showNoteColumns = false;
+    this.showActionMenu = false; 
+    this.showStatusDropdown = false;
   }
 }

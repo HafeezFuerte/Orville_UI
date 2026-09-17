@@ -13,6 +13,13 @@
     </div>
   </div>
   <div class="td-action relative" (click)="$event.stopPropagation()" *ngIf="activeTab === 'overview'">
+    <button *ngIf="ticket.statusid==330 || ticket.statusid==331" type="button" class="ov-btn ov-status--success !h-10 gap-2" (click)="approveRequest(1)">
+      Approve Request
+    </button>
+    <button *ngIf="ticket.statusid==330 || ticket.statusid==331" type="button" class="ov-btn ov-status--warning !h-10 gap-2" (click)="approveRequest(0)">
+      Decline Request
+    </button>
+
     <button type="button" class="td-action__btn"
       [class.is-open]="showActionMenu"
       (click)="showActionMenu = !showActionMenu"
@@ -31,11 +38,12 @@
           <span>Edit Ticket</span>
         </button>
       </div>
+      
     </div>
   </div>
   <button *ngIf="activeTab !== 'overview'" type="button" class="ov-btn ov-btn-primary !h-10" (click)="goEdit()">
     Edit Ticket
-  </button>
+  </button> 
 </div>
 
 <div class="ov-detail-layout">
@@ -66,7 +74,33 @@
 
       <div class="border-t border-defaultborder"></div>
       <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
-
+      <div class="ov-card py-5">
+        <div class="px-5 flex flex-col gap-5">
+          <div class="relative">
+            <label class="ov-label">Status</label>
+            <button type="button" class="wo-status-select" (click)="$event.stopPropagation(); showStatusDropdown = !showStatusDropdown">
+              <span class="flex items-center gap-3 min-w-0">
+                <img src="assets/images/work-order-detail/check-circle.svg" alt="" width="18" height="18" class="wo-ico" />
+                <span class="truncate text-[14px] font-medium text-defaulttextcolor">{{ ticket.status }}</span>
+              </span>
+              <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="18" height="18" class="wo-ico" />
+            </button>
+            <div *ngIf="showStatusDropdown" class="wo-status-menu" (click)="$event.stopPropagation()">
+              <button type="button" class="wo-status-menu__item" *ngFor="let s of statusOptions"
+                (click)="selectStatus(s)">{{ s.name }}</button>
+            </div>
+          </div>
+          <div>
+            <label class="ov-label">Notes*</label>
+            <textarea rows="3" placeholder="Enter" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
+          </div>
+          <div>
+            <button type="button" (click)="updateticketstaus()" class="ov-btn ov-btn-primary !h-9 !text-[13px]" aria-label="Send">
+             Update Ticket
+            </button>
+          </div>
+        </div>
+      </div>
       <div class="td-info-card">
         <div class="td-info-card__head">
           <h6 class="td-info-card__title">Ticket Information</h6>
@@ -82,15 +116,15 @@
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Property:</span>
-            <a class="ov-link font-bold" href="javascript:void(0)">{{ ticket.property }}</a>
+            <a class="ov-link font-bold" [routerLink]="['/properties', ticket?.property_code]" >{{ ticket.property }}</a>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Unit:</span>
-            <a class="ov-link font-bold" href="javascript:void(0)">{{ ticket.unit }}</a>
+            <a class="ov-link font-bold" [routerLink]="['/units', ticket?.unit_code]">{{ ticket.unit }}</a>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Contact:</span>
-            <a class="ov-link font-bold" href="javascript:void(0)">{{ ticket.contact }}</a>
+            <a class="ov-link font-bold" [routerLink]="['/contacts/tenants/edit-tenant', ticket?.contact_code]">{{ ticket.contact }}</a>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Source:</span>
@@ -153,9 +187,9 @@
           <h6 class="td-section-title">Attachments</h6>
           <p class="td-section-sub">Photos and videos</p>
           <div class="td-media-grid">
-            <article class="td-media" *ngFor="let file of attachments">
+            <article class="td-media" *ngFor="let file of attachfiles">
               <div class="td-media__preview">
-                <img src="assets/images/ticket-detail/image-placeholder.svg" alt="" width="64" height="52" />
+                <img src="{{file.file_path}}" alt="" width="64" height="52" />
               </div>
               <div class="td-media__meta">
                 <p class="td-media__name">{{ file.name }}</p>
@@ -166,7 +200,24 @@
         </div>
 
         <div class="td-recent-card">
-          <h6 class="td-section-title">Recent Contact Tickets</h6>
+          <h6 class="td-section-title">Ticket Activities</h6>
+          <div class="td-recent-list">
+            <div class="td-recent-row" *ngFor="let row of activities">
+              <div class="td-recent-row__main">
+                <span class="td-recent-row__icon">
+                  <img src="assets/images/action-menu/message.svg" alt="" width="20" height="20" />
+                </span>
+                <div class="min-w-0">
+                  <p class="td-recent-row__title">{{ row.notes }}</p>
+                  <p class="td-recent-row__date">{{ row.created_date |  date:'MM-dd-yyyy' }}</p>
+                </div>
+              </div>
+              <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="td-recent-card">
+          <h6 class="td-section-title">Recent Tickets</h6>
           <div class="td-recent-list">
             <div class="td-recent-row" *ngFor="let row of recentTickets">
               <div class="td-recent-row__main">
@@ -175,10 +226,10 @@
                 </span>
                 <div class="min-w-0">
                   <p class="td-recent-row__title">{{ row.title }}</p>
-                  <p class="td-recent-row__date">{{ row.date }}</p>
+                  <p class="td-recent-row__date">{{ row.created_date |  date:'MM-dd-yyyy' }}</p>
                 </div>
               </div>
-              <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+              <span [ngClass]="statusClass(row.status_nm)">{{ row.status_nm }}</span>
             </div>
           </div>
         </div>
@@ -251,95 +302,31 @@
 
       <!-- NOTES — Figma 2905:90535 -->
       <div *ngIf="activeTab === 'notes'" class="p-5">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h5 class="ov-card-title m-0 !text-[18px]">Notes</h5>
-          <button type="button" class="ov-btn ov-btn-primary !h-10">
-            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Notes
-          </button>
-        </div>
-
-        <div class="td-notes-card">
-          <div class="ov-toolbar !px-5 !pt-5 !pb-0 !border-0 !h-auto">
-            <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
-              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-              <input type="text" class="ov-input ov-search__input" [(ngModel)]="noteSearch"
-                (ngModelChange)="onNoteSearch()" placeholder="Search" />
-            </div>
-            <div class="ov-toolbar__btns relative" (click)="$event.stopPropagation()">
-              <button type="button" class="ov-btn ov-btn-toolbar"
-                (click)="showNoteColumns = !showNoteColumns">
-                <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-                Column
-              </button>
-              <app-column-menu
-                *ngIf="showNoteColumns"
-                [columns]="noteColumns"
-                (toggle)="toggleNoteColumn($event)"
-                (toggleAll)="toggleAllNoteColumns($event)"
-                (closed)="showNoteColumns = false">
-              </app-column-menu>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto px-5 pt-5">
-            <app-shared-table
-              [columns]="visibleNoteColumns"
-              [data]="paginatedNotes"
-              [loading]="false"
-              [hasActions]="false"
-              [showPaginator]="false"
-              [totalRecords]="noteTotalRecords"
-              [pageSize]="notePageSize"
-              [pageIndex]="notePageIndex">
-              <ng-template #colTemplate let-row="row" let-col="col">
-                <ng-container [ngSwitch]="col.key">
-                  <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)">{{ row.id }}</a>
-                  <span *ngSwitchCase="'subject'" class="font-semibold text-defaulttextcolor">{{ row.subject }}</span>
-                  <span *ngSwitchCase="'content'" class="text-textmuted">{{ row.content }}</span>
-                  <span *ngSwitchCase="'via'" class="td-via-chip">{{ row.via }}</span>
-                  <a *ngSwitchCase="'files'" class="td-file-link" href="javascript:void(0)">{{ row.files }}</a>
-                  <div *ngSwitchCase="'action'" class="flex justify-center">
-                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Note actions">
-                      <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
-                    </button>
-                  </div>
-                  <span *ngSwitchDefault class="text-textmuted">{{ row[col.key] }}</span>
-                </ng-container>
-              </ng-template>
-            </app-shared-table>
-          </div>
-
-          <div class="ov-page !px-5 !pb-5">
-            <div class="ov-page__meta">
-              <span class="ov-page__label">Show</span>
-              <div class="ov-page__size">
-                <select [(ngModel)]="notePageSize" (change)="onNotePageSizeChange()">
-                  <option [ngValue]="5">5</option>
-                  <option [ngValue]="10">10</option>
-                  <option [ngValue]="25">25</option>
-                </select>
-                <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
-              </div>
-              <span>Showing {{ noteStartRecord }} to {{ noteEndRecord }} of {{ noteTotalRecords }} records</span>
-            </div>
-            <div class="ov-page__nav">
-              <span class="ov-page__label">Page {{ noteDisplayPage }} of {{ noteTotalPages }}</span>
-              <div class="ov-page__btns">
-                <button type="button" class="ov-page__btn" (click)="previousNotePage()"
-                  [disabled]="noteDisplayPage <= 1" aria-label="Previous page">
-                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-                </button>
-                <button type="button" class="ov-page__btn is-active" (click)="goNotePage(1)">1</button>
-                <button type="button" class="ov-page__btn" (click)="nextNotePage()"
-                  [disabled]="noteDisplayPage >= noteTotalPages" aria-label="Next page">
-                  <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-notes-table [selectedTab]="selectedTab"></app-notes-table>
       </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showApprovalModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack" style="max-width: 520px">
+    <button type="button" class="ov-modal__float-close" (click)="showApprovalModal = false" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+    <div class="ov-modal">
+    <div class="ov-modal__header">
+      <h4 class="ov-modal__title">{{ApprovalModalText}}</h4>
+      <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
+    </div>
+    <div class="ov-modal__body flex flex-col gap-4">
+      <div>
+        <label class="ov-label">Notes</label>
+        <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" placeholder="Enter Comments....."></textarea>
+      </div>
+    </div>
+    <div class="ov-modal__footer">
+      <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">Save</button>
+    </div>
     </div>
   </div>
 </div>

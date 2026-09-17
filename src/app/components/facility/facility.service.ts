@@ -25,4 +25,7 @@ export class FacilityService {
    saveWorkOrder(payload: any): Observable<any> { 
     return this.http.post(environment.apiurl+'api/Application/save_update_workorder', payload, { headers: this.commonservice.updateHeaders() });
    }
+   saveTicket(payload: any): Observable<any> { 
+      return this.http.post(environment.apiurl+'api/Application/save_update_ticket', payload, { headers: this.commonservice.updateHeaders() });
+     }
 }

@@ -163,11 +163,7 @@ export class CreateWorkOrderComponent implements OnInit {
     else if(this.selectedPriority== null || this.selectedPriority==""){
       this.toastr.error("Invalid Priority");
       return;
-    }
-    else if(this.selectedPriority== null || this.selectedPriority==""){
-      this.toastr.error("Invalid Priority");
-      return;
-    }
+    } 
 
     const payload = {
       userid: this.currentUser?.userId || 1,
@@ -259,7 +255,7 @@ export class CreateWorkOrderComponent implements OnInit {
       ...this.commonService.commonPayload(),
       code: '',
       entity_id: workOrderCode,
-      entity: 'workorder',
+      entity: 'Workorder',
       document_type: docTypeInt,
       document_no: 'DOC-' + Math.floor(Math.random() * 1000000),
       issue_date: new Date().toISOString().substring(0, 10),

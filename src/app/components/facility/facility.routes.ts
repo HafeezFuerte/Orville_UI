@@ -25,7 +25,12 @@ export const facilityRoutingModule: Routes = [
           import('./tickets/create-ticket/create-ticket.component').then((m) => m.CreateTicketComponent),
       },
       {
-        path: ':id',
+        path: 'edit/:code',
+        loadComponent: () =>
+          import('./tickets/create-ticket/create-ticket.component').then((m) => m.CreateTicketComponent),
+      },
+      {
+        path: ':code',
         loadComponent: () =>
           import('./tickets/ticket-detail/ticket-detail.component').then((m) => m.TicketDetailComponent),
       }

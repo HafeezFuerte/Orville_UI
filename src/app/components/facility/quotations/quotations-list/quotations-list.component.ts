@@ -290,7 +290,7 @@ export class QuotationsListComponent {
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.isDrawerOpen = false;
   }
 
@@ -298,7 +298,7 @@ export class QuotationsListComponent {
     this.filterTitle = '';
     this.filterStatus = null;
     this.filterVendor = '';
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
   statusClass(status: QuotationStatus): string {

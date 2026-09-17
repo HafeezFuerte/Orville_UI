@@ -89,6 +89,12 @@ export class CommonService {
       payload
     );
   }
+  saveAttachment(payload: any): Observable<any> {
+    return this.postAPI(
+      environment.apiurl + 'api/Masters/save_documents',
+      payload
+    );
+  }
   private postAPI(url: string, payload: any): Observable<any> {
     const headers = this.updateHeaders();
     return this.http.post(url, payload, { headers });

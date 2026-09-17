@@ -17,26 +17,11 @@
   </div>
 
   <div class="ov-kpi-row mb-5">
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">New</span>
-      <div class="ov-kpi__val">{{ metrics.New.value }}</div>
-      <div class="ov-kpi__sub">{{ metrics.New.sub }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">Open</span>
-      <div class="ov-kpi__val">{{ metrics.Open.value }}</div>
-      <div class="ov-kpi__sub">{{ metrics.Open.sub }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">In Progress</span>
-      <div class="ov-kpi__val">{{ metrics['In Progress'].value }}</div>
-      <div class="ov-kpi__sub">{{ metrics['In Progress'].sub }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">Resolved</span>
-      <div class="ov-kpi__val">{{ metrics.Resolved.value }}</div>
-      <div class="ov-kpi__sub">{{ metrics.Resolved.sub }}</div>
-    </div>
+    <div class="ov-kpi" *ngFor="let item of metrics">
+      <span class="ov-kpi__badge">{{item.label}}</span>
+      <div class="ov-kpi__val">{{ item.value }}</div>
+      <div class="ov-kpi__sub">{{ item.sub }}</div>
+    </div> 
   </div>
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
@@ -59,11 +44,18 @@
     </div>
 
     <div class="border-b border-defaultborder px-5 py-3 overflow-x-auto" *ngIf="viewMode === 'list'">
-      <div class="ov-seg ov-seg--solid !w-max max-w-none" role="tablist" aria-label="Ticket status">
-        <button type="button" *ngFor="let tab of statusTabs" class="ov-seg__btn"
-          [class.is-active]="statusFilter === tab" (click)="setStatusFilter(tab)">
-          {{ tab }}
-        </button>
+      <div class="ov-seg ov-seg--solid !w-max max-w-none" role="tablist" aria-label="Ticket status"> 
+        <button
+        type="button"
+       *ngFor="let tab of statusTabs"
+       class="ov-seg__btn"
+       [class.is-active]="statusFilter === tab.id"
+       [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+       [class.border-transparent]="statusFilter !== tab.id" 
+       (click)="setStatusFilter(tab.id)">
+           {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+     </button> 
+
       </div>
     </div>
 
@@ -101,34 +93,28 @@
 
     <!-- List view — Figma 3041:94437 -->
     <div class="overflow-x-auto px-5 pb-0 pt-5" *ngIf="viewMode === 'list'">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)"   [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)"
-              (click)="navigateToDetail(row.id)">{{ row.id }}</a>
-            <a *ngSwitchCase="'title'" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
+            <a *ngSwitchCase="'code'" class="ov-link" href="javascript:void(0)"
+              (click)="navigateToDetail(row.code)">{{ row.code }}</a>
+            <a *ngSwitchCase="'title'"  (click)="navigateToDetail(row.code)" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
             <span *ngSwitchCase="'priority'" class="tk-chip" [ngClass]="priorityClass(row.priority)">
               {{ row.priority }}
             </span>
-            <span *ngSwitchCase="'status'" class="tk-chip" [ngClass]="statusClass(row.status)">
-              {{ row.status }}
+            <span *ngSwitchCase="'status_nm'" class="tk-chip" [ngClass]="statusClass(row.status_nm)">
+              {{ row.status_nm }}
             </span>
-            <span *ngSwitchCase="'source'" class="tk-chip tk-chip--soft">
-              {{ row.source }}
+            <span *ngSwitchCase="'source_nm'" class="tk-chip tk-chip--soft">
+              {{ row.source_nm }}
             </span>
             <div *ngSwitchCase="'contact'" class="flex items-center gap-2">
               <span class="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
-                {{ row.contactInitials }}
+                {{ getInitials(row.contact) }}
               </span>
-              <span class="text-defaulttextcolor">{{ row.contactName }}</span>
+              <span class="text-defaulttextcolor">{{ row.contact }}</span>
             </div>
             <div *ngSwitchCase="'details'" class="tk-details" [attr.title]="row.details">
               {{ row.details }}
@@ -136,9 +122,9 @@
             <div *ngSwitchCase="'action'" class="tk-action" data-tickets-action
               (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                [attr.aria-expanded]="openRowActionId === row.id"
+                [attr.aria-expanded]="openRowActionId === row.code"
                 (mousedown)="$event.stopPropagation()"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row.code, $event)">
                 <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
             </div>
@@ -152,12 +138,8 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -184,11 +166,11 @@
     <!-- Board view — Figma 3041:95309 -->
     <div *ngIf="viewMode === 'board'" class="ov-kanban px-5 pb-5 pt-5">
       <div class="ov-kanban__track">
-        <section class="ov-kanban__col" *ngFor="let col of kanbanColumns">
+        <section class="ov-kanban__col" *ngFor="let col of statusTabs">
           <header class="ov-kanban__col-head">
             <div class="ov-kanban__col-title">
-              <span class="ov-kanban__col-name">{{ col }}</span>
-              <span class="ov-kanban__col-count">{{ columnCount(col) }}</span>
+              <span class="ov-kanban__col-name">{{ col.name }}</span>
+              <span class="ov-kanban__col-count">{{col.cnt || '0' }}</span>
             </div>
             <button type="button" class="ov-kanban__col-more" aria-label="Column actions">
               <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="14" height="14" class="tk-icon" />
@@ -199,7 +181,7 @@
             <article class="ov-kanban-card" *ngFor="let row of cardsForColumn(col)">
               <div class="ov-kanban-card__top">
                 <a class="ov-kanban-card__id ov-link" href="javascript:void(0)"
-                  (click)="navigateToDetail(row.id)">#{{ row.id }}</a>
+                  (click)="navigateToDetail(row.code)">#{{ row.code }}</a>
                 <span class="ov-kanban-card__priority" [ngClass]="kanbanPriorityClass(row.priority)">
                   {{ row.priority }}
                 </span>
@@ -213,26 +195,26 @@
               </div>
               <div class="ov-kanban-card__meta">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="tk-icon" />
-                <span>{{ row.created }}</span>
+                <span>{{ row.created_date }}</span>
               </div>
 
               <div class="ov-kanban-card__divider"></div>
 
               <div class="ov-kanban-card__foot" (click)="$event.stopPropagation()">
                 <div class="ov-kanban-card__assignee">
-                  <span class="ov-kanban-card__avatar">{{ row.contactInitials }}</span>
-                  <span class="ov-kanban-card__assignee-name">{{ row.contactName }}</span>
+                  <span class="ov-kanban-card__avatar">{{ getInitials(row.contact) }}</span>
+                  <span class="ov-kanban-card__assignee-name">{{ row.contact }}</span>
                 </div>
                 <div class="relative" data-tickets-action>
                   <button type="button" class="ov-kanban-card__status"
-                    (click)="toggleKanbanStatus(row.id, $event)">
-                    {{ row.status }}
+                    (click)="toggleKanbanStatus(row.code, $event)">
+                    {{ row.status_nm }}
                     <img src="assets/images/work-orders/chevron-down.svg" alt="" width="12" height="12" class="tk-icon" />
                   </button>
                   <div *ngIf="openKanbanStatusId === row.id" class="ov-kanban-card__status-menu">
-                    <button type="button" *ngFor="let status of kanbanColumns"
+                    <button type="button" *ngFor="let status of statusTabs"
                       class="ov-kanban-card__status-item"
-                      (click)="openKanbanStatusId = null">{{ status }}</button>
+                      (click)="openKanbanStatusId = null">{{ status.name }}</button>
                   </div>
                 </div>
               </div>
@@ -252,7 +234,7 @@
     <button type="button" role="menuitem" class="tk-row-menu__item"
       (click)="navigateToDetail(openRowActionId!)">View</button>
     <button type="button" role="menuitem" class="tk-row-menu__item"
-      (click)="navigateToEdit()">Edit</button>
+      (click)="navigateToEdit(openRowActionId!)">Edit</button>
   </div>
 
   <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">

@@ -5,16 +5,16 @@
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Ticket</h3>
+        <h3 class="ov-page-title">{{editId==null || editId=='' ? 'New': 'Edit'}} Ticket</h3>
         <p class="ov-page-sub">
           Facility / Tickets /
-          <span class="ov-page-sub__current">New Ticket</span>
+          <span class="ov-page-sub__current">{{editId==null || editId=='' ? 'New': 'Edit'}} Ticket</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
       <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">Create Ticket</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">{{editId==null || editId=='' ? 'Create': 'Update'}} Ticket</button>
     </div>
   </div>
 
@@ -30,13 +30,12 @@
           <div class="ov-fields ov-fields--1">
             <div>
               <label class="ov-label">Title <span class="text-danger">*</span></label>
-              <ng-select [items]="titleOptions" [(ngModel)]="selectedTitle"
-                placeholder="Select escalation" class="ov-select w-full" appendTo="body">
-              </ng-select>
+              <input type="text" class="ov-input ct-date__input" [(ngModel)]="form.title" />
+         
             </div>
             <div>
               <label class="ov-label">Description</label>
-              <textarea [(ngModel)]="description" rows="4"
+              <textarea [(ngModel)]="form.description" rows="4"
                 placeholder="Description the work to be done..."
                 class="ov-input !h-auto min-h-[100px] resize-none"></textarea>
             </div>
@@ -53,25 +52,30 @@
           <div class="ov-fields ov-fields--2">
             <div>
               <label class="ov-label">Property <span class="text-danger">*</span></label>
-              <ng-select [items]="properties" [(ngModel)]="selectedProperty"
-                placeholder="Select Property" class="ov-select w-full" appendTo="body">
+              <ng-select #PropSelect [items]="properties" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedProperty"
+                placeholder="Select Property" (change)="onPropertyChange($event)" class="ov-select w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="PropSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Unit</label>
-              <ng-select [items]="units" [(ngModel)]="selectedUnit"
+              <ng-select [items]="units" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedUnit"
                 placeholder="Select Unit" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Common Area</label>
-              <ng-select [items]="commonAreas" [(ngModel)]="selectedCommonArea"
+              <ng-select [items]="commonAreas" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedCommonArea"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Contact</label>
-              <ng-select [items]="contacts" [(ngModel)]="selectedContact"
+              <ng-select [items]="contacts" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedContact"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
@@ -85,32 +89,32 @@
           <h6 class="ov-card-title">Details</h6>
         </div>
         <div class="ov-card__body">
-          <div class="ov-fields ov-fields--1">
+          <div class="ov-fields ov-fields--2">
             <div>
               <label class="ov-label">Source <span class="text-danger">*</span></label>
-              <ng-select [items]="sources" [(ngModel)]="selectedSource"
+              <ng-select [items]="sources" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedSource"
                 placeholder="Select Source" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
-          </div>
-          <div class="ov-fields ov-fields--3 mt-4">
             <div>
               <label class="ov-label">Date</label>
               <div class="ct-date">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="ct-date__icon" />
-                <input type="text" class="ov-input ct-date__input" [(ngModel)]="dateValue"
-                  placeholder="DD/MM/YYYY" />
+                <input type="text" class="ov-input ct-date__input" [(ngModel)]="form.dateValue"
+                 appFlowbiteDatepicker placeholder="DD/MM/YYYY" />
               </div>
             </div>
+          </div>
+          <div class="ov-fields ov-fields--2 mt-4"> 
             <div>
               <label class="ov-label">Visiting Slot</label>
-              <ng-select [items]="visitingSlots" [(ngModel)]="selectedVisitingSlot"
+              <ng-select [items]="visitingSlots" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedVisitingSlot"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Priority</label>
-              <ng-select [items]="priorities" [(ngModel)]="selectedPriority"
+              <ng-select [items]="priorities" [(ngModel)]="form.selectedPriority"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
@@ -136,6 +140,7 @@
                 (click)="$event.stopPropagation(); photoInput.click()">Browse files</button>
               <p class="ct-dropzone__hint">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
             </div>
+            <ng-container *ngIf="beforeImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: beforeImages, fileType: 'before' }"   ></ng-container> 
           </div>
 
           <div>
@@ -150,6 +155,7 @@
                 (click)="$event.stopPropagation(); videoInput.click()">Browse files</button>
               <p class="ct-dropzone__hint">Only Videos are allowed</p>
             </div>
+            <ng-container *ngIf="videos.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: videos, fileType: 'videos' }"   ></ng-container> 
           </div>
 
           <div>
@@ -165,6 +171,32 @@
                 (click)="$event.stopPropagation(); otherInput.click()">Browse files</button>
               <p class="ct-dropzone__hint">Only PDF, DOC, DOCX, TXT, and XLSX files are allowed.</p>
             </div>
+            <ng-container *ngIf="afterImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: afterImages, fileType: 'other' }"   ></ng-container> 
+          </div>
+        </div>
+        <div class="ov-card" *ngIf="attachfiles.length>0">
+          <div class="ov-card__head">
+            <div>
+              <h6 class="ov-card-title">Documents</h6> 
+            </div> 
+            <div 
+  *ngIf="attachfiles.length">
+  <div
+      class="flex items-center justify-between border border-defaultborder rounded-md p-3 mb-2"
+      *ngFor="let file of attachfiles; let i=index">
+      <div class="flex items-center gap-3">
+          <i class="ri-image-line text-primary text-[20px]"></i>
+          <div>
+              <div class="font-medium">
+                 <a href="{{file.file_path}}">View file</a>  
+              </div>
+              <small class="text-[#8c9097]">
+                  {{ file.document_type_name }}
+              </small>
+          </div>
+      </div> 
+  </div>
+  </div>
           </div>
         </div>
       </div>
@@ -183,13 +215,13 @@
           <div class="ov-fields ov-fields--1">
             <div>
               <label class="ov-label">Department</label>
-              <ng-select [items]="departments" [(ngModel)]="selectedDepartment"
+              <ng-select [items]="departments" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedDepartment"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">User</label>
-              <ng-select [items]="users" [(ngModel)]="selectedUser"
+              <ng-select [items]="users" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedUser"
                 placeholder="Select User" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
@@ -206,13 +238,13 @@
           <div class="ov-fields ov-fields--1">
             <div>
               <label class="ov-label">Ticket Category <span class="text-danger">*</span></label>
-              <ng-select [items]="categories" [(ngModel)]="selectedCategory"
+              <ng-select [items]="categories"  bindValue="code" bindLabel="name" (change)="onCategoryChanged($event)" [(ngModel)]="form.selectedCategory"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Sub Category</label>
-              <ng-select [items]="subCategories" [(ngModel)]="selectedSubCategory"
+              <ng-select [items]="subCategories" bindValue="id" bindLabel="name" [(ngModel)]="form.selectedSubCategory"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
@@ -234,7 +266,7 @@
                 <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" />
               </button>
             </span>
-            <input type="text" class="ct-tags__input" [(ngModel)]="newTag"
+            <input type="text" class="ct-tags__input" [(ngModel)]="form.newTag"
               (keydown)="onTagInputKey($event)"
               placeholder="Enter" />
           </div>
@@ -247,6 +279,33 @@
 
   <div class="ov-add-footer">
     <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">Create Ticket</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="createTicket()">{{editId==null || editId=='' ? 'Create': 'Update'}} Ticket</button>
   </div>
 </div>
+<ng-template #selectedFiles let-files="files" let-type="fileType">
+  <div
+  class="mt-4"
+  *ngIf="files.length">
+  <div
+      class="flex items-center justify-between border border-defaultborder rounded-md p-3 mb-2"
+      *ngFor="let file of files; let i=index">
+      <div class="flex items-center gap-3">
+          <i class="ri-image-line text-primary text-[20px]"></i>
+          <div>
+              <div class="font-medium">
+                  {{file.name}}
+              </div>
+              <small class="text-[#8c9097]">
+                  {{ (file.size / 1024) | number:'1.0-0' }} KB
+              </small>
+          </div>
+      </div>
+      <button
+          type="button"
+          class="ti-btn ti-btn-danger-light"
+          (click)="removeFile(i,type)">
+          <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
+      </button>
+  </div>
+  </div>
+  </ng-template>

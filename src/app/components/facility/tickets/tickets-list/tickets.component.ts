@@ -1,7 +1,7 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule,ActivatedRoute } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
@@ -11,6 +11,10 @@ import {
   TicketRow,
   TicketStatus
 } from '../tickets.data';
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
 
 type StatusTab = 'All' | TicketStatus;
 type ViewMode = 'list' | 'board';
@@ -29,26 +33,12 @@ type ViewMode = 'list' | 'board';
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.scss'
 })
-export class FacilityTicketsComponent {
-  private router = inject(Router);
+export class FacilityTicketsComponent { 
 
   searchQuery = '';
   viewMode: ViewMode = 'list';
   statusFilter: StatusTab = 'All';
-  statusTabs: StatusTab[] = [
-    'All',
-    'New',
-    'Open',
-    'In Progress',
-    'On Hold',
-    'Resolved',
-    'Rejected',
-    'Accepted',
-    'Vendor Rejected',
-    'Tenant Rejected',
-    'Escalated',
-    'Re-opened'
-  ];
+  statusTabs:any=[];
 
   /** Figma kanban column order (3041:95309) */
   kanbanColumns: TicketStatus[] = [
@@ -72,23 +62,23 @@ export class FacilityTicketsComponent {
   filterPriority: TicketPriority | null = null;
   statusOptions: TicketStatus[] = [...this.kanbanColumns];
   priorityOptions: TicketPriority[] = ['Low', 'Medium', 'High', 'Emergency'];
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = TICKET_ROWS;
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser();  
   openRowActionId: string | null = null;
   openKanbanStatusId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
 
-  readonly metrics = {
-    New: { value: '48', sub: '+6 this week' },
-    Open: { value: '184', sub: '21 due today' },
-    'In Progress': { value: '63', sub: '12 with vendors' },
-    Resolved: { value: '536', sub: '92% SLA met' }
-  };
+   metrics :any= [];
 
   tableColumns = [
     {
-      key: 'id',
+      key: 'code',
       label: 'ID',
       visible: true,
       useTemplate: true,
@@ -105,8 +95,8 @@ export class FacilityTicketsComponent {
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'property', label: 'Property', visible: true, width: '180px' },
-    { key: 'unit', label: 'Unit', visible: true, width: '140px' },
+    { key: 'property', label: 'Property', visible: true, width: '180px',useTemplate: true },
+    { key: 'unitcode', label: 'Unit', visible: true, width: '140px',useTemplate: true },
     {
       key: 'priority',
       label: 'Priority',
@@ -117,7 +107,7 @@ export class FacilityTicketsComponent {
       cellClass: 'text-center'
     },
     {
-      key: 'status',
+      key: 'status_nm',
       label: 'Status',
       visible: true,
       useTemplate: true,
@@ -125,9 +115,9 @@ export class FacilityTicketsComponent {
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'department', label: 'Department', visible: true, width: '160px' },
+    { key: 'department_nm', label: 'Department', visible: true, width: '160px' },
     {
-      key: 'source',
+      key: 'source_nm',
       label: 'Source',
       visible: true,
       useTemplate: true,
@@ -136,8 +126,8 @@ export class FacilityTicketsComponent {
       cellClass: 'text-center'
     },
     { key: 'contact', label: 'Contact', visible: true, useTemplate: true, width: '180px' },
-    { key: 'created', label: 'Created', visible: true, width: '110px' },
-    { key: 'details', label: 'Details', visible: true, useTemplate: true, width: '240px' },
+    { key: 'created_date', label: 'Created', visible: true, width: '110px' },
+    { key: 'description', label: 'Details', visible: true, useTemplate: true, width: '240px' },
     {
       key: 'action',
       label: 'Action',
@@ -148,6 +138,93 @@ export class FacilityTicketsComponent {
       cellClass: 'text-end overflow-visible'
     }
   ];
+
+  constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService) {}
+
+  ngOnInit() {
+    
+    this.loadTickets();  
+    this.loadLookup(82,41, 'statusTabs', '');
+  }
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
+  }
+  loadTickets() {
+    const filterList: any[] = [];
+    if (this.statusFilter && this.statusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    } 
+     
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? 'status' : '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "TICKETS"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => {  
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.tickets || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) { 
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as inactive"); 
+            this.loadTickets();
+        }else{
+          this.statusTabs.push({"id":"All","name":"All"}); 
+          this.statusTabs.push(...res.objResult.status);  
+          if(res.objResult.ticketdashboard){
+            this.metrics=res.objResult.ticketdashboard;
+           
+        }
+        }
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
@@ -189,42 +266,13 @@ export class FacilityTicketsComponent {
         .includes(q);
     });
   }
-
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
-  }
-
-  get displayPage(): number {
-    return this.pageIndex + 1;
-  }
-
-  get startRecord(): number {
-    if (!this.totalRecords) {
-      return 0;
-    }
-    return this.pageIndex * this.pageSize + 1;
-  }
-
-  get endRecord(): number {
-    return Math.min(this.totalRecords, (this.pageIndex + 1) * this.pageSize);
-  }
-
-  get paginatedRows(): TicketRow[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
-  }
-
-  get pagerItems(): Array<number | '...'> {
+  get pagerItems(): (number | string)[] {
     const total = this.totalPages;
     const current = this.displayPage;
     if (total <= 7) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
-    const items: Array<number | '...'> = [1];
+    const items: (number | string)[] = [1];
     if (current > 3) {
       items.push('...');
     }
@@ -237,32 +285,84 @@ export class FacilityTicketsComponent {
     items.push(total);
     return items;
   }
+  applyFilters(): void {
+    this.pageNo = 0;
+    this.isDrawerOpen = false;
+  }
+  clearFilters(): void {
+    this.filterTitle = '';
+    this.filterStatus = null; 
+    this.pageNo = 0;
+  }
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
 
-  setViewMode(mode: ViewMode): void {
-    this.viewMode = mode;
-    this.closeRowAction();
-    this.openKanbanStatusId = null;
-    this.showColumnDropdown = false;
+  get startRecord(): number {
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
+  }
+
+  get endRecord(): number {
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
+  }
+
+  get paginatedRows(): any[] {
+    const start = this.pageNo * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
   }
 
   setStatusFilter(tab: StatusTab): void {
     this.statusFilter = tab;
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadTickets();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
-  }
-
-  toggleColumn(key: string): void {
-    const col = this.tableColumns.find((c) => c.key === key);
-    if (col && key !== 'action') {
-      col.visible = col.visible === false;
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
     }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadTickets();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadTickets();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadTickets();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageNo++;
+      this.loadTickets();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadTickets();
+    }
+ 
   }
 
   toggleAllColumns(visible: boolean): void {
@@ -272,50 +372,32 @@ export class FacilityTicketsComponent {
       }
     });
   }
-
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find((c) => c.key === key);
+    if (col && key !== 'action') {
+      col.visible = !col.visible;
+    }
+  }
+  setViewMode(mode: ViewMode): void {
+    this.viewMode = mode;
+    this.closeRowAction();
+    this.openKanbanStatusId = null;
+    this.showColumnDropdown = false;
+  }
   toggleColumnDropdown(event: Event): void {
     event.stopPropagation();
     this.showColumnDropdown = !this.showColumnDropdown;
   }
-
-  applyFilters(): void {
-    this.pageIndex = 0;
-    this.isDrawerOpen = false;
-  }
-
-  clearFilters(): void {
-    this.filterTitle = '';
-    this.filterStatus = null;
-    this.filterPriority = null;
-    this.pageIndex = 0;
-  }
-
-  previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
-    }
-  }
-
-  nextPage(): void {
-    if (this.pageIndex < this.totalPages - 1) {
-      this.pageIndex++;
-    }
-  }
-
-  goToPage(page: number): void {
-    this.pageIndex = Math.max(0, Math.min(this.totalPages - 1, page - 1));
-  }
-
   columnCount(status: TicketStatus): number {
-    return this.filteredRows.filter((row) => row.status === status).length;
+    return this.allRows.filter((row) => row.status === status).length;
   }
 
-  cardsForColumn(status: TicketStatus): TicketRow[] {
-    return this.filteredRows.filter((row) => row.status === status);
+  cardsForColumn(status: any): any[] {
+    return this.allRows.filter((row) => row.status === status.id);
   }
 
-  cardLocation(row: TicketRow): string {
-    return `${row.property} · ${row.category}`;
+  cardLocation(row: any): string {
+    return `${row.property} · ${this.commonservice.getArabicLookupName(row,'category_nm')}`;
   }
 
   toggleKanbanStatus(id: string, event: Event): void {
@@ -416,9 +498,9 @@ export class FacilityTicketsComponent {
     this.router.navigate(['/facility/tickets', id]);
   }
 
-  navigateToEdit(): void {
+  navigateToEdit(id:string): void {
     this.closeRowAction();
-    this.router.navigate(['/facility/tickets/create']);
+    this.router.navigate(['/facility/tickets/create',id]);
   }
 
   @HostListener('document:click', ['$event'])

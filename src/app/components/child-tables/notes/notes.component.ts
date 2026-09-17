@@ -40,8 +40,7 @@ export class NotesComponent {
     { key: 'status', label: 'web.portfolio.notes.lblStatus', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'uploaded_date', label: 'web.portfolio.notes.lblNoteDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
     { key: 'created_by', label: 'web.portfolio.notes.lblCreatedBy', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
-    { key: 'file_path', label: 'web.portfolio.notes.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true },
-    { key: 'uploaded_date', label: 'web.portfolio.notes.lblCreatedAt', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true },
+    { key: 'file_path', label: 'web.portfolio.notes.lblFiles', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, redirect_url: '', isLink: true }, 
     { key: 'modified_date', label: 'web.portfolio.notes.lblModifiedDate', useTemplate: false, width: '', isHtml: false, headerClass: '', cellClass: '', is_include_currency: false, is_status: false, isLink: false, redirect_url: '' },
   ];
   searchQuery: string = '';
