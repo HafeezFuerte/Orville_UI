@@ -191,12 +191,12 @@ export const facilityRoutingModule: Routes = [
           import('./asset-management/create-asset/create-asset.component').then((m) => m.CreateAssetComponent),
       },
       {
-        path: 'edit/:id',
+        path: 'edit/:code',
         loadComponent: () =>
           import('./asset-management/create-asset/create-asset.component').then((m) => m.CreateAssetComponent),
       },
       {
-        path: ':id',
+        path: ':code',
         loadComponent: () =>
           import('./asset-management/asset-detail/asset-detail.component').then((m) => m.AssetDetailComponent),
       }

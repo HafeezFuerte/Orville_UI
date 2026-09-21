@@ -159,46 +159,7 @@
       </div>
 
       <div class="p-5" *ngIf="activeTab === 'Work Orders'">
-        <div class="ov-toolbar !px-0 !border-0 !h-auto mb-4">
-          <div class="ov-search flex-1 max-w-[280px]">
-            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-            <input type="text" class="ov-input ov-search__input" placeholder="Search...">
-          </div>
-          <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="navigateToAddWorkOrder()"
-            data-tooltip="Add Work Order">
-            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="asset-ico asset-ico--on-primary" />
-            Add Work Order
-          </button>
-        </div>
-        <div class="overflow-x-auto">
-          <app-shared-table [columns]="workOrderColumns" [data]="workOrders" [pageSize]="10">
-            <ng-template #colTemplate let-row="row" let-col="col">
-              <ng-container [ngSwitch]="col.key">
-                <ng-container *ngSwitchCase="'id'">
-                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
-                </ng-container>
-                <ng-container *ngSwitchCase="'property'">
-                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
-                </ng-container>
-                <ng-container *ngSwitchCase="'unit'">
-                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
-                </ng-container>
-                <ng-container *ngSwitchCase="'vendor'">
-                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row[col.key] }}</a>
-                </ng-container>
-                <ng-container *ngSwitchCase="'priority'">
-                  <span class="ov-status"
-                    [ngClass]="{'ov-status--blocked': row.priority === 'High', 'ov-status--warning': row.priority === 'Medium', 'ov-status--active': row.priority === 'Low'}">
-                    {{ row.priority }}
-                  </span>
-                </ng-container>
-                <ng-container *ngSwitchCase="'status'">
-                  <span class="asset-status">{{ row.status }}</span>
-                </ng-container>
-              </ng-container>
-            </ng-template>
-          </app-shared-table>
-        </div>
+        <app-workorders-table [selectedTab]="selectedTab"></app-workorders-table>
       </div>
 
       <div class="p-5" *ngIf="activeTab === 'Financials'">
@@ -206,8 +167,7 @@
         <p class="ov-card-sub m-0">No financial records for this asset yet.</p>
       </div>
 
-      <div class="p-5" *ngIf="activeTab === 'Attachments'">
-        <h5 class="ov-card-title mb-4">Attachments</h5>
+      <div class="p-5" *ngIf="activeTab === 'Attachments'"> 
         <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
       </div>
     </div>

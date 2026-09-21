@@ -6,17 +6,17 @@
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">{{ editId ? 'Edit Asset' : 'New Asset' }}</h3>
+        <h3 class="ov-page-title">{{ editId ==null || editId=='' ? 'New Asset' : 'Edit Asset' }}</h3>
         <p class="ov-page-sub">
           Facility / Asset /
-          <span class="ov-page-sub__current">{{ editId ? 'Edit Asset' : 'New Asset' }}</span>
+          <span class="ov-page-sub__current">{{ editId ==null || editId=='' ? 'New Asset' : 'Edit Asset' }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
       <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="saveAsset()">
-        {{ editId ? 'Save Asset' : 'Create Asset' }}
+        {{ editId ==null || editId=='' ? 'Save Asset' : 'Update Asset' }}
       </button>
     </div>
   </div>
@@ -158,7 +158,7 @@
               <label class="ov-label">Price <span class="text-danger">*</span></label>
               <input type="text" [(ngModel)]="price" placeholder="Enter" class="ov-input" />
             </div>
-            <div>
+            <!-- <div>
               <label class="ov-label">Maintenance Subcategory</label>
               <ng-select #maintSubcatSelect [items]="maintenanceSubcategories" bindLabel="name" bindValue="id"
                 [(ngModel)]="selectedMaintenanceSubcategory" placeholder="Select" class="ov-select w-full">
@@ -169,10 +169,10 @@
                   </div>
                 </ng-template>
               </ng-select>
-            </div>
+            </div> -->
             <div>
               <label class="ov-label">Expiry Date</label>
-              <input type="text" [(ngModel)]="expiryDate" placeholder="MM/DD/YYYY" class="ov-input" />
+              <input type="text" appFlowbiteDatepicker [(ngModel)]="expiryDate" placeholder="MM/DD/YYYY" class="ov-input" />
             </div>
             <div>
               <label class="ov-label">Total Warranty</label>
@@ -223,7 +223,7 @@
       <div class="flex flex-wrap items-center justify-end gap-3 pt-2 pb-6">
         <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
         <button type="button" class="ov-btn ov-btn-primary" (click)="saveAsset()">
-          {{ editId ? 'Save Asset' : 'Create Asset' }}
+          {{ editId ==null || editId=='' ? 'Save Asset' : 'Update Asset' }}
         </button>
       </div>
     </div>
@@ -261,7 +261,7 @@
         <div class="ov-card__body flex flex-col gap-4">
           <div>
             <label class="ov-label">Assign To Worker</label>
-            <ng-select #workerSelect [items]="assignWorkers" bindLabel="name" bindValue="id"
+            <ng-select #workerSelect [items]="assignWorkers" bindLabel="name" bindValue="code"
               [(ngModel)]="selectedAssignWorker" placeholder="Select" class="ov-select w-full">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-defaultborder">
@@ -273,7 +273,7 @@
           </div>
           <div>
             <label class="ov-label">Assign To Vendor</label>
-            <ng-select #vendorSelect [items]="assignVendors" bindLabel="name" bindValue="id"
+            <ng-select #vendorSelect [items]="assignVendors" bindLabel="name" bindValue="code"
               [(ngModel)]="selectedAssignVendor" placeholder="Select" class="ov-select w-full">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-defaultborder">

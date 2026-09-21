@@ -8,11 +8,11 @@ import { CommonService } from '../../../../services/common.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable } from 'rxjs';
-
+import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 @Component({
   selector: 'app-create-asset',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, NgSelectModule],
   templateUrl: './create-asset.component.html',
   styleUrl: './create-asset.component.scss'
 })
@@ -75,74 +75,25 @@ export class CreateAssetComponent implements OnInit {
   attachments: any[] = [];
 
   ngOnInit() {
-    this.loadLookup(26, 'assetCategories', 'lookup_name');
-    this.loadMaintenanceSubcategories();
-    this.loadWorkers();
-    this.loadVendors();
-    
-    this.loadProperties(() => {
-      this.route.params.subscribe(params => {
-        if (params['id']) {
-          this.editId = params['id'];
-          this.loadAssetDetails();
-        }
-      });
+    this.loadLookup(2,26, 'assetCategories', 'lookup_name');
+    this.loadLookup(70,6, 'assignWorkers', 'name');
+    this.loadLookup(70,5, 'assignVendors', 'name'); 
+    this.loadLookup(70,2, 'properties', 'name'); 
+    this.route.paramMap.subscribe((params) => {
+      this.editId=params.get('code'); 
+      if(this.editId)
+      this.loadAssetDetails();
     });
+ 
   }
 
-  loadProperties(callback?: () => void) {
-    this.portfolioService.getMasterByType({
-      typeId: 11,
-      filterId: 0,
-      filterText: '',
-      filterText1: ''
-    }).subscribe({
-      next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          this.properties = res.objResult.table.map((p: any) => ({
-            code: p.code || p.property_code || p.id,
-            name: p.name || p.property || p.code
-          }));
-          const propCode = this.route.snapshot.queryParams['propertyCode'];
-          if (propCode) {
-            const found = this.properties.find(p => p.code === propCode || p.id === propCode);
-            if (found) {
-              this.selectedProperty = found.code;
-            } else {
-              this.selectedProperty = propCode;
-            }
-            this.onPropertyChange();
-          }
-        }
-        if (callback) callback();
-      },
-      error: (err) => {
-        console.error('Error loading properties:', err);
-        if (callback) callback();
-      }
-    });
-  }
+   
 
   onPropertyChange() {
     this.selectedPropertyUnit = null;
     this.propertyUnits = [];
     if (this.selectedProperty) {
-      this.portfolioService.getMasterByType({
-        typeId: 3,
-        filterId: 0,
-        filterText: this.selectedProperty,
-        filterText1: ''
-      }).subscribe({
-        next: (res: any) => {
-          if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-            this.propertyUnits = res.objResult.table.map((u: any) => ({
-              code: u.code || u.unit_code || u.id,
-              name: `${u.unit_code || u.code} - ${u.unit_no || u.name}`
-            }));
-          }
-        },
-        error: (err) => console.error('Error loading units:', err)
-      });
+      this.loadLookup(44, 0, 'propertyUnits', this.selectedProperty);
     }
   }
 
@@ -150,40 +101,20 @@ export class CreateAssetComponent implements OnInit {
     this.selectedAssetSubcategory = null;
     this.assetSubcategories = [];
     if (this.selectedAssetCategory) {
-      this.portfolioService.getMasterByType({
-        typeId: 2,
-        filterId: 27,
-        filterText: String(this.selectedAssetCategory),
-        filterText1: ''
-      }).subscribe({
-        next: (res: any) => {
-          if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-            this.assetSubcategories = res.objResult.table.map((item: any) => ({
-              id: item.id,
-              name: item.lookup_name || item.name || ''
-            }));
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching asset subcategories:', err);
-        }
-      });
+      this.loadLookup(2, 27, 'assetSubcategories', this.selectedAssetCategory); 
     }
   }
 
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(typeid: number, filterId: number, targetProperty: string, filterText: string) {
     this.portfolioService.getMasterByType({
-      typeId: 2,
+      typeId: typeid,
       filterId: filterId,
-      filterText: '',
+      filterText:filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          (this as any)[targetProperty] = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item[nameField] || item.lookup_name || item.name || ''
-          }));
+          (this as any)[targetProperty] =   res.objResult.table;
         }
       },
       error: (err) => {
@@ -207,8 +138,8 @@ export class CreateAssetComponent implements OnInit {
       id: Number(this.assetDbId) || 0,
       code: this.editId || "",
       status: 1,
-      vendor_id: Number(this.selectedAssignVendor) || 0,
-      worker_id: Number(this.selectedAssignWorker) || 0,
+      vendor_id: this.selectedAssignVendor || '',
+      worker_id: this.selectedAssignWorker || '',
       barcode: this.barcodeValue || "",
       property_code: this.selectedProperty || "",
       unit_code: this.selectedPropertyUnit || "",
@@ -225,10 +156,10 @@ export class CreateAssetComponent implements OnInit {
       description: this.description || "",
       price: Number(this.price) || 0,
       purchase_date: new Date().toISOString(),
-      expiry_date: this.expiryDate ? new Date(this.expiryDate).toISOString() : new Date().toISOString(),
+      expiry_date: this.commonService.parseInputDate(this.expiryDate),
       total_warranty: Number(this.totalWarranty) || 0,
       maintenance_category: 0,
-      maintenance_subcategory: Number(this.selectedMaintenanceSubcategory) || 0,
+      maintenance_subcategory:  0,
       is_from_unit: this.selectedPropertyUnit ? true : false,
       room_code: "",
       file_path: "",
@@ -236,11 +167,7 @@ export class CreateAssetComponent implements OnInit {
     };
 
     const formData = new FormData();
-    formData.append('reqObject', JSON.stringify(requestJson));
-
-    console.log("=== Debugging save_update_assets Payload ===");
-    console.log("reqObject:", JSON.stringify(requestJson, null, 2));
-    console.log("============================================");
+    formData.append('reqObject', JSON.stringify(requestJson));  
 
     this.portfolioService.saveAsset(formData).subscribe({
       next: (res: any) => {
@@ -262,107 +189,30 @@ export class CreateAssetComponent implements OnInit {
                 this.goBack();
               },
               error: (err) => {
-                console.error("Error uploading asset files:", err);
+            
                 this.toastr.warning("Asset saved, but some files failed to upload");
                 this.goBack();
               }
             });
           } else {
-            this.toastr.success(res.message || "Asset saved successfully");
+            this.toastr.success("Asset saved successfully");
             this.goBack();
           }
         } else {
           this.toastr.error(res.message || "Failed to save asset");
         }
       },
-      error: (err: any) => {
-        console.error("Error saving asset:", err);
+      error: (err: any) => { 
         this.toastr.error("An error occurred while saving the asset");
       }
     });
   }
-
-  bindAssetData(data: any) {
-    if (!data) return;
-    this.assetDbId = data.id || 0;
-    this.editId = data.code || data.asset_code || this.editId;
-    this.assetName = data.asset_name || data.name || "";
-    this.assetModel = data.model || "";
-    this.selectedAssetCategory = data.asset_category || null;
-    
-    if (this.selectedAssetCategory) {
-      this.portfolioService.getMasterByType({
-        typeId: 2,
-        filterId: 27,
-        filterText: String(this.selectedAssetCategory),
-        filterText1: ''
-      }).subscribe((resSub: any) => {
-        if (resSub.statusCode == 200 && resSub.objResult && resSub.objResult.table) {
-          this.assetSubcategories = resSub.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item.lookup_name || item.name || ''
-          }));
-          this.selectedAssetSubcategory = data.asset_subcategory || null;
-        }
-      });
-    }
-    
-    this.commonAreaLeft = data.area || "";
-    this.brandManufacturer = data.manufacturer || "";
-    this.capacity = data.capacity || "";
-    this.selectedUnit = data.units || null;
-    this.location = data.location || "";
-    
-    this.selectedProperty = data.property_code || null;
-    if (this.selectedProperty) {
-      this.portfolioService.getMasterByType({
-        typeId: 3,
-        filterId: 0,
-        filterText: this.selectedProperty,
-        filterText1: ''
-      }).subscribe((resUnit: any) => {
-        if (resUnit.statusCode == 200 && resUnit.objResult && resUnit.objResult.table) {
-          this.propertyUnits = resUnit.objResult.table.map((u: any) => ({
-            code: u.code || u.unit_code || u.id,
-            name: `${u.unit_code || u.code} - ${u.unit_no || u.name}`
-          }));
-          this.selectedPropertyUnit = data.unit_code || null;
-        }
-      });
-    }
-    
-    this.selectedCommonAreaRight = data.common_area || null;
-    this.description = data.description || "";
-    this.price = data.price || "";
-    this.selectedMaintenanceSubcategory = data.maintenance_subcategory || null;
-    
-    if (data.expiry_date) {
-      this.expiryDate = data.expiry_date.substring(0, 10);
-    }
-    this.totalWarranty = data.total_warranty || "";
-    this.barcodeValue = data.barcode || "";
-    this.selectedAssignWorker = data.worker_id || null;
-    this.selectedAssignVendor = data.vendor_id || null;
-  }
+ 
 
   loadAssetDetails() {
-    const localAsset = localStorage.getItem('selectedAsset');
-    if (localAsset) {
-      try {
-        const data = JSON.parse(localAsset);
-        if (String(data.code || data.id) === String(this.editId)) {
-          this.bindAssetData(data);
-          return;
-        }
-      } catch (e) {
-        console.error("Error parsing localAsset:", e);
-      }
-    }
-
     const currentUser = this.commonService.getCurrentUser();
     const payload = {
-      typeId: 22,
-      typeid: 22,
+      typeId: 87, 
       filterId: 0,
       filterText: this.editId,
       filterText1: "",
@@ -374,67 +224,50 @@ export class CreateAssetComponent implements OnInit {
     this.propertiesService.getMasterDetails(payload).subscribe({
       next: (res: any) => {
         if (res && res.objResult) {
-          const details = res.objResult.assets || res.objResult.table || res.objResult;
+          const details = res.objResult.assetsdtls || res.objResult.table || res.objResult;
           if (Array.isArray(details) && details.length > 0) {
-            this.bindAssetData(details[0]);
+            const data = details[0];
+            this.commonAreaLeft = data.area || "";
+            this.brandManufacturer = data.manufacturer || "";
+            this.capacity = data.capacity || ""; 
+            this.location = data.location || "";
+             this.assetName=data.asset_name,
+            this.assetModel =data.model,
+            this.commonAreaLeft=data.area,
+            this.selectedAssignWorker=data.worker_id,
+            this.selectedAssignVendor=data.vendor_id,
+            this.selectedAssetCategory=data.asset_category,
+            this.selectedUnit=data.units;
+
+            this.selectedProperty = data.property_code || null;
+          
+            
+            this.selectedCommonAreaRight = data.common_area || null;
+            this.description = data.description || "";
+            this.price = data.price || ""; 
+            this.loadLookup(2, 27, 'assetSubcategories', this.selectedAssetCategory); 
+            this.loadLookup(44, 0, 'propertyUnits', this.selectedProperty);  
+            this.selectedPropertyUnit = data.unit_code || null; 
+            this.selectedAssetSubcategory=data.asset_subcategory
+            if (data.expiry_date) {
+              this.expiryDate = data.expiry_date.substring(0, 10);
+            }
+            this.totalWarranty = data.total_warranty || "";
+            this.barcodeValue = data.barcode || "";
+            this.selectedAssignWorker = data.worker_id || null;
+            this.selectedAssignVendor = data.vendor_id || null;
           }
+         
         }
       },
       error: (err: any) => console.error("Error loading asset details:", err)
     });
   }
+ 
 
-  loadWorkers() {
-    const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMasterByType({
-      typeId: 70,
-      filterId: 6,
-      filterText: '',
-      filterText1: '',
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1
-    }).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.users || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
-          if (Array.isArray(list)) {
-            this.assignWorkers = list.map((item: any) => ({
-              id: item.id || item.code || item.user_code || '',
-              name: item.name || item.column1 || item.lookup_name || item.full_name || item.user_name || item.technician_name || item.code || '-'
-            }));
-          }
-        }
-      },
-      error: (err) => console.error('Error loading technicians:', err)
-    });
-  }
+ 
 
-  loadVendors() {
-    const currentUser = this.commonService.getCurrentUser();
-    this.portfolioService.getMasterByType({
-      typeId: 70,
-      filterId: 5,
-      filterText: '',
-      filterText1: '',
-      userId: currentUser?.userId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
-      companyId: currentUser?.companyId || 1
-    }).subscribe({
-      next: (res: any) => {
-        if (res && res.objResult) {
-          const list = res.objResult.table || res.objResult.vendors || (Array.isArray(res.objResult) ? res.objResult : null) || Object.values(res.objResult).find((val: any) => Array.isArray(val)) || [];
-          if (Array.isArray(list)) {
-            this.assignVendors = list.map((item: any) => ({
-              id: item.id || item.code || item.user_code || '',
-              name: item.name || item.company_name || item.contact_name || item.lookup_name || item.full_name || item.user_name || item.code || '-'
-            }));
-          }
-        }
-      },
-      error: (err) => console.error('Error loading vendors:', err)
-    });
-  }
+ 
 
   onFileSelected(event: any) {
     const files = event.target.files;
@@ -477,46 +310,6 @@ export class CreateAssetComponent implements OnInit {
     formData.append('file_path', file);
     return this.portfolioService.saveAttachment(formData);
   }
-
-  loadMaintenanceSubcategories() {
-    this.portfolioService.getMasterByType({
-      typeId: 2,
-      filterId: 30, // Maintenance Categories lookup
-      filterText: '',
-      filterText1: ''
-    }).subscribe({
-      next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult && res.objResult.table) {
-          const categories = res.objResult.table;
-          const observables: Observable<any>[] = categories.map((cat: any) =>
-            this.portfolioService.getMasterByType({
-              typeId: 2,
-              filterId: 31, // Maintenance Subcategories lookup
-              filterText: String(cat.id),
-              filterText1: ''
-            })
-          );
-
-          forkJoin(observables).subscribe({
-            next: (responses: any) => {
-              let allSubcats: any[] = [];
-              const responseArray = Array.isArray(responses) ? responses : [responses];
-              responseArray.forEach(subRes => {
-                if (subRes && subRes.statusCode == 200 && subRes.objResult && subRes.objResult.table) {
-                  allSubcats = allSubcats.concat(subRes.objResult.table);
-                }
-              });
-              this.maintenanceSubcategories = allSubcats.map((item: any) => ({
-                id: item.id,
-                name: item.lookup_name || item.name || ''
-              }));
-            },
-            error: (err) => console.error('Error loading subcategories via forkJoin:', err)
-          });
-        }
-      },
-      error: (err) => console.error('Error loading maintenance categories:', err)
-    });
-  }
+ 
 }
 // Force compile 2

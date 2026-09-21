@@ -8,7 +8,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
-
+import { ToastrService } from 'ngx-toastr';
 export interface Asset {
   id: string;
   assetName: string;
@@ -32,6 +32,7 @@ export class AssetListComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
+  private toastr=inject(ToastrService);
 
   searchQuery: string = '';
   branches = ['Main Branch', 'Branch A'];
@@ -44,23 +45,26 @@ export class AssetListComponent implements OnInit {
   filterStatus: any = null;
   assetCategories: any[] = [];
   statusOptions = ['Operational', 'Down'];
-
+  pageIndex = 0; 
   pageNo = 0;
-  pageSize = 10;
+  pageSize = 10; 
+  totalPages = 0;
   totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonService.getCurrentUser();  
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'assetName', label: 'Asset Name', visible: true },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true },
+    { key: 'asset_name', label: 'Asset Name', visible: true, useTemplate: true },
     { key: 'model', label: 'Model', visible: true },
     { key: 'category', label: 'Category', visible: true, useTemplate: true },
     { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true },
-    { key: 'price', label: 'Price', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'location', label: 'Location', visible: true },
-    { key: 'Vendor', label: 'Vendor', visible: true },
-    { key: 'PurchaseDate', label: 'Purchase Date', visible: true },
+    { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
+    { key: 'price', label: 'Price' + ' (' + this.currentUser?.currencyCode +' )', visible: true }, 
+    { key: 'purchase_date', label: 'Purchase Date', visible: true },
+    { key: 'vendor', label: 'Vendor', visible: true },
+    { key: 'worker', label: 'Worker', visible: true }, 
     { key: 'action', label: 'Action', visible: true, useTemplate: true },
   ];
 
@@ -144,12 +148,11 @@ export class AssetListComponent implements OnInit {
   }
 
   loadData() {
-    this.isLoading = true;
-    const currentUser = this.commonService.getCurrentUser();
+    this.isLoading = true; 
     const payload = {
-      userid: currentUser?.userId || 1,
-      company_id: currentUser?.companyId || 1,
-      clientId: currentUser?.clientId || "74BB6922",
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
       source: "web",
       languageid: 1,
       page_no: this.pageNo,
@@ -162,22 +165,21 @@ export class AssetListComponent implements OnInit {
     };
 
     this.portfolioService.getMastersByPaging(payload).subscribe({
-      next: (res: any) => {
+      next: (response: any) => {
         this.isLoading = false;
-        if (res && res.objResult) {
-          const rawAssets = res.objResult.assets || res.objResult.table || [];
-          this.assetData = rawAssets.map((item: any) => ({
-            ...item,
-            assetName: item.asset_name || item.assetName || '',
-            Vendor: item.vendor || item.Vendor || '',
-            PurchaseDate: item.purchase_date || item.PurchaseDate || '',
-            location: item.location || item.Location || item.address || item.address1 || '-',
-            price: item.price || item.Price || '-',
-            status: item.status_name || item.status_nm || (item.status == 1 || item.status === '1' || item.status === 'Operational' || item.status === 'Active' || item.is_active === true ? 'Operational' : 'Down')
-          })).sort((a: any, b: any) => a.id - b.id);
-          this.totalRecords = res.objResult.total_records || (res.objResult.rows_info && res.objResult.rows_info[0]?.totalrecords) || this.assetData.length;
-          this.allAssetsData = [...this.assetData];
-        }
+        if (response && response.objResult) {
+          this.allRows = response.objResult.assets || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        } 
+         
       },
       error: (err) => {
         this.isLoading = false;
@@ -185,7 +187,45 @@ export class AssetListComponent implements OnInit {
       }
     });
   }
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
 
+  get startRecord(): number {
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
+  }
+
+  get endRecord(): number {
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadData();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageNo++;
+      this.loadData();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadData();
+    }
+ 
+  }
   allAssetsData: Asset[] = [];
 
   applyLocalSearch(): void {
@@ -207,12 +247,39 @@ export class AssetListComponent implements OnInit {
     this.assetData = temp;
   }
 
-  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageNo = event.pageIndex;
-    this.pageSize = event.pageSize;
+ 
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
     this.loadData();
   }
-
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages;
+    const current = this.displayPage;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const items: (number | string)[] = [1];
+    if (current > 3) {
+      items.push('...');
+    }
+    for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+      items.push(p);
+    }
+    if (current < total - 2) {
+      items.push('...');
+    }
+    items.push(total);
+    return items;
+  }
   onSearch() {
     this.pageNo = 0;
     this.loadData();
