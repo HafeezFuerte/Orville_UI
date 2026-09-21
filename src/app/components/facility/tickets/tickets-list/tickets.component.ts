@@ -319,6 +319,7 @@ export class FacilityTicketsComponent {
 
   onSearch(): void {
     this.pageNo = 0;
+    this.loadTickets();
   }
 
   onSharedTablePageChange(event: any): void {

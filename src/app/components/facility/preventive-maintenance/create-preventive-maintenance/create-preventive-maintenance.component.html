@@ -15,7 +15,7 @@
     </div>
     <div class="ov-add-header__actions">
       <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Preventive Maintenance</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{editId==null || editId=='' ? 'Create' : 'Update'}} Preventive Maintenance</button>
     </div>
   </div>
 
@@ -29,13 +29,13 @@
         <div class="ov-card__body flex flex-col gap-5">
           <div>
             <label class="ov-label">Name <span class="text-danger">*</span></label>
-            <input type="text" class="ov-input" [(ngModel)]="name" placeholder="Enter name" />
+            <input type="text" class="ov-input" [(ngModel)]="form.name" placeholder="Enter name" />
           </div>
           <div>
             <label class="ov-label">Start Date</label>
             <div class="pm-date">
               <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
-              <input type="text" class="ov-input pm-date__input" [(ngModel)]="startDate" placeholder="DD/MM/YYYY" />
+              <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY" />
             </div>
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -43,14 +43,14 @@
               <label class="ov-label">1st PPM Date <span class="text-danger">*</span></label>
               <div class="pm-date">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
-                <input type="text" class="ov-input pm-date__input" [(ngModel)]="firstPpmDate" placeholder="DD/MM/YYYY" />
+                <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.firstPpmDate" placeholder="DD/MM/YYYY" />
               </div>
             </div>
             <div>
               <label class="ov-label">Ends On</label>
               <div class="pm-date">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
-                <input type="text" class="ov-input pm-date__input" [(ngModel)]="endsOn" placeholder="DD/MM/YYYY" />
+                <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.endsOn" placeholder="DD/MM/YYYY" />
               </div>
             </div>
           </div>
@@ -66,17 +66,17 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label class="ov-label">Every <span class="text-danger">*</span></label>
-              <input type="number" class="ov-input" [(ngModel)]="every" min="1" />
+              <input type="number" class="ov-input" [(ngModel)]="form.every" min="1" />
             </div>
             <div>
               <label class="ov-label">Time span <span class="text-danger">*</span></label>
-              <ng-select [items]="options.timeSpans" [(ngModel)]="timeSpan"
+              <ng-select [items]="timeSpans" [(ngModel)]="form.timeSpan"
                 placeholder="Select" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Create <span class="text-danger">*</span></label>
-              <input type="number" class="ov-input" [(ngModel)]="createDaysBefore" min="0" />
+              <input type="number" class="ov-input" [(ngModel)]="form.createDaysBefore" min="0" />
               <p class="pm-form__hint">It will be triggered X days before the planned date</p>
             </div>
           </div>
@@ -92,22 +92,27 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label class="ov-label">Property <span class="text-danger">*</span></label>
-              <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
-                placeholder="Select Property" class="ov-select w-full" appendTo="body">
+              <ng-select #PropSelect [items]="properties" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedProperty"
+                placeholder="Select Property" (change)="onPropertyChange($event)" class="ov-select w-full" appendTo="body">
+                   <ng-template ng-header-tmp>
+                    <div class="p-1.5 border-b border-gray-100">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="PropSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                    </div>
+                  </ng-template>
               </ng-select>
             </div>
             <div>
               <label class="ov-label">Unit</label>
-              <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
-                placeholder="Select Unit" class="ov-select w-full" appendTo="body">
-              </ng-select>
+              <ng-select [items]="units" (change)="onUnitChange($event)" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedUnit"
+              placeholder="Select Unit" class="ov-select w-full" appendTo="body">
+            </ng-select>
             </div>
           </div>
           <div>
             <label class="ov-label">Common Area</label>
-            <ng-select [items]="options.commonAreas" [(ngModel)]="selectedCommonArea"
-              placeholder="Select" class="ov-select w-full" appendTo="body">
-            </ng-select>
+            <ng-select [items]="commonAreas" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedCommonArea"
+            placeholder="Select" class="ov-select w-full" appendTo="body">
+          </ng-select>
           </div>
         </div>
       </div>
@@ -120,8 +125,9 @@
         <div class="ov-card__body">
           <p class="pm-form__intro">Select Asset for the work order.</p>
           <label class="ov-label">Search Asset</label>
-          <input type="text" class="ov-input" [(ngModel)]="assetSearch"
-            placeholder="Search Asset by name, barcode, area, or location" />
+          <ng-select [items]="assets"  bindValue="code" bindLabel="name"   [(ngModel)]="form.selectedAsset"
+          placeholder="Select" class="ov-select w-full" appendTo="body">
+        </ng-select>
         </div>
       </div>
 
@@ -133,18 +139,18 @@
         <div class="ov-card__body flex flex-col gap-5">
           <div>
             <label class="ov-label">Title <span class="text-danger">*</span></label>
-            <input type="text" class="ov-input" [(ngModel)]="workOrderTitle" placeholder="Enter title" />
+            <input type="text" class="ov-input" [(ngModel)]="form.workOrderTitle" placeholder="Enter title" />
           </div>
           <div>
             <label class="ov-label">Details</label>
             <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
-              [(ngModel)]="workOrderDetails" placeholder="Enter details..."></textarea>
+              [(ngModel)]="form.workOrderDetails" placeholder="Enter details..."></textarea>
           </div>
           <div>
             <label class="ov-label">Maintenance Category <span class="text-danger">*</span></label>
-            <ng-select [items]="options.categories" [(ngModel)]="selectedCategory"
-              placeholder="Select category" class="ov-select w-full" appendTo="body">
-            </ng-select>
+            <ng-select [items]="categories"  bindValue="code" bindLabel="name"   [(ngModel)]="form.selectedCategory"
+            placeholder="Select" class="ov-select w-full" appendTo="body">
+          </ng-select>
           </div>
         </div>
       </div>
@@ -157,8 +163,10 @@
         </div>
         <div class="ov-card__body">
           <p class="pm-form__intro">Assign this work order to a responsible person directly without quotation.</p>
-          <input type="text" class="ov-input" [(ngModel)]="responsiblePerson"
-            placeholder="Enter responsible person's name..." />
+     
+              <ng-select [items]="responsibleusers"  bindValue="code" bindLabel="name"   [(ngModel)]="form.responsiblePerson"
+              placeholder="Select" class="ov-select w-full" appendTo="body">
+            </ng-select>
         </div>
       </div>
 
@@ -167,7 +175,7 @@
           <h6 class="ov-card-title">Technicians</h6>
         </div>
         <div class="ov-card__body">
-          <ng-select [items]="options.technicians" [(ngModel)]="selectedTechnicians" [multiple]="true"
+          <ng-select [items]="technicians" bindValue="code" bindLabel="name"  [(ngModel)]="form.selectedTechnicians"  
             placeholder="Search or select technicians..." class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>
@@ -178,7 +186,7 @@
           <h6 class="ov-card-title">Assign Vendor</h6>
         </div>
         <div class="ov-card__body">
-          <ng-select [items]="options.vendors" [(ngModel)]="selectedVendor"
+          <ng-select [items]="vendors" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedVendor"
             placeholder="Choose Vendor" class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>
@@ -191,7 +199,7 @@
         <div class="ov-card__body">
           <p class="pm-form__intro">Select the checkbox below to create post PPM inspections.</p>
           <label class="pm-check">
-            <input type="checkbox" [(ngModel)]="allowPostPpm" />
+            <input type="checkbox" [(ngModel)]="form.allowPostPpm" />
             <span>Allow Post-PPM Inspection</span>
           </label>
         </div>
@@ -202,8 +210,8 @@
           <h6 class="ov-card-title">Add CheckList</h6>
         </div>
         <div class="ov-card__body">
-          <div class="pm-check-row" *ngFor="let item of checklistItems; let i = index; trackBy: trackByIndex">
-            <input type="text" class="ov-input" [(ngModel)]="checklistItems[i]" placeholder="Enter" />
+          <div class="pm-check-row" *ngFor="let item of form.checklistItems; let i = index; trackBy: trackByIndex">
+            <input type="text" class="ov-input" [(ngModel)]="form.checklistItems[i]" placeholder="Enter" />
             <button type="button" class="pm-check-row__del" (click)="removeChecklistItem(i)" aria-label="Remove checklist item">
               <img src="assets/images/action-menu/trash.svg" alt="" width="16" height="16" />
             </button>
@@ -219,6 +227,6 @@
 
   <div class="ov-add-footer">
     <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">Create Preventive Maintenance</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{editId==null || editId=='' ? 'Create' : 'Update'}} Preventive Maintenance</button>
   </div>
 </div>

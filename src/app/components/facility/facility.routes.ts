@@ -108,6 +108,18 @@ export const facilityRoutingModule: Routes = [
             (m) => m.CreatePreventiveMaintenanceComponent
           ),
       },
+      {
+        path: ':code',
+        loadComponent: () =>
+          import('./preventive-maintenance/preventive-maintenance-detail/preventive-maintenance-detail.component').then((m) => m.PreventiveMaintenanceDetailComponent),
+      },
+      {
+        path: 'edit/:code',
+        loadComponent: () =>
+          import('./preventive-maintenance/create-preventive-maintenance/create-preventive-maintenance.component').then(
+            (m) => m.CreatePreventiveMaintenanceComponent
+          ),
+      },
     ]
   },
   {

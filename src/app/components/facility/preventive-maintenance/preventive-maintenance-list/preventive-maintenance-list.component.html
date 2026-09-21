@@ -38,26 +38,33 @@
     </div>
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)"   [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)">{{ row.id }}</a>
-            <span *ngSwitchCase="'title'" class="font-semibold text-defaulttextcolor">{{ row.title }}</span>
-            <span *ngSwitchCase="'status'" class="pm-chip" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
-            <span *ngSwitchCase="'priority'" class="pm-chip" [ngClass]="priorityClass(row.priority)">{{ row.priority }}</span>
-            <div *ngSwitchCase="'action'" class="pm-action" data-pm-action (click)="$event.stopPropagation()">
+            <a *ngSwitchCase="'code'" class="ov-link" href="javascript:void(0)"
+              (click)="navigateToDetail(row.code)">{{ row.code }}</a>
+            <a *ngSwitchCase="'title'"  (click)="navigateToDetail(row.code)" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
+            
+            <span *ngSwitchCase="'status_nm'" class="tk-chip" [ngClass]="statusClass(row.status_nm)">
+              {{ row.status_nm }}
+            </span>
+            <span *ngSwitchCase="'property'" class="tk-chip tk-chip--soft"> 
+              <a class="ov-link font-semibold" [routerLink]="['/properties', row.property_code]">{{ row.property }}</a>
+            </span> 
+            <span *ngSwitchCase="'unitcode'" class="tk-chip tk-chip--soft"> 
+              <a class="ov-link font-semibold" [routerLink]="['/properties', row.unit_code]">{{ row.unitcode }}</a>
+            </span> 
+            <span *ngSwitchCase="'vendor'" class="tk-chip tk-chip--soft"> 
+              <a class="ov-link font-semibold" [routerLink]="['/contacts/vendors', row.vendor_code]">{{ row.vendor }}</a>
+            </span> 
+            <div *ngSwitchCase="'action'" class="tk-action" data-tickets-action
+              (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                [attr.aria-expanded]="openRowActionId === row.id"
+                [attr.aria-expanded]="openRowActionId === row.code"
                 (mousedown)="$event.stopPropagation()"
-                (click)="toggleRowAction(row.id, $event)">
+                (click)="toggleRowAction(row.code, $event)">
                 <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
             </div>
@@ -71,11 +78,8 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">Show</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
@@ -87,7 +91,11 @@
           <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
-          <button type="button" class="ov-page__btn is-active" (click)="goPage(1)">1</button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
           <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>

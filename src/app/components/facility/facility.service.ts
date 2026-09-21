@@ -28,4 +28,7 @@ export class FacilityService {
    saveTicket(payload: any): Observable<any> { 
       return this.http.post(environment.apiurl+'api/Application/save_update_ticket', payload, { headers: this.commonservice.updateHeaders() });
      }
+     savePreventiveMaintenence(payload: any): Observable<any> { 
+      return this.http.post(environment.apiurl+'api/Application/save_update_preventive_maintenance', payload, { headers: this.commonservice.updateHeaders() });
+     }
 }

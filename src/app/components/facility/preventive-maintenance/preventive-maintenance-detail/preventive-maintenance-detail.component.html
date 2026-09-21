@@ -54,9 +54,9 @@
         <div class="min-w-0 flex items-start gap-1.5">
           <div class="min-w-0">
             <h4 class="ov-card-title !text-[16px]">{{ ticket.title }}</h4>
-            <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Ticket #{{ ticket.id }}</p>
+            <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Ticket #{{ ticket.code }}</p>
           </div>
-          <span class="td-prio-soft">{{ ticket.priority }}</span>
+          <!-- <span class="td-prio-soft">{{ ticket.priority }}</span> -->
         </div>
         <span [ngClass]="statusClass(ticket.status)">{{ ticket.status }}</span>
       </div>
@@ -105,42 +105,46 @@
         <div class="td-info-card__head">
           <h6 class="td-info-card__title">Ticket Information</h6>
         </div>
-        <div class="td-info-card__body">
-          <div class="ov-kv">
-            <span class="ov-kv__label">Lease ID:</span>
-            <span class="ov-kv__value">{{ ticket.leaseId }}</span>
-          </div>
+        <div class="td-info-card__body"> 
           <div class="ov-kv">
             <span class="ov-kv__label">Status:</span>
             <span class="td-status-dark td-status-dark--sm">{{ ticket.status }}</span>
           </div>
           <div class="ov-kv">
+            <span class="ov-kv__label">Trigger:</span>
+            <span class="td-status-dark td-status-dark--sm">{{ ticket.trigger }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Details:</span>
+            <span class="td-status-dark td-status-dark--sm">{{ ticket.description }}</span>
+          </div>
+          <div class="ov-kv">
             <span class="ov-kv__label">Property:</span>
-            <a class="ov-link font-bold" [routerLink]="['/properties', ticket?.property_code]" >{{ ticket.property }}</a>
+            <a class="ov-link font-bold" [routerLink]="['/properties', ticket?.property_code]" >{{ ticket.property_name }}</a>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Unit:</span>
-            <a class="ov-link font-bold" [routerLink]="['/units', ticket?.unit_code]">{{ ticket.unit }}</a>
+            <a class="ov-link font-bold" [routerLink]="['/units', ticket?.unit_code]">{{ ticket.property_unit }}</a>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Contact:</span>
-            <a class="ov-link font-bold" [routerLink]="['/contacts/tenants/edit-tenant', ticket?.contact_code]">{{ ticket.contact }}</a>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Source:</span>
-            <span class="ov-kv__value">{{ ticket.source }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Priority:</span>
-            <span class="td-prio-solid">{{ ticket.priority }}</span>
-          </div>
-          <div class="ov-kv">
-            <span class="ov-kv__label">Department:</span>
-            <span class="ov-kv__value">{{ ticket.department }}</span>
+            <span class="ov-kv__label">Vendor:</span>
+            <a class="ov-link font-bold" [routerLink]="['/contacts/vendors', ticket?.vendor_code]">{{ ticket.vendor }}</a>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Category:</span>
             <span class="ov-kv__value">{{ ticket.category }}</span>
+          </div> 
+          <div class="ov-kv">
+            <span class="ov-kv__label">Schedule:</span>
+            <span class="ov-kv__value">{{ ticket.schedule }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Technician:</span>
+            <span class="ov-kv__value">{{ ticket.technician }}</span>
+          </div>
+          <div class="ov-kv">
+            <span class="ov-kv__label">Responsible User:</span>
+            <span class="ov-kv__value">{{ ticket.responsible }}</span>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">Created:</span>
@@ -166,8 +170,7 @@
       <div class="ov-detail-tabs">
         <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'overview'"
           (click)="setTab('overview')">Overview</button>
-        <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'messages'"
-          (click)="setTab('messages')">Messages</button>
+        
         <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'notes'"
           (click)="setTab('notes')">Notes</button>
       </div>
@@ -182,8 +185,24 @@
           <h6 class="td-issue-card__title">{{ ticket.title }}</h6>
           <p class="td-issue-card__desc">{{ ticket.description }}</p>
         </div>
-
-        <div class="td-attach-card">
+        <div class="td-recent-card">
+          <h6 class="td-section-title">Ticket Activities</h6>
+          <div class="td-recent-list">
+            <div class="td-recent-row" *ngFor="let row of activities">
+              <div class="td-recent-row__main">
+                <span class="td-recent-row__icon">
+                  <img src="assets/images/action-menu/message.svg" alt="" width="20" height="20" />
+                </span>
+                <div class="min-w-0">
+                  <p class="td-recent-row__title">{{ row.notes }}</p>
+                  <p class="td-recent-row__date">{{ row.created_date |  date:'MM-dd-yyyy' }}</p>
+                </div>
+              </div>
+              <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="td-attach-card">
           <h6 class="td-section-title">Attachments</h6>
           <p class="td-section-sub">Photos and videos</p>
           <div class="td-media-grid">
@@ -232,73 +251,10 @@
               <span [ngClass]="statusClass(row.status_nm)">{{ row.status_nm }}</span>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
-      <!-- MESSAGES — Figma 2905:89518 -->
-      <div *ngIf="activeTab === 'messages'" class="p-5">
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <h5 class="ov-card-title m-0 !text-[18px]">Message</h5>
-        </div>
-        <div class="td-messages">
-          <aside class="td-messages__list">
-            <div class="td-messages__list-head">
-              <h6 class="ov-card-title m-0 !text-[16px]">Messages</h6>
-            </div>
-            <button type="button" class="td-messages__item is-active"
-              *ngFor="let c of conversations">
-              <span class="td-avatar">{{ c.initials }}</span>
-              <span class="min-w-0 flex-1 text-start">
-                <span class="flex items-center justify-between gap-2">
-                  <span class="text-[14px] font-semibold text-defaulttextcolor truncate">{{ c.name }}</span>
-                  <span class="text-[11px] text-textmuted shrink-0">{{ c.time }}</span>
-                </span>
-                <span class="block text-[12px] text-textmuted line-clamp-1 mt-1">{{ c.preview }}</span>
-              </span>
-            </button>
-          </aside>
-
-          <div class="td-messages__thread">
-            <div class="td-messages__thread-head">
-              <div>
-                <h6 class="ov-card-title m-0 !text-[16px]">Zaid Rahman</h6>
-                <span class="text-[13px] text-textmuted">Tenant</span>
-              </div>
-              <span class="td-active-pill">
-                <span class="td-active-pill__dot"></span>
-                Active
-              </span>
-            </div>
-
-            <div class="td-messages__body">
-              <div class="text-center">
-                <span class="td-day-chip">Today</span>
-              </div>
-
-              <ng-container *ngFor="let msg of messages">
-                <div class="td-msg" [class.td-msg--me]="msg.from === 'me'">
-                  <span class="td-avatar" *ngIf="msg.from === 'them'">{{ msg.initials }}</span>
-                  <div class="td-bubble" [class.td-bubble--me]="msg.from === 'me'">
-                    <p class="td-bubble__text">{{ msg.text }}</p>
-                    <p class="td-bubble__meta">{{ msg.meta }}</p>
-                  </div>
-                </div>
-              </ng-container>
-            </div>
-
-            <div class="td-messages__composer">
-              <button type="button" class="td-composer-attach" aria-label="Attach">
-                <img src="assets/images/action-menu/paperclip.svg" alt="" width="20" height="20" />
-              </button>
-              <input type="text" class="td-composer-input" [(ngModel)]="draftMessage"
-                (keydown.enter)="sendMessage()" placeholder="Write a message..." />
-              <button type="button" class="td-composer-send" (click)="sendMessage()" aria-label="Send">
-                <i class="ri-send-plane-fill text-[16px]"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+  
 
       <!-- NOTES — Figma 2905:90535 -->
       <div *ngIf="activeTab === 'notes'" class="p-5">
