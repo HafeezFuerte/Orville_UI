@@ -72,7 +72,8 @@ export class RemindersComponent implements OnInit {
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
-  allRows:any[]=[];
+  allRows: any[] = [];
+  allRowsData: any[] = [];
   currentUser = this.commonService.getCurrentUser();  
   totalRecordsCount = 0;
   totalPagesCount = 0;
@@ -134,13 +135,14 @@ export class RemindersComponent implements OnInit {
           const rawItems = res.objResult.reminders || res.objResult.table || [];
           if (rawItems.length) {
             this.useApiPaging = true;
-            this.allRows =rawItems;
+            this.allRows = rawItems;
+            this.allRowsData = [...rawItems];
             if (res.objResult.rows_info && res.objResult.rows_info[0]) {
-              this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
-              this.totalPagesCount = res.objResult.rows_info[0].noofpages;
+              this.totalRecords = res.objResult.rows_info[0].totalrecords;
+              this.totalPages = res.objResult.rows_info[0].noofpages;
             } else {
-              this.totalRecordsCount = this.allRows.length;
-              this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
+              this.totalRecords = this.allRows.length;
+              this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
             }
             return;
           }
@@ -153,6 +155,25 @@ export class RemindersComponent implements OnInit {
       },
     });
   }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.title && item.title.toLowerCase().includes(q)) ||
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.assignee && item.assignee.toLowerCase().includes(q)) ||
+        (item.priority && item.priority.toLowerCase().includes(q)) ||
+        (item.status_name && item.status_name.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
   loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
     this.commontabservice.getMasterByType({
       typeId: Typeid,
@@ -176,11 +197,13 @@ export class RemindersComponent implements OnInit {
       }
     });
   }
+
   private useMockData(): void {
     this.useApiPaging = false;
     this.allRows = [...REMINDER_ROWS];
-    this.totalRecordsCount = this.filteredRows.length;
-    this.totalPagesCount = Math.max(1, Math.ceil(this.totalRecordsCount / this.pageSize));
+    this.allRowsData = [...REMINDER_ROWS];
+    this.totalRecords = this.allRows.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
   }
  
 
@@ -234,20 +257,20 @@ export class RemindersComponent implements OnInit {
     if (this.useApiPaging) {
       return this.filteredRows;
     }
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get pagerItems(): (number | string)[] {

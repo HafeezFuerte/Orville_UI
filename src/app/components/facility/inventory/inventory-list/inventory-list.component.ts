@@ -9,10 +9,12 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 
+import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, FilterDrawerComponent],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.scss'
 })
@@ -23,6 +25,10 @@ export class InventoryListComponent implements OnInit {
   private commonService = inject(CommonService);
 
   searchQuery = '';
+  isDrawerOpen = false;
+  filterItemName = '';
+  filterCategory = '';
+  filterVendor = '';
   showColumnDropdown = false;
   pageIndex = 0;
   pageSize = 10;
@@ -248,7 +254,42 @@ export class InventoryListComponent implements OnInit {
     return this.allRows;
   }
 
+  allInventoryData: InventoryRow[] = [];
+
+  applyLocalSearch(): void {
+    if (!this.allInventoryData || this.allInventoryData.length === 0) {
+      this.allInventoryData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allInventoryData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.itemName && item.itemName.toLowerCase().includes(q)) ||
+        (item.partNumber && item.partNumber.toLowerCase().includes(q)) ||
+        (item.category && item.category.toLowerCase().includes(q)) ||
+        (item.vendor && item.vendor.toLowerCase().includes(q)) ||
+        (item.id && item.id.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
   onSearch(): void {
+    this.pageIndex = 0;
+    this.loadInventory();
+  }
+
+  applyFilters(): void {
+    this.pageIndex = 0;
+    this.isDrawerOpen = false;
+    this.loadInventory();
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterItemName = '';
+    this.filterCategory = '';
+    this.filterVendor = '';
     this.pageIndex = 0;
     this.loadInventory();
   }

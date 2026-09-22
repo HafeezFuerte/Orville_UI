@@ -56,7 +56,8 @@ export class ExpensesComponent {
     expiringLeases: 420
   };
   pageIndex = 0; 
-  allRows:any= [];
+  allRows: any = [];
+  allRowsData: any = [];
   tableColumns = [
     { key: 'code', label: 'ID', visible: true, useTemplate: true },
     { key: 'invoice_no', label: 'Bill Number', visible: true , useTemplate: true },
@@ -84,15 +85,6 @@ export class ExpensesComponent {
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    if(event.pageIndex>this.pageNo){
-      this.pageNo = this.pageNo + 1;
-      }
-      else{
-        this.pageNo = this.pageNo - 1;
-      }
-      if(this.pageNo<0)
-      this.pageNo=0;
-      this.pageSize = event.pageSize; 
     this.pageNo = event.pageIndex;
     this.pageSize = event.pageSize; 
     this.loadexpenses();
@@ -102,7 +94,6 @@ export class ExpensesComponent {
     if (this.statusFilter && this.statusFilter !== "All") {
       filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
     } 
- 
 
     const payload = {
       userid: this.currentUser?.userId,
@@ -123,12 +114,14 @@ export class ExpensesComponent {
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
           this.allRows = response.objResult.expenses || []; 
+          this.allRowsData = [...this.allRows];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         } else {
           this.allRows = []; 
+          this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
           this.toastr.error("No record[s] found");
@@ -137,11 +130,30 @@ export class ExpensesComponent {
       error: (err: any) => {
         console.error('Error loading leases:', err);
         this.allRows = []; 
+        this.allRowsData = [];
         this.totalRecords = 0;
         this.totalPages = 0;
       }
     });
   }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.invoice_no && item.invoice_no.toLowerCase().includes(q)) ||
+        (item.unit_code && item.unit_code.toLowerCase().includes(q)) ||
+        (item.account_name && item.account_name.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
   get filteredRows(): ExpenseRow[] {
     const q = this.searchQuery.trim().toLowerCase();
     return this.allRows.filter((row:any) => {
@@ -195,18 +207,18 @@ export class ExpensesComponent {
   }
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
     if (!this.totalRecords) {
       return 0;
     }
-    return this.pageIndex * this.pageSize + 1;
+    return this.pageNo * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get pagerItems(): (number | string)[] {
@@ -219,16 +231,18 @@ export class ExpensesComponent {
 
   setStatusFilter(status: string ): void {
     this.statusFilter = status;
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadexpenses();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadexpenses();
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadexpenses();
   }
 
   clearFilters(): void {
@@ -237,7 +251,8 @@ export class ExpensesComponent {
     this.filterAccount = '';
     this.filterStatus = null;
     this.statusFilter = 'All';
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadexpenses();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -306,25 +321,29 @@ export class ExpensesComponent {
   }
 
   onPageSizeChange(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadexpenses();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadexpenses();
     }
   }
 
   nextPage(): void {
-    if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+    if (this.displayPage < (this.totalPages || 1)) {
+      this.pageNo++;
+      this.loadexpenses();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
+      this.pageNo = target;
+      this.loadexpenses();
     }
   }
 

@@ -41,6 +41,7 @@ export class LandlordContractsListComponent implements OnInit {
   pageNo = 0;
   pageSize = 10;
   allRows: LandlordContractRow[] = [];
+  allRowsData: LandlordContractRow[] = [];
   isLoading = false;
   totalRecordsCount = 0;
   totalPagesCount = 0;
@@ -192,6 +193,7 @@ export class LandlordContractsListComponent implements OnInit {
             value: this.formatValue(item),
             daysLeft: item.days_left || item.daysLeft ? String(item.days_left || item.daysLeft) : this.calculateDaysLeft(item.end_date || item.endDate)
           }));
+          this.allRowsData = [...this.allRows];
 
           if (res.objResult.rows_info && res.objResult.rows_info[0]) {
             this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
@@ -202,6 +204,7 @@ export class LandlordContractsListComponent implements OnInit {
           }
         } else {
           this.allRows = [];
+          this.allRowsData = [];
           this.totalRecordsCount = 0;
           this.totalPagesCount = 0;
         }
@@ -210,10 +213,34 @@ export class LandlordContractsListComponent implements OnInit {
         this.isLoading = false;
         console.error("Error loading landlord contracts:", err);
         this.allRows = [];
+        this.allRowsData = [];
         this.totalRecordsCount = 0;
         this.totalPagesCount = 0;
       }
     });
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.name && item.name.toLowerCase().includes(q)) ||
+        (item.id && item.id.toLowerCase().includes(q)) ||
+        (item.landlord && item.landlord.toLowerCase().includes(q)) ||
+        (item.properties && item.properties.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadContracts();
   }
 
   get visibleColumns() {

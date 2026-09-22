@@ -83,28 +83,26 @@ export class LitigationsComponent implements OnInit {
     { key: 'internalStatus', label: 'Internal Statuses', visible: true }
   ];
 
-  litigationsData:any= [];
-
-  filteredData: Litigation[] = [];
+  litigationsData: any[] = [];
+  allLitigationsData: any[] = [];
 
   ngOnInit() {
     this.loadlegalcases();
-    this.applyFilters();
   }
   getArabicLookupName(row:any,key:string){ 
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
   loadlegalcases() {
+    this.isLoading = true;
     const filterList: any[] = [];
     if (this.activeStatusFilter && this.activeStatusFilter !== "All") {
       filterList.push({ 'key': 'P.status', 'value': this.activeStatusFilter });
     }
-     
 
     const payload = {
-      userid: this.currentUser?.userId,
-      company_id: this.currentUser?.companyId,
-      clientId: this.currentUser?.clientId,
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922",
       source: "web",
       languageid: 1,
       page_no: this.pageNo,
@@ -118,27 +116,55 @@ export class LitigationsComponent implements OnInit {
 
     this.commontabservice.getCommonGrid(payload).subscribe({
       next: (response: any) => { 
+        this.isLoading = false;
         if (response && response.statusCode === "200" && response.objResult) {  
           this.litigationsData = response.objResult.legal_cases || []; 
+          this.allLitigationsData = [...this.litigationsData];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         } else {
           this.litigationsData = []; 
+          this.allLitigationsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
           this.toastr.error("No record[s] found");
         }
       },
       error: (err: any) => {
-       
+        this.isLoading = false;
         this.litigationsData = []; 
+        this.allLitigationsData = [];
         this.totalRecords = 0;
         this.totalPages = 0;
       }
     });
   }
+
+  applyLocalSearch(): void {
+    if (!this.allLitigationsData || this.allLitigationsData.length === 0) {
+      this.allLitigationsData = [...(this.litigationsData || [])];
+    }
+    let temp = [...(this.allLitigationsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item => 
+        (item.case_name && item.case_name.toLowerCase().includes(q)) || 
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.legal_firm && item.legal_firm.toLowerCase().includes(q)) ||
+        (item.property && item.property.toLowerCase().includes(q)) ||
+        (item.details && item.details.toLowerCase().includes(q))
+      );
+    }
+    this.litigationsData = temp;
+  }
+
+  onSearch(): void {
+    this.pageNo = 0;
+    this.loadlegalcases();
+  }
+
   get visibleColumns() {
     return this.tableColumns.filter(c => c.visible);
   }
@@ -161,67 +187,83 @@ export class LitigationsComponent implements OnInit {
 
   setStatusFilter(status: string) {
     this.activeStatusFilter = status;
-    this.applyFilters();
+    this.pageNo = 0;
+    this.loadlegalcases();
   }
 
   applyFilters() {
-    let temp = [...this.litigationsData];
-
-    // Status filter
-    if (this.activeStatusFilter !== 'All') {
-      temp = temp.filter(item => item.status.toLowerCase() === this.activeStatusFilter.toLowerCase());
-    }
-
-    // Search query
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      temp = temp.filter(item => 
-        item.case_name.toLowerCase().includes(q) || 
-        item.code.toLowerCase().includes(q) ||
-        item.legal_firm.toLowerCase().includes(q)
-      );
-    }
-
-    // Drawer Filters
-    if (this.filterLegalFirm) {
-      temp = temp.filter(item => item.legalFirm === this.filterLegalFirm);
-    }
-    if (this.filterProperty) {
-      temp = temp.filter(item => item.property === this.filterProperty);
-    }
-    if (this.filterUnitBlocked) {
-      temp = temp.filter(item => item.unitBlocked === this.filterUnitBlocked);
-    }
-    if (this.filterTenantBlocked) {
-      temp = temp.filter(item => item.tenantBlocked === this.filterTenantBlocked);
-    }
-
-    this.filteredData = temp;
-    this.totalRecords = this.filteredData.length;
-  }
-  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    if(event.pageIndex>this.pageNo){
-      this.pageNo = this.pageNo + 1;
-      }
-      else{
-        this.pageNo = this.pageNo - 1;
-      }
-      if(this.pageNo<0)
-      this.pageNo=0;
-      this.pageSize = event.pageSize; 
-    this.pageNo = event.pageIndex;
-    this.pageSize = event.pageSize; 
+    this.pageNo = 0;
+    this.isDrawerOpen = false;
     this.loadlegalcases();
   }
+
   clearFilters() {
+    this.searchQuery = '';
     this.filterLegalFirm = null;
     this.filterProperty = null;
     this.filterUnitBlocked = null;
     this.filterTenantBlocked = null;
-    this.applyFilters();
+    this.pageNo = 0;
+    this.loadlegalcases();
   }
 
-  onPageChange(event: any) {
-    // Shared table pagination trigger hook
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    return this.pageNo * this.pageSize + 1;
+  }
+
+  get endRecord(): number {
+    const end = (this.pageNo + 1) * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
+  onPageSizeChange(): void {
+    this.pageNo = 0;
+    this.loadlegalcases();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadlegalcases();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < (this.totalPages || 1)) {
+      this.pageNo++;
+      this.loadlegalcases();
+    }
+  }
+
+  goToPage(page: number): void {
+    const target = page - 1;
+    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
+      this.pageNo = target;
+      this.loadlegalcases();
+    }
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    if(event.pageIndex > this.pageNo) {
+      this.pageNo = this.pageNo + 1;
+    } else {
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo < 0) this.pageNo = 0;
+    this.pageSize = event.pageSize; 
+    this.loadlegalcases();
   }
 }

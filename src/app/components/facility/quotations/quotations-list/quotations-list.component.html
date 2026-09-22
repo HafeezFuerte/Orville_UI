@@ -41,10 +41,15 @@
     </div>
 
     <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
-      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
-        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-        <input type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" placeholder="Search">
+      <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
+        <div class="ov-search flex-1">
+          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+          <input type="text" class="ov-input ov-search__input"
+            [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
+        </div>
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+          <i class="ri-search-line text-[18px]"></i>
+        </button>
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">

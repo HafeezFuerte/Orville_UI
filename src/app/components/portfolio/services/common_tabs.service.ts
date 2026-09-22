@@ -114,7 +114,7 @@ saveDocumentTemplate(payload: any): Observable<any> {
 }
 savePdfTemplate(payload: any): Observable<any> {
   return this.postAPI(
-    environment.apiurl + 'api/Configuration/save_update_pdf_template',
+    environment.apiurl + 'api/Configuration/save_update_document_template',
     payload
   );
 }

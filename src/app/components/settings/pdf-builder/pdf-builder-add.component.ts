@@ -192,6 +192,7 @@ export class PdfBuilderAddComponent implements OnInit {
     const payload = {
       id: this.templateId || 0,
       code: this.code || '',
+      doc_type: String(this.templateType || ''),
       template_type: String(this.templateType || ''),
       title: this.title.trim(),
       file_name: this.selectedFileName || 'template.pdf',
@@ -203,7 +204,7 @@ export class PdfBuilderAddComponent implements OnInit {
     };
 
     this.isSaving = true;
-    this.commonTabsService.savePdfTemplate(payload).subscribe({
+    this.commonTabsService.saveDocumentTemplate(payload).subscribe({
       next: (res: any) => {
         this.isSaving = false;
         if (res && (res.statusCode === 200 || res.statusCode === '200')) {

@@ -503,6 +503,11 @@ export class LeaseDetailComponent implements OnInit {
       return;
     }
 
+    let contentHtml = printElement.outerHTML;
+    const origin = window.location.origin;
+    contentHtml = contentHtml.replace(/src="\.\/assets\//g, `src="${origin}/assets/`);
+    contentHtml = contentHtml.replace(/src="assets\//g, `src="${origin}/assets/`);
+
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -520,6 +525,7 @@ export class LeaseDetailComponent implements OnInit {
         <!DOCTYPE html>
         <html>
           <head>
+            <base href="${origin}/">
             <title>Receipt - ${this.leaseId}</title>
             <style>
               @page { size: portrait; margin: 10mm; }
@@ -556,20 +562,50 @@ export class LeaseDetailComponent implements OnInit {
             </style>
           </head>
           <body>
-            ${printElement.outerHTML}
+            ${contentHtml}
           </body>
         </html>
       `);
       doc.close();
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
+
+      const images = Array.from(doc.querySelectorAll('img'));
+      let loaded = 0;
+      let printDone = false;
+
+      const runPrintAction = () => {
+        if (printDone) return;
+        printDone = true;
         setTimeout(() => {
-          if (document.body.contains(iframe)) {
-            document.body.removeChild(iframe);
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+          }, 1000);
+        }, 200);
+      };
+
+      if (images.length === 0) {
+        runPrintAction();
+      } else {
+        images.forEach((img) => {
+          if (img.complete && img.naturalHeight !== 0) {
+            loaded++;
+            if (loaded === images.length) runPrintAction();
+          } else {
+            img.onload = () => {
+              loaded++;
+              if (loaded === images.length) runPrintAction();
+            };
+            img.onerror = () => {
+              loaded++;
+              if (loaded === images.length) runPrintAction();
+            };
           }
-        }, 1000);
-      }, 300);
+        });
+        setTimeout(runPrintAction, 1000);
+      }
     }
   }
 

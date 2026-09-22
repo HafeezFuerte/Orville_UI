@@ -21,11 +21,16 @@
   </div>
 
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
-    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
-      <label class="sr-only" for="vendor-contract-search">Search by name</label>
-      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-      <input id="vendor-contract-search" type="text" class="ov-input ov-search__input"
-        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search by name">
+    <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
+      <div class="ov-search flex-1">
+        <label class="sr-only" for="vendor-contract-search">Search by name</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input id="vendor-contract-search" type="text" class="ov-input ov-search__input"
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search by name">
+      </div>
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <i class="ri-search-line text-[18px]"></i>
+      </button>
     </div>
     <div class="ov-toolbar__btns">
       <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
@@ -51,7 +56,8 @@
   <div class="px-5 pb-0 pt-5">
     <app-shared-table [columns]="visibleColumns" [data]="paginatedRows" [loading]="isLoading"
       [hasActions]="false" [showPaginator]="false"
-      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageIndex">
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
           <ng-container *ngSwitchCase="'id'">

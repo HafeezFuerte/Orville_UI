@@ -78,6 +78,7 @@ export class MastersComponent implements OnInit {
 
   // Form toggle
   showForm: boolean = false;
+  isEditMode: boolean = false;
 
   tableColumns = [
     { key: 'code', label: 'Code', useTemplate: true, width: '18%' },
@@ -203,8 +204,10 @@ export class MastersComponent implements OnInit {
   }
 
   // ── Step 3: Load items for the selected dependency lookup type ──
-  onDependencyTypeChange(lookupTypeId: number | null): void {
-    this.masterForm.get('dependency_id')?.setValue(null);
+  onDependencyTypeChange(lookupTypeId: number | null, preserveDependencyId?: number | null): void {
+    if (!preserveDependencyId) {
+      this.masterForm.get('dependency_id')?.setValue(null);
+    }
     this.dependencyItems = [];
     if (!lookupTypeId) return;
 
@@ -236,6 +239,10 @@ export class MastersComponent implements OnInit {
             class_name: item.class_name || '',
             dependency_id: item.dependency_id ?? null
           }));
+
+          if (preserveDependencyId) {
+            this.masterForm.get('dependency_id')?.setValue(preserveDependencyId);
+          }
         }
       },
       error: (err) => {
@@ -250,10 +257,84 @@ export class MastersComponent implements OnInit {
     return this.categories.find(c => c.id === this.selectedCategoryId) || null;
   }
 
+  // ── Action handlers from shared-table ─────────────────────────────────────
+  handleEditAction(event: any): void {
+    if (!event) return;
+    if (event.action_name === 'edit' || !event.action_name) {
+      this.openEditForm(event);
+    } else if (event.action_name === 'delete') {
+      this.deleteMasterItem(event);
+    }
+  }
+
+  openEditForm(item: any): void {
+    const user = this.commonService.getCurrentUser();
+    this.isEditMode = true;
+    this.dependencyItems = [];
+
+    this.masterForm.reset({
+      id: item.id || 0,
+      lookup_TypeId: this.selectedCategoryId || 0,
+      code: item.code && item.code !== '-' ? item.code : '',
+      name: item.name || '',
+      arabic_name: item.arabic_name || '',
+      description: item.description || '',
+      is_Active: item.is_active ?? true,
+      company_id: user?.companyId || 1,
+      display_order: item.display_order ?? 0,
+      user_id: user?.userId || 1,
+      dependency_type_id: null,
+      dependency_id: item.dependency_id ?? null,
+      class_name: item.class_name || '',
+      clientid: user?.clientId || '74BB6922'
+    });
+
+    if (item.dependency_id) {
+      this.onDependencyTypeChange(item.dependency_type_id || null, item.dependency_id);
+    }
+
+    this.showForm = true;
+  }
+
+  deleteMasterItem(item: any): void {
+    if (!confirm(`Are you sure you want to delete "${item.name || item.code}"?`)) return;
+
+    const user = this.commonService.getCurrentUser();
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const payload = {
+      typeId: -1,
+      filterId: -1,
+      filterText: String(item.id),
+      filterText1: String(this.selectedCategoryId),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1
+    };
+
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200') {
+          this.toastr.success('Record saved successfully', 'Success');
+          if (this.selectedCategoryId !== null) {
+            this.loadCategoryItems(this.selectedCategoryId);
+          }
+        } else {
+          this.toastr.error(res?.message || 'Failed to delete record', 'Error');
+        }
+      },
+      error: (err) => {
+        this.toastr.error('Failed to delete record', 'Error');
+        console.error(err);
+      }
+    });
+  }
+
   // ── Form open / close ──────────────────────────────────────────────────────
   openAddForm(): void {
     const user = this.commonService.getCurrentUser();
+    this.isEditMode = false;
     this.dependencyItems = [];
+
     this.masterForm.reset({
       id: 0,
       lookup_TypeId: this.selectedCategoryId || 0,
@@ -270,11 +351,13 @@ export class MastersComponent implements OnInit {
       class_name: '',
       clientid: user?.clientId || '74BB6922'
     });
+
     this.showForm = true;
   }
 
   closeForm(): void {
     this.showForm = false;
+    this.isEditMode = false;
   }
 
   onSubmitMaster(): void {
@@ -282,31 +365,79 @@ export class MastersComponent implements OnInit {
 
     const user = this.commonService.getCurrentUser();
     const formVal = this.masterForm.value;
+    const categoryId = this.selectedCategoryId || 0;
 
-    const payload = {
-      id:             formVal.id ?? 0,
-      lookup_TypeId:  this.selectedCategoryId || 0,
-      code:           formVal.code || '',
-      name:           formVal.name || '',
-      arabic_name:    formVal.arabic_name || '',
-      description:    formVal.description || '',
-      is_Active:      formVal.is_Active ?? true,
-      company_id:     user?.companyId || 1,
-      display_order:  formVal.display_order ?? 0,
-      user_id:        user?.userId || 1,
-      dependency_id:  formVal.dependency_id ?? 0,
-      class_name:     formVal.class_name || '',
-      clientid:       user?.clientId || '74BB6922'
-    };
+    let url = environment.apiurl + 'api/Masters/save_lookup';
+    let payload: any;
 
-    const url = environment.apiurl + 'api/Masters/save_lookup';
+    if (categoryId === 1000) {
+      // Country
+      url = environment.apiurl + 'api/Masters/save_country';
+      payload = {
+        id:          formVal.id ?? 0,
+        code:        formVal.code || '',
+        name:        formVal.name || '',
+        arabic_name: formVal.arabic_name || '',
+        description: formVal.description || '',
+        is_active:   formVal.is_Active ?? true,
+        company_id:  user?.companyId || 1,
+        userid:      user?.userId || 1,
+        clientId:    user?.clientId || '74BB6922'
+      };
+    } else if (categoryId === 1001) {
+      // State
+      url = environment.apiurl + 'api/Masters/save_state';
+      payload = {
+        id:          formVal.id ?? 0,
+        country_id:  formVal.dependency_id ?? 0,
+        code:        formVal.code || '',
+        name:        formVal.name || '',
+        arabic_name: formVal.arabic_name || '',
+        description: formVal.description || '',
+        is_active:   formVal.is_Active ?? true,
+        company_id:  user?.companyId || 1,
+        userid:      user?.userId || 1,
+        clientId:    user?.clientId || '74BB6922'
+      };
+    } else if (categoryId === 1002) {
+      // City
+      url = environment.apiurl + 'api/Masters/save_city';
+      payload = {
+        id:          formVal.id ?? 0,
+        state_id:    formVal.dependency_id ?? 0,
+        code:        formVal.code || '',
+        name:        formVal.name || '',
+        arabic_name: formVal.arabic_name || '',
+        description: formVal.description || '',
+        is_active:   formVal.is_Active ?? true,
+        company_id:  user?.companyId || 1,
+        userid:      user?.userId || 1,
+        clientId:    user?.clientId || '74BB6922'
+      };
+    } else {
+      // Standard Lookup Master
+      payload = {
+        id:             formVal.id ?? 0,
+        lookup_TypeId:  categoryId,
+        code:           formVal.code || '',
+        name:           formVal.name || '',
+        arabic_name:    formVal.arabic_name || '',
+        description:    formVal.description || '',
+        is_Active:      formVal.is_Active ?? true,
+        company_id:     user?.companyId || 1,
+        display_order:  formVal.display_order ?? 0,
+        user_id:        user?.userId || 1,
+        dependency_id:  formVal.dependency_id ?? 0,
+        class_name:     formVal.class_name || '',
+        clientid:       user?.clientId || '74BB6922'
+      };
+    }
 
     this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
       next: (res) => {
         if (res?.statusCode === '200') {
           this.toastr.success('Record saved successfully', 'Success');
           this.closeForm();
-          // Refresh items list and update record count
           if (this.selectedCategoryId !== null) {
             this.loadCategoryItems(this.selectedCategoryId);
           }

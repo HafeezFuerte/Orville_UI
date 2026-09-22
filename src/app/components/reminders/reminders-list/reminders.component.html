@@ -37,14 +37,22 @@
       </div>
 
       <div class="rem-toolbar">
-        <div class="ov-search rem-search">
-          <i class="ti ti-search ov-search__icon rem-search__ico" aria-hidden="true"></i>
-          <input
-            type="text"
-            class="ov-input ov-search__input"
-            [(ngModel)]="searchQuery"
-            (ngModelChange)="onSearch()"
-            placeholder="Search reminders..." />
+        <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
+          <div class="ov-search flex-1">
+            <label class="sr-only" for="reminder-search">Search</label>
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+            <input
+              id="reminder-search"
+              type="text"
+              class="ov-input ov-search__input"
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()"
+              (input)="applyLocalSearch()"
+              placeholder="Search reminders..." />
+          </div>
+          <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+            <i class="ri-search-line text-[18px]"></i>
+          </button>
         </div>
         <div class="rem-toolbar__btns">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">

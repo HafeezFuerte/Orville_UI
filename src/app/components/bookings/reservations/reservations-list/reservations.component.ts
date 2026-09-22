@@ -112,6 +112,10 @@ export class ReservationsComponent {
     this.pageIndex = 0;
   }
 
+  applyLocalSearch(): void {
+    this.pageIndex = 0;
+  }
+
   applyFilters(): void {
     this.pageIndex = 0;
   }

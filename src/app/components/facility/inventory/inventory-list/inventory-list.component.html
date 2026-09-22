@@ -15,12 +15,21 @@
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
     <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
-      <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
-        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-        <input type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" placeholder="Search">
+      <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
+        <div class="ov-search flex-1">
+          <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+          <input type="text" class="ov-input ov-search__input"
+            [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
+        </div>
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+          <i class="ri-search-line text-[18px]"></i>
+        </button>
       </div>
       <div class="ov-toolbar__btns">
+        <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
+          <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
+          Filter
+        </button>
         <div class="relative" data-inv-columns (click)="$event.stopPropagation()">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
@@ -116,4 +125,21 @@
     <button type="button" role="menuitem" class="inv-row-menu__item"
       (click)="navigateToDetail(openRowActionId!)">View</button>
   </div>
+
+  <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
+        <label class="ov-label">Item Name</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterItemName" placeholder="Enter item name">
+      </div>
+      <div class="flex flex-col">
+        <label class="ov-label">Category</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterCategory" placeholder="Enter category">
+      </div>
+      <div class="flex flex-col">
+        <label class="ov-label">Vendor</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterVendor" placeholder="Enter vendor">
+      </div>
+    </div>
+  </app-filter-drawer>
 </div>

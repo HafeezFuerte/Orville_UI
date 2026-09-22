@@ -220,8 +220,22 @@ export class QuotationsListComponent {
     this.loadQuotations();
   }
 
+  applyLocalSearch(): void {
+    if (!this.allRows || this.allRows.length === 0) return;
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      this.allRows = this.allRows.filter((r: any) =>
+        (r.title && String(r.title).toLowerCase().includes(q)) ||
+        (r.code && String(r.code).toLowerCase().includes(q)) ||
+        (r.quotation_no && String(r.quotation_no).toLowerCase().includes(q)) ||
+        (r.selected_vendors && String(r.selected_vendors).toLowerCase().includes(q))
+      );
+    }
+  }
+
   onSearch(): void {
     this.pageNo = 0;
+    this.loadQuotations();
   }
 
   onSharedTablePageChange(event: any): void {

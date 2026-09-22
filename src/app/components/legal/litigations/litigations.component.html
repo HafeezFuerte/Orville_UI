@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
     <h3 class="ov-page-title">Litigations</h3>
-    <p class="ov-page-sub">{{filteredData.length || 0}} litigations registered</p>
+    <p class="ov-page-sub">{{totalRecords || 0}} litigations registered</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
     <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
@@ -30,12 +30,17 @@
   </div>
 
   <!-- Search & Toolbar Actions block -->
-  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-    <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
-      <label class="sr-only" for="litigation-search">Search</label>
-      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-      <input id="litigation-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-        (ngModelChange)="applyFilters()" placeholder="Search by Litigation name...">
+  <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
+      <div class="ov-search flex-1">
+        <label class="sr-only" for="litigation-search">Search</label>
+        <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+        <input id="litigation-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search by Litigation name...">
+      </div>
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <i class="ri-search-line text-[18px]"></i>
+      </button>
     </div>
     
     <div class="ov-toolbar__btns flex gap-2">
@@ -95,8 +100,8 @@
   <!-- Shared Table rendering -->
   <div class="px-5 pb-5 pt-0">
     <app-shared-table [columns]="visibleColumns" [data]="litigationsData" [loading]="isLoading"
-      [hasActions]="false" [showPaginator]="true" [totalRecords]="totalRecords" [pageSize]="pageSize"
-      [pageIndex]="pageNo" (pageChange)="onPageChange($event)">
+      [hasActions]="false" [showPaginator]="false" [totalRecords]="totalRecords" [pageSize]="pageSize"
+      [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
 
@@ -187,6 +192,35 @@
         </ng-container>
       </ng-template>
     </app-shared-table>
+
+    <div class="ov-page mt-4">
+      <div class="ov-page__meta">
+        <span class="ov-page__label">Show</span>
+        <div class="ov-page__size">
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+          </select>
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
+        </div>
+        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      </div>
+      <div class="ov-page__nav">
+        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <div class="ov-page__btns">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+          </button>
+          <ng-container *ngFor="let item of pagerItems">
+            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+            <button *ngIf="item !== '...'" type="button" class="ov-page__btn" [class.is-active]="item === displayPage"
+              (click)="goToPage(+item)">{{ item }}</button>
+          </ng-container>
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

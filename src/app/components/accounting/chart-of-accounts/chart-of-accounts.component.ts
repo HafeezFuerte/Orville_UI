@@ -46,7 +46,8 @@ export class ChartOfAccountsComponent {
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
-  allRows:any[]=[];
+  allRows: any[] = [];
+  allRowsData: any[] = [];
   currentUser = this.commonservice.getCurrentUser();
   tableColumns = [
     { key: 'code', label: 'ID', visible: true, useTemplate: true },
@@ -139,10 +140,29 @@ export class ChartOfAccountsComponent {
 
   onSearch(): void {
     this.pageNo = 0;
+    this.loadCOA();
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.account_no && item.account_no.toLowerCase().includes(q)) ||
+        (item.account_name && item.account_name.toLowerCase().includes(q)) ||
+        (item.account_type_nm && item.account_type_nm.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
   }
 
   applyFilters(): void {
     this.pageNo = 0;
+    this.loadCOA();
   }
 
   clearFilters(): void {
@@ -206,12 +226,14 @@ export class ChartOfAccountsComponent {
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
           this.allRows = response.objResult.coa || []; 
+          this.allRowsData = [...this.allRows];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         } else {
           this.allRows = []; 
+          this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
           this.toastr.error("No record[s] found");
@@ -220,6 +242,7 @@ export class ChartOfAccountsComponent {
       error: (err: any) => {
         console.error('Error loading leases:', err);
         this.allRows = []; 
+        this.allRowsData = [];
         this.totalRecords = 0;
         this.totalPages = 0;
       }

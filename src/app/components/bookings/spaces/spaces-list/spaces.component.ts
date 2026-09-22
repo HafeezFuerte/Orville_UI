@@ -41,6 +41,7 @@ export class SpacesComponent implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   allRows: SpaceRow[] = [];
+  allRowsData: SpaceRow[] = [];
   isLoading = false;
   totalRecordsCount = 0;
   totalPagesCount = 0;
@@ -120,6 +121,7 @@ export class SpacesComponent implements OnInit {
             unit: item.unit_no || item.unit_name || item.unit || '',
             createdAt: item.created_at || item.createdAt || ''
           }));
+          this.allRowsData = [...this.allRows];
 
           if (res.objResult.rows_info && res.objResult.rows_info[0]) {
             this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
@@ -130,6 +132,7 @@ export class SpacesComponent implements OnInit {
           }
         } else {
           this.allRows = [];
+          this.allRowsData = [];
           this.totalRecordsCount = 0;
           this.totalPagesCount = 0;
         }
@@ -138,10 +141,40 @@ export class SpacesComponent implements OnInit {
         this.isLoading = false;
         console.error("Error loading spaces:", err);
         this.allRows = [];
+        this.allRowsData = [];
         this.totalRecordsCount = 0;
         this.totalPagesCount = 0;
       }
     });
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.name && item.name.toLowerCase().includes(q)) ||
+        (item.id && item.id.toLowerCase().includes(q)) ||
+        (item.location && item.location.toLowerCase().includes(q)) ||
+        (item.property && item.property.toLowerCase().includes(q)) ||
+        (item.phone && item.phone.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    if (event.pageIndex > this.pageIndex) {
+      this.pageIndex = this.pageIndex + 1;
+    } else {
+      this.pageIndex = this.pageIndex - 1;
+    }
+    if (this.pageIndex < 0) this.pageIndex = 0;
+    this.pageSize = event.pageSize;
+    this.loadSpaces();
   }
 
   get visibleColumns() {

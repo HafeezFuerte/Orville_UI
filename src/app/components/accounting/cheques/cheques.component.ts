@@ -35,7 +35,8 @@ export class ChequesComponent {
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
-  allRows:any[]=[];
+  allRows: any[] = [];
+  allRowsData: any[] = [];
   currentUser = this.commonservice.getCurrentUser();
 
   tableColumns = [
@@ -142,12 +143,14 @@ export class ChequesComponent {
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
           this.allRows = response.objResult.cheques || []; 
+          this.allRowsData = [...this.allRows];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         } else {
           this.allRows = []; 
+          this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
           this.toastr.error("No record[s] found");
@@ -156,10 +159,29 @@ export class ChequesComponent {
       error: (err: any) => {
         console.error('Error loading leases:', err);
         this.allRows = []; 
+        this.allRowsData = [];
         this.totalRecords = 0;
         this.totalPages = 0;
       }
     });
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.cheque_no && item.cheque_no.toLowerCase().includes(q)) ||
+        (item.invoice_no && item.invoice_no.toLowerCase().includes(q)) ||
+        (item.bank_name && item.bank_name.toLowerCase().includes(q)) ||
+        (item.cheque_status && item.cheque_status.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
   }
  
   get paginatedRows(): ChequeRow[] {

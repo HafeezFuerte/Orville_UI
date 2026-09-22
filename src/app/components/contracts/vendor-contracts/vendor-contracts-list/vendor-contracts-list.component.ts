@@ -38,9 +38,11 @@ export class VendorContractsListComponent implements OnInit {
   filterStatus: VendorContractStatus | null = null;
   statusOptions: VendorContractStatus[] = ['Active', 'Draft', 'Completed', 'Offered'];
 
+  pageNo = 0;
   pageIndex = 0;
   pageSize = 10;
   allRows: VendorContractRow[] = [];
+  allRowsData: VendorContractRow[] = [];
   isLoading = false;
   totalRecordsCount = 0;
   totalPagesCount = 0;
@@ -161,7 +163,7 @@ export class VendorContractsListComponent implements OnInit {
       clientID: currentUser?.clientId || "74BB6922",
       source: 'web',
       languageid: 1,
-      page_no: this.pageIndex,
+      page_no: this.pageNo,
       seqno: 0,
       search_keyword: this.searchQuery || '',
       pagecount: this.pageSize,
@@ -192,6 +194,7 @@ export class VendorContractsListComponent implements OnInit {
             value: this.formatValue(item),
             daysLeft: item.days_left || item.daysLeft ? String(item.days_left || item.daysLeft) : this.calculateDaysLeft(item.end_date || item.endDate)
           }));
+          this.allRowsData = [...this.allRows];
 
           if (res.objResult.rows_info && res.objResult.rows_info[0]) {
             this.totalRecordsCount = res.objResult.rows_info[0].totalrecords;
@@ -202,6 +205,7 @@ export class VendorContractsListComponent implements OnInit {
           }
         } else {
           this.allRows = [];
+          this.allRowsData = [];
           this.totalRecordsCount = 0;
           this.totalPagesCount = 0;
         }
@@ -210,10 +214,34 @@ export class VendorContractsListComponent implements OnInit {
         this.isLoading = false;
         console.error("Error loading vendor contracts:", err);
         this.allRows = [];
+        this.allRowsData = [];
         this.totalRecordsCount = 0;
         this.totalPagesCount = 0;
       }
     });
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.name && item.name.toLowerCase().includes(q)) ||
+        (item.id && item.id.toLowerCase().includes(q)) ||
+        (item.vendor && item.vendor.toLowerCase().includes(q)) ||
+        (item.properties && item.properties.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadContracts();
   }
 
   get visibleColumns() {
@@ -241,18 +269,18 @@ export class VendorContractsListComponent implements OnInit {
   }
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
     if (!this.totalRecords) {
       return 0;
     }
-    return this.pageIndex * this.pageSize + 1;
+    return this.pageNo * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get pagerItems(): (number | string)[] {
@@ -265,17 +293,17 @@ export class VendorContractsListComponent implements OnInit {
 
   setStatusFilter(status: 'All' | VendorContractStatus): void {
     this.statusFilter = status;
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadContracts();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadContracts();
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadContracts();
   }
 
@@ -285,7 +313,7 @@ export class VendorContractsListComponent implements OnInit {
     this.filterProperty = '';
     this.filterStatus = null;
     this.statusFilter = 'All';
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadContracts();
   }
 
@@ -323,28 +351,28 @@ export class VendorContractsListComponent implements OnInit {
   }
 
   onPageSizeChange(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.loadContracts();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
       this.loadContracts();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+      this.pageNo++;
       this.loadContracts();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages && target !== this.pageIndex) {
-      this.pageIndex = target;
+    if (target >= 0 && target < this.totalPages && target !== this.pageNo) {
+      this.pageNo = target;
       this.loadContracts();
     }
   }

@@ -57,7 +57,8 @@ export class CreditNotesComponent {
   totalPages = 0;
   totalRecords = 0;
   pageSizeOptions = [5, 10, 25, 50, 100];
-  allRows:any[]=[];
+  allRows: any[] = [];
+  allRowsData: any[] = [];
 
   draft = this.emptyDraft();
   constructor(  private toastr: ToastrService, private commontabservice: Common_TabsService,
@@ -82,6 +83,12 @@ export class CreditNotesComponent {
 
   get allColumnsSelected(): boolean {
     return this.tableColumns.every((col) => col.visible !== false);
+  }
+
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadcreditnotes();
   }
 
   get filteredRows(): CreditNoteRow[] {
@@ -112,23 +119,23 @@ export class CreditNotesComponent {
    
 
   get paginatedRows(): CreditNoteRow[] {
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
     if (!this.totalRecords) {
       return 0;
     }
-    return this.pageIndex * this.pageSize + 1;
+    return this.pageNo * this.pageSize + 1;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
   get pagerItems(): (number | string)[] {
@@ -148,11 +155,30 @@ export class CreditNotesComponent {
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadcreditnotes();
+  }
+
+  applyLocalSearch(): void {
+    if (!this.allRowsData || this.allRowsData.length === 0) {
+      this.allRowsData = [...(this.allRows || [])];
+    }
+    let temp = [...(this.allRowsData || [])];
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(item =>
+        (item.code && item.code.toLowerCase().includes(q)) ||
+        (item.tenant && item.tenant.toLowerCase().includes(q)) ||
+        (item.account_name && item.account_name.toLowerCase().includes(q)) ||
+        (item.details && item.details.toLowerCase().includes(q))
+      );
+    }
+    this.allRows = temp;
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadcreditnotes();
   }
 
   clearFilters(): void {
@@ -160,7 +186,8 @@ export class CreditNotesComponent {
     this.filterContact = '';
     this.filterAccount = '';
     this.filterCreatedBy = '';
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadcreditnotes();
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -258,11 +285,7 @@ export class CreditNotesComponent {
     });
   }
   loadcreditnotes() {
-    const filterList: any[] = [];
-    // if (this.statusFilter && this.statusFilter !== "All") {
-    //   filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
-    // } 
- 
+    const filterList: any[] = []; 
 
     const payload = {
       userid: this.currentUser?.userId,
@@ -283,12 +306,14 @@ export class CreditNotesComponent {
       next: (response: any) => { 
         if (response && response.statusCode === "200" && response.objResult) { 
           this.allRows = response.objResult.creditnotes || []; 
+          this.allRowsData = [...this.allRows];
           if (response.objResult.rows_info) {
             this.totalRecords = response.objResult.rows_info[0].totalrecords; 
             this.totalPages = response.objResult.rows_info[0].noofpages;
           }
         } else {
           this.allRows = []; 
+          this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
           this.toastr.error("No record[s] found");
@@ -297,6 +322,7 @@ export class CreditNotesComponent {
       error: (err: any) => {
         console.error('Error loading leases:', err);
         this.allRows = []; 
+        this.allRowsData = [];
         this.totalRecords = 0;
         this.totalPages = 0;
       }
@@ -357,25 +383,29 @@ export class CreditNotesComponent {
   }
 
   onPageSizeChange(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadcreditnotes();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadcreditnotes();
     }
   }
 
   nextPage(): void {
-    if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+    if (this.displayPage < (this.totalPages || 1)) {
+      this.pageNo++;
+      this.loadcreditnotes();
     }
   }
 
   goToPage(page: number): void {
     const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (target >= 0 && target < (this.totalPages || 1) && target !== this.pageNo) {
+      this.pageNo = target;
+      this.loadcreditnotes();
     }
   }
 
