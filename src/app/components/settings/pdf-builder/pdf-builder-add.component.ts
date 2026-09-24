@@ -56,7 +56,8 @@ export class PdfBuilderAddComponent implements OnInit {
   loadingDocTypes = false;
   loadingAutofill = false;
 
-  // Active dragging state
+  isDraggingBadge = false;
+  isDraggingFromSidebar = false;
   draggingFieldId: string | null = null;
   dragStartX = 0;
   dragStartY = 0;
@@ -86,30 +87,33 @@ export class PdfBuilderAddComponent implements OnInit {
     }
   }
 
+  defaultDocTypes: DocTypeOption[] = [
+    { id: 47, name: 'Lease Agreement', code: 'LEASE' },
+    { id: 48, name: 'Vendor Contract', code: 'VENDOR' },
+    { id: 49, name: 'Landlord Contract', code: 'LANDLORD' },
+    { id: 50, name: 'Work Order', code: 'WORK_ORDER' },
+    { id: 51, name: 'Invoice / Receipt', code: 'INVOICE' },
+    { id: 52, name: 'General Document', code: 'GENERAL' }
+  ];
+
+  defaultAutofill: AutofillItem[] = [
+    { id: 1, name: 'Tenant Name', tag: 'Tenant Name' },
+    { id: 2, name: 'Landlord Name', tag: 'Landlord Name' },
+    { id: 3, name: 'Building Name', tag: 'Building Name' },
+    { id: 4, name: 'Unit Number', tag: 'Unit Number' },
+    { id: 5, name: 'Annual Rent', tag: 'Annual Rent' },
+    { id: 6, name: 'Start Date', tag: 'Start Date' },
+    { id: 7, name: 'End Date', tag: 'End Date' },
+    { id: 8, name: 'Security Deposit', tag: 'Security Deposit' },
+    { id: 9, name: 'DEWA Number', tag: 'DEWA Number' },
+    { id: 10, name: 'Payment Mode', tag: 'Payment Mode' }
+  ];
+
   loadDocTypes(): void {
-    this.loadingDocTypes = true;
-    this.commonTabsService.getMasterByType({ typeId: 47, filterId: 0, filterText: '', filterText1: '' }).subscribe({
-      next: (res: any) => {
-        this.loadingDocTypes = false;
-        if (res && (res.statusCode === 200 || res.statusCode === '200') && res.objResult?.table) {
-          this.typeOptions = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item.name || item.lookup_name || item.description || item.code || '',
-            code: item.code || ''
-          }));
-        } else {
-          this.typeOptions = [];
-        }
-        if (this.typeOptions.length > 0 && !this.templateType) {
-          this.templateType = this.typeOptions[0].id || this.typeOptions[0].name;
-        }
-      },
-      error: (err: any) => {
-        this.loadingDocTypes = false;
-        console.error('Error loading doc types:', err);
-        this.typeOptions = [];
-      }
-    });
+    this.typeOptions = [...this.defaultDocTypes];
+    if (this.typeOptions.length > 0 && !this.templateType) {
+      this.templateType = this.typeOptions[0].name;
+    }
   }
 
   loadAutofillElements(filterId: number = 47): void {
@@ -118,7 +122,7 @@ export class PdfBuilderAddComponent implements OnInit {
     this.commonTabsService.getMasterByType({ typeId: 2, filterId: targetFilterId, filterText: '', filterText1: '' }).subscribe({
       next: (res: any) => {
         this.loadingAutofill = false;
-        if (res && (res.statusCode === 200 || res.statusCode === '200') && res.objResult?.table) {
+        if (res && (res.statusCode === 200 || res.statusCode === '200') && Array.isArray(res.objResult?.table) && res.objResult.table.length > 0) {
           this.autofillElements = res.objResult.table.map((item: any) => {
             const rawName = item.name || item.lookup_name || item.description || item.code || '';
             const tag = item.code || item.field_tag || rawName;
@@ -129,13 +133,13 @@ export class PdfBuilderAddComponent implements OnInit {
             };
           });
         } else {
-          this.autofillElements = [];
+          this.autofillElements = [...this.defaultAutofill];
         }
       },
       error: (err: any) => {
         this.loadingAutofill = false;
         console.error('Error loading autofill elements:', err);
-        this.autofillElements = [];
+        this.autofillElements = [...this.defaultAutofill];
       }
     });
   }
@@ -204,7 +208,7 @@ export class PdfBuilderAddComponent implements OnInit {
     };
 
     this.isSaving = true;
-    this.commonTabsService.saveDocumentTemplate(payload).subscribe({
+    this.commonTabsService.savePdfTemplate(payload).subscribe({
       next: (res: any) => {
         this.isSaving = false;
         if (res && (res.statusCode === 200 || res.statusCode === '200')) {
@@ -316,17 +320,22 @@ export class PdfBuilderAddComponent implements OnInit {
     }
 
     const count = this.placedFields.length;
+    // Map initial coordinates directly to white paper form lines in sample PDF:
+    // Center of document page sits around 44%-48% X. Form fields start at Y ~20% downwards.
+    const initialX = 44;
+    const initialY = Math.min(80, 20 + (count * 4.2) % 60);
+
     const newField: PlacedPdfField = {
       id: 'field_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
       name: el.name,
       tag: el.tag,
-      x: Math.min(80, 10 + (count * 5) % 65),
-      y: Math.min(85, 12 + (count * 7) % 70),
+      x: initialX,
+      y: initialY,
       page: 1
     };
 
     this.placedFields.push(newField);
-    this.toastr.info(`Added badge {{${el.name}}} to PDF template`, 'Placeholder Added');
+    this.toastr.info(`Placed {{${el.name}}} on contract line`, 'Field Placed');
   }
 
   removeField(fieldId: string, event?: Event): void {
@@ -336,27 +345,69 @@ export class PdfBuilderAddComponent implements OnInit {
     this.placedFields = this.placedFields.filter(f => f.id !== fieldId);
   }
 
+  // Handle clicking anywhere on the container/overlay to position the last active badge or place field
+  onCanvasClick(event: MouseEvent): void {
+    // Prevent overriding click when clicking a badge or remove button
+    const target = event.target as HTMLElement;
+    if (target && target.closest('.pdf-badge-item')) {
+      return;
+    }
+
+    if (!this.pdfContainer?.nativeElement || this.placedFields.length === 0) {
+      return;
+    }
+
+    const rect = this.pdfContainer.nativeElement.getBoundingClientRect();
+    const clickXPercent = Math.max(2, Math.min(85, ((event.clientX - rect.left) / rect.width) * 100));
+    const clickYPercent = Math.max(2, Math.min(92, ((event.clientY - rect.top) / rect.height) * 100));
+
+    // Move the most recently added field to the clicked position
+    const lastField = this.placedFields[this.placedFields.length - 1];
+    if (lastField) {
+      lastField.x = clickXPercent;
+      lastField.y = clickYPercent;
+    }
+  }
+
   // Dragging logic inside PDF overlay container
-  startDragField(field: PlacedPdfField, event: MouseEvent): void {
+  startDragField(field: PlacedPdfField, event: MouseEvent | TouchEvent): void {
     event.preventDefault();
+    event.stopPropagation();
+
+    this.isDraggingBadge = true;
     this.draggingFieldId = field.id;
-    this.dragStartX = event.clientX;
-    this.dragStartY = event.clientY;
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    this.dragStartX = clientX;
+    this.dragStartY = clientY;
     this.fieldStartX = field.x;
     this.fieldStartY = field.y;
 
-    const onMouseMove = (e: MouseEvent) => this.onDraggingField(e);
-    const onMouseUp = () => {
+    const onMouseMove = (e: MouseEvent) => this.onDraggingField(e.clientX, e.clientY);
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        this.onDraggingField(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const stopDrag = () => {
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mouseup', stopDrag);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', stopDrag);
       this.draggingFieldId = null;
+      this.isDraggingBadge = false;
     };
 
     window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', stopDrag);
   }
 
-  private onDraggingField(event: MouseEvent): void {
+  private onDraggingField(clientX: number, clientY: number): void {
     if (!this.draggingFieldId || !this.pdfContainer?.nativeElement) {
       return;
     }
@@ -366,21 +417,26 @@ export class PdfBuilderAddComponent implements OnInit {
       return;
     }
 
-    const deltaXPixels = event.clientX - this.dragStartX;
-    const deltaYPixels = event.clientY - this.dragStartY;
+    const deltaXPixels = clientX - this.dragStartX;
+    const deltaYPixels = clientY - this.dragStartY;
 
     const deltaXPercent = (deltaXPixels / rect.width) * 100;
     const deltaYPercent = (deltaYPixels / rect.height) * 100;
 
     const targetField = this.placedFields.find(f => f.id === this.draggingFieldId);
     if (targetField) {
-      targetField.x = Math.max(0, Math.min(85, this.fieldStartX + deltaXPercent));
-      targetField.y = Math.max(0, Math.min(92, this.fieldStartY + deltaYPercent));
+      targetField.x = Math.max(0, Math.min(88, this.fieldStartX + deltaXPercent));
+      targetField.y = Math.max(0, Math.min(94, this.fieldStartY + deltaYPercent));
     }
   }
 
   onSidebarTagDragStart(event: DragEvent, el: AutofillItem): void {
+    this.isDraggingFromSidebar = true;
     event.dataTransfer?.setData('application/json', JSON.stringify(el));
+  }
+
+  onSidebarTagDragEnd(): void {
+    this.isDraggingFromSidebar = false;
   }
 
   onContainerDragOver(event: DragEvent): void {
@@ -389,6 +445,7 @@ export class PdfBuilderAddComponent implements OnInit {
 
   onContainerDrop(event: DragEvent): void {
     event.preventDefault();
+    this.isDraggingFromSidebar = false;
     const data = event.dataTransfer?.getData('application/json');
     if (!data) {
       return;
@@ -404,8 +461,8 @@ export class PdfBuilderAddComponent implements OnInit {
       const dropXPixels = event.clientX - rect.left;
       const dropYPixels = event.clientY - rect.top;
 
-      const dropXPercent = Math.max(0, Math.min(85, (dropXPixels / rect.width) * 100));
-      const dropYPercent = Math.max(0, Math.min(92, (dropYPixels / rect.height) * 100));
+      const dropXPercent = Math.max(0, Math.min(88, (dropXPixels / rect.width) * 100));
+      const dropYPercent = Math.max(0, Math.min(94, (dropYPixels / rect.height) * 100));
 
       const newField: PlacedPdfField = {
         id: 'field_' + Date.now() + '_' + Math.floor(Math.random() * 1000),

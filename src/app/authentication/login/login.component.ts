@@ -91,7 +91,12 @@ export class LoginComponent {
           this.router.navigate(['/insights']); 
         }
         else {
-          this.toastr.error(res["message"], 'Login', {
+          let errorMsg = res["message"] || 'Invalid username or password';
+          if (errorMsg.includes('lblInvalidUsernamepwd') || errorMsg === 'Common.lblInvalidUsernamepwd') {
+            errorMsg = 'Invalid username or password';
+          }
+          this.error = errorMsg;
+          this.toastr.error(errorMsg, 'Login', {
             timeOut: 3000,
             positionClass: 'toast-top-right',
           });

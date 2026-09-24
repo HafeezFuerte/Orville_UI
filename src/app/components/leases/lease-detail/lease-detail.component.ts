@@ -497,7 +497,7 @@ export class LeaseDetailComponent implements OnInit {
   }
 
   triggerPrint(): void {
-    const printElement = document.querySelector('.printable-lease-receipt-container');
+    const printElement = document.querySelector('.printable-ejari-contract-container') || document.querySelector('.printable-lease-receipt-container');
     if (!printElement) {
       window.print();
       return;
@@ -526,39 +526,47 @@ export class LeaseDetailComponent implements OnInit {
         <html>
           <head>
             <base href="${origin}/">
-            <title>Receipt - ${this.leaseId}</title>
+            <title>Tenancy Contract - ${this.leaseId}</title>
             <style>
-              @page { size: portrait; margin: 10mm; }
-              body { font-family: Arial, Helvetica, sans-serif; color: #111; background: #fff; margin: 0; padding: 10px; }
-              .printable-lease-receipt-container { display: block; width: 100%; box-sizing: border-box; }
-              .plr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-              .plr-title { font-size: 26px; font-weight: 700; margin: 0 0 10px 0; color: #000; }
-              .plr-meta p { margin: 3px 0; font-size: 12px; color: #333; }
-              .plr-meta p span { font-weight: 600; color: #111; display: inline-block; min-width: 110px; }
-              .plr-logo { display: flex; align-items: center; gap: 8px; }
-              .plr-logo-text { display: flex; flex-direction: column; line-height: 1; }
-              .plr-brand-main { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #b89759; }
-              .plr-brand-sub { font-size: 8px; font-weight: 600; letter-spacing: 1px; color: #777; margin-top: 2px; }
-              .plr-addresses { display: flex; justify-content: space-between; margin-bottom: 28px; gap: 40px; }
-              .plr-from, .plr-to { flex: 1; }
-              .plr-from h4, .plr-to h4 { font-size: 13px; font-weight: 700; margin: 0 0 4px 0; color: #111; }
-              .plr-from h3, .plr-to h3 { font-size: 14px; font-weight: 700; margin: 0 0 6px 0; color: #000; }
-              .plr-from p, .plr-to p { margin: 3px 0; font-size: 12px; color: #444; }
-              .plr-from p span, .plr-to p span { font-weight: 600; }
-              .plr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
-              .plr-table th { background: #d8d8d8; color: #111; font-weight: 700; text-align: left; padding: 8px 10px; border: 1px solid #c0c0c0; }
-              .plr-table td { padding: 8px 10px; border: 1px solid #e0e0e0; vertical-align: top; color: #222; }
-              .plr-summary-wrapper { display: flex; justify-content: flex-end; margin-bottom: 25px; }
-              .plr-summary-box { width: 280px; }
-              .plr-sum-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: #222; }
-              .plr-sum-row strong { font-weight: 700; color: #000; }
-              .plr-sum-border { border-top: 1px solid #bbb; padding-top: 6px; margin-top: 4px; }
-              .plr-words-section { margin-bottom: 30px; }
-              .plr-words-label { font-size: 12px; color: #333; margin: 0 0 4px 0; }
-              .plr-words-value { font-size: 14px; font-weight: 700; color: #000; margin: 0; }
-              .plr-divider { border: none; border-top: 1px solid #ddd; margin: 20px 0 15px 0; }
-              .plr-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #777; }
-              .plr-ht-badge { display: inline-flex; align-items: center; gap: 4px; background: #2563eb; color: #fff; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-size: 10px; }
+              @page { size: A4 portrait; margin: 8mm; }
+              body { font-family: Arial, Helvetica, 'Segoe UI', sans-serif; color: #111; background: #fff; margin: 0; padding: 0; }
+              .printable-ejari-contract-container { display: block; width: 100%; box-sizing: border-box; background: #fff; }
+              .ejari-page { position: relative; background: #fff; box-sizing: border-box; padding-bottom: 10px; }
+              .ejari-page-break { page-break-after: always; break-after: page; }
+              .ejari-header-logos { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+              .ejari-brand-text { font-size: 18px; font-weight: 800; letter-spacing: 1.5px; color: #b89759; }
+              .ejari-logo-center { display: flex; align-items: center; gap: 8px; }
+              .ejari-logo-center img { height: 36px; width: auto; }
+              .ejari-title-box { border: 1px solid #111; padding: 6px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+              .ejari-title-meta { font-size: 10px; font-weight: 600; color: #333; }
+              .ejari-title-main { text-align: center; }
+              .ejari-title-main h2 { font-size: 17px; font-weight: 800; margin: 0; color: #000; }
+              .ejari-title-main h3 { font-size: 13px; font-weight: 700; margin: 2px 0 0 0; letter-spacing: 1px; }
+              .ejari-dark-bar { background: #1b365d !important; color: #ffffff !important; padding: 4px 10px; font-size: 11px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin: 8px 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              .ejari-form-grid { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9.5px; border: 1px solid #999; }
+              .ejari-form-grid td, .ejari-form-grid th { padding: 4px 6px; border: 1px dashed #bbb; vertical-align: middle; }
+              .ejari-lbl-en { font-weight: 700; color: #111; width: 18%; }
+              .ejari-val { font-weight: 600; color: #222; width: 32%; }
+              .ejari-lbl-ar { font-weight: 700; color: #111; text-align: right; direction: rtl; font-family: 'Tahoma', sans-serif; width: 18%; }
+              .ejari-checkbox-group { display: inline-flex; align-items: center; gap: 12px; font-weight: 700; }
+              .ejari-terms-rows { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+              .ejari-term-line { display: flex; align-items: baseline; gap: 6px; font-size: 9.5px; padding-bottom: 3px; border-bottom: 1px dashed #ccc; }
+              .ejari-term-num { font-weight: 700; color: #1b365d; min-width: 14px; }
+              .ejari-term-text { flex: 1; color: #333; }
+              .ejari-term-text-ar { direction: rtl; text-align: right; font-family: 'Tahoma', sans-serif; }
+              .ejari-signatures-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 5px 15px; }
+              .ejari-sig-col { text-align: center; width: 42%; }
+              .ejari-sig-line { border-bottom: 1px solid #333; height: 30px; margin-bottom: 5px; }
+              .ejari-sig-label { font-size: 10px; font-weight: 700; display: flex; justify-content: center; gap: 8px; }
+              .ejari-sig-date { font-size: 9px; color: #555; margin-top: 3px; display: flex; justify-content: space-between; }
+              .ejari-bilingual-section { margin-bottom: 10px; }
+              .ejari-section-heading { font-size: 10px; font-weight: 800; color: #1b365d; margin: 6px 0 3px 0; display: flex; justify-content: space-between; }
+              .ejari-two-col { display: flex; gap: 12px; }
+              .ejari-col-en { flex: 1; font-size: 8px; line-height: 1.3; color: #222; text-align: justify; }
+              .ejari-col-ar { flex: 1; font-size: 8px; line-height: 1.3; color: #222; text-align: justify; direction: rtl; font-family: 'Tahoma', sans-serif; }
+              .ejari-office-box { border: 1px solid #555; padding: 8px; margin: 10px 0; min-height: 60px; }
+              .ejari-office-title { font-size: 9.5px; font-weight: 800; color: #1b365d; text-align: center; }
+              .ejari-footer { font-size: 8px; color: #666; border-top: 1px solid #ddd; padding-top: 5px; margin-top: 10px; display: flex; justify-content: space-between; }
             </style>
           </head>
           <body>

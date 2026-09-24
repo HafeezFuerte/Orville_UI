@@ -7,7 +7,7 @@ export const environment = {
       apiurl: "https://localhost:44394/",
          //apiurl: "http://localhost:5296/",
          //apiurl: "https://localhost:7093/",
-         //apiurl: "http://development.orvillerealestate.com/",
+        //  apiurl: "http://development.orvillerealestate.com/",
          //apiurl: "https://appapi.orvillerealestate.com/",
 
   firebase: {

@@ -873,148 +873,556 @@
     </div>
   </div>
 
-  <!-- PRINT PREVIEW MODAL & PRINTABLE RECEIPT TEMPLATE -->
+  <!-- PRINT PREVIEW MODAL & PRINTABLE EJARI TENANCY CONTRACT TEMPLATE -->
   <div *ngIf="showPrintModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
-    <div class="ov-modal-stack" style="max-width: 860px; width: 95%;">
+    <div class="ov-modal-stack" style="max-width: 920px; width: 95%;">
       <button type="button" class="ov-modal__float-close" (click)="closePrintModal()" aria-label="Close">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
       <div class="ov-modal">
         <div class="ov-modal__header flex justify-between items-center border-b pb-3 mb-4">
-          <h4 class="ov-modal__title text-lg font-semibold">Lease Receipt Preview</h4>
+          <h4 class="ov-modal__title text-lg font-semibold">Dubai Tenancy Contract Preview (Ejari Format)</h4>
           <div class="flex gap-2">
             <button type="button" (click)="triggerPrint()" class="ov-btn ov-btn-primary flex items-center gap-1">
-              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> Print PDF
+              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> Print Contract
             </button>
             <button type="button" (click)="closePrintModal()" class="ov-btn ov-btn-ghost">Close</button>
           </div>
         </div>
-        <div class="ov-modal__body overflow-y-auto max-h-[75vh] p-2 bg-white rounded shadow-inner">
+        <div class="ov-modal__body overflow-y-auto max-h-[78vh] p-4 bg-white rounded shadow-inner">
 
-          <!-- PRINTABLE DOCUMENT LAYOUT -->
-          <div class="printable-lease-receipt-container">
-            <div class="plr-header">
-              <div class="plr-header-left">
-                <h1 class="plr-title">Receipt</h1>
-                <div class="plr-meta">
-                  <p><span>Billed To :</span> {{ tenantDataParsed?.tenant_name || tenantDataParsed?.tenant_name_on_lease || leasePrintData['created by'] }}</p>
-                  <p><span>Date of Issue :</span> {{ leasePrintData?.created_date | date:'dd-MM-yyyy' }}</p>
-                  <p><span>Due Date :</span> {{ leasePrintData?.lease_end_date | date:'dd-MM-yyyy' }}</p>
-                  <p><span>TRN Number :</span> Not Registered</p>
-                  <p><span>Prepared by :</span> {{ leasePrintData['created by'] || 'Sheikh Aqib' }}</p>
-                  <p><span>Receipt # :</span> {{ leasePrintData?.lease_code || leasePrintData['lease No'] }}</p>
-                  <p><span>Invoice Ref :</span> {{ leasePrintData?.active_lease || '' }}</p>
-                  <p><span>Bank Name :</span> </p>
+          <!-- PRINTABLE EJARI DOCUMENT LAYOUT (4 PAGES) -->
+          <div class="printable-ejari-contract-container">
+            
+            <!-- PAGE 1: MAIN CONTRACT FORM & ADDITIONAL TERMS -->
+            <div class="ejari-page ejari-page-break">
+              
+              <!-- Header Logos -->
+              <div class="ejari-header-logos">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-red-700 leading-tight">حكومة دبي<br><span class="text-[9px] text-gray-700">GOVERNMENT OF DUBAI</span></span>
+                </div>
+                <div class="ejari-logo-center">
+                  <img src="assets/images/nav/logo-emblem.svg" alt="Orville" />
+                  <span class="ejari-brand-text">ORVILLE</span>
+                </div>
+                <div class="flex items-center gap-2 text-right">
+                  <span class="text-xs font-bold text-emerald-800 leading-tight">دائرة الأراضي والأملاك<br><span class="text-[9px] text-gray-700">Land Department</span></span>
                 </div>
               </div>
-              <div class="plr-header-right">
-                <div class="plr-logo">
-                  <img src="./assets/images/nav/logo-emblem.svg" alt="Orville Real Estate" width="36" height="36" />
-                  <div class="plr-logo-text">
-                    <span class="plr-brand-main">ORVILLE</span>
-                    <span class="plr-brand-sub">REAL ESTATE</span>
+
+              <!-- Title Box Header -->
+              <div class="ejari-title-box">
+                <div class="ejari-title-meta">
+                  <p><strong>Date:</strong> {{ (leaseInfo?.start_date || leasePrintData?.created_date) | date:'dd/MM/yyyy' }}</p>
+                  <p><strong>No:</strong> {{ leaseInfo?.code || leasePrintData?.lease_code || '1234567890' }}</p>
+                </div>
+                <div class="ejari-title-main">
+                  <h2>عقد إيجار</h2>
+                  <h3>TENANCY CONTRACT</h3>
+                </div>
+                <div class="w-24"></div>
+              </div>
+
+              <!-- Form Metadata Grid Table -->
+              <table class="ejari-form-grid">
+                <tbody>
+                  <tr class="ejari-chk-row">
+                    <td class="ejari-lbl-en">Property Usage:</td>
+                    <td class="ejari-val" colspan="3">
+                      <div class="ejari-checkbox-group">
+                        <label><input type="checkbox" [checked]="leaseInfo?.property_usage === 'Industrial'"> Industrial</label>
+                        <label><input type="checkbox" [checked]="leaseInfo?.property_usage === 'Commercial'"> Commercial</label>
+                        <label><input type="checkbox" [checked]="!leaseInfo?.property_usage || leaseInfo?.property_usage === 'Residential'"> Residential</label>
+                      </div>
+                    </td>
+                    <td class="ejari-lbl-ar" colspan="2">استعمال الوحدة</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Owner Name</td>
+                    <td class="ejari-val" colspan="3">{{ leaseInfo?.owner_name || landlordDataParsed?.name || 'M/S Orville Real Estate LLC' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">اسم المالك</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Landlord Name</td>
+                    <td class="ejari-val" colspan="3">{{ landlordDataParsed?.name || leaseInfo?.landlord_name || 'M/S Orville Real Estate LLC' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">اسم المؤجر</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Tenant Name</td>
+                    <td class="ejari-val" colspan="3">{{ tenantDataParsed?.tenant_name || leaseInfo?.tenant || 'Default Tax Agency AK' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">اسم المستأجر</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Tenant Email</td>
+                    <td class="ejari-val">{{ tenantDataParsed?.email || leaseInfo?.tenant_email || 'tenant@domain.com' }}</td>
+                    <td class="ejari-lbl-en">Landlord Email</td>
+                    <td class="ejari-val">{{ landlordDataParsed?.email || 'contact@orvillerealestate.com' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">البريد الإلكتروني للمستأجر / المؤجر</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Tenant Phone</td>
+                    <td class="ejari-val">{{ tenantDataParsed?.phone || leaseInfo?.tenant_phone || '+971' }}</td>
+                    <td class="ejari-lbl-en">Landlord Phone</td>
+                    <td class="ejari-val">{{ landlordDataParsed?.phone || '+97145333983' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">هاتف المستأجر / المؤجر</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Building Name</td>
+                    <td class="ejari-val">{{ leaseInfo?.property || 'Saraya Plaza' }}</td>
+                    <td class="ejari-lbl-en">Location</td>
+                    <td class="ejari-val">{{ leaseInfo?.location || 'Dubai, UAE' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">اسم المبنى / المنطقة</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Property Size (S.M)</td>
+                    <td class="ejari-val">{{ leaseInfo?.size || '—' }}</td>
+                    <td class="ejari-lbl-en">Property Type / No</td>
+                    <td class="ejari-val">{{ leaseInfo?.property_type || 'Apartment' }} / {{ leaseInfo?.unitcode || '—' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">مساحة الوحدة م / رقم الوحدة</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Premises No. (DEWA)</td>
+                    <td class="ejari-val">{{ leaseInfo?.dewa_no || '—' }}</td>
+                    <td class="ejari-lbl-en">Plot No</td>
+                    <td class="ejari-val">{{ leaseInfo?.plot_no || '—' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">رقم حساب ديوا / رقم الأرض</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Contract Period</td>
+                    <td class="ejari-val" colspan="3">
+                      <strong>{{ leaseInfo?.total_days || '365' }} Days</strong> &nbsp;|&nbsp; 
+                      From: {{ (leaseInfo?.start_date) | date:'dd/MM/yyyy' }} &nbsp;|&nbsp; 
+                      To: {{ (leaseInfo?.end_date) | date:'dd/MM/yyyy' }}
+                    </td>
+                    <td class="ejari-lbl-ar" colspan="2">فترة الإيجار / من / إلى</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Annual Rent</td>
+                    <td class="ejari-val" colspan="3">AED {{ (leaseInfo?.annual_rent || leaseInfo?.rent_amount || 0) | number:'1.2-2' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">الإيجار السنوي</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Contract Value</td>
+                    <td class="ejari-val" colspan="3">AED {{ (leaseInfo?.rent_amount || 0) | number:'1.2-2' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">قيمة العقد</td>
+                  </tr>
+                  <tr>
+                    <td class="ejari-lbl-en">Security Deposit</td>
+                    <td class="ejari-val">AED {{ (leaseInfo?.security_income_amt || 0) | number:'1.2-2' }}</td>
+                    <td class="ejari-lbl-en">Mode of Payment</td>
+                    <td class="ejari-val">{{ leasePrintData?.mode_of_payment || 'Check' }}</td>
+                    <td class="ejari-lbl-ar" colspan="2">مبلغ التأمين / طريقة السداد</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Additional Terms Section Bar -->
+              <div class="ejari-dark-bar">
+                <span>Additional Terms</span>
+                <span class="ejari-bar-ar">شروط إضافية</span>
+              </div>
+
+              <!-- Terms Items 1 - 5 -->
+              <div class="ejari-terms-rows">
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">1</span>
+                  <span class="ejari-term-text">The tenant shall comply with all rules and regulations of the Dubai Land Department and building management.</span>
+                  <span class="ejari-term-text-ar">يلتزم المستأجر بجميع القوانين واللوائح الصادرة عن دائرة الأراضي والأملاك وإدارة المبنى.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">2</span>
+                  <span class="ejari-term-text">Security deposit is refundable upon vacating after inspection and utility bill settlements.</span>
+                  <span class="ejari-term-text-ar">مبلغ التأمين قابل للاسترداد عند الإخلاء بعد الفحص وسداد كافة الفواتير.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">3</span>
+                  <span class="ejari-term-text">Subletting or transferring the lease to third parties is strictly prohibited without written consent.</span>
+                  <span class="ejari-term-text-ar">يمنع منعاً باتاً التأجير من الباطن أو التنازل عن العقد للغير دون موافقة خطية.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">4</span>
+                  <span class="ejari-term-text">Maintenance issues resulting from tenant misuse shall be repaired at tenant's expense.</span>
+                  <span class="ejari-term-text-ar">أي صيانة ناتجة عن سوء استخدام المستأجر يتم إصلاحها على نفقته الخاصة.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">5</span>
+                  <span class="ejari-term-text">The unit shall be used solely for the designated purpose stated in this tenancy contract.</span>
+                  <span class="ejari-term-text-ar">تستخدم الوحدة فقط للغرض المخصص المذكور في هذا العقد.</span>
+                </div>
+              </div>
+
+            </div>
+            <!-- END PAGE 1 -->
+
+
+            <!-- PAGE 2: TERMS & CONDITIONS SUMMARY, SIGNATURES & LEGAL FINE PRINT -->
+            <div class="ejari-page ejari-page-break">
+              
+              <!-- Additional Terms 6 - 8 continuation -->
+              <div class="ejari-terms-rows">
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">6</span>
+                  <span class="ejari-term-text">Tenant must provide written notice 90 days prior to contract expiry regarding renewal or vacating.</span>
+                  <span class="ejari-term-text-ar">يجب على المستأجر تقديم إخطار خطي قبل 90 يوماً من انتهاء العقد بشأن التجديد أو الإخلاء.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">7</span>
+                  <span class="ejari-term-text">Cheques presented for rent payment must be honored on due dates without delay.</span>
+                  <span class="ejari-term-text-ar">يجب صرف الشيكات المقدمة لسداد الإيجار في مواعيد استحقاقها دون تأخير.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">8</span>
+                  <span class="ejari-term-text">All governmental fees, taxes, and Ejari registration charges are borne by the tenant unless agreed.</span>
+                  <span class="ejari-term-text-ar">تحمل كافة الرسوم الحكومية والضرائب ورسوم تسجيل إيجاري على المستأجر ما لم يتفق على خلاف ذلك.</span>
+                </div>
+              </div>
+
+              <!-- Terms & Conditions Section Bar -->
+              <div class="ejari-dark-bar">
+                <span>Terms & Conditions</span>
+                <span class="ejari-bar-ar">الشروط والأحكام</span>
+              </div>
+
+              <div class="ejari-terms-rows">
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">1</span>
+                  <span class="ejari-term-text">The tenant has inspected the premises and agreed to lease the unit on its current condition.</span>
+                  <span class="ejari-term-text-ar">قد قام المستأجر بمعاينة الوحدة ووافق على استئجار العقار على حالته الحالية.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">2</span>
+                  <span class="ejari-term-text">The tenant undertakes to use the premises for designated purpose without transfer or sublease without landlord's consent.</span>
+                  <span class="ejari-term-text-ar">يتعهد المستأجر باستعمال العقار للغرض المخصص له دون التنازل أو التأجير من الباطن دون موافقة المؤجر.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">3</span>
+                  <span class="ejari-term-text">The tenant undertakes not to make any amendments or modifications to the premises without landlord approval.</span>
+                  <span class="ejari-term-text-ar">يتعهد المستأجر بعدم إجراء أي تعديلات أو تغييرات في العقار دون موافقة خطية من المؤجر.</span>
+                </div>
+              </div>
+
+              <!-- Mid-Document Signature Section -->
+              <div class="ejari-signatures-row">
+                <div class="ejari-sig-col">
+                  <div class="ejari-sig-line"></div>
+                  <div class="ejari-sig-label">
+                    <span>Tenant Signature</span>
+                    <span class="ar-txt">توقيع المستأجر</span>
+                  </div>
+                </div>
+                <div class="ejari-sig-col">
+                  <div class="ejari-sig-line"></div>
+                  <div class="ejari-sig-label">
+                    <span>Landlord Signature</span>
+                    <span class="ar-txt">توقيع المؤجر</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="plr-addresses">
-              <div class="plr-from">
-                <h4>Receipt From</h4>
-                <h3>Orville Real Estate</h3>
-                <p><span>Bank Name :</span></p>
-                <p><span>Bank Address :</span></p>
-                <p><span>IBAN : , SWIFT :</span></p>
-                <p><span>Tax Registration No:</span> Not Registered</p>
+              <!-- Additional Terms and Conditions Detailed Legal Clauses -->
+              <div class="ejari-dark-bar">
+                <span>Additional Terms and Conditions</span>
+                <span class="ejari-bar-ar">الشروط والأحكام الإضافية</span>
               </div>
-              <div class="plr-to">
-                <h4>Receipt To</h4>
-                <h3>{{ tenantDataParsed?.tenant_name || tenantDataParsed?.tenant_name_on_lease || 'Tenant' }}</h3>
-                <p>Building : {{ leasePrintData?.property }} - {{ leasePrintData?.unitcode }}</p>
+
+              <div class="ejari-bilingual-section">
+                <p class="text-[8px] italic mb-2 text-gray-600">The following Terms and Conditions form an integral part of the Tenancy Contract, and both Parties confirm their legal capacity to agree on this Lease.</p>
+
+                <div class="ejari-section-heading">
+                  <span>1) Move-In Condition:</span>
+                  <span class="ar-head">1) حالة العقار عند الانتقال:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>a. On signing this Lease, the Tenant confirms that the premises, including all fittings, fixtures, furniture and other items included in the Lease have been received in good condition and undertakes that on Lease expiry the leased property shall be handed over to the Lessor in same condition as given to the Tenant.</p>
+                    <p>b. This lease contract was concluded for use and occupancy of leased property only and does not extend or include any other services, parking or facilities if any exist in the building.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>أ. عند توقيع هذا العقد، يقر المستأجر بمعاينة العقار، بما في ذلك كافة التركيبات والمعدات والمفروشات واستلامها بحالة جيدة، ويتعهد بتسليم العقار للمؤجر بنفس الحالة عند انتهاء العقد.</p>
+                    <p>ب. إن عقد الإيجار تم لإقامة وإشغال العين المؤجرة فقط، ولا يشمل أو يمتد لأي خدمات أو مواقف أو مرافق أخرى في المبنى ما لم يتفق عليها بشكل منفصل.</p>
+                  </div>
+                </div>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>2) Tenant's Responsibility:</span>
+                  <span class="ar-head">2) مسؤوليات المستأجر:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>a. The Tenant shall be liable to pay the Lease amounts due until the date of actual handover of the premises in addition to any other costs and administrative expenses incurred by the Lessor.</p>
+                    <p>b. Tenant undertakes to hand over all rent cheques covering the entire tenancy period at the commencement of the rental period.</p>
+                    <p>c. The Tenant shall be solely responsible for the payment of Dubai Electricity and Water Authority (DEWA) bills, chiller charges, waste disposal service charges, and all utility consumption during the tenancy period.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>أ. يكون المستأجر مسؤولاً بمفرده عن سداد كافة مبالغ الإيجار المستحقة ولغاية تاريخ التسليم الفعلي للعقار للمؤجر، إضافة إلى أي تكاليف ومصاريف إدارية أخرى.</p>
+                    <p>ب. يقوم المستأجر بتسليم جميع شيكات الإيجار التي تغطي كامل المدة الإيجارية عند بدء فترة الإيجار.</p>
+                    <p>ج. تقع على عاتق المستأجر المسؤولية الكاملة عن سداد مياه وهيئة كهرباء ومياه دبي وتكاليف التبريد والنظافة وكافة استهلاكات الخدمات.</p>
+                  </div>
+                </div>
+
               </div>
+
             </div>
+            <!-- END PAGE 2 -->
 
-            <table class="plr-table">
-              <thead>
-                <tr>
-                  <th>Sr.No</th>
-                  <th>Description</th>
-                  <th>Invoice amount</th>
-                  <th>Tax</th>
-                  <th>Paid Amount</th>
-                  <th>Account</th>
-                  <th>Payment Mode</th>
-                  <th>Due Date</th>
-                  <th>Paid Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>{{ leasePrintData?.description || '' }}</td>
-                  <td>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</td>
-                  <td>AED 0.00</td>
-                  <td>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</td>
-                  <td>Security Deposits Liability</td>
-                  <td>{{ leasePrintData?.mode_of_payment || 'Cash' }}</td>
-                  <td>{{ leasePrintData?.lease_start_date | date:'dd-MM-yyyy' }}</td>
-                  <td>{{ leasePrintData?.created_date | date:'dd-MM-yyyy' }}</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</td>
-                  <td>Security Deposits Liability</td>
-                  <td>{{ leasePrintData?.mode_of_payment || 'Cash' }}</td>
-                  <td></td>
-                  <td>{{ leasePrintData?.created_date | date:'dd-MM-yyyy' }}</td>
-                </tr>
-              </tbody>
-            </table>
 
-            <div class="plr-summary-wrapper">
-              <div class="plr-summary-box">
-                <div class="plr-sum-row">
-                  <span>Subtotal</span>
-                  <strong>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</strong>
+            <!-- PAGE 3: DETAILED LEGAL CLAUSES CONTINUATION -->
+            <div class="ejari-page ejari-page-break">
+              
+              <div class="ejari-bilingual-section">
+
+                <div class="ejari-section-heading">
+                  <span>2) Tenant's Responsibility (Continued):</span>
+                  <span class="ar-head">2) مسؤوليات المستأجر (متابعة):</span>
                 </div>
-                <div class="plr-sum-row">
-                  <span>Tax</span>
-                  <strong>AED 0.00</strong>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>d. Tenant undertakes to comply with all rules and regulations applicable to the Premises including common area facilities such as parking, swimming pool, gym, etc.</p>
+                    <p>e. All maintenance works inside the leased unit are at Tenant's expense and the Tenant shall be responsible for any damage to property during the tenancy.</p>
+                    <p>f. The Tenant undertakes to notify the Lessor in the event of fire, flood, material damages or other such incidents including building premises.</p>
+                    <p>g. The Tenant shall not make any structural modifications, partitions or extensions in the leased property without written approval of Lessor.</p>
+                    <p>h. The Tenant shall not place any boards or signs on any parts of the building exterior without Lessor written approval.</p>
+                    <p>i. The Tenant is strictly forbidden to carry out any dangerous or illegal activities or use hazardous materials on the premises.</p>
+                    <p>j. The unit is strictly for personal use of the Tenant and immediate family.</p>
+                    <p>k. The Tenant is not allowed to keep pets in the leased property except for villas.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>د. يتعهد المستأجر بالالتزام التام بكافة اللوائح والتعليمات المتعلقة باستخدام العقار والمرافق المشتركة كالمواقف وحمام السباحة والنادي الصحي.</p>
+                    <p>هـ. جميع أعمال الصيانة داخل الوحدة المؤجرة هي على نفقة المستأجر، ويكون مسؤولاً عن أي أضرار تلحق بالعقار.</p>
+                    <p>و. يتعهد المستأجر بإخطار المؤجر في حالة وجود حريق، أو تسرب مياه، أو أي أضرار مادية أخرى.</p>
+                    <p>ز. حظر على المستأجر القيام بأي تعديلات هيكلية أو قواطع أو إضافات في العقار دون موافقة خطية مسبقة من المؤجر.</p>
+                    <p>ح. حظر على المستأجر وضع أي لوحات أو إعلانات على أي جزء من المبنى دون موافقة المؤجر.</p>
+                    <p>ط. يحظر تماماً ممارسة أي أنشطة غير قانونية أو استخدام مواد خطرة في العين المؤجرة.</p>
+                    <p>ي. الوحدة مخصصة للاستخدام الشخصي للمستأجر وعائلته المباشرة فقط.</p>
+                    <p>ك. لا يسمح للمستأجر باقتناء الحيوانات ألا في الفلل وشريطة موافقة المؤجر.</p>
+                  </div>
                 </div>
-                <div class="plr-sum-row plr-sum-border">
-                  <span>Total Amount</span>
-                  <strong>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</strong>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>3) Lessor's Rights and Responsibilities:</span>
+                  <span class="ar-head">3) حقوق ومسؤوليات المؤجر:</span>
                 </div>
-                <div class="plr-sum-row">
-                  <span>Amount Paid</span>
-                  <strong>AED {{ (leasePrintData?.price || 0) | number:'1.2-2' }}</strong>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>a. The Lessor shall have the right to enter and inspect the leased property during reasonable hours and whenever deemed necessary with prior notice of one day.</p>
+                    <p>b. If Tenant vacates without consent, Lessor may retake possession without prejudice to accrued rent due.</p>
+                    <p>c. The Lessor shall not be responsible for any injury, loss or damage to property or life occurring within the premises.</p>
+                    <p>d. The Lessor will provide necessary services and maintenance to the building structure.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>أ. يكون للمؤجر الحق الكامل في دخول المعاينة والفحص للعين المؤجرة خلال ساعات العمل المعقولة مع إشعار مسبق.</p>
+                    <p>ب. في حالة إخلاء المستأجر للعقار دون موافقة، يحق للمؤجر استلام العين المؤجرة دون الإخلال بحقه في المطالبة بالإيجار المستحق.</p>
+                    <p>ج. لا يكون المؤجر مسؤولاً عن أي حادث أو إصابة أو خسارة في الممتلكات أو الأرواح داخل العقار.</p>
+                    <p>د. سيقوم المؤجر بتقديم الخدمات والصيانة الضرورية للعين المؤجرة المبنى.</p>
+                  </div>
                 </div>
-                <div class="plr-sum-row">
-                  <span>Amount Due</span>
-                  <strong>AED 0.00</strong>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>4) Tenancy Contract Renewal and Notice required:</span>
+                  <span class="ar-head">4) تجديد عقد الإيجار والإشعارات المطلوبة:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>a. If the tenancy contract period is less than 3 months and Tenant fails to inform Lessor in writing 60 days prior, Tenant pays 2 months rent penalty.</p>
+                    <p>b. If Tenant wishes to renew short-term lease, written notice is required 30 days prior.</p>
+                    <p>c. If contract is not renewed by expiry date, rent adjustment applies as per market conditions.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>أ. إذا كانت مدة العقد أقل من 3 أشهر ولم يقم المستأجر بإخطار المؤجر خطياً بالرغبة بالإخلاء، يلتزم بدفع إيجار شهرين كغرامة.</p>
+                    <p>ب. يرغب المستأجر في تجديد عقد الإيجار لفترة قصيرة، يتوجب إخطار المؤجر كتابياً قبل 30 يوماً.</p>
+                    <p>ج. إذا لم يتم تجديد العقد عند الانتهاء، يخضع بدل الإيجار الجديد لظروف السوق.</p>
+                  </div>
+                </div>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>5) Contract Breach:</span>
+                  <span class="ar-head">5) خرق العقد:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>Violations include non-payment of rent within 7 days of due date, illegal use, subletting without consent, or breach of terms. Consequences include lease cancellation and eviction.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>تشمل المخالفات عدم سداد الإيجار خلال 7 أيام من الاستحقاق، أو الاستخدام غير المشروع، أو التأجير من الباطن دون موافقة. وتترتب عليها فسخ العقد والإخلاء.</p>
+                  </div>
+                </div>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>6) Early Termination and Vacating:</span>
+                  <span class="ar-head">6) الإنهاء المبكر والإخلاء:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>Early termination requires 3 months prior written notice and payment of 2 months rent compensation penalty to Lessor.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>يتطلب الإنهاء المبكر إشعاراً خطياً قبل 3 أشهر مع سداد تعويض يعادل إيجار شهرين للمؤجر.</p>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+            <!-- END PAGE 3 -->
+
+
+            <!-- PAGE 4: LEGAL COMPLETION, EJARI TERMS, RIGHTS & SIGNATURES -->
+            <div class="ejari-page">
+              
+              <div class="ejari-bilingual-section">
+
+                <div class="ejari-section-heading">
+                  <span>7) Fees and Charges:</span>
+                  <span class="ar-head">7) الرسوم والمصاريف:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>Tenant pays AED 1,000 administrative fee for bounce cheque, AED 1,000 late payment fee, legal fees incurred, and all traffic/parking fines.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>يدفع المستأجر 1,000 درهم عن كل شيك مرتجع، و1,000 درهم غرامة تأخير، إضافة إلى كافة الرسوم القانونية والمخالفات.</p>
+                  </div>
+                </div>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>8) Move-Out:</span>
+                  <span class="ar-head">8) الإخلاء:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>Tenant shall vacate on agreed date, return keys/access cards, settle all utility bills, and restore property to original condition.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>يجب على المستأجر إخلاء العقار في التاريخ المتفق عليه، وتسليم المفاتيح، وسداد الفواتير وإعادة العقار لحالته الأصلية.</p>
+                  </div>
+                </div>
+
+                <div class="ejari-section-heading mt-2">
+                  <span>9) Liability & 10) Standard Terms:</span>
+                  <span class="ar-head">9) المسؤولية و10) الشروط العامة:</span>
+                </div>
+                <div class="ejari-two-col">
+                  <div class="ejari-col-en">
+                    <p>Governed by UAE Law No. 26 of 2007. Disputes settled by Dubai Rental Dispute Center. Discrepancies resolved in favor of Arabic text.</p>
+                  </div>
+                  <div class="ejari-col-ar">
+                    <p>يخضع للقانون رقم 26 لسنة 2007 في دبي. وتفصل مركز فض المنازعات الإيجارية في أي نزاع. وعند الاختلاف يعتمد النص العربي.</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Ejari Terms 4 to 14 List -->
+              <div class="ejari-terms-rows mt-2">
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">4</span>
+                  <span class="ejari-term-text">The tenant shall be responsible for payment of electricity, water, cooling and gas charges.</span>
+                  <span class="ejari-term-text-ar">يكون المستأجر مسؤولاً عن سداد كافة فواتير الكهرباء والماء والتبريد والغاز.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">7</span>
+                  <span class="ejari-term-text">All formal and legal notifications shall be sent to mentioned email addresses and phone numbers.</span>
+                  <span class="ejari-term-text-ar">ترسل كافة الإخطارات القانونية والرسمية إلى البريد الإلكتروني ورقم الهاتف المذكورين.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">10</span>
+                  <span class="ejari-term-text">Any disagreement or dispute shall be settled by the Rental Dispute Center in Dubai.</span>
+                  <span class="ejari-term-text-ar">أي نزاع أو خلاف ينشأ عن تنفيذ هذا العقد يتم البت فيه عن طريق مركز فض المنازعات.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">11</span>
+                  <span class="ejari-term-text">This contract is subject to provisions of Law No. (26) of 2007 regulating relationship between landlords and tenants.</span>
+                  <span class="ejari-term-text-ar">يخضع هذا العقد لأحكام القانون رقم 26 لسنة 2007 بشأن تنظيم العلاقة بين المؤجرين والمستأجرين.</span>
+                </div>
+                <div class="ejari-term-line">
+                  <span class="ejari-term-num">14</span>
+                  <span class="ejari-term-text">The landlord undertakes to register this tenancy contract in EJARI affiliated to Dubai Land Department.</span>
+                  <span class="ejari-term-text-ar">يتعهد المؤجر تسجيل عقد الإيجار في نظام إيجاري التابع لدائرة الأراضي والأملاك.</span>
                 </div>
               </div>
-            </div>
 
-            <div class="plr-words-section">
-              <p class="plr-words-label">Amount in Words (Total Amount)</p>
-              <p class="plr-words-value">AED {{ numberToWords(leasePrintData?.price || 0) }}</p>
-            </div>
-
-            <hr class="plr-divider" />
-
-            <div class="plr-footer">
-              <span class="plr-disclaimer">This receipt is issued on behalf of the company</span>
-              <div class="plr-powered">
-                <span>Powered By</span>
-                <span class="plr-ht-badge">Orville</span>
+              <!-- Know Your Rights Section Bar -->
+              <div class="ejari-dark-bar">
+                <span>Know your rights:</span>
+                <span class="ejari-bar-ar">لمعرفة حقوق الأطراف</span>
               </div>
+              <div class="ejari-two-col text-[8.5px]">
+                <div class="ejari-col-en">
+                  <p>• Center website through www.dubailand.gov.ae and use Smart Judge service in case of dispute.</p>
+                  <p>• Law No 26 of 2007 regulating relationship between landlords and tenants in Dubai.</p>
+                  <p>• Law No 33 of 2008 amending Law 26 of 2007.</p>
+                  <p>• Law No 43 of 2013 determining rent increases for properties in Dubai.</p>
+                </div>
+                <div class="ejari-col-ar">
+                  <p>• إمكانية زيارة موقع مركز فض المنازعات الإيجارية من خلال www.dubailand.gov.ae واستخدام خدمة القاضي الذكي.</p>
+                  <p>• الاطلاع على قانون رقم 26 لسنة 2007 بشأن تنظيم العلاقة بين المؤجرين والمستأجرين.</p>
+                  <p>• الاطلاع على قانون رقم 33 لسنة 2008 الخاص بتعديل بعض أحكام قانون 26 لسنة 2007.</p>
+                  <p>• الاطلاع على قانون رقم 43 لسنة 2013 بشأن تحديد زيادة بدل الإيجار.</p>
+                </div>
+              </div>
+
+              <!-- Attachments for EJARI Registration Section Bar -->
+              <div class="ejari-dark-bar">
+                <span>Attachments for EJARI registration:</span>
+                <span class="ejari-bar-ar">المرفقات للتسجيل على إيجاري</span>
+              </div>
+              <div class="ejari-two-col text-[8.5px]">
+                <div class="ejari-col-en">
+                  <p>1. Original unified tenancy contract</p>
+                  <p>2. Copy of Emirates ID or passport for tenant (individuals) Or trade license for tenant (companies)</p>
+                  <p>3. Original Emirates ID of applicant or representative card by DNRD</p>
+                  <p class="italic text-[8px] mt-1 text-gray-600">Note: You may add an addendum to this tenancy contract in case you have additional terms signed by all parties.</p>
+                </div>
+                <div class="ejari-col-ar">
+                  <p>1. نسخة أصلية من عقد الإيجار الموحد</p>
+                  <p>2. صورة من بطاقة الهوية أو جواز سفر المستأجر للأفراد أو صورة من الرخصة التجارية للمصانع والشركات</p>
+                  <p>3. أصل هوية الإمارات لمقدم الطلب أو بطاقة مندوب صادرة من الإدارة العامة للإقامة وشؤون الأجانب</p>
+                </div>
+              </div>
+
+              <!-- FOR OFFICE USE ONLY Box -->
+              <div class="ejari-office-box">
+                <div class="ejari-office-title">FOR OFFICE USE ONLY</div>
+              </div>
+
+              <!-- Final Signatures Row -->
+              <div class="ejari-signatures-row">
+                <div class="ejari-sig-col">
+                  <div class="ejari-sig-line"></div>
+                  <div class="ejari-sig-label">
+                    <span>Tenant Signature</span>
+                    <span class="ar-txt">توقيع المستأجر</span>
+                  </div>
+                  <div class="ejari-sig-date">
+                    <span>Date: ____________</span>
+                    <span>التاريخ: ____________</span>
+                  </div>
+                </div>
+                <div class="ejari-sig-col">
+                  <div class="ejari-sig-line"></div>
+                  <div class="ejari-sig-label">
+                    <span>Landlord Signature</span>
+                    <span class="ar-txt">توقيع المؤجر</span>
+                  </div>
+                  <div class="ejari-sig-date">
+                    <span>Date: ____________</span>
+                    <span>التاريخ: ____________</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Disclaimer -->
+              <div class="ejari-footer">
+                <span>Official Dubai Land Department Unified Tenancy Contract Template</span>
+                <span class="font-bold text-gray-800">Powered By Orville Real Estate Management</span>
+              </div>
+
             </div>
+            <!-- END PAGE 4 -->
+
           </div>
-          <!-- END PRINTABLE DOCUMENT LAYOUT -->
+          <!-- END PRINTABLE EJARI DOCUMENT LAYOUT -->
 
         </div>
       </div>

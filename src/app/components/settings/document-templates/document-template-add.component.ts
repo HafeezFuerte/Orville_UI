@@ -76,30 +76,33 @@ export class DocumentTemplateAddComponent implements OnInit, OnDestroy {
     this.editor?.destroy();
   }
 
+  defaultDocTypes: DocTypeOption[] = [
+    { id: 47, name: 'Lease Agreement', code: 'LEASE' },
+    { id: 48, name: 'Vendor Contract', code: 'VENDOR' },
+    { id: 49, name: 'Landlord Contract', code: 'LANDLORD' },
+    { id: 50, name: 'Work Order', code: 'WORK_ORDER' },
+    { id: 51, name: 'Invoice / Receipt', code: 'INVOICE' },
+    { id: 52, name: 'General Document', code: 'GENERAL' }
+  ];
+
+  defaultAutofill: AutofillItem[] = [
+    { id: 1, name: 'Tenant Name', tag: 'Tenant Name' },
+    { id: 2, name: 'Landlord Name', tag: 'Landlord Name' },
+    { id: 3, name: 'Building Name', tag: 'Building Name' },
+    { id: 4, name: 'Unit Number', tag: 'Unit Number' },
+    { id: 5, name: 'Annual Rent', tag: 'Annual Rent' },
+    { id: 6, name: 'Start Date', tag: 'Start Date' },
+    { id: 7, name: 'End Date', tag: 'End Date' },
+    { id: 8, name: 'Security Deposit', tag: 'Security Deposit' },
+    { id: 9, name: 'DEWA Number', tag: 'DEWA Number' },
+    { id: 10, name: 'Payment Mode', tag: 'Payment Mode' }
+  ];
+
   loadDocTypes(): void {
-    this.loadingDocTypes = true;
-    this.commonTabsService.getMasterByType({ typeId: 47, filterId: 0, filterText: '', filterText1: '' }).subscribe({
-      next: (res: any) => {
-        this.loadingDocTypes = false;
-        if (res && (res.statusCode === 200 || res.statusCode === '200') && res.objResult?.table) {
-          this.typeOptions = res.objResult.table.map((item: any) => ({
-            id: item.id,
-            name: item.name || item.lookup_name || item.description || item.code || '',
-            code: item.code || ''
-          }));
-        } else {
-          this.typeOptions = [];
-        }
-        if (this.typeOptions.length > 0 && !this.templateType) {
-          this.templateType = this.typeOptions[0].id || this.typeOptions[0].name;
-        }
-      },
-      error: (err: any) => {
-        this.loadingDocTypes = false;
-        console.error('Error loading doc types:', err);
-        this.typeOptions = [];
-      }
-    });
+    this.typeOptions = [...this.defaultDocTypes];
+    if (this.typeOptions.length > 0 && !this.templateType) {
+      this.templateType = this.typeOptions[0].name;
+    }
   }
 
   loadAutofillElements(filterId: number = 47): void {
@@ -108,7 +111,7 @@ export class DocumentTemplateAddComponent implements OnInit, OnDestroy {
     this.commonTabsService.getMasterByType({ typeId: 2, filterId: targetFilterId, filterText: '', filterText1: '' }).subscribe({
       next: (res: any) => {
         this.loadingAutofill = false;
-        if (res && (res.statusCode === 200 || res.statusCode === '200') && res.objResult?.table) {
+        if (res && (res.statusCode === 200 || res.statusCode === '200') && Array.isArray(res.objResult?.table) && res.objResult.table.length > 0) {
           this.autofillElements = res.objResult.table.map((item: any) => {
             const rawName = item.name || item.lookup_name || item.description || item.code || '';
             const tag = item.code || item.field_tag || rawName;
@@ -119,13 +122,13 @@ export class DocumentTemplateAddComponent implements OnInit, OnDestroy {
             };
           });
         } else {
-          this.autofillElements = [];
+          this.autofillElements = [...this.defaultAutofill];
         }
       },
       error: (err: any) => {
         this.loadingAutofill = false;
         console.error('Error loading autofill elements:', err);
-        this.autofillElements = [];
+        this.autofillElements = [...this.defaultAutofill];
       }
     });
   }
@@ -171,6 +174,7 @@ export class DocumentTemplateAddComponent implements OnInit, OnDestroy {
       id: this.templateId || 0,
       code: this.code || '',
       doc_type: String(this.templateType || ''),
+      template_type: String(this.templateType || ''),
       title: this.title.trim(),
       content: this.content,
       userid: currentUser?.userId || 1,
