@@ -3,14 +3,14 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Mandatory Documents
+        {{ 'web.settings.mandatoryDocs.lblTitle' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Require tenants or landlords to upload mandatory documents before continuing.
+        {{ 'web.settings.mandatoryDocs.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="updateSettings()">
-      Update
+      {{ 'web.common.lblUpdate' | translate }}
     </button>
   </div>
 
@@ -18,7 +18,7 @@
   <section
     class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
     <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-      Enable Mandatory Document Settings
+      {{ 'web.settings.mandatoryDocs.lblTitle' | translate }}
     </h2>
     <div class="flex items-center gap-3">
       <button
@@ -29,16 +29,15 @@
         "
         (click)="enabled = !enabled"
         [attr.aria-pressed]="enabled"
-        aria-label="Enable Mandatory Documents">
+        [attr.aria-label]="'web.settings.mandatoryDocs.lblTitle' | translate">
         <span
           class="pointer-events-none absolute top-1/2 block h-4 w-4 -translate-y-1/2 rounded-full bg-white shadow transition-[left]"
           [ngClass]="enabled ? 'left-[calc(100%-18px)]' : 'left-0.5'"></span>
       </button>
-      <span class="text-sm font-semibold text-defaulttextcolor">Enable Mandatory Documents</span>
+      <span class="text-sm font-semibold text-defaulttextcolor">{{ 'web.settings.mandatoryDocs.lblTitle' | translate }}</span>
     </div>
     <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-      Allows you to restrict tenants or landlords from performing actions until mandatory documents
-      are uploaded.
+      {{ 'web.settings.mandatoryDocs.lblSubtitle' | translate }}
     </p>
   </section>
 
@@ -47,33 +46,33 @@
     class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-        Mandatory Documents
+        {{ 'web.settings.mandatoryDocs.lblTitle' | translate }}
       </h2>
       <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
         <span class="text-lg leading-none" aria-hidden="true">+</span>
-        Add Document
+        {{ 'web.settings.mandatoryDocs.btnAdd' | translate }}
       </button>
     </div>
 
     <div
       class="w-full overflow-hidden rounded-2xl border border-defaultborder"
       role="table"
-      aria-label="Mandatory documents">
+      [attr.aria-label]="'web.settings.mandatoryDocs.lblTitle' | translate">
       <div
         class="flex gap-4 overflow-x-auto bg-bodybg px-5 py-3.5 dark:bg-white/5"
         role="row">
         <div class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
-          Document Type
+          {{ 'web.settings.docTemplates.lblType' | translate }}
         </div>
         <div
           class="w-[200px] shrink-0 text-xs font-semibold text-textmuted sm:w-[280px] lg:w-[420px]"
           role="columnheader">
-          User Type
+          {{ 'web.common.lblUser' | translate }}
         </div>
         <div
           class="w-[100px] shrink-0 text-xs font-semibold text-textmuted sm:w-[160px] lg:w-[200px]"
           role="columnheader">
-          Actions
+          {{ 'web.settings.docTemplates.lblActions' | translate }}
         </div>
       </div>
 
@@ -103,14 +102,14 @@
           <button
             type="button"
             class="ov-icon-btn"
-            aria-label="Edit document"
+            [attr.aria-label]="'web.settings.docTemplates.lblEdit' | translate"
             (click)="openEdit(row)">
             <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
           </button>
           <button
             type="button"
             class="ov-icon-btn ov-icon-btn--danger"
-            aria-label="Delete document"
+            [attr.aria-label]="'web.settings.docTemplates.lblDelete' | translate"
             (click)="deleteDocument(row)">
             <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
           </button>
@@ -120,7 +119,7 @@
       <div
         *ngIf="documents.length === 0"
         class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-        No mandatory documents yet.
+        {{ 'web.common.lblNoRecordsFound' | translate }}
       </div>
     </div>
   </section>
@@ -141,7 +140,7 @@
     <button
       type="button"
       class="ov-modal-close"
-      aria-label="Close"
+      [attr.aria-label]="'web.common.lblClose' | translate"
       (click)="closeModal()">
       <img
         src="./assets/images/common/close-plus.svg"
@@ -166,14 +165,14 @@
       <div class="p-5">
         <div class="overflow-hidden rounded-2xl border border-defaultborder py-4">
           <div class="px-4">
-            <h3 class="m-0 text-base font-semibold text-defaulttextcolor">Mandatory Documents</h3>
+            <h3 class="m-0 text-base font-semibold text-defaulttextcolor">{{ 'web.settings.mandatoryDocs.lblTitle' | translate }}</h3>
           </div>
           <div class="mt-4 h-px w-full bg-defaultborder"></div>
           <div class="flex flex-col gap-4 px-4 pt-4">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div class="flex min-w-0 flex-col gap-2">
                 <label class="text-sm font-medium text-textmuted" for="md-doc-type">
-                  Document type <span class="text-danger">*</span>
+                  {{ 'web.settings.docTemplates.lblType' | translate }} <span class="text-danger">*</span>
                 </label>
                 <div class="relative">
                   <select
@@ -193,7 +192,7 @@
 
               <div class="flex min-w-0 flex-col gap-2">
                 <label class="text-sm font-medium text-textmuted" for="md-user-type">
-                  User type <span class="text-danger">*</span>
+                  {{ 'web.common.lblUser' | translate }} <span class="text-danger">*</span>
                 </label>
                 <div class="relative">
                   <select
@@ -213,10 +212,9 @@
             </div>
 
             <div class="flex flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
-              <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+              <p class="m-0 text-xs font-semibold text-primary dark:text-white">{{ 'web.settings.docTemplates.lblTip' | translate }}</p>
               <p class="m-0 text-xs font-normal text-textmuted">
-                Users of this type must upload the selected document before restricted actions are
-                allowed.
+                {{ 'web.settings.mandatoryDocs.lblSubtitle' | translate }}
               </p>
             </div>
           </div>
@@ -225,14 +223,14 @@
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.common.lblClose' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!canSave"
           (click)="saveDocument()">
-          Save
+          {{ 'web.common.btnSave' | translate }}
         </button>
       </div>
     </div>

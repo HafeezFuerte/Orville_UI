@@ -6,13 +6,16 @@ import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-company-shifts',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    TranslateModule
   ],
   templateUrl: './company-shifts.component.html',
   styleUrl: './company-shifts.component.scss'

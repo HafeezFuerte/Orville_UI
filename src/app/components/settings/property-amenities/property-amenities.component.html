@@ -2,15 +2,15 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Property Amenities
+        {{ 'web.settings.propertyAmenities.lblTitle' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Manage property amenities that can be assigned to properties.
+        {{ 'web.settings.propertyAmenities.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add New
+      {{ 'web.settings.propertyAmenities.btnAdd' | translate }}
     </button>
   </div>
 
@@ -26,7 +26,7 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search amenities by name"
+        [placeholder]="'web.settings.propertyAmenities.phSearch' | translate"
         aria-label="Search amenities by name"
         [(ngModel)]="searchQuery"
         (ngModelChange)="onSearchChange()" />
@@ -39,7 +39,7 @@
         [attr.aria-expanded]="showColumns"
         (click)="toggleColumns()">
         <img src="./assets/images/work-orders/columns.svg" alt="" width="16" height="16" />
-        <span>Columns</span>
+        <span>{{ 'web.settings.propertyAmenities.btnColumns' | translate }}</span>
       </button>
 
       <div *ngIf="showColumns" class="pa-menu" (click)="$event.stopPropagation()">
@@ -55,7 +55,7 @@
             <input
               type="search"
               class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
-              placeholder="Search options..."
+              [placeholder]="'web.settings.propertyTypes.phColumnSearch' | translate"
               [(ngModel)]="columnSearch" />
           </label>
         </div>
@@ -66,7 +66,7 @@
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [checked]="allColumnsSelected"
               (change)="toggleSelectAllColumns($any($event.target).checked)" />
-            <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+            <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.propertyTypes.lblSelectAll' | translate }}</span>
           </label>
           <label
             *ngFor="let col of filteredColumns"
@@ -79,9 +79,9 @@
           </label>
         </div>
         <div class="pa-menu__footer">
-          <button type="button" class="pa-menu__link" (click)="clearColumns()">Clear</button>
+          <button type="button" class="pa-menu__link" (click)="clearColumns()">{{ 'web.settings.propertyTypes.btnClear' | translate }}</button>
           <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
-          <button type="button" class="pa-menu__close" (click)="closeColumns()">Close</button>
+          <button type="button" class="pa-menu__close" (click)="closeColumns()">{{ 'web.settings.propertyTypes.btnClose' | translate }}</button>
         </div>
       </div>
     </div>
@@ -100,14 +100,14 @@
           *ngIf="isColumnVisible('id')"
           class="pa-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
-          ID
+          {{ 'web.settings.propertyAmenities.colId' | translate }}
         </div>
         <div
           *ngIf="isColumnVisible('name')"
           class="pa-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
           <button type="button" class="pa-sort" (click)="toggleSort('name')">
-            Name
+            {{ 'web.settings.propertyAmenities.colName' | translate }}
             <span class="pa-sort__icons" aria-hidden="true">
               <span [class.is-active]="sortKey === 'name' && sortDir === 'asc'">▲</span>
               <span [class.is-active]="sortKey === 'name' && sortDir === 'desc'">▼</span>
@@ -118,7 +118,7 @@
           *ngIf="isColumnVisible('actions')"
           class="pa-table__cell pa-table__cell--action text-xs font-semibold text-textmuted"
           role="columnheader">
-          Actions
+          {{ 'web.settings.propertyAmenities.colActions' | translate }}
         </div>
       </div>
 
@@ -203,7 +203,7 @@
       class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
       <div class="flex flex-col gap-[18px] px-5 pt-5">
         <h2 id="pa-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
-          {{ modalTitle }}
+          {{ editingId == null ? ('web.settings.propertyAmenities.lblNewModalTitle' | translate) : ('web.settings.propertyAmenities.lblEditModalTitle' | translate) }}
         </h2>
         <div class="h-px w-full bg-defaultborder"></div>
       </div>
@@ -211,26 +211,26 @@
       <div class="flex flex-col gap-4 p-5">
         <div class="flex min-w-0 flex-col gap-2">
           <label class="ov-label" for="pa-name">
-            Name <span class="text-danger">*</span>
+            {{ 'web.settings.propertyAmenities.lblModalName' | translate }} <span class="text-danger">*</span>
           </label>
           <input
             id="pa-name"
             type="text"
             class="ov-input"
-            placeholder="Enter amenity name"
+            [placeholder]="'web.settings.propertyAmenities.phModalName' | translate"
             [(ngModel)]="draft.name" />
         </div>
       </div>
 
       <div
         class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
-        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.settings.propertyAmenities.btnModalClose' | translate }}</button>
         <button
           type="button"
           class="ov-btn ov-btn-primary"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.propertyAmenities.btnModalSave' | translate }}
         </button>
       </div>
     </div>

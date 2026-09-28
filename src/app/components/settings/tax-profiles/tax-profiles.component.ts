@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   DEFAULT_TAX_PROFILES,
   EMPTY_TAX_PROFILE,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-tax-profiles',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './tax-profiles.component.html',
   styleUrl: './tax-profiles.component.scss',
 })

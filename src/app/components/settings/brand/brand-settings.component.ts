@@ -13,10 +13,12 @@ interface LogoUpload {
   fileName: string | null;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-brand-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, TranslateModule],
   templateUrl: './brand-settings.component.html',
   styleUrl: './brand-settings.component.scss',
 })

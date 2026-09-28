@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { environment } from '../../../../environments/environment';
@@ -47,7 +48,7 @@ interface LookupItem {
 @Component({
   selector: 'app-masters',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedTableComponent, NgSelectModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedTableComponent, NgSelectModule, TranslateModule],
   templateUrl: './masters.component.html',
   styleUrl: './masters.component.scss',
 })

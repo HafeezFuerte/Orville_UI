@@ -1,9 +1,9 @@
 <form class="cs-shifts" [formGroup]="companyShiftsForm" (ngSubmit)="onSubmit()">
   <div class="cs-shifts__page-header">
     <div class="cs-shifts__title-block">
-      <h1 class="cs-shifts__title">Company Shifts</h1>
+      <h1 class="cs-shifts__title">{{ 'web.settings.companyShifts.lblTitle' | translate }}</h1>
       <p class="cs-shifts__subtitle">
-        Turn on a day, then set working hours. Times use 24-hour format (HH:MM).
+        {{ 'web.settings.companyShifts.lblSubtitle' | translate }}
       </p>
     </div>
   </div>
@@ -15,26 +15,26 @@
 
     <div class="cs-shifts__actions">
       <button type="button" class="cs-shifts__chip" (click)="applyWeekdays()">
-        Apply Mon–Fri · 09:00–18:00
+        {{ 'web.settings.companyShifts.btnApplyWeekdays' | translate }}
       </button>
       <button type="button" class="cs-shifts__chip cs-shifts__chip--muted" (click)="clearWeekend()">
-        Clear weekend
+        {{ 'web.settings.companyShifts.btnClearWeekend' | translate }}
       </button>
       <label class="cs-shifts__enable-all">
         <input class="cs-shifts__switch-input" type="checkbox" formControlName="selectAll" />
         <span class="cs-shifts__switch" aria-hidden="true">
           <span class="cs-shifts__switch-knob"></span>
         </span>
-        <span class="cs-shifts__enable-all-label">Enable all days</span>
+        <span class="cs-shifts__enable-all-label">{{ 'web.settings.companyShifts.lblEnableAll' | translate }}</span>
       </label>
     </div>
 
     <div class="cs-shifts__cols" aria-hidden="true">
-      <span class="cs-shifts__col cs-shifts__col--day">Day</span>
-      <span class="cs-shifts__col cs-shifts__col--opens">Opens</span>
+      <span class="cs-shifts__col cs-shifts__col--day">{{ 'web.settings.companyShifts.colDay' | translate }}</span>
+      <span class="cs-shifts__col cs-shifts__col--opens">{{ 'web.settings.companyShifts.colOpens' | translate }}</span>
       <span class="cs-shifts__col cs-shifts__col--to"></span>
-      <span class="cs-shifts__col cs-shifts__col--closes">Closes</span>
-      <span class="cs-shifts__col cs-shifts__col--duration">Duration</span>
+      <span class="cs-shifts__col cs-shifts__col--closes">{{ 'web.settings.companyShifts.colCloses' | translate }}</span>
+      <span class="cs-shifts__col cs-shifts__col--duration">{{ 'web.settings.companyShifts.colDuration' | translate }}</span>
       <span class="cs-shifts__col cs-shifts__col--spacer"></span>
     </div>
 
@@ -63,7 +63,7 @@
               class="cs-shifts__day-status"
               [class.cs-shifts__day-status--open]="shift.get('enabled')?.value"
             >
-              {{ shift.get('enabled')?.value ? 'Open' : 'Closed' }}
+              {{ shift.get('enabled')?.value ? ('web.settings.companyShifts.lblOpen' | translate) : ('web.settings.companyShifts.lblClosed' | translate) }}
             </span>
           </div>
         </div>
@@ -74,7 +74,7 @@
           <span *ngIf="!shift.get('enabled')?.value" class="cs-shifts__time-ph">HH:MM</span>
         </label>
 
-        <span class="cs-shifts__to">to</span>
+        <span class="cs-shifts__to">{{ 'web.settings.companyShifts.lblTo' | translate }}</span>
 
         <label class="cs-shifts__time" [class.cs-shifts__time--disabled]="!shift.get('enabled')?.value">
           <img src="./assets/images/settings/clock.svg" alt="" width="14" height="14" />
@@ -97,9 +97,9 @@
   </div>
 
   <div class="cs-shifts__footer">
-    <p class="cs-shifts__footer-note">Changes apply to new bookings and staff schedules.</p>
+    <p class="cs-shifts__footer-note">{{ 'web.settings.companyShifts.lblFooterNote' | translate }}</p>
     <button type="submit" class="ov-btn ov-btn-primary" [disabled]="companyShiftsForm.invalid">
-      Save Changes
+      {{ 'web.settings.companyShifts.btnSaveChanges' | translate }}
     </button>
   </div>
 </form>

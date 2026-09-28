@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
@@ -19,7 +20,7 @@ type SortDir = 'asc' | 'desc';
 @Component({
   selector: 'app-room-types',
   standalone: true,
-  imports: [CommonModule, FormsModule, OvPaginatorComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, OvPaginatorComponent],
   templateUrl: './room-types.component.html',
   styleUrl: './room-types.component.scss',
 })

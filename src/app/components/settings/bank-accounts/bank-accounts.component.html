@@ -3,29 +3,29 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Bank Accounts
+        {{ 'web.settings.bankAccounts.title' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Manage all bank accounts for payments and collections ({{ totalCount }} total)
+        {{ 'web.settings.bankAccounts.sub' | translate }} ({{ totalCount }} {{ 'web.settings.bankAccounts.total' | translate }})
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add Bank Account
+      {{ 'web.settings.bankAccounts.addAccount' | translate }}
     </button>
   </div>
 
-  <!-- Empty state (no search / columns — matches Tax & Discount Profiles) -->
+  <!-- Empty state -->
   <div *ngIf="rows.length === 0" class="ba-empty">
     <div class="ba-empty__icon" aria-hidden="true">
       <img src="./assets/images/settings/cash-banknote.svg" alt="" width="22" height="22" />
     </div>
-    <h2 class="ba-empty__title">No bank accounts yet</h2>
+    <h2 class="ba-empty__title">{{ 'web.settings.bankAccounts.noAccountsTitle' | translate }}</h2>
     <p class="ba-empty__sub">
-      Create your first bank account to start receiving and sending payments.
+      {{ 'web.settings.bankAccounts.noAccountsSub' | translate }}
     </p>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
-      Add Bank Account
+      {{ 'web.settings.bankAccounts.addAccount' | translate }}
     </button>
   </div>
 
@@ -43,7 +43,7 @@
         <input
           type="search"
           class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-          placeholder="Search by name..."
+          [placeholder]="'web.settings.bankAccounts.searchPlaceholder' | translate"
           aria-label="Search bank accounts"
           [(ngModel)]="searchQuery" />
       </label>
@@ -55,7 +55,7 @@
           [attr.aria-expanded]="showColumns"
           (click)="toggleColumns()">
           <img src="./assets/images/settings/layout-grid.svg" alt="" width="16" height="16" />
-          <span>Columns ({{ visibleColumnCount }})</span>
+          <span>{{ 'web.settings.bankAccounts.columns' | translate }} ({{ visibleColumnCount }})</span>
           <img src="./assets/images/settings/chevron-down.svg" alt="" width="12" height="12" />
         </button>
 
@@ -72,7 +72,7 @@
               <input
                 type="search"
                 class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
-                placeholder="Search options..."
+                [placeholder]="'web.settings.bankAccounts.searchOptions' | translate"
                 [(ngModel)]="columnSearch" />
             </label>
           </div>
@@ -83,7 +83,7 @@
                 class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
                 [checked]="allColumnsSelected"
                 (change)="toggleSelectAllColumns($any($event.target).checked)" />
-              <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+              <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.bankAccounts.selectAll' | translate }}</span>
             </label>
             <label
               *ngFor="let col of filteredColumns"
@@ -100,14 +100,14 @@
               type="button"
               class="border-0 bg-transparent p-0 text-xs font-semibold text-link"
               (click)="clearColumns()">
-              Clear
+              {{ 'web.settings.bankAccounts.clear' | translate }}
             </button>
             <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
             <button
               type="button"
               class="border-0 bg-transparent p-0 text-xs font-semibold text-defaulttextcolor"
               (click)="closeColumns()">
-              Close
+              {{ 'web.settings.bankAccounts.close' | translate }}
             </button>
           </div>
         </div>
@@ -127,49 +127,49 @@
             *ngIf="isColumnVisible('bankName')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            Bank Name
+            {{ 'web.settings.bankAccounts.bankName' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('currency')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            Currency
+            {{ 'web.settings.bankAccounts.currency' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('accountType')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            Account Type
+            {{ 'web.settings.bankAccounts.accountType' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('accountNumber')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            Account Number
+            {{ 'web.settings.bankAccounts.accountNumber' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('iban')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            IBAN
+            {{ 'web.settings.bankAccounts.iban' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('swift')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            SWIFT
+            {{ 'web.settings.bankAccounts.swift' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('primary')"
             class="ba-table__cell text-xs font-semibold text-textmuted"
             role="columnheader">
-            Primary
+            {{ 'web.settings.bankAccounts.primary' | translate }}
           </div>
           <div
             *ngIf="isColumnVisible('actions')"
             class="ba-table__cell ba-table__cell--action text-xs font-semibold text-textmuted"
             role="columnheader">
-            Actions
+            {{ 'web.settings.bankAccounts.actions' | translate }}
           </div>
         </div>
 
@@ -221,14 +221,14 @@
             <span
               *ngIf="row.isPrimary"
               class="inline-flex items-center rounded-md bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
-              Primary
+              {{ 'web.settings.bankAccounts.primary' | translate }}
             </span>
             <button
               *ngIf="!row.isPrimary"
               type="button"
               class="border-0 bg-transparent p-0 text-xs font-medium text-link"
               (click)="setPrimary(row)">
-              Set primary
+              {{ 'web.settings.bankAccounts.setPrimary' | translate }}
             </button>
           </div>
           <div *ngIf="isColumnVisible('actions')" class="ba-table__cell ba-table__cell--action" role="cell">
@@ -253,7 +253,7 @@
       <div
         *ngIf="filteredRows.length === 0"
         class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-        No bank accounts match your search.
+        {{ 'web.settings.bankAccounts.noMatch' | translate }}
       </div>
     </div>
   </ng-container>
@@ -301,57 +301,57 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="flex min-w-0 flex-col gap-2">
               <label class="ov-label" for="ba-bank-name">
-                Bank Name <span class="text-danger">*</span>
+                {{ 'web.settings.bankAccounts.bankName' | translate }} <span class="text-danger">*</span>
               </label>
               <input
                 id="ba-bank-name"
                 type="text"
                 class="ov-input"
-                placeholder="Enter bank name"
+                [placeholder]="'web.settings.bankAccounts.enterBankName' | translate"
                 [(ngModel)]="draft.bankName" />
             </div>
             <div class="flex min-w-0 flex-col gap-2">
               <label class="ov-label" for="ba-account-title">
-                Account Title <span class="text-danger">*</span>
+                {{ 'web.settings.bankAccounts.accountTitle' | translate }} <span class="text-danger">*</span>
               </label>
               <input
                 id="ba-account-title"
                 type="text"
                 class="ov-input"
-                placeholder="Enter account title"
+                [placeholder]="'web.settings.bankAccounts.enterAccountTitle' | translate"
                 [(ngModel)]="draft.accountTitle" />
             </div>
             <div class="flex min-w-0 flex-col gap-2">
               <label class="ov-label" for="ba-account-number">
-                Account Number <span class="text-danger">*</span>
+                {{ 'web.settings.bankAccounts.accountNumber' | translate }} <span class="text-danger">*</span>
               </label>
               <input
                 id="ba-account-number"
                 type="text"
                 class="ov-input"
-                placeholder="Enter account number"
+                [placeholder]="'web.settings.bankAccounts.enterAccountNumber' | translate"
                 [(ngModel)]="draft.accountNumber" />
             </div>
             <div class="flex min-w-0 flex-col gap-2">
-              <label class="ov-label" for="ba-iban">IBAN</label>
+              <label class="ov-label" for="ba-iban">{{ 'web.settings.bankAccounts.iban' | translate }}</label>
               <input
                 id="ba-iban"
                 type="text"
                 class="ov-input"
-                placeholder="Enter IBAN"
+                [placeholder]="'web.settings.bankAccounts.enterIban' | translate"
                 [(ngModel)]="draft.iban" />
             </div>
             <div class="flex min-w-0 flex-col gap-2">
-              <label class="ov-label" for="ba-swift">Swift Code</label>
+              <label class="ov-label" for="ba-swift">{{ 'web.settings.bankAccounts.swiftCode' | translate }}</label>
               <input
                 id="ba-swift"
                 type="text"
                 class="ov-input"
-                placeholder="Enter SWIFT code"
+                [placeholder]="'web.settings.bankAccounts.enterSwift' | translate"
                 [(ngModel)]="draft.swiftCode" />
             </div>
             <div class="flex min-w-0 flex-col gap-2">
-              <label class="ov-label" for="ba-currency">Currency</label>
+              <label class="ov-label" for="ba-currency">{{ 'web.settings.bankAccounts.currency' | translate }}</label>
               <div class="relative">
                 <select
                   id="ba-currency"
@@ -368,7 +368,7 @@
               </div>
             </div>
             <div class="flex min-w-0 flex-col gap-2">
-              <label class="ov-label" for="ba-type">Account Type</label>
+              <label class="ov-label" for="ba-type">{{ 'web.settings.bankAccounts.accountType' | translate }}</label>
               <div class="relative">
                 <select
                   id="ba-type"
@@ -392,9 +392,9 @@
                   class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-defaultborder text-primary"
                   [(ngModel)]="draft.isPrimary" />
                 <span class="flex min-w-0 flex-col gap-0.5">
-                  <span class="text-sm font-medium text-defaulttextcolor">Primary Bank Account</span>
+                  <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.bankAccounts.primaryAccount' | translate }}</span>
                   <span class="text-xs font-normal text-textmuted">
-                    Check if you want this bank account to be primary.
+                    {{ 'web.settings.bankAccounts.primaryAccountSub' | translate }}
                   </span>
                 </span>
               </label>
@@ -405,14 +405,14 @@
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Cancel
+          {{ 'web.settings.bankAccounts.cancel' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.bankAccounts.save' | translate }}
         </button>
       </div>
     </div>

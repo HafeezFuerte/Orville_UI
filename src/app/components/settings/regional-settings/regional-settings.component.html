@@ -1,9 +1,9 @@
 <form class="rs-settings" [formGroup]="regionalSettingsForm" (ngSubmit)="onSubmit()">
   <div class="rs-settings__page-header">
     <div class="rs-settings__title-block">
-      <h1 class="rs-settings__title">Regional Settings</h1>
+      <h1 class="rs-settings__title">{{ 'web.settings.regional.lblTitle' | translate }}</h1>
       <p class="rs-settings__subtitle">
-        Control how dates, money, and measurements appear across the portal.
+        {{ 'web.settings.regional.lblSubtitle' | translate }}
       </p>
     </div>
     <span class="rs-settings__summary">
@@ -13,18 +13,18 @@
   </div>
 
   <div class="rs-settings__tip">
-    These settings apply to invoices, leases, reports, and calendars for all users.
+    {{ 'web.settings.regional.lblTip' | translate }}
   </div>
 
   <section class="rs-settings__card">
     <div class="rs-settings__section-head">
-      <h2 class="rs-settings__section-title">Time &amp; Calendar</h2>
-      <p class="rs-settings__section-sub">Affects schedules, due dates, and how dates are shown.</p>
+      <h2 class="rs-settings__section-title">{{ 'web.settings.regional.lblTimeCalendar' | translate }}</h2>
+      <p class="rs-settings__section-sub">{{ 'web.settings.regional.lblTimeCalendarSub' | translate }}</p>
     </div>
 
     <div class="rs-settings__row">
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-timezone">Time Zone</label>
+        <label class="rs-settings__label" for="rs-timezone">{{ 'web.settings.regional.lblTimezone' | translate }}</label>
         <ng-select
           id="rs-timezone"
           class="ov-select w-full"
@@ -32,21 +32,21 @@
           bindLabel="name"
           bindValue="id"
           formControlName="timezone"
-          placeholder="Select Time Zone"
+          [placeholder]="'web.settings.regional.phTimezone' | translate"
           [searchable]="true"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Used for bookings, shifts, and reminders.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblTimezoneHint' | translate }}</p>
         <div
           class="rs-settings__error"
           *ngIf="regionalSettingsForm.get('timezone')?.touched && regionalSettingsForm.get('timezone')?.hasError('required')"
         >
-          Time zone is required.
+          {{ 'web.settings.regional.errTimezoneReq' | translate }}
         </div>
       </div>
 
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-date-format">Date Format</label>
+        <label class="rs-settings__label" for="rs-date-format">{{ 'web.settings.regional.lblDateFormat' | translate }}</label>
         <ng-select
           id="rs-date-format"
           class="ov-select w-full"
@@ -54,23 +54,23 @@
           bindLabel="name"
           bindValue="id"
           formControlName="dateFormat"
-          placeholder="Select Date Format"
+          [placeholder]="'web.settings.regional.phDateFormat' | translate"
           [searchable]="false"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Example shown in parentheses.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblDateFormatHint' | translate }}</p>
         <div
           class="rs-settings__error"
           *ngIf="regionalSettingsForm.get('dateFormat')?.touched && regionalSettingsForm.get('dateFormat')?.hasError('required')"
         >
-          Date format is required.
+          {{ 'web.settings.regional.errDateFormatReq' | translate }}
         </div>
       </div>
     </div>
 
     <div class="rs-settings__row">
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-first-day">First day of week</label>
+        <label class="rs-settings__label" for="rs-first-day">{{ 'web.settings.regional.lblFirstDayOfWeek' | translate }}</label>
         <ng-select
           id="rs-first-day"
           class="ov-select w-full"
@@ -78,19 +78,19 @@
           bindLabel="name"
           bindValue="id"
           formControlName="firstDayOfWeek"
-          placeholder="Select day"
+          [placeholder]="'web.settings.regional.phFirstDay' | translate"
           [searchable]="false"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Controls calendar week start across the app.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblFirstDayHint' | translate }}</p>
       </div>
 
       <div class="rs-settings__field rs-settings__field--note">
         <span class="rs-settings__label rs-settings__label--spacer" aria-hidden="true">&nbsp;</span>
         <div class="rs-settings__info-note">
-          <p class="rs-settings__info-title">Tip</p>
+          <p class="rs-settings__info-title">{{ 'web.settings.regional.lblTipTitle' | translate }}</p>
           <p class="rs-settings__info-text">
-            Changing timezone will not convert past records — only new activity.
+            {{ 'web.settings.regional.lblTipText' | translate }}
           </p>
         </div>
       </div>
@@ -99,13 +99,13 @@
 
   <section class="rs-settings__card">
     <div class="rs-settings__section-head">
-      <h2 class="rs-settings__section-title">Money &amp; Units</h2>
-      <p class="rs-settings__section-sub">Used on invoices, contracts, and property measurements.</p>
+      <h2 class="rs-settings__section-title">{{ 'web.settings.regional.lblMoneyUnits' | translate }}</h2>
+      <p class="rs-settings__section-sub">{{ 'web.settings.regional.lblMoneyUnitsSub' | translate }}</p>
     </div>
 
     <div class="rs-settings__row">
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-currency">Currency</label>
+        <label class="rs-settings__label" for="rs-currency">{{ 'web.settings.regional.lblCurrency' | translate }}</label>
         <ng-select
           id="rs-currency"
           class="ov-select w-full"
@@ -113,21 +113,21 @@
           bindLabel="displayName"
           bindValue="id"
           formControlName="currency"
-          placeholder="Select Currency"
+          [placeholder]="'web.settings.regional.phCurrency' | translate"
           [searchable]="true"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Shown on invoices, receipts, and reports.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblCurrencyHint' | translate }}</p>
         <div
           class="rs-settings__error"
           *ngIf="regionalSettingsForm.get('currency')?.touched && regionalSettingsForm.get('currency')?.hasError('required')"
         >
-          Currency is required.
+          {{ 'web.settings.regional.errCurrencyReq' | translate }}
         </div>
       </div>
 
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-unit-system">Unit System</label>
+        <label class="rs-settings__label" for="rs-unit-system">{{ 'web.settings.regional.lblUnitSystem' | translate }}</label>
         <ng-select
           id="rs-unit-system"
           class="ov-select w-full"
@@ -135,23 +135,23 @@
           bindLabel="name"
           bindValue="id"
           formControlName="unitSystem"
-          placeholder="Select Unit System"
+          [placeholder]="'web.settings.regional.phUnitSystem' | translate"
           [searchable]="false"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Applies to area, length, and listing details.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblUnitSystemHint' | translate }}</p>
         <div
           class="rs-settings__error"
           *ngIf="regionalSettingsForm.get('unitSystem')?.touched && regionalSettingsForm.get('unitSystem')?.hasError('required')"
         >
-          Unit system is required.
+          {{ 'web.settings.regional.errUnitSystemReq' | translate }}
         </div>
       </div>
     </div>
 
     <div class="rs-settings__row">
       <div class="rs-settings__field">
-        <label class="rs-settings__label" for="rs-payment">Default payment method</label>
+        <label class="rs-settings__label" for="rs-payment">{{ 'web.settings.regional.lblDefaultPayment' | translate }}</label>
         <ng-select
           id="rs-payment"
           class="ov-select w-full"
@@ -159,23 +159,23 @@
           bindLabel="name"
           bindValue="id"
           formControlName="defaultPaymentMethod"
-          placeholder="Select Payment Method"
+          [placeholder]="'web.settings.regional.phPayment' | translate"
           [searchable]="false"
           [clearable]="false"
         ></ng-select>
-        <p class="rs-settings__hint">Pre-selected when creating invoices and receipts.</p>
+        <p class="rs-settings__hint">{{ 'web.settings.regional.lblDefaultPaymentHint' | translate }}</p>
         <div
           class="rs-settings__error"
           *ngIf="regionalSettingsForm.get('defaultPaymentMethod')?.touched && regionalSettingsForm.get('defaultPaymentMethod')?.hasError('required')"
         >
-          Default payment method is required.
+          {{ 'web.settings.regional.errDefaultPaymentReq' | translate }}
         </div>
       </div>
 
       <div class="rs-settings__field rs-settings__field--note">
         <span class="rs-settings__label rs-settings__label--spacer" aria-hidden="true">&nbsp;</span>
         <div class="rs-settings__payment-note">
-          Staff can still change the method per transaction.
+          {{ 'web.settings.regional.lblPaymentNote' | translate }}
         </div>
       </div>
     </div>
@@ -183,10 +183,10 @@
 
   <div class="rs-settings__footer">
     <p class="rs-settings__footer-note">
-      Review changes carefully — they affect invoices and reports.
+      {{ 'web.settings.regional.lblFooterNote' | translate }}
     </p>
     <button type="submit" class="ov-btn ov-btn-primary" [disabled]="regionalSettingsForm.invalid">
-      Update
+      {{ 'web.settings.regional.btnUpdate' | translate }}
     </button>
   </div>
 </form>

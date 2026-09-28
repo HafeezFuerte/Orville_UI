@@ -1,14 +1,14 @@
 <div class="dept-settings">
   <div class="dept-settings__page-header">
     <div class="dept-settings__title-block">
-      <h1 class="dept-settings__title">Departments</h1>
+      <h1 class="dept-settings__title">{{ 'web.settings.departments.lblTitle' | translate }}</h1>
       <p class="dept-settings__subtitle">
-        Group users so tickets can be routed to the right team.
+        {{ 'web.settings.departments.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <img src="./assets/images/settings/plus-white.svg" alt="" width="14" height="14" />
-      Add Department
+      {{ 'web.settings.departments.btnAdd' | translate }}
     </button>
   </div>
 
@@ -18,7 +18,7 @@
       <input
         type="search"
         [(ngModel)]="searchQuery"
-        placeholder="Search departments..."
+        [placeholder]="'web.settings.departments.phSearch' | translate"
         aria-label="Search departments"
       />
     </label>
@@ -27,10 +27,10 @@
 
   <div class="dept-settings__table" role="table" aria-label="Departments">
     <div class="dept-settings__thead" role="row">
-      <div class="dept-settings__th dept-settings__col--name" role="columnheader">Name</div>
-      <div class="dept-settings__th dept-settings__col--users" role="columnheader">Users</div>
-      <div class="dept-settings__th dept-settings__col--admin" role="columnheader">Is Admin</div>
-      <div class="dept-settings__th dept-settings__col--actions" role="columnheader">Actions</div>
+      <div class="dept-settings__th dept-settings__col--name" role="columnheader">{{ 'web.settings.departments.colName' | translate }}</div>
+      <div class="dept-settings__th dept-settings__col--users" role="columnheader">{{ 'web.settings.departments.colUsers' | translate }}</div>
+      <div class="dept-settings__th dept-settings__col--admin" role="columnheader">{{ 'web.settings.departments.colIsAdmin' | translate }}</div>
+      <div class="dept-settings__th dept-settings__col--actions" role="columnheader">{{ 'web.settings.departments.colActions' | translate }}</div>
     </div>
 
     <div
@@ -53,7 +53,7 @@
           [class.dept-settings__badge--yes]="row.isAdmin"
           [class.dept-settings__badge--no]="!row.isAdmin"
         >
-          {{ row.isAdmin ? 'Yes' : 'No' }}
+          {{ row.isAdmin ? ('web.settings.departments.lblYes' | translate) : ('web.settings.departments.lblNo' | translate) }}
         </span>
       </div>
       <div class="dept-settings__td dept-settings__col--actions" role="cell">
@@ -77,7 +77,7 @@
     </div>
 
     <div class="dept-settings__empty" *ngIf="filteredDepartments.length === 0">
-      No departments found.
+      {{ 'web.settings.departments.emptyMsg' | translate }}
     </div>
   </div>
 </div>
@@ -119,22 +119,22 @@
       <div class="dept-settings__modal-body">
         <div class="dept-settings__modal-section">
           <div class="dept-settings__modal-section-head">
-            <h3 class="dept-settings__modal-section-title">Department details</h3>
+            <h3 class="dept-settings__modal-section-title">{{ 'web.settings.departments.modalDetails' | translate }}</h3>
           </div>
           <div class="dept-settings__modal-section-body">
             <div class="dept-settings__modal-field">
               <label class="ov-label" for="dept-name">
-                Department Name <span class="dept-settings__req">*</span>
+                {{ 'web.settings.departments.lblDepartmentName' | translate }} <span class="dept-settings__req">*</span>
               </label>
               <input
                 id="dept-name"
                 class="ov-input"
                 type="text"
                 [(ngModel)]="draftName"
-                placeholder="Enter department name"
+                [placeholder]="'web.settings.departments.phName' | translate"
               />
               <p class="dept-settings__modal-hint">
-                Use a clear name so tickets can be routed correctly.
+                {{ 'web.settings.departments.lblDeptHint' | translate }}
               </p>
             </div>
 
@@ -142,9 +142,9 @@
               <input type="checkbox" [(ngModel)]="draftIsAdmin" />
               <span class="dept-settings__check-box" aria-hidden="true"></span>
               <span class="dept-settings__admin-copy">
-                <span class="dept-settings__admin-title">Admin department</span>
+                <span class="dept-settings__admin-title">{{ 'web.settings.departments.lblAdminDept' | translate }}</span>
                 <span class="dept-settings__admin-hint">
-                  Members can manage tickets assigned to this department.
+                  {{ 'web.settings.departments.lblAdminHint' | translate }}
                 </span>
               </span>
             </label>
@@ -154,7 +154,7 @@
 
       <div class="dept-settings__modal-footer">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.settings.departments.btnClose' | translate }}
         </button>
         <button
           type="button"
@@ -162,7 +162,7 @@
           [disabled]="!draftName.trim()"
           (click)="saveDepartment()"
         >
-          Save
+          {{ 'web.settings.departments.btnSave' | translate }}
         </button>
       </div>
     </div>

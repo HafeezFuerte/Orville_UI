@@ -20,10 +20,12 @@ export interface DocTypeOption {
   code?: string;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-document-templates',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './document-templates.component.html',
 })
 export class DocumentTemplatesComponent implements OnInit {

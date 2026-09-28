@@ -15,10 +15,12 @@ export interface AttachmentTypeRow {
   expiryReminderDays: number;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-attachment-types',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './attachment-types.component.html',
 })
 export class AttachmentTypesComponent {

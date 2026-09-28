@@ -2,9 +2,9 @@
   <!-- Page header -->
   <div class="flex flex-wrap items-start justify-between gap-4 w-full">
     <div class="flex flex-col gap-1.5 min-w-0">
-      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">Masters</h1>
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">{{ 'web.settings.masters.lblTitle' | translate }}</h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-[#93939d]">
-        Manage lookup categories and master records used across the portal.
+        {{ 'web.settings.masters.lblSubtitle' | translate }}
       </p>
     </div>
   </div>
@@ -17,7 +17,7 @@
       <div
         class="border-b border-defaultborder bg-bodybg px-4 py-3.5 text-xs font-semibold uppercase tracking-wide text-[#93939d]"
       >
-        Master Categories
+        {{ 'web.settings.masters.lblCategoriesHeader' | translate }}
       </div>
 
       <div *ngIf="categories.length === 0" class="flex flex-col gap-2 p-3">
@@ -68,15 +68,15 @@
           <h2 class="m-0 text-base font-semibold text-defaulttextcolor">
             {{
               showForm
-                ? (isEditMode ? 'Edit ' : 'Add ') + (getActiveCategory()?.lookup_name || '')
-                : getActiveCategory()?.lookup_name || 'Select a Category'
+                ? ((isEditMode ? ('web.settings.masters.lblEditPrefix' | translate) : ('web.settings.masters.lblAddPrefix' | translate)) + (getActiveCategory()?.lookup_name || ''))
+                : getActiveCategory()?.lookup_name || ('web.settings.masters.lblSelectCategoryMsg' | translate)
             }}
           </h2>
           <span
             *ngIf="!showForm && getActiveCategory()"
             class="inline-flex items-center whitespace-nowrap rounded-full bg-[#eeeef5] px-2.5 py-1 text-xs font-medium text-primary"
           >
-            {{ getActiveCategory()?.records }} records
+            {{ getActiveCategory()?.records }} {{ 'web.settings.masters.lblRecords' | translate }}
           </span>
         </div>
 
@@ -87,7 +87,7 @@
           (click)="openAddForm()"
         >
           <img src="./assets/images/settings/plus-white.svg" alt="" width="14" height="14" />
-          Add New
+          {{ 'web.settings.masters.lblAddBtn' | translate }}
         </button>
 
         <button
@@ -96,7 +96,7 @@
           class="ov-btn ov-btn-ghost"
           (click)="closeForm()"
         >
-          Back
+          {{ 'web.settings.masters.lblBackBtn' | translate }}
         </button>
       </div>
 
@@ -104,7 +104,7 @@
         *ngIf="!selectedCategoryId && !showForm"
         class="flex flex-1 items-center justify-center px-5 py-16 text-sm font-normal text-[#93939d]"
       >
-        <p class="m-0">Select a category from the left panel</p>
+        <p class="m-0">{{ 'web.settings.masters.lblSelectCategoryMsg' | translate }}</p>
       </div>
 
       <ng-container *ngIf="!showForm && selectedCategoryId">
@@ -127,7 +127,7 @@
                   class="text-xs font-medium"
                   [ngClass]="row.is_active ? 'text-success' : 'text-textmuted'"
                 >
-                  {{ row.is_active ? 'Active' : 'Inactive' }}
+                  {{ row.is_active ? ('web.settings.masters.lblActive' | translate) : ('web.settings.masters.lblInactive' | translate) }}
                 </span>
 
                 <span *ngSwitchCase="'name'" class="font-semibold text-defaulttextcolor">
@@ -152,90 +152,90 @@
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div class="flex min-w-0 flex-col gap-1.5">
               <label class="m-0 text-sm font-medium text-textmuted" for="ms-code">
-                Code <span class="text-[#c94a4a]">*</span>
+                {{ 'web.settings.masters.lblCode' | translate }} <span class="text-[#c94a4a]">*</span>
               </label>
               <input
                 id="ms-code"
                 type="text"
                 class="ov-input"
                 formControlName="code"
-                placeholder="Enter code"
+                [placeholder]="'web.settings.masters.phCode' | translate"
               />
               <p
                 class="m-0 text-xs text-[#c94a4a]"
                 *ngIf="masterForm.get('code')?.invalid && masterForm.get('code')?.touched"
               >
-                Code is required.
+                {{ 'web.settings.masters.errCodeReq' | translate }}
               </p>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
               <label class="m-0 text-sm font-medium text-textmuted" for="ms-name">
-                Name <span class="text-[#c94a4a]">*</span>
+                {{ 'web.settings.masters.lblName' | translate }} <span class="text-[#c94a4a]">*</span>
               </label>
               <input
                 id="ms-name"
                 type="text"
                 class="ov-input"
                 formControlName="name"
-                placeholder="Enter name"
+                [placeholder]="'web.settings.masters.phName' | translate"
               />
               <p
                 class="m-0 text-xs text-[#c94a4a]"
                 *ngIf="masterForm.get('name')?.invalid && masterForm.get('name')?.touched"
               >
-                Name is required.
+                {{ 'web.settings.masters.errNameReq' | translate }}
               </p>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
-              <label class="m-0 text-sm font-medium text-textmuted" for="ms-arabic">Arabic Name</label>
+              <label class="m-0 text-sm font-medium text-textmuted" for="ms-arabic">{{ 'web.settings.masters.lblArabicName' | translate }}</label>
               <input
                 id="ms-arabic"
                 type="text"
                 class="ov-input"
                 formControlName="arabic_name"
-                placeholder="الاسم بالعربي"
+                [placeholder]="'web.settings.masters.phArabicName' | translate"
                 dir="rtl"
               />
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
-              <label class="m-0 text-sm font-medium text-textmuted" for="ms-order">Display Order</label>
+              <label class="m-0 text-sm font-medium text-textmuted" for="ms-order">{{ 'web.settings.masters.lblDisplayOrder' | translate }}</label>
               <input
                 id="ms-order"
                 type="number"
                 class="ov-input"
                 formControlName="display_order"
-                placeholder="0"
+                [placeholder]="'web.settings.masters.phDisplayOrder' | translate"
               />
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
-              <label class="m-0 text-sm font-medium text-textmuted" for="ms-class">Class Name</label>
+              <label class="m-0 text-sm font-medium text-textmuted" for="ms-class">{{ 'web.settings.masters.lblClassName' | translate }}</label>
               <input
                 id="ms-class"
                 type="text"
                 class="ov-input"
                 formControlName="class_name"
-                placeholder="e.g. badge bg-success"
+                [placeholder]="'web.settings.masters.phClassName' | translate"
               />
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
-              <label class="m-0 text-sm font-medium text-textmuted" for="ms-desc">Description</label>
+              <label class="m-0 text-sm font-medium text-textmuted" for="ms-desc">{{ 'web.settings.masters.lblDescription' | translate }}</label>
               <textarea
                 id="ms-desc"
                 class="ov-input"
                 formControlName="description"
                 rows="2"
-                placeholder="Enter description"
+                [placeholder]="'web.settings.masters.phDescription' | translate"
               ></textarea>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
               <label class="m-0 text-sm font-medium text-textmuted" for="ms-dep-type">
-                Dependency Type
+                {{ 'web.settings.masters.lblDependencyType' | translate }}
               </label>
               <ng-select
                 id="ms-dep-type"
@@ -244,14 +244,14 @@
                 bindLabel="lookup_name"
                 bindValue="id"
                 formControlName="dependency_type_id"
-                placeholder="Select Dependency Type"
+                [placeholder]="'web.settings.masters.phDependencyType' | translate"
                 (change)="onDependencyTypeChange($event?.id)"
               ></ng-select>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
               <label class="m-0 text-sm font-medium text-textmuted" for="ms-dep-item">
-                Dependency Item
+                {{ 'web.settings.masters.lblDependencyItem' | translate }}
               </label>
               <ng-select
                 id="ms-dep-item"
@@ -261,17 +261,17 @@
                 bindValue="id"
                 [loading]="loadingDependencyItems"
                 formControlName="dependency_id"
-                placeholder="Select Dependency Item"
+                [placeholder]="'web.settings.masters.phDependencyItem' | translate"
               ></ng-select>
             </div>
 
             <div class="flex min-w-0 flex-col gap-1.5">
-              <span class="m-0 text-sm font-medium text-textmuted">Active</span>
+              <span class="m-0 text-sm font-medium text-textmuted">{{ 'web.settings.masters.lblStatusActive' | translate }}</span>
               <div
                 class="box-border flex min-h-10 items-center justify-between gap-3 rounded-lg border border-defaultborder bg-bodybg px-3.5 py-2"
               >
                 <span class="text-sm font-medium text-defaulttextcolor">
-                  {{ masterForm.get('is_Active')?.value ? 'Active' : 'Inactive' }}
+                  {{ masterForm.get('is_Active')?.value ? ('web.settings.masters.lblActive' | translate) : ('web.settings.masters.lblInactive' | translate) }}
                 </span>
                 <button
                   type="button"
@@ -304,14 +304,14 @@
               class="ov-btn ov-btn-muted ov-btn--sm"
               (click)="closeForm()"
             >
-              Cancel
+              {{ 'web.settings.masters.btnCancel' | translate }}
             </button>
             <button
               type="submit"
               class="ov-btn ov-btn-primary ov-btn--sm"
               [disabled]="masterForm.invalid"
             >
-              Save
+              {{ 'web.settings.masters.btnSave' | translate }}
             </button>
           </div>
         </form>

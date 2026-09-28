@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   DEFAULT_INVOICE_RECEIPT_PROFILES,
   EMPTY_INVOICE_RECEIPT_PROFILE,
@@ -12,7 +13,7 @@ import {
 @Component({
   selector: 'app-invoice-receipt-profiles',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './invoice-receipt-profiles.component.html',
   styleUrl: './invoice-receipt-profiles.component.scss',
 })

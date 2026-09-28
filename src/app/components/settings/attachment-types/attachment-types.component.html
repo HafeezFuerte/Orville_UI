@@ -3,15 +3,15 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Attachment Types
+        {{ 'web.settings.attachmentTypes.lblTitle' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Define document types and which fields are required when uploading attachments.
+        {{ 'web.settings.attachmentTypes.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add New
+      {{ 'web.common.btnNew' | translate }}
     </button>
   </div>
 
@@ -28,8 +28,8 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search attachment types..."
-        aria-label="Search attachment types"
+        [placeholder]="'web.settings.attachmentTypes.phSearch' | translate"
+        [attr.aria-label]="'web.settings.attachmentTypes.phSearch' | translate"
         [(ngModel)]="searchQuery" />
     </label>
 
@@ -43,23 +43,23 @@
   <div
     class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
     role="table"
-    aria-label="Attachment types">
+    [attr.aria-label]="'web.settings.attachmentTypes.lblTitle' | translate">
     <div class="w-full overflow-x-auto">
       <div
         class="flex min-w-[1100px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
         role="row">
-        <div class="w-14 shrink-0 text-xs font-semibold text-textmuted" role="columnheader">ID</div>
+        <div class="w-14 shrink-0 text-xs font-semibold text-textmuted" role="columnheader">{{ 'web.common.lblID' | translate }}</div>
         <div class="min-w-[140px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
-          Name
+          {{ 'web.common.lblName' | translate }}
         </div>
         <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
-          Issue Date
+          {{ 'web.contacts.lblIssueDate' | translate }}
         </div>
         <div class="w-[88px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
-          Expiry Date
+          {{ 'web.contacts.lblExpiryDate' | translate }}
         </div>
         <div class="w-[72px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
-          Number
+          {{ 'web.common.lblCode' | translate }}
         </div>
         <div class="w-[100px] shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
           Authority
@@ -77,7 +77,7 @@
           Reminder
         </div>
         <div class="w-[88px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Actions
+          {{ 'web.common.lblActions' | translate }}
         </div>
       </div>
 
@@ -105,8 +105,7 @@
               row.hasIssueDate
                 ? 'bg-success/10 text-success'
                 : 'bg-[#eeeef5] text-textmuted dark:bg-white/10'
-            "
-            [attr.aria-label]="row.hasIssueDate ? 'Yes' : 'No'">
+            ">
             {{ row.hasIssueDate ? '✓' : '—' }}
           </span>
         </div>
@@ -179,14 +178,14 @@
           <button
             type="button"
             class="ov-icon-btn"
-            aria-label="Edit attachment type"
+            [attr.aria-label]="'web.settings.docTemplates.lblEdit' | translate"
             (click)="openEdit(row)">
             <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
           </button>
           <button
             type="button"
             class="ov-icon-btn ov-icon-btn--danger"
-            aria-label="Delete attachment type"
+            [attr.aria-label]="'web.settings.docTemplates.lblDelete' | translate"
             (click)="deleteType(row)">
             <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
           </button>
@@ -197,7 +196,7 @@
     <div
       *ngIf="filteredRows.length === 0"
       class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-      No attachment types found.
+      {{ 'web.common.lblNoRecordsFound' | translate }}
     </div>
   </div>
 </div>
@@ -217,7 +216,7 @@
     <button
       type="button"
       class="ov-modal-close"
-      aria-label="Close"
+      [attr.aria-label]="'web.common.lblClose' | translate"
       (click)="closeModal()">
       <img
         src="./assets/images/common/close-plus.svg"
@@ -235,7 +234,7 @@
             {{ modalTitle }}
           </h2>
           <p class="m-0 text-[13px] font-normal text-textmuted">
-            Configure the attachment type name, reminder, and available fields.
+            {{ 'web.settings.attachmentTypes.lblSubtitle' | translate }}
           </p>
         </div>
         <div class="h-px w-full bg-defaultborder"></div>
@@ -245,13 +244,13 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="at-name">
-              Attachment Type <span class="text-danger">*</span>
+              {{ 'web.settings.attachmentTypes.lblTitle' | translate }} <span class="text-danger">*</span>
             </label>
             <input
               id="at-name"
               type="text"
               class="ov-input"
-              placeholder="Please enter a document type name"
+              [placeholder]="'web.settings.attachmentTypes.phSearch' | translate"
               [(ngModel)]="draftName" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
@@ -277,14 +276,14 @@
                 type="checkbox"
                 class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
                 [(ngModel)]="draftHasIssueDate" />
-              <span class="text-sm font-medium text-defaulttextcolor">Has Issue Date</span>
+              <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.contacts.lblIssueDate' | translate }}</span>
             </label>
             <label class="flex cursor-pointer items-start gap-2.5">
               <input
                 type="checkbox"
                 class="form-checkbox mt-0.5 h-4 w-4 rounded border-defaultborder text-primary"
                 [(ngModel)]="draftHasExpiryDate" />
-              <span class="text-sm font-medium text-defaulttextcolor">Has Expiry Date</span>
+              <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.contacts.lblExpiryDate' | translate }}</span>
             </label>
             <label class="flex cursor-pointer items-start gap-2.5">
               <input
@@ -320,14 +319,14 @@
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.common.lblClose' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!canSave"
           (click)="saveType()">
-          Save
+          {{ 'web.common.btnSave' | translate }}
         </button>
       </div>
     </div>

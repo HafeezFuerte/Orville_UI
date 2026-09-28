@@ -3,15 +3,15 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Tax Profiles
+        {{ 'web.settings.taxProfiles.title' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Manage and reuse tax configurations ({{ totalCount }} total)
+        {{ 'web.settings.taxProfiles.sub' | translate }} ({{ totalCount }} {{ 'web.settings.taxProfiles.total' | translate }})
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add New
+      {{ 'web.settings.taxProfiles.addNew' | translate }}
     </button>
   </div>
 
@@ -20,12 +20,12 @@
     <div class="tp-empty__icon" aria-hidden="true">
       <img src="./assets/images/settings/percent.svg" alt="" width="22" height="22" />
     </div>
-    <h2 class="tp-empty__title">No tax profiles yet</h2>
+    <h2 class="tp-empty__title">{{ 'web.settings.taxProfiles.noProfilesTitle' | translate }}</h2>
     <p class="tp-empty__sub">
-      Create your first tax profile to apply tax rates on invoices and expenses.
+      {{ 'web.settings.taxProfiles.noProfilesSub' | translate }}
     </p>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
-      Add Tax Profile
+      {{ 'web.settings.taxProfiles.addProfile' | translate }}
     </button>
   </div>
 
@@ -43,7 +43,7 @@
         <input
           type="search"
           class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-          placeholder="Search profiles..."
+          [placeholder]="'web.settings.taxProfiles.searchPlaceholder' | translate"
           aria-label="Search tax profiles"
           [(ngModel)]="searchQuery" />
       </label>
@@ -60,19 +60,19 @@
       <div class="w-full overflow-x-auto">
         <div class="tp-table__head" role="row">
           <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
-            Profile Name
+            {{ 'web.settings.taxProfiles.profileName' | translate }}
           </div>
           <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
-            Percentage
+            {{ 'web.settings.taxProfiles.percentage' | translate }}
           </div>
           <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
-            Expense
+            {{ 'web.settings.taxProfiles.expense' | translate }}
           </div>
           <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
-            Default For
+            {{ 'web.settings.taxProfiles.defaultFor' | translate }}
           </div>
           <div class="tp-table__cell tp-table__cell--action text-xs font-semibold text-textmuted" role="columnheader">
-            Action
+            {{ 'web.settings.taxProfiles.action' | translate }}
           </div>
         </div>
 
@@ -92,9 +92,9 @@
             <span
               *ngIf="row.expenseProfile"
               class="inline-flex items-center rounded-md bg-info/10 px-2 py-0.5 text-xs font-medium text-info">
-              Yes
+              {{ 'web.settings.taxProfiles.yes' | translate }}
             </span>
-            <span *ngIf="!row.expenseProfile" class="text-sm text-textmuted">No</span>
+            <span *ngIf="!row.expenseProfile" class="text-sm text-textmuted">{{ 'web.settings.taxProfiles.no' | translate }}</span>
           </div>
           <div class="tp-table__cell text-sm text-defaulttextcolor" role="cell">
             {{ defaultLabel(row) }}
@@ -121,13 +121,13 @@
       <div
         *ngIf="filteredRows.length === 0"
         class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-        No tax profiles match your search.
+        {{ 'web.settings.taxProfiles.noMatch' | translate }}
       </div>
     </div>
   </ng-container>
 </div>
 
-<!-- Add / Edit modal — Orville modal chrome (same as Discount Profiles) -->
+<!-- Add / Edit modal -->
 <div
   *ngIf="modalOpen"
   class="ov-modal-backdrop"
@@ -168,25 +168,25 @@
         <div class="overflow-hidden py-0">
           <div>
             <p class="m-0 text-sm font-semibold leading-normal text-defaulttextcolor">
-              Tax Profile
+              {{ 'web.settings.taxProfiles.taxProfile' | translate }}
             </p>
           </div>
           <div class="mt-4 h-px w-full bg-defaultborder"></div>
           <div class="flex flex-col gap-4 pt-4">
             <div class="flex min-w-0 flex-col gap-2">
               <label class="ov-label" for="tp-name">
-                Profile Name <span class="text-danger">*</span>
+                {{ 'web.settings.taxProfiles.profileName' | translate }} <span class="text-danger">*</span>
               </label>
               <input
                 id="tp-name"
                 type="text"
                 class="ov-input"
-                placeholder="Enter profile name"
+                [placeholder]="'web.settings.taxProfiles.enterProfileName' | translate"
                 [(ngModel)]="draft.name" />
             </div>
 
             <div class="flex min-w-0 flex-col gap-2">
-              <label class="ov-label" for="tp-percentage">Percentage</label>
+              <label class="ov-label" for="tp-percentage">{{ 'web.settings.taxProfiles.percentage' | translate }}</label>
               <div class="tp-affix">
                 <span class="tp-affix__prefix">%</span>
                 <input
@@ -206,9 +206,9 @@
                 class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-defaultborder text-primary"
                 [(ngModel)]="draft.expenseProfile" />
               <span class="flex min-w-0 flex-col gap-0.5">
-                <span class="text-sm font-medium text-defaulttextcolor">Expense Profile</span>
+                <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.taxProfiles.expenseProfile' | translate }}</span>
                 <span class="text-xs font-normal text-textmuted">
-                  Use this profile when creating expenses.
+                  {{ 'web.settings.taxProfiles.expenseProfileSub' | translate }}
                 </span>
               </span>
             </label>
@@ -219,9 +219,9 @@
                 class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-defaultborder text-primary"
                 [(ngModel)]="draft.defaultCommercial" />
               <span class="flex min-w-0 flex-col gap-0.5">
-                <span class="text-sm font-medium text-defaulttextcolor">Default For Commercial</span>
+                <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.taxProfiles.defaultCommercial' | translate }}</span>
                 <span class="text-xs font-normal text-textmuted">
-                  Pre-select for commercial properties.
+                  {{ 'web.settings.taxProfiles.defaultCommercialSub' | translate }}
                 </span>
               </span>
             </label>
@@ -232,17 +232,17 @@
                 class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded-[3px] border-defaultborder text-primary"
                 [(ngModel)]="draft.defaultResidential" />
               <span class="flex min-w-0 flex-col gap-0.5">
-                <span class="text-sm font-medium text-defaulttextcolor">Default For Residential</span>
+                <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.taxProfiles.defaultResidential' | translate }}</span>
                 <span class="text-xs font-normal text-textmuted">
-                  Pre-select for residential properties.
+                  {{ 'web.settings.taxProfiles.defaultResidentialSub' | translate }}
                 </span>
               </span>
             </label>
 
             <div class="flex flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
-              <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+              <p class="m-0 text-xs font-semibold text-primary dark:text-white">{{ 'web.settings.taxProfiles.tip' | translate }}</p>
               <p class="m-0 text-xs font-normal text-textmuted">
-                Only one commercial and one residential default can be active at a time.
+                {{ 'web.settings.taxProfiles.tipDesc' | translate }}
               </p>
             </div>
           </div>
@@ -251,14 +251,14 @@
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.settings.taxProfiles.close' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.taxProfiles.save' | translate }}
         </button>
       </div>
     </div>

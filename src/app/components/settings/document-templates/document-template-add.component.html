@@ -5,7 +5,7 @@
       <button
         type="button"
         class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg"
-        aria-label="Back to Document Templates"
+        [attr.aria-label]="'web.settings.docTemplates.lblTitle' | translate"
         (click)="cancel()">
         <img
           src="./assets/images/common/arrow-narrow-left.svg"
@@ -15,23 +15,23 @@
       </button>
       <div class="min-w-0">
         <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-          Add Document Template
+          {{ (templateId > 0 ? 'web.settings.docTemplates.lblEditTitle' : 'web.settings.docTemplates.lblAddTitle') | translate }}
         </h1>
         <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
-          Document Templates / New
+          {{ 'web.settings.docTemplates.lblAddSubtitle' | translate }}
         </p>
       </div>
     </div>
     <div class="flex shrink-0 items-center gap-2.5">
-      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">{{ 'web.common.btnCancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ 'web.common.btnSave' | translate }}</button>
     </div>
   </div>
 
   <!-- Tip banner -->
   <div
     class="w-full rounded-[10px] border border-defaultborder bg-bodybg px-4 py-3 text-[13px] font-normal leading-normal text-textmuted">
-    Templates created here can be printed from the lease page using prefilled lease elements.
+    {{ 'web.settings.docTemplates.lblTipBanner' | translate }}
   </div>
 
   <!-- Editor body -->
@@ -41,15 +41,15 @@
       class="flex min-w-0 flex-1 flex-col gap-5 overflow-hidden rounded-xl border border-defaultborder bg-white p-6 dark:bg-bodybg">
       <div class="flex flex-col gap-1">
         <h2 class="m-0 text-lg font-semibold leading-normal text-defaulttextcolor">
-          Document Template
+          {{ 'web.settings.docTemplates.lblSectionTitle' | translate }}
         </h2>
         <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-          Define the template type, title and body content.
+          {{ 'web.settings.docTemplates.lblSectionSub' | translate }}
         </p>
       </div>
 
       <div class="flex w-full flex-col gap-2">
-        <label class="text-sm font-medium text-textmuted" for="dt-type">Template Type</label>
+        <label class="text-sm font-medium text-textmuted" for="dt-type">{{ 'web.settings.docTemplates.lblTemplateType' | translate }}</label>
         <div class="relative">
           <select
             id="dt-type"
@@ -69,27 +69,26 @@
 
       <div class="flex w-full flex-col gap-2">
         <label class="text-sm font-medium text-textmuted" for="dt-title">
-          Title <span class="text-danger">*</span>
+          {{ 'web.settings.docTemplates.lblTitleField' | translate }} <span class="text-danger">*</span>
         </label>
         <input
           id="dt-title"
           type="text"
           class="ov-input"
-          placeholder="e.g. Lease_Agreement_ORV"
+          [placeholder]="'web.settings.docTemplates.phTitle' | translate"
           [(ngModel)]="title" />
       </div>
 
       <div class="flex w-full flex-col gap-1 rounded-lg bg-[#eeeef5] p-3.5 dark:bg-white/10">
-        <p class="m-0 text-xs font-semibold text-primary dark:text-white">Tip</p>
+        <p class="m-0 text-xs font-semibold text-primary dark:text-white">{{ 'web.settings.docTemplates.lblTip' | translate }}</p>
         <p class="m-0 text-xs font-normal text-textmuted">
-          Drag autofill elements into the editor. Printed leases will replace each field with live
-          tenant and lease data.
+          {{ 'web.settings.docTemplates.lblTipDesc' | translate }}
         </p>
       </div>
 
       <div class="flex w-full flex-col gap-4">
         <label class="text-sm font-medium text-textmuted">
-          Content <span class="text-danger">*</span>
+          {{ 'web.settings.docTemplates.lblContentField' | translate }} <span class="text-danger">*</span>
         </label>
         <div
           class="dt-editor overflow-hidden rounded-lg border border-defaultborder"
@@ -99,7 +98,7 @@
           <ngx-editor
             [editor]="editor"
             [(ngModel)]="content"
-            placeholder="Start writing your document template…">
+            [placeholder]="'web.settings.docTemplates.phContent' | translate">
           </ngx-editor>
         </div>
       </div>
@@ -113,21 +112,21 @@
         class="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-[10px] border-[1.5px] border-info bg-bodybg px-3.5 py-3 text-left">
         <span class="text-sm font-medium text-[#BD9759]" aria-hidden="true">⚡</span>
         <span class="text-[13px] font-semibold text-defaulttextcolor">
-          Ask RiaAI for Autofill Suggestions
+          {{ 'web.settings.docTemplates.lblAskRia' | translate }}
         </span>
       </button>
 
       <div
         class="rounded-lg border border-defaultborder bg-bodybg p-3.5 text-xs font-normal leading-normal text-textmuted">
-        Click or drag an element to insert it at the cursor position in the editor.
+        {{ 'web.settings.docTemplates.lblAutofillDesc' | translate }}
       </div>
 
       <h3 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-        Auto Fill Elements
+        {{ 'web.settings.docTemplates.lblAutofillHeader' | translate }}
       </h3>
 
       <div class="flex w-full flex-col gap-2">
-        <div *ngIf="loadingAutofill" class="text-xs text-textmuted py-2">Loading elements...</div>
+        <div *ngIf="loadingAutofill" class="text-xs text-textmuted py-2">{{ 'web.settings.docTemplates.lblLoading' | translate }}</div>
         <button
           type="button"
           *ngFor="let el of autofillElements"

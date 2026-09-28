@@ -5,7 +5,7 @@
       <button
         type="button"
         class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg"
-        aria-label="Back to PDF Builder"
+        [attr.aria-label]="'web.settings.pdfBuilder.lblTitle' | translate"
         (click)="cancel()">
         <img
           src="./assets/images/common/arrow-narrow-left.svg"
@@ -14,16 +14,18 @@
           height="18" />
       </button>
       <div class="min-w-0">
-        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">PDF Template Builder</h1>
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+          {{ (templateId > 0 ? 'web.settings.pdfBuilder.lblEditTitle' : 'web.settings.pdfBuilder.lblAddTitle') | translate }}
+        </h1>
         <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
-          PDF Builder / New
+          {{ 'web.settings.pdfBuilder.lblAddSubtitle' | translate }}
         </p>
       </div>
     </div>
     <div class="flex shrink-0 items-center gap-2.5">
-      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-muted" (click)="cancel()">{{ 'web.common.btnCancel' | translate }}</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="save()" [disabled]="isSaving">
-        {{ isSaving ? 'Saving...' : 'Save' }}
+        {{ isSaving ? ('web.common.lblLoading' | translate) : ('web.common.btnSave' | translate) }}
       </button>
     </div>
   </div>
@@ -31,7 +33,7 @@
   <!-- Tip banner -->
   <div
     class="w-full rounded-[10px] border border-defaultborder bg-bodybg px-4 py-3 text-[13px] font-normal leading-normal text-textmuted">
-    Upload a PDF template, then click or drag autofill elements onto the PDF to place dynamic placeholders.
+    {{ 'web.settings.pdfBuilder.lblTipBanner' | translate }}
   </div>
 
   <!-- Main interactive workspace layout -->
@@ -42,14 +44,14 @@
       <div class="flex items-center justify-between gap-2 border-b border-defaultborder pb-3">
         <div>
           <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-            PDF Interactive Preview Layer
+            {{ 'web.settings.pdfBuilder.lblPreviewTitle' | translate }}
           </h2>
           <p class="m-0 text-xs text-textmuted">
-            Drag placeholder badges to position them over the PDF page.
+            {{ 'web.settings.pdfBuilder.lblPreviewSub' | translate }}
           </p>
         </div>
         <span *ngIf="placedFields.length > 0" class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-          {{ placedFields.length }} field{{ placedFields.length === 1 ? '' : 's' }} placed
+          {{ placedFields.length }} {{ (placedFields.length === 1 ? 'web.settings.pdfBuilder.lblFieldPlaced' : 'web.settings.pdfBuilder.lblFieldsPlaced') | translate }}
         </span>
       </div>
 
@@ -83,12 +85,12 @@
           <div class="rounded-full bg-white p-4 shadow-sm dark:bg-bodybg">
             <img src="./assets/images/settings/upload.svg" alt="" width="40" height="40" />
           </div>
-          <p class="m-0 text-sm font-semibold text-defaulttextcolor">No PDF Template Loaded</p>
+          <p class="m-0 text-sm font-semibold text-defaulttextcolor">{{ 'web.settings.pdfBuilder.lblNoPdfLoaded' | translate }}</p>
           <p class="m-0 max-w-sm text-xs text-textmuted">
-            Upload a PDF file using the right panel to activate the interactive canvas overlay layer.
+            {{ 'web.settings.pdfBuilder.lblNoPdfSub' | translate }}
           </p>
           <button type="button" class="ov-btn ov-btn-primary mt-2" (click)="browseFiles()">
-            Browse PDF File
+            {{ 'web.settings.pdfBuilder.lblBrowseFile' | translate }}
           </button>
         </div>
 
@@ -120,12 +122,12 @@
       <!-- Template Form Details -->
       <div class="flex flex-col gap-4">
         <h3 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-          Template Settings
+          {{ 'web.settings.pdfBuilder.lblTemplateSettings' | translate }}
         </h3>
 
         <div class="flex w-full flex-col gap-1.5">
           <label class="text-xs font-medium text-textmuted" for="pdf-title">
-            Title <span class="text-danger">*</span>
+            {{ 'web.settings.pdfBuilder.lblTitleField' | translate }} <span class="text-danger">*</span>
           </label>
           <input
             id="pdf-title"
@@ -136,7 +138,7 @@
         </div>
 
         <div class="flex w-full flex-col gap-1.5">
-          <label class="text-xs font-medium text-textmuted" for="pdf-type">Template Type</label>
+          <label class="text-xs font-medium text-textmuted" for="pdf-type">{{ 'web.settings.pdfBuilder.lblTemplateType' | translate }}</label>
           <div class="relative">
             <select
               id="pdf-type"
@@ -157,7 +159,7 @@
 
       <!-- File Upload Zone -->
       <div class="flex flex-col gap-2 border-t border-defaultborder pt-4">
-        <label class="text-xs font-medium text-textmuted">PDF File Upload</label>
+        <label class="text-xs font-medium text-textmuted">{{ 'web.settings.pdfBuilder.lblPdfFileUpload' | translate }}</label>
         <div
           class="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-defaultborder bg-bodybg p-4 text-center transition-colors hover:border-primary"
           [class.border-primary]="dragOver"
@@ -169,10 +171,10 @@
           <img src="./assets/images/settings/upload.svg" alt="" width="28" height="28" />
           <div class="flex flex-col items-center">
             <p class="m-0 text-xs font-bold text-defaulttextcolor">
-              {{ selectedFileName ? selectedFileName : 'Drag and drop PDF file here' }}
+              {{ selectedFileName ? selectedFileName : ('web.settings.pdfBuilder.lblDragDrop' | translate) }}
             </p>
             <p class="m-0 text-[11px] text-textmuted">
-              {{ selectedFileName ? 'Click to change file' : 'or click to browse' }}
+              {{ selectedFileName ? ('web.settings.pdfBuilder.lblClickToChange' | translate) : ('web.settings.pdfBuilder.lblClickToBrowse' | translate) }}
             </p>
           </div>
           <input
@@ -185,7 +187,7 @@
         <div *ngIf="selectedFileName" class="flex items-center justify-between gap-2 px-1 text-xs">
           <span class="truncate font-medium text-defaulttextcolor">{{ selectedFileName }}</span>
           <button type="button" class="text-danger font-semibold border-0 bg-transparent p-0 cursor-pointer" (click)="clearFile()">
-            Remove
+            {{ 'web.settings.pdfBuilder.lblRemove' | translate }}
           </button>
         </div>
       </div>
@@ -194,18 +196,18 @@
       <div class="flex flex-col gap-3 border-t border-defaultborder pt-4">
         <div class="flex items-center justify-between">
           <h3 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-            Auto Fill Elements
+            {{ 'web.settings.pdfBuilder.lblAutofillHeader' | translate }}
           </h3>
-          <span class="text-xs text-textmuted">Click or drag to place</span>
+          <span class="text-xs text-textmuted">{{ 'web.settings.pdfBuilder.lblAutofillSub' | translate }}</span>
         </div>
 
         <div
           class="rounded-lg border border-defaultborder bg-bodybg p-3 text-xs text-textmuted">
-          Click an element or drag it onto the PDF preview to place a dynamic placeholder.
+          {{ 'web.settings.pdfBuilder.lblAutofillTip' | translate }}
         </div>
 
         <div class="flex w-full flex-col gap-2 max-h-[320px] overflow-y-auto pr-1">
-          <div *ngIf="loadingAutofill" class="text-xs text-textmuted py-2">Loading elements...</div>
+          <div *ngIf="loadingAutofill" class="text-xs text-textmuted py-2">{{ 'web.settings.docTemplates.lblLoading' | translate }}</div>
           <div *ngIf="!loadingAutofill && autofillElements.length === 0" class="text-xs text-textmuted py-2">
             No autofill elements available for this template type.
           </div>
@@ -219,7 +221,7 @@
             (click)="addTagToPdf(el)">
             <span class="shrink-0 text-xs text-textmuted" aria-hidden="true">⠿</span>
             <span class="min-w-0 flex-1 text-[13px] font-medium text-defaulttextcolor">{{ el.name }}</span>
-            <span class="text-xs text-primary font-bold">+ Add</span>
+            <span class="text-xs text-primary font-bold">{{ 'web.settings.pdfBuilder.lblAddTag' | translate }}</span>
           </button>
         </div>
       </div>

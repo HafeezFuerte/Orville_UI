@@ -2,14 +2,16 @@
   <!-- Page header -->
   <div class="flex w-full flex-wrap items-center justify-between gap-4 overflow-hidden">
     <div class="flex min-w-0 flex-col gap-1.5">
-      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">PDF Builder</h1>
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
+        {{ 'web.settings.pdfBuilder.lblTitle' | translate }}
+      </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Create custom PDF prints with prefilled elements and print them from the lease page.
+        {{ 'web.settings.pdfBuilder.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openNew()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add PDF
+      {{ 'web.settings.pdfBuilder.btnAdd' | translate }}
     </button>
   </div>
 
@@ -26,8 +28,8 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search PDF templates..."
-        aria-label="Search PDF templates"
+        [placeholder]="'web.settings.pdfBuilder.phSearch' | translate"
+        [attr.aria-label]="'web.settings.pdfBuilder.phSearch' | translate"
         [(ngModel)]="searchQuery" />
     </label>
 
@@ -41,29 +43,29 @@
   <div
     class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
     role="table"
-    aria-label="PDF templates">
+    [attr.aria-label]="'web.settings.pdfBuilder.lblTitle' | translate">
     <div
       class="flex gap-4 overflow-x-auto bg-bodybg px-5 py-3.5 dark:bg-white/5"
       role="row">
       <div
         class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted"
         role="columnheader">
-        Name
+        {{ 'web.settings.pdfBuilder.lblTitleField' | translate }}
       </div>
       <div
         class="w-[160px] shrink-0 text-xs font-semibold text-textmuted sm:w-[220px] lg:w-[280px]"
         role="columnheader">
-        Template type
+        {{ 'web.settings.pdfBuilder.lblType' | translate }}
       </div>
       <div
         class="w-[140px] shrink-0 text-xs font-semibold text-textmuted sm:w-[180px] lg:w-[220px]"
         role="columnheader">
-        File
+        {{ 'web.settings.pdfBuilder.lblFileName' | translate }}
       </div>
       <div
         class="w-[100px] shrink-0 text-right text-xs font-semibold text-textmuted sm:w-[140px] lg:w-[233px]"
         role="columnheader">
-        Actions
+        {{ 'web.settings.pdfBuilder.lblActions' | translate }}
       </div>
     </div>
 
@@ -100,7 +102,7 @@
             width="16"
             height="16"
             class="shrink-0" />
-          Open PDF
+          {{ 'web.settings.pdfBuilder.lblBrowseFile' | translate }}
         </button>
       </div>
       <div
@@ -109,14 +111,14 @@
         <button
           type="button"
           class="ov-icon-btn"
-          aria-label="Edit PDF template"
+          [attr.aria-label]="'web.settings.docTemplates.lblEdit' | translate"
           (click)="openEdit(row)">
           <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
         </button>
         <button
           type="button"
           class="ov-icon-btn ov-icon-btn--danger"
-          aria-label="Delete PDF template"
+          [attr.aria-label]="'web.settings.docTemplates.lblDelete' | translate"
           (click)="deleteTemplate(row)">
           <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
         </button>
@@ -126,7 +128,7 @@
     <div
       *ngIf="filteredTemplates.length === 0"
       class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-      No PDF templates found.
+      {{ 'web.settings.pdfBuilder.lblNoTemplates' | translate }}
     </div>
   </div>
 </div>

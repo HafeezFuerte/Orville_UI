@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-watermark-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, TranslateModule],
   templateUrl: './watermark-settings.component.html',
   styleUrl: './watermark-settings.component.scss',
 })

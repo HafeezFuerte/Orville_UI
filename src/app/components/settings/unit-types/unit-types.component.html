@@ -1,14 +1,14 @@
 <div class="flex flex-col gap-4 py-4 font-hanken">
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
-      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">Unit Types</h1>
+      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">{{ 'web.settings.unitTypes.lblTitle' | translate }}</h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Unit Types are used to categorize units. You can create as many unit types as you need.
+        {{ 'web.settings.unitTypes.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add New
+      {{ 'web.settings.unitTypes.btnAdd' | translate }}
     </button>
   </div>
 
@@ -24,7 +24,7 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search by name"
+        [placeholder]="'web.settings.unitTypes.phSearch' | translate"
         aria-label="Search unit types"
         [(ngModel)]="searchQuery"
         (ngModelChange)="onSearchChange()" />
@@ -38,17 +38,17 @@
           [attr.aria-expanded]="showFilters"
           (click)="toggleFilters()">
           <img src="./assets/images/work-orders/filter.svg" alt="" width="16" height="16" />
-          <span>Filters{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}</span>
+          <span>{{ 'web.settings.unitTypes.btnFilters' | translate }}{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}</span>
         </button>
 
         <div *ngIf="showFilters" class="ut-menu" (click)="$event.stopPropagation()">
-          <p class="ut-menu__label">Category Type</p>
+          <p class="ut-menu__label">{{ 'web.settings.unitTypes.lblCategoryType' | translate }}</p>
           <button
             type="button"
             class="ut-menu__item"
             [class.is-active]="filterCategory === ''"
             (click)="applyFilterCategory('')">
-            All
+            {{ 'web.settings.unitTypes.lblAll' | translate }}
           </button>
           <button
             type="button"
@@ -59,7 +59,7 @@
             {{ t }}
           </button>
           <div class="ut-menu__footer">
-            <button type="button" class="ut-menu__link" (click)="clearFilters()">Clear</button>
+            <button type="button" class="ut-menu__link" (click)="clearFilters()">{{ 'web.settings.unitTypes.btnClear' | translate }}</button>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@
           [attr.aria-expanded]="showColumns"
           (click)="toggleColumns()">
           <img src="./assets/images/work-orders/columns.svg" alt="" width="16" height="16" />
-          <span>Columns</span>
+          <span>{{ 'web.settings.unitTypes.btnColumns' | translate }}</span>
         </button>
 
         <div *ngIf="showColumns" class="ut-menu" (click)="$event.stopPropagation()">
@@ -87,7 +87,7 @@
               <input
                 type="search"
                 class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
-                placeholder="Search options..."
+                [placeholder]="'web.settings.unitTypes.phColumnSearch' | translate"
                 [(ngModel)]="columnSearch" />
             </label>
           </div>
@@ -98,7 +98,7 @@
                 class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
                 [checked]="allColumnsSelected"
                 (change)="toggleSelectAllColumns($any($event.target).checked)" />
-              <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+              <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.unitTypes.lblSelectAll' | translate }}</span>
             </label>
             <label
               *ngFor="let col of filteredColumns"
@@ -111,9 +111,9 @@
             </label>
           </div>
           <div class="ut-menu__footer">
-            <button type="button" class="ut-menu__link" (click)="clearColumns()">Clear</button>
+            <button type="button" class="ut-menu__link" (click)="clearColumns()">{{ 'web.settings.unitTypes.btnClear' | translate }}</button>
             <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
-            <button type="button" class="ut-menu__close" (click)="closeColumns()">Close</button>
+            <button type="button" class="ut-menu__close" (click)="closeColumns()">{{ 'web.settings.unitTypes.btnClose' | translate }}</button>
           </div>
         </div>
       </div>
@@ -133,14 +133,14 @@
           *ngIf="isColumnVisible('id')"
           class="ut-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
-          <button type="button" class="ut-sort" (click)="toggleSort('id')">ID</button>
+          <button type="button" class="ut-sort" (click)="toggleSort('id')">{{ 'web.settings.unitTypes.colId' | translate }}</button>
         </div>
         <div
           *ngIf="isColumnVisible('name')"
           class="ut-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
           <button type="button" class="ut-sort" (click)="toggleSort('name')">
-            Name
+            {{ 'web.settings.unitTypes.colName' | translate }}
             <span class="ut-sort__icons" aria-hidden="true">
               <span [class.is-active]="sortKey === 'name' && sortDir === 'asc'">▲</span>
               <span [class.is-active]="sortKey === 'name' && sortDir === 'desc'">▼</span>
@@ -152,7 +152,7 @@
           class="ut-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
           <button type="button" class="ut-sort" (click)="toggleSort('categoryType')">
-            Category Type
+            {{ 'web.settings.unitTypes.colCategoryType' | translate }}
             <span class="ut-sort__icons" aria-hidden="true">
               <span [class.is-active]="sortKey === 'categoryType' && sortDir === 'asc'">▲</span>
               <span [class.is-active]="sortKey === 'categoryType' && sortDir === 'desc'">▼</span>
@@ -163,13 +163,13 @@
           *ngIf="isColumnVisible('unitsCount')"
           class="ut-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
-          Units
+          {{ 'web.settings.unitTypes.colUnits' | translate }}
         </div>
         <div
           *ngIf="isColumnVisible('actions')"
           class="ut-table__cell ut-table__cell--action text-xs font-semibold text-textmuted"
           role="columnheader">
-          Actions
+          {{ 'web.settings.unitTypes.colActions' | translate }}
         </div>
       </div>
 
@@ -216,7 +216,7 @@
       </ng-container>
 
       <div *ngIf="pagedRows.length === 0" class="ut-table-empty" role="row">
-        <p class="ut-table-empty__text">No unit types match your filters.</p>
+        <p class="ut-table-empty__text">{{ 'web.settings.unitTypes.emptyMsg' | translate }}</p>
       </div>
     </div>
   </div>
@@ -256,10 +256,10 @@
       <div class="flex flex-col gap-[18px] px-5 pt-5">
         <div class="flex flex-col gap-1.5">
           <h2 id="ut-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
-            {{ modalTitle }}
+            {{ editingId == null ? ('web.settings.unitTypes.lblNewModalTitle' | translate) : ('web.settings.unitTypes.lblEditModalTitle' | translate) }}
           </h2>
           <p class="m-0 text-[13px] font-normal text-textmuted">
-            Define a unit type and its category for portfolio units.
+            {{ 'web.settings.unitTypes.lblModalSub' | translate }}
           </p>
         </div>
         <div class="h-px w-full bg-defaultborder"></div>
@@ -267,17 +267,17 @@
 
       <div class="flex flex-col gap-4 p-5">
         <div class="flex min-w-0 flex-col gap-2">
-          <label class="ov-label" for="ut-name">Name</label>
+          <label class="ov-label" for="ut-name">{{ 'web.settings.unitTypes.lblModalName' | translate }}</label>
           <input
             id="ut-name"
             type="text"
             class="ov-input"
-            placeholder="Enter unit type name"
+            [placeholder]="'web.settings.unitTypes.phModalName' | translate"
             [(ngModel)]="draft.name" />
         </div>
 
         <div class="flex min-w-0 flex-col gap-2">
-          <label class="ov-label" for="ut-category">Category Type</label>
+          <label class="ov-label" for="ut-category">{{ 'web.settings.unitTypes.lblCategoryType' | translate }}</label>
           <div class="relative">
             <select
               id="ut-category"
@@ -297,13 +297,13 @@
 
       <div
         class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
-        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.settings.unitTypes.btnModalClose' | translate }}</button>
         <button
           type="button"
           class="ov-btn ov-btn-primary"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.unitTypes.btnModalSave' | translate }}
         </button>
       </div>
     </div>

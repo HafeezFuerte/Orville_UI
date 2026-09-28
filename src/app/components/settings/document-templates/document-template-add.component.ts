@@ -19,10 +19,12 @@ export interface AutofillItem {
   tag: string;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-document-template-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxEditorModule],
+  imports: [CommonModule, FormsModule, NgxEditorModule, TranslateModule],
   templateUrl: './document-template-add.component.html',
   styleUrl: './document-template-add.component.scss',
 })

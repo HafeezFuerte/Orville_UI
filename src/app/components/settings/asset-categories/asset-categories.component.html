@@ -2,16 +2,15 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Asset Categories
+        {{ 'web.settings.assetCategories.lblTitle' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Asset Categories are used to categorize inventory assets. You can create as many asset
-        categories as you need.
+        {{ 'web.settings.assetCategories.lblSubtitle' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      New Asset Category
+      {{ 'web.settings.assetCategories.btnAdd' | translate }}
     </button>
   </div>
 
@@ -27,7 +26,7 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search categories..."
+        [placeholder]="'web.settings.assetCategories.phSearch' | translate"
         aria-label="Search asset categories"
         [(ngModel)]="searchQuery"
         (ngModelChange)="onSearchChange()" />
@@ -40,7 +39,7 @@
         [attr.aria-expanded]="showColumns"
         (click)="toggleColumns()">
         <img src="./assets/images/work-orders/columns.svg" alt="" width="16" height="16" />
-        <span>Columns</span>
+        <span>{{ 'web.settings.assetCategories.btnColumns' | translate }}</span>
       </button>
 
       <div *ngIf="showColumns" class="ac-col-menu" (click)="$event.stopPropagation()">
@@ -56,7 +55,7 @@
             <input
               type="search"
               class="h-full w-full min-w-0 p-0 text-xs text-defaulttextcolor placeholder:text-textmuted"
-              placeholder="Search options..."
+              [placeholder]="'web.settings.propertyTypes.phColumnSearch' | translate"
               [(ngModel)]="columnSearch" />
           </label>
         </div>
@@ -67,7 +66,7 @@
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [checked]="allColumnsSelected"
               (change)="toggleSelectAllColumns($any($event.target).checked)" />
-            <span class="text-sm font-medium text-defaulttextcolor">(Select All)</span>
+            <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.propertyTypes.lblSelectAll' | translate }}</span>
           </label>
           <label
             *ngFor="let col of filteredColumns"
@@ -84,14 +83,14 @@
             type="button"
             class="border-0 bg-transparent p-0 text-xs font-semibold text-link"
             (click)="clearColumns()">
-            Clear
+            {{ 'web.settings.propertyTypes.btnClear' | translate }}
           </button>
           <span class="h-3 w-px bg-defaultborder" aria-hidden="true"></span>
           <button
             type="button"
             class="border-0 bg-transparent p-0 text-xs font-semibold text-defaulttextcolor"
             (click)="closeColumns()">
-            Close
+            {{ 'web.settings.propertyTypes.btnClose' | translate }}
           </button>
         </div>
       </div>
@@ -111,19 +110,19 @@
           *ngIf="isColumnVisible('name')"
           class="ac-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
-          Category/Subcategory
+          {{ 'web.settings.assetCategories.colCategorySub' | translate }}
         </div>
         <div
           *ngIf="isColumnVisible('assetCount')"
           class="ac-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
-          Inventory Assets
+          {{ 'web.settings.assetCategories.colAssetsCount' | translate }}
         </div>
         <div
           *ngIf="isColumnVisible('actions')"
           class="ac-table__cell ac-table__cell--action text-xs font-semibold text-textmuted"
           role="columnheader">
-          Actions
+          {{ 'web.settings.assetCategories.colActions' | translate }}
         </div>
       </div>
 
@@ -211,32 +210,32 @@
       <div class="flex flex-col gap-[18px] px-5 pt-5">
         <div class="flex flex-col gap-1.5">
           <h2 id="ac-modal-title" class="m-0 text-base font-semibold text-defaulttextcolor">
-            {{ modalTitle }}
+            {{ editingId == null ? ('web.settings.assetCategories.lblNewModalTitle' | translate) : ('web.settings.assetCategories.lblEditModalTitle' | translate) }}
           </h2>
-          <p class="m-0 text-[13px] font-normal text-textmuted">{{ modalSubtitle }}</p>
+          <p class="m-0 text-[13px] font-normal text-textmuted">{{ editingId == null ? ('web.settings.assetCategories.lblModalSubCreate' | translate) : ('web.settings.assetCategories.lblModalSubEdit' | translate) }}</p>
         </div>
         <div class="h-px w-full bg-defaultborder"></div>
       </div>
 
       <div class="flex flex-col gap-4 p-5">
         <div class="flex min-w-0 flex-col gap-2">
-          <label class="ov-label" for="ac-name">Name</label>
+          <label class="ov-label" for="ac-name">{{ 'web.settings.assetCategories.lblModalName' | translate }}</label>
           <input
             id="ac-name"
             type="text"
             class="ov-input"
-            placeholder="Enter category name"
+            [placeholder]="'web.settings.assetCategories.phModalName' | translate"
             [(ngModel)]="draft.name" />
         </div>
 
         <div class="flex min-w-0 flex-col gap-2">
-          <label class="ov-label" for="ac-parent">Sub-Category of (optional)</label>
+          <label class="ov-label" for="ac-parent">{{ 'web.settings.assetCategories.lblParentCategory' | translate }}</label>
           <div class="relative">
             <select
               id="ac-parent"
               class="ov-input cursor-pointer appearance-none pr-8"
               [(ngModel)]="draft.parentId">
-              <option [ngValue]="null">None (top-level)</option>
+              <option [ngValue]="null">{{ 'web.settings.assetCategories.lblNoParent' | translate }}</option>
               <option *ngFor="let p of parentOptions" [ngValue]="p.id">{{ p.name }}</option>
             </select>
             <img
@@ -251,13 +250,13 @@
 
       <div
         class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
-        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.settings.assetCategories.btnModalClose' | translate }}</button>
         <button
           type="button"
           class="ov-btn ov-btn-primary"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.assetCategories.btnModalSave' | translate }}
         </button>
       </div>
     </div>

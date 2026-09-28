@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-company-details',
   standalone: true,
@@ -14,7 +16,8 @@ import { environment } from '../../../../environments/environment';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    TranslateModule
   ],
   templateUrl: './company-details.component.html',
   styleUrls: ['./company-details.component.scss'],

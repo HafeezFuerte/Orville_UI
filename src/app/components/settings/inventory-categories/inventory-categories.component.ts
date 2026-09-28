@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
@@ -14,7 +15,7 @@ import {
 @Component({
   selector: 'app-inventory-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule, OvPaginatorComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, OvPaginatorComponent],
   templateUrl: './inventory-categories.component.html',
   styleUrl: './inventory-categories.component.scss',
 })

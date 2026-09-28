@@ -16,10 +16,12 @@ export interface PdfTemplateRow {
   updated?: string;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-pdf-builder',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './pdf-builder.component.html',
 })
 export class PdfBuilderComponent implements OnInit {

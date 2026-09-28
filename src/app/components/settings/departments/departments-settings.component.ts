@@ -9,10 +9,12 @@ export interface DepartmentRow {
   isAdmin: boolean;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-departments-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './departments-settings.component.html',
   styleUrl: './departments-settings.component.scss',
 })

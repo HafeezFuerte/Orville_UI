@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   BANK_ACCOUNT_TYPE_OPTIONS,
   BANK_CURRENCY_OPTIONS,
@@ -14,7 +15,7 @@ import {
 @Component({
   selector: 'app-bank-accounts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './bank-accounts.component.html',
   styleUrl: './bank-accounts.component.scss',
 })

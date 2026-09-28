@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   DEFAULT_MANAGEMENT_FEE_SETTINGS,
   MANAGEMENT_FEE_TOGGLES,
@@ -11,7 +12,7 @@ import {
 @Component({
   selector: 'app-management-fee',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './management-fee.component.html',
   styleUrl: './management-fee.component.scss',
 })

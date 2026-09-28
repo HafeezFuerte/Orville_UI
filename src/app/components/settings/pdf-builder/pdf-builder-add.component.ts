@@ -28,10 +28,12 @@ export interface PlacedPdfField {
   page?: number;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-pdf-builder-add',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './pdf-builder-add.component.html',
   styleUrl: './pdf-builder-add.component.scss',
 })

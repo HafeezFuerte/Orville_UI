@@ -3,15 +3,15 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Invoice/Receipt Profiles
+        {{ 'web.settings.invoiceReceiptProfiles.title' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Manage company details and logos used on invoices and receipts.
+        {{ 'web.settings.invoiceReceiptProfiles.sub' | translate }}
       </p>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openCreate()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      Add New
+      {{ 'web.settings.invoiceReceiptProfiles.addNew' | translate }}
     </button>
   </div>
 
@@ -28,7 +28,7 @@
       <input
         type="search"
         class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-        placeholder="Search profiles..."
+        [placeholder]="'web.settings.invoiceReceiptProfiles.searchPlaceholder' | translate"
         aria-label="Search profiles"
         [(ngModel)]="searchQuery" />
     </label>
@@ -48,22 +48,22 @@
         class="flex min-w-[820px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
         role="row">
         <div class="min-w-[160px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
-          Name
+          {{ 'web.settings.invoiceReceiptProfiles.name' | translate }}
         </div>
         <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted sm:w-[140px]" role="columnheader">
-          City
+          {{ 'web.settings.invoiceReceiptProfiles.city' | translate }}
         </div>
         <div class="w-[140px] shrink-0 text-xs font-semibold text-textmuted sm:w-[180px]" role="columnheader">
-          Address
+          {{ 'web.settings.invoiceReceiptProfiles.address' | translate }}
         </div>
         <div class="w-[160px] shrink-0 text-xs font-semibold text-textmuted sm:w-[200px]" role="columnheader">
-          Country
+          {{ 'web.settings.invoiceReceiptProfiles.country' | translate }}
         </div>
         <div class="w-[88px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Logos
+          {{ 'web.settings.invoiceReceiptProfiles.logos' | translate }}
         </div>
         <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Action
+          {{ 'web.settings.invoiceReceiptProfiles.action' | translate }}
         </div>
       </div>
 
@@ -131,7 +131,7 @@
     <div
       *ngIf="filteredRows.length === 0"
       class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-      No invoice/receipt profiles found.
+      {{ 'web.settings.invoiceReceiptProfiles.noMatch' | translate }}
     </div>
   </div>
 </div>
@@ -168,14 +168,14 @@
           {{ modalTitle }}
         </h2>
         <p class="m-0 text-[13px] font-normal text-textmuted">
-          Company details printed on invoices and receipts.
+          {{ 'web.settings.invoiceReceiptProfiles.modalSub' | translate }}
         </p>
       </div>
 
       <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
         <!-- Logos -->
         <div class="flex flex-col gap-2">
-          <span class="ov-label">Logos</span>
+          <span class="ov-label">{{ 'web.settings.invoiceReceiptProfiles.logos' | translate }}</span>
           <div
             class="irp-dropzone"
             [class.irp-dropzone--active]="dropActive"
@@ -193,8 +193,8 @@
                 alt=""
                 width="28"
                 height="28" />
-              <span class="text-sm font-medium text-defaulttextcolor">Add file</span>
-              <span class="text-xs text-textmuted">or drop files to upload</span>
+              <span class="text-sm font-medium text-defaulttextcolor">{{ 'web.settings.invoiceReceiptProfiles.addFile' | translate }}</span>
+              <span class="text-xs text-textmuted">{{ 'web.settings.invoiceReceiptProfiles.dropFiles' | translate }}</span>
             </ng-container>
             <ng-template #logoPreview>
               <div class="flex items-center gap-3">
@@ -209,7 +209,7 @@
                   type="button"
                   class="text-xs font-medium text-danger"
                   (click)="removeLogo(); $event.stopPropagation()">
-                  Remove
+                  {{ 'web.settings.invoiceReceiptProfiles.remove' | translate }}
                 </button>
               </div>
             </ng-template>
@@ -226,17 +226,17 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="irp-name">
-              Name <span class="text-danger">*</span>
+              {{ 'web.settings.invoiceReceiptProfiles.name' | translate }} <span class="text-danger">*</span>
             </label>
             <input
               id="irp-name"
               type="text"
               class="ov-input"
-              placeholder="Profile name"
+              [placeholder]="'web.settings.invoiceReceiptProfiles.profileName' | translate"
               [(ngModel)]="draft.name" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-email">Email</label>
+            <label class="ov-label" for="irp-email">{{ 'web.settings.invoiceReceiptProfiles.email' | translate }}</label>
             <input
               id="irp-email"
               type="email"
@@ -245,7 +245,7 @@
               [(ngModel)]="draft.email" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-phone">Phone</label>
+            <label class="ov-label" for="irp-phone">{{ 'web.settings.invoiceReceiptProfiles.phone' | translate }}</label>
             <input
               id="irp-phone"
               type="tel"
@@ -254,7 +254,7 @@
               [(ngModel)]="draft.phone" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-vat">VAT #</label>
+            <label class="ov-label" for="irp-vat">{{ 'web.settings.invoiceReceiptProfiles.vat' | translate }}</label>
             <input
               id="irp-vat"
               type="text"
@@ -263,7 +263,7 @@
               [(ngModel)]="draft.vat" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-address1">Address 1</label>
+            <label class="ov-label" for="irp-address1">{{ 'web.settings.invoiceReceiptProfiles.address1' | translate }}</label>
             <input
               id="irp-address1"
               type="text"
@@ -272,7 +272,7 @@
               [(ngModel)]="draft.address1" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-address2">Address 2</label>
+            <label class="ov-label" for="irp-address2">{{ 'web.settings.invoiceReceiptProfiles.address2' | translate }}</label>
             <input
               id="irp-address2"
               type="text"
@@ -281,14 +281,14 @@
               [(ngModel)]="draft.address2" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-country">Country</label>
+            <label class="ov-label" for="irp-country">{{ 'web.settings.invoiceReceiptProfiles.country' | translate }}</label>
             <div class="relative">
               <select
                 id="irp-country"
                 class="ov-input cursor-pointer appearance-none pr-8"
                 [(ngModel)]="draft.country"
                 (ngModelChange)="onCountryChange()">
-                <option value="">Select country</option>
+                <option value="">{{ 'web.settings.invoiceReceiptProfiles.selectCountry' | translate }}</option>
                 <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
               </select>
               <img
@@ -300,14 +300,14 @@
             </div>
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-state">State</label>
+            <label class="ov-label" for="irp-state">{{ 'web.settings.invoiceReceiptProfiles.state' | translate }}</label>
             <div class="relative">
               <select
                 id="irp-state"
                 class="ov-input cursor-pointer appearance-none pr-8 disabled:opacity-50"
                 [disabled]="!draft.country"
                 [(ngModel)]="draft.state">
-                <option value="">Select state</option>
+                <option value="">{{ 'web.settings.invoiceReceiptProfiles.selectState' | translate }}</option>
                 <option *ngFor="let s of stateOptions" [value]="s">{{ s }}</option>
               </select>
               <img
@@ -319,7 +319,7 @@
             </div>
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-city">City</label>
+            <label class="ov-label" for="irp-city">{{ 'web.settings.invoiceReceiptProfiles.city' | translate }}</label>
             <input
               id="irp-city"
               type="text"
@@ -328,7 +328,7 @@
               [(ngModel)]="draft.city" />
           </div>
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="irp-postcode">Postcode</label>
+            <label class="ov-label" for="irp-postcode">{{ 'web.settings.invoiceReceiptProfiles.postcode' | translate }}</label>
             <input
               id="irp-postcode"
               type="text"
@@ -339,26 +339,26 @@
         </div>
 
         <div class="flex min-w-0 flex-col gap-2">
-          <label class="ov-label" for="irp-footer">Footer</label>
+          <label class="ov-label" for="irp-footer">{{ 'web.settings.invoiceReceiptProfiles.footer' | translate }}</label>
           <textarea
             id="irp-footer"
             rows="3"
             class="ov-input"
-            placeholder="Footer text shown on invoices and receipts"
+            [placeholder]="'web.settings.invoiceReceiptProfiles.footerPlaceholder' | translate"
             [(ngModel)]="draft.footer"></textarea>
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.settings.invoiceReceiptProfiles.close' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!canSave"
           (click)="save()">
-          Save
+          {{ 'web.settings.invoiceReceiptProfiles.save' | translate }}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   DEFAULT_PAYMENT_SETTINGS,
   PAYMENT_ACCOUNT_OPTIONS,
@@ -15,7 +16,7 @@ type DayListKey = 'delayedRentDays' | 'upcomingPaymentDays' | 'bouncedChequeDays
 @Component({
   selector: 'app-payment-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './payment-settings.component.html',
   styleUrl: './payment-settings.component.scss',
 })

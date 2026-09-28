@@ -8,10 +8,12 @@ export interface MandatoryDocumentRow {
   userType: string;
 }
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-mandatory-documents',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './mandatory-documents.component.html',
 })
 export class MandatoryDocumentsComponent {
