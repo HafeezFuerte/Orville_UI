@@ -161,22 +161,180 @@
   }
 }
 
+.orville-settings-title {
+  padding: 10px 18px 2px;
+  color: rgb(var(--default-text-color));
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+/*
+ * Main-menu icon rail — shown only by the global two-panel rules in orville-ds.scss.
+ * Hover / keyboard focus widens it over the settings panel (grid track stays 3.5rem, so no reflow).
+ */
+.orville-settings-rail {
+  position: relative;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  justify-self: start;
+  width: 3.5rem;
+  min-height: 0;
+  padding: 10px 10px 16px;
+  border-inline-end: 1px solid rgb(var(--default-border));
+  background-color: inherit;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  transition: width 0.15s ease, box-shadow 0.15s ease;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:hover,
+  &:focus-within {
+    width: 15rem;
+    box-shadow: 6px 0 16px rgb(0 0 0 / 0.08);
+    transition-delay: 0.08s;
+
+    .orville-settings-rail__label,
+    .orville-settings-rail__heading {
+      display: block;
+    }
+
+    .orville-settings-rail__badge,
+    .orville-settings-rail__angle {
+      display: inline-flex;
+    }
+
+    .orville-settings-rail__sep--labelled {
+      display: none;
+    }
+  }
+}
+
+.orville-settings-rail__sep {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 1px;
+  margin: 6px 2px;
+  background: rgb(var(--default-border));
+}
+
+.orville-settings-rail__heading {
+  display: none;
+  padding: 10px 8px 4px;
+  color: rgb(var(--text-muted));
+  font-size: 11px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.orville-settings-rail__item {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: rgb(var(--text-muted));
+  font-size: 14px;
+  white-space: nowrap;
+
+  .orville-nav-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+
+  .bx {
+    flex-shrink: 0;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  &:hover:not(.active) {
+    background-color: rgb(var(--orville-nav-active-bg));
+    color: rgb(var(--default-text-color));
+  }
+
+  &.active {
+    background-color: rgb(var(--orville-nav-active-bg));
+    color: #252536;
+    font-weight: 600;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: -8px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 3px;
+      background: rgb(var(--orville-accent));
+    }
+  }
+}
+
+.orville-settings-rail__label {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 18px;
+}
+
+.orville-settings-rail__badge {
+  display: none;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgb(var(--orville-nav-active-bg));
+  color: #252536;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.orville-settings-rail__angle {
+  display: none;
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
 .orville-settings-heading {
   list-style: none;
   pointer-events: none;
-  margin-top: 10px !important;
+  margin-top: 12px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid rgb(var(--default-border));
 
   &:first-of-type {
     margin-top: 4px !important;
+    padding-top: 0 !important;
+    border-top: 0;
   }
 }
 
 .orville-settings-heading__label {
-  padding: 4px 8px 2px;
-  color: #c5c5ce;
-  font-size: 12px;
+  padding: 4px 8px;
+  color: rgb(var(--text-muted));
+  font-size: 11px;
   font-weight: 600;
   line-height: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   font-family: var(--default-font-family, "Hanken Grotesk", sans-serif);
 }
 
@@ -274,7 +432,17 @@
 }
 
 :host ::ng-deep .orville-settings-menu {
+  .orville-nav-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgb(var(--orville-nav-active-bg));
+    color: #252536;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
   > .slide > .side-menu__item {
+    position: relative;
     min-height: 36px;
     height: 36px;
     gap: 10px;
@@ -309,6 +477,21 @@
       /* Light active pill — always dark text for contrast (even when page theme is dark) */
       color: #252536 !important;
       font-weight: 600 !important;
+
+      &::before {
+        content: "" !important;
+        display: block !important;
+        position: absolute;
+        inset-inline-start: 0;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        height: auto;
+        border: 0 !important;
+        border-radius: 3px;
+        background: rgb(var(--orville-accent)) !important;
+        opacity: 1 !important;
+      }
 
       .side-menu__label {
         font-weight: 600 !important;
@@ -389,19 +572,36 @@
     }
   }
 
-  /* Parent stays gold when any child route is active */
+  /* Active top-level item (or parent of the active route): grey pill, dark label, gold edge bar */
+  .main-menu > .slide > .side-menu__item.active,
   .main-menu > .slide.active > .orville-parent-item,
   .orville-parent-item.active {
+    position: relative;
     background-color: rgb(var(--orville-nav-active-bg)) !important;
-    color: rgb(var(--orville-accent)) !important;
+    color: #252536 !important;
     font-weight: 600 !important;
+
+    &::before {
+      content: "" !important;
+      display: block !important;
+      position: absolute;
+      inset-inline-start: -5px !important;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      height: auto;
+      border: 0 !important;
+      border-radius: 3px;
+      background: rgb(var(--orville-accent)) !important;
+      opacity: 1 !important;
+    }
 
     .side-menu__label,
     .orville-nav-icon,
     .side-menu__icon,
     .side-menu__angle {
-      color: rgb(var(--orville-accent)) !important;
-      fill: rgb(var(--orville-accent)) !important;
+      color: #252536 !important;
+      fill: #252536 !important;
       font-weight: 600 !important;
     }
   }
@@ -498,6 +698,15 @@
  */
 :host-context(html.dark),
 :host-context(.dark) {
+  .orville-settings-rail__item:not(.active) {
+    color: rgb(255 255 255 / 0.72);
+
+    &:hover {
+      background-color: rgb(255 255 255 / 0.08);
+      color: #fff;
+    }
+  }
+
   ::ng-deep {
     .main-menu > .slide > .side-menu__item,
     .orville-parent-item {
@@ -556,17 +765,18 @@
       }
     }
 
+    .main-menu > .slide > .side-menu__item.active,
     .main-menu > .slide.active > .orville-parent-item,
     .orville-parent-item.active {
-      background-color: rgb(255 255 255 / 0.08) !important;
-      color: rgb(var(--orville-accent)) !important;
+      background-color: rgb(255 255 255 / 0.14) !important;
+      color: #fff !important;
 
       .side-menu__label,
       .orville-nav-icon,
       .side-menu__icon,
       .side-menu__angle {
-        color: rgb(var(--orville-accent)) !important;
-        fill: rgb(var(--orville-accent)) !important;
+        color: #fff !important;
+        fill: #fff !important;
       }
     }
 
@@ -576,7 +786,7 @@
   }
 }
 
-/* Light menu: parent gold + active sub dark text on dark page theme */
+/* Light menu on dark page theme: keep the light active pill with dark text */
 :host-context(html.dark):host-context([data-menu-styles='light']),
 :host-context(.dark):host-context([data-menu-styles='light']) {
   ::ng-deep {
@@ -584,14 +794,14 @@
     .main-menu > .slide.active > .orville-parent-item,
     .orville-parent-item.active {
       background-color: rgb(var(--orville-nav-active-bg)) !important;
-      color: rgb(var(--orville-accent)) !important;
+      color: #252536 !important;
 
       .side-menu__label,
       .orville-nav-icon,
       .side-menu__icon,
       .side-menu__angle {
-        color: rgb(var(--orville-accent)) !important;
-        fill: rgb(var(--orville-accent)) !important;
+        color: #252536 !important;
+        fill: #252536 !important;
       }
     }
 
@@ -647,6 +857,49 @@
 
   .orville-settings-heading__label {
     color: rgb(255 255 255 / 0.4);
+  }
+
+  .orville-settings-title {
+    color: #fff;
+  }
+
+  .orville-settings-heading,
+  .orville-settings-rail,
+  .orville-settings-rail__sep {
+    border-color: rgb(255 255 255 / 0.1);
+  }
+
+  .orville-settings-rail__sep {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .orville-settings-rail__item {
+    color: rgb(255 255 255 / 0.72);
+
+    &:hover:not(.active) {
+      background-color: rgb(255 255 255 / 0.08);
+      color: #fff;
+    }
+
+    &.active {
+      background-color: rgb(255 255 255 / 0.14);
+      color: #fff;
+    }
+  }
+
+  .orville-settings-rail__heading {
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  .orville-settings-rail:hover,
+  .orville-settings-rail:focus-within {
+    box-shadow: 6px 0 16px rgb(0 0 0 / 0.35);
+  }
+
+  .orville-settings-rail__badge,
+  ::ng-deep .orville-settings-menu .orville-nav-badge {
+    background: rgb(255 255 255 / 0.14);
+    color: #fff;
   }
 
   .orville-nav-heading__label {
@@ -745,17 +998,18 @@
     }
   }
 
+  ::ng-deep .main-menu > .slide > .side-menu__item.active,
   ::ng-deep .main-menu > .slide.active > .orville-parent-item,
   ::ng-deep .orville-parent-item.active {
     background-color: rgb(255 255 255 / 0.14) !important;
-    color: rgb(var(--orville-accent)) !important;
+    color: #fff !important;
 
     .side-menu__label,
     .orville-nav-icon,
     .side-menu__icon,
     .side-menu__angle {
-      color: rgb(var(--orville-accent)) !important;
-      fill: rgb(var(--orville-accent)) !important;
+      color: #fff !important;
+      fill: #fff !important;
     }
   }
 
@@ -768,13 +1022,20 @@
   .orville-create-wrap {
     display: none;
   }
+
+  ::ng-deep .main-menu > .slide > .side-menu__item.active::before,
+  ::ng-deep .main-menu > .slide.active > .orville-parent-item::before {
+    display: none !important;
+  }
 }
 
 :host-context([data-toggled='icon-overlay-close']:not([icon-overlay='open'])),
 :host-context([data-toggled='icon-text-close']:not([icon-text='open'])),
 :host-context([data-vertical-style='closed']) {
   .orville-logo-wordmark,
-  .orville-create-label {
+  .orville-create-label,
+  .orville-settings-title,
+  .orville-settings-heading__label {
     display: none;
   }
 

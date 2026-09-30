@@ -13,8 +13,36 @@
   </div>
 
   <div class="orville-sidebar-body" [class.is-settings]="isSettingsMode">
+    <!-- Settings two-panel: main-menu icon rail (desktop, expanded sidebar only) -->
+    <!-- Hover expands the rail over the settings panel to show main-menu labels -->
+    <nav class="orville-settings-rail" *ngIf="isSettingsMode" aria-label="Main menu">
+      <ng-container *ngFor="let item of originalMenuItems; let i = index">
+        <ng-container *ngIf="item.type === 'heading'">
+          <span *ngIf="i > 0" class="orville-settings-rail__sep"
+            [class.orville-settings-rail__sep--labelled]="item.menutype !== 'settings-heading'"
+            aria-hidden="true"></span>
+          <span *ngIf="item.menutype !== 'settings-heading'" class="orville-settings-rail__heading">
+            {{ item.title }}
+          </span>
+        </ng-container>
+        <a *ngIf="item.type !== 'heading' && railPath(item) as path"
+          class="orville-settings-rail__item"
+          [class.active]="item.menutype === 'settings'"
+          [routerLink]="path"
+          [attr.aria-label]="item.title">
+          <span *ngIf="item.icon && item.icon.endsWith('.svg')" class="orville-nav-icon"
+            [style.--orville-icon]="'url(' + item.icon + ')'"></span>
+          <i *ngIf="item.icon && !item.icon.endsWith('.svg')" class="bx {{ item.icon }}"></i>
+          <span class="orville-settings-rail__label">{{ item.title }}</span>
+          <span *ngIf="item.badgeText" class="orville-settings-rail__badge">{{ item.badgeText }}</span>
+          <i *ngIf="item.type === 'sub'" class="fe fe-chevron-right orville-settings-rail__angle"></i>
+        </a>
+      </ng-container>
+    </nav>
+
     <!-- Static (non-scrolling) settings chrome — not position:fixed -->
     <div class="orville-settings-chrome" *ngIf="isSettingsMode">
+      <div class="orville-settings-title">Settings</div>
       <div class="orville-settings-search">
         <input
           type="search"

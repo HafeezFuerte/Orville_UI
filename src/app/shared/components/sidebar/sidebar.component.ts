@@ -1580,9 +1580,25 @@ export class SidebarComponent {
   }
 
 
+  /** Rail target: the item's own path, or its first descendant link. */
+  railPath(item: Menu): string | null {
+    if (item.path) {
+      return item.path;
+    }
+    for (const child of item.children ?? []) {
+      const path = this.railPath(child);
+      if (path) {
+        return path;
+      }
+    }
+    return null;
+  }
+
   switchToSettingsMenu() {
     this.isSettingsMode = true;
     this.settingsSearchQuery = '';
+    // Drives the global two-panel width rules (header / content offsets live outside this component)
+    this.renderer.setAttribute(document.documentElement, 'data-orville-settings', 'true');
     // Always rebuild so menu paths stay in sync with settings-menu.data.ts
     this.allSettingsMenuItems = buildFigmaSettingsMenuItems();
     this.settingsMenuItems = [...this.allSettingsMenuItems];
@@ -1624,6 +1640,7 @@ export class SidebarComponent {
   restoreMainMenu() {
     this.isSettingsMode = false;
     this.settingsSearchQuery = '';
+    this.renderer.removeAttribute(document.documentElement, 'data-orville-settings');
     this.menuItems = [...this.originalMenuItems];
   }
 
@@ -1949,6 +1966,7 @@ export class SidebarComponent {
     return this.sanitizer.bypassSecurityTrustHtml(svgContent);
   }
   ngOnDestroy() {
+    this.renderer.removeAttribute(document.documentElement, 'data-orville-settings');
     if (this.menuitemsSubscribe$) {
       this.menuitemsSubscribe$.unsubscribe();
     }
