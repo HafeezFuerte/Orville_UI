@@ -106,110 +106,100 @@
   </div>
 
   <!-- Table -->
-  <div
-    class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white dark:bg-bodybg"
-    role="table"
-    [attr.aria-label]="pageTitle">
-    <div class="w-full overflow-x-auto">
-      <div
-        class="flex min-w-[1080px] gap-3 bg-bodybg px-5 py-3.5 dark:bg-white/5"
-        role="row">
-        <div class="w-12 shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Image
-        </div>
-        <div class="min-w-[180px] flex-1 text-xs font-semibold text-textmuted" role="columnheader">
-          User Details
-        </div>
-        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Username
-        </div>
-        <div class="w-[130px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Phone
-        </div>
-        <div class="w-[120px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Role
-        </div>
-        <div class="w-[100px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Reference No
-        </div>
-        <div class="w-[100px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Login
-        </div>
-        <div class="w-16 shrink-0 text-center text-xs font-semibold text-textmuted" role="columnheader">
-          Units
-        </div>
-        <div class="w-[160px] shrink-0 text-xs font-semibold text-textmuted" role="columnheader">
-          Actions
-        </div>
-      </div>
+  <div class="px-5 pb-0 pt-5">
+    <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="isLoading"
+      [totalRecords]="totalRecords" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
 
-      <div
-        *ngFor="let row of filteredRows"
-        class="flex min-w-[1080px] gap-3 border-t border-defaultborder px-5 py-3.5"
-        role="row">
-        <div class="flex w-12 shrink-0 items-center" role="cell">
-          <span
-            class="inline-flex size-9 items-center justify-center rounded-full text-xs font-semibold text-white"
-            [style.background]="row.avatarColor">
-            {{ row.initials }}
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container *ngIf="col.key === 'id'">
+          <div class="flex items-center gap-2.5">
+            <span class="ov-avatar" *ngIf="row.image_path && !row.image_path.includes('default_user')">
+              <img [src]="row.image_path" alt="" />
+            </span>
+            <span class="ov-avatar" *ngIf="!row.image_path || row.image_path.includes('default_user')">
+              {{ getInitials(row.name || row.name) }}
+            </span>
+            <a class="ov-link font-semibold" [routerLink]="['/settings/user-detail', row.code]">{{ row.code || row.id }}</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'name'">
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{ row.name || '' }}</span>
+          <span class="flex items-center gap-1 text-[12px] text-textmuted font-normal"> 
+            {{row.email_address}}
           </span>
-        </div>
-        <div class="flex min-w-[180px] flex-1 flex-col justify-center gap-0.5" role="cell">
-          <button
-            type="button"
-            class="cursor-pointer border-0 bg-transparent p-0 text-left text-sm font-medium text-link"
-            (click)="openEdit(row)">
-            {{ row.name }}
-          </button>
-          <span class="text-xs text-textmuted">{{ row.email }}</span>
-        </div>
-        <div class="flex w-[120px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
-          {{ row.username }}
-        </div>
-        <div class="flex w-[130px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
-          {{ row.phone }}
-        </div>
-        <div class="flex w-[120px] shrink-0 items-center" role="cell">
-          <span
-            class="inline-flex items-center rounded-md bg-[#eeeef5] px-2.5 py-1 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
-            {{ row.role }}
+
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'email'">
+          <span class="text-[14px] text-textmuted">{{ row.email_address || row.email || '-' }}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'phone'">
+          <span class="text-[14px] text-textmuted">{{ row.phone   || '-' }}</span>
+        </ng-container> 
+
+        <ng-container *ngIf="col.key === 'gender'">
+          <span class="text-[14px] text-textmuted">{{ row.gender || '-' }}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'status'">
+          <span class="ov-status"
+            [class.ov-status--active]="isActiveStatus(row)"
+            [class.ov-status--blocked]="isBlockedStatus(row)"
+            [class.ov-status--muted]="!isActiveStatus(row) && !isBlockedStatus(row)">
+            {{ statusLabel(row) }}
           </span>
-        </div>
-        <div class="flex w-[100px] shrink-0 items-center text-sm text-textmuted" role="cell">
-          {{ row.referenceNo || '—' }}
-        </div>
-        <div class="flex w-[100px] shrink-0 items-center text-sm text-defaulttextcolor" role="cell">
-          {{ row.lastLogin }}
-        </div>
-        <div
-          class="flex w-16 shrink-0 items-center justify-center text-sm font-medium text-defaulttextcolor"
-          role="cell">
-          {{ row.units }}
-        </div>
-        <div class="flex w-[160px] shrink-0 items-center gap-2" role="cell">
-          <button
-            type="button"
-            class="ov-icon-btn"
-            aria-label="Edit user"
-            (click)="openEdit(row)">
-            <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 items-center gap-1.5 rounded-md border border-defaultborder bg-white px-2 text-xs font-medium text-danger dark:bg-bodybg"
-            [attr.aria-label]="row.status === 'active' ? 'Block user' : 'Unblock user'"
-            (click)="toggleBlock(row)">
-            <img src="./assets/images/settings/ban.svg" alt="" width="14" height="14" />
-            {{ row.status === 'active' ? 'Block User' : 'Unblock' }}
-          </button>
-        </div>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'action'">
+          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+              (click)="toggleRowAction(row.code || row.id, $event)">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+            </button>
+            <div *ngIf="openActionCode === (row.code || row.id)"
+              class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+              <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
+                [routerLink]="['/contacts/tenants', row.code]"
+                (click)="openActionCode = null">View</a>
+              <button type="button"
+                class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="openEdit(row.code)">Edit</button>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+    </app-shared-table>
+  </div>
+
+  <div class="ov-page">
+    <div class="ov-page__meta">
+      <span class="ov-page__label">Show</span>
+      <div class="ov-page__size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+        </select>
+        <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
+      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
     </div>
-
-    <div
-      *ngIf="filteredRows.length === 0"
-      class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-      No {{ pageTitle.toLowerCase() }} found.
+    <div class="ov-page__nav">
+      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <div class="ov-page__btns">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
+        </button>
+        <ng-container *ngFor="let item of pagerItems">
+          <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
+          <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
+            [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
+        </ng-container>
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)" aria-label="Next page">
+          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
+        </button>
+      </div>
     </div>
   </div>
 </div>
