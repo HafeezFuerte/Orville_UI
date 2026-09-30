@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,14 +23,12 @@ type ViewMode = 'list' | 'board';
 @Component({
   selector: 'app-facility-tickets',
   standalone: true,
-  imports: [
-    CommonModule,
+  imports: [CommonModule,
     FormsModule,
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
-  ],
+    ColumnMenuComponent, TranslateModule],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.scss'
 })

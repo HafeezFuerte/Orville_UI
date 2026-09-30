@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,7 @@ import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowb
 @Component({
   selector: 'app-create-ticket',
   standalone: true,
-  imports: [CommonModule, FormsModule,FlowbiteDatepickerDirective, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule,FlowbiteDatepickerDirective, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './create-ticket.component.html',
   styleUrl: './create-ticket.component.scss'
 })

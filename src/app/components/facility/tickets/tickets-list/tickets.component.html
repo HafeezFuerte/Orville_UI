@@ -1,17 +1,17 @@
 <div>
   <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
     <div>
-      <h3 class="ov-page-title">Tickets</h3>
-      <p class="ov-page-sub">Manage and view all tickets</p>
+      <h3 class="ov-page-title">{{ 'web.facility.tickets.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.facility.tickets.subtitle' | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="tk-icon" />
-        Export
+        {{ 'web.facility.tickets.export' | translate }}
       </button>
       <button type="button" class="ov-btn ov-btn-primary" routerLink="/facility/tickets/create">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="tk-icon" />
-        Add Ticket
+        {{ 'web.facility.tickets.addTicket' | translate }}
       </button>
     </div>
   </div>
@@ -28,7 +28,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
       <div class="flex flex-wrap items-center gap-3">
         <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">
-          {{ viewMode === 'board' ? 'Tickets Board' : 'Ticket List' }}
+          {{ viewMode === 'board' ? ('web.facility.tickets.ticketsBoard' | translate) : ('web.facility.tickets.ticketList' | translate) }}
         </h5>
         <div class="ov-view-toggle" role="group" aria-label="Tickets view mode">
           <button type="button" class="ov-view-toggle__btn" [class.is-on]="viewMode === 'list'"
@@ -50,7 +50,7 @@
        *ngFor="let tab of statusTabs"
        class="ov-seg__btn"
        [class.is-active]="statusFilter === tab.id"
-       [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+       [class.text-gray-500]="statusFilter !== tab.id"
        [class.border-transparent]="statusFilter !== tab.id" 
        (click)="setStatusFilter(tab.id)">
            {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
@@ -61,20 +61,20 @@
 
     <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
       <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
-        <label class="sr-only" for="ticket-search">Search</label>
+        <label class="sr-only" for="ticket-search">{{ 'web.common.search' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="ticket-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" placeholder="Search">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" [placeholder]="'web.common.search' | translate">
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.facility.tickets.filter' | translate }}
         </button>
         <div class="relative" data-tickets-columns (click)="$event.stopPropagation()" *ngIf="viewMode === 'list'">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.facility.tickets.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -86,7 +86,7 @@
         </div>
         <button type="button" *ngIf="viewMode === 'board'" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.facility.tickets.column' | translate }}
         </button>
       </div>
     </div>
@@ -136,17 +136,17 @@
 
     <div class="ov-page" *ngIf="viewMode === 'list'">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.common.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
             <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.common.showing' | translate }} {{ startRecord }} {{ 'web.common.to' | translate }} {{ endRecord }} {{ 'web.common.of' | translate }} {{ totalRecords }} {{ 'web.common.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.common.page' | translate }} {{ displayPage }} {{ 'web.common.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
           <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
@@ -232,28 +232,28 @@
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
     <button type="button" role="menuitem" class="tk-row-menu__item"
-      (click)="navigateToDetail(openRowActionId!)">View</button>
+      (click)="navigateToDetail(openRowActionId!)">{{ 'web.common.view' | translate }}</button>
     <button type="button" role="menuitem" class="tk-row-menu__item"
-      (click)="navigateToEdit(openRowActionId!)">Edit</button>
+      (click)="navigateToEdit(openRowActionId!)">{{ 'web.common.edit' | translate }}</button>
   </div>
 
   <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col">
-        <label class="ov-label">Title</label>
-        <input type="text" class="ov-input" [(ngModel)]="filterTitle" placeholder="Enter title">
+        <label class="ov-label">{{ 'web.facility.tickets.filterTitle' | translate }}</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterTitle" [placeholder]="'web.facility.tickets.filterTitlePlaceholder' | translate">
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">Status</label>
+        <label class="ov-label">{{ 'web.facility.tickets.filterStatus' | translate }}</label>
         <select class="ov-input" [(ngModel)]="filterStatus">
-          <option [ngValue]="null">All</option>
+          <option [ngValue]="null">{{ 'web.common.all' | translate }}</option>
           <option *ngFor="let status of statusOptions" [ngValue]="status">{{ status }}</option>
         </select>
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">Priority</label>
+        <label class="ov-label">{{ 'web.facility.tickets.filterPriority' | translate }}</label>
         <select class="ov-input" [(ngModel)]="filterPriority">
-          <option [ngValue]="null">All</option>
+          <option [ngValue]="null">{{ 'web.common.all' | translate }}</option>
           <option *ngFor="let priority of priorityOptions" [ngValue]="priority">{{ priority }}</option>
         </select>
       </div>

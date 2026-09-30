@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,14 +18,12 @@ type StatusTab = 'All' | RequestStatus;
 @Component({
   selector: 'app-facility-requests',
   standalone: true,
-  imports: [
-    CommonModule,
+  imports: [CommonModule,
     FormsModule,
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
-  ],
+    ColumnMenuComponent, TranslateModule],
   templateUrl: './requests.component.html',
   styleUrl: './requests.component.scss'
 })

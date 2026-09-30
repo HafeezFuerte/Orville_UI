@@ -3,10 +3,10 @@
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
       <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-        Users and Admins
+        {{ 'web.settings.usersAndAdmins.title' | translate }}
       </h1>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        Manage portal users, admins, and support technicians.
+        {{ 'web.settings.usersAndAdmins.subtitle' | translate }}
       </p>
     </div>
   </div>
@@ -19,14 +19,20 @@
       class="ov-seg__btn"
       [class.is-active]="mainTab === tab.id"
       (click)="setMainTab(tab.id)">
-      {{ tab.label }}
+      {{ tab.labelKey | translate }}
     </button>
   </div>
 
   <!-- Section header -->
   <div class="flex w-full flex-wrap items-center justify-between gap-3">
     <div class="flex min-w-0 flex-wrap items-center gap-3">
-      <h2 class="m-0 text-base font-semibold text-defaulttextcolor">{{ pageTitle }}</h2>
+      <h2 class="m-0 text-base font-semibold text-defaulttextcolor">
+        <ng-container [ngSwitch]="mainTab">
+          <span *ngSwitchCase="'admins'">{{ 'web.settings.usersAndAdmins.tabAdmins' | translate }}</span>
+          <span *ngSwitchCase="'technicians'">{{ 'web.settings.usersAndAdmins.tabTechnicians' | translate }}</span>
+          <span *ngSwitchDefault>{{ 'web.settings.usersAndAdmins.tabUsers' | translate }}</span>
+        </ng-container>
+      </h2>
       <div class="ov-seg">
         <button
           type="button"
@@ -34,13 +40,17 @@
           class="ov-seg__btn"
           [class.is-active]="statusFilter === tab.id"
           (click)="statusFilter = tab.id">
-          {{ tab.label }}
+          {{ tab.labelKey | translate }}
         </button>
       </div>
     </div>
     <button type="button" class="ov-btn ov-btn-primary" (click)="openNew()">
       <span class="text-lg leading-none" aria-hidden="true">+</span>
-      {{ addLabel }}
+      <ng-container [ngSwitch]="mainTab">
+        <span *ngSwitchCase="'admins'">{{ 'web.settings.usersAndAdmins.addAdmin' | translate }}</span>
+        <span *ngSwitchCase="'technicians'">{{ 'web.settings.usersAndAdmins.addTechnician' | translate }}</span>
+        <span *ngSwitchDefault>{{ 'web.settings.usersAndAdmins.addUser' | translate }}</span>
+      </ng-container>
     </button>
   </div>
 
@@ -58,8 +68,8 @@
         <input
           type="search"
           class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-          [placeholder]="'Search ' + pageTitle + '...'"
-          [attr.aria-label]="'Search ' + pageTitle"
+          [placeholder]="'web.common.search' | translate"
+          [attr.aria-label]="'web.common.search' | translate"
           [(ngModel)]="searchQuery" />
       </label>
 
@@ -71,7 +81,7 @@
           (click)="isRoleDropdownOpen = !isRoleDropdownOpen"
           aria-haspopup="listbox"
           [attr.aria-expanded]="isRoleDropdownOpen">
-          <span [class.ov-select__placeholder]="!roleFilter">{{ roleFilter || 'Role' }}</span>
+          <span [class.ov-select__placeholder]="!roleFilter">{{ roleFilter || ('web.settings.usersAndAdmins.roleFilter' | translate) }}</span>
           <img
             src="./assets/images/settings/chevron-down.svg"
             alt=""
@@ -85,7 +95,7 @@
             class="ov-select__option"
             [class.is-selected]="roleFilter === ''"
             (click)="roleFilter = ''; isRoleDropdownOpen = false">
-            Role
+            {{ 'web.settings.usersAndAdmins.roleFilter' | translate }}
           </button>
           <button
             type="button"
@@ -129,7 +139,6 @@
           <span class="flex items-center gap-1 text-[12px] text-textmuted font-normal"> 
             {{row.email_address}}
           </span>
-
         </ng-container>
 
         <ng-container *ngIf="col.key === 'email'">
@@ -163,10 +172,10 @@
               class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
               <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
                 [routerLink]="['/contacts/tenants', row.code]"
-                (click)="openActionCode = null">View</a>
+                (click)="openActionCode = null">{{ 'web.common.view' | translate }}</a>
               <button type="button"
                 class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="openEdit(row.code)">Edit</button>
+                (click)="openEdit(row.code)">{{ 'web.common.edit' | translate }}</button>
             </div>
           </div>
         </ng-container>
@@ -176,17 +185,17 @@
 
   <div class="ov-page">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.show' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.common.showing' | translate }} {{ startRecord }} {{ 'web.common.to' | translate }} {{ endRecord }} {{ 'web.common.of' | translate }} {{ totalRecords }} {{ 'web.common.records' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.common.page' | translate }} {{ displayPage }} {{ 'web.common.of' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />

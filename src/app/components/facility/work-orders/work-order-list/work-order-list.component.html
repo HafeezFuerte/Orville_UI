@@ -1,39 +1,39 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="ov-page-title">Work Orders</h3>
-    <p class="ov-page-sub">Track, prioritize and assign maintenance requests from one workspace.</p>
+    <h3 class="ov-page-title">{{ 'web.facility.workOrders.title' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.facility.workOrders.subtitle' | translate }}</p>
     <p class="sr-only">Facility / Work Orders</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.facility.workOrders.export' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="wo-icon" />
-      Export
+      {{ 'web.facility.workOrders.export' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" data-tooltip="Add Work Order">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" [attr.data-tooltip]="'web.facility.workOrders.addWorkOrder' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="wo-icon" />
-      Add Work Order
+      {{ 'web.facility.workOrders.addWorkOrder' | translate }}
     </button>
   </div>
 </div>
 
 <div class="ov-kpi-row mb-5">
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">New</span>
+    <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiNew' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.new }}</div>
     <div class="ov-kpi__sub">+6 this week</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Open</span>
+    <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiOpen' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.open }}</div>
     <div class="ov-kpi__sub">21 due today</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">In Progress</span>
+    <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiInProgress' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.inprogress }}</div>
     <div class="ov-kpi__sub">12 with vendors</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">Resolved</span>
+    <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiResolved' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.resolved }}</div>
     <div class="ov-kpi__sub">92% SLA met</div>
   </div>
@@ -43,7 +43,7 @@
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
     <div class="flex flex-wrap items-center gap-3">
       <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">
-        {{ viewMode === 'board' ? 'Workflow Board' : 'Work Orders List' }}
+        {{ viewMode === 'board' ? ('web.facility.workOrders.workflowBoard' | translate) : ('web.facility.workOrders.title' | translate) }}
       </h5>
       <div class="ov-view-toggle">
         <button type="button" (click)="setViewMode('list')" class="ov-view-toggle__btn"
@@ -70,26 +70,24 @@
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="work-order-search">Search</label>
+        <label class="sr-only" for="work-order-search">{{ 'web.common.search' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon wo-icon" />
         <input id="work-order-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.common.search' | translate">
       </div>
       <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
     <div class="ov-toolbar__btns">
-      <button type="button" class="ov-btn ov-btn-toolbar"
-        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+      <button type="button" class="ov-btn ov-btn-toolbar">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" class="wo-icon" />
-        Filter
+        {{ 'web.facility.workOrders.filter' | translate }}
       </button>
       <div class="relative" (click)="$event.stopPropagation()" *ngIf="viewMode !== 'board'">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
-          data-tooltip="Columns">
+        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" class="wo-icon" />
-          Column
+          {{ 'web.facility.workOrders.column' | translate }}
         </button>
         <div *ngIf="showColumnDropdown"
           class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -97,7 +95,7 @@
             class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
               class="h-3.5 w-3.5 rounded text-primary">
-            Select All
+            {{ 'web.common.selectAll' | translate }}
           </label>
           <label *ngFor="let col of tableColumns"
             class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
@@ -107,9 +105,9 @@
           </label>
         </div>
       </div>
-      <button type="button" *ngIf="viewMode === 'board'" class="ov-btn ov-btn-toolbar" data-tooltip="Columns">
+      <button type="button" *ngIf="viewMode === 'board'" class="ov-btn ov-btn-toolbar">
         <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" class="wo-icon" />
-        Column
+        {{ 'web.facility.workOrders.column' | translate }}
       </button>
     </div>
   </div>
@@ -171,13 +169,13 @@
                 class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="navigateToDetail(row.code); openActionCode = null">View</button>
+                  (click)="navigateToDetail(row.code); openActionCode = null">{{ 'web.common.view' | translate }}</button>
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="handleEditAction(row); openActionCode = null">Edit</button>
+                  (click)="handleEditAction(row); openActionCode = null">{{ 'web.common.edit' | translate }}</button>
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                  (click)="openActionCode = null">Delete</button>
+                  (click)="openActionCode = null">{{ 'web.common.delete' | translate }}</button>
               </div>
             </div>
           </ng-container>
@@ -270,12 +268,12 @@
 
         <div class="flex flex-col gap-1 border-y border-defaultborder py-2">
           <div class="flex items-center justify-between text-[13px] gap-2">
-            <span class="text-textmuted">Property:</span>
+            <span class="text-textmuted">{{ 'web.facility.workOrders.property' | translate }}:</span>
             <a class="ov-link font-semibold line-clamp-1 text-end max-w-[150px]"
               [routerLink]="['/properties', row.property_code]">{{ row.property }}</a>
           </div>
           <div class="flex items-center justify-between text-[13px] gap-2">
-            <span class="text-textmuted">Unit:</span>
+            <span class="text-textmuted">{{ 'web.facility.workOrders.unit' | translate }}:</span>
             <a class="ov-link font-semibold text-end max-w-[150px]"
               [routerLink]="['/units', row.unit_code]">{{ row.unit }}</a>
           </div>
@@ -283,11 +281,11 @@
 
         <div class="flex flex-col gap-1 text-[12px]">
           <div class="flex justify-between gap-2">
-            <span class="text-textmuted">Vendor:</span>
+            <span class="text-textmuted">{{ 'web.facility.workOrders.vendor' | translate }}:</span>
             <span class="font-medium text-defaulttextcolor">{{ row.vendor_name || '-' }}</span>
           </div>
           <div class="flex justify-between gap-2">
-            <span class="text-textmuted">Responsible:</span>
+            <span class="text-textmuted">{{ 'web.facility.workOrders.responsible' | translate }}:</span>
             <span class="font-medium text-defaulttextcolor">{{ row.responsiblePerson || row.responsible_person || row.responsible_user || '-' }}</span>
           </div>
         </div>
@@ -295,7 +293,7 @@
         <div class="flex items-center justify-between pt-2 border-t border-defaultborder mt-1">
           <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'status_nm') }}</span>
           <button type="button" (click)="handleEditAction(row)" class="ov-icon-btn ov-icon-btn--bare"
-            data-tooltip="Edit">
+            [attr.data-tooltip]="'web.common.edit' | translate">
             <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
           </button>
         </div>
@@ -304,27 +302,27 @@
 
     <div class="flex flex-wrap items-center justify-between gap-3 w-full rounded-xl border border-defaultborder bg-white p-3">
       <div class="flex items-center gap-2">
-        <span class="text-[13px] text-textmuted">Show</span>
+        <span class="text-[13px] text-textmuted">{{ 'web.common.show' | translate }}</span>
         <select class="form-select w-20 !text-[13px] !py-1" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
         </select>
       </div>
 
       <div class="text-[13px] text-textmuted">
-        Showing <strong class="text-defaulttextcolor">{{ startRecord }}</strong>
-        to <strong class="text-defaulttextcolor">{{ endRecord }}</strong>
-        of <strong class="text-defaulttextcolor">{{ totalRecords }}</strong> records
+        {{ 'web.common.showing' | translate }} <strong class="text-defaulttextcolor">{{ startRecord }}</strong>
+        {{ 'web.common.to' | translate }} <strong class="text-defaulttextcolor">{{ endRecord }}</strong>
+        {{ 'web.common.of' | translate }} <strong class="text-defaulttextcolor">{{ totalRecords }}</strong> {{ 'web.common.records' | translate }}
       </div>
 
       <div class="flex items-center gap-2">
         <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 !text-[13px]" (click)="previousPage()"
-          [disabled]="pageNo === 0">Previous</button>
+          [disabled]="pageNo === 0">{{ 'web.common.previous' | translate }}</button>
         <button type="button" *ngFor="let page of pages" class="ov-btn !h-8 !px-3 !text-[13px]"
           [class.ov-btn-primary]="page === pageNo + 1"
           [class.ov-btn-ghost]="page !== pageNo + 1"
           (click)="goToPage(page)">{{ page }}</button>
         <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 !text-[13px]" (click)="nextPage()"
-          [disabled]="pageNo === totalPages - 1">Next</button>
+          [disabled]="pageNo === totalPages - 1">{{ 'web.common.next' | translate }}</button>
       </div>
     </div>
   </div>

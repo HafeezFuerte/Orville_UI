@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-preventive-maintenance-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './preventive-maintenance-list.component.html',
   styleUrl: './preventive-maintenance-list.component.scss'
 })

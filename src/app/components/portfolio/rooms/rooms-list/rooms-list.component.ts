@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +37,7 @@ export interface Room {
 @Component({
   selector: 'app-rooms-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
+  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './rooms-list.component.html',
   styleUrl: './rooms-list.component.scss'
 })

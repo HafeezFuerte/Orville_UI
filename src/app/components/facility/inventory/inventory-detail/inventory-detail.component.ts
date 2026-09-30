@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +18,7 @@ type DetailTab = 'details' | 'lines' | 'attachments' | 'notes';
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, TranslateModule],
   templateUrl: './inventory-detail.component.html',
   styleUrl: './inventory-detail.component.scss'
 })
