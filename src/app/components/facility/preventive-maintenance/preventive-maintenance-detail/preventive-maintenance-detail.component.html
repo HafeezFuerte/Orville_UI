@@ -14,10 +14,10 @@
   </div>
   <div class="td-action relative" (click)="$event.stopPropagation()" *ngIf="activeTab === 'overview'">
     <button *ngIf="ticket.statusid==330 || ticket.statusid==331" type="button" class="ov-btn ov-status--success !h-10 gap-2" (click)="approveRequest(1)">
-      Approve Request
+      {{ 'web.facility.preventiveMaintenance.approveRequest' | translate }}
     </button>
     <button *ngIf="ticket.statusid==330 || ticket.statusid==331" type="button" class="ov-btn ov-status--warning !h-10 gap-2" (click)="approveRequest(0)">
-      Decline Request
+      {{ 'web.facility.preventiveMaintenance.declineRequest' | translate }}
     </button>
 
     <button type="button" class="td-action__btn"
@@ -25,7 +25,7 @@
       (click)="showActionMenu = !showActionMenu"
       aria-haspopup="menu"
       [attr.aria-expanded]="showActionMenu">
-      <span>Action</span>
+      <span>{{ 'web.facility.preventiveMaintenance.action' | translate }}</span>
       <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="14" height="14"
         [class.td-action__chevron--open]="showActionMenu" />
     </button>
@@ -63,7 +63,7 @@
 
       <div class="flex gap-5">
         <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
-          View Activity
+          {{ 'web.facility.preventiveMaintenance.viewActivity' | translate }}
         </button>
         <button type="button" (click)="goEdit()"
           class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor gap-1.5">
@@ -92,7 +92,7 @@
           </div>
           <div>
             <label class="ov-label">Notes*</label>
-            <textarea rows="3" placeholder="Enter" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
+            <textarea rows="3" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
           </div>
           <div>
             <button type="button" (click)="updateticketstaus()" class="ov-btn ov-btn-primary !h-9 !text-[13px]" aria-label="Send">

@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,14 +17,12 @@ type StatusTab = 'All' | QuotationStatus;
 @Component({
   selector: 'app-quotations-list',
   standalone: true,
-  imports: [
-    CommonModule,
+  imports: [CommonModule,
     FormsModule,
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
-  ],
+    ColumnMenuComponent, TranslateModule],
   templateUrl: './quotations-list.component.html',
   styleUrl: './quotations-list.component.scss'
 })

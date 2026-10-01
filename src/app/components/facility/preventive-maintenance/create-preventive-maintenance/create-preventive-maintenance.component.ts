@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowb
 @Component({
   selector: 'app-create-preventive-maintenance',
   standalone: true,
-  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './create-preventive-maintenance.component.html',
   styleUrl: './create-preventive-maintenance.component.scss'
 })

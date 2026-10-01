@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +9,7 @@ import { QUOTATION_FORM_OPTIONS } from '../quotations.data';
 @Component({
   selector: 'app-request-quotation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './request-quotation.component.html',
   styleUrl: './request-quotation.component.scss'
 })

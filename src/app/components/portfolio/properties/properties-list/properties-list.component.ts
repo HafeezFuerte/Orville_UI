@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { portfolioStatusClass } from '../../portfolio-status.util';
 @Component({
   selector: 'app-properties-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
+  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './properties-list.component.html',
   styleUrl: './properties-list.component.scss'
 })

@@ -1,8 +1,8 @@
 import { Component, HostListener,inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component'; 
 import { CommonService } from '../../../services/common.service'; 
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
@@ -20,7 +20,7 @@ type StatusFilter = 'all' | UserStatus;
 @Component({
   selector: 'app-users-and-admins',
   standalone: true,
-  imports: [CommonModule,RouterModule,SharedTableComponent, FormsModule],
+  imports: [CommonModule, RouterModule, SharedTableComponent, FormsModule, TranslateModule],
   templateUrl: './users-and-admins.component.html',
 })
 export class UsersAndAdminsComponent {
@@ -50,16 +50,16 @@ export class UsersAndAdminsComponent {
 
   users: SettingsUserRow[] = [...MOCK_SETTINGS_USERS];
 
-  readonly mainTabs: { id: MainTab; label: string }[] = [
-    { id: 'users', label: 'Users' },
-    { id: 'admins', label: 'Admins' },
-    { id: 'technicians', label: 'Support Technicians' },
+  readonly mainTabs: { id: MainTab; labelKey: string }[] = [
+    { id: 'users', labelKey: 'web.settings.usersAndAdmins.tabUsers' },
+    { id: 'admins', labelKey: 'web.settings.usersAndAdmins.tabAdmins' },
+    { id: 'technicians', labelKey: 'web.settings.usersAndAdmins.tabTechnicians' },
   ];
 
-  readonly statusTabs: { id: StatusFilter; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'active', label: 'Active' },
-    { id: 'blocked', label: 'Blocked' },
+  readonly statusTabs: { id: StatusFilter; labelKey: string }[] = [
+    { id: 'all', labelKey: 'web.settings.usersAndAdmins.statusAll' },
+    { id: 'active', labelKey: 'web.settings.usersAndAdmins.statusActive' },
+    { id: 'blocked', labelKey: 'web.settings.usersAndAdmins.statusBlocked' },
   ];
 
   readonly roleOptions = [
@@ -71,6 +71,13 @@ export class UsersAndAdminsComponent {
     'Support Technician',
   ];
   tableColumns = [
+    { key: 'id', label: 'web.settings.usersAndAdmins.colImage', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.settings.usersAndAdmins.colUserDetails', visible: true, useTemplate: true },
+    { key: 'username', label: 'web.settings.usersAndAdmins.colUsername', visible: true },
+    { key: 'phone', label: 'web.settings.usersAndAdmins.colPhone', visible: true, useTemplate: true },
+    { key: 'role_name', label: 'web.settings.usersAndAdmins.colRole', visible: true },
+    { key: 'assignedUnits', label: 'web.settings.usersAndAdmins.colUnits', visible: true }, 
+    { key: 'action', label: 'web.settings.usersAndAdmins.colActions', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
     { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'name', label: 'User Details', visible: true, useTemplate: true },
     { key: 'username', label: 'web.contacts.lblUsername', visible: true},

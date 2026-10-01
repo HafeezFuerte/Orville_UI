@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { MOCK_ROLES, RoleRow } from './roles-and-permissions.data';
 
 @Component({
   selector: 'app-roles-and-permissions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './roles-and-permissions.component.html',
 })
 export class RolesAndPermissionsComponent {

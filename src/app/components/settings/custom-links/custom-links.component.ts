@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +19,7 @@ type SortDir = 'asc' | 'desc';
 @Component({
   selector: 'app-custom-links',
   standalone: true,
-  imports: [CommonModule, FormsModule, OvPaginatorComponent],
+  imports: [CommonModule, FormsModule, OvPaginatorComponent, TranslateModule],
   templateUrl: './custom-links.component.html',
   styleUrl: './custom-links.component.scss',
 })

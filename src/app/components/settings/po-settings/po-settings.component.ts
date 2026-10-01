@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { DEFAULT_PO_SETTINGS, PoSettingsModel } from './po-settings.data';
 @Component({
   selector: 'app-po-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './po-settings.component.html',
   styleUrl: './po-settings.component.scss',
 })
