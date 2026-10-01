@@ -28,10 +28,13 @@
       <div class="ov-detail-side">
 
         <div class="ov-detail-side__hero ud-hero">
-          <div class="ud-avatar" [style.background]="user.avatarColor" aria-hidden="true">{{ user.initials }}</div>
+          <div class="ud-avatar" *ngIf="user.image_path==null || user.image_path==''" style="background:#6B6B7D" aria-hidden="true">{{ getInitials(user.fullname) }}</div>
+          <div class="ud-avatar" *ngIf="user.image_path!=null && user.image_path!=''" style="background:#6B6B7D" aria-hidden="true">
+            <img [src]="user.image_path" alt="" />
+          </div>
           <div>
-            <h4 class="ov-detail-side__title">{{ user.name }}</h4>
-            <p class="ov-detail-side__email">User #{{ profile.userId }}</p>
+            <h4 class="ov-detail-side__title">{{ user.fullname }}</h4>
+            <p class="ov-detail-side__email">User #{{ user.code }}</p>
           </div>
           <div class="ov-detail-side__actions">
             <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="editUser()">Edit User</button>
@@ -46,7 +49,7 @@
             <h6 class="ov-detail-panel__title">App Login</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value" [title]="user.email">{{ user.email }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value" [title]="user.email_address">{{ user.email_address }}</span></div>
             <div class="ov-kv"><span class="ov-kv__label">Username:</span><span class="ov-kv__value">{{ user.username }}</span></div>
           </div>
         </div>
@@ -56,13 +59,13 @@
             <h6 class="ov-detail-panel__title">Personal Details</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Full Name:</span><span class="ov-kv__value">{{ user.name }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Role:</span><span class="ov-kv__value"><span class="ud-role">{{ user.role }}</span></span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Department:</span><span class="ov-kv__value">{{ profile.department || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Full Name:</span><span class="ov-kv__value">{{ user.fullname }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Role:</span><span class="ov-kv__value"><span class="ud-role">{{ user.role_name }}</span></span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Department:</span><span class="ov-kv__value">{{ user.dept_name || dash }}</span></div>
             <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value">{{ user.phone || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Gender:</span><span class="ov-kv__value">{{ profile.gender || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Nationality:</span><span class="ov-kv__value">{{ profile.nationality || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Languages:</span><span class="ov-kv__value">{{ profile.languages || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Gender:</span><span class="ov-kv__value">{{ user.gender || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Nationality:</span><span class="ov-kv__value">{{ user.country_name || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Languages:</span><span class="ov-kv__value">{{ user.spoken_languages || dash }}</span></div>
           </div>
         </div>
 
@@ -71,9 +74,9 @@
             <h6 class="ov-detail-panel__title">Timeline</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ profile.createdAt }}</span></div>
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ profile.lastUpdatedAt }}</span></div>
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Sign In:</span><span class="ov-kv__value">{{ profile.lastSignInAt }}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ user.created_date | date:'MM-dd-yyyy HH:MM'}}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ user.updated_date | date:'MM-dd-yyyy HH:MM'}}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Sign In:</span><span class="ov-kv__value">{{ user.last_login }}</span></div>
           </div>
         </div>
 

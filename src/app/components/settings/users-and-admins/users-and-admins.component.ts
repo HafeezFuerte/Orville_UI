@@ -76,7 +76,8 @@ export class UsersAndAdminsComponent {
     { key: 'username', label: 'web.contacts.lblUsername', visible: true},
     { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true, useTemplate: true },
     { key: 'role_name', label: 'Role', visible: true },
-    { key: 'assignedUnits', label: 'Last Login', visible: true, useTemplate: true },
+    { key: 'status', label: 'status', visible: true, useTemplate: true },
+    { key: 'last_login_dt', label: 'Last Login', visible: true },
     { key: 'assignedUnits', label: 'web.contacts.lblAssignedUnits', visible: true}, 
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
@@ -91,7 +92,12 @@ export class UsersAndAdminsComponent {
   }
   loadUsers() {
     const filterList: any[] = [];
-   
+    if (this.mainTab && this.mainTab!="users") {
+      filterList.push({ 'key': 'P.role_type', 'value': this.mainTab =="admins" ? "A" : this.mainTab=="technicians" ? "S" :"U" });
+    } 
+    if (this.statusFilter && this.statusFilter!="all") {
+      filterList.push({ 'key': 'P.is_active', 'value': this.statusFilter =="active" ? 1 : 0 });
+    } 
     const payload = {
       userid: this.currentUser?.userId,
       company_id: this.currentUser?.companyId,
@@ -210,7 +216,14 @@ export class UsersAndAdminsComponent {
     this.mainTab = tab;
     this.statusFilter = 'all';
     this.roleFilter = '';
-    this.searchQuery = '';
+    this.searchQuery = ''; 
+    this.pageNo = 0;
+    this.loadUsers();
+  }
+  setStatusTab(tab: StatusFilter): void {
+    this.statusFilter = tab; 
+    this.pageNo = 0;
+    this.loadUsers();
   }
  
   get displayPage(): number {
@@ -291,7 +304,7 @@ export class UsersAndAdminsComponent {
   statusLabel(row: any): string {
     return this.commonservice.getArabicLookupName(row, 'status') || row?.status || '-';
   }
-
+  
   isActiveStatus(row: any): boolean {
     return (this.statusLabel(row) || '').toLowerCase() === 'active';
   }

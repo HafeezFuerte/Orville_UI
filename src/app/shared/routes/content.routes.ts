@@ -220,7 +220,14 @@ export const content: Routes = [
               ),
           },
           {
-            path: ':id',
+            path: 'edit/:code',
+            loadComponent: () =>
+              import('../../components/settings/users-and-admins/user-add.component').then(
+                (m) => m.UserAddComponent
+              ),
+          },
+          {
+            path: ':code',
             loadComponent: () =>
               import('../../components/settings/users-and-admins/user-detail.component').then(
                 (m) => m.UserDetailComponent

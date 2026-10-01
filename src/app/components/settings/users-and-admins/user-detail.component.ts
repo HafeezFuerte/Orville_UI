@@ -6,6 +6,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { SettingsUserRow } from './users-and-admins.data';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../services/common.service';
 import {
   FAHAD_DETAIL,
   USER_ASSIGNED_PROPERTIES,
@@ -35,7 +37,7 @@ export class UserDetailComponent implements OnInit {
   activeTab: UserDetailTab = 'units';
   showActions = false;
 
-  user: SettingsUserRow = FAHAD_DETAIL;
+  user: any ={};
   profile: UserDetailProfile = getUserDetailProfile(FAHAD_DETAIL.id);
 
   unitSearch = '';
@@ -47,13 +49,14 @@ export class UserDetailComponent implements OnInit {
   selectedPropertyIds = new Set<string>();
   selectedReportIds = new Set<string>();
 
+  editId:any='';
   pageNo = 0;
   pageSize = 10;
   pageSizeOptions = [10, 20, 25, 50];
   loginPageNo = 0;
   loginPageSize = 20;
 
-  private units: UserAssignedUnit[] = [...USER_ASSIGNED_UNITS];
+  private units: any=[];
   private properties: UserAssignedProperty[] = [...USER_ASSIGNED_PROPERTIES];
   private reports: UserAssignedReport[] = [...USER_ASSIGNED_REPORTS];
   private logins: UserLoginRow[] = [...USER_LOGIN_HISTORY];
@@ -86,16 +89,66 @@ export class UserDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private commontabservice:Common_TabsService,
+    private commonservice: CommonService
   ) {}
 
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
+  }
+  getUserDetails(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) {  
+          var temp=res.objResult.table[0] || {}; 
+          if(temp){
+            this.user= temp;
+          }
+         
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {  
+          (this as any)[targetProperty] = res.objResult.table;
+        }
+        
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    const found = findSettingsUser(id);
-    if (found) {
-      this.user = found;
-      this.profile = getUserDetailProfile(found.id);
-    }
+     
+    this.route.paramMap.subscribe((params) => {
+      this.editId=params.get('code'); 
+      if(this.editId)
+      this.getUserDetails(91,0, '', this.editId);
+    });  
+    this.loadLookup(70,2,'units','');
   }
 
   get dash(): string {
@@ -124,7 +177,7 @@ export class UserDetailComponent implements OnInit {
       return this.units;
     }
     return this.units.filter(
-      (r) =>
+      (r:any) =>
         r.unit.toLowerCase().includes(q) ||
         r.property.toLowerCase().includes(q) ||
         r.landlords.toLowerCase().includes(q)
@@ -273,7 +326,7 @@ export class UserDetailComponent implements OnInit {
 
   unassignAction(kind: 'units' | 'properties' | 'reports'): void {
     if (kind === 'units' && this.hasUnitSelection) {
-      this.units = this.units.filter((u) => !this.selectedUnitIds.has(u.id));
+      this.units = this.units.filter((u:any) => !this.selectedUnitIds.has(u.id));
       this.selectedUnitIds.clear();
       this.toastr.success('Selected units unassigned (presentation).', 'User Details');
       return;
