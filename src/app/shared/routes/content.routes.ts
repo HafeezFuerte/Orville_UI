@@ -252,6 +252,13 @@ export const content: Routes = [
                 (m) => m.RoleAddComponent
               ),
           },
+          {
+            path: ':code',
+            loadComponent: () =>
+              import('../../components/settings/roles-and-permissions/role-add.component').then(
+                (m) => m.RoleAddComponent
+              ),
+          },
         ],
       },
       {

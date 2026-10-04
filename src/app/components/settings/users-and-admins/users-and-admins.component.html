@@ -39,9 +39,7 @@
           *ngFor="let tab of statusTabs"
           class="ov-seg__btn"
           [class.is-active]="statusFilter === tab.id"
-          (click)="setStatusTab(tab.id)" >
-          {{ tab.label }}
-          (click)="statusFilter = tab.id">
+          (click)="setStatusTab(tab.id)" >  
           {{ tab.labelKey | translate }}
         </button>
       </div>
@@ -75,39 +73,10 @@
           [(ngModel)]="searchQuery" />
       </label>
 
-      <div class="ov-select" (click)="$event.stopPropagation()">
-        <button
-          type="button"
-          class="ov-select__trigger"
-          [class.is-open]="isRoleDropdownOpen"
-          (click)="isRoleDropdownOpen = !isRoleDropdownOpen"
-          aria-haspopup="listbox"
-          [attr.aria-expanded]="isRoleDropdownOpen">
-          <span [class.ov-select__placeholder]="!roleFilter">{{ roleFilter || ('web.settings.usersAndAdmins.roleFilter' | translate) }}</span>
-          <img
-            src="./assets/images/settings/chevron-down.svg"
-            alt=""
-            width="12"
-            height="12"
-            class="ov-select__chevron" />
-        </button>
-        <div *ngIf="isRoleDropdownOpen" class="ov-select__menu" role="listbox">
-          <button
-            type="button"
-            class="ov-select__option"
-            [class.is-selected]="roleFilter === ''"
-            (click)="roleFilter = ''; isRoleDropdownOpen = false">
-            {{ 'web.settings.usersAndAdmins.roleFilter' | translate }}
-          </button>
-          <button
-            type="button"
-            class="ov-select__option"
-            *ngFor="let r of roleOptions"
-            [class.is-selected]="roleFilter === r"
-            (click)="roleFilter = r; isRoleDropdownOpen = false">
-            {{ r }}
-          </button>
-        </div>
+      <div class="ov-select" style="width:360px;" (click)="$event.stopPropagation()">
+        <ng-select [(ngModel)]="roleFilter" [items]="roleOptions" (change)="filterByRole()"  [clearable]="true"
+        placeholder="Select role" bindValue="code" bindLabel="name" class="ng-select-sm" appendTo="body"></ng-select>
+
       </div>
     </div>
 

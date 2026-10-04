@@ -53,7 +53,13 @@
           This is a protected system role. Permissions are read-only.
         </p>
       </div>
-
+      <div class="flex min-w-0 flex-1 flex-col gap-2 sm:max-w-md">
+        <label class="text-sm font-medium text-textmuted" for="rp-name">
+          Role Type <span class="text-danger">*</span>
+        </label>
+        <ng-select [(ngModel)]="roleFilter" [items]="roleOptions"  [clearable]="true"
+        placeholder="Select role" bindValue="code" bindLabel="name" class="ng-select-sm" appendTo="body"></ng-select>
+      </div>
       <div class="flex flex-wrap items-center gap-3">
         <span
           class="inline-flex items-center rounded-lg bg-[#eeeef5] px-3 py-1.5 text-xs font-medium text-primary dark:bg-white/10 dark:text-white">
@@ -83,7 +89,7 @@
       class="flex flex-col overflow-hidden rounded-xl border border-defaultborder bg-white dark:bg-bodybg">
       <div
         class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder bg-bodybg px-4 py-3 dark:bg-white/5">
-        <h2 class="m-0 text-sm font-semibold text-defaulttextcolor">{{ cat.name }}</h2>
+        <h2 class="m-0 text-sm font-semibold text-defaulttextcolor">{{ cat.MenuName }}</h2>
         <label
           class="inline-flex cursor-pointer items-center gap-2"
           [class.cursor-not-allowed]="isSystem"
@@ -94,7 +100,7 @@
             [checked]="categoryAllSelected(cat)"
             [indeterminate]="categorySomeSelected(cat)"
             [disabled]="isSystem"
-            [attr.aria-label]="'Select all ' + cat.name"
+            [attr.aria-label]="'Select all ' + cat.MenuName"
             (change)="toggleCategoryAll(cat)" />
           <span class="text-xs font-semibold text-textmuted">Select All</span>
         </label>
@@ -102,17 +108,17 @@
 
       <div class="grid grid-cols-1 gap-2.5 p-4 sm:grid-cols-2">
         <label
-          *ngFor="let p of cat.permissions"
+          *ngFor="let p of cat.Actions"
           class="inline-flex cursor-pointer items-start gap-2.5 rounded-lg border border-transparent px-2 py-1.5 transition-colors hover:border-defaultborder hover:bg-bodybg"
           [class.cursor-not-allowed]="isSystem"
           [class.opacity-60]="isSystem">
           <input
             type="checkbox"
             class="form-checkbox mt-0.5 h-4 w-4 shrink-0 rounded border-defaultborder text-primary"
-            [checked]="isChecked(cat.id, p.id)"
+            [checked]="isChecked(cat.MenuId, p.Key)"
             [disabled]="isSystem"
-            (change)="toggle(cat.id, p.id)" />
-          <span class="text-sm font-medium leading-snug text-defaulttextcolor">{{ p.label }}</span>
+            (change)="toggle(cat.MenuId, p.Key)" />
+          <span class="text-sm font-medium leading-snug text-defaulttextcolor">{{ p.Label }}</span>
         </label>
       </div>
     </section>

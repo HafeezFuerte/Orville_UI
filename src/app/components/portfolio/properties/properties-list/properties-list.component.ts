@@ -9,7 +9,7 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PropertiesService } from '../../services/properties.service';
 import { PortfolioService } from '../../services/portfolio.service';
-
+import { CommonService } from '../../../../services/common.service';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
 
@@ -26,7 +26,7 @@ export class PropertiesListComponent implements OnInit {
   categoryFilter: 'All' | 'Units' | 'Rooms' = 'All';
   searchQuery: string = '';
   showColumnDropdown = false;
-
+  currentUser = this.commonservice.getCurrentUser();
   // Advanced Filters & Drawer States
   isDrawerOpen: boolean = false;
   selectedType: string | null = null;
@@ -88,7 +88,8 @@ export class PropertiesListComponent implements OnInit {
   constructor(
     public translate: TranslateService,
     private propertiesService: PropertiesService,
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
+    private commonservice:CommonService
   ) {}
 
   getArabicLookupName(row: any, key: string): string {
@@ -158,9 +159,9 @@ private loadMetrics(
 
   loadProperties(append = false): void {
     const payload = {
-      userid: 1,
-      company_id: 1,
-      clientId: "74BB6922",
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
       source: 'web',
       languageid: 1,
       page_no: this.pageNo,

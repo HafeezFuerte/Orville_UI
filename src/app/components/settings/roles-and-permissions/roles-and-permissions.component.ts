@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MOCK_ROLES, RoleRow } from './roles-and-permissions.data';
-
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-roles-and-permissions',
   standalone: true,
@@ -13,20 +15,47 @@ import { MOCK_ROLES, RoleRow } from './roles-and-permissions.data';
 })
 export class RolesAndPermissionsComponent {
   searchQuery = '';
-  roles: RoleRow[] = [...MOCK_ROLES];
-
-  constructor(private router: Router) {}
-
-  get filteredRoles(): RoleRow[] {
+  roles: any=[];
+  froles: any=[];
+  constructor(private router: Router,private commontabservice: Common_TabsService,private toastr:ToastrService) {}
+  ngOnInit() { 
+    this.loadLookup(42,0,'roles','');  
+  }
+  filteredRoles() {
     const q = this.searchQuery.trim().toLowerCase();
     if (!q) {
-      return this.roles;
+      this.roles = this.froles;
     }
-    return this.roles.filter((r) => r.name.toLowerCase().includes(q));
+    this.roles = this.froles.filter((r:any) => r.name.toLowerCase().includes(q));
   }
-
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {   
+          if(Typeid==96){
+            this.toastr.show("Deleted Successfully"); 
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          }
+          else{
+            (this as any)[targetProperty] = res.objResult.table; 
+            this.froles=this.roles;
+          }
+        } 
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   get countLabel(): string {
-    const n = this.filteredRoles.length;
+    const n = this.roles.length;
     return `${n} role${n === 1 ? '' : 's'}`;
   }
 
@@ -34,16 +63,14 @@ export class RolesAndPermissionsComponent {
     this.router.navigate(['/settings/roles-and-permissions/new']);
   }
 
-  openEdit(row: RoleRow): void {
-    this.router.navigate(['/settings/roles-and-permissions/new'], {
-      queryParams: { id: row.id },
-    });
+  openEdit(row: any): void {
+    this.router.navigate(['/settings/roles-and-permissions', row.rcode]);
   }
 
-  deleteRole(row: RoleRow): void {
-    if (row.system || row.userCount > 0) {
+  deleteRole(row: any): void {
+    if (row.issystem_role || row.users > 0) {
       return;
     }
-    this.roles = this.roles.filter((r) => r.id !== row.id);
+    this.loadLookup(96,0,'',row.rcode);  
   }
 }

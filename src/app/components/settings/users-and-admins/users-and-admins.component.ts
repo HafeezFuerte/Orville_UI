@@ -7,6 +7,7 @@ import { SharedTableComponent } from '../../../shared/components/shared-table/sh
 import { CommonService } from '../../../services/common.service'; 
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { NgSelectModule } from '@ng-select/ng-select';
 import {
   MOCK_SETTINGS_USERS,
   SettingsUserRow,
@@ -20,7 +21,7 @@ type StatusFilter = 'all' | UserStatus;
 @Component({
   selector: 'app-users-and-admins',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedTableComponent, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule,NgSelectModule, SharedTableComponent, FormsModule, TranslateModule],
   templateUrl: './users-and-admins.component.html',
 })
 export class UsersAndAdminsComponent {
@@ -62,27 +63,14 @@ export class UsersAndAdminsComponent {
     { id: 'blocked', labelKey: 'web.settings.usersAndAdmins.statusBlocked' },
   ];
 
-  readonly roleOptions = [
-    'Collector',
-    'Inspector',
-    'Manager',
-    'Accountant',
-    'Admin',
-    'Support Technician',
-  ];
+  roleOptions:any=[];
   tableColumns = [
+    
     { key: 'id', label: 'web.settings.usersAndAdmins.colImage', visible: true, useTemplate: true },
     { key: 'name', label: 'web.settings.usersAndAdmins.colUserDetails', visible: true, useTemplate: true },
-    { key: 'username', label: 'web.settings.usersAndAdmins.colUsername', visible: true },
+    { key: 'username', label: 'web.settings.usersAndAdmins.colUsername', visible: true},
     { key: 'phone', label: 'web.settings.usersAndAdmins.colPhone', visible: true, useTemplate: true },
     { key: 'role_name', label: 'web.settings.usersAndAdmins.colRole', visible: true },
-    { key: 'assignedUnits', label: 'web.settings.usersAndAdmins.colUnits', visible: true }, 
-    { key: 'action', label: 'web.settings.usersAndAdmins.colActions', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
-    { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
-    { key: 'name', label: 'User Details', visible: true, useTemplate: true },
-    { key: 'username', label: 'web.contacts.lblUsername', visible: true},
-    { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true, useTemplate: true },
-    { key: 'role_name', label: 'Role', visible: true },
     { key: 'status', label: 'status', visible: true, useTemplate: true },
     { key: 'last_login_dt', label: 'Last Login', visible: true },
     { key: 'assignedUnits', label: 'web.contacts.lblAssignedUnits', visible: true}, 
@@ -93,9 +81,26 @@ export class UsersAndAdminsComponent {
     return this.tableColumns.filter(col => col.visible !== false);
   }
   constructor() {}
-  ngOnInit() {
-    
-    this.loadUsers();   
+  ngOnInit() { 
+    this.loadLookup(42,0,'roleOptions',''); 
+     this.loadUsers();   
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {  
+          (this as any)[targetProperty] = res.objResult.table; 
+        } 
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
   }
   loadUsers() {
     const filterList: any[] = [];
@@ -104,6 +109,9 @@ export class UsersAndAdminsComponent {
     } 
     if (this.statusFilter && this.statusFilter!="all") {
       filterList.push({ 'key': 'P.is_active', 'value': this.statusFilter =="active" ? 1 : 0 });
+    } 
+    if (this.roleFilter && this.roleFilter!="") {
+      filterList.push({ 'key': 'P.role_type', 'value': this.roleFilter });
     } 
     const payload = {
       userid: this.currentUser?.userId,
@@ -141,6 +149,9 @@ export class UsersAndAdminsComponent {
         this.totalPages = 0;
       }
     });
+  }
+  filterByRole(){
+    this.loadUsers();
   }
   get pagerItems(): (number | string)[] {
     const total = this.totalPages || 1;
@@ -299,9 +310,7 @@ export class UsersAndAdminsComponent {
  
   }
   openNew(): void {
-    this.router.navigate(['/settings/users-and-admins/new'], {
-      queryParams: { type: this.kindForTab },
-    });
+    this.router.navigate(['/settings/users-and-admins/new']);
   }
   toggleRowAction(code: string | number, event: Event): void {
     event.stopPropagation(); 
