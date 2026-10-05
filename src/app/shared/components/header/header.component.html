@@ -4,6 +4,18 @@
     <div class="main-header-container ps-[0.725rem] pe-[1rem] ">
 
       <div class="header-content-left">
+        <!-- Mobile (<768px) top bar: hamburger + centered logo -->
+        <button type="button" class="orville-m-burger" aria-label="Open menu" (click)="toggleSidebar()">
+          <span></span><span></span><span></span>
+        </button>
+        <a routerLink="/dashboard/crm" class="orville-m-logo" aria-label="Orville Real Estate">
+          <img src="./assets/images/nav/logo-emblem.svg" alt="" class="orville-m-logo__emblem" width="30" height="30">
+          <span class="orville-m-logo__wordmark">
+            <img src="./assets/images/nav/logo-orville.svg" alt="ORVILLE" width="63" height="12">
+            <img src="./assets/images/nav/logo-real-estate.svg" alt="REAL ESTATE" width="63" height="3">
+          </span>
+        </a>
+
         <!-- Start::header-element -->
         <div class="header-element">
           <div class="horizontal-logo">
@@ -503,6 +515,11 @@
 
         <div class="orville-header-divider hidden md:block"></div>
 
+        <!-- Mobile (<768px) top bar actions -->
+        <button type="button" class="orville-m-action" aria-label="Search" data-hs-overlay="#search-modal">
+          <img src="./assets/images/mobile-chrome/search.svg" alt="" width="20" height="20">
+        </button>
+
         <!-- Header Profile -->
         <div
           class="header-element hs-dropdown !items-center ti-dropdown [--placement:bottom-left]">
@@ -511,9 +528,10 @@
             class="hs-dropdown-toggle orville-profile-trigger ti-dropdown-toggle !p-0 !border-0 !shadow-none !bg-transparent">
             <span class="inline-flex items-center gap-[11px]">
               <span *ngIf="currentUser?.userName"
-                class="inline-flex items-center justify-center rounded-full bg-primary text-white font-semibold"
+                class="orville-avatar inline-flex items-center justify-center rounded-full bg-primary text-white font-semibold"
                 style="width: 32px; height: 32px;">
-                {{ currentUser?.userName?.charAt(0)?.toUpperCase() }}
+                <span class="orville-avatar__letter">{{ currentUser?.userName?.charAt(0)?.toUpperCase() }}</span>
+                <span class="orville-avatar__initials">{{ userInitials }}</span>
               </span>
               <span class="orville-profile-meta hidden sm:flex">
                 <span class="orville-profile-name">{{ currentUser?.userName }}</span>

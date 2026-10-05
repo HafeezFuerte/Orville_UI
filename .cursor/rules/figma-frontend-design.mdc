@@ -1,9 +1,24 @@
 ---
-description: Figma-driven frontend design — check frame first, no visual drift, no backend, preserve labels, protect Ynex theme switcher
+description: Orville shared-memory protocol (AGENTS.md + .ai/) and Figma-driven frontend rules — check frame first, no visual drift, no backend, preserve labels, protect Ynex theme switcher
 alwaysApply: true
 ---
 
 # Orville UI — Figma Frontend Implementation
+
+## Shared project memory — read first
+
+- Before meaningful work, read `AGENTS.md` and follow its shared-memory protocol (startup + completion steps).
+- The `.ai/` directory contains shared project memory used by Cursor, Claude Code, Codex, and other agents:
+  `PROJECT.md`, `RULES.md`, `CURRENT_STATE.md`, `HANDOFF.md`, `DECISIONS.md`, `TASKS.md`, `CHANGELOG.md`.
+- Do not treat Cursor plans or transcripts as authoritative project memory. Cursor plans may be used for
+  temporary planning, but important decisions, current state, pending tasks and handoff information MUST be
+  written into `.ai/`. A plan that exists only in the machine-local Cursor folder is not project memory.
+- After meaningful work, update the shared memory files required by `AGENTS.md`
+  (`.ai/HANDOFF.md`, `.ai/TASKS.md`, `.ai/CHANGELOG.md`, plus `.ai/CURRENT_STATE.md` / `.ai/DECISIONS.md` when relevant).
+- Priority: user instruction > `AGENTS.md` > `.ai/RULES.md` > `.ai/DECISIONS.md` > `.ai/PROJECT.md` >
+  `.ai/CURRENT_STATE.md` > `.ai/HANDOFF.md` > this rule > private agent memory.
+- The Figma/frontend rules below mirror `.ai/RULES.md` and remain fully in force. If they ever differ,
+  `.ai/RULES.md` wins — update this mirror rather than weakening either copy.
 
 Apply these rules on every Figma-driven UI change in this Angular (Ynex) project. Follow this rule **strictly** for all future page/section UI work.
 

@@ -1,10 +1,20 @@
 # Orville UI — Claude Code
 
-Before any UI work, read and follow:
+**Start with [`AGENTS.md`](./AGENTS.md).** It is the universal entry point for all agents and
+defines the shared-memory startup and completion protocol. Project truth lives in the
+Git-tracked [`.ai/`](./.ai/) directory, not in Claude account memory or local Claude
+memory. Do not keep a separate Claude-only version of project knowledge.
 
-1. **[HANDOFF.md](./HANDOFF.md)** — full project context, what is already built, Figma nodes, routes, DS, pitfalls, and how this user works.
-2. **[`.cursor/rules/figma-frontend-design.mdc`](./.cursor/rules/figma-frontend-design.mdc)** — hard rules: Figma first, frontend only, keep labels, protect theme switcher.
+Load order: `CLAUDE.md` → `AGENTS.md` → `.ai/PROJECT.md`, `.ai/RULES.md`,
+`.ai/CURRENT_STATE.md`, `.ai/HANDOFF.md`, relevant `.ai/DECISIONS.md` / `.ai/TASKS.md`.
 
-If those two files conflict with a one-off user message, the **user message for this turn wins**, then HANDOFF, then the Cursor rule.
+@AGENTS.md
 
-Do not start implementing a screen without a Figma `node-id` (ask if missing). Do not call APIs or change backend contracts.
+## Claude-specific notes
+
+- Start Claude Code **from this repository root** so this file loads at startup. (Older Claude
+  settings live one level up in `../.claude/`, outside the repo.)
+- If Claude auto-memory or `/memory` notes conflict with `.ai/`, the repository wins. Promote anything
+  durable you learn into `.ai/` instead of private memory.
+- Figma MCP: load the design-to-code skill before `get_design_context`; save assets into `src/assets/`.
+- The legacy Claude handoff is archived at `.ai/archive/HANDOFF-legacy-2026-08.md` (read-only reference).

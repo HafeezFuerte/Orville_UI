@@ -4,11 +4,12 @@ import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../shared.module';
+import { MobileBottomNavComponent } from '../../components/mobile-bottom-nav/mobile-bottom-nav.component';
 
 @Component({
     selector: 'app-content-layout',
     standalone: true,
-    imports: [CommonModule, RouterModule, SharedModule],
+    imports: [CommonModule, RouterModule, SharedModule, MobileBottomNavComponent],
     templateUrl: './content-layout.component.html',
     styleUrl: './content-layout.component.scss',
 })

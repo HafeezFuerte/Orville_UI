@@ -9,6 +9,7 @@ import { CommonService } from '../../../services/common.service';
 import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../../../components/common/store/login-auth-params/auth.selectors';
 import { buildFigmaSettingsMenuItems } from '../../../components/settings/settings-menu.data';
+import { HeaderScopeService } from '../../services/header-scope.service';
 interface PageMenu {
   menuID: number;
   menuName: string;
@@ -109,10 +110,19 @@ export class SidebarComponent {
     public router: Router,
     public renderer: Renderer2,
     private elementRef: ElementRef,
-    private store: Store
+    private store: Store,
+    public scope: HeaderScopeService
 
   ) {
     this.screenWidth = window.innerWidth;
+    if (this.screenWidth < 768 && !document.documentElement.hasAttribute('data-toggled')) {
+      document.documentElement.setAttribute('data-toggled', 'close');
+    }
+  }
+
+  closeMobileDrawer() {
+    document.documentElement.setAttribute('data-toggled', 'close');
+    document.querySelector('#responsive-overlay')?.classList.remove('active');
   }
 
  

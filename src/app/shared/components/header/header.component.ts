@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Common_TabsService } from '../../../components/portfolio/services/common_tabs.service';
 import { AuthPayload } from '../../../components/common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
+import { HeaderScopeService } from '../../services/header-scope.service';
 interface Item {
   id: number;
   name: string;
@@ -20,10 +21,21 @@ interface Item {
 })
 
 export class HeaderComponent {
-  branches: string[] = ['Main Branch', 'Downtown Branch', 'Dubai Marina Branch', 'Business Bay Branch'];
-  buildings: any[] = [];
-  selectedBranch: string | null = null;
-  selectedBuilding: string | null = null;
+  get branches(): string[] { return this.scope.branches; }
+  get buildings(): any[] { return this.scope.buildings; }
+  set buildings(value: any[]) { this.scope.buildings = value; }
+  get selectedBranch(): string | null { return this.scope.selectedBranch; }
+  set selectedBranch(value: string | null) { this.scope.selectedBranch = value; }
+  get selectedBuilding(): string | null { return this.scope.selectedBuilding; }
+  set selectedBuilding(value: string | null) { this.scope.selectedBuilding = value; }
+
+  get userInitials(): string {
+    const name = (this.currentUser?.userName ?? '').trim();
+    if (!name) { return ''; }
+    const parts = name.split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : name.slice(0, 2);
+    return initials.toUpperCase();
+  }
 
   cartItemCount: number = 5;
   public isCollapsed = true;
@@ -109,7 +121,8 @@ export class HeaderComponent {
     private router: Router,
     private translate: TranslateService,
     private commontabservice:Common_TabsService,
-    private commonservice:CommonService
+    private commonservice:CommonService,
+    private scope: HeaderScopeService
   ) {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     this.selectedLanguage = this.languages.find(l => l.code === savedLang) || this.languages[0];

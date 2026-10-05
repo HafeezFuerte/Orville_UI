@@ -230,7 +230,7 @@
 }
 
 .ov-notify-item--unread {
-  background: rgb(var(--primary-rgb) / 0.045);
+  background: rgb(var(--primary) / 0.045);
 }
 
 .ov-notify-item--unread .ov-notify-item__title {
@@ -256,7 +256,7 @@
 }
 
 .ov-notify-item__icon[data-tone="primary"] {
-  background: rgb(var(--primary-rgb) / 0.1);
+  background: rgb(var(--primary) / 0.1);
   color: rgb(var(--primary));
 }
 
@@ -824,5 +824,218 @@
 @media (max-width: 767px) {
   .orville-header-divider {
     display: none;
+  }
+}
+
+/* ---- Mobile top bar (Figma "Chrome / Mobile Top bar" 6122:455) — phones only ---- */
+.orville-m-burger,
+.orville-m-logo,
+.orville-m-action,
+.orville-avatar__initials {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  :host .app-header {
+    height: 56px;
+    border-bottom: 1px solid rgb(var(--default-border));
+  }
+
+  .main-header {
+    height: 56px !important;
+  }
+
+  :host-context(html:not(.dark)[data-header-styles='light']) .app-header {
+    background: #fff !important;
+  }
+
+  .main-header-container {
+    height: 56px;
+    padding: 10px 16px !important;
+  }
+
+  .header-content-left {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Desktop/tablet header pieces the mobile bar replaces */
+  .header-content-left > .header-element,
+  .header-content-right > .header-element:not(.hs-dropdown),
+  .header-content-right > .header-fullscreen,
+  .header-content-right > .header-element.header-country {
+    display: none !important;
+  }
+
+  /* Order: search, notifications, profile */
+  .header-content-right > * {
+    order: 3;
+  }
+
+  .header-content-right > .orville-m-action {
+    order: 1;
+  }
+
+  .header-content-right > .header-element.header-notification {
+    display: flex !important;
+    order: 2;
+  }
+
+  .header-notification .orville-notify-wrap {
+    width: 40px;
+    height: 40px;
+    align-items: center;
+  }
+
+  .header-notification .orville-icon-btn {
+    border: 0 !important;
+    border-radius: 20px;
+    background-color: rgb(var(--body-bg)) !important;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .header-notification .orville-notify-badge {
+    top: -4px;
+    left: auto;
+    right: -4px;
+  }
+
+  /* Notification panel: full-width sheet under the 56px top bar, above the 64px bottom nav */
+  .header-notification .ov-notify-panel.main-header-dropdown {
+    position: fixed !important;
+    inset: 64px 12px auto 12px !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none;
+    max-height: calc(100vh - 140px - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 140px - env(safe-area-inset-bottom, 0px));
+    margin: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  .header-notification .ov-notify-panel__head {
+    padding: 12px 16px;
+  }
+
+  .header-notification .ov-notify-panel__list#header-notification-scroll {
+    max-height: none;
+    padding: 6px;
+  }
+
+  .header-notification .ov-notify-item {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .header-notification .ov-notify-item__close {
+    opacity: 1;
+  }
+
+  .header-notification .ov-notify-panel__foot {
+    padding: 12px 16px;
+  }
+
+  .orville-m-burger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 24px;
+    height: 24px;
+    padding: 5px 0 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    span {
+      display: block;
+      width: 16px;
+      height: 2px;
+      border-radius: 1px;
+      background: rgb(var(--default-text-color));
+    }
+  }
+
+  .orville-m-logo {
+    display: flex;
+    align-items: center;
+    gap: 2.56px;
+    margin-inline: auto;
+  }
+
+  .orville-m-logo__emblem {
+    width: 30px;
+    height: 30px;
+    display: block;
+  }
+
+  .orville-m-logo__wordmark {
+    display: grid;
+    gap: 4px;
+
+    img {
+      display: block;
+      width: 63px;
+      height: auto;
+    }
+  }
+
+  .header-content-right {
+    gap: 8px;
+  }
+
+  .orville-m-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 20px;
+    background: rgb(var(--body-bg));
+    cursor: pointer;
+
+    img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+  }
+
+  .orville-avatar__letter {
+    display: none;
+  }
+
+  .orville-avatar__initials {
+    display: inline;
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+:host-context(.dark),
+:host-context([data-header-styles='dark']) {
+  .orville-m-action {
+    background: rgb(255 255 255 / 0.08);
+
+    img {
+      filter: brightness(2);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .header-notification .orville-icon-btn {
+      background-color: rgb(255 255 255 / 0.08) !important;
+
+      img {
+        filter: brightness(2);
+      }
+    }
   }
 }

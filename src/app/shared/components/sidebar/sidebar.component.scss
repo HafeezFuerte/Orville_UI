@@ -1047,3 +1047,185 @@
     padding: 8px;
   }
 }
+
+/* ---- Mobile menu drawer (Figma "Mobile Menu / Drawer" 6959:10394) — phones only ---- */
+.orville-drawer-top {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  :host .app-sidebar {
+    width: 300px !important;
+  }
+
+  .orville-drawer-top {
+    display: block;
+    flex: 0 0 auto;
+    padding: 16px 12px 0;
+  }
+
+  .orville-drawer-top__head {
+    display: flex;
+    align-items: center;
+    padding-bottom: 12px;
+  }
+
+  .orville-drawer-top__brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: rgb(var(--orville-accent));
+    font-size: 13px;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  .orville-drawer-top__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid rgb(var(--default-border));
+    border-radius: 999px;
+    background: #fff;
+    color: rgb(var(--text-muted));
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .orville-drawer-top__scope {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 12px;
+  }
+
+  .orville-drawer-select {
+    width: 100%;
+
+    ::ng-deep .ng-select-container {
+      min-height: 40px !important;
+      height: 40px;
+      padding-inline: 16px 12px;
+      border-radius: 8px !important;
+      border-color: rgb(var(--default-border)) !important;
+      background-color: #fff !important;
+    }
+
+    &.ng-select:not(.w-16):not(.w-20) ::ng-deep > .ng-select-container .ng-value-container {
+      padding-left: 0 !important;
+    }
+
+    ::ng-deep .ng-placeholder,
+    ::ng-deep .ng-value-label {
+      font-size: 14px;
+      color: rgb(var(--text-muted));
+    }
+  }
+
+  .orville-create-wrap {
+    padding: 0 12px;
+  }
+
+  .orville-create-btn {
+    height: auto;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  :host ::ng-deep {
+    .main-menu {
+      padding: 14px 12px 24px !important;
+    }
+
+    .main-menu > .slide {
+      padding: 0 !important;
+    }
+
+    .main-menu > .slide + .slide {
+      margin-top: 2px !important;
+    }
+
+    .main-menu > .slide > .side-menu__item {
+      min-height: 40px;
+      height: auto;
+      gap: 10px;
+      padding: 10px 12px !important;
+      border-radius: 8px;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      color: rgb(var(--default-text-color)) !important;
+
+      .side-menu__label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        line-height: normal !important;
+        color: inherit !important;
+      }
+
+      .orville-nav-icon {
+        width: 20px;
+        height: 20px;
+        margin-inline-end: 0;
+        color: inherit !important;
+      }
+
+      .side-menu__angle {
+        color: rgb(var(--text-muted)) !important;
+      }
+    }
+
+    /* Figma drawer active row: grey pill, gold label + icon, no edge bar */
+    .main-menu > .slide > .side-menu__item.active,
+    .main-menu > .slide.active > .orville-parent-item,
+    .orville-parent-item.active {
+      color: rgb(var(--orville-accent)) !important;
+      font-weight: 600 !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      .side-menu__label,
+      .orville-nav-icon,
+      .side-menu__icon {
+        color: rgb(var(--orville-accent)) !important;
+        fill: rgb(var(--orville-accent)) !important;
+        font-weight: 600 !important;
+      }
+    }
+
+    .orville-nav-heading-slide {
+      margin-top: 0 !important;
+      padding-top: 10px !important;
+    }
+
+    .orville-nav-heading {
+      padding: 6px 0 2px;
+    }
+
+    .orville-nav-heading__label {
+      color: rgb(var(--text-muted));
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  :host-context(.dark) {
+    .orville-drawer-top__close,
+    .orville-drawer-select ::ng-deep .ng-select-container {
+      background: rgb(var(--body-bg)) !important;
+      border-color: rgb(255 255 255 / 0.12) !important;
+    }
+  }
+}

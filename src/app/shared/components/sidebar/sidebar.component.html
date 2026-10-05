@@ -12,6 +12,30 @@
     </a>
   </div>
 
+  <!-- Mobile (<768px) drawer top: brand + close + branch/building (Figma "Mobile Menu / Drawer") -->
+  <div class="orville-drawer-top">
+    <div class="orville-drawer-top__head">
+      <span class="orville-drawer-top__brand">ORVILLE REAL ESTATE</span>
+      <button type="button" class="orville-drawer-top__close" aria-label="Close menu" (click)="closeMobileDrawer()">×</button>
+    </div>
+    <div class="orville-drawer-top__scope">
+      <ng-select #drawerBranchSelect [items]="scope.branches" [(ngModel)]="scope.selectedBranch" placeholder="Select Branch"
+        class="orville-drawer-select" [clearable]="false">
+        <ng-template ng-header-tmp>
+          <input type="text" placeholder="Search" (input)="$any(drawerBranchSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
+        </ng-template>
+      </ng-select>
+      <ng-select #drawerBldgSelect bindValue="code" bindLabel="name" [items]="scope.buildings" [(ngModel)]="scope.selectedBuilding"
+        placeholder="Select Building" class="orville-drawer-select" [clearable]="false">
+        <ng-template ng-header-tmp>
+          <input type="text" placeholder="Search" (input)="$any(drawerBldgSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">
+        </ng-template>
+        <ng-template ng-label-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+        <ng-template ng-option-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
+      </ng-select>
+    </div>
+  </div>
+
   <div class="orville-sidebar-body" [class.is-settings]="isSettingsMode">
     <!-- Settings two-panel: main-menu icon rail (desktop, expanded sidebar only) -->
     <!-- Hover expands the rail over the settings panel to show main-menu labels -->

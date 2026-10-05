@@ -1,0 +1,68 @@
+/* Figma "Chrome / Mobile Bottom nav" 6315:3197 — phones only */
+:host {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  :host {
+    display: block;
+  }
+}
+
+.orville-bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 49;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 8px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  box-shadow: 0 -4px 12px 0 rgb(0 0 0 / 0.06);
+}
+
+.orville-bottom-nav__tab {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--text-muted));
+  text-decoration: none;
+  cursor: pointer;
+
+  &.active {
+    color: rgb(189 151 89);
+
+    .orville-bottom-nav__label {
+      font-weight: 700;
+    }
+  }
+}
+
+.orville-bottom-nav__icon {
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.orville-bottom-nav__label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+:host-context(.dark) .orville-bottom-nav {
+  background: rgb(var(--body-bg));
+  box-shadow: 0 -4px 12px 0 rgb(0 0 0 / 0.3);
+}
