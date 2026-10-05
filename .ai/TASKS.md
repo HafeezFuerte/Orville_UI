@@ -5,6 +5,13 @@ Old Cursor plans were all marked completed and were not imported as active tasks
 
 ## IN PROGRESS
 
+### TASK-20261005-02 — Work Order Detail "Inventory Request" tab
+Owner/last agent: Cursor (office PC)
+Started: 2026-10-05
+Status: Implemented and browser-verified with injected sample data, because the browser session was not logged in. **Uncommitted.**
+Files: `src/app/components/facility/work-orders/work-order-detail/work-order-detail.component.{ts,html,scss}`
+Next step: user review, then commit. Wire Submit to a backend endpoint when one exists. Confirm the field names for site (`property_name`/`property`/`building_name`) and stock (`qty`/`quantity`/`stock_qty`/`available_qty`).
+
 ### TASK-20261001-01 — Commit shared-memory setup
 Owner/last agent: Claude (Cowork) → Cursor (adoption verified 2026-10-01)
 Started: 2026-10-01

@@ -1,6 +1,6 @@
 import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
@@ -29,7 +29,7 @@ export class WorkOrderDetailComponent implements OnInit {
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
-  tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Attachments'];
+  tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Inventory Request', 'Attachments'];
   notesForm: any = {};
   attachmentsForm: any = {};
   tabsList: any[] = [];
@@ -70,6 +70,12 @@ export class WorkOrderDetailComponent implements OnInit {
       {
         key: 'Quotations',
         label: 'Quotations',
+        layout: 'table',
+        data: []
+      },
+      {
+        key: 'Inventory Request',
+        label: 'Inventory Request',
         layout: 'table',
         data: []
       },
@@ -211,6 +217,139 @@ export class WorkOrderDetailComponent implements OnInit {
     { key: 'action', label: 'Action', visible: true, useTemplate: true }
   ];
 
+  inventoryRequests: any[] = [];
+  inventoryRequestSearch = '';
+
+  inventoryRequestColumns = [
+    { key: 'id', label: 'ID', visible: true, useTemplate: true },
+    { key: 'name', label: 'Name', visible: true },
+    { key: 'storeroom', label: 'Storeroom', visible: true },
+    { key: 'requestedFor', label: 'Requested For', visible: true },
+    { key: 'requestedDate', label: 'Requested Date', visible: true },
+    { key: 'requiredDate', label: 'Required Date', visible: true },
+    { key: 'items', label: 'Line Items', visible: true },
+    { key: 'status', label: 'Status', visible: true, useTemplate: true }
+  ];
+
+  get filteredInventoryRequests(): any[] {
+    const term = this.inventoryRequestSearch.trim().toLowerCase();
+    if (!term) return this.inventoryRequests;
+    return this.inventoryRequests.filter(r =>
+      [r.id, r.name, r.storeroom, r.requestedFor].some(v => String(v ?? '').toLowerCase().includes(term)));
+  }
+
+  showInventoryRequestModal = false;
+  inventoryItems: any[] = [];
+  inventoryLoaded = false;
+  lineItemTypes = ['Item', 'Tool'];
+  irForm: any = this.emptyInventoryRequestForm();
+
+  get requestedForOptions(): string[] {
+    const p = this.personnel;
+    const names = [this.currentUserName, p.activeTenant, p.raisedBy, p.responsiblePerson, p.technician, p.vendor, p.vendorTechnician];
+    return [...new Set(names.filter(n => n && n !== '-' && n !== 'Not Assigned'))];
+  }
+
+  get storeroomOptions(): string[] {
+    return [...new Set(this.inventoryItems.map(i => i.location).filter(l => l && l !== '-'))];
+  }
+
+  get currentUserName(): string {
+    return this.commonService.getCurrentUser()?.userName || '-';
+  }
+
+  openInventoryRequestModal(): void {
+    this.irForm = this.emptyInventoryRequestForm();
+    this.showInventoryRequestModal = true;
+    if (!this.inventoryLoaded) {
+      this.loadInventoryItems();
+    }
+  }
+
+  closeInventoryRequestModal(): void {
+    this.showInventoryRequestModal = false;
+  }
+
+  addLineItem(): void {
+    this.irForm.lines.push({ type: 'Item', itemId: '', qty: null });
+  }
+
+  removeLineItem(index: number): void {
+    this.irForm.lines.splice(index, 1);
+  }
+
+  availableQty(line: any): number {
+    return this.inventoryItems.find(i => i.id === line.itemId)?.stock ?? 0;
+  }
+
+  submitInventoryRequest(): void {
+    const f = this.irForm;
+    const lines = f.lines.filter((l: any) => l.itemId && Number(l.qty) > 0);
+    if (!f.name.trim() || !f.requestedFor || !f.storeroom) {
+      this.toastr.error('Please fill all required fields');
+      return;
+    }
+    if (!lines.length) {
+      this.toastr.error('Add at least one line item with quantity');
+      return;
+    }
+    this.inventoryRequests.unshift({
+      id: 'IR-' + String(this.inventoryRequests.length + 1).padStart(3, '0'),
+      name: f.name.trim(),
+      storeroom: f.storeroom,
+      requestedFor: f.requestedFor,
+      requestedDate: f.requestedDate,
+      requiredDate: f.requiredDate ? formatDate(f.requiredDate, 'dd-MMM-yyyy', 'en-US') : '-',
+      items: lines.length,
+      status: 'Pending'
+    });
+    this.closeInventoryRequestModal();
+  }
+
+  private emptyInventoryRequestForm(): any {
+    return {
+      name: `Inventory Request from Work Order #${this.workOrderId || ''}`,
+      description: '',
+      requestedDate: formatDate(new Date(), 'dd-MMM-yyyy', 'en-US'),
+      requiredDate: '',
+      requestedFor: '',
+      storeroom: '',
+      lines: [{ type: 'Item', itemId: '', qty: null }]
+    };
+  }
+
+  private loadInventoryItems(): void {
+    const currentUser = this.commonService.getCurrentUser();
+    this.commonTabsService.getCommonGrid({
+      userid: currentUser?.userId || 1,
+      company_id: currentUser?.companyId || 1,
+      clientId: currentUser?.clientId || '74BB6922',
+      clientID: currentUser?.clientId || '74BB6922',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 100,
+      feature: 'INVENTORY_ITEMS',
+      featureid: 'INVENTORY_ITEMS',
+      search_columns: 'P.item_name,P.location',
+      filter_by: ''
+    }).subscribe({
+      next: (res: any) => {
+        this.inventoryLoaded = true;
+        const raw = res?.objResult?.inventory_items || res?.objResult?.inventory || res?.objResult?.table || [];
+        this.inventoryItems = raw.map((item: any, idx: number) => ({
+          id: String(item.code || item.id || idx),
+          name: item.item_name || item.name || item.itemName || '-',
+          location: item.location_name || item.property_name || item.location || item.property || '-',
+          stock: Number(item.qty ?? item.quantity ?? item.stock_qty ?? item.available_qty ?? 0) || 0
+        }));
+      },
+      error: (err: any) => console.error('Error loading inventory items:', err)
+    });
+  }
+
   attachments: any[] = [];
 
   attachmentColumns =[
@@ -297,6 +436,7 @@ export class WorkOrderDetailComponent implements OnInit {
               title: data.title || data.workOrder || '-',
               priority: data.priority || '-',
               category: data.maintenance_name || '-',
+              site: data.property_name || data.property || data.building_name || data.building || '-',
               due_date:this.commonService.formatDateForInput(data.due_date),
               subcategory: data.maintenance_sub_name || '-',
               signatures: data.signatures || '-',

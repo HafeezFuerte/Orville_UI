@@ -464,6 +464,39 @@
         </div>
       </div>
 
+      <!-- INVENTORY REQUEST -->
+      <div class="p-5" *ngIf="activeTab === 'Inventory Request'">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h5 class="ov-card-title m-0">Inventory Requests</h5>
+          <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="openInventoryRequestModal()">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico wo-ico--on-primary" />
+            Add Inventory Request
+          </button>
+        </div>
+        <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
+          <div class="ov-search flex-1 max-w-[280px]">
+            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+            <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate"
+              [(ngModel)]="inventoryRequestSearch">
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <app-shared-table [columns]="inventoryRequestColumns" [data]="filteredInventoryRequests" [hasActions]="false"
+            [totalRecords]="filteredInventoryRequests.length" [pageSize]="10">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'id'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <span class="wo-badge wo-badge--soft">{{ row.status }}</span>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </app-shared-table>
+        </div>
+      </div>
+
       <!-- ATTACHMENTS -->
       <div class="p-5" *ngIf="activeTab === 'Attachments'">
         <app-attachments-table [selectedTab]="selectedTab"></app-attachments-table>
@@ -515,5 +548,118 @@
       <button type="button" (click)="saveCost()" class="ov-btn ov-btn-primary">Save</button>
     </div>
   </div>
+  </div>
+</div>
+
+<!-- Modal: Add Inventory Request -->
+<div *ngIf="showInventoryRequestModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
+  <div class="ov-modal-stack" style="max-width: 640px">
+    <button type="button" class="ov-modal__float-close" (click)="closeInventoryRequestModal()" aria-label="Close">
+      <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+    <div class="ov-modal ov-modal--lg">
+      <div class="ov-modal__header">
+        <h4 class="ov-modal__title">Inventory Request</h4>
+      </div>
+      <div class="ov-modal__body">
+        <div class="ov-fields ov-fields--2">
+          <div class="ov-fields__full">
+            <label class="ov-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="irForm.name" />
+          </div>
+          <div class="ov-fields__full">
+            <label class="ov-label">Description</label>
+            <textarea class="ov-input wo-textarea !h-auto" rows="3" placeholder="Type your description here"
+              [(ngModel)]="irForm.description"></textarea>
+          </div>
+          <div>
+            <label class="ov-label">Requested Date</label>
+            <input type="text" class="ov-input" [value]="irForm.requestedDate" disabled />
+          </div>
+          <div>
+            <label class="ov-label">Required Date</label>
+            <input type="date" class="ov-input" [(ngModel)]="irForm.requiredDate" />
+          </div>
+          <div>
+            <label class="ov-label">Requested By</label>
+            <input type="text" class="ov-input" [value]="currentUserName" disabled />
+          </div>
+          <div>
+            <label class="ov-label">Requested For <span class="text-danger">*</span></label>
+            <select class="ov-input" [(ngModel)]="irForm.requestedFor">
+              <option value="" disabled>Select an option</option>
+              <option *ngFor="let p of requestedForOptions" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+          <div class="ov-fields__full">
+            <label class="ov-label">Site <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [value]="workOrderDetails.site || '-'" disabled />
+          </div>
+          <div>
+            <label class="ov-label">Storeroom <span class="text-danger">*</span></label>
+            <select class="ov-input" [(ngModel)]="irForm.storeroom">
+              <option value="" disabled>Select an option</option>
+              <option *ngFor="let s of storeroomOptions" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="ov-label">Work Order</label>
+            <input type="text" class="ov-input" [value]="(workOrderDetails.id || workOrderId) + ' ' + (workOrderDetails.title || '')" disabled />
+          </div>
+          <div class="ov-fields__full">
+            <label class="ov-label">Workorder Category</label>
+            <input type="text" class="ov-input" [value]="workOrderDetails.category || '-'" disabled />
+          </div>
+        </div>
+
+        <h5 class="wo-ir-section">Line Items</h5>
+        <div class="overflow-x-auto">
+          <table class="wo-ir-table">
+            <thead>
+              <tr>
+                <th class="w-[96px]">Select</th>
+                <th>Name and Description</th>
+                <th class="w-[100px]">Available Qty</th>
+                <th class="w-[120px]">Qty</th>
+                <th class="w-[44px]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let line of irForm.lines; let i = index">
+                <td>
+                  <select class="ov-input" [(ngModel)]="line.type">
+                    <option *ngFor="let t of lineItemTypes" [value]="t">{{ t }}</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="ov-input" [(ngModel)]="line.itemId">
+                    <option value="" disabled>Select</option>
+                    <option *ngFor="let item of inventoryItems" [value]="item.id">{{ item.name }} / {{ item.location }}</option>
+                  </select>
+                </td>
+                <td class="wo-ir-table__qty">{{ availableQty(line) }}</td>
+                <td>
+                  <input type="number" min="1" class="ov-input" placeholder="Enter Qty" [(ngModel)]="line.qty" />
+                </td>
+                <td>
+                  <button type="button" class="wo-icon-sq wo-icon-sq--danger" aria-label="Remove line"
+                    *ngIf="irForm.lines.length > 1" (click)="removeLineItem(i)">
+                    <img src="assets/images/work-order-detail/trash.svg" alt="" width="16" height="16" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] mt-3" (click)="addLineItem()">
+          <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico" />
+          Add New
+        </button>
+      </div>
+      <div class="ov-modal__footer">
+        <button type="button" (click)="closeInventoryRequestModal()" class="ov-btn ov-btn-ghost">Cancel</button>
+        <button type="button" (click)="submitInventoryRequest()" class="ov-btn ov-btn-primary">Submit Details</button>
+      </div>
+    </div>
   </div>
 </div>

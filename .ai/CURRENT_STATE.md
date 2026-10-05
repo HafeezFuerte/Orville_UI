@@ -55,6 +55,11 @@ Unit Overview mobile, Property tab add screens, mobile bottom nav, A4 V2 font bu
 
 ## Work in progress
 
+- **Work Order Detail: "Inventory Request" tab (2026-10-05, Cursor, uncommitted).** Built from a Facilio screenshot.
+  It has a request list, an "Add Inventory Request" modal form (with line items) and a local-only Submit, since there
+  is no API. Inventory and storerooms are read through the existing `getCommonGrid` (`INVENTORY_ITEMS`). An earlier
+  "Parts & Costs" tab attempt the same day was fully reverted at the user's request.
+  Files: `work-order-detail.component.{ts,html,scss}`.
 - **Mobile login (< 768px) to Figma `7341:17681`** — `src/app/authentication/login/login.component.scss`
   is newer on disk (30 Sep ~10:06 +04) than the git index → **very likely uncommitted**. A Cursor plan
   marks it done and verified. **UNVERIFIED:** commit/visual state.

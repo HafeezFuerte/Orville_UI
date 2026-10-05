@@ -4,6 +4,57 @@ Append-only. Newest entry at the top. Keep entries short; no pasted conversation
 
 ---
 
+## 2026-10-05 — Cursor (office PC), settings sidebar rail restored
+
+Task: Restore the settings two-panel sidebar (icon rail + settings panel) that was lost in a git pull.
+Cause: commit `c0ef3599` (Omer_Ali_Khan, "worked on masters, brands, watermarks, sidebar…") deleted the
+`orville-settings-rail` `<nav>` from `sidebar.component.html` and the two-panel `@media (min-width: 992px)` /
+`1280px` rules from `orville-ds.scss`, replacing them with "/* Single panel settings sidebar */". The merge
+`e71f250c` kept that deletion.
+Fix: `git restore --source=ebdca4e4 --worktree` for both files. Nothing else differed between `ebdca4e4` and
+the merge in those files, so this restores exactly karthi's version. The sidebar TS (`railPath`,
+`originalMenuItems`, `data-orville-settings`) was intact.
+
+Changed:
+- src/app/shared/components/sidebar/sidebar.component.html
+- src/assets/scss/orville-ds.scss
+
+Handoff:
+- Verify on `/settings/*` while logged in (the menu is empty when logged out), then commit. Tell Omer, so a later
+  merge does not drop the rail again.
+
+## 2026-10-05 — Cursor (office PC), Inventory Request tab
+
+Task: Work Order Detail, new "Inventory Request" tab (built from a Facilio screenshot; no Figma node).
+Summary: Tabs are now Overview, Messages, Notes, Quotations, Inventory Request, Attachments. The tab has a
+request list (`app-shared-table` with search, same layout as Quotations) and an "Add Inventory Request" button.
+The button opens a large `ov-modal` form with these fields: Name*, Description, Requested Date (today, read-only),
+Required Date, Requested By (read-only), Requested For*, Site* (read-only), Storeroom*, Work Order (read-only),
+Workorder Category (read-only), plus a Line Items table (Item/Tool, item, Available Qty, Qty, remove, "+ Add New")
+and Cancel / Submit Details. Inventory items and storerooms come from the existing `getCommonGrid`
+(`INVENTORY_ITEMS`); storerooms are the distinct inventory locations. Submit adds the request to the list
+**locally only**, because there is no inventory-request API. `workOrderDetails.site` was added to the existing mapping.
+Follow-up: the popup width was changed from a custom 880px to the project's standard large size (`ov-modal-stack`
+`max-width: 640px` + `ov-modal ov-modal--lg`, the same as invoices, expenses, credit notes and the reusable modal).
+Project popup widths are 420 (sm), 520 (default forms), 600 (facility line-item popups) and 640 (lg).
+
+Changed:
+- src/app/components/facility/work-orders/work-order-detail/work-order-detail.component.{ts,html,scss}
+
+Handoff:
+- User review, then commit. Confirm the site and stock field names once logged in with real data.
+
+## 2026-10-05 — Cursor (office PC)
+
+Task: Work Order Detail "Parts & Costs" tab, built and then **reverted at the user's request**.
+Summary: A Parts & Costs tab (Inventory Items, Costs, Time Track cards, plus an "+ Add Part" inventory drawer) was
+built from user screenshots, then fully reverted with `git checkout` of `work-order-detail.component.{ts,html,scss}`
+and removal of `assets/images/work-order-detail/sort.svg`. The Work Order Detail page is back to its committed state.
+Do not re-add the tab unless the user asks again.
+
+Changed:
+- No net application change. `.ai/CHANGELOG.md` only.
+
 ## 2026-10-01 — Cursor (office PC)
 
 Task: Adopt the shared-memory architecture in Cursor; mobile Figma Action menu for Landlord details.

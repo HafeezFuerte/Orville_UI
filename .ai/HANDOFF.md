@@ -1,9 +1,23 @@
 # Current Agent Handoff
 
-Last updated: 2026-10-01 13:30 (Asia/Dubai)
+Last updated: 2026-10-05 14:50 (Asia/Dubai)
 Agent: Cursor (office PC)
 Machine/context if relevant: OFFICE PC
-Branch: `main` — 2 commits behind `origin/main` (`9253a9b`); fetched, not pulled
+Branch: `main`, 2 commits ahead of `origin/main` (not pushed)
+
+## Latest session (2026-10-05)
+
+- New **Inventory Request** tab on Work Order Detail. It has a list, an "Add Inventory Request" modal form with line
+  items, and a local-only Submit. Details are in `CHANGELOG.md` and `TASKS.md` (TASK-20261005-02). It is uncommitted.
+- **Settings sidebar rail restored** (`sidebar.component.html` and `orville-ds.scss`, from karthi's commit `ebdca4e4`).
+  It had been removed by Omer's `c0ef3599` and lost in merge `e71f250c`. Uncommitted. Verify while logged in, then
+  commit separately, e.g. `sidebar: restore settings two-panel rail [Cursor]`.
+- A "Parts & Costs" tab was built earlier the same day and then fully reverted at the user's request. Do not re-add it.
+- Verified in the browser with injected sample data, because the session was not logged in and the APIs returned nothing.
+- Next: user review, then commit:
+  `git add src/app/components/facility/work-orders/work-order-detail .ai && git commit -m "work-orders: add Inventory Request tab [Cursor]"`
+
+The sections below are from the 2026-10-01 session and remain valid for their pending items.
 
 ## Current task
 
