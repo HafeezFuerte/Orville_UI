@@ -28,10 +28,13 @@
       <div class="ov-detail-side">
 
         <div class="ov-detail-side__hero ud-hero">
-          <div class="ud-avatar" [style.background]="user.avatarColor" aria-hidden="true">{{ user.initials }}</div>
+          <div class="ud-avatar" *ngIf="user.image_path==null || user.image_path==''" style="background:#6B6B7D" aria-hidden="true">{{ getInitials(user.fullname) }}</div>
+          <div class="ud-avatar" *ngIf="user.image_path!=null && user.image_path!=''" style="background:#6B6B7D" aria-hidden="true">
+            <img [src]="user.image_path" alt="" />
+          </div>
           <div>
-            <h4 class="ov-detail-side__title">{{ user.name }}</h4>
-            <p class="ov-detail-side__email">User #{{ profile.userId }}</p>
+            <h4 class="ov-detail-side__title">{{ user.fullname }}</h4>
+            <p class="ov-detail-side__email">User #{{ user.code }}</p>
           </div>
           <div class="ov-detail-side__actions">
             <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="editUser()">Edit User</button>
@@ -46,7 +49,7 @@
             <h6 class="ov-detail-panel__title">App Login</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value" [title]="user.email">{{ user.email }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Email:</span><span class="ov-kv__value" [title]="user.email_address">{{ user.email_address }}</span></div>
             <div class="ov-kv"><span class="ov-kv__label">Username:</span><span class="ov-kv__value">{{ user.username }}</span></div>
           </div>
         </div>
@@ -56,13 +59,13 @@
             <h6 class="ov-detail-panel__title">Personal Details</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Full Name:</span><span class="ov-kv__value">{{ user.name }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Role:</span><span class="ov-kv__value"><span class="ud-role">{{ user.role }}</span></span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Department:</span><span class="ov-kv__value">{{ profile.department || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Full Name:</span><span class="ov-kv__value">{{ user.fullname }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Role:</span><span class="ov-kv__value"><span class="ud-role">{{ user.role_name }}</span></span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Department:</span><span class="ov-kv__value">{{ user.dept_name || dash }}</span></div>
             <div class="ov-kv"><span class="ov-kv__label">Phone:</span><span class="ov-kv__value">{{ user.phone || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Gender:</span><span class="ov-kv__value">{{ profile.gender || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Nationality:</span><span class="ov-kv__value">{{ profile.nationality || dash }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Languages:</span><span class="ov-kv__value">{{ profile.languages || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Gender:</span><span class="ov-kv__value">{{ user.gender || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Nationality:</span><span class="ov-kv__value">{{ user.country_name || dash }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">Languages:</span><span class="ov-kv__value">{{ user.spoken_languages || dash }}</span></div>
           </div>
         </div>
 
@@ -71,9 +74,9 @@
             <h6 class="ov-detail-panel__title">Timeline</h6>
           </div>
           <div class="ov-detail-panel__body">
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ profile.createdAt }}</span></div>
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ profile.lastUpdatedAt }}</span></div>
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Sign In:</span><span class="ov-kv__value">{{ profile.lastSignInAt }}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ user.created_date | date:'MM-dd-yyyy HH:MM'}}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Updated:</span><span class="ov-kv__value">{{ user.updated_date | date:'MM-dd-yyyy HH:MM'}}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Last Sign In:</span><span class="ov-kv__value">{{ user.last_login }}</span></div>
           </div>
         </div>
 
@@ -97,64 +100,69 @@
         <div class="ud-shell__body">
       <!-- Units -->
       <section *ngIf="activeTab === 'units'" class="ud-panel">
-        <div class="ud-panel__head">
-          <div>
-            <h4 class="ud-panel__title">Assigned Units</h4>
-            <p class="ud-panel__sub">{{ unitsCountLabel }}</p>
+        <ng-container *ngIf="!isAssigning">
+          <div class="ud-panel__head">
+            <div>
+              <h4 class="ud-panel__title">Assigned Units</h4>
+              <p class="ud-panel__sub">{{ unitsCountLabel }}</p>
+            </div>
+            <div class="ud-panel__actions">
+              <button
+                type="button"
+                class="ud-btn-danger"
+                [disabled]="!hasUnitSelection"
+                (click)="unassignAction('units')">
+                Unassign
+              </button>
+              <button type="button" class="ov-btn ov-btn-primary" (click)="assignAction('Units')">
+                + Assign Units
+              </button>
+            </div>
           </div>
-          <div class="ud-panel__actions">
-            <button
-              type="button"
-              class="ud-btn-danger"
-              [disabled]="!hasUnitSelection"
-              (click)="unassignAction('units')">
-              Unassign
-            </button>
-            <button type="button" class="ov-btn ov-btn-primary" (click)="assignAction('Units')">
-              + Assign Units
-            </button>
+          <div class="ud-toolbar">
+            <div class="ov-search flex-1 max-w-none sm:max-w-[320px]">
+              <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+              <input
+                type="text"
+                class="ov-input ov-search__input"
+                placeholder="Search units..."
+                [(ngModel)]="unitSearch"
+                (ngModelChange)="onSearch()" />
+            </div>
           </div>
-        </div>
-        <div class="ud-toolbar">
-          <div class="ov-search flex-1 max-w-none sm:max-w-[320px]">
-            <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-            <input
-              type="text"
-              class="ov-input ov-search__input"
-              placeholder="Search units..."
-              [(ngModel)]="unitSearch"
-              (ngModelChange)="onSearch()" />
-          </div>
-        </div>
-        <app-shared-table
-          [columns]="unitColumns"
-          [data]="pagedUnits"
-          [hasActions]="false"
-          [emptyMessage]="'No units assigned to this user.'"
-          [totalRecords]="filteredUnits.length"
-          [pageSize]="pageSize"
-          [pageIndex]="pageNo"
-          [pageSizeOptions]="pageSizeOptions"
-          (pageChange)="onTablePage($event)">
-          <ng-template #colTemplate let-row="row" let-col="col">
-            <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'select'">
-                <input
-                  type="checkbox"
-                  class="ud-check"
-                  [checked]="isUnitSelected(row.id)"
-                  (change)="toggleUnit(row.id, $any($event.target).checked)" />
+          <app-shared-table
+            [columns]="unitColumns"
+            [data]="assigned_units"
+            [hasActions]="false"
+            [emptyMessage]="'No units assigned to this user.'"
+            [totalRecords]="assigned_units?.length"
+            [pageSize]="pageSize"
+            [pageIndex]="pageNo"
+            [pageSizeOptions]="pageSizeOptions"
+            (pageChange)="onTablePage($event)">
+            <ng-template #colTemplate let-row="row" let-col="col">
+              <ng-container [ngSwitch]="col.key">
+                <ng-container *ngSwitchCase="'select'">
+                  <input
+                    type="checkbox"
+                    class="ud-check"
+                    [checked]="isUnitSelected(row.code)"
+                    (change)="toggleUnit(row.code, $any($event.target).checked)" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'name'">
+                  <a [routerLink]="['/units', row?.code]" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.name }}</a>
+                </ng-container>
               </ng-container>
-              <ng-container *ngSwitchCase="'unit'">
-                <a href="javascript:void(0)" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.unit }}</a>
-              </ng-container>
-            </ng-container>
-          </ng-template>
-        </app-shared-table>
+            </ng-template>
+          </app-shared-table>
+        </ng-container>
+        <ng-container *ngIf="isAssigning" [ngTemplateOutlet]="AssignBlock" 
+        [ngTemplateOutletContext]="{ data: units, assignType: 'Units', datacolumns: unitColumns }" ></ng-container>
       </section>
 
       <!-- Properties -->
       <section *ngIf="activeTab === 'properties'" class="ud-panel">
+        <ng-container *ngIf="!isAssigning">
         <div class="ud-panel__head">
           <div>
             <h4 class="ud-panel__title">Assigned Properties</h4>
@@ -186,10 +194,10 @@
         </div>
         <app-shared-table
           [columns]="propertyColumns"
-          [data]="pagedProperties"
+          [data]="assigned_properties"
           [hasActions]="false"
           [emptyMessage]="'No properties assigned to this user.'"
-          [totalRecords]="filteredProperties.length"
+          [totalRecords]="assigned_properties?.length"
           [pageSize]="pageSize"
           [pageIndex]="pageNo"
           [pageSizeOptions]="pageSizeOptions"
@@ -200,16 +208,23 @@
                 <input
                   type="checkbox"
                   class="ud-check"
-                  [checked]="isPropertySelected(row.id)"
-                  (change)="toggleProperty(row.id, $any($event.target).checked)" />
+                  [checked]="isPropertySelected(row.code)"
+                  (change)="toggleProperty(row.code, $any($event.target).checked)" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'name'">
+                <a [routerLink]="['/properties', row?.code]" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.name }}</a>
               </ng-container>
             </ng-container>
           </ng-template>
         </app-shared-table>
+      </ng-container>
+        <ng-container *ngIf="isAssigning" [ngTemplateOutlet]="AssignBlock" 
+        [ngTemplateOutletContext]="{ data: properties, assignType: 'Properties', datacolumns: propertyColumns }" ></ng-container>
       </section>
 
       <!-- Reports -->
       <section *ngIf="activeTab === 'reports'" class="ud-panel">
+        <ng-container *ngIf="!isAssigning">
         <div class="ud-panel__head">
           <div>
             <h4 class="ud-panel__title">Assigned Reports</h4>
@@ -241,10 +256,10 @@
         </div>
         <app-shared-table
           [columns]="reportColumns"
-          [data]="pagedReports"
+          [data]="assigned_reports"
           [hasActions]="false"
           [emptyMessage]="'No reports assigned to this user.'"
-          [totalRecords]="filteredReports.length"
+          [totalRecords]="assigned_reports.length"
           [pageSize]="pageSize"
           [pageIndex]="pageNo"
           [pageSizeOptions]="pageSizeOptions"
@@ -264,6 +279,9 @@
             </ng-container>
           </ng-template>
         </app-shared-table>
+        </ng-container>
+        <ng-container *ngIf="isAssigning" [ngTemplateOutlet]="AssignBlock" 
+        [ngTemplateOutletContext]="{ data: reports, assignType: 'Reports', datacolumns: reportColumns }" ></ng-container>
       </section>
 
       <!-- Logins -->
@@ -291,18 +309,18 @@
         </div>
         <app-shared-table
           [columns]="loginColumns"
-          [data]="pagedLogins"
+          [data]="logins"
           [hasActions]="false"
           [emptyMessage]="'No login records found.'"
-          [totalRecords]="filteredLogins.length"
+          [totalRecords]="logins.length"
           [pageSize]="loginPageSize"
           [pageIndex]="loginPageNo"
           [pageSizeOptions]="[10, 20, 25, 50]"
           (pageChange)="onLoginPage($event)">
           <ng-template #colTemplate let-row="row" let-col="col">
             <ng-container [ngSwitch]="col.key">
-              <ng-container *ngSwitchCase="'deviceType'">
-                <span class="ud-device">{{ row.deviceType }}</span>
+              <ng-container *ngSwitchCase="'device_type'">
+                <span class="ud-device">{{ row.device_type }}</span>
               </ng-container>
             </ng-container>
           </ng-template>
@@ -313,3 +331,63 @@
     </div>
   </div>
 </div>
+<ng-template #AssignBlock let-data="data" let-type="assignType" let-columns="datacolumns" >
+  <div class="ud-panel__head">
+    <button type="button" class="ov-back" (click)="backlist()" title="Back to Users">
+      <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
+    </button>
+    <div>
+      <h4 class="ud-panel__title">Assign {{type}}</h4>
+      <p class="ud-panel__sub">{{ CountLabel(type) }}</p>
+    </div>
+    <div class="ud-panel__actions"> 
+      <button type="button" class="ov-btn ov-btn-primary" [disabled]="!hasrecordSelected" (click)="saveassignlist(type,0)">
+         Assign {{type}}
+      </button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveassignlist(type,1)">
+         Assign All {{type}}
+      </button>
+    </div>
+  </div>
+  <div class="ud-toolbar">
+    <div class="ov-search flex-1 max-w-none sm:max-w-[320px]">
+      <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
+      <input
+        type="text"
+        class="ov-input ov-search__input"
+        placeholder="Search {{type}}..."
+        [(ngModel)]="searchKeyword"
+        (ngModelChange)="filteredList(data,type)" />
+    </div>
+  </div>
+  <app-shared-table
+    [columns]="columns"
+    [data]="data"
+    [hasActions]="false"
+    [emptyMessage]="'No {{type}} assigned to this user.'"
+    [totalRecords]="data?.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageNo"
+    [pageSizeOptions]="pageSizeOptions"
+    (pageChange)="onTablePage($event)">
+    <ng-template #colTemplate let-row="row" let-col="col">
+      <ng-container [ngSwitch]="col.key">
+        <ng-container *ngSwitchCase="'select'">
+          <input
+            type="checkbox"
+            class="ud-check"
+            [checked]="isRecordSelected(row.code)"
+            (change)="toggleRecord(row.code, $any($event.target).checked)" />
+        </ng-container>
+        <ng-container *ngSwitchCase="'name'" >
+          <a *ngIf="type=='Units'" [routerLink]="['/units', row?.code]" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.name }}</a>
+          <a *ngIf="type=='Properties'" [routerLink]="['/properties', row?.code]" class="ov-link font-semibold" (click)="$event.preventDefault()">{{ row.name }}</a>
+        </ng-container>
+        <ng-container *ngIf="col.key === 'units'">
+          <span class="text-[14px] text-defaulttextcolor">{{ row.units || '-' }}</span>
+        </ng-container>
+        
+      </ng-container>
+    </ng-template>
+  </app-shared-table>
+</ng-template>

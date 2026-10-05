@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +21,7 @@ interface InventoryLineDraft {
 @Component({
   selector: 'app-create-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FileUploadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FileUploadComponent, TranslateModule],
   templateUrl: './create-inventory.component.html',
   styleUrl: './create-inventory.component.scss'
 })

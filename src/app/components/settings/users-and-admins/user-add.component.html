@@ -66,7 +66,8 @@
     </div>
 
     <!-- Email -->
-    <div class="flex flex-col gap-2">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="flex min-w-0 flex-col gap-2">
       <label class="text-sm font-medium text-textmuted" for="ua-email">
         Email <span class="text-danger">*</span>
       </label>
@@ -75,7 +76,14 @@
         type="email"
         class="ov-input"
         placeholder="name@company.com"
-        [(ngModel)]="email" />
+        [(ngModel)]="email" /></div>
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="text-sm font-medium text-textmuted">{{ 'web.contacts.lblGender' | translate }}</label>
+          <ng-select [items]="genders" appendTo="body" [searchable]="true"
+            [placeholder]="'web.contacts.lblSelect' | translate" class="ov-select w-full"
+            [(ngModel)]="gender"> 
+          </ng-select>
+        </div>
     </div>
 
     <!-- Username / Password -->
@@ -132,28 +140,31 @@
           Country <span class="text-danger">*</span>
         </label>
         <div class="relative">
-          <select
-            id="ua-country"
-            class="ov-input cursor-pointer appearance-none pr-8"
-            [(ngModel)]="country">
-            <option value="">Select Phone Country</option>
-            <option *ngFor="let c of countryOptions" [value]="c">{{ c }}</option>
-          </select>
-          <img
+          <ng-select #CountrySelect [(ngModel)]="country" [items]="countryOptions" [searchable]="true"  [clearable]="true"
+          placeholder="Select role" bindValue="id" bindLabel="country_name" class="ng-select-sm w-full" appendTo="body">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-gray-100">
+                <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="CountrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
+        <!-- <img
             src="./assets/images/settings/chevron-down.svg"
             alt=""
             width="12"
             height="12"
-            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" /> -->
         </div>
       </div>
       <div class="flex min-w-0 flex-col gap-2">
         <label class="text-sm font-medium text-textmuted" for="ua-phone">Phone</label>
-        <input
-          id="ua-phone"
-          type="tel"
-          class="ov-input"
-          [(ngModel)]="phone" />
+        <div class="ov-phone">
+          <span class="ov-phone__code">
+            <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
+            <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
+          </span>
+          <input type="text" class="ov-input" [(ngModel)]="phone" placeholder='Enter Phone no'>
+        </div> 
       </div>
     </div>
 
@@ -162,19 +173,14 @@
       <div class="flex min-w-0 flex-col gap-2">
         <label class="text-sm font-medium text-textmuted" for="ua-group">Group</label>
         <div class="relative">
-          <select
-            id="ua-group"
-            class="ov-input cursor-pointer appearance-none pr-8"
-            [(ngModel)]="group">
-            <option value="">Select Group</option>
-            <option *ngFor="let g of groupOptions" [value]="g">{{ g }}</option>
-          </select>
-          <img
+          <ng-select [(ngModel)]="group" [items]="groupOptions"   [clearable]="true"
+          placeholder="Select role" bindValue="id" bindLabel="name" class="ng-select-sm w-full" appendTo="body"></ng-select>
+          <!-- <img
             src="./assets/images/settings/chevron-down.svg"
             alt=""
             width="12"
             height="12"
-            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" /> -->
         </div>
       </div>
       <div class="flex min-w-0 flex-col gap-2">
@@ -182,19 +188,15 @@
           Role <span class="text-danger">*</span>
         </label>
         <div class="relative">
-          <select
-            id="ua-role"
-            class="ov-input cursor-pointer appearance-none pr-8"
-            [(ngModel)]="role">
-            <option value="">Choose a Role</option>
-            <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
-          </select>
-          <img
+          <ng-select [(ngModel)]="role" [items]="roleOptions"   [clearable]="true"
+          placeholder="Select role" bindValue="code" bindLabel="name" class="ng-select-sm w-full" appendTo="body"></ng-select>
+ 
+          <!-- <img
             src="./assets/images/settings/chevron-down.svg"
             alt=""
             width="12"
             height="12"
-            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" /> -->
         </div>
       </div>
     </div>
@@ -204,13 +206,9 @@
       <div class="flex min-w-0 flex-col gap-2">
         <label class="text-sm font-medium text-textmuted" for="ua-tz">Time Zone</label>
         <div class="relative">
-          <select
-            id="ua-tz"
-            class="ov-input cursor-pointer appearance-none pr-8"
-            [(ngModel)]="timeZone">
-            <option *ngFor="let t of timeZoneOptions" [value]="t">{{ t }}</option>
-          </select>
-          <img
+          <ng-select [(ngModel)]="timeZone" [items]="timeZoneOptions"   [clearable]="true"
+          placeholder="Select role" bindValue="id" bindLabel="name" class="ng-select-sm w-full" appendTo="body"></ng-select>
+            <img
             src="./assets/images/settings/chevron-down.svg"
             alt=""
             width="12"

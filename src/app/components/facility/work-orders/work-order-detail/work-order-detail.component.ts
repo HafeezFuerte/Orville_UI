@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent],
+  imports: [CommonModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
   templateUrl: './work-order-detail.component.html',
   styleUrl: './work-order-detail.component.scss'
 })

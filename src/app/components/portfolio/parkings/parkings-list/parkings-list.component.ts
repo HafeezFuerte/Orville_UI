@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,7 +32,7 @@ import { parkingCycleClass, parkingTypeClass, portfolioStatusClass } from '../..
 @Component({
   selector: 'app-parkings-list',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './parkings-list.component.html',
   styleUrl: './parkings-list.component.scss'
 })

@@ -1,7 +1,13 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener,inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component'; 
+import { CommonService } from '../../../services/common.service'; 
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { NgSelectModule } from '@ng-select/ng-select';
 import {
   MOCK_SETTINGS_USERS,
   SettingsUserRow,
@@ -15,16 +21,29 @@ type StatusFilter = 'all' | UserStatus;
 @Component({
   selector: 'app-users-and-admins',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterModule,NgSelectModule, SharedTableComponent, FormsModule, TranslateModule],
   templateUrl: './users-and-admins.component.html',
 })
 export class UsersAndAdminsComponent {
+  private router = inject(Router); 
+  private commontabservice=inject(Common_TabsService);
+  private commonservice = inject(CommonService);
+  private toastr=inject(ToastrService);
   mainTab: MainTab = 'users';
   statusFilter: StatusFilter = 'all';
   searchQuery = '';
   roleFilter = '';
+  openActionCode: string | number | null = null;
   isRoleDropdownOpen = false;
-
+  isLoading=false;
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser();  
   @HostListener('document:click')
   closeRoleDropdown() {
     this.isRoleDropdownOpen = false;
@@ -32,29 +51,115 @@ export class UsersAndAdminsComponent {
 
   users: SettingsUserRow[] = [...MOCK_SETTINGS_USERS];
 
-  readonly mainTabs: { id: MainTab; label: string }[] = [
-    { id: 'users', label: 'Users' },
-    { id: 'admins', label: 'Admins' },
-    { id: 'technicians', label: 'Support Technicians' },
+  readonly mainTabs: { id: MainTab; labelKey: string }[] = [
+    { id: 'users', labelKey: 'web.settings.usersAndAdmins.tabUsers' },
+    { id: 'admins', labelKey: 'web.settings.usersAndAdmins.tabAdmins' },
+    { id: 'technicians', labelKey: 'web.settings.usersAndAdmins.tabTechnicians' },
   ];
 
-  readonly statusTabs: { id: StatusFilter; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'active', label: 'Active' },
-    { id: 'blocked', label: 'Blocked' },
+  readonly statusTabs: { id: StatusFilter; labelKey: string }[] = [
+    { id: 'all', labelKey: 'web.settings.usersAndAdmins.statusAll' },
+    { id: 'active', labelKey: 'web.settings.usersAndAdmins.statusActive' },
+    { id: 'blocked', labelKey: 'web.settings.usersAndAdmins.statusBlocked' },
   ];
 
-  readonly roleOptions = [
-    'Collector',
-    'Inspector',
-    'Manager',
-    'Accountant',
-    'Admin',
-    'Support Technician',
+  roleOptions:any=[];
+  tableColumns = [
+    
+    { key: 'id', label: 'web.settings.usersAndAdmins.colImage', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.settings.usersAndAdmins.colUserDetails', visible: true, useTemplate: true },
+    { key: 'username', label: 'web.settings.usersAndAdmins.colUsername', visible: true},
+    { key: 'phone', label: 'web.settings.usersAndAdmins.colPhone', visible: true, useTemplate: true },
+    { key: 'role_name', label: 'web.settings.usersAndAdmins.colRole', visible: true },
+    { key: 'status', label: 'status', visible: true, useTemplate: true },
+    { key: 'last_login_dt', label: 'Last Login', visible: true },
+    { key: 'assignedUnits', label: 'web.contacts.lblAssignedUnits', visible: true}, 
+    { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
-  constructor(private router: Router) {}
+  get visibleColumns() {
+    return this.tableColumns.filter(col => col.visible !== false);
+  }
+  constructor() {}
+  ngOnInit() { 
+    this.loadLookup(42,0,'roleOptions',''); 
+     this.loadUsers();   
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {  
+          (this as any)[targetProperty] = res.objResult.table; 
+        } 
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  loadUsers() {
+    const filterList: any[] = [];
+    if (this.mainTab && this.mainTab!="users") {
+      filterList.push({ 'key': 'P.role_type', 'value': this.mainTab =="admins" ? "A" : this.mainTab=="technicians" ? "S" :"U" });
+    } 
+    if (this.statusFilter && this.statusFilter!="all") {
+      filterList.push({ 'key': 'P.is_active', 'value': this.statusFilter =="active" ? 1 : 0 });
+    } 
+    if (this.roleFilter && this.roleFilter!="") {
+      filterList.push({ 'key': 'P.role_type', 'value': this.roleFilter });
+    } 
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "USERS"
+    };
 
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => {  
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.users || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => { 
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
+  filterByRole(){
+    this.loadUsers();
+  }
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
   get pageTitle(): string {
     switch (this.mainTab) {
       case 'admins':
@@ -129,19 +234,109 @@ export class UsersAndAdminsComponent {
     this.mainTab = tab;
     this.statusFilter = 'all';
     this.roleFilter = '';
-    this.searchQuery = '';
+    this.searchQuery = ''; 
+    this.pageNo = 0;
+    this.loadUsers();
+  }
+  setStatusTab(tab: StatusFilter): void {
+    this.statusFilter = tab; 
+    this.pageNo = 0;
+    this.loadUsers();
+  }
+ 
+  get displayPage(): number {
+    return this.pageNo + 1;
   }
 
+  get startRecord(): number {
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
+  }
+
+  get endRecord(): number {
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
+  }
+
+  get paginatedRows(): any[] {
+    const start = this.pageNo * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
+  }
+
+  onSearch(): void {
+    this.pageNo = 0;
+    this.loadUsers();
+  }
+
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadUsers();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadUsers();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadUsers();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageNo++;
+      this.loadUsers();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadUsers();
+    }
+ 
+  }
   openNew(): void {
-    this.router.navigate(['/settings/users-and-admins/new'], {
-      queryParams: { type: this.kindForTab },
-    });
+    this.router.navigate(['/settings/users-and-admins/new']);
+  }
+  toggleRowAction(code: string | number, event: Event): void {
+    event.stopPropagation(); 
+    this.openActionCode = this.openActionCode === code ? null : code;
+  }
+  
+  statusLabel(row: any): string {
+    return this.commonservice.getArabicLookupName(row, 'status') || row?.status || '-';
+  }
+  
+  isActiveStatus(row: any): boolean {
+    return (this.statusLabel(row) || '').toLowerCase() === 'active';
   }
 
-  openEdit(row: SettingsUserRow): void {
-    this.router.navigate(['/settings/users-and-admins', row.id]);
+  isBlockedStatus(row: any): boolean {
+    const value = (this.statusLabel(row) || '').toLowerCase();
+    return value === 'blocked' || value === 'inactive';
   }
-
+  openEdit(row: any): void {
+    this.router.navigate(['/settings/users-and-admins', row.code]);
+  }
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
+  }
   toggleBlock(row: SettingsUserRow): void {
     this.users = this.users.map((u) =>
       u.id === row.id

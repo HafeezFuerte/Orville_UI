@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowb
 @Component({
   selector: 'app-create-work-order',
   standalone: true,
-  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, NgSelectModule],
+  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, NgSelectModule, TranslateModule],
   templateUrl: './create-work-order.component.html',
   styleUrl: './create-work-order.component.scss'
 })

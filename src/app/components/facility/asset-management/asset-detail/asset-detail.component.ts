@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -40,7 +41,7 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 @Component({
   selector: 'app-asset-detail',
   standalone: true,
-  imports: [CommonModule, SharedTableComponent,WorkordersTableComponent, AttachmentsComponent],
+  imports: [CommonModule, SharedTableComponent,WorkordersTableComponent, AttachmentsComponent, TranslateModule],
   templateUrl: './asset-detail.component.html',
   styleUrl: './asset-detail.component.scss'
 })

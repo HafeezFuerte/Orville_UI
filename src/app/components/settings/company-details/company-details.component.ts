@@ -98,14 +98,12 @@ export class CompanyDetailsComponent implements OnInit {
     this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
       next: (res) => {
         if (res && res.statusCode === '200' && res.objResult && res.objResult.table) {
-          this.countries = res.objResult.table;
-          console.log('Countries loaded:', this.countries);
+          this.countries = res.objResult.table; 
           this.fetchCompanyDetails();
         }
       },
       error: (err) => {
-        this.toastr.error('Failed to load countries list', 'Error');
-        console.error(err);
+        this.toastr.error('Failed to load countries list', 'Error'); 
       }
     });
   }
@@ -123,14 +121,12 @@ export class CompanyDetailsComponent implements OnInit {
       clientId: user?.clientId || '74BB6922',
       companyId: user?.companyId || 1
     };
-    console.log('fetchCompanyDetails sending payload:', payload);
+     
 
     this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
-      next: (res) => {
-        console.log('Raw company details response:', res);
+      next: (res) => { 
         if (res && res.statusCode === '200' && res.objResult && res.objResult.table && res.objResult.table.length > 0) {
-          const data = res.objResult.table[0];
-          console.log('Company settings loaded:', data);
+          const data = res.objResult.table[0]; 
           this.companyCode = data.code || 'B96AKY4';
           
           this.companyDetailsForm.patchValue({
@@ -158,9 +154,7 @@ export class CompanyDetailsComponent implements OnInit {
             enableArchivingNoBalanceEffect: data.enable_archiving || false,
             createTicketUnrecognizedEmail: data.create_tickets_from_unrecognized_email || false
           });
-
-          console.log('Form values after patch:', this.companyDetailsForm.value);
-
+ 
           // Trigger state loading with country details
           if (data.country_id) {
             this.onCountryChange({ id: data.country_id }, false);
@@ -169,14 +163,13 @@ export class CompanyDetailsComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error('Failed to load company details', 'Error');
-        console.log('HTTP Error details in fetchCompanyDetails:', err);
+        
       }
     });
   }
 
   // API Call to fetch states based on country
-  onCountryChange(countryObj: any, clearDependent: boolean = true): void {
-    console.log('onCountryChange called with:', countryObj, 'clearDependent:', clearDependent);
+  onCountryChange(countryObj: any, clearDependent: boolean = true): void { 
     if (!countryObj) {
       this.states = [];
       this.cities = [];
@@ -196,11 +189,10 @@ export class CompanyDetailsComponent implements OnInit {
       next: (res) => {
         if (res && res.statusCode === '200' && res.objResult && res.objResult.table) {
           this.states = res.objResult.table;
-          console.log('States loaded:', this.states);
+           
           const currentStateId = this.companyDetailsForm.get('state')?.value;
           if (currentStateId) {
-            const match = this.states.find(s => s.id === currentStateId);
-            console.log('Matching state found for patch:', match);
+            const match = this.states.find(s => s.id === currentStateId); 
             if (match) {
               this.onStateChange(match, false);
             } else {
@@ -215,14 +207,14 @@ export class CompanyDetailsComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error('Failed to load states list', 'Error');
-        console.error(err);
+         
       }
     });
   }
 
   // API Call to fetch cities based on state
   onStateChange(stateObj: any, clearDependent: boolean = true): void {
-    console.log('onStateChange called with:', stateObj, 'clearDependent:', clearDependent);
+     
     if (!stateObj) {
       this.cities = [];
       this.companyDetailsForm.patchValue({ state: null, city: null });
@@ -240,14 +232,13 @@ export class CompanyDetailsComponent implements OnInit {
       next: (res) => {
         if (res && res.statusCode === '200' && res.objResult && res.objResult.table) {
           this.cities = res.objResult.table;
-          console.log('Cities loaded:', this.cities);
+           
         } else {
           this.cities = [];
         }
       },
       error: (err) => {
-        this.toastr.error('Failed to load cities list', 'Error');
-        console.error(err);
+        this.toastr.error('Failed to load cities list', 'Error'); 
       }
     });
   }
@@ -310,7 +301,7 @@ export class CompanyDetailsComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error('Failed to save company details', 'Error');
-        console.error(err);
+         
       }
     });
   }

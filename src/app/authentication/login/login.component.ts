@@ -5,10 +5,12 @@ import { AuthService } from '../../shared/services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { setAuthPropsData } from '../../components/common/store/login-auth-params/auth.actions';
 import { AuthPayload } from '../../components/common/store/login-auth-params/auth.models';
 import { CommonService } from '../../services/common.service';
+import { Common_TabsService } from '../../components/portfolio/services/common_tabs.service';
 import { selectCurrentUser } from '../../components/common/store/login-auth-params/auth.selectors';
 
 @Component({
@@ -34,7 +36,9 @@ export class LoginComponent {
     private renderer: Renderer2,
     private toastr: ToastrService, private authService: AuthService,
     private store: Store,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private httpclient: HttpClient,
+    private commontabservice:Common_TabsService
 
   ) { }
 
@@ -51,8 +55,7 @@ export class LoginComponent {
   employeeData: any = null;
 
 
-  loadError: string | null = null;
-  // ✅ API login
+  loadError: string | null = null; 
   login() {
     if (!this.loginForm.valid) {
       this.error = 'Please enter valid username and password';
@@ -81,7 +84,7 @@ export class LoginComponent {
                 userCode: res.objResult.user_Code || '',
                 token: res.objResult.access_token
               };
-
+              this.storelogin_info(res.objResult.user_Code);
               // Dispatch once
               this.store.dispatch(setAuthPropsData(authUser));
               // If you're temporarily keeping currentUser in CommonService
@@ -112,7 +115,25 @@ export class LoginComponent {
       },
     });
   }
+  storelogin_info(usercode:string){
+    this.httpclient.get<any>('https://ipapi.co/json/').subscribe({
+      next: (data:any) => {  
+        this.commontabservice.getMasterByType({
+          typeId: 95,
+          filterId: 1,
+          filterText: usercode,
+          filterText1: JSON.stringify(data)
+        }).subscribe({
+          next: (res: any) => {  
+          } 
+        });
 
+      },
+      error: (error:any) => {
+        console.error('Unable to get location', error);
+      }
+    });
+  }
   toggleVisibility() {
     this.showPassword = !this.showPassword;
     this.toggleClass = this.showPassword ? 'line' : 'off-line';

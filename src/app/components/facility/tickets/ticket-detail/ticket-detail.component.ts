@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,7 +30,7 @@ interface TicketNoteRow {
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './ticket-detail.component.html',
   styleUrl: './ticket-detail.component.scss'
 })

@@ -167,7 +167,7 @@ export class CreateQuotationComponent {
         source: "web",
         languageid: 1,
         title: this.title|| "",
-        quotationno:this.quotationno,
+        quotation_no:this.quotationno,
         vendor_code:this.selectedVendors.join(',') ||  "",
         code: this.editId,
         workorder_code: this.selectedWorkOrder,

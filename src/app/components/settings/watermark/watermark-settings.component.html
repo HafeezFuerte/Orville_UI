@@ -8,15 +8,16 @@
     </div>
     <div class="wm-settings__header-actions">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleWatermark()">
-        {{ 'web.settings.watermark.lblEnableWatermark' | translate }}
+        {{ watermarkEnabled ? 'Disable Watermark' : 'Enable Watermark' }}
       </button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="update()">
+      <button type="button" class="ov-btn ov-btn-primary" [disabled]="isLoading" (click)="update()">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
         {{ 'web.common.lblUpdate' | translate }}
       </button>
     </div>
   </div>
 
-  <div class="wm-settings__body">
+  <div class="wm-settings__body" *ngIf="watermarkEnabled; else disabledWatermarkState">
     <section class="wm-settings__card wm-settings__card--settings">
       <div class="wm-settings__section-head">
         <h2 class="wm-settings__section-title">{{ 'web.settings.watermark.lblTitle' | translate }}</h2>
@@ -72,69 +73,84 @@
         </div>
       </div>
 
-      <p class="wm-settings__label wm-settings__label--block">{{ 'web.settings.watermark.lblWatermarkText' | translate }}</p>
-
-      <div class="wm-settings__image-row">
-        <div class="wm-settings__current" *ngIf="showCurrentPane; else emptyCurrent">
-          <img
-            *ngIf="watermarkPreviewUrl"
-            class="wm-settings__current-img"
-            [src]="watermarkPreviewUrl"
-            alt="Current watermark"
-          />
-          <div *ngIf="showDefaultLogo" class="wm-settings__logo" aria-hidden="true">
-            <img
-              class="wm-settings__logo-emblem"
-              src="./assets/images/settings/wm-logo-emblem.svg"
-              alt=""
-              width="48"
-              height="48"
-            />
-            <span class="wm-settings__logo-wordmark">
-              <img src="./assets/images/settings/wm-logo-orville.svg" alt="ORVILLE" width="98" height="18" />
-              <img src="./assets/images/settings/wm-logo-tag.svg" alt="REAL ESTATE" width="98" height="5" />
-            </span>
-          </div>
-          <button
-            type="button"
-            class="wm-settings__remove"
-            aria-label="Remove watermark image"
-            (click)="removeWatermarkImage()"
-          >
-            <img src="./assets/images/settings/x-white.svg" alt="" width="12" height="12" />
-          </button>
-        </div>
-        <ng-template #emptyCurrent>
-          <div class="wm-settings__current wm-settings__current--empty">
-            <span class="wm-settings__empty-hint">No watermark image</span>
-          </div>
-        </ng-template>
-
-        <div class="wm-settings__replace" (click)="fileInput.click()">
-          <img
-            class="wm-settings__upload-icon"
-            src="./assets/images/settings/upload-cloud.svg"
-            alt=""
-            width="22"
-            height="22"
-          />
-          <p class="wm-settings__replace-hint">Drag and drop or click to replace</p>
-          <button
-            type="button"
-            class="ov-btn ov-btn-ghost"
-            (click)="$event.stopPropagation(); fileInput.click()"
-          >
-            Replace Image
-          </button>
-          <input
-            #fileInput
-            class="wm-settings__file-input"
-            type="file"
-            accept="image/*"
-            (change)="onReplaceImage($event)"
-          />
-        </div>
+      <!-- Text mode input -->
+      <div *ngIf="watermarkType === 'Text'" class="mt-4 flex flex-col gap-2">
+        <label class="ov-label" for="wm-text-input">Watermark Text</label>
+        <input
+          id="wm-text-input"
+          type="text"
+          class="ov-input"
+          [(ngModel)]="watermarkText"
+          placeholder="Enter watermark text (e.g. ORVILLE REAL ESTATE)"
+        />
       </div>
+
+      <!-- Image mode upload row -->
+      <ng-container *ngIf="watermarkType === 'Image'">
+        <p class="wm-settings__label wm-settings__label--block">{{ 'web.settings.watermark.lblWatermarkText' | translate }}</p>
+
+        <div class="wm-settings__image-row">
+          <div class="wm-settings__current" *ngIf="showCurrentPane; else emptyCurrent">
+            <img
+              *ngIf="watermarkPreviewUrl"
+              class="wm-settings__current-img"
+              [src]="watermarkPreviewUrl"
+              alt="Current watermark"
+            />
+            <div *ngIf="showDefaultLogo" class="wm-settings__logo" aria-hidden="true">
+              <img
+                class="wm-settings__logo-emblem"
+                src="./assets/images/settings/wm-logo-emblem.svg"
+                alt=""
+                width="48"
+                height="48"
+              />
+              <span class="wm-settings__logo-wordmark">
+                <img src="./assets/images/settings/wm-logo-orville.svg" alt="ORVILLE" width="98" height="18" />
+                <img src="./assets/images/settings/wm-logo-tag.svg" alt="REAL ESTATE" width="98" height="5" />
+              </span>
+            </div>
+            <button
+              type="button"
+              class="wm-settings__remove"
+              aria-label="Remove watermark image"
+              (click)="removeWatermarkImage()"
+            >
+              <img src="./assets/images/settings/x-white.svg" alt="" width="12" height="12" />
+            </button>
+          </div>
+          <ng-template #emptyCurrent>
+            <div class="wm-settings__current wm-settings__current--empty">
+              <span class="wm-settings__empty-hint">No watermark image</span>
+            </div>
+          </ng-template>
+
+          <div class="wm-settings__replace" (click)="fileInput.click()">
+            <img
+              class="wm-settings__upload-icon"
+              src="./assets/images/settings/upload-cloud.svg"
+              alt=""
+              width="22"
+              height="22"
+            />
+            <p class="wm-settings__replace-hint">Drag and drop or click to replace</p>
+            <button
+              type="button"
+              class="ov-btn ov-btn-ghost"
+              (click)="$event.stopPropagation(); fileInput.click()"
+            >
+              Replace Image
+            </button>
+            <input
+              #fileInput
+              class="wm-settings__file-input"
+              type="file"
+              accept="image/*"
+              (change)="onReplaceImage($event)"
+            />
+          </div>
+        </div>
+      </ng-container>
     </section>
 
     <aside class="wm-settings__card wm-settings__card--preview">
@@ -157,26 +173,42 @@
           [attr.data-position]="rotation"
           *ngIf="showPreviewMark"
         >
-          <ng-container *ngIf="watermarkPreviewUrl; else defaultPreviewLogo">
-            <img [src]="watermarkPreviewUrl" alt="" />
+          <ng-container *ngIf="watermarkType === 'Text'; else imageWatermarkPreview">
+            <span class="text-white text-base sm:text-lg font-bold tracking-widest uppercase opacity-85 drop-shadow-md select-none px-3 py-1 border border-white/40 rounded bg-black/20">
+              {{ watermarkText || 'ORVILLE REAL ESTATE' }}
+            </span>
           </ng-container>
-          <ng-template #defaultPreviewLogo>
-            <div class="wm-settings__logo wm-settings__logo--preview">
-              <img
-                class="wm-settings__logo-emblem"
-                src="./assets/images/settings/wm-logo-emblem.svg"
-                alt=""
-                width="48"
-                height="48"
-              />
-              <span class="wm-settings__logo-wordmark">
-                <img src="./assets/images/settings/wm-logo-orville.svg" alt="" width="98" height="18" />
-                <img src="./assets/images/settings/wm-logo-tag.svg" alt="" width="98" height="5" />
-              </span>
-            </div>
+          <ng-template #imageWatermarkPreview>
+            <ng-container *ngIf="watermarkPreviewUrl; else defaultPreviewLogo">
+              <img [src]="watermarkPreviewUrl" alt="" />
+            </ng-container>
+            <ng-template #defaultPreviewLogo>
+              <div class="wm-settings__logo wm-settings__logo--preview">
+                <img
+                  class="wm-settings__logo-emblem"
+                  src="./assets/images/settings/wm-logo-emblem.svg"
+                  alt=""
+                  width="48"
+                  height="48"
+                />
+                <span class="wm-settings__logo-wordmark">
+                  <img src="./assets/images/settings/wm-logo-orville.svg" alt="" width="98" height="18" />
+                  <img src="./assets/images/settings/wm-logo-tag.svg" alt="" width="98" height="5" />
+                </span>
+              </div>
+            </ng-template>
           </ng-template>
         </div>
       </div>
     </aside>
   </div>
+
+  <ng-template #disabledWatermarkState>
+    <div class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-defaultborder bg-white p-10 text-center dark:bg-bodybg">
+      <img src="./assets/images/settings/watermark-preview.png" alt="" class="h-24 opacity-30" />
+      <p class="m-0 text-sm font-medium text-textmuted">
+        Watermark is currently disabled. Click <strong>"Enable Watermark"</strong> above to configure security watermarks.
+      </p>
+    </div>
+  </ng-template>
 </div>

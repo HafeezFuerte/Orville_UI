@@ -2,11 +2,10 @@
   <!-- Page header -->
   <div class="flex w-full flex-col gap-1.5">
     <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">
-      Profile verification
+      {{ 'web.settings.profileVerification.title' | translate }}
     </h1>
     <p class="m-0 max-w-3xl text-[13px] font-normal leading-normal text-textmuted">
-      Require landlords and tenants to complete mandatory profile fields before they can take
-      actions.
+      {{ 'web.settings.profileVerification.subtitle' | translate }}
     </p>
   </div>
 
@@ -20,17 +19,16 @@
           class="pv-toggle mt-0.5"
           [class.pv-toggle--on]="enabled"
           [attr.aria-pressed]="enabled"
-          aria-label="Enable profile verification for landlords and tenants"
+          [attr.aria-label]="'web.settings.profileVerification.enableToggleTitle' | translate"
           (click)="enabled = !enabled">
           <span class="pv-toggle__knob"></span>
         </button>
         <div class="min-w-0 flex-1">
           <p class="m-0 text-sm font-semibold text-defaulttextcolor">
-            Enable profile verification for landlords and tenants
+            {{ 'web.settings.profileVerification.enableToggleTitle' | translate }}
           </p>
           <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
-            This setting will require landlords and tenants to upload mandatory information before
-            they can take any action.
+            {{ 'web.settings.profileVerification.enableToggleSub' | translate }}
           </p>
         </div>
       </div>
@@ -40,24 +38,24 @@
 
     <div class="flex flex-col gap-2">
       <label class="text-sm font-semibold text-defaulttextcolor" for="pv-message">
-        Profile verification message
+        {{ 'web.settings.profileVerification.messageLabel' | translate }}
       </label>
       <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
         <textarea
           id="pv-message"
           rows="2"
           class="ov-input flex-1"
-          placeholder="Enter the message shown to landlords and tenants"
+          [placeholder]="'web.settings.profileVerification.messagePlaceholder' | translate"
           [(ngModel)]="verificationMessage"></textarea>
         <button type="button" class="ov-btn ov-btn-primary shrink-0" (click)="saveMessage()">
-          Save
+          {{ 'web.settings.profileVerification.save' | translate }}
         </button>
       </div>
       <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-        This message will be displayed to landlords and tenants before they can take any action.
+        {{ 'web.settings.profileVerification.enableToggleSub' | translate }}
       </p>
       <p *ngIf="messageSaved" class="m-0 text-xs font-medium text-success">
-        Verification message saved.
+        {{ 'web.settings.profileVerification.messageSaved' | translate }}
       </p>
     </div>
   </section>
@@ -77,7 +75,7 @@
         [class.pv-tab--active]="activeTab === 'landlord'"
         [attr.aria-selected]="activeTab === 'landlord'"
         (click)="setTab('landlord')">
-        Landlord
+        {{ 'web.settings.profileVerification.tabLandlord' | translate }}
       </button>
       <button
         type="button"
@@ -86,7 +84,7 @@
         [class.pv-tab--active]="activeTab === 'tenant'"
         [attr.aria-selected]="activeTab === 'tenant'"
         (click)="setTab('tenant')">
-        Tenant
+        {{ 'web.settings.profileVerification.tabTenant' | translate }}
       </button>
     </div>
 
@@ -94,15 +92,15 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
           <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
-            Mandatory {{ roleLabel }} Fields
+            {{ 'web.settings.profileVerification.mandatoryFieldsTitle' | translate }}
           </h2>
           <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
-            Add mandatory fields for {{ roleLabel }}
+            {{ 'web.settings.profileVerification.subtitle' | translate }}
           </p>
         </div>
         <button type="button" class="ov-btn ov-btn-primary" (click)="openEditFields()">
           <span class="text-lg leading-none" aria-hidden="true">+</span>
-          Add {{ roleLabel }} Fields
+          {{ 'web.settings.profileVerification.addFieldsBtn' | translate }}
         </button>
       </div>
 
@@ -112,7 +110,7 @@
         role="status">
         <span class="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[#D08A28] text-[11px] font-bold text-white" aria-hidden="true">i</span>
         <span>
-          Profile verification is disabled. Enable it above to require and edit mandatory fields.
+          {{ 'web.settings.profileVerification.disabledWarn' | translate }}
         </span>
       </div>
 
@@ -127,15 +125,15 @@
         <input
           type="search"
           class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-          [placeholder]="'Search ' + roleLabel.toLowerCase() + ' fields...'"
-          [attr.aria-label]="'Search ' + roleLabel + ' fields'"
+          [placeholder]="'web.settings.profileVerification.searchFields' | translate"
+          [attr.aria-label]="'web.settings.profileVerification.searchFields' | translate"
           [(ngModel)]="fieldSearch" />
       </label>
 
       <div
         class="w-full overflow-hidden rounded-2xl border border-defaultborder"
         role="list"
-        [attr.aria-label]="'Mandatory ' + roleLabel + ' fields'">
+        [attr.aria-label]="'web.settings.profileVerification.mandatoryFieldsTitle' | translate">
         <div
           *ngFor="let field of filteredSelectedFields; let last = last"
           class="flex items-center justify-between gap-3 px-5 py-3.5"
@@ -159,15 +157,14 @@
           *ngIf="filteredSelectedFields.length === 0"
           class="px-5 py-10 text-center text-sm text-textmuted">
           <ng-container *ngIf="selectedFields.length === 0; else noSearchMatch">
-            No mandatory fields yet. Click “Add {{ roleLabel }} Fields” to choose fields.
+            {{ 'web.settings.profileVerification.disabledWarn' | translate }}
           </ng-container>
-          <ng-template #noSearchMatch>No fields match your search.</ng-template>
+          <ng-template #noSearchMatch>{{ 'web.settings.profileVerification.disabledWarn' | translate }}</ng-template>
         </div>
       </div>
 
       <p class="m-0 text-xs text-textmuted">
-        {{ selectedFields.length }} field{{ selectedFields.length === 1 ? '' : 's' }} required for
-        {{ roleLabel.toLowerCase() }}s
+        {{ selectedFields.length }} field{{ selectedFields.length === 1 ? '' : 's' }}
       </p>
     </div>
   </section>
@@ -188,7 +185,7 @@
     <button
       type="button"
       class="ov-modal-close"
-      aria-label="Close"
+      [attr.aria-label]="'web.settings.profileVerification.close' | translate"
       (click)="closeModal()">
       <img
         src="./assets/images/common/close-plus.svg"
@@ -205,7 +202,7 @@
           {{ modalTitle }}
         </h2>
         <p class="m-0 text-[13px] font-normal text-textmuted">
-          Select which profile fields {{ roleLabel.toLowerCase() }}s must complete.
+          {{ 'web.settings.profileVerification.subtitle' | translate }}
         </p>
       </div>
 
@@ -217,8 +214,7 @@
             i
           </span>
           <span>
-            Your company has disabled profile verification so you cannot select any mandatory
-            fields.
+            {{ 'web.settings.profileVerification.disabledWarn' | translate }}
           </span>
         </div>
 
@@ -233,8 +229,8 @@
           <input
             type="search"
             class="h-full w-full min-w-0 p-0 text-sm text-defaulttextcolor placeholder:text-textmuted"
-            placeholder="Search fields..."
-            aria-label="Search fields"
+            [placeholder]="'web.settings.profileVerification.searchFields' | translate"
+            [attr.aria-label]="'web.settings.profileVerification.searchFields' | translate"
             [(ngModel)]="modalSearch" />
         </label>
 
@@ -251,7 +247,7 @@
               [indeterminate]="someDraftSelected"
               [disabled]="!enabled"
               (change)="toggleSelectAllDraft()" />
-            <span class="text-sm font-semibold text-defaulttextcolor">Select All</span>
+            <span class="text-sm font-semibold text-defaulttextcolor">{{ 'web.settings.profileVerification.selectAll' | translate }}</span>
           </label>
 
           <label
@@ -271,21 +267,21 @@
           <div
             *ngIf="modalFilteredOptions.length === 0"
             class="px-4 py-8 text-center text-sm text-textmuted">
-            No fields match your search.
+            {{ 'web.settings.profileVerification.disabledWarn' | translate }}
           </div>
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2.5 border-t border-defaultborder p-5">
         <button type="button" class="ov-btn ov-btn-muted ov-btn--sm" (click)="closeModal()">
-          Close
+          {{ 'web.settings.profileVerification.close' | translate }}
         </button>
         <button
           type="button"
           class="ov-btn ov-btn-primary ov-btn--sm"
           [disabled]="!enabled"
           (click)="saveFields()">
-          Save
+          {{ 'web.settings.profileVerification.save' | translate }}
         </button>
       </div>
     </div>

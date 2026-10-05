@@ -22,7 +22,7 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
 @Component({
   selector: 'app-quotation-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule,NotesComponent,AttachmentsComponent, RouterModule, NgSelectModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule, NotesComponent, AttachmentsComponent, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule],
   templateUrl: './quotation-detail.component.html',
   styleUrl: './quotation-detail.component.scss'
 })
