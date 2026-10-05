@@ -184,7 +184,7 @@ export class MastersComponent implements OnInit {
         this.loadingItems = false;
         if (res?.statusCode === '200' && res?.objResult?.table) {
           this.categoryItems = res.objResult.table.map((item: any) => ({
-            id: item.id,
+            id: item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0,
             code: item.code || item.account_code || item.country_code || item.state_code || item.city_code || '-',
             name: item.name || item.country_name || item.state_name || item.city_name || item.account_name || item.profile_name || '',
             arabic_name: item.arabic_name || item.state_name_ar || item.city_name_ar || '',
@@ -192,7 +192,7 @@ export class MastersComponent implements OnInit {
             is_active: item.is_active ?? item.isActive ?? true,
             display_order: item.display_order ?? 0,
             class_name: item.class_name || '',
-            dependency_id: item.dependency_id ?? null
+            dependency_id: item.dependency_id ?? item.country_id ?? item.state_id ?? null
           }));
         }
       },
@@ -230,7 +230,7 @@ export class MastersComponent implements OnInit {
         this.loadingDependencyItems = false;
         if (res?.statusCode === '200' && res?.objResult?.table) {
           this.dependencyItems = res.objResult.table.map((item: any) => ({
-            id: item.id,
+            id: item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0,
             code: item.code || item.account_code || item.country_code || item.state_code || item.city_code || '-',
             name: item.name || item.country_name || item.state_name || item.city_name || item.account_name || item.profile_name || '',
             arabic_name: item.arabic_name || item.state_name_ar || item.city_name_ar || '',
@@ -238,7 +238,7 @@ export class MastersComponent implements OnInit {
             is_active: item.is_active ?? item.isActive ?? true,
             display_order: item.display_order ?? 0,
             class_name: item.class_name || '',
-            dependency_id: item.dependency_id ?? null
+            dependency_id: item.dependency_id ?? item.country_id ?? item.state_id ?? null
           }));
 
           if (preserveDependencyId) {
@@ -261,10 +261,12 @@ export class MastersComponent implements OnInit {
   // ── Action handlers from shared-table ─────────────────────────────────────
   handleEditAction(event: any): void {
     if (!event) return;
-    if (event.action_name === 'edit' || !event.action_name) {
-      this.openEditForm(event);
-    } else if (event.action_name === 'delete') {
-      this.deleteMasterItem(event);
+    const action = event.action_name || (event.action ? event.action.name : 'edit');
+    const rowData = event.row || event.item || event;
+    if (action === 'edit') {
+      this.openEditForm(rowData);
+    } else if (action === 'delete') {
+      this.deleteMasterItem(rowData);
     }
   }
 
@@ -273,8 +275,17 @@ export class MastersComponent implements OnInit {
     this.isEditMode = true;
     this.dependencyItems = [];
 
+    let depTypeId = item.dependency_type_id || null;
+    if (!depTypeId && this.selectedCategoryId === 1001) {
+      depTypeId = 1000; // State depends on Country
+    } else if (!depTypeId && this.selectedCategoryId === 1002) {
+      depTypeId = 1001; // City depends on State
+    }
+
+    const depId = item.dependency_id ?? item.country_id ?? item.state_id ?? null;
+
     this.masterForm.reset({
-      id: item.id || 0,
+      id: item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0,
       lookup_TypeId: this.selectedCategoryId || 0,
       code: item.code && item.code !== '-' ? item.code : '',
       name: item.name || '',
@@ -284,14 +295,14 @@ export class MastersComponent implements OnInit {
       company_id: user?.companyId || 1,
       display_order: item.display_order ?? 0,
       user_id: user?.userId || 1,
-      dependency_type_id: null,
-      dependency_id: item.dependency_id ?? null,
+      dependency_type_id: depTypeId,
+      dependency_id: depId,
       class_name: item.class_name || '',
       clientid: user?.clientId || '74BB6922'
     });
 
-    if (item.dependency_id) {
-      this.onDependencyTypeChange(item.dependency_type_id || null, item.dependency_id);
+    if (depTypeId) {
+      this.onDependencyTypeChange(depTypeId, depId);
     }
 
     this.showForm = true;
@@ -302,10 +313,11 @@ export class MastersComponent implements OnInit {
 
     const user = this.commonService.getCurrentUser();
     const url = environment.apiurl + 'api/Masters/_getMasters';
+    const itemId = item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0;
     const payload = {
       typeId: -1,
       filterId: -1,
-      filterText: String(item.id),
+      filterText: String(itemId),
       filterText1: String(this.selectedCategoryId),
       userId: user?.userId || 1,
       clientId: user?.clientId || '74BB6922',
@@ -336,6 +348,13 @@ export class MastersComponent implements OnInit {
     this.isEditMode = false;
     this.dependencyItems = [];
 
+    let depTypeId: number | null = null;
+    if (this.selectedCategoryId === 1001) {
+      depTypeId = 1000; // State depends on Country
+    } else if (this.selectedCategoryId === 1002) {
+      depTypeId = 1001; // City depends on State
+    }
+
     this.masterForm.reset({
       id: 0,
       lookup_TypeId: this.selectedCategoryId || 0,
@@ -347,11 +366,15 @@ export class MastersComponent implements OnInit {
       company_id: user?.companyId || 1,
       display_order: 0,
       user_id: user?.userId || 1,
-      dependency_type_id: null,
+      dependency_type_id: depTypeId,
       dependency_id: null,
       class_name: '',
       clientid: user?.clientId || '74BB6922'
     });
+
+    if (depTypeId) {
+      this.onDependencyTypeChange(depTypeId);
+    }
 
     this.showForm = true;
   }

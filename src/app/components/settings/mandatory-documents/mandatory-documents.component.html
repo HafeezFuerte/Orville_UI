@@ -9,7 +9,8 @@
         {{ 'web.settings.mandatoryDocs.lblSubtitle' | translate }}
       </p>
     </div>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="updateSettings()">
+    <button type="button" class="ov-btn ov-btn-primary" [disabled]="isLoading" (click)="updateSettings()">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
       {{ 'web.common.lblUpdate' | translate }}
     </button>
   </div>
@@ -43,6 +44,7 @@
 
   <!-- Documents list card -->
   <section
+    *ngIf="enabled"
     class="flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white p-5 dark:bg-bodybg">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
@@ -178,8 +180,8 @@
                   <select
                     id="md-doc-type"
                     class="ov-input cursor-pointer appearance-none pr-8"
-                    [(ngModel)]="draftDocumentType">
-                    <option *ngFor="let t of documentTypeOptions" [value]="t">{{ t }}</option>
+                    [(ngModel)]="draftDocumentTypeId">
+                    <option *ngFor="let t of documentTypeOptions" [value]="t.id">{{ t.name }}</option>
                   </select>
                   <img
                     src="./assets/images/settings/chevron-down.svg"

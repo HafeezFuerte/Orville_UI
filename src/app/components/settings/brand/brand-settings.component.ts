@@ -1,7 +1,13 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateModule } from '@ngx-translate/core';
+import { forkJoin, Observable } from 'rxjs';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 
 type LogoSlot = 'originalLogo' | 'whiteLogo' | 'originalIcon' | 'whiteIcon';
 
@@ -13,8 +19,6 @@ interface LogoUpload {
   fileName: string | null;
 }
 
-import { TranslateModule } from '@ngx-translate/core';
-
 @Component({
   selector: 'app-brand-settings',
   standalone: true,
@@ -22,7 +26,11 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './brand-settings.component.html',
   styleUrl: './brand-settings.component.scss',
 })
-export class BrandSettingsComponent implements OnDestroy {
+export class BrandSettingsComponent implements OnInit, OnDestroy {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   readonly defaultPrimary = '#57BFC7';
   readonly defaultSecondary = '#1989FA';
   readonly defaultTheme = 'Minimal';
@@ -32,6 +40,18 @@ export class BrandSettingsComponent implements OnDestroy {
   selectedTheme = this.defaultTheme;
   darkMode = true;
   applyPreviewEnabled = false;
+  isLoading = false;
+
+  // Track raw File objects selected by the user before uploading
+  selectedFiles: Map<LogoSlot, File> = new Map();
+
+  // Saved image URLs from server
+  existingLogoUrls: Record<LogoSlot, string> = {
+    originalLogo: '',
+    whiteLogo: '',
+    originalIcon: '',
+    whiteIcon: '',
+  };
 
   themeOptions = [
     { label: 'Minimal', value: 'Minimal' },
@@ -46,8 +66,78 @@ export class BrandSettingsComponent implements OnDestroy {
     { key: 'whiteIcon', label: 'White Logo Icon', hint: 'Click to upload white icon', previewUrl: null, fileName: null },
   ];
 
+  ngOnInit(): void {
+    this.fetchBrandSettings();
+  }
+
   ngOnDestroy(): void {
     this.uploads.forEach((u) => this.revokePreview(u));
+  }
+
+  // API Call: Get Brand Records (TypeId: 2, FilterId: 1005)
+  fetchBrandSettings(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'brand_theme',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0) {
+            const row = records[0];
+            if (row.strValue) {
+              this.parseBrandData(row.strValue);
+            }
+          }
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to load brand settings', 'Error');
+        console.error('Error fetching brand settings:', err);
+      },
+    });
+  }
+
+  private parseBrandData(strValue: string): void {
+    try {
+      const parsed = JSON.parse(strValue);
+      const item = Array.isArray(parsed) ? parsed[0] : parsed;
+      if (!item) return;
+
+      if (item.primary_color) this.primaryColor = item.primary_color;
+      if (item.secondary_color) this.secondaryColor = item.secondary_color;
+      if (item.theme) this.selectedTheme = item.theme;
+      if (item.dark_mode !== undefined) {
+        this.darkMode = item.dark_mode === 'true' || item.dark_mode === true;
+      }
+
+      this.existingLogoUrls.originalLogo = item.original_logo || '';
+      this.existingLogoUrls.whiteLogo = item.white_logo || '';
+      this.existingLogoUrls.originalIcon = item.original_logo_icon || '';
+      this.existingLogoUrls.whiteIcon = item.white_logo_icon || '';
+
+      this.uploads.forEach((u) => {
+        const serverUrl = this.existingLogoUrls[u.key];
+        if (serverUrl) {
+          u.previewUrl = serverUrl;
+          u.fileName = serverUrl.split('/').pop() || null;
+        }
+      });
+    } catch (e) {
+      console.error('Failed to parse brand strValue JSON:', e);
+    }
   }
 
   onFileSelected(event: Event, upload: LogoUpload): void {
@@ -59,7 +149,132 @@ export class BrandSettingsComponent implements OnDestroy {
     this.revokePreview(upload);
     upload.previewUrl = URL.createObjectURL(file);
     upload.fileName = file.name;
+    this.selectedFiles.set(upload.key, file);
     input.value = '';
+  }
+
+  // Upload single logo image file before saving theme settings
+  private uploadSingleFile(key: LogoSlot, file: File): Observable<{ key: LogoSlot; url: string }> {
+    const user = this.commonService.getCurrentUser();
+    const reqObject = {
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      company_id: user?.companyId || 1,
+      source: 'web',
+      languageid: 1,
+      code: '',
+      entity_id: '1',
+      entity: 'Brand',
+      document_type: 28,
+      document_no: 'LOGO-' + Math.floor(Math.random() * 1000000),
+      issue_date: new Date().toISOString().substring(0, 10),
+      expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+      issuing_authority: 'System',
+      share_with_tenants: true,
+      status: 33,
+      share_with_landlords: true,
+    };
+
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(reqObject));
+    formData.append('file_path', file);
+
+    const url = environment.apiurl + 'api/Masters/save_documents';
+    return new Observable((observer) => {
+      this.http.post<any>(url, formData, { headers: this.commonService.updateHeaders() }).subscribe({
+        next: (res) => {
+          let uploadedUrl = '';
+          if (res && (res.statusCode === '200' || res.statusCode === 200)) {
+            uploadedUrl =
+              res.objResult?.file_path ||
+              (Array.isArray(res.objResult?.table) ? res.objResult.table[0]?.file_path : '') ||
+              '';
+          }
+          observer.next({ key, url: uploadedUrl || this.existingLogoUrls[key] });
+          observer.complete();
+        },
+        error: (err) => {
+          console.error(`Failed to upload image for ${key}:`, err);
+          observer.next({ key, url: this.existingLogoUrls[key] });
+          observer.complete();
+        },
+      });
+    });
+  }
+
+  // Main Save Action: Upload images first, then save JSON payload (TypeId: 90)
+  saveBrandSettings(): void {
+    this.isLoading = true;
+    const uploadTasks: Observable<{ key: LogoSlot; url: string }>[] = [];
+
+    this.selectedFiles.forEach((file, key) => {
+      uploadTasks.push(this.uploadSingleFile(key, file));
+    });
+
+    if (uploadTasks.length > 0) {
+      forkJoin(uploadTasks).subscribe({
+        next: (results) => {
+          results.forEach((res) => {
+            if (res.url) {
+              this.existingLogoUrls[res.key] = res.url;
+            }
+          });
+          this.executeSaveTypeId90();
+        },
+        error: (err) => {
+          console.error('Error in batch uploading logo images:', err);
+          this.executeSaveTypeId90();
+        },
+      });
+    } else {
+      this.executeSaveTypeId90();
+    }
+  }
+
+  // API Call: Save Brand Records (TypeId: 90, FilterId: 1005)
+  private executeSaveTypeId90(): void {
+    const strValueObj = [
+      {
+        original_logo: this.existingLogoUrls.originalLogo,
+        white_logo: this.existingLogoUrls.whiteLogo,
+        original_logo_icon: this.existingLogoUrls.originalIcon,
+        white_logo_icon: this.existingLogoUrls.whiteIcon,
+        primary_color: this.primaryColor,
+        secondary_color: this.secondaryColor,
+        theme: this.selectedTheme,
+        dark_mode: String(this.darkMode),
+      },
+    ];
+
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'brand_theme',
+      filterText1: JSON.stringify(strValueObj),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200') {
+          this.toastr.success('Brand theme settings saved successfully!', 'Success');
+          this.selectedFiles.clear();
+          this.fetchBrandSettings();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save brand theme settings', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to save brand theme settings', 'Error');
+        console.error('Error saving brand theme settings:', err);
+      },
+    });
   }
 
   onPrimaryInput(value: string): void {
@@ -85,7 +300,6 @@ export class BrandSettingsComponent implements OnDestroy {
   }
 
   generateTheme(): void {
-    // Presentation-only: mark preview as available after generating from colors
     this.applyPreviewEnabled = true;
   }
 
@@ -93,7 +307,6 @@ export class BrandSettingsComponent implements OnDestroy {
     if (!this.applyPreviewEnabled) {
       return;
     }
-    // Local preview only — does not override the global theme switcher
   }
 
   reset(): void {
@@ -102,31 +315,12 @@ export class BrandSettingsComponent implements OnDestroy {
     this.selectedTheme = this.defaultTheme;
     this.darkMode = true;
     this.applyPreviewEnabled = false;
+    this.selectedFiles.clear();
     this.uploads.forEach((u) => {
       this.revokePreview(u);
-      u.previewUrl = null;
-      u.fileName = null;
+      u.previewUrl = this.existingLogoUrls[u.key] || null;
+      u.fileName = u.previewUrl ? u.previewUrl.split('/').pop() || null : null;
     });
-  }
-
-  saveThemeJson(): void {
-    const payload = {
-      primaryColor: this.primaryColor,
-      secondaryColor: this.secondaryColor,
-      theme: this.selectedTheme,
-      darkMode: this.darkMode,
-      logos: this.uploads.map((u) => ({
-        key: u.key,
-        fileName: u.fileName,
-      })),
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'orville-brand-theme.json';
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   private normalizeHex(value: string, fallback: string): string {
@@ -142,8 +336,9 @@ export class BrandSettingsComponent implements OnDestroy {
   }
 
   private revokePreview(upload: LogoUpload): void {
-    if (upload.previewUrl) {
+    if (upload.previewUrl && upload.previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(upload.previewUrl);
     }
   }
 }
+
