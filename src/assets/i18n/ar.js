@@ -3,6 +3,7 @@ export const locale = {
   "data": {
     "web": {
       "contacts": {
+        "lblclosingStatus": "حالة الإغلاق",
         "lblTenantLoginInfo": "معلومات تسجيل دخول المستأجر",
         "lblSelect": "اختر الجنس",
         "lblEnteruser": "أدخل اسم المستخدم",
@@ -416,6 +417,7 @@ export const locale = {
         "lblPrice": "السعر"
       },
       "Unit": {
+        "lblReraNumber": "رقم Rera",
         "lblclosingStatus": "حالة الإغلاق",
         "lblRoomType": "نوع الغرفة",
         "lblUnitNo": "رقم الوحدة",
@@ -809,6 +811,17 @@ export const locale = {
         "lblAllTypes": "كل الأنواع"
       },
       "common": {
+        "lblEnter": "إدخال",
+        "lblSelect": "اختيار",
+        "lblClear": "مسح",
+        "lblExport": "تصدير",
+        "lblRoomType": "نوع الغرفة",
+        "lblBeds": "الأسرة",
+        "lblFloorNumber": "رقم الطابق",
+        "lblRentType": "نوع الإيجار",
+        "lblDeposit": "الإيداع",
+        "lblMarketRent": "إيجار السوق",
+        "lblTotalServiceCharges": "إجمالي رسوم الخدمة",
         "show": "عرض",
         "showing": "عرض",
         "to": "إلى",
@@ -1229,7 +1242,8 @@ export const locale = {
         },
         "lblIsRequired": "مطلوب",
         "phSearchByNameOrID": "البحث بالاسم أو الرقم التعريف...",
-        "lblPhoneNumber": "رقم الهاتف" },
+        "lblPhoneNumber": "رقم الهاتف"
+      },
       "leases": {
         "lblLeaseManagement": "إدارة عقد الإيجار",
         "lblManageLeases": "إدارة وعرض جميع عقود الإيجار الخاصة بك",

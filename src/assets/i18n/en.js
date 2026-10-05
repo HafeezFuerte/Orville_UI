@@ -3,6 +3,7 @@ export const locale = {
   "data": {
     "web": {
       "contacts": {
+        "lblclosingStatus": "Closing Status",
         "lblSelect": "Select Gender",
         "lblTenantLoginInfo": "Tenant Login Info",
         "lblEnteruser": "Enter Username",
@@ -416,6 +417,7 @@ export const locale = {
         "lblEditUnit": "Edit Unit"
       },
       "Unit": {
+        "lblReraNumber": "Rera Number",
         "lblclosingStatus": "Closing Status",
         "lblRoomType": "RoomType",
         "lblUnitNo": "UnitNo",
@@ -809,6 +811,17 @@ export const locale = {
         "lblAllTypes": "All Types"
       },
       "common": {
+        "lblEnter": "Enter",
+        "lblSelect": "Select",
+        "lblClear": "Clear",
+        "lblExport": "Export",
+        "lblRoomType": "Room Type",
+        "lblBeds": "Beds",
+        "lblFloorNumber": "Floor Number",
+        "lblRentType": "Rent Type",
+        "lblDeposit": "Deposit",
+        "lblMarketRent": "Market Rent",
+        "lblTotalServiceCharges": "Total Service Charges",
         "show": "Show",
         "showing": "Showing",
         "to": "to",
