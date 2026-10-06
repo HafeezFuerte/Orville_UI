@@ -1820,6 +1820,7 @@ export const locale = {
           "update": "Update"
         },
         "bankAccounts": {
+          "total": "Total",
           "title": "Bank Accounts",
           "sub": "Manage all bank accounts for payments and collections",
           "addAccount": "Add Bank Account",
@@ -1873,6 +1874,7 @@ export const locale = {
           "saveChanges": "Save Changes"
         },
         "taxProfiles": {
+          "total": "Total",
           "title": "Tax Profiles",
           "sub": "Manage and reuse tax configurations",
           "addNew": "Add New",
@@ -1904,6 +1906,7 @@ export const locale = {
           "save": "Save"
         },
         "discountProfiles": {
+          "total": "Total",
           "title": "Discount Profiles",
           "sub": "Manage and reuse discount configurations",
           "addNew": "Add New",

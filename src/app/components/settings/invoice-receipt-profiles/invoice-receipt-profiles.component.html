@@ -1,4 +1,12 @@
-<div class="flex flex-col gap-4 py-4 font-hanken">
+<div class="relative flex flex-col gap-4 py-4 font-hanken">
+  <!-- Loading overlay -->
+  <div *ngIf="isLoading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-xs rounded-2xl">
+    <div class="flex items-center gap-3 rounded-lg bg-white px-4 py-2.5 shadow-md dark:bg-bodybg border border-defaultborder">
+      <div class="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+      <span class="text-sm font-medium text-defaulttextcolor">Loading...</span>
+    </div>
+  </div>
+
   <!-- Page header -->
   <div class="flex w-full flex-wrap items-center justify-between gap-4">
     <div class="flex min-w-0 flex-col gap-1.5">
@@ -306,7 +314,8 @@
                 id="irp-state"
                 class="ov-input cursor-pointer appearance-none pr-8 disabled:opacity-50"
                 [disabled]="!draft.country"
-                [(ngModel)]="draft.state">
+                [(ngModel)]="draft.state"
+                (ngModelChange)="onStateChange()">
                 <option value="">{{ 'web.settings.invoiceReceiptProfiles.selectState' | translate }}</option>
                 <option *ngFor="let s of stateOptions" [value]="s">{{ s }}</option>
               </select>
@@ -320,12 +329,22 @@
           </div>
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="irp-city">{{ 'web.settings.invoiceReceiptProfiles.city' | translate }}</label>
-            <input
-              id="irp-city"
-              type="text"
-              class="ov-input"
-              placeholder="City"
-              [(ngModel)]="draft.city" />
+            <div class="relative">
+              <select
+                id="irp-city"
+                class="ov-input cursor-pointer appearance-none pr-8 disabled:opacity-50"
+                [disabled]="!draft.state"
+                [(ngModel)]="draft.city">
+                <option value="">Select City</option>
+                <option *ngFor="let c of cityOptions" [value]="c">{{ c }}</option>
+              </select>
+              <img
+                src="./assets/images/settings/chevron-down.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
           </div>
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="irp-postcode">{{ 'web.settings.invoiceReceiptProfiles.postcode' | translate }}</label>

@@ -1820,6 +1820,7 @@ export const locale = {
           "update": "تحديث"
         },
         "bankAccounts": {
+          "total": "المجموع",
           "title": "الحسابات المصرفية",
           "sub": "إدارة جميع الحسابات المصرفية للمدفوعات والتحصيلات",
           "addAccount": "إضافة حساب مصرفي",
@@ -1873,6 +1874,7 @@ export const locale = {
           "saveChanges": "حفظ التغييرات"
         },
         "taxProfiles": {
+          "total": "المجموع",
           "title": "ملفات تعريف الضريبة",
           "sub": "إدارة وتكرار استخدام إعدادات الضريبة",
           "addNew": "إضافة جديد",
@@ -1904,6 +1906,7 @@ export const locale = {
           "save": "حفظ"
         },
         "discountProfiles": {
+          "total": "المجموع",
           "title": "ملفات تعريف الخصم",
           "sub": "إدارة وتكرار استخدام إعدادات الخصم",
           "addNew": "إضافة جديد",

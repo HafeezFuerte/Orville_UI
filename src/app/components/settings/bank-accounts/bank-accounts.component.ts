@@ -1,7 +1,11 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import {
   BANK_ACCOUNT_TYPE_OPTIONS,
   BANK_CURRENCY_OPTIONS,
@@ -19,16 +23,20 @@ import {
   templateUrl: './bank-accounts.component.html',
   styleUrl: './bank-accounts.component.scss',
 })
-export class BankAccountsComponent {
+export class BankAccountsComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   modalOpen = false;
   showColumns = false;
   editingId: number | null = null;
+  isLoading = false;
 
   draft: Omit<BankAccount, 'id'> = { ...EMPTY_BANK_ACCOUNT };
-
-  rows: BankAccount[] = DEFAULT_BANK_ACCOUNTS.map((r) => ({ ...r }));
+  rows: BankAccount[] = [];
 
   readonly currencies = BANK_CURRENCY_OPTIONS;
   readonly accountTypes = BANK_ACCOUNT_TYPE_OPTIONS;
@@ -131,6 +139,59 @@ export class BankAccountsComponent {
     );
   }
 
+  ngOnInit(): void {
+    this.fetchAccounts();
+  }
+
+  // API Call: Fetch Accounts (TypeId: 2, FilterId: 1005, FilterText: "bank_accounts")
+  fetchAccounts(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'bank_accounts',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0) {
+            const row = records[0];
+            if (row.strValue) {
+              try {
+                const parsed = JSON.parse(row.strValue);
+                if (Array.isArray(parsed)) {
+                  this.rows = parsed;
+                  const maxId = this.rows.reduce((max, r) => (r.id > max ? r.id : max), 0);
+                  this.nextId = maxId + 1;
+                  return;
+                }
+              } catch (e) {
+                console.error('Failed to parse bank_accounts strValue:', e);
+              }
+            }
+          }
+        }
+        // Fallback default bank accounts if no backend record found
+        this.rows = DEFAULT_BANK_ACCOUNTS.map((r) => ({ ...r }));
+        this.nextId = this.rows.length + 1;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to load bank accounts', 'Error');
+        console.error('Error fetching bank accounts:', err);
+      },
+    });
+  }
+
   isColumnVisible(key: string): boolean {
     return this.columns.find((c) => c.key === key)?.visible !== false;
   }
@@ -214,40 +275,76 @@ export class BankAccountsComponent {
       isPrimary: !!this.draft.isPrimary,
     };
 
+    let updatedRows: BankAccount[];
     if (this.editingId == null) {
       const id = this.nextId++;
-      let next = [...this.rows, { id, ...payload }];
+      updatedRows = [...this.rows, { id, ...payload }];
       if (payload.isPrimary) {
-        next = next.map((row) => ({ ...row, isPrimary: row.id === id }));
+        updatedRows = updatedRows.map((row) => ({ ...row, isPrimary: row.id === id }));
       }
-      this.rows = next;
     } else {
-      let next = this.rows.map((row) =>
+      updatedRows = this.rows.map((row) =>
         row.id === this.editingId ? { ...row, ...payload } : row
       );
       if (payload.isPrimary) {
-        next = next.map((row) => ({
+        updatedRows = updatedRows.map((row) => ({
           ...row,
           isPrimary: row.id === this.editingId,
         }));
       }
-      this.rows = next;
     }
     this.closeModal();
+    this.saveAccountsBackend(updatedRows);
   }
 
   deleteAccount(row: BankAccount): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
+    const updatedRows = this.rows.filter((r) => r.id !== row.id);
+    this.saveAccountsBackend(updatedRows);
   }
 
   setPrimary(row: BankAccount): void {
-    this.rows = this.rows.map((r) => ({
+    const updatedRows = this.rows.map((r) => ({
       ...r,
       isPrimary: r.id === row.id,
     }));
+    this.saveAccountsBackend(updatedRows);
   }
 
   onAccountTypeChange(type: BankAccountType): void {
     this.draft.accountType = type;
   }
+
+  // API Call: Save / Update Bank Accounts (TypeId: 90, FilterId: 1005, FilterText: "bank_accounts")
+  private saveAccountsBackend(rowsToSave: BankAccount[]): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'bank_accounts',
+      filterText1: JSON.stringify(rowsToSave),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200') {
+          this.toastr.success('Bank accounts updated successfully!', 'Success');
+          this.fetchAccounts();
+        } else {
+          this.toastr.error(res?.message || 'Failed to update bank accounts', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to update bank accounts', 'Error');
+        console.error('Save bank accounts error:', err);
+      },
+    });
+  }
 }
+

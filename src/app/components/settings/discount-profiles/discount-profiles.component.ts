@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import {
   DEFAULT_DISCOUNT_PROFILES,
   DISCOUNT_TYPE_OPTIONS,
@@ -17,14 +21,18 @@ import {
   templateUrl: './discount-profiles.component.html',
   styleUrl: './discount-profiles.component.scss',
 })
-export class DiscountProfilesComponent {
+export class DiscountProfilesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   modalOpen = false;
   editingId: number | null = null;
+  isLoading = false;
 
   draft: Omit<DiscountProfile, 'id'> = { ...EMPTY_DISCOUNT_PROFILE };
-
-  rows: DiscountProfile[] = DEFAULT_DISCOUNT_PROFILES.map((r) => ({ ...r }));
+  rows: DiscountProfile[] = [];
 
   readonly discountTypes = DISCOUNT_TYPE_OPTIONS;
   private nextId = 1;
@@ -74,6 +82,59 @@ export class DiscountProfilesComponent {
     return this.draft.discountType === 'Fixed Amount' ? 'AED' : '%';
   }
 
+  ngOnInit(): void {
+    this.fetchProfiles();
+  }
+
+  // API Call: Fetch Profiles (TypeId: 2, FilterId: 1005, FilterText: "discount_profile")
+  fetchProfiles(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'discount_profile',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0) {
+            const row = records[0];
+            if (row.strValue) {
+              try {
+                const parsed = JSON.parse(row.strValue);
+                if (Array.isArray(parsed)) {
+                  this.rows = parsed;
+                  const maxId = this.rows.reduce((max, r) => (r.id > max ? r.id : max), 0);
+                  this.nextId = maxId + 1;
+                  return;
+                }
+              } catch (e) {
+                console.error('Failed to parse discount_profile strValue:', e);
+              }
+            }
+          }
+        }
+        // Fallback default profiles if no backend record found
+        this.rows = DEFAULT_DISCOUNT_PROFILES.map((r) => ({ ...r }));
+        this.nextId = this.rows.length + 1;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to load discount profiles', 'Error');
+        console.error('Error fetching discount profiles:', err);
+      },
+    });
+  }
+
   openCreate(): void {
     this.editingId = null;
     this.draft = { ...EMPTY_DISCOUNT_PROFILE };
@@ -117,26 +178,26 @@ export class DiscountProfilesComponent {
       isDefault: !!this.draft.isDefault,
     };
 
+    let updatedRows: DiscountProfile[];
     if (this.editingId == null) {
       const id = this.nextId++;
-      let next = [...this.rows, { id, ...payload }];
+      updatedRows = [...this.rows, { id, ...payload }];
       if (payload.isDefault) {
-        next = next.map((row) => ({ ...row, isDefault: row.id === id }));
+        updatedRows = updatedRows.map((row) => ({ ...row, isDefault: row.id === id }));
       }
-      this.rows = next;
     } else {
-      let next = this.rows.map((row) =>
+      updatedRows = this.rows.map((row) =>
         row.id === this.editingId ? { ...row, ...payload } : row
       );
       if (payload.isDefault) {
-        next = next.map((row) => ({
+        updatedRows = updatedRows.map((row) => ({
           ...row,
           isDefault: row.id === this.editingId,
         }));
       }
-      this.rows = next;
     }
     this.closeModal();
+    this.saveProfilesBackend(updatedRows);
   }
 
   duplicate(row: DiscountProfile): void {
@@ -151,13 +212,49 @@ export class DiscountProfilesComponent {
   }
 
   deleteProfile(row: DiscountProfile): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
+    const updatedRows = this.rows.filter((r) => r.id !== row.id);
+    this.saveProfilesBackend(updatedRows);
   }
 
   setDefault(row: DiscountProfile): void {
-    this.rows = this.rows.map((r) => ({
+    const updatedRows = this.rows.map((r) => ({
       ...r,
       isDefault: r.id === row.id,
     }));
+    this.saveProfilesBackend(updatedRows);
+  }
+
+  // API Call: Save / Update Profiles (TypeId: 90, FilterId: 1005, FilterText: "discount_profile")
+  private saveProfilesBackend(rowsToSave: DiscountProfile[]): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'discount_profile',
+      filterText1: JSON.stringify(rowsToSave),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200') {
+          this.toastr.success('Discount profiles updated successfully!', 'Success');
+          this.fetchProfiles();
+        } else {
+          this.toastr.error(res?.message || 'Failed to update discount profiles', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toastr.error('Failed to update discount profiles', 'Error');
+        console.error('Save discount profiles error:', err);
+      },
+    });
   }
 }
+
