@@ -69,6 +69,9 @@
             {{ 'web.settings.taxProfiles.expense' | translate }}
           </div>
           <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
+            GL Expense Account
+          </div>
+          <div class="tp-table__cell text-xs font-semibold text-textmuted" role="columnheader">
             {{ 'web.settings.taxProfiles.defaultFor' | translate }}
           </div>
           <div class="tp-table__cell tp-table__cell--action text-xs font-semibold text-textmuted" role="columnheader">
@@ -95,6 +98,9 @@
               {{ 'web.settings.taxProfiles.yes' | translate }}
             </span>
             <span *ngIf="!row.expenseProfile" class="text-sm text-textmuted">{{ 'web.settings.taxProfiles.no' | translate }}</span>
+          </div>
+          <div class="tp-table__cell text-sm text-defaulttextcolor" role="cell">
+            {{ getAccountName(row.expenseAccountId) }}
           </div>
           <div class="tp-table__cell text-sm text-defaulttextcolor" role="cell">
             {{ defaultLabel(row) }}
@@ -198,6 +204,19 @@
                   class="ov-input tp-affix__input"
                   [(ngModel)]="draft.percentage" />
               </div>
+            </div>
+
+            <div class="flex min-w-0 flex-col gap-2">
+              <label class="ov-label" for="tp-gl-account">Expense Account Mapping / Tax Ledger</label>
+              <select
+                id="tp-gl-account"
+                class="ov-input"
+                [(ngModel)]="draft.expenseAccountId">
+                <option value="">-- Select GL Account --</option>
+                <option *ngFor="let acc of glAccountsList" [value]="acc.id">
+                  {{ acc.name }}
+                </option>
+              </select>
             </div>
 
             <label class="flex cursor-pointer items-start gap-3">

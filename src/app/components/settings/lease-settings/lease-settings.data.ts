@@ -61,6 +61,10 @@ export interface LeaseSettingsModel extends LeaseToggleState {
   renewalChecklists: LeaseChecklistItem[];
   fixedPayments: LeaseFixedPayment[];
   leaseTerms: LeaseTerm[];
+  unearnedRentAccountId?: string;
+  rentIncomeAccountId?: string;
+  securityDepositAccountId?: string;
+  landlordPayableAccountId?: string;
 }
 
 export const LEASE_PENALTY_ACCOUNTS: LeaseAccountOption[] = [
@@ -116,6 +120,10 @@ export const DEFAULT_LEASE_SETTINGS: LeaseSettingsModel = {
   renewalChecklists: [],
   fixedPayments: [],
   leaseTerms: [],
+  unearnedRentAccountId: 'ADD2C',
+  rentIncomeAccountId: '7C2EF',
+  securityDepositAccountId: 'F4F69',
+  landlordPayableAccountId: '833DC',
   shortTermLeasePriority: true,
   includeCommonArea: false,
   generateCommissionInvoice: false,

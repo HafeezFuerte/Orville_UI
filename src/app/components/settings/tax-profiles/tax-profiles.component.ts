@@ -31,6 +31,7 @@ export class TaxProfilesComponent implements OnInit {
 
   draft: Omit<TaxProfile, 'id'> = { ...EMPTY_TAX_PROFILE };
   rows: TaxProfile[] = [];
+  glAccountsList: { id: string; name: string }[] = [];
 
   private nextId = 1;
 
@@ -66,7 +67,40 @@ export class TaxProfilesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.fetchGLAccounts();
     this.fetchProfiles();
+  }
+
+  // API Call: Fetch GL Accounts Master (TypeId: 2, FilterId: 1003)
+  fetchGLAccounts(): void {
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1003,
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0) {
+            this.glAccountsList = records.map((acc: any) => ({
+              id: acc.account_code || acc.code || String(acc.id),
+              name: `${acc.account_name}${acc.account_code ? ' (' + acc.account_code + ')' : ''}`,
+            }));
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching GL accounts for tax profiles:', err);
+      },
+    });
   }
 
   // API Call: Fetch Profiles (TypeId: 2, FilterId: 1005, FilterText: "tax_profiles")
@@ -132,6 +166,7 @@ export class TaxProfilesComponent implements OnInit {
       expenseProfile: row.expenseProfile,
       defaultCommercial: row.defaultCommercial,
       defaultResidential: row.defaultResidential,
+      expenseAccountId: row.expenseAccountId || '',
     };
     this.modalOpen = true;
   }
@@ -142,6 +177,11 @@ export class TaxProfilesComponent implements OnInit {
 
   formatPercentage(row: TaxProfile): string {
     return `${row.percentage}%`;
+  }
+
+  getAccountName(id?: string): string {
+    if (!id) return '—';
+    return this.glAccountsList.find((a) => a.id === id)?.name ?? id;
   }
 
   defaultLabel(row: TaxProfile): string {
@@ -165,6 +205,7 @@ export class TaxProfilesComponent implements OnInit {
       expenseProfile: !!this.draft.expenseProfile,
       defaultCommercial: !!this.draft.defaultCommercial,
       defaultResidential: !!this.draft.defaultResidential,
+      expenseAccountId: this.draft.expenseAccountId || '',
     };
 
     let updatedRows: TaxProfile[];

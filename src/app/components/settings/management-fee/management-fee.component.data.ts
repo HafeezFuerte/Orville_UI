@@ -1,5 +1,10 @@
+export type ManagementFeeToggleKey =
+  | 'enableCalculateOnContractValue'
+  | 'autoSendManagementFeeInvoice'
+  | 'alignInvoiceDueDatesWithContractStart';
+
 export interface ManagementFeeToggleDef {
-  key: keyof ManagementFeeSettingsModel;
+  key: ManagementFeeToggleKey;
   label: string;
   description: string;
 }
@@ -8,6 +13,7 @@ export interface ManagementFeeSettingsModel {
   enableCalculateOnContractValue: boolean;
   autoSendManagementFeeInvoice: boolean;
   alignInvoiceDueDatesWithContractStart: boolean;
+  managementFeeAccountId?: string;
 }
 
 export const MANAGEMENT_FEE_TOGGLES: ManagementFeeToggleDef[] = [
@@ -33,4 +39,5 @@ export const DEFAULT_MANAGEMENT_FEE_SETTINGS: ManagementFeeSettingsModel = {
   enableCalculateOnContractValue: false,
   autoSendManagementFeeInvoice: false,
   alignInvoiceDueDatesWithContractStart: false,
+  managementFeeAccountId: '',
 };

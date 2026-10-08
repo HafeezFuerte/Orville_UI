@@ -29,7 +29,8 @@ export class PaymentSettingsComponent implements OnInit {
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
 
-  readonly accounts: PaymentAccountOption[] = PAYMENT_ACCOUNT_OPTIONS;
+  readonly defaultAccounts: PaymentAccountOption[] = PAYMENT_ACCOUNT_OPTIONS;
+  accountsList: PaymentAccountOption[] = [...PAYMENT_ACCOUNT_OPTIONS];
   readonly toggles: PaymentToggleDef[] = PAYMENT_TOGGLES;
 
   isLoading = false;
@@ -54,7 +55,7 @@ export class PaymentSettingsComponent implements OnInit {
     if (!id) {
       return 'Cash - Checking (default)';
     }
-    return this.accounts.find((a) => a.id === id)?.name ?? 'Selected account';
+    return this.accountsList.find((a) => a.id === id)?.name ?? 'Selected account';
   }
 
   get enabledToggleCount(): number {
@@ -62,7 +63,40 @@ export class PaymentSettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.fetchGLAccounts();
     this.fetchSettings();
+  }
+
+  // API Call: Fetch GL Accounts Master (TypeId: 2, FilterId: 1003)
+  fetchGLAccounts(): void {
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1003,
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0) {
+            this.accountsList = records.map((acc: any) => ({
+              id: acc.account_code || acc.code || String(acc.id),
+              name: `${acc.account_name}${acc.account_code ? ' (' + acc.account_code + ')' : ''}`,
+            }));
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching GL accounts for payment settings:', err);
+      },
+    });
   }
 
   // API Call: Fetch Invoice Settings (TypeId: 2, FilterId: 1005, FilterText: "invoice_settings")

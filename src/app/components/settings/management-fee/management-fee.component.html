@@ -34,6 +34,32 @@
           [attr.aria-label]="item.label" />
       </label>
     </div>
+
+    <div class="mt-6 flex flex-col gap-2 border-t border-defaultborder pt-5">
+      <label class="ov-label" for="mf-gl-account">
+        Management Fee GL Revenue / Income Account Selector
+      </label>
+      <div class="relative max-w-lg">
+        <select
+          id="mf-gl-account"
+          class="ov-input cursor-pointer appearance-none pr-8"
+          [(ngModel)]="model.managementFeeAccountId">
+          <option value="">-- Select GL Account --</option>
+          <option *ngFor="let acc of glAccountsList" [value]="acc.id">
+            {{ acc.name }}
+          </option>
+        </select>
+        <img
+          src="./assets/images/settings/chevron-down.svg"
+          alt=""
+          width="12"
+          height="12"
+          class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+      </div>
+      <p class="text-xs text-textmuted">
+        Select the default Chart of Accounts GL ledger mapped for management fee invoices and postings.
+      </p>
+    </div>
   </section>
 
   <div class="mf-footer">
