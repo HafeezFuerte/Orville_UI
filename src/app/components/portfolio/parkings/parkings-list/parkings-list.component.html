@@ -220,14 +220,17 @@
     <div class="ov-modal__body flex flex-col gap-4">
       <div>
         <label class="ov-label">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
-        <ng-select [items]="propertiesList" bindValue="code" [placeholder]="'web.parkings.lblSearchProperty' | translate"
+        <ng-select #propSelect [items]="propertiesList" bindValue="code" bindLabel="name" [placeholder]="'web.parkings.lblSearchProperty' | translate"
           class="ov-select w-full" appendTo="body" [(ngModel)]="parkingForm.property_code"
           [searchable]="true" (change)="onPropertyChange($event)">
-          <ng-template ng-label-tmp let-item="item">
+          <!-- <ng-template ng-label-tmp let-item="item">
             {{ item.code }} - {{ item.name }}
           </ng-template>
           <ng-template ng-option-tmp let-item="item">
             {{ item.code }} - {{ item.name }}
+          </ng-template> -->
+          <ng-template ng-header-tmp>
+            <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
           </ng-template>
         </ng-select>
       </div>
@@ -317,3 +320,5 @@
   </div>
 
 </app-filter-drawer>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

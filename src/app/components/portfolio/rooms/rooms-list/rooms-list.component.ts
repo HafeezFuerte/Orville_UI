@@ -14,6 +14,7 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 export interface Room {
   id: number;
   name: string;
@@ -37,7 +38,7 @@ export interface Room {
 @Component({
   selector: 'app-rooms-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './rooms-list.component.html',
   styleUrl: './rooms-list.component.scss'
 })
@@ -139,7 +140,8 @@ export class RoomsListComponent implements OnInit {
 
   // Mock Units Data
   allUnits: any = [];
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   filteredUnits: any = [];
   paginatedUnits: any = [];
   currentUser: AuthPayload | null = null;
@@ -294,11 +296,52 @@ export class RoomsListComponent implements OnInit {
     if(ev.action_name=="edit")
       window.location.href='/edit-room/'+ev.code;
     else if (ev.action_name=="delete")
-    {
+    {  this.deleteModal=!this.deleteModal;  
+      this.edit_code=ev.code;
       //this.deleteUnit(36, ev.code,'');
     }
   }
-
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commonservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive");
+              this.edit_code='';
+              this.loadRooms();
+              this.pageNo=0;
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,9, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;

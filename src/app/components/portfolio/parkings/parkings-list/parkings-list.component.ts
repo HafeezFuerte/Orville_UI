@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Common_TabsService } from '../../services/common_tabs.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../../services/common.service';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 export interface Parking {
   id: number;
   parkingNo: string;
@@ -32,7 +33,7 @@ import { parkingCycleClass, parkingTypeClass, portfolioStatusClass } from '../..
 @Component({
   selector: 'app-parkings-list',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [FormsModule,DeleteConfirmationComponent, ReactiveFormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './parkings-list.component.html',
   styleUrl: './parkings-list.component.scss'
 })
@@ -61,7 +62,8 @@ export class ParkingsListComponent implements OnInit {
     recurring_cycle: null,status: null,
     remarks: ''
   };
- 
+  edit_code:string='';
+  deleteModal:boolean=false;
 
   // Pagination
   pageNo = 0;
@@ -380,8 +382,52 @@ export class ParkingsListComponent implements OnInit {
     if (row.action_name === 'edit') {
       this.editParking(row);
     }
+    if (row.action_name === 'delete') {
+      this.deleteModal=!this.deleteModal;  
+      this.edit_code=row.code;
+    }
   }
-
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive");
+              this.edit_code='';
+              this.loadParkings();
+              this.pageNo=0;
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,10, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;

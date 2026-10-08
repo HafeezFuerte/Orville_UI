@@ -12,11 +12,13 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
-
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { Common_TabsService } from '../../services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-properties-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './properties-list.component.html',
   styleUrl: './properties-list.component.scss'
 })
@@ -62,7 +64,8 @@ export class PropertiesListComponent implements OnInit {
   ];
 
   openActionCode: string | number | null = null;
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
   }
@@ -89,7 +92,9 @@ export class PropertiesListComponent implements OnInit {
     public translate: TranslateService,
     private propertiesService: PropertiesService,
     private portfolioService: PortfolioService,
-    private commonservice:CommonService
+    private commonservice:CommonService,
+    private commontabservice:Common_TabsService,
+    private toastr:ToastrService
   ) {}
 
   getArabicLookupName(row: any, key: string): string {
@@ -343,10 +348,51 @@ private loadMetrics(
       window.location.href='/edit-property/'+ev.code;
     else if (ev.action_name=="delete")
     {
-      //this.deleteUnit(ev.code);
+      this.deleteModal=!this.deleteModal;  
+      this.edit_code=ev.code;
     }
   }
-
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,7, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive");
+              this.edit_code='';
+              this.loadProperties();
+              this.pageNo=0;
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;

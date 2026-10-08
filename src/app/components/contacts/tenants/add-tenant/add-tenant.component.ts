@@ -545,8 +545,9 @@ export class AddTenantComponent implements OnInit {
   }
 
   saveTenant() {
-    if (!this.tenantData.first_name || !this.tenantData.last_name || !this.tenantData.email_address) {
-      this.toastr.warning('Please fill in all required fields (First Name, Last Name, Email).', 'Missing Info');
+    if (!this.tenantData.first_name || !this.tenantData.last_name || !this.tenantData.email_address
+      || !this.tenantData.mobile_no) {
+      this.toastr.warning('Please fill in all required fields (First Name, Last Name, Email,Phone no).', 'Missing Info');
       return;
     }
 

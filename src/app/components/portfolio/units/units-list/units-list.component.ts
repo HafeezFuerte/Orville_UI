@@ -15,6 +15,7 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 export interface Unit {
   id: number;
   name: string;
@@ -38,7 +39,7 @@ export interface Unit {
 @Component({
   selector: 'app-units-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './units-list.component.html',
   styleUrl: './units-list.component.scss'
 })
@@ -89,7 +90,8 @@ export class UnitsListComponent implements OnInit, OnDestroy {
   totalPages = 0;
   totalRecords = 0; 
   userChangedPageSize = false;
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   // Metrics
   metrics = {
     total: 2955,
@@ -165,7 +167,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
   currentUser: AuthPayload | null = null;
   private langSub: Subscription | null = null;
 
-  constructor(public translate: TranslateService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
+  constructor(public translate: TranslateService,private commontabservice:Common_TabsService,private toastr:ToastrService, private commonService: CommonService,public commonservice: Common_TabsService, private propertiesService: PropertiesService) {}
 
   getArabicLookupName(row: any, key: string): string {
     return row[localStorage.getItem("selectedLang") === "EN" ? key : key + '_ar'] || row[key] || '';
@@ -449,9 +451,52 @@ export class UnitsListComponent implements OnInit, OnDestroy {
     if(ev.action_name=="edit")
       window.location.href='/edit-unit/'+ev.code;
     else if (ev.action_name=="delete")
-    {
+    {  
+      this.deleteModal=!this.deleteModal;  
+      this.edit_code=ev.code;
       //this.deleteUnit(ev.code);
     }
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive");
+              this.edit_code='';
+              this.loadUnits();
+              this.pageNo=0;
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,8, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
   }
 
   @HostListener('document:click')

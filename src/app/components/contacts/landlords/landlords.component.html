@@ -148,6 +148,8 @@
               <button type="button"
                 class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                 (click)="editLandlord(row.code)">Edit</button>
+                     <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                     (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
             </div>
           </div>
         </ng-container>
@@ -210,3 +212,5 @@
     </div>
   </div>
 </app-filter-drawer>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

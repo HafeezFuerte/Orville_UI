@@ -11,6 +11,8 @@ import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 export interface Vendor {
   id: number;
   code: string;
@@ -28,7 +30,7 @@ export interface Vendor {
 @Component({
   selector: 'app-vendors',
   standalone: true,
-  imports: [CommonModule, FilterDrawerComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent,DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './vendors.component.html',
   styleUrl: './vendors.component.scss'
 })
@@ -37,6 +39,7 @@ export class VendorsComponent implements OnInit {
   private router = inject(Router);
   private commonService = inject(CommonService);
   private toastr =inject(ToastrService);
+  private commontabservice = inject(Common_TabsService);
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   openActionCode: string | number | null = null;
@@ -44,7 +47,8 @@ export class VendorsComponent implements OnInit {
   isLoading: boolean = false;
   currentUser: AuthPayload | null = null;
   isDrawerOpen = false;
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   // Filter criteria
   filterName: string = '';
   filterEmail: string = '';
@@ -258,10 +262,48 @@ export class VendorsComponent implements OnInit {
     if (row.action_name === 'edit') {
       this.router.navigate(['/contacts/vendors/edit-vendor', row.code]);
     } else if (row.action_name === 'delete') {
-      console.log('Delete vendor clicked', row.id);
+      this.deleteModal=!this.deleteModal;  
+      this.edit_code=row.code;
     }
   }
-
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive"); 
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,13, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
   get displayPage(): number {
     return this.pageNo + 1;
   }

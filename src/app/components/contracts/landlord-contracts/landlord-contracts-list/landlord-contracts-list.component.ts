@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 import {
   LANDLORD_CONTRACT_STATUS_TABS,
   LandlordContractRow,
@@ -13,11 +14,13 @@ import {
 } from '../landlord-contracts.data';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-landlord-contracts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule,TranslateModule, FormsModule,DeleteConfirmationComponent, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
   templateUrl: './landlord-contracts-list.component.html',
   styleUrl: './landlord-contracts-list.component.scss'
 })
@@ -25,7 +28,7 @@ export class LandlordContractsListComponent implements OnInit {
   private router = inject(Router);
   private commontabservice = inject(Common_TabsService);
   private commonService = inject(CommonService);
-
+  private toastr =inject(ToastrService);
   searchQuery = '';
   statusFilter: 'All' | LandlordContractStatus = 'All';
   statusTabs = LANDLORD_CONTRACT_STATUS_TABS;
@@ -37,7 +40,8 @@ export class LandlordContractsListComponent implements OnInit {
   filterProperty = '';
   filterStatus: LandlordContractStatus | null = null;
   statusOptions: LandlordContractStatus[] = ['Active', 'Draft', 'Completed', 'Offered'];
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   pageNo = 0;
   pageSize = 10;
   allRows: LandlordContractRow[] = [];
@@ -338,6 +342,48 @@ export class LandlordContractsListComponent implements OnInit {
 
   goToEdit(id: string): void {
     this.router.navigate(['/landlord-contracts/create'], { queryParams: { code: id } });
+  }
+  goToDelete(id: string): void {
+    this.deleteModal=!this.deleteModal;  
+      this.edit_code=id;
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive"); 
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,15, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
   }
 
   goToDetail(id: string): void {

@@ -13,26 +13,29 @@ import {
 } from '../vendor-contracts.data';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
-
+import { ToastrService } from 'ngx-toastr';
+import { TranslateModule } from '@ngx-translate/core';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
   selector: 'app-vendor-contracts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule,DeleteConfirmationComponent,TranslateModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
   templateUrl: './vendor-contracts-list.component.html',
   styleUrl: './vendor-contracts-list.component.scss'
 })
 export class VendorContractsListComponent implements OnInit {
   private router = inject(Router);
   private commontabservice = inject(Common_TabsService);
-  private commonService = inject(CommonService);
-
+  private commonService = inject(CommonService); 
+  private toastr =inject(ToastrService);
   searchQuery = '';
   statusFilter: 'All' | VendorContractStatus = 'All';
   statusTabs = VENDOR_CONTRACT_STATUS_TABS;
   isDrawerOpen = false;
   showColumnDropdown = false;
   openActionId: string | null = null;
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   filterVendor = '';
   filterProperty = '';
   filterStatus: VendorContractStatus | null = null;
@@ -345,7 +348,48 @@ export class VendorContractsListComponent implements OnInit {
   goToEdit(id: string): void {
     this.router.navigate(['/vendor-contracts/create'], { queryParams: { code: id } });
   }
-
+  goToDelete(id: string): void {
+    this.deleteModal=!this.deleteModal;  
+      this.edit_code=id;
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
+          if(Typeid==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success("Successfully marked as inactive"); 
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        } 
+        }
+        else
+        this.toastr.error("No record[s] found");
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,16, '', this.edit_code);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
   goToDetail(id: string): void {
     this.router.navigate(['/vendor-contracts', id]);
   }
