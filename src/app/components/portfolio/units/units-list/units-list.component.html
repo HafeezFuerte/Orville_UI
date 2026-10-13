@@ -91,13 +91,13 @@
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
         {{ 'web.contacts.lblFilter' | translate }}
       </button>
-      <div class="relative">
-        <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
           {{ 'web.contacts.lblColumn' | translate }}
         </button>
-        <div *ngIf="showColumnDropdown" class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
+        <div *ngIf="showColumnDropdown" (click)="$event.stopPropagation()" class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
           <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)" class="h-3.5 w-3.5 rounded text-primary">
             {{ 'web.contacts.lblSelectAll' | translate }}

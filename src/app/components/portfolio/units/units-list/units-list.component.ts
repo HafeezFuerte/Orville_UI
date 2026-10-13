@@ -174,7 +174,13 @@ export class UnitsListComponent implements OnInit, OnDestroy {
   }
 
   isCommercialCategory(row: any): boolean {
-    return String(this.getArabicLookupName(row, 'category_name') || '').toLowerCase().includes('commercial');
+    const name = String(this.getArabicLookupName(row, 'category_name') || row.category || '').toLowerCase();
+    return name.includes('commercial');
+  }
+
+  isResidentialCategory(row: any): boolean {
+    const name = String(this.getArabicLookupName(row, 'category_name') || row.category || '').toLowerCase();
+    return name.includes('residential');
   }
 
   ngOnInit(): void {
@@ -252,8 +258,10 @@ export class UnitsListComponent implements OnInit, OnDestroy {
 
     var filterList=[];
      
-    if (this.selectedCategory) {
-      filterList.push({'key':'category','value': this.selectedCategory});
+    const catId = this.selectedCategory ||
+      (this.categoryFilter !== 'All' ? this.categories?.find(c => String(c.name || c.lookup_name || '').toLowerCase().includes(this.categoryFilter.toLowerCase()))?.id : null);
+    if (catId) {
+      filterList.push({'key':'category','value': catId});
     }
     if (this.selectedStatus) {
       filterList.push({'key':'P.unit_status','value': this.selectedStatus});
@@ -275,7 +283,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
       seqno: 0, 
       search_keyword: this.searchQuery || "",
       pagecount: this.pageSize,
-      filter_by: "",
+      filter_by: this.categoryFilter !== 'All' ? this.categoryFilter : "",
       filter_list: JSON.stringify(filterList),
       featureid: "Units"
     };
@@ -285,7 +293,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
         if (response && response.statusCode === "200" && response.objResult) { 
           const nextBatch = response.objResult.units || [];
           this.allUnitsData = nextBatch;
-          this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...nextBatch] : nextBatch;
+          this.applyFilters(append);
           if(response.objResult.rows_info)
           {
             this.totalRecords=response.objResult.rows_info[0].totalrecords; 
@@ -303,11 +311,15 @@ export class UnitsListComponent implements OnInit, OnDestroy {
 
   allUnitsData: any[] = [];
 
-  applyLocalSearch(): void {
-    if (!this.allUnitsData || this.allUnitsData.length === 0) {
-      this.allUnitsData = [...(this.paginatedUnits || [])];
-    }
+  applyFilters(append = false): void {
     let result = this.allUnitsData || [];
+
+    if (this.categoryFilter === 'Commercial') {
+      result = result.filter(u => this.isCommercialCategory(u));
+    } else if (this.categoryFilter === 'Residential') {
+      result = result.filter(u => this.isResidentialCategory(u));
+    }
+
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
       result = result.filter((u: any) =>
@@ -318,79 +330,21 @@ export class UnitsListComponent implements OnInit, OnDestroy {
         (u.code && u.code.toString().toLowerCase().includes(q))
       );
     }
-    this.paginatedUnits = result;
+
+    this.paginatedUnits = append ? [...(this.paginatedUnits || []), ...result] : result;
   }
 
-  filterAndPaginate(): void {
-    // let result = this.allUnits;
-
-    // // 1. Filter by category tabs OR selected category dropdown
-    // if (this.categoryFilter !== 'All') {
-    //   result = result.filter((u:any) => u.category === this.categoryFilter);
-    // } else if (this.selectedCategory) {
-    //   result = result.filter((u:any) => u.category === this.selectedCategory);
-    // }
-
-    // // 2. Filter by status dropdown
-    // if (this.selectedStatus) {
-    //   result = result.filter((u:any) => u.unit_status === this.selectedStatus);
-    // }
-
-    // // 3. Filter by beds dropdown
-    // if (this.selectedBeds) {
-    //   result = result.filter((u:any) => u.beds_id === this.selectedBeds);
-    // }
-
-    // // 4. Filter by property_code   dropdown
-    // if (this.selectedPropertyCode) {
-    //   result = result.filter((u:any) => u.property_code === this.selectedPropertyCode);
-    // }
-
-    // // 5. Drawer custom filters
-    // if (this.selectedTag) {
-    //   result = result.filter((u:any) => u.tags === this.selectedTag);
-    // }
-    // if (this.selectedLandlord) {
-    //   result = result.filter((u:any) => u.landlord === this.selectedLandlord);
-    // }
-    // if (this.selectedId) {
-    //   result = result.filter((u:any) => u.id === this.selectedId);
-    // }
-    // if (this.selectedArea) {
-    //   result = result.filter((u:any) => u.area.toLowerCase().includes(this.selectedArea!.toLowerCase()));
-    // }
-
-    // // 6. Filter by search query
-    // if (this.searchQuery) {
-    //   const query = this.searchQuery.toLowerCase();
-    //   result = result.filter((u:any) => 
-    //     u.property_Name.toLowerCase().includes(query) || 
-    //     u.unit_code.toLowerCase().includes(query) ||
-    //     u.unit_no.toLowerCase().includes(query)
-    //   );
-    // }
-
-    // this.totalRecords = result.length;
-    
-    // if (!this.userChangedPageSize) {
-    //   if (this.totalRecords <= 5) this.pageSize = 5;
-    //   else if (this.totalRecords <= 10) this.pageSize = 10;
-    //   else if (this.totalRecords <= 25) this.pageSize = 25;
-    //   else if (this.totalRecords <= 50) this.pageSize = 50;
-    //   else this.pageSize = 100;
-    // }
-
-    // this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
-
-    // // 7. Paginate
-    // const startIndex = (this.pageNo - 1) * this.pageSize;
-    // this.paginatedUnits = result.slice(startIndex, startIndex + this.pageSize);
+  applyLocalSearch(): void {
+    if (!this.allUnitsData || this.allUnitsData.length === 0) {
+      this.allUnitsData = [...(this.paginatedUnits || [])];
+    }
+    this.applyFilters(false);
   }
 
   setCategoryFilter(category: 'All' | 'Residential' | 'Commercial'): void {
     this.categoryFilter = category;
-    this.pageNo = 1;
-    this.filterAndPaginate();
+    this.pageNo = 0;
+    this.loadUnits();
   }
 
   setViewMode(mode: 'list' | 'grid'): void {
@@ -502,6 +456,12 @@ export class UnitsListComponent implements OnInit, OnDestroy {
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;
+    this.showColumnDropdown = false;
+  }
+
+  toggleColumnDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
   }
 
   toggleRowAction(code: string | number, event: Event): void {

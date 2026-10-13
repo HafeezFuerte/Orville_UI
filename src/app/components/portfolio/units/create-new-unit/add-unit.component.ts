@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -94,6 +94,73 @@ export class AddUnitComponent implements OnInit {
 
   public isEditMode = false;
   public unitId: any = null;
+
+  readonly commercialUnitTypes: any[] = [
+    { id: 101, name: 'Office' },
+    { id: 102, name: 'Shop' },
+    { id: 103, name: 'Retail' },
+    { id: 104, name: 'Warehouse' },
+    { id: 105, name: 'Showroom' },
+    { id: 106, name: 'Commercial Villa' },
+    { id: 107, name: 'Commercial Floor' },
+    { id: 108, name: 'Storage' }
+  ];
+
+  get selectedCategoryName(): string {
+    const catVal = this.unitForm?.get('category')?.value;
+    if (catVal === undefined || catVal === null || catVal === '') return '';
+    const match = this.categories.find(c => c.id === catVal || c.code === catVal || String(c.id) === String(catVal) || String(c.code) === String(catVal));
+    if (match) return String(match.name || match.lookup_name || '').toLowerCase();
+    return typeof catVal === 'string' ? catVal.toLowerCase() : '';
+  }
+
+  get isCommercialCategory(): boolean {
+    return this.selectedCategoryName.includes('commercial');
+  }
+
+  get filteredUnitTypes(): any[] {
+    if (this.isCommercialCategory) {
+      const commercial = this.unitTypes.filter(t => !this.isResidentialUnitType(t));
+      if (commercial.length > 0) {
+        return commercial;
+      }
+      return this.commercialUnitTypes;
+    }
+    return this.unitTypes;
+  }
+
+  isResidentialUnitType(type: any): boolean {
+    const name = String(type.name || type.lookup_name || '').toLowerCase().trim();
+    if (type.categoryType && String(type.categoryType).toLowerCase().includes('residential')) return true;
+    if (type.category_name && String(type.category_name).toLowerCase().includes('residential')) return true;
+    if (name.includes('commercial')) return false;
+
+    const residentialPatterns = [
+      /\b\d+\s*bhk\b/i,
+      /\bbhk\b/i,
+      /\bstudio\b/i,
+      /\bduplex\b/i,
+      /\bpenthouse\b/i,
+      /\bapartment\b/i,
+      /\btownhouse\b/i,
+      /\bresidential\b/i,
+      /\b\d+\s*bed\b/i
+    ];
+    return residentialPatterns.some(pattern => pattern.test(name));
+  }
+
+  onCategoryChange(): void {
+    if (this.isCommercialCategory) {
+      this.unitForm.get('beds')?.setValue('');
+      const currentUnitTypeVal = this.unitForm.get('unitType')?.value;
+      if (currentUnitTypeVal) {
+        const found = this.unitTypes.find(t => t.id === currentUnitTypeVal || String(t.id) === String(currentUnitTypeVal));
+        if (found && this.isResidentialUnitType(found)) {
+          this.unitForm.get('unitType')?.setValue('');
+        }
+      }
+    }
+  }
 
   constructor(
     public translate: TranslateService,
@@ -272,29 +339,91 @@ export class AddUnitComponent implements OnInit {
     }
   }
 
+  private mapLandlordItem(l: any): any {
+    const displayName = l.name ||
+      l.landlord ||
+      l.landlord_name ||
+      (l.first_name ? `${l.first_name} ${l.last_name || ''}`.trim() : '') ||
+      l.contact_name ||
+      l.company_name ||
+      l.code ||
+      ('Landlord ' + (l.id || l.code));
+    return {
+      id: l.id || l.code || l.landlord_id,
+      code: l.code || l.id || l.landlord_id,
+      name: displayName
+    };
+  }
+
   loadLandlords() {
+    const currentUser = this.currentUser || this.commonService.getCurrentUser();
     this.portfolioService.getMasterByType({
-      typeId: 28,
-      filterId: 0,
+      typeId: 70,
+      filterId: 4,
       filterText: '',
-      filterText1: ''
+      filterText1: '',
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || '74BB6922',
+      companyId: currentUser?.companyId || 1
     }).subscribe({
       next: (res: any) => {
-        if (res.statusCode == 200 && res.objResult) {
-          const list = res.objResult.landlords || res.objResult.table || res.objResult.landlord || [];
-          if (Array.isArray(list)) {
-            this.landlordsList = list.map((l: any) => ({
-              id: l.id || l.code || l.landlord_id,
-              name: l.name || l.landlord_name || l.first_name || l.full_name || l.code || ('Landlord ' + l.id)
-            }));
+        if (res && res.objResult) {
+          const list = res.objResult.table || res.objResult.landlords || res.objResult.landlord || (Array.isArray(res.objResult) ? res.objResult : null) || [];
+          if (Array.isArray(list) && list.length > 0) {
+            this.landlordsList = list.map((l: any) => this.mapLandlordItem(l));
             this.filteredLandlords = [...this.landlordsList];
+            this.reconcileSelectedLandlords();
+            return;
+          }
+        }
+        this.fallbackLoadLandlords();
+      },
+      error: () => {
+        this.fallbackLoadLandlords();
+      }
+    });
+  }
+
+  fallbackLoadLandlords() {
+    const currentUser = this.currentUser || this.commonService.getCurrentUser();
+    const payload = {
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 200,
+      filter_by: '',
+      filter_list: '',
+      featureid: 'LANDLORDS'
+    };
+    this.propertiesService.getTenants(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const list = res.objResult.landlords || res.objResult.table || [];
+          if (Array.isArray(list)) {
+            this.landlordsList = list.map((l: any) => this.mapLandlordItem(l));
+            this.filteredLandlords = [...this.landlordsList];
+            this.reconcileSelectedLandlords();
           }
         }
       },
-      error: (err) => {
-        console.error('Error fetching landlords list:', err);
+      error: (err: any) => {
+        console.error('Error in fallback load landlords:', err);
       }
     });
+  }
+
+  private reconcileSelectedLandlords() {
+    if (this.selectedLandlords.length > 0 && this.landlordsList.length > 0) {
+      this.selectedLandlords = this.selectedLandlords.map(sel => {
+        const found = this.landlordsList.find(l => String(l.id) === String(sel.id) || String(l.code) === String(sel.id) || l.name === sel.name);
+        return found ? found : sel;
+      });
+    }
   }
 
   loadProperties() {
@@ -420,14 +549,45 @@ export class AddUnitComponent implements OnInit {
 
   // Landlord Search logic
   searchLandlords() {
-    if (!this.landlordSearchQuery.trim()) {
+    const q = this.landlordSearchQuery.trim().toLowerCase();
+    if (!q) {
       this.filteredLandlords = [...this.landlordsList];
     } else {
       this.filteredLandlords = this.landlordsList.filter(l =>
-        l.name.toLowerCase().includes(this.landlordSearchQuery.toLowerCase())
+        l.name.toLowerCase().includes(q) || (l.code && String(l.code).toLowerCase().includes(q))
       );
     }
     this.showLandlordDropdown = true;
+  }
+
+  onLandlordSearchFocus() {
+    this.searchLandlords();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target && !target.closest('.ov-landlord-search') && !target.closest('.ov-landlord-dropdown')) {
+      this.showLandlordDropdown = false;
+    }
+  }
+
+  onAddLandlordClick(): void {
+    if (this.filteredLandlords.length === 1) {
+      this.selectLandlord(this.filteredLandlords[0]);
+    } else if (this.landlordSearchQuery.trim()) {
+      const q = this.landlordSearchQuery.trim().toLowerCase();
+      const exact = this.landlordsList.find(l => l.name.toLowerCase() === q || String(l.code).toLowerCase() === q);
+      if (exact) {
+        this.selectLandlord(exact);
+      } else if (this.filteredLandlords.length > 0) {
+        this.selectLandlord(this.filteredLandlords[0]);
+      } else {
+        this.createNewLandlord();
+      }
+    } else {
+      this.createNewLandlord();
+    }
   }
 
   selectLandlord(landlord: any) {
@@ -500,7 +660,7 @@ export class AddUnitComponent implements OnInit {
       name: form.unitNumber || '',
       unit_no: form.unitNumber || '',
       unit_code: form.unitCode || '',
-      beds: parseInt(form.beds) || 0,
+      beds: this.isCommercialCategory ? 0 : (parseInt(form.beds) || 0),
       no_of_parkings: Number(form.parkingSpaces) || 0,
       floor_no: parseInt(form.floorNumber) || 0,
       reserved_amt: Number(form.reservedAmount) || 0,
