@@ -64,4 +64,6 @@ Next step: on the office PC, review those Codex threads; record any durable deci
 
 ## COMPLETED
 
+- **TASK-20261014-01 — Settings: Priority 1 Core Master Screens (Property Types, Unit Types, Property Amenities, Room Types, Visiting Slots)**: Connected live CRUD to backend Master APIs (`api/Masters/_getMasters`, `api/Masters/save_lookup`). Handled category type mappings, loading states, and modal action states. (Antigravity, 2026-10-14)
+- **TASK-20261013-01 — Portfolio Units List & New Unit UI Fixes**: Commercial tab filtering, column dropdown outside-click dismiss, commercial unit types filtering, commercial beds removal, and landlord autocomplete search. (Antigravity, 2026-10-13)
 - Portal-wide Figma HTML/SCSS conversion of most modules (Aug–Sep 2026) — see `CURRENT_STATE.md` and git log

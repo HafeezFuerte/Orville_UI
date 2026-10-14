@@ -7,15 +7,22 @@ export interface AmenityColumnDef {
 export interface AmenityRow {
   id: number;
   name: string;
+  code?: string;
+  description?: string;
   isDefault: boolean;
+  isActive?: boolean;
 }
 
 export interface AmenityDraft {
   name: string;
+  code?: string;
+  description?: string;
 }
 
 export const EMPTY_AMENITY: AmenityDraft = {
   name: '',
+  code: '',
+  description: '',
 };
 
 /**

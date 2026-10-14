@@ -1,9 +1,13 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import {
   DEFAULT_UNIT_TYPES,
   EMPTY_UNIT_TYPE,
@@ -24,7 +28,11 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './unit-types.component.html',
   styleUrl: './unit-types.component.scss',
 })
-export class UnitTypesComponent {
+export class UnitTypesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   filterCategory: UnitCategoryType | '' = '';
@@ -32,6 +40,8 @@ export class UnitTypesComponent {
   showColumns = false;
   showFilters = false;
   editingId: number | null = null;
+  isLoading = false;
+  isSaving = false;
 
   sortKey: SortKey = 'name';
   sortDir: SortDir = 'asc';
@@ -51,9 +61,65 @@ export class UnitTypesComponent {
     { key: 'actions', label: 'Actions', visible: true },
   ];
 
-  private nextId = 1;
-
   constructor(private readonly host: ElementRef<HTMLElement>) {}
+
+  ngOnInit(): void {
+    this.fetchUnitTypes();
+  }
+
+  fetchUnitTypes(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 3, // Category 3 is Unit Types
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && res?.objResult?.table) {
+          this.rows = res.objResult.table.map((item: any) => ({
+            id: item.id ?? item.code,
+            name: item.name || item.lookup_name || '',
+            code: item.code || '',
+            description: item.description || '',
+            categoryType: this.parseCategoryType(item),
+            unitsCount: item.records ?? item.unitsCount ?? item.count ?? 0,
+            isActive: item.is_active ?? item.isActive ?? true,
+          }));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching unit types:', err);
+      },
+    });
+  }
+
+  private parseCategoryType(item: any): UnitCategoryType {
+    const raw = (item.class_name || item.categoryType || item.category_name || item.description || '').toLowerCase();
+    if (raw.includes('commercial')) return 'Commercial';
+    if (raw.includes('mixed')) return 'Mixed Use';
+    if (raw.includes('residential')) return 'Residential';
+    const name = (item.name || item.lookup_name || '').toLowerCase();
+    if (
+      name.includes('office') ||
+      name.includes('retail') ||
+      name.includes('shop') ||
+      name.includes('warehouse') ||
+      name.includes('commercial')
+    ) {
+      return 'Commercial';
+    }
+    return 'Residential';
+  }
 
   get filteredRows(): UnitTypeRow[] {
     const q = this.searchQuery.trim().toLowerCase();
@@ -233,6 +299,8 @@ export class UnitTypesComponent {
     this.editingId = row.id;
     this.draft = {
       name: row.name,
+      code: row.code || '',
+      description: row.description || '',
       categoryType: row.categoryType,
     };
     this.modalOpen = true;
@@ -243,37 +311,77 @@ export class UnitTypesComponent {
   }
 
   save(): void {
-    if (!this.canSave) {
+    if (!this.canSave || this.isSaving) {
       return;
     }
-    if (this.editingId == null) {
-      this.rows = [
-        ...this.rows,
-        {
-          id: this.nextId++,
-          name: this.draft.name.trim(),
-          categoryType: this.draft.categoryType,
-          unitsCount: 0,
-        },
-      ];
-    } else {
-      this.rows = this.rows.map((r) =>
-        r.id === this.editingId
-          ? {
-              ...r,
-              name: this.draft.name.trim(),
-              categoryType: this.draft.categoryType,
-            }
-          : r
-      );
-    }
-    this.modalOpen = false;
+    this.isSaving = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      id: Number(this.editingId) || 0,
+      lookup_TypeId: 3, // Category 3 is Unit Types
+      code: this.draft.code || this.draft.name.trim().toUpperCase().replace(/\s+/g, '_'),
+      name: this.draft.name.trim(),
+      arabic_name: '',
+      description: this.draft.description || this.draft.categoryType,
+      is_Active: true,
+      company_id: Number(user?.companyId) || 1,
+      display_order: 0,
+      user_id: Number(user?.userId) || 1,
+      dependency_id: 0,
+      class_name: this.draft.categoryType,
+      clientid: user?.clientId || '74BB6922',
+    };
+
+    const url = environment.apiurl + 'api/Masters/save_lookup';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200') {
+          this.toastr.success('Unit type saved successfully', 'Success');
+          this.closeModal();
+          this.fetchUnitTypes();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save unit type', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('Error saving unit type:', err);
+        const errMsg = err.error?.message || err.error?.title || 'Failed to save unit type';
+        this.toastr.error(errMsg, 'Error');
+      },
+    });
   }
 
   deleteRow(row: UnitTypeRow): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
-    if (this.pageIndex > this.totalPages - 1) {
-      this.pageIndex = Math.max(0, this.totalPages - 1);
+    if (!confirm(`Are you sure you want to delete "${row.name}"?`)) {
+      return;
     }
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: -1,
+      filterId: -1,
+      filterText: String(row.id),
+      filterText1: '3', // Category 3 is Unit Types
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200') {
+          this.toastr.success('Unit type deleted successfully', 'Success');
+          this.fetchUnitTypes();
+        } else {
+          this.toastr.error(res?.message || 'Failed to delete unit type', 'Error');
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting unit type:', err);
+        this.toastr.error('Failed to delete unit type', 'Error');
+      },
+    });
   }
 }

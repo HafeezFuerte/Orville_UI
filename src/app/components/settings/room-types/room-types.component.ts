@@ -1,9 +1,13 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import {
   DEFAULT_ROOM_TYPES,
   EMPTY_ROOM_TYPE,
@@ -24,7 +28,11 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './room-types.component.html',
   styleUrl: './room-types.component.scss',
 })
-export class RoomTypesComponent {
+export class RoomTypesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   filterCategory: RoomCategoryType | '' = '';
@@ -32,6 +40,8 @@ export class RoomTypesComponent {
   showColumns = false;
   showFilters = false;
   editingId: number | null = null;
+  isLoading = false;
+  isSaving = false;
 
   sortKey: SortKey = 'name';
   sortDir: SortDir = 'asc';
@@ -51,9 +61,101 @@ export class RoomTypesComponent {
     { key: 'actions', label: 'Actions', visible: true },
   ];
 
-  private nextId = 1;
-
   constructor(private readonly host: ElementRef<HTMLElement>) {}
+
+  ngOnInit(): void {
+    this.fetchRoomTypes();
+  }
+
+  fetchRoomTypes(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'room_types',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res && res.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
+            try {
+              const parsed = JSON.parse(records[0].strValue);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                this.rows = parsed;
+                return;
+              }
+            } catch (e) {
+              console.error('Failed to parse room_types strValue:', e);
+            }
+          }
+        }
+        this.fetchRoomTypesFallback();
+      },
+      error: () => {
+        this.fetchRoomTypesFallback();
+      },
+    });
+  }
+
+  private fetchRoomTypesFallback(): void {
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 8,
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && res?.objResult?.table && res.objResult.table.length > 0) {
+          this.rows = res.objResult.table.map((item: any) => ({
+            id: item.id ?? item.code,
+            name: item.name || item.lookup_name || '',
+            code: item.code || '',
+            description: item.description || '',
+            categoryType: this.parseCategoryType(item),
+            roomsCount: item.records ?? item.roomsCount ?? item.count ?? 0,
+            isActive: item.is_active ?? item.isActive ?? true,
+          }));
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  private parseCategoryType(item: any): RoomCategoryType {
+    const raw = (item.class_name || item.categoryType || item.category_name || item.description || '').toLowerCase();
+    if (raw.includes('commercial')) return 'Commercial';
+    if (raw.includes('mixed')) return 'Mixed Use';
+    if (raw.includes('residential')) return 'Residential';
+    const name = (item.name || item.lookup_name || '').toLowerCase();
+    if (
+      name.includes('office') ||
+      name.includes('retail') ||
+      name.includes('shop') ||
+      name.includes('warehouse') ||
+      name.includes('commercial')
+    ) {
+      return 'Commercial';
+    }
+    return 'Residential';
+  }
 
   get filteredRows(): RoomTypeRow[] {
     const q = this.searchQuery.trim().toLowerCase();
@@ -233,6 +335,8 @@ export class RoomTypesComponent {
     this.editingId = row.id;
     this.draft = {
       name: row.name,
+      code: row.code || '',
+      description: row.description || '',
       categoryType: row.categoryType,
     };
     this.modalOpen = true;
@@ -243,37 +347,99 @@ export class RoomTypesComponent {
   }
 
   save(): void {
-    if (!this.canSave) {
+    if (!this.canSave || this.isSaving) {
       return;
     }
+    this.isSaving = true;
+
+    let updatedRows: RoomTypeRow[];
     if (this.editingId == null) {
-      this.rows = [
-        ...this.rows,
-        {
-          id: this.nextId++,
-          name: this.draft.name.trim(),
-          categoryType: this.draft.categoryType,
-          roomsCount: 0,
-        },
-      ];
+      const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+      const newRow: RoomTypeRow = {
+        id: maxId + 1,
+        name: this.draft.name.trim(),
+        code: this.draft.code || this.draft.name.trim().toUpperCase().replace(/\s+/g, '_'),
+        description: this.draft.description || '',
+        categoryType: this.draft.categoryType,
+        roomsCount: 0,
+        isActive: true,
+      };
+      updatedRows = [...this.rows, newRow];
     } else {
-      this.rows = this.rows.map((r) =>
+      updatedRows = this.rows.map((r) =>
         r.id === this.editingId
           ? {
               ...r,
               name: this.draft.name.trim(),
+              code: this.draft.code || r.code || '',
+              description: this.draft.description || r.description || '',
               categoryType: this.draft.categoryType,
             }
           : r
       );
     }
-    this.modalOpen = false;
+
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'room_types',
+      filterText1: JSON.stringify(updatedRows),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200') {
+          this.toastr.success('Room type saved successfully', 'Success');
+          this.closeModal();
+          this.rows = updatedRows;
+        } else {
+          this.toastr.error(res?.message || 'Failed to save room type', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('Error saving room type:', err);
+        this.toastr.error('Failed to save room type', 'Error');
+      },
+    });
   }
 
   deleteRow(row: RoomTypeRow): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
-    if (this.pageIndex > this.totalPages - 1) {
-      this.pageIndex = Math.max(0, this.totalPages - 1);
+    if (!confirm(`Are you sure you want to delete "${row.name}"?`)) {
+      return;
     }
+    const updatedRows = this.rows.filter((r) => r.id !== row.id);
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'room_types',
+      filterText1: JSON.stringify(updatedRows),
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200') {
+          this.toastr.success('Room type deleted successfully', 'Success');
+          this.rows = updatedRows;
+        } else {
+          this.toastr.error(res?.message || 'Failed to delete room type', 'Error');
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting room type:', err);
+        this.toastr.error('Failed to delete room type', 'Error');
+      },
+    });
   }
 }

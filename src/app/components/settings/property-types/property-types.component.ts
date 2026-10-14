@@ -1,9 +1,13 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import {
   DEFAULT_PROPERTY_TYPES,
   EMPTY_PROPERTY_TYPE,
@@ -22,12 +26,18 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './property-types.component.html',
   styleUrl: './property-types.component.scss',
 })
-export class PropertyTypesComponent {
+export class PropertyTypesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   modalOpen = false;
   showColumns = false;
   editingId: number | null = null;
+  isLoading = false;
+  isSaving = false;
 
   sortKey: SortKey = 'name';
   sortDir: SortDir = 'asc';
@@ -44,9 +54,46 @@ export class PropertyTypesComponent {
     { key: 'actions', label: 'Actions', visible: true },
   ];
 
-  private nextId = 1;
-
   constructor(private readonly host: ElementRef<HTMLElement>) {}
+
+  ngOnInit(): void {
+    this.fetchPropertyTypes();
+  }
+
+  fetchPropertyTypes(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1, // Category 1 is Property Types
+      filterText: '',
+      filterText1: '',
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && res?.objResult?.table) {
+          this.rows = res.objResult.table.map((item: any) => ({
+            id: item.id ?? item.code,
+            name: item.name || item.lookup_name || '',
+            code: item.code || '',
+            description: item.description || '',
+            propertiesCount: item.records ?? item.propertiesCount ?? item.count ?? 0,
+            isActive: item.is_active ?? item.isActive ?? true,
+          }));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching property types:', err);
+      },
+    });
+  }
 
   get filteredRows(): PropertyTypeRow[] {
     const q = this.searchQuery.trim().toLowerCase();
@@ -190,7 +237,11 @@ export class PropertyTypesComponent {
 
   openEdit(row: PropertyTypeRow): void {
     this.editingId = row.id;
-    this.draft = { name: row.name };
+    this.draft = {
+      name: row.name,
+      code: row.code || '',
+      description: row.description || '',
+    };
     this.modalOpen = true;
   }
 
@@ -199,30 +250,77 @@ export class PropertyTypesComponent {
   }
 
   save(): void {
-    if (!this.canSave) {
+    if (!this.canSave || this.isSaving) {
       return;
     }
-    if (this.editingId == null) {
-      this.rows = [
-        ...this.rows,
-        {
-          id: this.nextId++,
-          name: this.draft.name.trim(),
-          propertiesCount: 0,
-        },
-      ];
-    } else {
-      this.rows = this.rows.map((r) =>
-        r.id === this.editingId ? { ...r, name: this.draft.name.trim() } : r
-      );
-    }
-    this.modalOpen = false;
+    this.isSaving = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      id: Number(this.editingId) || 0,
+      lookup_TypeId: 1, // Category 1 is Property Types
+      code: this.draft.code || this.draft.name.trim().toUpperCase().replace(/\s+/g, '_'),
+      name: this.draft.name.trim(),
+      arabic_name: '',
+      description: this.draft.description || '',
+      is_Active: true,
+      company_id: Number(user?.companyId) || 1,
+      display_order: 0,
+      user_id: Number(user?.userId) || 1,
+      dependency_id: 0,
+      class_name: '',
+      clientid: user?.clientId || '74BB6922',
+    };
+
+    const url = environment.apiurl + 'api/Masters/save_lookup';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200') {
+          this.toastr.success('Property type saved successfully', 'Success');
+          this.closeModal();
+          this.fetchPropertyTypes();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save property type', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('Error saving property type:', err);
+        const errMsg = err.error?.message || err.error?.title || 'Failed to save property type';
+        this.toastr.error(errMsg, 'Error');
+      },
+    });
   }
 
   deleteRow(row: PropertyTypeRow): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
-    if (this.pageIndex > this.totalPages - 1) {
-      this.pageIndex = Math.max(0, this.totalPages - 1);
+    if (!confirm(`Are you sure you want to delete "${row.name}"?`)) {
+      return;
     }
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: -1,
+      filterId: -1,
+      filterText: String(row.id),
+      filterText1: '1', // Category 1 is Property Types
+      userId: user?.userId || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: user?.companyId || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200') {
+          this.toastr.success('Property type deleted successfully', 'Success');
+          this.fetchPropertyTypes();
+        } else {
+          this.toastr.error(res?.message || 'Failed to delete property type', 'Error');
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting property type:', err);
+        this.toastr.error('Failed to delete property type', 'Error');
+      },
+    });
   }
 }

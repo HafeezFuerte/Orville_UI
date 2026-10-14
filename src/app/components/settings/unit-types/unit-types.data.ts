@@ -9,12 +9,17 @@ export interface UnitTypeColumnDef {
 export interface UnitTypeRow {
   id: number;
   name: string;
+  code?: string;
+  description?: string;
   categoryType: UnitCategoryType;
   unitsCount: number;
+  isActive?: boolean;
 }
 
 export interface UnitTypeDraft {
   name: string;
+  code?: string;
+  description?: string;
   categoryType: UnitCategoryType;
 }
 
@@ -26,6 +31,8 @@ export const UNIT_CATEGORY_TYPES: UnitCategoryType[] = [
 
 export const EMPTY_UNIT_TYPE: UnitTypeDraft = {
   name: '',
+  code: '',
+  description: '',
   categoryType: 'Residential',
 };
 

@@ -9,12 +9,17 @@ export interface RoomTypeColumnDef {
 export interface RoomTypeRow {
   id: number;
   name: string;
+  code?: string;
+  description?: string;
   categoryType: RoomCategoryType;
   roomsCount: number;
+  isActive?: boolean;
 }
 
 export interface RoomTypeDraft {
   name: string;
+  code?: string;
+  description?: string;
   categoryType: RoomCategoryType;
 }
 
@@ -26,6 +31,8 @@ export const ROOM_CATEGORY_TYPES: RoomCategoryType[] = [
 
 export const EMPTY_ROOM_TYPE: RoomTypeDraft = {
   name: '',
+  code: '',
+  description: '',
   categoryType: 'Residential',
 };
 

@@ -104,7 +104,12 @@
         </div>
       </div>
 
-      <ng-container *ngIf="pagedRows.length > 0">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <span class="ms-2 text-sm text-textmuted">Loading visiting slots...</span>
+      </div>
+
+      <ng-container *ngIf="!isLoading && pagedRows.length > 0">
         <div
           *ngFor="let row of pagedRows"
           class="vs-table__row"
@@ -140,7 +145,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="pagedRows.length === 0" class="vs-table-empty" role="row">
+      <div *ngIf="!isLoading && pagedRows.length === 0" class="vs-table-empty" role="row">
         <p class="vs-table-empty__text">{{ emptyMessage }}</p>
       </div>
     </div>
@@ -203,8 +208,9 @@
         <button
           type="button"
           class="ov-btn ov-btn-primary"
-          [disabled]="!canSave"
+          [disabled]="!canSave || isSaving"
           (click)="save()">
+          <span *ngIf="isSaving" class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent me-1.5"></span>
           Save
         </button>
       </div>

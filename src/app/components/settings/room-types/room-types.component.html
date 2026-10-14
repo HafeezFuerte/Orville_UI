@@ -173,7 +173,12 @@
         </div>
       </div>
 
-      <ng-container *ngIf="pagedRows.length > 0">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <span class="ms-2 text-sm text-textmuted">Loading room types...</span>
+      </div>
+
+      <ng-container *ngIf="!isLoading && pagedRows.length > 0">
         <div
           *ngFor="let row of pagedRows"
           class="rt-table__row"
@@ -215,7 +220,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="pagedRows.length === 0" class="rt-table-empty" role="row">
+      <div *ngIf="!isLoading && pagedRows.length === 0" class="rt-table-empty" role="row">
         <p class="rt-table-empty__text">No room types match your filters.</p>
       </div>
     </div>
@@ -301,8 +306,9 @@
         <button
           type="button"
           class="ov-btn ov-btn-primary"
-          [disabled]="!canSave"
+          [disabled]="!canSave || isSaving"
           (click)="save()">
+          <span *ngIf="isSaving" class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent me-1.5"></span>
           {{ 'web.settings.roomTypes.btnModalSave' | translate }}
         </button>
       </div>
