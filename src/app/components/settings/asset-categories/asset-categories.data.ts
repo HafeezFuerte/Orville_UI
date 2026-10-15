@@ -21,6 +21,4 @@ export const EMPTY_ASSET_CATEGORY: AssetCategoryDraft = {
   parentId: null,
 };
 
-export const DEFAULT_ASSET_CATEGORIES: AssetCategory[] = [
-  { id: 1, name: 'Home Appliances', parentId: null, assetCount: 3 },
-];
+export const DEFAULT_ASSET_CATEGORIES: AssetCategory[] = [];

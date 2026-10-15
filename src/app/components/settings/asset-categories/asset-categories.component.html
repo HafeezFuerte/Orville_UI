@@ -126,7 +126,12 @@
         </div>
       </div>
 
-      <ng-container *ngIf="pagedRows.length > 0">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <span class="ms-2 text-sm text-textmuted">Loading asset categories...</span>
+      </div>
+
+      <ng-container *ngIf="!isLoading && pagedRows.length > 0">
         <div
           *ngFor="let row of pagedRows"
           class="ac-table__row"
@@ -147,7 +152,7 @@
           </div>
           <div
             *ngIf="isColumnVisible('actions')"
-            class="ac-table__cell ac-table__cell--action"
+            class="ac-table__cell ic-table__cell--action"
             role="cell">
             <button
               type="button"
@@ -167,7 +172,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="pagedRows.length === 0" class="ac-table-empty" role="row">
+      <div *ngIf="!isLoading && pagedRows.length === 0" class="ac-table-empty" role="row">
         <p class="ac-table-empty__text">
           No asset categories yet. Create your first category to organize inventory assets.
         </p>
@@ -253,10 +258,11 @@
         <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.settings.assetCategories.btnModalClose' | translate }}</button>
         <button
           type="button"
-          class="ov-btn ov-btn-primary"
-          [disabled]="!canSave"
+          class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
+          [disabled]="!canSave || isSaving"
           (click)="save()">
-          {{ 'web.settings.assetCategories.btnModalSave' | translate }}
+          <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+          {{ (isSaving ? 'web.settings.propertyTypes.lblSaving' : 'web.settings.assetCategories.btnModalSave') | translate }}
         </button>
       </div>
     </div>

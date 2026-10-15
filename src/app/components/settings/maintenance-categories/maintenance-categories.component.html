@@ -17,7 +17,7 @@
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="rows.length === 0" class="mc-empty">
+  <div *ngIf="!isLoading && rows.length === 0" class="mc-empty">
     <div class="mc-empty__icon" aria-hidden="true">
       <img src="./assets/images/settings/screwdriver-wrench.svg" alt="" width="22" height="22" />
     </div>
@@ -30,7 +30,7 @@
     </button>
   </div>
 
-  <ng-container *ngIf="rows.length > 0">
+  <ng-container *ngIf="isLoading || rows.length > 0">
     <div class="flex w-full flex-wrap items-center justify-between gap-3">
       <label
         class="ov-inline-search h-10 w-full max-w-[360px] rounded-lg border border-defaultborder bg-white px-3.5 dark:bg-bodybg">
@@ -161,61 +161,68 @@
           </div>
         </div>
 
-        <div
-          *ngFor="let row of pagedRows"
-          class="mc-table__row"
-          role="row"
-          [style.grid-template-columns]="tableGridTemplate">
-          <div *ngIf="isColumnVisible('icon')" class="mc-table__cell" role="cell">
-            <span class="mc-icon" aria-hidden="true">
-              <img [src]="iconSrc(row.icon)" alt="" width="16" height="16" />
-            </span>
-          </div>
-          <div *ngIf="isColumnVisible('name')" class="mc-table__cell" role="cell">
-            <div class="mc-name">
-              <button type="button" class="mc-name__link" (click)="openEdit(row)">
-                {{ row.name }}
-              </button>
-              <span *ngIf="row.isGlobal" class="mc-global">Global</span>
-            </div>
-          </div>
-          <div *ngIf="isColumnVisible('categoryType')" class="mc-table__cell" role="cell">
-            <span class="text-sm text-defaulttextcolor">{{ row.categoryType }}</span>
-          </div>
-          <div *ngIf="isColumnVisible('workOrders')" class="mc-table__cell" role="cell">
-            <span class="mc-count">{{ row.workOrders }}</span>
-          </div>
-          <div *ngIf="isColumnVisible('avgCompletionTime')" class="mc-table__cell" role="cell">
-            <span class="text-sm text-defaulttextcolor">{{
-              row.avgCompletionTime || '—'
-            }}</span>
-          </div>
-          <div
-            *ngIf="isColumnVisible('actions')"
-            class="mc-table__cell mc-table__cell--action"
-            role="cell">
-            <button
-              type="button"
-              class="ov-icon-btn"
-              aria-label="Edit category"
-              (click)="openEdit(row)">
-              <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
-            </button>
-            <button
-              type="button"
-              class="ov-icon-btn ov-icon-btn--danger"
-              aria-label="Delete category"
-              (click)="deleteRow(row)">
-              <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
-            </button>
-          </div>
+        <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+          <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          <span class="ms-2 text-sm text-textmuted">Loading maintenance categories...</span>
         </div>
 
-        <div
-          *ngIf="pagedRows.length === 0"
-          class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
-          No categories found.
-        </div>
+        <ng-container *ngIf="!isLoading">
+          <div
+            *ngFor="let row of pagedRows"
+            class="mc-table__row"
+            role="row"
+            [style.grid-template-columns]="tableGridTemplate">
+            <div *ngIf="isColumnVisible('icon')" class="mc-table__cell" role="cell">
+              <span class="mc-icon" aria-hidden="true">
+                <img [src]="iconSrc(row.icon)" alt="" width="16" height="16" />
+              </span>
+            </div>
+            <div *ngIf="isColumnVisible('name')" class="mc-table__cell" role="cell">
+              <div class="mc-name">
+                <button type="button" class="mc-name__link" (click)="openEdit(row)">
+                  {{ row.name }}
+                </button>
+                <span *ngIf="row.isGlobal" class="mc-global">Global</span>
+              </div>
+            </div>
+            <div *ngIf="isColumnVisible('categoryType')" class="mc-table__cell" role="cell">
+              <span class="text-sm text-defaulttextcolor">{{ row.categoryType }}</span>
+            </div>
+            <div *ngIf="isColumnVisible('workOrders')" class="mc-table__cell" role="cell">
+              <span class="mc-count">{{ row.workOrders }}</span>
+            </div>
+            <div *ngIf="isColumnVisible('avgCompletionTime')" class="mc-table__cell" role="cell">
+              <span class="text-sm text-defaulttextcolor">{{
+                row.avgCompletionTime || '—'
+              }}</span>
+            </div>
+            <div
+              *ngIf="isColumnVisible('actions')"
+              class="mc-table__cell mc-table__cell--action"
+              role="cell">
+              <button
+                type="button"
+                class="ov-icon-btn"
+                aria-label="Edit category"
+                (click)="openEdit(row)">
+                <img src="./assets/images/settings/pencil.svg" alt="" width="14" height="14" />
+              </button>
+              <button
+                type="button"
+                class="ov-icon-btn ov-icon-btn--danger"
+                aria-label="Delete category"
+                (click)="deleteRow(row)">
+                <img src="./assets/images/settings/trash.svg" alt="" width="14" height="14" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            *ngIf="pagedRows.length === 0"
+            class="border-t border-defaultborder px-5 py-10 text-center text-sm text-textmuted">
+            No categories found.
+          </div>
+        </ng-container>
       </div>
     </div>
 
@@ -376,10 +383,11 @@
         <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.settings.maintenanceCategories.btnModalClose' | translate }}</button>
         <button
           type="button"
-          class="ov-btn ov-btn-primary"
-          [disabled]="!canSave"
+          class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
+          [disabled]="!canSave || isSaving"
           (click)="save()">
-          {{ 'web.settings.maintenanceCategories.btnModalSave' | translate }}
+          <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+          {{ (isSaving ? 'web.settings.propertyTypes.lblSaving' : 'web.settings.maintenanceCategories.btnModalSave') | translate }}
         </button>
       </div>
     </div>

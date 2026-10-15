@@ -145,7 +145,12 @@
         </div>
       </div>
 
-      <ng-container *ngIf="pagedRows.length > 0">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <span class="ms-2 text-sm text-textmuted">Loading quotation categories...</span>
+      </div>
+
+      <ng-container *ngIf="!isLoading && pagedRows.length > 0">
         <div
           *ngFor="let row of pagedRows"
           class="qc-table__row"
@@ -192,7 +197,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="pagedRows.length === 0" class="qc-table-empty" role="row">
+      <div *ngIf="!isLoading && pagedRows.length === 0" class="qc-table-empty" role="row">
         <p class="qc-table-empty__text">
           No quotation categories yet. Create your first quotation category to get started.
         </p>
@@ -270,10 +275,11 @@
         <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
         <button
           type="button"
-          class="ov-btn ov-btn-primary"
-          [disabled]="!canSave"
+          class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
+          [disabled]="!canSave || isSaving"
           (click)="save()">
-          Save
+          <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+          {{ isSaving ? ('web.settings.propertyTypes.lblSaving' | translate) : 'Save' }}
         </button>
       </div>
     </div>
