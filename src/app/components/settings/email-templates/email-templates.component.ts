@@ -1,8 +1,12 @@
 import { TranslateModule } from '@ngx-translate/core';
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
   DEFAULT_EMAIL_TEMPLATES,
@@ -23,7 +27,11 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './email-templates.component.html',
   styleUrl: './email-templates.component.scss',
 })
-export class EmailTemplatesComponent {
+export class EmailTemplatesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   targetFilter: TargetFilter = 'all';
@@ -31,6 +39,9 @@ export class EmailTemplatesComponent {
   openMenuId: number | null = null;
   previewOpen = false;
   previewRow: EmailTemplateRow | null = null;
+  editingDescription = '';
+  isLoading = false;
+  isSaving = false;
 
   sortKey: SortKey = 'name';
   sortDir: SortDir = 'asc';
@@ -48,7 +59,91 @@ export class EmailTemplatesComponent {
     { key: 'actions', label: 'Actions', visible: true },
   ];
 
+  private static readonly STORAGE_KEY = 'orville_email_templates';
+
   constructor(private readonly host: ElementRef<HTMLElement>) {}
+
+  ngOnInit(): void {
+    this.loadCachedTemplates();
+    this.fetchEmailTemplates();
+  }
+
+  private loadCachedTemplates(): void {
+    try {
+      const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.rows = parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse cached email_templates:', e);
+    }
+  }
+
+  fetchEmailTemplates(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'email_templates',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
+            try {
+              const parsed = JSON.parse(records[0].strValue);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                this.rows = parsed;
+                localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(this.rows));
+                return;
+              }
+            } catch (e) {
+              console.error('Failed to parse email_templates strValue:', e);
+            }
+          }
+        }
+        // If backend returned -200 or empty, keep cached templates if they exist
+        const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              this.rows = parsed;
+              return;
+            }
+          } catch (e) {}
+        }
+        this.rows = DEFAULT_EMAIL_TEMPLATES.map((r) => ({ ...r }));
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching email templates:', err);
+        const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              this.rows = parsed;
+              return;
+            }
+          } catch (e) {}
+        }
+        this.rows = DEFAULT_EMAIL_TEMPLATES.map((r) => ({ ...r }));
+      },
+    });
+  }
 
   get totalCount(): number {
     return this.rows.length;
@@ -195,14 +290,59 @@ export class EmailTemplatesComponent {
   }
 
   openPreview(row: EmailTemplateRow): void {
-    this.previewRow = row;
+    this.previewRow = { ...row };
+    this.editingDescription = row.description || '';
     this.previewOpen = true;
     this.openMenuId = null;
+  }
+
+  saveTemplate(): void {
+    if (!this.previewRow || this.isSaving) {
+      return;
+    }
+    this.isSaving = true;
+    const updatedRows = this.rows.map((r) =>
+      r.id === this.previewRow!.id ? { ...r, description: this.editingDescription.trim() } : r
+    );
+
+    this.rows = updatedRows;
+    localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(this.rows));
+
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'email_templates',
+      filterText1: JSON.stringify(updatedRows),
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200') {
+          this.toastr.success('Email template updated successfully', 'Success');
+          this.closePreview();
+        } else {
+          this.toastr.error(res?.message || 'Failed to update email template', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('Error saving email template:', err);
+        const errMsg = err.error?.message || err.error?.title || 'Failed to update email template';
+        this.toastr.error(errMsg, 'Error');
+      },
+    });
   }
 
   closePreview(): void {
     this.previewOpen = false;
     this.previewRow = null;
+    this.editingDescription = '';
   }
 
   @HostListener('document:click', ['$event'])

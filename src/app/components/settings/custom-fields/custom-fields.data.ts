@@ -25,6 +25,26 @@ export interface CustomFieldRow {
   useForVerification: boolean;
 }
 
+export interface CustomFieldDraft {
+  fieldName: string;
+  fieldLabel: string;
+  dataType: CustomFieldDataType;
+  module: CustomFieldModule;
+  visibleToTenant: boolean;
+  visibleToLandlord: boolean;
+  useForVerification: boolean;
+}
+
+export const EMPTY_CUSTOM_FIELD: CustomFieldDraft = {
+  fieldName: '',
+  fieldLabel: '',
+  dataType: 'String',
+  module: 'Leases',
+  visibleToTenant: false,
+  visibleToLandlord: false,
+  useForVerification: false,
+};
+
 export const CUSTOM_FIELD_DATA_TYPES: CustomFieldDataType[] = [
   'Single Select',
   'Date',

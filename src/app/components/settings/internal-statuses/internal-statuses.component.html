@@ -173,7 +173,12 @@
         </div>
       </div>
 
-      <ng-container *ngIf="pagedRows.length > 0">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-10" role="row">
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <span class="ms-2 text-sm text-textmuted">Loading internal statuses...</span>
+      </div>
+
+      <ng-container *ngIf="!isLoading && pagedRows.length > 0">
         <div
           *ngFor="let row of pagedRows"
           class="is-table__row"
@@ -228,7 +233,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="pagedRows.length === 0" class="is-table-empty" role="row">
+      <div *ngIf="!isLoading && pagedRows.length === 0" class="is-table-empty" role="row">
         <p class="is-table-empty__text">{{ emptyMessage }}</p>
       </div>
     </div>
@@ -336,10 +341,11 @@
         <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Cancel</button>
         <button
           type="button"
-          class="ov-btn ov-btn-primary"
-          [disabled]="!canSubmit"
+          class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
+          [disabled]="!canSubmit || isSaving"
           (click)="save()">
-          Submit
+          <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+          <span>{{ isSaving ? ('web.settings.propertyTypes.lblSaving' | translate) : 'Submit' }}</span>
         </button>
       </div>
     </div>

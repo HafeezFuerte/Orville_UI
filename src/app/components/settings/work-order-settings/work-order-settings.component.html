@@ -128,7 +128,14 @@
     </p>
     <div class="wos-footer__actions">
       <span *ngIf="saved" class="wos-saved" role="status">Settings updated</span>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Update</button>
+      <button
+        type="button"
+        class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
+        [disabled]="isSaving || isLoading"
+        (click)="save()">
+        <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+        <span>{{ isSaving ? ('web.settings.propertyTypes.lblSaving' | translate) : 'Update' }}</span>
+      </button>
     </div>
   </div>
 </div>

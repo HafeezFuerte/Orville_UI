@@ -1,8 +1,12 @@
 import { TranslateModule } from '@ngx-translate/core';
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
   DEFAULT_INTERNAL_STATUSES,
@@ -26,7 +30,11 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './internal-statuses.component.html',
   styleUrl: './internal-statuses.component.scss',
 })
-export class InternalStatusesComponent {
+export class InternalStatusesComponent implements OnInit {
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
+  private commonService = inject(CommonService);
+
   searchQuery = '';
   columnSearch = '';
   filterModule: InternalStatusModule | '' = '';
@@ -34,6 +42,8 @@ export class InternalStatusesComponent {
   showColumns = false;
   showFilters = false;
   editingId: number | null = null;
+  isLoading = false;
+  isSaving = false;
 
   sortKey: SortKey = 'name';
   sortDir: SortDir = 'asc';
@@ -53,9 +63,100 @@ export class InternalStatusesComponent {
     { key: 'actions', label: 'Action', visible: true },
   ];
 
+  private static readonly STORAGE_KEY = 'orville_internal_statuses';
   private nextId = 1;
 
   constructor(private readonly host: ElementRef<HTMLElement>) {}
+
+  ngOnInit(): void {
+    this.loadCachedStatuses();
+    this.fetchStatuses();
+  }
+
+  private loadCachedStatuses(): void {
+    try {
+      const cached = localStorage.getItem(InternalStatusesComponent.STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.rows = parsed;
+          const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+          this.nextId = maxId + 1;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse cached internal_statuses:', e);
+    }
+  }
+
+  fetchStatuses(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: 1005,
+      filterText: 'internal_statuses',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && res.objResult) {
+          const records = res.objResult.table || res.objResult.table0 || res.objResult;
+          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
+            try {
+              const parsed = JSON.parse(records[0].strValue);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                this.rows = parsed;
+                const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+                this.nextId = maxId + 1;
+                localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
+                return;
+              }
+            } catch (e) {
+              console.error('Failed to parse internal_statuses strValue:', e);
+            }
+          }
+        }
+        // If backend returned -200 or empty, keep cached statuses if they exist
+        const cached = localStorage.getItem(InternalStatusesComponent.STORAGE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              this.rows = parsed;
+              const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+              this.nextId = maxId + 1;
+              return;
+            }
+          } catch (e) {}
+        }
+        this.rows = DEFAULT_INTERNAL_STATUSES.map((r) => ({ ...r }));
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching internal statuses:', err);
+        const cached = localStorage.getItem(InternalStatusesComponent.STORAGE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              this.rows = parsed;
+              const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+              this.nextId = maxId + 1;
+              return;
+            }
+          } catch (e) {}
+        }
+        this.rows = DEFAULT_INTERNAL_STATUSES.map((r) => ({ ...r }));
+      },
+    });
+  }
 
   get filteredRows(): InternalStatusRow[] {
     const q = this.searchQuery.trim().toLowerCase();
@@ -268,22 +369,22 @@ export class InternalStatusesComponent {
   }
 
   save(): void {
-    if (!this.canSubmit || this.draft.module === '') {
+    if (!this.canSubmit || this.draft.module === '' || this.isSaving) {
       return;
     }
+    this.isSaving = true;
+    let updatedRows: InternalStatusRow[];
     if (this.editingId == null) {
-      this.rows = [
-        ...this.rows,
-        {
-          id: this.nextId++,
-          name: this.draft.name.trim(),
-          module: this.draft.module,
-          colorKey: this.draft.colorKey,
-          hasAssociatedRecords: false,
-        },
-      ];
+      const newStatus: InternalStatusRow = {
+        id: this.nextId++,
+        name: this.draft.name.trim(),
+        module: this.draft.module,
+        colorKey: this.draft.colorKey,
+        hasAssociatedRecords: false,
+      };
+      updatedRows = [...this.rows, newStatus];
     } else {
-      this.rows = this.rows.map((r) =>
+      updatedRows = this.rows.map((r) =>
         r.id === this.editingId
           ? {
               ...r,
@@ -294,13 +395,74 @@ export class InternalStatusesComponent {
           : r
       );
     }
-    this.modalOpen = false;
+
+    const user = this.commonService.getCurrentUser();
+    this.rows = updatedRows;
+    localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'internal_statuses',
+      filterText1: JSON.stringify(updatedRows),
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200') {
+          this.toastr.success('Internal status saved successfully', 'Success');
+          this.closeModal();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save internal status', 'Error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('Error saving internal status:', err);
+        const errMsg = err.error?.message || err.error?.title || 'Failed to save internal status';
+        this.toastr.error(errMsg, 'Error');
+      },
+    });
   }
 
   deleteRow(row: InternalStatusRow): void {
-    this.rows = this.rows.filter((r) => r.id !== row.id);
+    if (!confirm(`Are you sure you want to delete "${row.name}"?`)) {
+      return;
+    }
+    const updatedRows = this.rows.filter((r) => r.id !== row.id);
+    this.rows = updatedRows;
+    localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
     if (this.pageIndex > this.totalPages - 1) {
       this.pageIndex = Math.max(0, this.totalPages - 1);
     }
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 90,
+      filterId: 1005,
+      filterText: 'internal_statuses',
+      filterText1: JSON.stringify(updatedRows),
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200') {
+          this.toastr.success('Internal status deleted successfully', 'Success');
+        } else {
+          this.toastr.error(res?.message || 'Failed to delete internal status', 'Error');
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting internal status:', err);
+        this.toastr.error('Failed to delete internal status', 'Error');
+      },
+    });
   }
 }
