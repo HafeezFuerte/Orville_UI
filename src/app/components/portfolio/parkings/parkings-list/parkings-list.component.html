@@ -259,6 +259,13 @@
             [placeholder]="'web.parkings.phSelectType' | translate" class="ov-select w-full" appendTo="body"
             [(ngModel)]="parkingForm.parking_type" [searchable]="true"></ng-select>
         </div>
+        <div *ngIf="parkingForm.parking_type==89">
+          <label class="ov-label">
+              {{ 'web.parkings.lblParkingfee' | translate }} ( {{currentUser?.currencyCode}} ) <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="ov-input" formControlName="parkingfee"
+              placeholder="{{ 'web.parkings.lblParkingfee' | translate }}">
+      </div>
       </div>
 
       <div>
@@ -267,6 +274,7 @@
           bindLabel="name" bindValue="id" [placeholder]="'web.parkings.lblSelectCycle' | translate" class="ov-select w-full" appendTo="body"
           [(ngModel)]="parkingForm.recurring_cycle" [searchable]="true"></ng-select>
       </div>
+      
 
       <div>
         <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>

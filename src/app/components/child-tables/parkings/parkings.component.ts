@@ -149,19 +149,25 @@ export class ParkingsComponent {
     };
     if (!this.validateForm(this.selectedTab.form, commonLabels)) {
       return;
-    }
+    } 
     const values = this.selectedTab.form.value;
+    if(values.parking_type=="89" && (values.parkingfee==null || values.parkingfee=="" || values.parkingfee=="0")){
+      this.toastr.error("Invalid parking fee","Error");
+      return;
+    }
     const payload = {
      ...this.commonService.commonPayload,
      id:0, 
      property_code:this.selectedTab?.entity_id,
-     unit_code:values.unit_code,
-     rooom_code:values.room_code,
-     is_from_unit:this.selectedTab.key=="units"? true :false,
+     unit_code:this.selectedTab?.filter_code,
+     room_code:values.room_code ?? "",
+     is_from_unit:this.selectedTab.entity=="Units"? true :false,
      parking_no:values.parking_no,
      parking_type:values.parking_type || '',
      recurring_cycle:values.recurring_cycle || 0,
-     remarks:values.remarks || 0,
+     remarks:values.remarks || "",
+     parking_fee:values.parkingfee || 0,
+     status:96, // available id
      code:values.code || ''
   };
   this.common_TabsService.saveParking(payload).subscribe({
@@ -211,6 +217,7 @@ export class ParkingsComponent {
       parking_type: ['', Validators.required],
       recurring_cycle: ['', Validators.required],
       remarks: [''], 
+      parkingfee: [''], 
       code:['']
     });
     this.selectedTab.form.patchValue({
@@ -236,6 +243,7 @@ export class ParkingsComponent {
         recurring_cycle: row?.recurring_cycle,
         parking_type: row?.parking_type ??'',
         remarks:row?.remarks ??'',
+        parkingfee:row?.parking_fee ??'',
         code:row?.code ??''
       });
     }

@@ -44,7 +44,14 @@ export class AddLandlordComponent implements OnInit {
   cities: any[] = [];
   states: any[] = [];
   docTypes = ['Passport', 'Trade License', 'Visa'];
-
+  bankdtls:any= {
+    bank_name: '',
+    bank_address: '',
+    iban: '',
+    account_no: '',
+    sort_code: '',
+    code_swift: ''
+  };
   // Form State
   displayAsCompany = false;
   autoSignLeases = false;
@@ -658,12 +665,12 @@ export class AddLandlordComponent implements OnInit {
       auto_hold_amount_in_wallet: this.autoBillWallet,
       emergencydtls: [],
       bankdtls: {
-        bank_name: 'ENBD Bank',
-        bank_address: 'Deira, Dubai',
-        iban: 'ENB0351496556322',
-        account_no: '125322878556984',
-        sort_code: '66841',
-        code_swift: '-'
+        bank_name: this.bankdtls.bank_name,
+        bank_address: this.bankdtls.bank_address,
+        iban: this.bankdtls.iban,
+        account_no: this.bankdtls.account_no,
+        sort_code: this.bankdtls.sort_code,
+        code_swift: this.bankdtls.code_swift
       },
       invoiceInfo: {
         invoice_num_pre: '',

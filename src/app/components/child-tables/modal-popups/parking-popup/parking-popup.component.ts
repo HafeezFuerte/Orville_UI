@@ -5,6 +5,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';  
 import { TranslateModule } from '@ngx-translate/core';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
+import { CommonService } from '../../../../services/common.service';
 @Component({
   selector: 'app-parking-popup',
   standalone: true,
@@ -19,7 +20,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
   styleUrls: ['./parking-popup.component.scss']
 })
 export class ParkingPopupComponent {
-
+  currentUser = this.commonservice.getCurrentUser();
   @Input({ required: true })
   form!: FormGroup; 
   @Input() entity_id: string = '';
@@ -30,6 +31,7 @@ export class ParkingPopupComponent {
   unitsList: any = []; 
   roomsList: any = [];
   parkingTypeList: any = [];
+  parking_type: any = [];
   communicationChannels: any = [];
   editor!: Editor;
   @Output() fileSelected = new EventEmitter<File[]>();
@@ -38,7 +40,7 @@ export class ParkingPopupComponent {
     ['ordered_list', 'bullet_list'],
     ['link']
   ];
-  constructor(private portfolioService: PortfolioService,    private fb: FormBuilder,){}
+  constructor(private portfolioService: PortfolioService, private commonservice:CommonService,   private fb: FormBuilder,){}
   ngOnInit(){
      this.editor = new Editor(); 
      this.form.patchValue({
@@ -57,6 +59,7 @@ export class ParkingPopupComponent {
       control?.disable();
       this.getRooms(); 
     }
+    this.parking_type=this.form.get('parking_type');
     //  this.form = this.fb.group({
     //   property_code: ['', Validators.required],
     //   unit_code: ['', Validators.required],
@@ -72,6 +75,9 @@ export class ParkingPopupComponent {
   }
   onChange(){
     console.log("test");
+  }
+  onTypeChange(){
+     
   }
   getUnits(){
     this.unitsList=[];

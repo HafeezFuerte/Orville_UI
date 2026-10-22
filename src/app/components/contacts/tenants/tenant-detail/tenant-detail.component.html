@@ -221,23 +221,23 @@
         <span class="ov-statement-summary__eyebrow">Statement Summary</span>
         <div>
           <span class="ov-statement-summary__label">Current Balance</span>
-          <p class="ov-statement-summary__value">AED {{ (tenantData?.current_balance || tenantData?.balance || 0) | number:'1.2-2' }}</p>
+          <p class="ov-statement-summary__value">AED {{ invoice_data.totalamt || 0 | number:'1.2-2' }}</p>
           <span class="ov-statement-summary__hint">Total due balance of Tenants Account</span>
         </div>
         <div class="ov-statement-summary__metrics">
           <div>
             <span class="ov-statement-summary__metric-label">Total Invoiced</span>
-            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.total_invoiced || tenantData?.invoiced || 0) | number:'1.2-2' }}</span>
+            <span class="ov-statement-summary__metric-value">AED {{  invoice_data.totalamt|| 0 | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Total charges levied on this statement</span>
           </div>
           <div>
             <span class="ov-statement-summary__metric-label">Total Paid</span>
-            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.total_paid || tenantData?.paid || 0) | number:'1.2-2' }}</span>
+            <span class="ov-statement-summary__metric-value">AED {{ invoice_data.paidamt || 0 | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Payments received for this statement</span>
           </div>
           <div>
             <span class="ov-statement-summary__metric-label">Available Credits</span>
-            <span class="ov-statement-summary__metric-value">AED {{ (tenantData?.available_credits || tenantData?.credits || 0) | number:'1.2-2' }}</span>
+            <span class="ov-statement-summary__metric-value">AED {{  invoice_data.balamt || 0 | number:'1.2-2' }}</span>
             <span class="ov-statement-summary__metric-hint">Credit balances held for future adjustments</span>
           </div>
         </div>
@@ -284,7 +284,7 @@
           <input id="tenant-leases-search" type="text" class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate" />
         </div>
       </div>
-      <app-shared-table [columns]="leaseColumns" [data]="leaseData" [loading]="false">
+      <app-shared-table [columns]="leaseColumns" [data]="leaseData"  [totalRecords]="leaseData.length" [loading]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container *ngIf="col.key === 'lease_code'">
             <span class="ov-link font-semibold cursor-pointer">{{ row.lease_code || row.id }}</span>
@@ -325,8 +325,8 @@
         [loading]="false"
         [totalRecords]="userData.length">
         <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container *ngIf="col.key === 'id'">
-            <span class="ov-link font-semibold cursor-pointer">{{ row.id || '-' }}</span>
+          <ng-container *ngIf="col.key === 'user_code'">
+            <span class="ov-link font-semibold cursor-pointer">{{ row.user_code || '-' }}</span>
           </ng-container>
           <ng-container *ngIf="col.key === 'status'">
             <span class="ov-status" [class.ov-status--active]="row.status === 'Active' || row.status === true">
@@ -359,8 +359,8 @@
         [loading]="false"
         [totalRecords]="emergencyContactData.length">
         <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container *ngIf="col.key === 'user_code'">
-            <span class="ov-link font-semibold cursor-pointer">{{ row.user_code || '-' }}</span>
+          <ng-container *ngIf="col.key === 'code'">
+            <span class="ov-link font-semibold cursor-pointer">{{ row.code || '-' }}</span>
           </ng-container>
           <ng-container *ngIf="col.key === 'is_active'">
             <span class="ov-status"

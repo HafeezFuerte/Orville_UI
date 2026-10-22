@@ -55,10 +55,10 @@
             </select>
         </div>
     </div>
-    <div class="ov-fields ov-fields--2">
+    <div class="ov-fields ov-fields--3">
         <div>
             <label class="ov-label">
-                {{ 'web.portfolio.parking.lblParkingno' | translate }} <span class="text-danger">*</span>
+                {{ 'web.parkings.lblParkingNo' | translate }} <span class="text-danger">*</span>
             </label>
             <input type="text" class="ov-input" formControlName="parking_no"
                 placeholder="{{ 'web.portfolio.notes.lblEnter' | translate }}">
@@ -67,7 +67,7 @@
             <label class="ov-label">
                 {{ 'web.portfolio.parking.lblParkingType' | translate }}
             </label>
-            <select class="ov-input" formControlName="parking_type">
+            <select class="ov-input" formControlName="parking_type" (change)="onTypeChange()">
                 <option value="" disabled>
                     {{ 'web.portfolio.parking.lblSelect' | translate }}
                 </option>
@@ -76,7 +76,15 @@
                 </option>
             </select>
         </div>
+        <div *ngIf="parking_type.value==89">
+            <label class="ov-label">
+                {{ 'web.parkings.lblParkingfee' | translate }} ( {{currentUser?.currencyCode}} ) <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="ov-input" formControlName="parkingfee"
+                placeholder="{{ 'web.parkings.lblParkingfee' | translate }}">
+        </div>
     </div>
+  
     <div>
         <label class="ov-label">
             {{ 'web.portfolio.parking.lblRemarks' | translate }}

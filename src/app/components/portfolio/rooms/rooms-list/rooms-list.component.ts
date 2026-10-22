@@ -109,7 +109,7 @@ export class RoomsListComponent implements OnInit {
     { key: 'unitcode', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'land_lord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'roomType', label: 'Room Type', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'room_type_name', label: 'Room Type', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'room_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },

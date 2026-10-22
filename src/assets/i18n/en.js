@@ -799,6 +799,7 @@ export const locale = {
         "lblParkingList": "Parking List",
         "phSearchParking": "Search by Property, Parking Number, or Unit",
         "lblParkingNo": "Parking Number",
+        "lblParkingfee": "Fee",
         "phParkingNoPlaceholder": "Example: P-004",
         "lblParkingType": "Parking Type",
         "phSelectType": "Select Type",

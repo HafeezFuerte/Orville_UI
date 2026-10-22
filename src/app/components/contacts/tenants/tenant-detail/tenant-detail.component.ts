@@ -145,6 +145,7 @@ export class TenantDetailComponent implements OnInit {
           if (result.documents) this.attachmentData = result.documents;
           if (result.emergency_dtls) this.emergencyContactData = result.emergency_dtls;
           if (result.users) this.userData = result.users;
+           if (result.invoice_dtls) this.invoice_data = result.invoice_dtls[0] || {};
           
           console.log('Tenant Details Loaded:', this.tenantData);
           this.initializeTabs();
@@ -353,18 +354,16 @@ export class TenantDetailComponent implements OnInit {
 
   // --- TAB 5: USERS ---
   userColumns = [
-    { key: 'id', label: 'web.contacts.lblID', visible: true, useTemplate: true },
+    { key: 'user_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
     { key: 'name', label: 'web.contacts.lblName', visible: true },
-    { key: 'userName', label: 'web.contacts.lblUserName', visible: true },
-    { key: 'email', label: 'web.contacts.lblEmail', visible: true },
+    { key: 'username', label: 'web.contacts.lblUserName', visible: true },
+    { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
     { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true },
-    { key: 'role', label: 'web.contacts.lblRole', visible: true },
-    { key: 'type', label: 'web.contacts.lblType', visible: true },
+    { key: 'role_name', label: 'web.contacts.lblRole', visible: true },
+    { key: 'role_type', label: 'web.contacts.lblType', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'Timezone', label: 'web.contacts.lblTimezone', visible: true },
-    { key: 'Country', label: 'web.contacts.lblCountry', visible: true },
-    { key: 'Default', label: 'web.contacts.lblDefault', visible: true },
-    { key: 'Created', label: 'web.contacts.lblCreated', visible: true },
+    { key: 'Timezone', label: 'web.contacts.lblTimezone', visible: true },  
+    { key: 'created_date', label: 'web.contacts.lblCreated', visible: true },
     { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true }
   ];
 
@@ -372,18 +371,15 @@ export class TenantDetailComponent implements OnInit {
 
   // --- TAB 6: EMERGENCY CONTACT ---
   emergencyContactColumns = [
-    { key: 'user_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
-    { key: 'column1', label: 'web.contacts.lblName', visible: true },
-    { key: 'username', label: 'web.contacts.lblUserName', visible: true },
+    { key: 'code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.contacts.lblName', visible: true }, 
     { key: 'phone', label: 'web.contacts.lblPhoneNumber', visible: true },
     { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
-    { key: 'role_name', label: 'web.contacts.lblRole', visible: true },
-    { key: 'time_zone', label: 'web.contacts.lblTimezone', visible: true },
-    { key: 'is_active', label: 'web.contacts.lblStatus', visible: true, useTemplate: true }
+    { key: 'releation', label: 'releation', visible: true }, 
   ];
 
   emergencyContactData: any[] = [];
-
+  invoice_data: any = {};
   setTab(tab: string) {
     this.activeTab = tab;
   }
@@ -400,7 +396,7 @@ export class TenantDetailComponent implements OnInit {
       source: "web",
       languageid: 1,
       code: "",
-      entity: "tenant",
+      entity: "Tenants",
       entity_id: String(this.tenantId),
       email_address: this.emergencyForm.email_address,
       name: this.emergencyForm.name || "",

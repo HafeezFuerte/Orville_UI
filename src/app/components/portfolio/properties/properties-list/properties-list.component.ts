@@ -31,7 +31,7 @@ export class PropertiesListComponent implements OnInit {
   currentUser = this.commonservice.getCurrentUser();
   // Advanced Filters & Drawer States
   isDrawerOpen: boolean = false;
-  selectedType: string | null = null;
+  selectedType: string | null = "All";
   selectedStatus: string | null = null;
   selectedTag: string | null = null;
   selectedArea: string | null = null;
@@ -163,6 +163,13 @@ private loadMetrics(
 }
 
   loadProperties(append = false): void {
+    const filterList: any[] = [];
+    if (this.selectedType && this.selectedType !== "All") {
+      filterList.push({ 'key': 'P.property_type', 'value': this.selectedType });
+    } 
+// if (this.categoryFilter && this.categoryFilter !== "All") {
+//       filterList.push({ 'key': 'P.property_type', 'value': this.selectedType });
+//     } 
     const payload = {
       userid: this.currentUser?.userId,
       company_id: this.currentUser?.companyId,
@@ -173,7 +180,8 @@ private loadMetrics(
       seqno: 0,
       search_keyword: this.searchQuery || '',
       pagecount: this.pageSize, // Load all to handle advanced dashboard filters locally for interactive UX
-      filter_by: this.categoryFilter !== 'All' ? this.categoryFilter : '',
+      filter_by: this.selectedType !== 'All' ? 'P.property_type' : '', 
+      filter_list: JSON.stringify(filterList),
       featureid: 'Property'
     };
 
@@ -200,22 +208,22 @@ private loadMetrics(
   }
 
   applyLocalFilters(): void {
-    let result = this.properties || [];
-    if (this.selectedType) {
-      const type = this.selectedType.toLowerCase();
-      result = result.filter(p => (p.type_name || '').toLowerCase() === type);
-    }
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(p =>
-        (p.name && p.name.toLowerCase().includes(q)) ||
-        (p.code && p.code.toString().toLowerCase().includes(q)) ||
-        (p.type_name && p.type_name.toLowerCase().includes(q)) ||
-        (p.address_1 && p.address_1.toLowerCase().includes(q)) ||
-        (p.tags && p.tags.toLowerCase().includes(q))
-      );
-    }
-    this.paginatedProperties = result;
+    // let result = this.properties || [];
+    // if (this.selectedType) {
+    //   const type = this.selectedType.toLowerCase();
+    //   result = result.filter(p => (p.type_name || '').toLowerCase() === type);
+    // }
+    // if (this.searchQuery) {
+    //   const q = this.searchQuery.toLowerCase();
+    //   result = result.filter(p =>
+    //     (p.name && p.name.toLowerCase().includes(q)) ||
+    //     (p.code && p.code.toString().toLowerCase().includes(q)) ||
+    //     (p.type_name && p.type_name.toLowerCase().includes(q)) ||
+    //     (p.address_1 && p.address_1.toLowerCase().includes(q)) ||
+    //     (p.tags && p.tags.toLowerCase().includes(q))
+    //   );
+    // }
+    // this.paginatedProperties = result;
     //   result = result.filter(p => 
     //     p.name.toLowerCase().includes(q) || 
     //     p.type_name.toLowerCase().includes(q)
@@ -267,7 +275,8 @@ private loadMetrics(
 
   setTypeFilter(type: string | null): void {
     this.selectedType = type;
-    this.applyLocalFilters();
+    this.pageNo=0;
+    this.loadProperties();
   }
 
   toggleColumn(key: string): void {

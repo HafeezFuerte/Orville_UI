@@ -60,7 +60,8 @@ export class ParkingsListComponent implements OnInit {
     parking_no: '',
     parking_type: null,
     recurring_cycle: null,status: null,
-    remarks: ''
+    remarks: '',
+    parkingfee:0
   };
   edit_code:string='';
   deleteModal:boolean=false;
@@ -80,7 +81,7 @@ export class ParkingsListComponent implements OnInit {
     occupied: 885,
     reserved: 10
   };
-
+  currentUser =this.commonService.getCurrentUser();
   // Columns definition for the shared table component
   tableColumns = [
     { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
@@ -89,7 +90,7 @@ export class ParkingsListComponent implements OnInit {
     { key: 'unit', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true }, 
     { key: 'parking_status_nm', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'type', label: 'Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'fee', label: 'Fee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'fee', label: 'Fee (' + this.currentUser?.currencyCode+ ' )', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'cycle', label: 'Cycle', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'remarks', label: 'Remarks', headerClass: 'text-start', useTemplate: true, visible: true },
     { key: 'created_date', label: 'Created', headerClass: 'text-start', useTemplate: true, visible: true },
@@ -118,7 +119,7 @@ export class ParkingsListComponent implements OnInit {
   get allColumnsSelected(): boolean {
     return this.tableColumns.every(c => c.visible !== false);
   }
-  currentUser: AuthPayload | null = null;
+
   isEditMode: boolean = false;
   currentEditId: number = 0;
   currentEditCode: string = '';
@@ -311,7 +312,8 @@ export class ParkingsListComponent implements OnInit {
         parking_type: null,
         recurring_cycle: null,
         status:null,
-        remarks: ''
+        remarks: '',
+        parkingfee:0
       };
     }
   }
@@ -334,7 +336,8 @@ export class ParkingsListComponent implements OnInit {
       parking_type: row.parking_type,
       recurring_cycle: row.recurring_cycle,
       remarks: row.remarks !== '-' ? row.remarks : '',
-      status:row.status
+      status:row.status,
+      parkingfee:row.parking_fee
     };
     
     this.showAddModal = true;
@@ -345,7 +348,10 @@ export class ParkingsListComponent implements OnInit {
       this.toastr.warning('Please fill in all required fields.', 'Validation Error');
       return;
     }
-
+    if(this.parkingForm.parking_type=="89" && (this.parkingForm.parkingfee==null ||  this.parkingForm.parkingfee==0)){
+      this.toastr.error("Invalid parking fee","Error");
+      return;
+    }
     const payload = {
       userid: Number(this.currentUser?.userId || localStorage.getItem('userId')) || 1,
       company_id: Number(this.currentUser?.companyId || localStorage.getItem('companyId')) || 1,
@@ -359,8 +365,8 @@ export class ParkingsListComponent implements OnInit {
       parking_no: this.parkingForm.parking_no || '',
       parking_type: this.parkingForm.parking_type || '',
       status: this.parkingForm.status || 96, // available id
-      room_code: "",
-      rooom_code: "",
+      parking_fee:this.parkingForm.parkingfee || 0,
+      room_code: "", 
       recurring_cycle: this.parkingForm.recurring_cycle || 0,
       remarks: this.parkingForm.remarks || ""
     };
