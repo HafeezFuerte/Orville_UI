@@ -5,6 +5,7 @@ export interface AuthPayload {
   userName: string;
   roleName: string;
   userCode: string;
+  roleCode?:string;
   token: string;
   currencyCode: string;  
 }

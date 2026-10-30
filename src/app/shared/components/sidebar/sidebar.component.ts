@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { selectCurrentUser } from '../../../components/common/store/login-auth-params/auth.selectors';
 import { buildFigmaSettingsMenuItems } from '../../../components/settings/settings-menu.data';
 import { HeaderScopeService } from '../../services/header-scope.service';
+ 
 interface PageMenu {
   menuID: number;
   menuName: string;
@@ -52,6 +53,7 @@ export class SidebarComponent {
   isSettingsMode = false;
   settingsSearchQuery = '';
   private allSettingsMenuItems: Menu[] = [];
+  currentUser=this.commonServices.getCurrentUser();
   // Addding sticky-pin
   scrolled = false;
   screenWidth: number;
@@ -132,9 +134,9 @@ export class SidebarComponent {
         this.loggedInEmpId = data?.userId;
       });
     const body = {  
-  "userid": this.loggedInEmpId,
-  "company_id": 1,
-  "clientId": "74BB6922",
+  "userid": this.currentUser?.userId,
+  "company_id": this.currentUser?.companyId,
+  "clientId": this.currentUser?.clientId,
   "source": "web", 
   "search_keyword": "string"
 };
@@ -207,6 +209,8 @@ export class SidebarComponent {
         this.settingsMenuItems = buildFigmaSettingsMenuItems();
         this.allSettingsMenuItems = [...this.settingsMenuItems];
 
+        if(this.currentUser?.roleCode=="A"){
+          this.isSettingsMode = true;
         // Add Settings menu item at the end
         this.menuItems.push({
           title: 'Settings',
@@ -216,6 +220,7 @@ export class SidebarComponent {
           active: false,
           selected: false
         });
+      }
 
         // Presentation-only Add-ons / More grouping (does not drop API modules)
         this.menuItems = this.applyMainMenuPresentation(this.menuItems);
@@ -740,12 +745,11 @@ export class SidebarComponent {
   private ensurePropertyListingsMenu(items: Menu[]): Menu[] {
     if (!items?.length) {
       return items;
-    }
-
+    } 
     let result = items.filter((item) => !this.isPropertyListingsChildTitle(item.title));
     const hasParent = result.some((item) => this.isPropertyListingsParent(item.title));
 
-    if (!hasParent) {
+    if (hasParent) {
       const insertAt = Math.max(
         0,
         result.findIndex((item) => (item.title || '').toLowerCase().includes('remind'))
@@ -854,9 +858,9 @@ export class SidebarComponent {
     ];
 
     let result = [...items];
-    for (const def of defaults) {
+    for (const def of defaults) { 
       const exists = result.some((item) => this.matchMoreKey(item.title) === def.key);
-      if (exists) {
+      if (!exists) {
         continue;
       }
       result.push({

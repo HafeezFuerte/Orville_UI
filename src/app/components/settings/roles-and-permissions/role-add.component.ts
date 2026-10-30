@@ -28,6 +28,7 @@ export class RoleAddComponent implements OnInit {
   currentUser = this.commonservice.getCurrentUser();
   roleName = '';
   isSystem = false; 
+  allSelected=false;
   roleFilter='';
   roleOptions :any=[];
   //readonly categories = ROLE_PERMISSION_CATEGORIES;
@@ -54,6 +55,8 @@ export class RoleAddComponent implements OnInit {
   }
   fillRolePermissions(store_perms:any): Record<string, Record<string, boolean>> {
     const map: Record<string, Record<string, boolean>> = {};
+    if(!store_perms)
+      return map;
     for (const cat of store_perms) {
       map[cat.MenuId] = {};
       for (const p of cat.Actions) {
@@ -114,9 +117,9 @@ export class RoleAddComponent implements OnInit {
     return this.roleName.trim().length > 0 && !this.isSystem;
   }
 
-  get allSelected(): boolean {
-    return this.categories.every((cat:any) => this.categoryAllSelected(cat));
-  }
+  // get allSelected(): boolean {
+  //   return this.categories.every((cat:any) => this.categoryAllSelected(cat));
+  // }
 
   get someSelected(): boolean {
     if (this.allSelected) {
@@ -187,9 +190,9 @@ export class RoleAddComponent implements OnInit {
     if (this.isSystem) {
       return;
     }
-    const turnOn = !this.allSelected;
+    const turnOn = this.allSelected;
     for (const cat of this.categories) {
-      this.permissions[cat.MenuId] = turnOn ? fullCategoryPerms(cat) : emptyCategoryPerms(cat);
+      this.permissions[cat.MenuId] = turnOn ? this.fullCategory(cat,true) : this.fullCategory(cat,false);
     }
   }
 
@@ -202,9 +205,13 @@ export class RoleAddComponent implements OnInit {
       return;
     }
     if(this.permissions){ 
-      for (const cat of this.categories) { 
+      for (const cat of this.categories) {  
+        cat.Value=0;
         for (const ac of cat.Actions) {
-          ac.Value=this.permissions[cat.MenuId][ac.Key] ? 1:0 
+          ac.Value=this.permissions[cat.MenuId]!=null && this.permissions[cat.MenuId][ac.Key] ? 1:0 
+        }
+        if(cat.Actions.filter((item:any)=>item.Value==1).length>0){
+          cat.Value=1;
         } 
       }
       

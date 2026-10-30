@@ -82,6 +82,7 @@ export class LoginComponent {
                 userName: res.objResult.username,
                 roleName: res.objResult.roleName,
                 userCode: res.objResult.user_Code || '',
+                roleCode: res.objResult.roleCode,
                 token: res.objResult.access_token
               };
               this.storelogin_info(res.objResult.user_Code);
