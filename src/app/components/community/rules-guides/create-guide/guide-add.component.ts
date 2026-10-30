@@ -7,13 +7,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import {CommunityService} from '../../community.services'
 @Component({
   selector: 'app-guide-add',
   standalone: true,
-  imports: [CommonModule,FlowbiteDatepickerDirective, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, FlowbiteDatepickerDirective, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './guide-add.component.html',
   styleUrl: './guide-add.component.scss'
 })

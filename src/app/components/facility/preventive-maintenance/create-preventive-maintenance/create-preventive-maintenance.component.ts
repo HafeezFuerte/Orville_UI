@@ -1,4 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,9 +27,25 @@ export class CreatePreventiveMaintenanceComponent {
   private commtabservice = inject(Common_TabsService);
   private propertiesService = inject(PropertiesService);
   private toastr = inject(ToastrService);  
+  private translate = inject(TranslateService);
 
   currentUser = this.commonService.getCurrentUser(); 
   timeSpans= ['Days', 'Weeks', 'Months', 'Years'];
+
+  getTimeSpanLabel(span: string): string {
+    switch ((span || '').toLowerCase()) {
+      case 'days':
+        return this.translate.instant('web.facility.preventiveMaintenance.days');
+      case 'weeks':
+        return this.translate.instant('web.facility.preventiveMaintenance.weeks');
+      case 'months':
+        return this.translate.instant('web.facility.preventiveMaintenance.months');
+      case 'years':
+        return this.translate.instant('web.facility.preventiveMaintenance.years');
+      default:
+        return span;
+    }
+  }
   form : any= {
   name :'',
   startDate : '',

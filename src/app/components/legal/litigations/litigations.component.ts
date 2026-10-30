@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
@@ -32,7 +33,7 @@ export interface Litigation {
 @Component({
   selector: 'app-litigations',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent, OvPaginatorComponent],
   templateUrl: './litigations.component.html',
   styleUrls: []
 })
@@ -40,6 +41,7 @@ export class LitigationsComponent implements OnInit {
   private commonService =inject(CommonService);
   private commontabservice =inject(Common_TabsService);
   private toastr=inject(ToastrService);
+  private translate = inject(TranslateService);
   searchQuery: string = '';
   isLoading: boolean = false;
   activeStatusFilter: string = 'All';
@@ -57,6 +59,13 @@ export class LitigationsComponent implements OnInit {
   propertiesList: string[] = ['Sunrise Apartments', 'Green Heights', 'Oak Residency', 'City Center Plaza', 'River View Towers'];
   blockedStatusList: string[] = ['Yes', 'No'];
 
+  statusTabs = [
+    { id: 'All', labelKey: 'web.legal.litigations.tabAll' },
+    { id: 'Open', labelKey: 'web.legal.litigations.tabOpen' },
+    { id: 'Pending', labelKey: 'web.legal.litigations.tabPending' },
+    { id: 'Closed', labelKey: 'web.legal.litigations.tabClosed' }
+  ];
+
   pageNo = 0;
   pageSize = 10;
   totalPages = 0;
@@ -64,23 +73,23 @@ export class LitigationsComponent implements OnInit {
   pageSizeOptions = [5, 10, 25, 50, 100];
   
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'case_name', label: 'Name', visible: true },
-    { key: 'details', label: 'Details', visible: true },
-    { key: 'legal_firm', label: 'Legal Firm', visible: true },
-    { key: 'case_date', label: 'Case Date', visible: true },
-    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
-    { key: 'escalation_option', label: 'Escalation Option', visible: true},
-    { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit_no', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'active_lease', label: 'Lease', visible: true, useTemplate: true },
-    { key: 'tenant', label: 'Tenant', visible: true, useTemplate: true },
-    { key: 'unitBlocked', label: 'Unit Blocked', visible: true, useTemplate: true },
-    { key: 'tenantBlocked', label: 'Tenant Blocked', visible: true, useTemplate: true },
-    { key: 'hearingsCount', label: 'Hearings Count', visible: true, useTemplate: true },
-    { key: 'attachmentsCount', label: 'Attachments Count', visible: true, useTemplate: true },
-    { key: 'notesCount', label: 'Notes Count', visible: true, useTemplate: true },
-    { key: 'internalStatus', label: 'Internal Statuses', visible: true }
+    { key: 'code', label: 'web.legal.litigations.colId', visible: true, useTemplate: true },
+    { key: 'case_name', label: 'web.legal.litigations.colName', visible: true },
+    { key: 'details', label: 'web.legal.litigations.colDetails', visible: true },
+    { key: 'legal_firm', label: 'web.legal.litigations.colLegalFirm', visible: true },
+    { key: 'case_date', label: 'web.legal.litigations.colCaseDate', visible: true },
+    { key: 'status_nm', label: 'web.legal.litigations.colStatus', visible: true, useTemplate: true },
+    { key: 'escalation_option', label: 'web.legal.litigations.colEscalationOption', visible: true},
+    { key: 'property', label: 'web.legal.litigations.colProperty', visible: true, useTemplate: true },
+    { key: 'unit_no', label: 'web.legal.litigations.colUnit', visible: true, useTemplate: true },
+    { key: 'active_lease', label: 'web.legal.litigations.colLease', visible: true, useTemplate: true },
+    { key: 'tenant', label: 'web.legal.litigations.colTenant', visible: true, useTemplate: true },
+    { key: 'unitBlocked', label: 'web.legal.litigations.colUnitBlocked', visible: true, useTemplate: true },
+    { key: 'tenantBlocked', label: 'web.legal.litigations.colTenantBlocked', visible: true, useTemplate: true },
+    { key: 'hearingsCount', label: 'web.legal.litigations.colHearingsCount', visible: true, useTemplate: true },
+    { key: 'attachmentsCount', label: 'web.legal.litigations.colAttachmentsCount', visible: true, useTemplate: true },
+    { key: 'notesCount', label: 'web.legal.litigations.colNotesCount', visible: true, useTemplate: true },
+    { key: 'internalStatus', label: 'web.legal.litigations.colInternalStatuses', visible: true }
   ];
 
   litigationsData: any[] = [];
@@ -129,7 +138,7 @@ export class LitigationsComponent implements OnInit {
           this.allLitigationsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant("web.common.noRecordsFound"));
         }
       },
       error: (err: any) => {
@@ -264,6 +273,12 @@ export class LitigationsComponent implements OnInit {
     }
     if(this.pageNo < 0) this.pageNo = 0;
     this.pageSize = event.pageSize; 
+    this.loadlegalcases();
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.loadlegalcases();
   }
 }

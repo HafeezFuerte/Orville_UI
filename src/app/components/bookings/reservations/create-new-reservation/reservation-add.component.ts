@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ReservationStatus } from '../reservations.data';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface TimeSlot {
   label: string;
@@ -18,7 +19,7 @@ interface CalendarCell {
 @Component({
   selector: 'app-reservation-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './reservation-add.component.html',
   styleUrls: ['./reservation-add.component.scss'],
 })

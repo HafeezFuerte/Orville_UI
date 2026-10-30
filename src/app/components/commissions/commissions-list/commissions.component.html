@@ -1,27 +1,27 @@
 <div class="com-page">
   <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
     <div>
-      <h3 class="ov-page-title">Commissions</h3>
-      <p class="ov-page-sub">View and manage all commissions</p>
+      <h3 class="ov-page-title">{{ 'web.commissions.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.commissions.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-        Export
+        {{ 'web.commissions.export' | translate }}
       </button>
     </div>
   </div>
 
-  <div class="com-tabs mb-5 overflow-x-auto" role="tablist" aria-label="Commission type">
+  <div class="com-tabs mb-5 overflow-x-auto" role="tablist" [attr.aria-label]="'web.commissions.title' | translate">
     <div class="ov-seg ov-seg--tabs">
       <button type="button" class="ov-seg__btn" [class.is-active]="kindFilter === 'All'" (click)="setKindFilter('All')">
-        All
+        {{ 'web.commissions.all' | translate }}
       </button>
       <button type="button" class="ov-seg__btn" [class.is-active]="kindFilter === 'Tenant'" (click)="setKindFilter('Tenant')">
-        Tenant Commissions ({{ tenantCount }})
+        {{ 'web.commissions.tenantCommissions' | translate }} ({{ tenantCount }})
       </button>
       <button type="button" class="ov-seg__btn" [class.is-active]="kindFilter === 'Landlord'" (click)="setKindFilter('Landlord')">
-        Landlord Commissions ({{ landlordCount }})
+        {{ 'web.commissions.landlordCommissions' | translate }} ({{ landlordCount }})
       </button>
     </div>
   </div>
@@ -29,7 +29,7 @@
   <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none dark:bg-bodybg">
     <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
-        <label class="sr-only" for="commission-search">Search</label>
+        <label class="sr-only" for="commission-search">{{ 'web.commissions.search' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input
           id="commission-search"
@@ -37,17 +37,17 @@
           class="ov-input ov-search__input"
           [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()"
-          placeholder="Search">
+          [placeholder]="'web.commissions.phSearch' | translate">
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.commissions.filter' | translate }}
         </button>
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.commissions.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -83,51 +83,33 @@
       </app-shared-table>
     </div>
 
-    <div class="ov-page">
-      <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
-        <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
-          </select>
-          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
-        </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
-      </div>
-      <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
-        <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-          </button>
-          <ng-container *ngFor="let item of pagerItems">
-            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
-          </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-ov-paginator
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 25, 50, 100]"
+      (pageChange)="onPageChange($event)">
+    </app-ov-paginator>
   </div>
 </div>
 
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by From</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterFrom" placeholder="Enter name">
+      <label class="ov-label mb-1.5">{{ 'web.commissions.filterByFrom' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterFrom" [placeholder]="'web.commissions.phEnterName' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Type</label>
-      <ng-select [(ngModel)]="filterType" [items]="typeOptions" [clearable]="true"
-        placeholder="Select Type" class="ng-select-sm w-full" appendTo="body"></ng-select>
+      <label class="ov-label mb-1.5">{{ 'web.commissions.filterByType' | translate }}</label>
+      <ng-select [(ngModel)]="filterType" [items]="typeOptions" bindValue="value" [clearable]="true"
+        [placeholder]="'web.commissions.phSelectType' | translate" class="ng-select-sm w-full" appendTo="body">
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.labelKey | translate }}
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.labelKey | translate }}
+        </ng-template>
+      </ng-select>
     </div>
   </div>
 </app-filter-drawer>

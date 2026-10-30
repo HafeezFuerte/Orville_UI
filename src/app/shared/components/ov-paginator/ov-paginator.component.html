@@ -1,7 +1,7 @@
 <div class="ov-page ov-page--table">
   <div class="ov-page__meta">
     <ng-container *ngIf="showPageSize">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
       <div class="ov-page__size">
         <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
           <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
@@ -9,13 +9,13 @@
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
     </ng-container>
-    <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+    <span>{{ 'web.common.lblShowing' | translate }} {{ startRecord }} {{ 'web.common.lblTo' | translate }} {{ endRecord }} {{ 'web.common.lblOf' | translate }} {{ totalRecords }} {{ 'web.common.lblRecords' | translate }}</span>
   </div>
   <div class="ov-page__nav">
-    <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+    <span class="ov-page__label">{{ 'web.common.lblPage' | translate }} {{ displayPage }} {{ 'web.common.lblOf' | translate }} {{ totalPages || 1 }}</span>
     <div class="ov-page__btns">
       <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1"
-        aria-label="Previous page">
+        [attr.aria-label]="'web.common.lblPreviousPage' | translate">
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14"
           class="ov-page__chevron ov-page__chevron--prev" />
       </button>
@@ -25,7 +25,7 @@
           (click)="goToPage(+item)">{{ item }}</button>
       </ng-container>
       <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= (totalPages || 1)"
-        aria-label="Next page">
+        [attr.aria-label]="'web.common.lblNextPage' | translate">
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14"
           class="ov-page__chevron ov-page__chevron--next" />
       </button>

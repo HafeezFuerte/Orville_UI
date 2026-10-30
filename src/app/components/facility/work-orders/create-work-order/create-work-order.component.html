@@ -1,19 +1,19 @@
 <div class="ov-form ov-add-form">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" (click)="goBack()" class="ov-back" title="Back to Work Orders">
+      <button type="button" (click)="goBack()" class="ov-back" [title]="'web.facility.workOrders.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">{{ editId ? 'Edit Work Order' : 'Create Work Order' }}</h3>
+        <h3 class="ov-page-title">{{ editId ? ('web.facility.workOrders.editWorkOrder' | translate) : ('web.facility.workOrders.newWorkOrder' | translate) }}</h3>
         <p class="ov-page-sub">
-          Facility / Work Order /
-          <span class="ov-page-sub__current">{{ editId ? 'Edit Work Order' : 'Create Work Order' }}</span>
+          {{ 'web.facility.facility' | translate }} / {{ 'web.facility.workOrders.title' | translate }} /
+          <span class="ov-page-sub__current">{{ editId ? ('web.facility.workOrders.editWorkOrder' | translate) : ('web.facility.workOrders.newWorkOrder' | translate) }}</span>
         </p>
         <ol class="ov-sr">
-          <li><button type="button" (click)="goBack()">Facility</button></li>
-          <li><button type="button" (click)="goBack()">Work Orders</button></li>
-          <li>{{ editId ? 'Edit Work Order' : 'Create Work Order' }}</li>
+          <li><button type="button" (click)="goBack()">{{ 'web.facility.facility' | translate }}</button></li>
+          <li><button type="button" (click)="goBack()">{{ 'web.facility.workOrders.title' | translate }}</button></li>
+          <li>{{ editId ? ('web.facility.workOrders.editWorkOrder' | translate) : ('web.facility.workOrders.newWorkOrder' | translate) }}</li>
         </ol>
       </div>
     </div>
@@ -29,18 +29,18 @@
       <!-- Work order details -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Work order details</h6>
-          <p class="ov-card-sub">Provide the title and description of the work order.</p>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.workOrderDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.facility.workOrders.workOrderDetailsDesc' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--1">
             <div>
-              <label class="ov-label">Title <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.workOrders.colTitle' | translate }} <span class="text-danger">*</span></label>
               <input type="text" [(ngModel)]="title" [placeholder]="'web.common.lblEnter' | translate" class="ov-input" />
             </div>
             <div>
-              <label class="ov-label">Description</label>
-              <textarea [(ngModel)]="description" rows="4" placeholder="Description of the work to be done..."
+              <label class="ov-label">{{ 'web.common.lblDescription' | translate }}</label>
+              <textarea [(ngModel)]="description" rows="4" [placeholder]="'web.facility.workOrders.phDescription' | translate"
                 class="ov-input !h-auto min-h-[100px] resize-none"></textarea>
             </div>
           </div>
@@ -50,15 +50,15 @@
       <!-- Location -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Location</h6>
-          <p class="ov-card-sub">Select where this work order is located.</p>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.location' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.facility.workOrders.locationDesc' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblProperty' | translate }} <span class="text-danger">*</span></label>
               <ng-select #propSelect [items]="properties" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedProperty" (change)="onPropertyChange()" placeholder="Select Property"
+                [(ngModel)]="selectedProperty" (change)="onPropertyChange()" [placeholder]="'web.facility.workOrders.phSelectProperty' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -69,9 +69,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Unit</label>
+              <label class="ov-label">{{ 'web.leases.lblUnit' | translate }}</label>
               <ng-select #unitSelect [items]="units" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedUnit"  (change)="onUnitChange()" placeholder="Select Unit" class="ov-select w-full">
+                [(ngModel)]="selectedUnit"  (change)="onUnitChange()" [placeholder]="'web.facility.workOrders.phSelectUnit' | translate" class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
                     <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
@@ -81,7 +81,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Common Area</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblCommonArea' | translate }}</label>
               <ng-select #caSelect bindLabel="name" bindValue="code" [items]="commonAreas" [(ngModel)]="selectedCommonArea" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
@@ -93,17 +93,8 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Floor</label>
+              <label class="ov-label">{{ 'web.portfolio.units.createUnit.floorNumber' | translate }}</label>
               <input type="text" readonly="true" [(ngModel)]="selectedFloor" [placeholder]="'web.common.lblEnter' | translate" class="ov-input" />
-              <!-- <ng-select #floorSelect [items]="floors" [(ngModel)]="selectedFloor" [placeholder]="'web.common.lblSelect' | translate"
-                class="ov-select w-full">
-                <ng-template ng-header-tmp>
-                  <div class="p-1.5 border-b border-defaultborder">
-                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
-                      (input)="floorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
-                  </div>
-                </ng-template>
-              </ng-select> -->
             </div>
           </div>
         </div>
@@ -112,15 +103,15 @@
       <!-- Maintenance & Scheduling -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Maintenance &amp; Scheduling</h6>
-          <p class="ov-card-sub">Set category, priority, and date configurations.</p>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.maintenanceScheduling' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.facility.workOrders.maintenanceSchedulingDesc' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Maintenance Category <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.workOrders.colCategory' | translate }} <span class="text-danger">*</span></label>
               <ng-select #catSelect [items]="categories" bindLabel="name" bindValue="id"
-                [(ngModel)]="selectedCategory" (change)="onCategoryChange()" placeholder="Select Category"
+                [(ngModel)]="selectedCategory" (change)="onCategoryChange()" [placeholder]="'web.facility.workOrders.phSelectCategory' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -131,9 +122,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Maintenance Subcategory</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblMaintenanceSubcategory' | translate }}</label>
               <ng-select #subcatSelect [items]="subcategories" bindLabel="name" bindValue="id"
-                [(ngModel)]="selectedSubcategory" placeholder="Select Sub Category" class="ov-select w-full">
+                [(ngModel)]="selectedSubcategory" [placeholder]="'web.facility.workOrders.phSelectSubcategory' | translate" class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
                     <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
@@ -143,7 +134,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Priority <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblPriority' | translate }} <span class="text-danger">*</span></label>
               <ng-select #prioSelect [items]="priorities" [(ngModel)]="selectedPriority" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
@@ -155,7 +146,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Estimated Duration Type</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblEstimatedDurationType' | translate }}</label>
               <ng-select #durTypeSelect [items]="durationTypes" [(ngModel)]="selectedDurationType" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
@@ -167,11 +158,11 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Estimated Duration</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblEstimatedDuration' | translate }}</label>
               <input type="text" [(ngModel)]="duration" [placeholder]="'web.common.lblEnter' | translate" class="ov-input" />
             </div>
             <div>
-              <label class="ov-label">Visiting Slot</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblVisitingSlot' | translate }}</label>
               <ng-select #visitSelect [items]="visitingHours" [(ngModel)]="selectedVisitingHours" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" bindValue="id" bindLabel="name">
                 <ng-template ng-header-tmp>
@@ -183,7 +174,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Due Date</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.colDueDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="dueDate"
@@ -193,7 +184,7 @@
              
             </div>
             <div>
-              <label class="ov-label">Available Date</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblAvailableDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="availableDate"
@@ -207,54 +198,54 @@
       <!-- Media -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Media</h6>
-          <p class="ov-card-sub">Upload media files related to the issue.</p>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.media' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.facility.workOrders.mediaDesc' | translate }}</p>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div>
-            <label class="ov-label">Images (Before)</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.beforeImages' | translate }}</label>
             <div class="cwo-dropzone" (click)="beforeInput.click()">
               <input #beforeInput type="file" multiple class="hidden" accept="image/*"
                 (change)="onFileSelected($event, 'before')" />
               <i class="ri-upload-cloud-2-line text-[28px] text-textmuted mb-2"></i>
-              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">Drag and drop your file here</p>
-              <p class="m-0 mt-1 text-[12px] text-textmuted">or browse from your device</p>
+              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">{{ 'web.facility.workOrders.dropzoneDrag' | translate }}</p>
+              <p class="m-0 mt-1 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneBrowseDevice' | translate }}</p>
               <button type="button" class="ov-btn ov-btn-primary mt-3" (click)="$event.stopPropagation(); beforeInput.click()">
-                Browse files
+                {{ 'web.facility.workOrders.dropzoneBrowseBtn' | translate }}
               </button>
-              <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
+              <p class="m-0 mt-3 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneSupportedImg' | translate }}</p>
             </div>
             <ng-container *ngIf="beforeImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: beforeImages, fileType: 'before' }"   ></ng-container> 
           </div>
 
           <div>
-            <label class="ov-label">Images (After)</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.afterImages' | translate }}</label>
             <div class="cwo-dropzone" (click)="afterInput.click()">
               <input #afterInput type="file" multiple class="hidden" accept="image/*"
                 (change)="onFileSelected($event, 'after')" />
               <i class="ri-upload-cloud-2-line text-[28px] text-textmuted mb-2"></i>
-              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">Drag and drop your file here</p>
-              <p class="m-0 mt-1 text-[12px] text-textmuted">or browse from your device</p>
+              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">{{ 'web.facility.workOrders.dropzoneDrag' | translate }}</p>
+              <p class="m-0 mt-1 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneBrowseDevice' | translate }}</p>
               <button type="button" class="ov-btn ov-btn-primary mt-3" (click)="$event.stopPropagation(); afterInput.click()">
-                Browse files
+                {{ 'web.facility.workOrders.dropzoneBrowseBtn' | translate }}
               </button>
-              <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: JPG, PNG · Maximum size: 10 MB</p>
+              <p class="m-0 mt-3 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneSupportedImg' | translate }}</p>
             </div>
             <ng-container *ngIf="afterImages.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: afterImages, fileType: 'after' }"   ></ng-container> 
           </div>
 
           <div>
-            <label class="ov-label">Videos</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblVideos' | translate }}</label>
             <div class="cwo-dropzone" (click)="videoInput.click()">
               <input #videoInput type="file" multiple class="hidden" accept="video/*"
                 (change)="onFileSelected($event, 'video')" />
               <i class="ri-upload-cloud-2-line text-[28px] text-textmuted mb-2"></i>
-              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">Drag and drop your file here</p>
-              <p class="m-0 mt-1 text-[12px] text-textmuted">or browse from your device</p>
+              <p class="m-0 text-[14px] font-medium text-defaulttextcolor">{{ 'web.facility.workOrders.dropzoneDrag' | translate }}</p>
+              <p class="m-0 mt-1 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneBrowseDevice' | translate }}</p>
               <button type="button" class="ov-btn ov-btn-primary mt-3" (click)="$event.stopPropagation(); videoInput.click()">
-                Browse files
+                {{ 'web.facility.workOrders.dropzoneBrowseBtn' | translate }}
               </button>
-              <p class="m-0 mt-3 text-[12px] text-textmuted">Supported formats: MP4 · Maximum size: 50 MB</p>
+              <p class="m-0 mt-3 text-[12px] text-textmuted">{{ 'web.facility.workOrders.dropzoneSupportedVideo' | translate }}</p>
             </div>
             <ng-container *ngIf="videos.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: videos, fileType: 'video' }"   ></ng-container> 
           </div>
@@ -265,12 +256,12 @@
       <div class="ov-card">
         <div class="ov-card__head !flex !flex-wrap !items-start !justify-between !gap-3">
           <div>
-            <h6 class="ov-card-title">Attachments</h6>
-            <p class="ov-card-sub">Attach documents for reference.</p>
+            <h6 class="ov-card-title">{{ 'web.facility.workOrders.attachments' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.facility.workOrders.attachmentsDesc' | translate }}</p>
           </div>
           <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="attachmentInput.click()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Attachment
+            {{ 'web.facility.workOrders.lblAddAttachment' | translate }}
           </button>
           <input #attachmentInput type="file" multiple class="hidden" (change)="onFileSelected($event, 'attachment')" />
         </div>
@@ -280,12 +271,12 @@
             <div class="cwo-empty-docs__icon">
               <i class="ri-file-3-line text-[20px] text-textmuted"></i>
             </div>
-            <p class="m-0 text-[14px] font-semibold text-defaulttextcolor">No documents uploaded yet</p>
+            <p class="m-0 text-[14px] font-semibold text-defaulttextcolor">{{ 'web.facility.workOrders.noDocsYet' | translate }}</p>
             <p class="m-0 mt-1 max-w-[360px] text-center text-[12px] text-textmuted leading-relaxed">
-              Keep important documents organized and choose whether they are visible to tenants, landlords, or kept private.
+              {{ 'web.facility.workOrders.noDocsDesc' | translate }}
             </p>
             <button type="button" class="ov-btn ov-btn-primary mt-4" (click)="attachmentInput.click()">
-              Add Document
+              {{ 'web.facility.workOrders.lblAddDocument' | translate }}
             </button>
           </div>
           <ng-container *ngIf="attachments.length>0" [ngTemplateOutlet]="selectedFiles"    [ngTemplateOutletContext]="{ files: attachments, fileType: 'attachment' }"   ></ng-container>
@@ -295,7 +286,7 @@
       <div class="ov-card" *ngIf="attachfiles.length>0">
         <div class="ov-card__head">
           <div>
-            <h6 class="ov-card-title">Documents</h6> 
+            <h6 class="ov-card-title">{{ 'web.facility.workOrders.documents' | translate }}</h6> 
           </div> 
           <div 
 *ngIf="attachfiles.length">
@@ -306,7 +297,7 @@
         <i class="ri-image-line text-primary text-[20px]"></i>
         <div>
             <div class="font-medium">
-               <a href="{{file.file_path}}">View file</a>  
+               <a href="{{file.file_path}}">{{ 'web.common.lblViewFile' | translate }}</a>  
             </div>
             <small class="text-[#8c9097]">
                 {{ file.document_type_name }}
@@ -324,13 +315,13 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Assignment</h6>
-          <p class="ov-card-sub">Assign a team or a user to the work order</p>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.assignment' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.facility.workOrders.assignmentDesc' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--1">
             <div>
-              <label class="ov-label">Responsible People</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.responsible' | translate }}</label>
               <ng-select #respSelect [items]="responsiblePeople" bindLabel="name" bindValue="code"
                 [(ngModel)]="selectedResponsiblePerson" [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full">
                 <ng-template ng-header-tmp>
@@ -342,9 +333,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Technicians</label>
+              <label class="ov-label">{{ 'web.contacts.lblSupportTechnicians' | translate }}</label>
               <ng-select #tenantSelect [items]="techincians" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedTechincian"   placeholder="Select Tenant"
+                [(ngModel)]="selectedTechincian" [placeholder]="'web.facility.workOrders.phSelectTechnician' | translate"
                 class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
@@ -355,9 +346,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Assign Vendor</label>
+              <label class="ov-label">{{ 'web.facility.workOrders.lblAssignVendor' | translate }}</label>
               <ng-select #vendorSelect [items]="vendors" bindLabel="name" bindValue="code"
-                [(ngModel)]="selectedVendor" placeholder="Select Vendor" class="ov-select w-full">
+                [(ngModel)]="selectedVendor" [placeholder]="'web.facility.workOrders.phSelectVendor' | translate" class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
                     <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
@@ -372,10 +363,10 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Tags</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.workOrders.tags' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <label class="ov-label">Tags</label>
+          <label class="ov-label">{{ 'web.facility.workOrders.tags' | translate }}</label>
           <div class="cwo-tags">
             <span *ngFor="let tag of tags; let i = index" class="cwo-tags__chip">
               {{ tag }}
@@ -384,17 +375,17 @@
             <input type="text" [(ngModel)]="newTag" (keydown.enter)="addTag($event)" [placeholder]="'web.common.lblEnter' | translate"
               class="cwo-tags__input" />
           </div>
-          <p class="m-0 mt-2 text-[12px] text-textmuted">Press Tab or Comma to add multiple tags</p>
+          <p class="m-0 mt-2 text-[12px] text-textmuted">{{ 'web.facility.workOrders.tagsHint' | translate }}</p>
         </div>
       </div>
 
       <div class="ov-card overflow-hidden">
         <div class="ov-card__body">
           <div class="flex justify-between items-start mb-3">
-            <p class="m-0 text-[11px] font-bold uppercase tracking-wider text-textmuted">Tenant Details</p>
+            <p class="m-0 text-[11px] font-bold uppercase tracking-wider text-textmuted">{{ 'web.leases.lblTenantDetails' | translate }}</p>
             <button type="button" (click)="viewTenant()" [disabled]="!selectedTenantDetails"
               class="ov-link text-[12px] font-semibold disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-1">
-              View <i class="ri-arrow-right-line"></i>
+              {{ 'web.common.view' | translate }} <i class="ri-arrow-right-line"></i>
             </button>
           </div>
           <div class="flex items-center gap-3 mb-4">
@@ -415,28 +406,28 @@
             <div class="flex gap-2">
               <img src="assets/images/action-menu/mail.svg" alt="" width="16" height="16" />
               <div>
-                <p class="m-0 text-textmuted">Email</p>
+                <p class="m-0 text-textmuted">{{ 'web.common.lblEmail' | translate }}</p>
                 <p class="m-0 font-semibold text-defaulttextcolor">{{ selectedTenantDetails?.email || '-' }}</p>
               </div>
             </div>
             <div class="flex gap-2">
               <i class="ri-phone-line text-textmuted mt-0.5"></i>
               <div>
-                <p class="m-0 text-textmuted">Phone</p>
+                <p class="m-0 text-textmuted">{{ 'web.common.lblPhone' | translate }}</p>
                 <p class="m-0 font-semibold text-defaulttextcolor">{{ selectedTenantDetails?.phone || '-' }}</p>
               </div>
             </div>
             <div class="flex gap-2">
               <i class="ri-home-4-line text-textmuted mt-0.5"></i>
               <div>
-                <p class="m-0 text-textmuted">Tenant type</p>
+                <p class="m-0 text-textmuted">{{ 'web.contacts.lblTenantType' | translate }}</p>
                 <p class="m-0 font-semibold text-defaulttextcolor">{{ selectedTenantDetails?.type || '-' }}</p>
               </div>
             </div>
             <div class="flex gap-2">
               <img src="assets/images/work-orders/map-pin.svg" alt="" width="14" height="14" />
               <div>
-                <p class="m-0 text-textmuted">Location</p>
+                <p class="m-0 text-textmuted">{{ 'web.facility.workOrders.location' | translate }}</p>
                 <p class="m-0 font-semibold text-defaulttextcolor">{{ selectedTenantDetails?.location || '-' }}</p>
               </div>
             </div>
@@ -445,7 +436,7 @@
         <div class="border-t border-defaultborder bg-light px-5 py-3 text-center">
           <button type="button" (click)="editTenant()" [disabled]="!selectedTenantDetails"
             class="border-0 bg-transparent text-[13px] font-semibold text-textmuted hover:text-defaulttextcolor disabled:opacity-50 disabled:pointer-events-none">
-            Edit Tenant <i class="ri-arrow-right-s-line"></i>
+            {{ 'web.facility.workOrders.lblEditTenant' | translate }} <i class="ri-arrow-right-s-line"></i>
           </button>
         </div>
       </div>

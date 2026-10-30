@@ -1,13 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-add-landlord',
@@ -28,8 +29,10 @@ export class AddLandlordComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
 
   isEditMode = false;
   landlordId: any = null;
@@ -124,11 +127,11 @@ export class AddLandlordComponent implements OnInit {
 
   saveDocument() {
     if (!this.docForm.document_type) {
-      this.toastr.error("Document Type is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errDocTypeRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.docForm.file) {
-      this.toastr.error("Please attach a file.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errAttachFile'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
 
@@ -148,12 +151,12 @@ export class AddLandlordComponent implements OnInit {
 
     this.resetDocForm();
     this.isAddDocModalOpen = false;
-    this.toastr.success("Document attached successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocAttachedSuccess'));
   }
 
   removeDocument(index: number) {
     this.uploadedDocuments.splice(index, 1);
-    this.toastr.success("Document removed successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocRemovedSuccess'));
   }
 
   // Settings
@@ -404,10 +407,11 @@ export class AddLandlordComponent implements OnInit {
   ngOnInit() {
     this.loadCountries();
     
+    const currentUser = this.commonService.getCurrentUser();
     this.propertiesService.getTenants({
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       page_no: 0,
@@ -576,28 +580,28 @@ export class AddLandlordComponent implements OnInit {
   saveLandlord() {
     // Validate required fields
     if (!this.landlordData.first_name || !this.landlordData.first_name.trim()) {
-      this.toastr.error("First Name is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errFirstNameRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.landlordData.last_name || !this.landlordData.last_name.trim()) {
-      this.toastr.error("Last Name is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errLastNameRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.landlordData.email_address || !this.landlordData.email_address.trim()) {
-      this.toastr.error("Email address is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errEmailRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.landlordData.email_address.trim())) {
-      this.toastr.error("Please enter a valid email address.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errValidEmail'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.landlordData.mobile_no || !this.landlordData.mobile_no.trim()) {
-      this.toastr.error("Phone Number is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errPhoneRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.landlordData.country_id) {
-      this.toastr.error("Country is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errCountryRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
 
@@ -614,14 +618,15 @@ export class AddLandlordComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      this.toastr.warning(this.translate.instant('web.contacts.errDuplicateEmailOrMobile'), this.translate.instant('web.contacts.lblDuplicateFound'));
       return;
     }
 
+    const currentUser = this.commonService.getCurrentUser();
     const requestJson = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       email_address: this.landlordData.email_address,
@@ -692,15 +697,15 @@ export class AddLandlordComponent implements OnInit {
     this.propertiesService.saveLandlord(formData).subscribe({
       next: (res: any) => {
         if (res.statusCode === "200" || res.status === 200 || res.message === 'Success') {
-          this.toastr.success(this.isEditMode ? 'Landlord updated successfully!' : 'Landlord saved successfully!', 'Success');
+          this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgLandlordUpdated' : 'web.contacts.msgLandlordSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/landlords']);
         } else {
-          this.toastr.error(res.message || 'Failed to save landlord.', 'Error');
+          this.toastr.error(res.message || this.translate.instant('web.contacts.errFailedToSaveLandlord'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         console.error('Failed to save landlord:', err);
-        this.toastr.error('An error occurred while saving the landlord.', 'Error');
+        this.toastr.error(this.translate.instant('web.contacts.errFailedToSaveLandlord'), this.translate.instant('web.common.lblError'));
       }
     });
   }

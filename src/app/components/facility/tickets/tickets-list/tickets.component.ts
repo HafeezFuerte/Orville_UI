@@ -78,7 +78,7 @@ export class FacilityTicketsComponent {
   tableColumns = [
     {
       key: 'code',
-      label: 'ID',
+      label: 'web.common.lblID',
       visible: true,
       useTemplate: true,
       width: '90px',
@@ -87,18 +87,18 @@ export class FacilityTicketsComponent {
     },
     {
       key: 'title',
-      label: 'Title',
+      label: 'web.facility.tickets.lblTitle',
       visible: true,
       useTemplate: true,
       width: '220px',
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'property', label: 'Property', visible: true, width: '180px',useTemplate: true },
-    { key: 'unitcode', label: 'Unit', visible: true, width: '140px',useTemplate: true },
+    { key: 'property', label: 'web.facility.tickets.colProperty', visible: true, width: '180px',useTemplate: true },
+    { key: 'unitcode', label: 'web.facility.tickets.colUnit', visible: true, width: '140px',useTemplate: true },
     {
       key: 'priority',
-      label: 'Priority',
+      label: 'web.facility.tickets.colPriority',
       visible: true,
       useTemplate: true,
       width: '110px',
@@ -107,29 +107,29 @@ export class FacilityTicketsComponent {
     },
     {
       key: 'status_nm',
-      label: 'Status',
+      label: 'web.facility.tickets.colStatus',
       visible: true,
       useTemplate: true,
       width: '130px',
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'department_nm', label: 'Department', visible: true, width: '160px' },
+    { key: 'department_nm', label: 'web.facility.tickets.lblDepartment', visible: true, width: '160px' },
     {
       key: 'source_nm',
-      label: 'Source',
+      label: 'web.facility.tickets.lblSource',
       visible: true,
       useTemplate: true,
       width: '140px',
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'contact', label: 'Contact', visible: true, useTemplate: true, width: '180px' },
-    { key: 'created_date', label: 'Created', visible: true, width: '110px' },
-    { key: 'description', label: 'Details', visible: true, useTemplate: true, width: '240px' },
+    { key: 'contact', label: 'web.facility.tickets.lblContact', visible: true, useTemplate: true, width: '180px' },
+    { key: 'created_date', label: 'web.facility.tickets.lblCreated', visible: true, width: '110px' },
+    { key: 'description', label: 'web.facility.tickets.details', visible: true, useTemplate: true, width: '240px' },
     {
       key: 'action',
-      label: 'Action',
+      label: 'web.facility.tickets.action',
       visible: true,
       useTemplate: true,
       width: '72px',
@@ -184,7 +184,7 @@ export class FacilityTicketsComponent {
           this.allRows = []; 
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
         }
       },
       error: (err: any) => {
@@ -205,7 +205,7 @@ export class FacilityTicketsComponent {
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult) { 
           if(Typeid==71){
-            this.toastr.success("Successfully marked as inactive"); 
+            this.toastr.success(this.translate.instant('web.facility.tickets.msgMarkedInactiveSuccess')); 
             this.loadTickets();
         }else{
           this.statusTabs.push({"id":"All","name":"All"}); 
@@ -217,7 +217,7 @@ export class FacilityTicketsComponent {
         }
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

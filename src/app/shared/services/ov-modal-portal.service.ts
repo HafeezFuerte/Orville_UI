@@ -14,8 +14,6 @@ export class OvModalPortalService implements OnDestroy {
   private readonly portalSelector = [
     '.ov-modal-backdrop',
     '.ov-create-overlay',
-    '.ov-filter-drawer__container.active',
-    '.ov-email-sub-drawer.active',
     '[data-ov-modal-portal]',
   ].join(',');
 
@@ -23,6 +21,11 @@ export class OvModalPortalService implements OnDestroy {
     if (this.observer || typeof document === 'undefined') {
       return;
     }
+
+    // Clean up any leaked or orphaned drawer elements directly attached to document.body
+    document.querySelectorAll(':scope > .ov-filter-drawer__container, :scope > .ov-email-sub-drawer').forEach((el) => {
+      el.remove();
+    });
 
     zone.runOutsideAngular(() => {
       this.observer = new MutationObserver(() => {
@@ -59,7 +62,12 @@ export class OvModalPortalService implements OnDestroy {
     this.syncBodyClass();
   }
 
-  releaseHost(): void {
+  releaseHost(el?: HTMLElement): void {
+    if (el && el.parentElement === document.body) {
+      try {
+        document.body.removeChild(el);
+      } catch (e) {}
+    }
     this.syncBodyClass();
   }
 
@@ -100,15 +108,6 @@ export class OvModalPortalService implements OnDestroy {
     nodes.forEach((node) => {
       const el = node as HTMLElement;
       if (!document.body.contains(el)) {
-        return;
-      }
-      if (
-        el.classList.contains('ov-filter-drawer__container') ||
-        el.classList.contains('ov-email-sub-drawer')
-      ) {
-        if (el.classList.contains('active')) {
-          anyOpen = true;
-        }
         return;
       }
       anyOpen = true;

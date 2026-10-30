@@ -15,7 +15,7 @@ import { SharedTableComponent } from '../../../shared/components/shared-table/sh
 import { ReusableModalComponent } from '../reusable-modal/reusable-modal.component';
 import { CommonAreaPopupComponent } from '../../child-tables/modal-popups/common-area-popup/common-area-popup.component';
 import { AttachmentPopupComponent } from '../../child-tables/modal-popups/attachments-popup/attachment-popup.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NotesPopupComponent } from '../../child-tables/modal-popups/notes-popup/notes-popup.component';
 import { ConfirmPopupComponent } from '../popups/confirm-dialog/confirm-dialog';
@@ -99,6 +99,18 @@ export class DetailPageLayoutComponent {
   }
 
   private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
+
+  get addButtonLabel(): string {
+    if (this.selectedTab?.addKey) {
+      return this.translate.instant(this.selectedTab.addKey);
+    }
+    const addWord = this.translate.instant('web.common.lblAdd');
+    if (this.selectedTab?.addButtonTextKey) {
+      return `${addWord} ${this.translate.instant(this.selectedTab.addButtonTextKey)}`;
+    }
+    return this.selectedTab?.addButtonText ? `${addWord} ${this.selectedTab.addButtonText}` : addWord;
+  }
 
   get propertyCodeQueryParams() {
     const code = this.route.snapshot.paramMap.get('code') || this.route.parent?.snapshot.paramMap.get('code') || '';

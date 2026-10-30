@@ -2,21 +2,21 @@
 <div class="bc-detail">
   <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
     <div class="flex items-start gap-4">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Broadcasts" aria-label="Back">
+      <button type="button" class="ov-back" (click)="goBack()" [attr.title]="'web.broadcasts.backToBroadcasts' | translate" [attr.aria-label]="'web.broadcasts.backToBroadcasts' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Broadcast Details</h3>
+        <h3 class="ov-page-title">{{ 'web.broadcasts.broadcastDetails' | translate }}</h3>
         <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-          <li><a href="javascript:void(0)" (click)="goBack()">Broadcasts</a></li>
+          <li><a href="javascript:void(0)" (click)="goBack()">{{ 'web.broadcasts.title' | translate }}</a></li>
           <li class="px-2">/</li>
-          <li class="font-semibold text-defaulttextcolor">Details</li>
+          <li class="font-semibold text-defaulttextcolor">{{ 'web.common.lblDetails' | translate }}</li>
         </ol>
       </div>
     </div>
     <div class="flex flex-wrap gap-2 items-center">
-      <button type="button" class="ov-btn ov-btn-primary" (click)="sendNow()">Send Now</button>
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="editBroadcast()">Edit Broadcast</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="sendNow()">{{ 'web.broadcasts.sendNow' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="editBroadcast()">{{ 'web.broadcasts.editBroadcast' | translate }}</button>
     </div>
   </div>
 
@@ -28,67 +28,67 @@
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <h5 class="bc-side__title">
-                Broadcast - {{ broadcastData.subject || 'Lease Agreement' }}
+                {{ 'web.broadcasts.title' | translate }} - {{ broadcastData.subject || 'Lease Agreement' }}
               </h5>
               <p class="bc-side__recipient">
-                Recipient: {{ broadcastData.sendTo || 'Deal' }}
+                {{ 'web.broadcasts.recipients' | translate }}: {{ broadcastData.sendTo || 'Deal' }}
               </p>
             </div>
             <span class="ov-status ov-status--soft shrink-0">{{ broadcastData.status || 'Draft' }}</span>
           </div>
-          <button type="button" class="bc-side__activity">View Activity</button>
+          <button type="button" class="bc-side__activity">{{ 'web.broadcasts.viewActivity' | translate }}</button>
         </div>
 
         <div class="bc-side__divider"></div>
 
         <div class="bc-side__section">
-          <h6 class="bc-side__section-label">Information</h6>
+          <h6 class="bc-side__section-label">{{ 'web.broadcasts.information' | translate }}</h6>
 
           <div class="bc-side__block">
-            <h6 class="bc-side__block-title">Broadcast Details</h6>
+            <h6 class="bc-side__block-title">{{ 'web.broadcasts.broadcastDetails' | translate }}</h6>
             <div class="bc-kv">
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Id:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.colId' | translate }}:</span>
                 <span class="bc-kv__value">{{ broadcastData.id || '31658' }}</span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Subject:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.subject' | translate }}:</span>
                 <span class="bc-kv__value">{{ broadcastData.subject || 'Lease Agreement' }}</span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Status:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.colStatus' | translate }}:</span>
                 <span class="bc-kv__value">
                   <span class="ov-status ov-status--soft">{{ broadcastData.status || 'Draft' }}</span>
                 </span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Type:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.broadcastType' | translate }}:</span>
                 <span class="bc-kv__value">{{ broadcastData.type || broadcastData.sendTo || 'Deal' }}</span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Schedule:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.schedule' | translate }}:</span>
                 <span class="bc-kv__value">
                   <span class="bc-pill" [class.bc-pill--yes]="broadcastData.scheduled !== false"
                     [class.bc-pill--no]="broadcastData.scheduled === false">
-                    {{ broadcastData.scheduled === false ? 'No' : 'Yes' }}
+                    {{ (broadcastData.scheduled === false ? 'web.broadcasts.no' : 'web.broadcasts.yes') | translate }}
                   </span>
                 </span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Created at:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.createdAt' | translate }}:</span>
                 <span class="bc-kv__value">{{ broadcastData.createdAt || '06-05-2026' }}</span>
               </div>
               <div class="bc-kv__row">
-                <span class="bc-kv__label">Last Updated:</span>
+                <span class="bc-kv__label">{{ 'web.broadcasts.lastUpdated' | translate }}:</span>
                 <span class="bc-kv__value">{{ broadcastData.lastUpdated || '06-05-2026' }}</span>
               </div>
             </div>
           </div>
 
           <div class="bc-side__block">
-            <h6 class="bc-side__block-title">Schedule &amp; Delivery</h6>
+            <h6 class="bc-side__block-title">{{ 'web.broadcasts.scheduleDelivery' | translate }}</h6>
             <p class="bc-side__time">
-              <span>Time:</span>
+              <span>{{ 'web.broadcasts.time' | translate }}</span>
               {{ broadcastData.scheduleTime || '12:34 (GMT+04:00) Abu Dhabi' }}
             </p>
           </div>
@@ -99,23 +99,23 @@
     <!-- Right panel -->
     <div class="ov-detail-layout__right flex flex-col gap-4">
       <div>
-        <h6 class="bc-template-title">Broadcast template</h6>
-        <p class="bc-template-sub">This is the exact content received by the tenant.</p>
+        <h6 class="bc-template-title">{{ 'web.broadcasts.broadcastTemplate' | translate }}</h6>
+        <p class="bc-template-sub">{{ 'web.broadcasts.exactContentReceived' | translate }}</p>
       </div>
 
       <div class="ov-card overflow-hidden flex flex-col">
         <div class="bc-preview-head">
           <div>
-            <p class="bc-preview-head__title">Tenancy Contract</p>
-            <p class="bc-preview-head__sub">Email preview · Template variables highlighted</p>
+            <p class="bc-preview-head__title">{{ 'web.broadcasts.tenancyContract' | translate }}</p>
+            <p class="bc-preview-head__sub">{{ 'web.broadcasts.emailPreview' | translate }}</p>
           </div>
-          <div class="bc-view-toggle" role="group" aria-label="Preview mode">
+          <div class="bc-view-toggle" role="group" [attr.aria-label]="'web.broadcasts.preview' | translate">
             <button type="button" class="bc-view-toggle__btn"
               [class.is-active]="previewMode === 'desktop'"
-              (click)="setPreviewMode('desktop')">Desktop</button>
+              (click)="setPreviewMode('desktop')">{{ 'web.broadcasts.desktop' | translate }}</button>
             <button type="button" class="bc-view-toggle__btn"
               [class.is-active]="previewMode === 'mobile'"
-              (click)="setPreviewMode('mobile')">Mobile</button>
+              (click)="setPreviewMode('mobile')">{{ 'web.broadcasts.mobile' | translate }}</button>
           </div>
         </div>
 
@@ -129,53 +129,53 @@
                 <img src="assets/images/nav/logo-real-estate.svg" alt="REAL ESTATE" height="10" />
               </div>
             </div>
-            <h2 class="bc-mail__h">Tenancy Contract</h2>
+            <h2 class="bc-mail__h">{{ 'web.broadcasts.tenancyContract' | translate }}</h2>
             <p class="bc-mail__date-row">
-              <span>Date:</span>
+              <span>{{ 'web.broadcasts.date' | translate }}</span>
               <em class="bc-token">{{ broadcastData.createdAt || '06-05-2026' }}</em>
             </p>
 
             <div class="bc-mail__grid">
               <div>
-                <p class="bc-mail__sec">Owner / Lessor Information:</p>
-                <p class="bc-mail__line"><span>Owner's Name:</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
-                <p class="bc-mail__line"><span>Lessor's Name:</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
+                <p class="bc-mail__sec">{{ 'web.broadcasts.ownerLessorInfo' | translate }}</p>
+                <p class="bc-mail__line"><span>{{ 'web.broadcasts.ownersName' | translate }}</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
+                <p class="bc-mail__line"><span>{{ 'web.broadcasts.lessorsName' | translate }}</span> <em class="bc-token">LANDLORD FULL NAME</em></p>
               </div>
               <div>
-                <p class="bc-mail__sec">Tenant Information:</p>
-                <p class="bc-mail__line"><span>Tenant's Name:</span>
+                <p class="bc-mail__sec">{{ 'web.broadcasts.tenantInfo' | translate }}</p>
+                <p class="bc-mail__line"><span>{{ 'web.broadcasts.tenantsName' | translate }}</span>
                   <em class="bc-token">{{ broadcastData.recipientName || 'TENANT FULL NAME' }}</em></p>
-                <p class="bc-mail__line"><span>Tenant's Email:</span>
+                <p class="bc-mail__line"><span>{{ 'web.broadcasts.tenantsEmail' | translate }}</span>
                   <em class="bc-token">{{ broadcastData.recipientEmail || 'TENANT EMAIL' }}</em></p>
-                <p class="bc-mail__line"><span>Tenant's Phone:</span>
+                <p class="bc-mail__line"><span>{{ 'web.broadcasts.tenantsPhone' | translate }}</span>
                   <em class="bc-token">{{ broadcastData.recipientPhone || 'TENANT PHONE WITH COUNTRY CODE' }}</em></p>
               </div>
             </div>
 
-            <p class="bc-mail__sec">Property Information:</p>
-            <p class="bc-mail__line"><span>Building Name:</span>
+            <p class="bc-mail__sec">{{ 'web.broadcasts.propertyInfo' | translate }}</p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.buildingName' | translate }}</span>
               <em class="bc-token">{{ broadcastData.property || 'PROPERTY' }}</em></p>
-            <p class="bc-mail__line"><span>Property No:</span>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.propertyNo' | translate }}</span>
               <em class="bc-token">{{ broadcastData.propertyNo || 'UNIT NO.' }}</em></p>
-            <p class="bc-mail__line"><span>Location:</span>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.location' | translate }}</span>
               <em class="bc-token">{{ broadcastData.location || 'PROPERTY FULL ADDRESS' }}</em></p>
 
-            <p class="bc-mail__sec">Contract Information:</p>
-            <p class="bc-mail__line"><span>Contract Period:</span>
+            <p class="bc-mail__sec">{{ 'web.broadcasts.contractInfo' | translate }}</p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.contractPeriod' | translate }}</span>
               <em class="bc-token">DD-MM-YYYY</em>
               <em class="bc-token">DD-MM-YYYY</em>
             </p>
-            <p class="bc-mail__line"><span>Move-in Date:</span> <em class="bc-token">DD-MM-YYYY</em></p>
-            <p class="bc-mail__line"><span>Contract Value:</span> <em class="bc-token">CONTRACT VALUE</em></p>
-            <p class="bc-mail__line"><span>Rent:</span>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.moveInDate' | translate }}</span> <em class="bc-token">DD-MM-YYYY</em></p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.contractValue' | translate }}</span> <em class="bc-token">CONTRACT VALUE</em></p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.rent' | translate }}</span>
               <em class="bc-token">LEASE RENT</em>
               <em class="bc-token">LEASE RENT IN WORDS</em>
             </p>
-            <p class="bc-mail__line"><span>Security Deposit:</span> <em class="bc-token">SECURITY DEPOSIT</em></p>
-            <p class="bc-mail__line"><span>Mode of Payment:</span> <em class="bc-token">MODE OF PAYMENT</em></p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.securityDeposit' | translate }}</span> <em class="bc-token">SECURITY DEPOSIT</em></p>
+            <p class="bc-mail__line"><span>{{ 'web.broadcasts.modeOfPayment' | translate }}</span> <em class="bc-token">MODE OF PAYMENT</em></p>
 
             <div class="bc-mail__sign">
-              <p class="bc-mail__line m-0 mb-2"><span>Tenant Signature:</span></p>
+              <p class="bc-mail__line m-0 mb-2"><span>{{ 'web.broadcasts.tenantSignature' | translate }}</span></p>
               <div class="bc-token bc-token--block">TENANT SIGNATURE</div>
             </div>
           </div>
@@ -198,45 +198,45 @@
                     </div>
                     <div class="min-w-0 flex-1">
                       <p class="bc-phone__name">{{ broadcastData.subject || 'Lease Agreement' }}</p>
-                      <p class="bc-phone__meta">Broadcast Message</p>
+                      <p class="bc-phone__meta">{{ 'web.broadcasts.broadcastMessage' | translate }}</p>
                     </div>
                     <span class="bc-phone__date">{{ broadcastData.createdAt || '06-05-2026' }}</span>
                   </div>
 
                   <div class="bc-phone__section">
                     <div class="bc-phone__section-head">
-                      <p class="bc-phone__section-title">Tenant Information</p>
-                      <span class="bc-phone__badge">Tenant</span>
+                      <p class="bc-phone__section-title">{{ 'web.broadcasts.tenantInfo' | translate }}</p>
+                      <span class="bc-phone__badge">{{ 'web.broadcasts.tenant' | translate }}</span>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Tenant's Name</span>
+                      <span>{{ 'web.broadcasts.tenantsName' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.recipientName || 'TENANT FULL NAME' }}</em>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Tenant's Email</span>
+                      <span>{{ 'web.broadcasts.tenantsEmail' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.recipientEmail || 'TENANT EMAIL' }}</em>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Tenant's Phone</span>
+                      <span>{{ 'web.broadcasts.tenantsPhone' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.recipientPhone || 'TENANT PHONE WITH COUNTRY CODE' }}</em>
                     </div>
                   </div>
 
                   <div class="bc-phone__section">
                     <div class="bc-phone__section-head">
-                      <p class="bc-phone__section-title">Property Details</p>
-                      <span class="bc-phone__badge">Property</span>
+                      <p class="bc-phone__section-title">{{ 'web.broadcasts.propertyDetails' | translate }}</p>
+                      <span class="bc-phone__badge">{{ 'web.broadcasts.property' | translate }}</span>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Building Name</span>
+                      <span>{{ 'web.broadcasts.buildingName' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.property || 'PROPERTY' }}</em>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Property No</span>
+                      <span>{{ 'web.broadcasts.propertyNo' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.propertyNo || 'UNIT NO.' }}</em>
                     </div>
                     <div class="bc-phone__field">
-                      <span>Location</span>
+                      <span>{{ 'web.broadcasts.location' | translate }}</span>
                       <em class="bc-token">{{ broadcastData.location || 'PROPERTY FULL ADDRESS' }}</em>
                     </div>
                   </div>

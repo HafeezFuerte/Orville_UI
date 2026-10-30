@@ -331,7 +331,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.financials?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Unit'
+        addButtonText: 'Financials',
+        addKey: 'web.property.lblAddFinancial'
       },
   
       {
@@ -344,7 +345,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.inventoryItems?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Inventory'
+        addButtonText: 'Inventory',
+        addKey: 'web.property.lblAddAsset'
       },
 
       {
@@ -355,7 +357,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.workOrders?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Room'
+        addButtonText: 'Work Order',
+        addKey: 'web.facility.lblAddWorkOrder'
       },
   
       {
@@ -369,6 +372,7 @@ export class RoomDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Attachments',
+        addKey: 'web.property.lblAddAttachment',
         form: this.attachmentsForm,
         popupType: 'attachment'      
       },
@@ -382,7 +386,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.legalCases?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Common Area'
+        addButtonText: 'Legal Case',
+        addKey: 'web.common.lblAddHearing'
       },
       {
         key: 'parkings',
@@ -395,7 +400,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.parkings?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Parking'
+        addButtonText: 'Parking',
+        addKey: 'web.parkings.lblAddParking'
       },
       {
         key: 'notes',
@@ -408,6 +414,7 @@ export class RoomDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Notes',
+        addKey: 'web.property.lblAddNotes',
         form: this.notesForm,
         popupType: 'notes'
       },
@@ -420,7 +427,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.broadcasts?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Broadcasts'
+        addButtonText: 'Broadcasts',
+        addKey: 'web.common.lblAddBroadcast'
       },
       {
         key: 'inspections',
@@ -431,7 +439,8 @@ export class RoomDetailComponent implements OnInit {
         totalRecords: this.inpectionsColumns?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Asset'
+        addButtonText: 'Inspection',
+        addKey: 'web.common.lblAddInspection'
       }
   
     ];

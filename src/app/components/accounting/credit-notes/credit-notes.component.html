@@ -1,13 +1,13 @@
 <div class="cn-page">
   <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
     <div>
-      <h3 class="ov-page-title">Credit Notes</h3>
-      <p class="ov-page-sub">View all the Credit Notes</p>
+      <h3 class="ov-page-title">{{ 'web.accounting.creditNotes.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.accounting.creditNotes.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
       <button type="button" class="ov-btn ov-btn-primary" (click)="openCreateModal()">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Issue Credit Note
+        {{ 'web.accounting.creditNotes.issueCreditNote' | translate }}
       </button>
     </div>
   </div>
@@ -16,7 +16,7 @@
     <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
         <div class="ov-search flex-1">
-          <label class="sr-only" for="credit-note-search">Search by name</label>
+          <label class="sr-only" for="credit-note-search">{{ 'web.accounting.creditNotes.searchByName' | translate }}</label>
           <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
           <input
             id="credit-note-search"
@@ -25,21 +25,21 @@
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
             (input)="applyLocalSearch()"
-            placeholder="Search by name">
+            [placeholder]="'web.accounting.creditNotes.searchByName' | translate">
         </div>
-        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.accounting.creditNotes.search' | translate">
           <i class="ri-search-line text-[18px]"></i>
         </button>
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.accounting.creditNotes.filter' | translate }}
         </button>
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.accounting.creditNotes.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -79,7 +79,7 @@
             </ng-container>
             <ng-container *ngSwitchCase="'action'">
               <div class="inline-flex" (click)="$event.stopPropagation()">
-                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" aria-label="Row actions">
+                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" [attr.aria-label]="'web.accounting.creditNotes.colAction' | translate">
                   <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
                 </button>
                 <div *ngIf="openActionId === row.id"
@@ -88,9 +88,9 @@
                   [style.right.px]="dropdownRight"
                   (click)="$event.stopPropagation()">
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                    (click)="openEditModal(row)">Edit Credit note</button>
+                    (click)="openEditModal(row)">{{ 'web.accounting.creditNotes.editCreditNote' | translate }}</button>
                   <button type="button" class="cn-delete-action block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
-                    (click)="deleteCreditNote(row.code)">Delete Credit note</button>
+                    (click)="deleteCreditNote(row.code)">{{ 'web.accounting.creditNotes.deleteCreditNote' | translate }}</button>
                 </div>
               </div>
             </ng-container>
@@ -101,7 +101,7 @@
 
     <div class="ov-page">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.accounting.creditNotes.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
             <option [ngValue]="5">5</option>
@@ -112,12 +112,12 @@
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.accounting.creditNotes.showing' | translate }} {{ startRecord }} {{ 'web.accounting.creditNotes.to' | translate }} {{ endRecord }} {{ 'web.accounting.creditNotes.of' | translate }} {{ totalRecords }} {{ 'web.accounting.creditNotes.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.accounting.creditNotes.page' | translate }} {{ displayPage }} {{ 'web.accounting.creditNotes.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.accounting.creditNotes.prev' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
           <ng-container *ngFor="let item of pagerItems">
@@ -125,7 +125,7 @@
             <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
               [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
           </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.accounting.creditNotes.next' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
         </div>
@@ -137,74 +137,74 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Contact</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterContact" placeholder="Enter contact">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.creditNotes.filterByContact' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterContact" [placeholder]="'web.accounting.creditNotes.enterContact' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Account</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterAccount" placeholder="Enter account">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.creditNotes.filterByAccount' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterAccount" [placeholder]="'web.accounting.creditNotes.enterAccount' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Created By</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterCreatedBy" placeholder="Enter name">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.creditNotes.filterByCreatedBy' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterCreatedBy" [placeholder]="'web.accounting.creditNotes.enterName' | translate">
     </div>
   </div>
 </app-filter-drawer>
 
 <div *ngIf="modalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="credit-note-title">
   <div class="ov-modal-stack" style="max-width: 640px">
-    <button type="button" class="ov-modal__float-close" (click)="closeModal()" aria-label="Close">
+    <button type="button" class="ov-modal__float-close" (click)="closeModal()" [attr.aria-label]="'web.common.lblClose' | translate">
       <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
     </button>
     <div class="ov-modal ov-modal--lg">
     <div class="ov-modal__header">
-      <h6 class="ov-modal__title" id="credit-note-title">{{ modalTitle }}</h6>
-      <p class="ov-modal__sub">{{ modalSub }}</p>
+      <h6 class="ov-modal__title" id="credit-note-title">{{ modalTitle | translate }}</h6>
+      <p class="ov-modal__sub">{{ modalSub | translate }}</p>
     </div>
     <div class="ov-modal__body">
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">Tenant *</label>
+          <label class="ov-label">{{ 'web.accounting.creditNotes.tenant' | translate }} *</label>
           <ng-select #tenantSelect    [searchable]="true"   [(ngModel)]="draft.tenant" bindValue="code" bindLabel="tenant"
           [items]="tenants"   [searchable]="true"
-           [clearable]="true" placeholder="Select Tenant" class="ov-select ng-select-sm w-full" appendTo="body">
+           [clearable]="true" [placeholder]="'web.accounting.creditNotes.selectTenant' | translate" class="ov-select ng-select-sm w-full" appendTo="body">
              <ng-template ng-header-tmp>
                <div class="p-1.5 border-b border-gray-100">
-                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                 <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.accounting.creditNotes.search' | translate" (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                </div>
              </ng-template>
            </ng-select> 
         </div>
         <div>
-          <label class="ov-label">Account</label>
+          <label class="ov-label">{{ 'web.accounting.creditNotes.colAccount' | translate }}</label>
           <ng-select [(ngModel)]="draft.account"  bindValue="account_code" bindLabel="account_name" name="cnAccount" [items]="accounts" [searchable]="true"
-            [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            [clearable]="true" [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div>
-          <label class="ov-label">Amount *</label>
+          <label class="ov-label">{{ 'web.accounting.creditNotes.colAmount' | translate }} *</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="cnAmount" [(ngModel)]="draft.amount" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Note Date</label>
+          <label class="ov-label">{{ 'web.accounting.creditNotes.noteDate' | translate }}</label>
           <div class="ov-date">
             <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
             <input type="text" class="ov-input" name="cnNoteDate" [(ngModel)]="draft.noteDate"
                appFlowbiteDatepicker placeholder="DD/MM/YYYY">
           </div>
-          <span class="ov-modal__hint">Leaving this empty will select today's date.</span>
+          <span class="ov-modal__hint">{{ 'web.accounting.creditNotes.noteDateHint' | translate }}</span>
         </div>
         <div class="ov-fields__full">
-          <label class="ov-label">Note</label>
-          <textarea class="ov-input min-h-24 resize-y" name="cnNote" [(ngModel)]="draft.note" placeholder="Enter Note.."></textarea>
+          <label class="ov-label">{{ 'web.accounting.creditNotes.note' | translate }}</label>
+          <textarea class="ov-input min-h-24 resize-y" name="cnNote" [(ngModel)]="draft.note" [placeholder]="'web.accounting.creditNotes.enterNote' | translate"></textarea>
         </div>
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">Close</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveCreditNote()">Save</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeModal()">{{ 'web.common.lblClose' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveCreditNote()">{{ 'web.common.save' | translate }}</button>
     </div>
   </div>
   </div>

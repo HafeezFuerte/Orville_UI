@@ -1,5 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,6 +12,9 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { Subject, takeUntil } from 'rxjs';
+
 type DetailTab = 'overview' | 'messages' | 'notes';
 
 interface TicketNoteRow {
@@ -34,12 +36,15 @@ interface TicketNoteRow {
   templateUrl: './preventive-maintenance-detail.component.html',
   styleUrl: './preventive-maintenance-detail.component.scss'
 })
-export class PreventiveMaintenanceDetailComponent {
+export class PreventiveMaintenanceDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router); 
   private commonService = inject(CommonService);
   private commonTabsService = inject(Common_TabsService);
-  private toastr=inject(ToastrService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
+  private destroy$ = new Subject<void>();
+
   currentUser = this.commonService.getCurrentUser(); 
   activeTab: DetailTab = 'overview';
   showActionMenu = false;
@@ -100,6 +105,9 @@ activities:any=[];
   noteRows:any=[];
   ngOnInit() {
     this.initializeTabs(); 
+    this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.initializeTabs();
+    });
     this.loadlookup(2,51,'statusOptions','','');
     this.route.params.subscribe(params => {
       this.ticketId = params['code'];
@@ -108,13 +116,21 @@ activities:any=[];
       }
     });
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   approveRequest(flg:number){
     this.isAccept=false;
     if(flg==1){
-    this.ApprovalModalText="Approve";this.isAccept=true;
+      this.ApprovalModalText = this.translate.instant('web.facility.preventiveMaintenance.approve');
+      this.isAccept=true;
     }
-    if(flg==0)
-    this.ApprovalModalText="Reject";
+    if(flg==0) {
+      this.ApprovalModalText = this.translate.instant('web.facility.preventiveMaintenance.reject');
+    }
     this.showApprovalModal=true;
   }
   loadTicketDetails() {
@@ -176,20 +192,20 @@ activities:any=[];
     this.tabsList = [
       {
         key: 'Overview',
-        label: 'Overview',
+        label: this.translate.instant('web.facility.preventiveMaintenance.tabOverview'),
         layout: 'content',
         data: []
       }, 
       {
         key: 'notes',
-        label: 'Notes',
+        label: this.translate.instant('web.facility.preventiveMaintenance.tabNotes'),
         entity: 'Preventive_Maintenance',
         entity_id: this.ticketId,
         data: this.noteRows || [],
         totalRecords: (this.noteRows || []).length,
         loading: false,
         hasActions: true,
-        addButtonText: 'Notes',
+        addButtonText: this.translate.instant('web.facility.preventiveMaintenance.tabNotes'),
         form: this.notesForm,
         popupType: 'notes'
       } 

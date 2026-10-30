@@ -1,10 +1,10 @@
 <div class="fin" [class.fin--tab]="variant === 'tab'">
   <div class="fin__head" *ngIf="variant !== 'tab'">
-    <h6 class="fin__title">Invoice &amp; Receipts</h6>
+    <h6 class="fin__title">{{ 'web.common.lblFinancials' | translate }}</h6>
   </div>
 
   <div *ngIf="invoices.length === 0" class="fin__empty">
-    <span>No invoice records found</span>
+    <span>{{ 'web.common.lblNoRecordsFound' | translate }}</span>
   </div>
 
   <div *ngIf="invoices.length > 0" class="fin__card">
@@ -18,51 +18,51 @@
         </span>
       </div>
       <div class="fin__inv-actions">
-        <button type="button" class="ov-btn ov-btn-ghost">View Invoice</button>
-        <button type="button" class="ov-btn ov-btn-ghost">Download</button>
+        <button type="button" class="ov-btn ov-btn-ghost">{{ 'web.common.lblView' | translate }}</button>
+        <button type="button" class="ov-btn ov-btn-ghost">{{ 'web.common.lblDownload' | translate }}</button>
       </div>
     </div>
 
     <div class="fin__meta">
       <div class="fin__meta-item">
-        <span class="fin__meta-label">Invoice Date</span>
+        <span class="fin__meta-label">{{ 'web.accounting.invoices.colInvoiceDate' | translate }}</span>
         <span class="fin__meta-value">{{ invoice.invoice_date | date:'dd MMM yyyy' || '-' }}</span>
       </div>
       <div class="fin__meta-item">
-        <span class="fin__meta-label">Due Date</span>
+        <span class="fin__meta-label">{{ 'web.common.lblDueDate' | translate }}</span>
         <span class="fin__meta-value">{{ invoice.due_date | date:'dd MMM yyyy' || '-' }}</span>
       </div>
       <div class="fin__meta-item">
-        <span class="fin__meta-label">Invoice Type</span>
+        <span class="fin__meta-label">{{ 'web.accounting.invoices.colInvoiceType' | translate }}</span>
         <span class="fin__meta-value">{{ getArabicLookupName(invoice,'invoice_type_name') || '-' }}</span>
       </div>
       <div class="fin__meta-item">
-        <span class="fin__meta-label">Account</span>
+        <span class="fin__meta-label">{{ 'web.contacts.lblAccount' | translate }}</span>
         <span class="fin__meta-value">{{ invoice.account_name || '-' }}</span>
       </div>
       <div class="fin__meta-item">
-        <span class="fin__meta-label">Payment Via</span>
+        <span class="fin__meta-label">{{ 'web.leases.lblPaymentVia' | translate }}</span>
         <span class="fin__meta-value">{{ invoice.payment_type_name || 'Mixed' }}</span>
       </div>
     </div>
 
     <div class="fin__stats">
       <div class="fin__stat">
-        <span class="fin__stat-label">Invoice Total</span>
+        <span class="fin__stat-label">{{ 'web.accounting.invoices.invoiceAmount' | translate }}</span>
         <span class="fin__stat-value">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.total_amount | number:'1.2-2' }}</span>
       </div>
       <div class="fin__stat">
-        <span class="fin__stat-label">Amount Paid</span>
+        <span class="fin__stat-label">{{ 'web.common.lblAmountPaid' | translate }}</span>
         <span class="fin__stat-value">{{ currentUser?.currencyCode || 'AED' }} {{ invoice.paid_amount | number:'1.2-2' }}</span>
       </div>
       <div class="fin__stat">
-        <span class="fin__stat-label">Balance Due</span>
+        <span class="fin__stat-label">{{ 'web.common.lblBalanceDue' | translate }}</span>
         <span class="fin__stat-value" [class.fin__stat-value--danger]="(invoice.balance_amount || 0) > 0">
           {{ currentUser?.currencyCode || 'AED' }} {{ invoice.balance_amount | number:'1.2-2' }}
         </span>
       </div>
       <div class="fin__stat">
-        <span class="fin__stat-label">Receipts</span>
+        <span class="fin__stat-label">{{ 'web.common.lblReceipts' | translate }}</span>
         <span class="fin__stat-value">{{ receipts.length }}</span>
       </div>
     </div>
@@ -88,7 +88,7 @@
         </div>
         <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/accounting/invoices/create']" >
           <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-          Record Receipt
+          {{ 'web.common.lblRecordReceipt' | translate }}
         </button>
       </div>
 
@@ -96,12 +96,12 @@
         <table class="fin__table">
           <thead>
             <tr>
-              <th>Receipt No</th>
-              <th>Date</th>
-              <th>Method</th>
-              <th>Reference</th>
-              <th class="text-end">Amount</th>
-              <th>Status</th>
+              <th>{{ 'web.accounting.invoices.receiptNo' | translate }}</th>
+              <th>{{ 'web.common.lblDate' | translate }}</th>
+              <th>{{ 'web.common.lblMethod' | translate }}</th>
+              <th>{{ 'web.common.lblReference' | translate }}</th>
+              <th class="text-end">{{ 'web.contacts.lblAmount' | translate }}</th>
+              <th>{{ 'web.common.lblStatus' | translate }}</th>
               <th></th>
             </tr>
           </thead>
@@ -129,31 +129,31 @@
                         <span class="ov-action-menu__icon-box">
                           <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
                         </span>
-                        <span>Edit</span>
+                        <span>{{ 'web.common.lblEdit' | translate }}</span>
                       </button>
                       <button type="button" role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Payment')">
                         <span class="ov-action-menu__icon-box">
                           <img class="ov-action-menu__icon" src="assets/images/action-menu/receive-payment.svg" alt="" width="14" height="14">
                         </span>
-                        <span>Receive Payment</span>
+                        <span>{{ 'web.common.lblReceivePayment' | translate }}</span>
                       </button>
                       <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger-icon" (click)="OnApproveClick('Bounce')">
                         <span class="ov-action-menu__icon-box">
                           <i class="ti ti-arrow-back-up" aria-hidden="true"></i>
                         </span>
-                        <span>Bounce</span>
+                        <span>{{ 'web.common.lblBounce' | translate }}</span>
                       </button>
                       <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--info" (click)="OnApproveClick('Return')">
                         <span class="ov-action-menu__icon-box">
                           <i class="ti ti-receipt-refund" aria-hidden="true"></i>
                         </span>
-                        <span>Return Cheque</span>
+                        <span>{{ 'web.common.lblReturnCheque' | translate }}</span>
                       </button>
                       <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger" (click)="OnApproveClick('Print')">
                         <span class="ov-action-menu__icon-box">
                           <img class="ov-action-menu__icon" src="assets/images/action-menu/trash.svg" alt="" width="14" height="14">
                         </span>
-                        <span>Delete</span>
+                        <span>{{ 'web.common.lblDelete' | translate }}</span>
                       </button>
                     </div> 
                   </div>
@@ -181,40 +181,40 @@
     </button>
     <div class="ov-modal">
     <div class="ov-modal__header">
-      <h4 class="ov-modal__title">Receive Payment</h4>
+      <h4 class="ov-modal__title">{{ 'web.common.lblReceivePayment' | translate }}</h4>
     </div>
     <div class="ov-modal__body flex flex-col gap-4">
       <div class="form-check form-switch">
-        <label class="block text-[11px] font-semibold text-textmuted mb-1.5">Receive Full Payment</label>
+        <label class="block text-[11px] font-semibold text-textmuted mb-1.5">{{ 'web.common.lblReceiveFullPayment' | translate }}</label>
         <input [(ngModel)]="receivepayment.receivefull" (change)="onRadioChange()"
             class="ti-switch customswtichcheckbox before:relative before:!top-[-1px] checked:before:!top-[0px]"
             type="checkbox">
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
         <div>
-          <label class="ov-label">Amount</label>
+          <label class="ov-label">{{ 'web.contacts.lblAmount' | translate }}</label>
           <input type="number" [disabled]="receivepayment.receivefull==1" class="ov-input" [(ngModel)]="receivepayment.Amount">
         </div>
         <div>
-          <label class="ov-label">Paid Date</label>
+          <label class="ov-label">{{ 'web.common.lblPaidDate' | translate }}</label>
           <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
            class="ov-input" [(ngModel)]="receivepayment.paiddate">
         </div>
         <div>
-          <label class="ov-label">Payment Via</label>
+          <label class="ov-label">{{ 'web.leases.lblPaymentVia' | translate }}</label>
           <ng-select [(ngModel)]="receivepayment.payment_via" bindValue="id" bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
         <div>
-          <label class="ov-label">Account</label>
+          <label class="ov-label">{{ 'web.contacts.lblAccount' | translate }}</label>
           <ng-select [(ngModel)]="receivepayment.account" bindValue="account_code" bindLabel="account_name" [items]="coa_list" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
         </div>
       </div>
       <div>
-        <label class="ov-label">Notes</label>
+        <label class="ov-label">{{ 'web.property.lblNotes' | translate }}</label>
         <textarea rows="5" class="ov-input" [(ngModel)]="receivepayment.notes" placeholder="Enter remarks here..."></textarea>
       </div>
       <div>
-        <label class="ov-label">Add Receipt</label>
+        <label class="ov-label">{{ 'web.common.lblAddReceipt' | translate }}</label>
         <app-file-upload
           [accept]="'image/*'"
           (filesChanged)="onFilesSelected($event)"
@@ -225,8 +225,8 @@
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="showReceivePayment = false" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" (click)="save_payment()" class="ov-btn ov-btn-primary">Receive</button>
+      <button type="button" (click)="showReceivePayment = false" class="ov-btn ov-btn-ghost">{{ 'web.common.lblCancel' | translate }}</button>
+      <button type="button" (click)="save_payment()" class="ov-btn ov-btn-primary">{{ 'web.common.lblReceive' | translate }}</button>
     </div>
   </div>
   </div>
@@ -238,20 +238,20 @@
     </button>
     <div class="ov-modal">
     <div class="ov-modal__header">
-      <h4 class="ov-modal__title">Edit Cheque</h4>
+      <h4 class="ov-modal__title">{{ 'web.common.lblEditCheque' | translate }}</h4>
     </div>
     <div class="ov-modal__body flex flex-col gap-4">
       <div class="ov-fields ov-fields--2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
         <div>
-          <label class="ov-label">Cheque No</label>
+          <label class="ov-label">{{ 'web.common.lblChequeNo' | translate }}</label>
           <input type="text" [(ngModel)]="chequeBlock.cheque_no" class="ov-input" />
         </div>
         <div>
-          <label class="ov-label">Cheque Date</label>
+          <label class="ov-label">{{ 'web.common.lblChequeDate' | translate }}</label>
           <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY" [(ngModel)]="chequeBlock.cheque_date" class="ov-input" />
         </div>
         <div>
-          <label class="ov-label">Amount</label>
+          <label class="ov-label">{{ 'web.contacts.lblAmount' | translate }}</label>
           <input type="text" [(ngModel)]="chequeBlock.Amount" class="ov-input" />
         </div>
         <div>
@@ -277,8 +277,8 @@
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="showChequeEdit = false" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" (click)="update_cheque()" class="ov-btn ov-btn-primary">Update</button>
+      <button type="button" (click)="showChequeEdit = false" class="ov-btn ov-btn-ghost">{{ 'web.common.lblCancel' | translate }}</button>
+      <button type="button" (click)="update_cheque()" class="ov-btn ov-btn-primary">{{ 'web.common.lblUpdate' | translate }}</button>
     </div>
   </div>
   </div>
@@ -329,8 +329,8 @@
   
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="showChequeBounce = false" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" (click)="update_bounce_cheque()" class="ov-btn ov-btn-primary">Update</button>
+      <button type="button" (click)="showChequeBounce = false" class="ov-btn ov-btn-ghost">{{ 'web.common.lblCancel' | translate }}</button>
+      <button type="button" (click)="update_bounce_cheque()" class="ov-btn ov-btn-primary">{{ 'web.common.lblUpdate' | translate }}</button>
     </div>
   </div>
   </div>

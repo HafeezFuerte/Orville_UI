@@ -1,13 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-add-vendor',
@@ -30,6 +31,8 @@ export class AddVendorComponent implements OnInit {
   private toastr = inject(ToastrService);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
+  private translate = inject(TranslateService);
 
   isEditMode = false;
   vendorId: any = null;
@@ -314,10 +317,11 @@ export class AddVendorComponent implements OnInit {
     this.loadLookup(15, 'vendorTypes', 'lookup_name');
     this.loadLookup(16, 'categories', 'lookup_name');
 
+    const currentUser = this.commonService.getCurrentUser();
     this.propertiesService.getTenants({
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       page_no: 0,
@@ -487,24 +491,24 @@ export class AddVendorComponent implements OnInit {
 
   saveVendor() {
     if (!this.vendorData.first_name || !this.vendorData.first_name.trim()) {
-      this.toastr.warning('Contact Name is required.', 'Validation Warning');
+      this.toastr.warning(this.translate.instant('web.contacts.errContactNameRequired'), this.translate.instant('web.contacts.lblValidationWarning'));
       return;
     }
     if (!this.vendorData.email_address || !this.vendorData.email_address.trim()) {
-      this.toastr.warning('Email Address is required.', 'Validation Warning');
+      this.toastr.warning(this.translate.instant('web.contacts.errEmailRequired'), this.translate.instant('web.contacts.lblValidationWarning'));
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.vendorData.email_address)) {
-      this.toastr.warning('Please enter a valid Email Address.', 'Validation Warning');
+      this.toastr.warning(this.translate.instant('web.contacts.errValidEmail'), this.translate.instant('web.contacts.lblValidationWarning'));
       return;
     }
     if (!this.vendorData.address1 || !this.vendorData.address1.trim()) {
-      this.toastr.warning('Address Line 1 is required.', 'Validation Warning');
+      this.toastr.warning(this.translate.instant('web.contacts.errAddressLine1Required'), this.translate.instant('web.contacts.lblValidationWarning'));
       return;
     }
     if (!this.vendorData.country_id) {
-      this.toastr.warning('Country is required.', 'Validation Warning');
+      this.toastr.warning(this.translate.instant('web.contacts.errCountryRequired'), this.translate.instant('web.contacts.lblValidationWarning'));
       return;
     }
 
@@ -521,14 +525,15 @@ export class AddVendorComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      this.toastr.warning(this.translate.instant('web.contacts.errDuplicateEmailOrMobile'), this.translate.instant('web.contacts.lblDuplicateFound'));
       return;
     }
 
+    const currentUser = this.commonService.getCurrentUser();
     const requestJson = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       email_address: this.vendorData.email_address,
@@ -568,15 +573,15 @@ export class AddVendorComponent implements OnInit {
     this.propertiesService.saveVendor(formData).subscribe({
       next: (res: any) => {
         if (res.statusCode === "200" || res.status === 200 || res.message === 'Success') {
-          this.toastr.success(this.isEditMode ? 'Vendor updated successfully!' : 'Vendor saved successfully!', 'Success');
+          this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgVendorUpdated' : 'web.contacts.msgVendorSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/vendors']);
         } else {
-          this.toastr.error(res.message || 'Failed to save vendor.', 'Error');
+          this.toastr.error(res.message || this.translate.instant('web.contacts.errFailedToSaveVendor'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         console.error('Failed to save vendor:', err);
-        this.toastr.error('An error occurred while saving the vendor.', 'Error');
+        this.toastr.error(this.translate.instant('web.contacts.errServerErrorSaving'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -646,11 +651,11 @@ export class AddVendorComponent implements OnInit {
 
   saveDocument() {
     if (!this.docForm.document_type) {
-      this.toastr.error("Document Type is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errDocTypeRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.docForm.file) {
-      this.toastr.error("Please attach a file.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errAttachFile'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
 
@@ -670,11 +675,11 @@ export class AddVendorComponent implements OnInit {
 
     this.resetDocForm();
     this.isAddDocModalOpen = false;
-    this.toastr.success("Document attached successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocAttachedSuccess'));
   }
 
   removeDocument(index: number) {
     this.uploadedDocuments.splice(index, 1);
-    this.toastr.success("Document removed successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocRemovedSuccess'));
   }
 }

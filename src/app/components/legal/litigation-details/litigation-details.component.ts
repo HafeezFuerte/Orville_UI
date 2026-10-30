@@ -1,7 +1,8 @@
-import { Component, OnInit,inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
-import { RouterModule,ActivatedRoute,Route } from '@angular/router';
+import { RouterModule, ActivatedRoute, Route } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DetailPageLayoutComponent } from '../../portfolio/detail-page-layout/detail-page-layout.component';
 import { DetailTab } from '../../../shared/models/detail-tab.model';
 import { NotesComponent } from '../../child-tables/notes/notes.component';
@@ -17,6 +18,7 @@ import { CommonService } from '../../../services/common.service';
     CommonModule, 
     FormsModule, 
     RouterModule, 
+    TranslateModule,
     DetailPageLayoutComponent, 
     NotesComponent, 
     AttachmentsComponent, 
@@ -30,6 +32,7 @@ export class LitigationDetailsComponent implements OnInit {
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
+  private translate = inject(TranslateService);
   legalId: string = '';
   activeTab = 'overview';
   showMoreDetails = false;
@@ -45,11 +48,11 @@ export class LitigationDetailsComponent implements OnInit {
   attachmentsData :any=[];
 
   hearingColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'date', label: 'Date', visible: true },
-    { key: 'description', label: 'Description', visible: true },
-    { key: 'attachment', label: 'Attachment', visible: true, useTemplate: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.legal.details.colHearingId', visible: true, useTemplate: true },
+    { key: 'date', label: 'web.legal.details.colHearingDate', visible: true },
+    { key: 'description', label: 'web.legal.details.colHearingDescription', visible: true },
+    { key: 'attachment', label: 'web.legal.details.colHearingAttachment', visible: true, useTemplate: true },
+    { key: 'action', label: 'web.legal.details.colHearingAction', visible: true, useTemplate: true }
   ];
 
   ngOnInit() { 
@@ -63,7 +66,7 @@ export class LitigationDetailsComponent implements OnInit {
     this.tabs = [
       {
         key: 'overview',
-        label: 'Hearings',
+        label: 'web.legal.details.tabHearings',
         entity_id: this.legalId,
         layout: 'content',
         columns: this.hearingColumns,
@@ -115,7 +118,7 @@ export class LitigationDetailsComponent implements OnInit {
           this.initializeTabs(); 
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant("web.common.noRecordsFound"));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);

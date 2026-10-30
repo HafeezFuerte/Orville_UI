@@ -1,4 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ export class CreateTicketComponent {
   private commtabservice = inject(Common_TabsService);
   private propertiesService = inject(PropertiesService);
   private toastr = inject(ToastrService); 
+  public translate = inject(TranslateService); 
 
   currentUser = this.commonService.getCurrentUser(); 
   beforeImages: File[] = [];
@@ -198,19 +199,19 @@ export class CreateTicketComponent {
  
   createTicket() {
     if(this.form.title== null || this.form.title==""){
-      this.toastr.error("Invalid Title");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidTitle'));
       return;
     }
     else if(this.form.selectedProperty== null || this.form.selectedProperty==""){
-      this.toastr.error("Invalid Property");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidProperty'));
       return;
     } 
     else if(this.form.selectedCategory== null || this.form.selectedCategory==""){
-      this.toastr.error("Invalid Category");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidCategory'));
       return;
     }
     else if(this.form.selectedPriority== null || this.form.selectedPriority==""){
-      this.toastr.error("Invalid Priority");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidPriority'));
       return;
     } 
 
@@ -260,26 +261,26 @@ export class CreateTicketComponent {
           if (uploadTasks.length > 0) {
             forkJoin(uploadTasks).subscribe({
               next: () => {
-                this.toastr.success("Ticket and all files saved successfully");
+                this.toastr.success(this.translate.instant('web.facility.tickets.ticketSavedWithFilesSuccess'));
                 this.goBack();
               },
               error: (err) => {
                  
-                this.toastr.warning("Ticket saved, but some files failed to upload");
+                this.toastr.warning(this.translate.instant('web.facility.tickets.ticketSavedFilesUploadFailed'));
                 this.goBack();
               }
             });
           } else {
-            this.toastr.success( "Ticket saved successfully");
+            this.toastr.success(this.translate.instant('web.facility.tickets.ticketSavedSuccess'));
             this.goBack();
           }
         } else {
-          this.toastr.error(res.message || "Failed to save work order");
+          this.toastr.error(res.message || this.translate.instant('web.facility.workOrders.saveFailed'));
         }
       },
       error: (err: any) => {
          
-        this.toastr.error("An error occurred while saving the work order");
+        this.toastr.error(this.translate.instant('web.facility.workOrders.saveError'));
       }
     });
   }

@@ -15,13 +15,14 @@ import {
   SpaceRow,
   getSpaceDetail,
 } from '../spaces.data';
+import { TranslateModule } from '@ngx-translate/core';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-space-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './space-detail.component.html',
   styleUrls: ['./space-detail.component.scss'],
 })
@@ -43,9 +44,9 @@ export class SpaceDetailComponent implements OnInit {
   showRowMenuId: string | null = null;
 
   actionOptions = [
-    { label: 'Edit Space',      icon: 'ti ti-pencil', asset: 'assets/images/action-menu/pencil.svg', danger: false },
-    { label: 'Add Reservation', icon: 'ti ti-plus',   asset: 'assets/images/action-menu/plus.svg',   danger: false },
-    { label: 'Delete Space',    icon: 'ti ti-trash',  asset: 'assets/images/action-menu/trash.svg',  danger: true  },
+    { label: 'web.bookings.spaces.editSpace',      icon: 'ti ti-pencil', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { label: 'web.bookings.reservations.addReservation', icon: 'ti ti-plus',   asset: 'assets/images/action-menu/plus.svg',   danger: false },
+    { label: 'web.bookings.spaces.deleteSpace',    icon: 'ti ti-trash',  asset: 'assets/images/action-menu/trash.svg',  danger: true  },
   ];
 
   get hasDangerAction(): boolean {
@@ -58,15 +59,15 @@ export class SpaceDetailComponent implements OnInit {
   reservationPageSize = 10;
 
   reservationColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px' },
-    { key: 'reserver', label: 'Reserver', visible: true },
-    { key: 'bookingDate', label: 'Booking Date', visible: true, width: '130px' },
-    { key: 'time', label: 'Time', visible: true, width: '130px' },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true, width: '110px' },
-    { key: 'approval', label: 'Approval', visible: true, useTemplate: true, width: '120px' },
-    { key: 'email', label: 'Email', visible: true },
-    { key: 'lease', label: 'Lease', visible: true, useTemplate: true, width: '100px' },
-    { key: 'actions', label: 'Actions', visible: true, useTemplate: true, width: '70px' },
+    { key: 'id', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true, width: '90px' },
+    { key: 'reserver', label: 'web.bookings.reservations.reserver', visible: true },
+    { key: 'bookingDate', label: 'web.bookings.reservations.colBookingDate', visible: true, width: '130px' },
+    { key: 'time', label: 'web.bookings.reservations.colTime', visible: true, width: '130px' },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true, width: '110px' },
+    { key: 'approval', label: 'web.bookings.spaces.colApproval', visible: true, useTemplate: true, width: '120px' },
+    { key: 'email', label: 'web.bookings.reservations.colEmail', visible: true },
+    { key: 'lease', label: 'web.bookings.reservations.colLease', visible: true, useTemplate: true, width: '100px' },
+    { key: 'actions', label: 'web.bookings.reservations.colAction', visible: true, useTemplate: true, width: '70px' },
   ];
 
   attachments: SpaceAttachment[] = [...SPACE_ATTACHMENTS];
@@ -76,19 +77,19 @@ export class SpaceDetailComponent implements OnInit {
   attachmentPageSize = 10;
 
   attachmentColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '110px' },
-    { key: 'fileType', label: 'File Type', visible: true },
-    { key: 'docId', label: 'Doc ID', visible: true },
-    { key: 'status', label: 'Document Status', visible: true, useTemplate: true },
-    { key: 'issueDate', label: 'Issue Date', visible: true },
-    { key: 'expiryDate', label: 'Expiry Date', visible: true },
-    { key: 'files', label: 'Files', visible: true, useTemplate: true },
-    { key: 'uploadedBy', label: 'Uploaded By', visible: true },
-    { key: 'shareLandlord', label: 'Share Landlord', visible: true, useTemplate: true },
-    { key: 'shareTenant', label: 'Share Tenant', visible: true, useTemplate: true },
-    { key: 'createdAt', label: 'Created At', visible: true },
-    { key: 'updatedAt', label: 'Updated At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true },
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true, width: '110px' },
+    { key: 'fileType', label: 'web.bookings.spaces.colFileType', visible: true },
+    { key: 'docId', label: 'web.bookings.spaces.colDocId', visible: true },
+    { key: 'status', label: 'web.bookings.spaces.colDocStatus', visible: true, useTemplate: true },
+    { key: 'issueDate', label: 'web.bookings.spaces.colIssueDate', visible: true },
+    { key: 'expiryDate', label: 'web.bookings.spaces.colExpiryDate', visible: true },
+    { key: 'files', label: 'web.bookings.spaces.colFiles', visible: true, useTemplate: true },
+    { key: 'uploadedBy', label: 'web.bookings.spaces.colUploadedBy', visible: true },
+    { key: 'shareLandlord', label: 'web.bookings.spaces.colShareLandlord', visible: true, useTemplate: true },
+    { key: 'shareTenant', label: 'web.bookings.spaces.colShareTenant', visible: true, useTemplate: true },
+    { key: 'createdAt', label: 'web.common.lblCreated', visible: true },
+    { key: 'updatedAt', label: 'web.bookings.spaces.colUpdatedAt', visible: true },
+    { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true },
   ];
 
   get dash(): string {
@@ -337,15 +338,15 @@ export class SpaceDetailComponent implements OnInit {
 
   onAction(label: string): void {
     this.showActionMenu = false;
-    if (label === 'Edit Space') {
+    if (label === 'Edit Space' || label === 'web.bookings.spaces.editSpace') {
       this.goToEdit();
       return;
     }
-    if (label === 'Add Reservation') {
+    if (label === 'Add Reservation' || label === 'web.bookings.reservations.addReservation') {
       void this.router.navigate(['/bookings/reservations/new']);
       return;
     }
-    if (label === 'Delete Space') {
+    if (label === 'Delete Space' || label === 'web.bookings.spaces.deleteSpace') {
       this.toastr.info('Delete is presentation only.', 'Space Details');
     }
   }

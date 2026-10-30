@@ -1,17 +1,17 @@
 <form class="ov-add-form" (ngSubmit)="save()">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="cancel()" title="Back to Spaces">
+      <button type="button" class="ov-back" (click)="cancel()" [title]="'web.bookings.spaces.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Create a new bookable space</h3>
-        <p class="ov-page-sub">Bookings / Spaces / <span class="ov-page-sub__current">Create</span></p>
+        <h3 class="ov-page-title">{{ (isEdit ? 'web.bookings.spaces.editSpaceTitle' : 'web.bookings.spaces.createSpaceTitle') | translate }}</h3>
+        <p class="ov-page-sub">{{ 'web.bookings.spaces.breadcrumbSub' | translate }} <span class="ov-page-sub__current">{{ (isEdit ? 'web.common.edit' : 'web.bookings.spaces.create') | translate }}</span></p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
-      <button type="submit" class="ov-btn ov-btn-primary">Save Space</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="submit" class="ov-btn ov-btn-primary">{{ 'web.bookings.spaces.saveSpace' | translate }}</button>
     </div>
   </div>
 
@@ -19,30 +19,30 @@
     <div class="ov-add-layout__main">
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Space information</h6>
-          <p class="ov-card-sub">Give guests the essential information they need before booking.</p>
+          <h6 class="ov-card-title">{{ 'web.bookings.spaces.spaceInfo' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.bookings.spaces.spaceInfoSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Space name *</label>
-              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+              <label class="ov-label">{{ 'web.bookings.spaces.spaceNameReq' | translate }}</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Space Location *</label>
-              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" placeholder="Enter">
+              <label class="ov-label">{{ 'web.bookings.spaces.spaceLocationReq' | translate }}</label>
+              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Phone Number *</label>
-              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter">
+              <label class="ov-label">{{ 'web.bookings.spaces.phoneReq' | translate }}</label>
+              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Email</label>
-              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter">
+              <label class="ov-label">{{ 'web.bookings.spaces.email' | translate }}</label>
+              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Description</label>
-              <textarea class="ov-input !h-[100px] resize-none py-3" name="description" [(ngModel)]="form.description" placeholder="Enter"></textarea>
+              <label class="ov-label">{{ 'web.bookings.spaces.description' | translate }}</label>
+              <textarea class="ov-input !h-[100px] resize-none py-3" name="description" [(ngModel)]="form.description" [placeholder]="'web.common.lblEnter' | translate"></textarea>
             </div>
           </div>
         </div>
@@ -50,22 +50,22 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Location</h6>
-          <p class="ov-card-sub">Link the space to a property and unit for accurate access and reporting.</p>
+          <h6 class="ov-card-title">{{ 'web.bookings.spaces.location' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.bookings.spaces.locationSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Property</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.property' | translate }}</label>
               <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [clearable]="true"
                 bindLabel="name" bindValue="code" (change)="onPropertyChange()"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Unit</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.unit' | translate }}</label>
               <ng-select [(ngModel)]="form.unit" name="unit" [items]="units" [clearable]="true"
                 bindLabel="name" bindValue="code"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -74,27 +74,27 @@
       <section class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Availability schedule</h6>
-            <p class="ov-card-sub">Choose the booking window, time zone, and recurring weekly hours.</p>
+            <h6 class="ov-card-title">{{ 'web.bookings.spaces.availabilitySchedule' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.bookings.spaces.availabilityScheduleSub' | translate }}</p>
           </div>
           <button type="button" class="ov-btn ov-btn-ghost !h-9 whitespace-nowrap" (click)="copyMondayToAll()">
-            Copy Monday to all
+            {{ 'web.bookings.spaces.copyMondayToAll' | translate }}
           </button>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2 mb-4">
             <div>
-              <label class="ov-label">Availability Option</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.availabilityOption' | translate }}</label>
               <ng-select [(ngModel)]="form.availability" name="availability" [items]="availabilityOptions" bindLabel="name" bindValue="id"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Slot duration</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.slotDuration' | translate }}</label>
               <ng-select [(ngModel)]="form.slotDuration" name="slotDuration" [items]="slotOptions" bindLabel="name" bindValue="id" [clearable]="true"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Start Date</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.startDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="startDate" [(ngModel)]="form.startDate"
@@ -102,7 +102,7 @@
               </div>
             </div>
             <div>
-              <label class="ov-label">End Date</label>
+              <label class="ov-label">{{ 'web.bookings.spaces.endDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="endDate" [(ngModel)]="form.endDate"
@@ -120,7 +120,7 @@
                 <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
                 <input type="text" class="ov-input !pl-[44px]" [(ngModel)]="row.start" [name]="row.day + '-start'" placeholder="--:-- --" [disabled]="!row.enabled">
               </div>
-              <span class="text-sm text-textmuted">to</span>
+              <span class="text-sm text-textmuted">{{ 'web.bookings.spaces.to' | translate }}</span>
               <div class="ov-date flex-1">
                 <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
                 <input type="text" class="ov-input !pl-[44px]" [(ngModel)]="row.end" [name]="row.day + '-end'" placeholder="--:-- --" [disabled]="!row.enabled">
@@ -132,13 +132,13 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Rules</h6>
-          <p class="ov-card-sub">Set expectations clearly and highlight what is included.</p>
+          <h6 class="ov-card-title">{{ 'web.bookings.spaces.rules' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.bookings.spaces.rulesSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
-          <label class="ov-label">Details</label>
+          <label class="ov-label">{{ 'web.bookings.spaces.details' | translate }}</label>
           <textarea class="ov-input !h-[140px] resize-none py-3" name="rules" [(ngModel)]="form.rules"
-            placeholder="Write the note content here..."></textarea>
+            [placeholder]="'web.bookings.spaces.phWriteNote' | translate"></textarea>
         </div>
       </section>
     </div>
@@ -146,15 +146,15 @@
     <aside class="ov-add-layout__aside">
       <section class="ov-card ov-upload">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Images</h6>
+          <h6 class="ov-card-title">{{ 'web.bookings.spaces.images' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <app-file-upload
             [accept]="'image/*'"
             [multiple]="false"
-            [buttonText]="'Upload'"
-            [dropText]="'Drop your image here or'"
-            [browseText]="'Browse'"
+            [buttonText]="'web.bookings.spaces.upload' | translate"
+            [dropText]="'web.bookings.spaces.dropImage' | translate"
+            [browseText]="'web.bookings.spaces.browse' | translate"
             [buttonClass]="'ov-btn ov-btn-primary'"
             (filesChanged)="onImageSelected($event)">
           </app-file-upload>
@@ -163,12 +163,12 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Payments</h6>
+          <h6 class="ov-card-title">{{ 'web.bookings.spaces.payments' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="ov-label">Slot Price</label>
-            <input type="text" class="ov-input" name="slotPrice" [(ngModel)]="form.slotPrice" placeholder="Enter">
+            <label class="ov-label">{{ 'web.bookings.spaces.slotPrice' | translate }}</label>
+            <input type="text" class="ov-input" name="slotPrice" [(ngModel)]="form.slotPrice" [placeholder]="'web.common.lblEnter' | translate">
           </div>
           <div class="flex items-center gap-3 rounded-lg border border-dashed border-[#cfd4dc] bg-transparent px-2.5 py-4">
             <button type="button"
@@ -178,14 +178,14 @@
                 : 'border-[#b8bfc9] bg-[#cfd4dc]'"
               (click)="form.enablePayment = !form.enablePayment"
               [attr.aria-pressed]="form.enablePayment"
-              aria-label="Enable Payment">
+              [attr.aria-label]="'web.bookings.spaces.enablePayment' | translate">
               <span
                 class="pointer-events-none absolute top-[2px] size-[24px] rounded-full bg-white shadow-sm transition-all"
                 [style.left]="form.enablePayment ? '29px' : '3px'"></span>
             </button>
             <div>
-              <p class="m-0 text-sm font-medium text-defaulttextcolor">Enable Payment</p>
-              <p class="mb-0 mt-0.5 text-xs text-textmuted">Allow payment for this space</p>
+              <p class="m-0 text-sm font-medium text-defaulttextcolor">{{ 'web.bookings.spaces.enablePayment' | translate }}</p>
+              <p class="mb-0 mt-0.5 text-xs text-textmuted">{{ 'web.bookings.spaces.allowPaymentSub' | translate }}</p>
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
-    <button type="submit" class="ov-btn ov-btn-primary">Save Space</button>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">{{ 'web.common.cancel' | translate }}</button>
+    <button type="submit" class="ov-btn ov-btn-primary">{{ 'web.bookings.spaces.saveSpace' | translate }}</button>
   </div>
 </form>

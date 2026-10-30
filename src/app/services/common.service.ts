@@ -30,7 +30,15 @@ export class CommonService {
       this.currentUser = user;
     });
  }
- getCurrentUser(): AuthPayload | null {
+  getCurrentUser(): AuthPayload | null {
+    if (!this.currentUser) {
+      try {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+          this.currentUser = JSON.parse(stored);
+        }
+      } catch (e) {}
+    }
     return this.currentUser;
   }
   formatDateForInput(dateStr: string): string {
@@ -61,19 +69,21 @@ export class CommonService {
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
   updateHeaders(): HttpHeaders {
-  
-  if (!this.currentUser) {
-    return new HttpHeaders();
+    if (!this.currentUser) {
+      this.getCurrentUser();
+    }
+    if (!this.currentUser) {
+      return new HttpHeaders();
+    }
+    return new HttpHeaders({
+      Accesstoken: this.currentUser.token || '',
+      userId: String(this.currentUser.userId || ''),
+      languageid: '1',
+      portalId: '3',
+      source: 'web',
+      clientID: this.currentUser.clientId || ''
+    });
   }
-  return new HttpHeaders({
-    Accesstoken: this.currentUser.token,
-    userId: String(this.currentUser.userId),
-    languageid: '1',
-    portalId: '3',
-    source: 'web',
-    clientID: this.currentUser.clientId
-  });
-}
   getSideNav(data: any) {
     return this.http.post(SharedUrlLinks._sidenav, data, { headers: this.updateHeaders() });
   } 

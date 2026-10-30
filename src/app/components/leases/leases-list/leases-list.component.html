@@ -18,29 +18,29 @@
 
 <div class="ov-kpi-row leases-kpi-row mb-5">
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">REVENUE</span>
+    <span class="ov-kpi__badge">{{ 'web.leases.lblRevenue' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.revenue }}</div>
-    <div class="ov-kpi__sub">Total rent value</div>
+    <div class="ov-kpi__sub">{{ 'web.leases.lblTotalRentValue' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">TOTAL LEASES</span>
+    <span class="ov-kpi__badge">{{ 'web.leases.lblTotalLeases' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.totalLeases }}</div>
-    <div class="ov-kpi__sub">Signed agreements</div>
+    <div class="ov-kpi__sub">{{ 'web.leases.lblSignedAgreements' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">ACTIVE LEASES</span>
+    <span class="ov-kpi__badge">{{ 'web.leases.lblActiveLeases' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.activeLeases }}</div>
-    <div class="ov-kpi__sub">Live occupancy</div>
+    <div class="ov-kpi__sub">{{ 'web.leases.lblLiveOccupancy' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">DRAFT LEASES</span>
+    <span class="ov-kpi__badge">{{ 'web.leases.lblDraftLeases' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.draftLeases }}</div>
-    <div class="ov-kpi__sub">Pending signature</div>
+    <div class="ov-kpi__sub">{{ 'web.leases.lblPendingSignature' | translate }}</div>
   </div>
   <div class="ov-kpi">
-    <span class="ov-kpi__badge">EXPIRING LEASES</span>
+    <span class="ov-kpi__badge">{{ 'web.leases.lblExpiringLeases' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.expiringLeases }}</div>
-    <div class="ov-kpi__sub">Within 30 days</div>
+    <div class="ov-kpi__sub">{{ 'web.leases.lblWithin30Days' | translate }}</div>
   </div>
 </div>
 
@@ -64,13 +64,13 @@
     class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center gap-3">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[480px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="lease-search">Search leases</label>
+        <label class="sr-only" for="lease-search">{{ 'web.leases.phSearchLeases' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="lease-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" (input)="applyFilters()" placeholder="Search leases..." />
+          (keyup.enter)="onSearch()" (input)="applyFilters()" [placeholder]="'web.leases.phSearchLeases' | translate" />
       </div>
       <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !min-h-10 !w-10 !px-0 shrink-0"
-        title="Search" aria-label="Search">
+        [title]="'web.common.btnSearch' | translate" [attr.aria-label]="'web.common.btnSearch' | translate">
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="brightness-0 invert" />
       </button>
     </div>
@@ -78,13 +78,13 @@
       <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.contacts.lblFilter' | translate }}
       </button>
       <div class="relative" (click)="$event.stopPropagation()">
         <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contacts.lblColumn' | translate }}
         </button>
         <div *ngIf="showColumnDropdown"
           class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -98,7 +98,7 @@
             class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
             <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
               class="h-3.5 w-3.5 rounded text-primary">
-            {{ col.label }}
+            {{ col.label | translate }}
           </label>
         </div>
       </div>
@@ -159,7 +159,7 @@
               <div *ngIf="openActionId === row.lease_code"
                 class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
-                  [routerLink]="['/leases', row.lease_code]" (click)="openActionId = null">View</a>
+                  [routerLink]="['/leases', row.lease_code]" (click)="openActionId = null">{{ 'web.common.view' | translate }}</a>
               </div>
             </div>
           </ng-container>
@@ -171,7 +171,7 @@
 
   <div class="ov-page">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
           <option [ngValue]="5">5</option>
@@ -182,10 +182,10 @@
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.common.lblShowing' | translate }} {{ startRecord }} {{ 'web.common.lblTo' | translate }} {{ endRecord }} {{ 'web.common.lblOf' | translate }} {{ totalRecords }} {{ 'web.common.lblRecords' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.common.lblPage' | translate }} {{ displayPage }} {{ 'web.common.lblOf' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1"
           aria-label="Previous page">
@@ -210,17 +210,17 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="onSearch()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Tenant</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterTenant" placeholder="Enter Tenant name">
+      <label class="ov-label mb-1.5">{{ 'web.leases.lblFilterByTenant' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterTenant" [placeholder]="'web.leases.phEnterTenantName' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Property</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterProperty" placeholder="Enter Property name">
+      <label class="ov-label mb-1.5">{{ 'web.leases.lblFilterByProperty' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterProperty" [placeholder]="'web.leases.phEnterPropertyName' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Status</label>
+      <label class="ov-label mb-1.5">{{ 'web.leases.lblFilterByStatus' | translate }}</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.leases.phSelectStatus' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

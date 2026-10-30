@@ -20,22 +20,22 @@
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiNew' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.new }}</div>
-    <div class="ov-kpi__sub">+6 this week</div>
+    <div class="ov-kpi__sub">{{ 'web.facility.workOrders.kpiSubThisWeek' | translate }}</div>
   </div>
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiOpen' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.open }}</div>
-    <div class="ov-kpi__sub">21 due today</div>
+    <div class="ov-kpi__sub">{{ 'web.facility.workOrders.kpiSubDueToday' | translate }}</div>
   </div>
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiInProgress' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.inprogress }}</div>
-    <div class="ov-kpi__sub">12 with vendors</div>
+    <div class="ov-kpi__sub">{{ 'web.facility.workOrders.kpiSubWithVendors' | translate }}</div>
   </div>
   <div class="ov-kpi">
     <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiResolved' | translate }}</span>
     <div class="ov-kpi__val">{{ metrics.resolved }}</div>
-    <div class="ov-kpi__sub">92% SLA met</div>
+    <div class="ov-kpi__sub">{{ 'web.facility.workOrders.kpiSubSlaMet' | translate }}</div>
   </div>
 </div>
 
@@ -47,11 +47,11 @@
       </h5>
       <div class="ov-view-toggle">
         <button type="button" (click)="setViewMode('list')" class="ov-view-toggle__btn"
-          [class.is-on]="viewMode === 'list'" data-tooltip="Switch to List" aria-label="List view">
+          [class.is-on]="viewMode === 'list'" [attr.data-tooltip]="'web.facility.workOrders.switchToList' | translate" aria-label="List view">
           <img src="assets/images/work-orders/list-details.svg" alt="" width="20" height="20" class="wo-icon" />
         </button>
         <button type="button" (click)="setViewMode('board')" class="ov-view-toggle__btn"
-          [class.is-on]="viewMode === 'board'" data-tooltip="Switch to Board" aria-label="Board view">
+          [class.is-on]="viewMode === 'board'" [attr.data-tooltip]="'web.facility.workOrders.switchToBoard' | translate" aria-label="Board view">
           <img src="assets/images/work-orders/board.svg" alt="" width="20" height="20" class="wo-icon" />
         </button>
       </div>
@@ -62,7 +62,7 @@
     <div class="ov-seg ov-seg--solid !w-max max-w-none">
       <button type="button" *ngFor="let tab of tabs" (click)="onTabChange(tab)" class="ov-seg__btn"
         [class.is-active]="activeTab === tab.id">
-        {{ tab.name }}
+        {{ tab.id === 'All' ? ('web.common.all' | translate) : (getArabicLookupName(tab, 'name') || tab.name) }}
       </button>
     </div>
   </div>
@@ -75,7 +75,7 @@
         <input id="work-order-search" type="text" class="ov-input ov-search__input"
           [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.common.search' | translate">
       </div>
-      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.common.search' | translate">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
@@ -101,7 +101,7 @@
             class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
             <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
               class="h-3.5 w-3.5 rounded text-primary">
-            {{ col.label }}
+            {{ col.label | translate }}
           </label>
         </div>
       </div>
@@ -191,7 +191,7 @@
       <section class="ov-kanban__col" *ngFor="let col of kanbanColumns">
         <header class="ov-kanban__col-head">
           <div class="ov-kanban__col-title">
-            <span class="ov-kanban__col-name">{{ col }}</span>
+            <span class="ov-kanban__col-name">{{ getKanbanColumnLabel(col) }}</span>
             <span class="ov-kanban__col-count">{{ columnCount(col) }}</span>
           </div>
           <button type="button" class="ov-kanban__col-more" aria-label="Column actions">
@@ -231,13 +231,13 @@
               <div class="relative">
                 <button type="button" class="ov-kanban-card__status"
                   (click)="toggleKanbanStatus(row.code, $event)">
-                  {{ getArabicLookupName(row, 'status_nm') || col }}
+                  {{ getArabicLookupName(row, 'status_nm') || getKanbanColumnLabel(col) }}
                   <img src="assets/images/work-orders/chevron-down.svg" alt="" width="12" height="12" class="wo-icon" />
                 </button>
                 <div *ngIf="openKanbanStatusCode === row.code" class="ov-kanban-card__status-menu">
                   <button type="button" *ngFor="let status of kanbanColumns"
                     class="ov-kanban-card__status-item"
-                    (click)="openKanbanStatusCode = null">{{ status }}</button>
+                    (click)="openKanbanStatusCode = null">{{ getKanbanColumnLabel(status) }}</button>
                 </div>
               </div>
             </div>

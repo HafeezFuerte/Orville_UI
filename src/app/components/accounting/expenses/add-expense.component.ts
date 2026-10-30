@@ -145,7 +145,7 @@ export class AddExpenseComponent {
 
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -183,7 +183,7 @@ export class AddExpenseComponent {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -364,7 +364,7 @@ validateForm(
 
     if (control?.invalid) {
       errors.push(
-        `${fieldLabels[controlName]} ${'IsRequired'}`
+        `${fieldLabels[controlName]} ${this.translate.instant('web.accounting.expenses.isRequired')}`
       );
     }
 
@@ -374,14 +374,14 @@ validateForm(
 }
 
   onSubmit() { 
-    const invoiceformLabels = {
-      billedFrom:"Tenant",
-      property_code: "Property Code", 
-      unit_code: "Unit Code", 
-      paymentVia: "Payment Type",
-      issueDate: "Issue Date", 
-      dueDate: "Due Date", 
-      invoiceNumber: "Bill Number", 
+    const invoiceformLabels: { [key: string]: string } = {
+      billedFrom: this.translate.instant('web.accounting.expenses.billedFrom'),
+      property_code: this.translate.instant('web.accounting.expenses.property'), 
+      unit_code: this.translate.instant('web.accounting.expenses.unit'), 
+      paymentVia: this.translate.instant('web.accounting.expenses.paymentVia'),
+      issueDate: this.translate.instant('web.accounting.expenses.dateOfIssue'), 
+      dueDate: this.translate.instant('web.accounting.expenses.dueDate'), 
+      invoiceNumber: this.translate.instant('web.accounting.expenses.colBillNumber'), 
     }; 
     
  const errors: string[] = [];
@@ -391,7 +391,7 @@ validateForm(
  if (errors.length > 0) { 
    this.toastr.error(
      errors.join('<br>'),
-     'Validation',
+     this.translate.instant('web.accounting.expenses.validation'),
      {
        enableHtml: true,
        timeOut: 5000,
@@ -442,23 +442,23 @@ validateForm(
       this.accountingService.save_expense(formData).subscribe({
         next: (res: any) => {
           if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-            this.toastr.success("Successfully saved");
+            this.toastr.success(this.translate.instant('web.accounting.expenses.successfullySaved'));
             this.router.navigate(['/accounting/expenses']);
 
           } else {
-            this.toastr.error(res.message || "Failed to save legal cases");
+            this.toastr.error(res.message || this.translate.instant('web.accounting.expenses.failedToSaveExpense'));
           }
         },
         error: (err: any) => {
-          console.error("Error saving work order:", err);
-          this.toastr.error("An error occurred while saving the legal cases : " + err);
+          console.error("Error saving expense:", err);
+          this.toastr.error(this.translate.instant('web.accounting.expenses.errorSavingExpense') + " : " + err);
         }
       });
 
 
     }  
     else{
-      this.toastr.error("Please fill all required fields : ");
+      this.toastr.error(this.translate.instant('web.accounting.expenses.pleaseFillAllRequired'));
       return;
     }
   }

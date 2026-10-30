@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReminderPriority, ReminderStatus } from '../reminders.data';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../services/common.service';
@@ -12,11 +13,12 @@ import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite
 @Component({
   selector: 'app-reminder-add',
   standalone: true,
-  imports: [CommonModule, FormsModule,FlowbiteDatepickerDirective, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, FlowbiteDatepickerDirective, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './reminder-add.component.html',
   styleUrl: './reminder-add.component.scss',
 })
 export class ReminderAddComponent implements OnInit {
+  private translate = inject(TranslateService);
   userOptions: any[] = [];
   readonly priorityOptions: ReminderPriority[] = ['Low', 'Medium', 'High'];
   readonly statusOptions: ReminderStatus[] = ['Pending', 'Completed'];
@@ -107,7 +109,7 @@ export class ReminderAddComponent implements OnInit {
           (this as any)[targetProperty] = res.objResult.table;
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.reminders.msgNoRecords'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -189,12 +191,12 @@ export class ReminderAddComponent implements OnInit {
 
   save(): void {
     const errors: string[] = [];
-    if (!this.form.title.trim()) errors.push('Title is required.');
-    if (!this.form.assignees.length) errors.push('At least one assignee is required.');
-    if (!this.form.date.trim()) errors.push('Reminder Date is required.');
+    if (!this.form.title.trim()) errors.push(this.translate.instant('web.reminders.valTitleReq'));
+    if (!this.form.assignees.length) errors.push(this.translate.instant('web.reminders.valAssigneeReq'));
+    if (!this.form.date.trim()) errors.push(this.translate.instant('web.reminders.valDateReq'));
 
     if (errors.length > 0) {
-      this.toastr.error(errors.join('<br>'), 'Validation', {
+      this.toastr.error(errors.join('<br>'), this.translate.instant('web.reminders.validation'), {
         enableHtml: true,
         timeOut: 5000,
         positionClass: 'toast-top-right'
@@ -271,21 +273,21 @@ export class ReminderAddComponent implements OnInit {
           //   }
           // }
 
-          let msg = res.message || 'Reminder saved successfully';
+          let msg = res.message || this.translate.instant('web.reminders.msgSavedSuccess');
           if (!msg || msg.trim() === 'LBL_SUCCESS' || msg.toUpperCase().includes('LBL_SUCCESS')) {
-            msg = 'Success';
+            msg = this.translate.instant('web.reminders.msgSavedSuccess');
           }
           this.toastr.success(msg);
           this.cancel();
         } else {
-          let msg = res.message || 'Failed to save reminder';
-          if (msg.includes('LBL_')) msg = 'Failed to save reminder';
+          let msg = res.message || this.translate.instant('web.reminders.msgSaveFailed');
+          if (msg.includes('LBL_')) msg = this.translate.instant('web.reminders.msgSaveFailed');
           this.toastr.error(msg);
         }
       },
       error: (err) => {
         console.error('Error saving reminder:', err);
-        this.toastr.error('An error occurred while saving the reminder');
+        this.toastr.error(this.translate.instant('web.reminders.msgSaveError'));
       }
     });
   }

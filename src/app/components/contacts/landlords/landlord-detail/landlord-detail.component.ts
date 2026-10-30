@@ -4,8 +4,9 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
@@ -24,8 +25,10 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
   @ViewChild(NotesComponent) notesTable!: NotesComponent;
@@ -95,14 +98,15 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   getLandlordDetails() {
+    const currentUser = this.commonService.getCurrentUser();
     const payload = {
       typeId: 28,
       filterId: 0,
       filterText: this.landlordId,
       filterText1: "",
-      userId: Number(localStorage.getItem('userId')) || 1,
-      clientId: "74BB6922",
-      companyId: Number(localStorage.getItem('companyId')) || 1
+      userId: currentUser?.userId,
+      clientId: currentUser?.clientId,
+      companyId: currentUser?.companyId
     };
 
     this.propertiesService.getMasterDetails(payload).subscribe({
@@ -128,6 +132,7 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
           if (res.objResult.documents) this.attachmentData = res.objResult.documents;
           if (res.objResult.emergency_dtls) this.emergencyContactData = res.objResult.emergency_dtls;
           if (res.objResult.units) this.unitData = res.objResult.units;
+          if (res.objResult.users) this.userData = this.mapUserData(res.objResult.users);
           
           if (this.landlordData) {
             const data = this.landlordData;
@@ -275,6 +280,42 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
   activeTab = 'Wallet';
   tabs = ['Wallet', 'Units', 'Due Payment', 'Agreement', 'Chat', 'Attachments', 'Notes', 'User', 'Emergency Contact'];
 
+  getTabLabel(tab: string): string {
+    const map: { [k: string]: string } = {
+      'Wallet': 'web.contacts.tabWallet',
+      'Units': 'web.contacts.tabUnits',
+      'Due Payment': 'web.contacts.tabDuePayment',
+      'Agreement': 'web.contacts.tabAgreement',
+      'Chat': 'web.contacts.tabChat',
+      'Attachments': 'web.contacts.tabAttachments',
+      'Notes': 'web.contacts.tabNotes',
+      'User': 'web.contacts.tabUser',
+      'Emergency Contact': 'web.contacts.tabEmergencyContact'
+    };
+    return map[tab] || tab;
+  }
+
+  getActionLabel(label: string): string {
+    const map: { [k: string]: string } = {
+      'Edit Landlord': 'web.contacts.lblEditLandlord',
+      'Inflow': 'web.contacts.lblInflow',
+      'Outflow': 'web.contacts.lblOutflow',
+      'Landlord Contribution': 'web.contacts.lblLandlordContribution',
+      'Landlord Distribution': 'web.contacts.lblLandlordDistribution',
+      'Add Notes': 'web.contacts.lblAddNotes',
+      'Add Attachment': 'web.contacts.lblAddAttachment',
+      'Add User': 'web.contacts.lblAddUser',
+      'Add Emergency Contact': 'web.contacts.lblAddEmergencyContact',
+      'Add Broadcast': 'web.contacts.lblAddBroadcast',
+      'Request for Approval': 'web.contacts.lblRequestForApproval',
+      'Send Email': 'web.contacts.lblSendEmail',
+      'View Activity': 'web.contacts.lblViewActivity',
+      'Block Landlord': 'web.contacts.lblBlockLandlord',
+      'Archive': 'web.contacts.lblArchive'
+    };
+    return map[label] || label;
+  }
+
   showPersonalDetails = true;
   showSubscriptionsModal = false;
   showActionDropdown = false;
@@ -339,7 +380,7 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
     }
     else if (label === 'Add User') {
       this.activeTab = 'User';
-      this.showAddUserModal = true;
+      this.openAddUserModal();
     }
     else if (label === 'Add Emergency Contact') {
       this.activeTab = 'Emergency Contact';
@@ -610,21 +651,21 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
   sendChatMessage() {
     if (this.newMessageText && this.newMessageText.trim()) {
       const text = this.newMessageText.trim();
-      const currentUser = JSON.parse(localStorage.getItem('user_details') || '{}');
+      const currentUser = this.commonService.getCurrentUser();
       const nowIso = new Date().toISOString();
       const contactId = this.selectedContact?.id || 1;
 
       const payload = {
-        userid: currentUser?.userId || 1,
-        company_id: currentUser?.companyId || 1,
-        clientId: currentUser?.clientId || '74BB6922',
+        userid: currentUser?.userId,
+        company_id: currentUser?.companyId,
+        clientId: currentUser?.clientId,
         source: 'web',
         languageid: 1,
         entity: 'Landlord',
         code: '',
         entity_id: String(this.landlordId || ''),
         group_id: '0',
-        sender_id: currentUser?.userId || 1,
+        sender_id: currentUser?.userId,
         receiver_id: contactId,
         message: text,
         send_on: nowIso,
@@ -700,15 +741,173 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
     { key: 'role', label: 'web.contacts.lblRole', visible: true },
     { key: 'type', label: 'web.contacts.lblType', visible: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'Timezone', label: 'web.contacts.lblTimezone', visible: true, useTemplate: true },
-    { key: 'Country', label: 'web.contacts.lblCountry', visible: true, useTemplate: true },
+    { key: 'timezone', label: 'web.contacts.lblTimezone', visible: true },
+    { key: 'country', label: 'web.contacts.lblCountry', visible: true },
     { key: 'Default', label: 'web.contacts.lblDefault', visible: true, useTemplate: true },
-    { key: 'Created', label: 'web.contacts.lblCreated', visible: true, useTemplate: true },
-    { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true },
-
+    { key: 'Actions', label: 'web.contacts.lblActions', visible: true, useTemplate: true }
   ];
 
   userData: any[] = [];
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0).toUpperCase() + (parts.length > 1 ? parts[1].charAt(0).toUpperCase() : '');
+  }
+
+  mapUserData(users: any[]): any[] {
+    if (!Array.isArray(users)) return [];
+    return users.map((u: any) => {
+      const fullName = u.column1 || u.name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '-';
+      const userCode = u.user_code || u.id || u.code || '-';
+      const username = u.username || u.userName || '-';
+      const email = u.email_address || u.email || '-';
+      const roleName = u.role_name || u.role || 'Landlords';
+      const roleType = u.role_type || u.type || (u.role_type === 'L' ? 'Landlord' : u.role_type === 'T' ? 'Tenant' : u.role_type === 'V' ? 'Vendor' : '-');
+      const isActive = u.is_active === true || u.is_active === 1 || u.is_active === 'Active' || u.status === 'Active';
+      const isDefault = u.is_parent === 1 || u.is_parent === true || u.is_default === true;
+      const timezone = u.time_zone || u.timezone || '-';
+      const country = u.country || u.country_name || '-';
+      return {
+        ...u,
+        id: userCode,
+        user_code: userCode,
+        name: fullName,
+        column1: fullName,
+        userName: username,
+        username: username,
+        email: email,
+        email_address: email,
+        phone: u.phone || u.phone_no || u.mobile_no || '-',
+        role: roleName,
+        role_name: roleName,
+        type: roleType,
+        role_type: roleType,
+        status: isActive ? 'Active' : 'Inactive',
+        is_active: isActive,
+        timezone: timezone,
+        Timezone: timezone,
+        country: country,
+        Country: country,
+        isDefault: isDefault,
+        Default: isDefault ? 'Yes' : 'No',
+        initials: this.getInitials(fullName)
+      };
+    });
+  }
+
+  userForm = {
+    email_address: '',
+    username: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+    phone_code: '+971',
+    phone: '',
+    is_default: false
+  };
+
+  openAddUserModal(): void {
+    this.resetUserForm();
+    this.showAddUserModal = true;
+  }
+
+  resetUserForm(): void {
+    this.userForm = {
+      email_address: '',
+      username: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone_code: '+971',
+      phone: '',
+      is_default: false
+    };
+  }
+
+  saveUser(): void {
+    if (!this.userForm.email_address) {
+      this.toastr.error('Please enter email address.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.password || this.userForm.password.length < 8) {
+      this.toastr.error('Password must be at least 8 characters.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.first_name || !this.userForm.last_name) {
+      this.toastr.error('Please enter first and last name.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.phone) {
+      this.toastr.error('Please enter phone number.', 'Validation Error');
+      return;
+    }
+
+    const currentUser = this.commonService.getCurrentUser();
+    const fullPhone = (this.userForm.phone_code ? this.userForm.phone_code + ' ' : '') + (this.userForm.phone || '');
+
+    const requestJson = {
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
+      source: 'web',
+      languageid: 1,
+      email_address: this.userForm.email_address,
+      username: this.userForm.username || this.userForm.email_address,
+      password: this.userForm.password,
+      first_name: this.userForm.first_name,
+      last_name: this.userForm.last_name,
+      name: `${this.userForm.first_name} ${this.userForm.last_name}`.trim(),
+      mobile_no: fullPhone,
+      phone: fullPhone,
+      code: '',
+      roleid: 3,
+      role_id: 3,
+      role_code: 'L',
+      parent_code: this.landlordData?.code || this.landlordId,
+      is_default: this.userForm.is_default || false,
+      gender: 'Male',
+      profileImage_path: '',
+      status: 'Active'
+    };
+
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(requestJson));
+
+    this.propertiesService.saveUsers(formData).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
+          let duplicateError: string | null = null;
+          if (res.objResult?.table?.[0]) {
+            const firstRow = res.objResult.table[0];
+            const keys = Object.keys(firstRow);
+            for (const key of keys) {
+              const val = firstRow[key];
+              if (key.toLowerCase().includes('duplicate') || (typeof val === 'number' && val < 0)) {
+                duplicateError = typeof val === 'string' ? val : key;
+                break;
+              }
+            }
+          }
+          if (duplicateError) {
+            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', 'Error');
+            return;
+          }
+
+          this.toastr.success(res.message || 'User saved successfully!', 'Success');
+          this.showAddUserModal = false;
+          this.resetUserForm();
+          this.getLandlordDetails();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save user.', 'Error');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error saving user:', err);
+        this.toastr.error(err.error?.message || 'Server error encountered while saving user.', 'Error');
+      }
+    });
+  }
 
   // --- TAB 9: EMERGENCY CONTACT ---
   emergencyContactColumns = [
@@ -743,13 +942,14 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
 
   saveEmergencyContact(): void {
     if (!this.emergencyForm.email_address) {
-      this.toastr.error('Please enter email address');
+      this.toastr.error(this.translate.instant('web.contacts.errPleaseEnterEmail'));
       return;
     }
+    const currentUser = this.commonService.getCurrentUser();
     const payload = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: "74BB6922",
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: "web",
       languageid: 1,
       code: "",
@@ -767,17 +967,17 @@ export class LandlordDetailComponent implements OnInit, OnDestroy {
     this.propertiesService.saveEmergencyDetails(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
-          this.toastr.success(res.message || 'Emergency contact saved successfully');
+          this.toastr.success(res.message || this.translate.instant('web.contacts.msgEmergencyContactSaved'));
           this.showAddEmergencyContactModal = false;
           this.resetEmergencyForm();
           this.getLandlordDetails();
         } else {
-          this.toastr.error(res?.message || 'Failed to save emergency contact');
+          this.toastr.error(res?.message || this.translate.instant('web.contacts.errFailedToSaveEmergencyContact'));
         }
       },
       error: (err: any) => {
         console.error('Error saving emergency contact:', err);
-        this.toastr.error('Failed to save emergency contact');
+        this.toastr.error(this.translate.instant('web.contacts.errFailedToSaveEmergencyContact'));
       }
     });
   }

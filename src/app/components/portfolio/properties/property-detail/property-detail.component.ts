@@ -252,7 +252,8 @@ export class PropertyDetailComponent implements OnInit {
         totalRecords: this.unitsData?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Unit'
+        addButtonText: 'Unit',
+        addKey: 'web.property.lblAddUnit'
       },
 
       {
@@ -263,7 +264,8 @@ export class PropertyDetailComponent implements OnInit {
         totalRecords: this.roomsData?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Room'
+        addButtonText: 'Room',
+        addKey: 'web.rooms.lblAddRoom'
       },
 
       {
@@ -276,6 +278,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Tenant',
+        addKey: 'web.contacts.lblAddTenant',
         redirect_addurl: '/contacts/tenants/add-tenant'
       },
       {
@@ -289,6 +292,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Common Area',
+        addKey: 'web.portfolio.commonArea.lblNewCommonArea',
         form: this.commonAreaForm,
         popupType: 'common-area'
       },
@@ -302,6 +306,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Broadcasts',
+        addKey: 'web.Unit.lblAddBroadcasts',
         redirect_addurl: '/broadcasts/create'
       },
       {
@@ -315,6 +320,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Attachments',
+        addKey: 'web.property.lblAddAttachment',
         form: this.attachmentsForm,
         popupType: 'attachment'
       },
@@ -330,6 +336,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Notes',
+        addKey: 'web.property.lblAddNotes',
         form: this.notesForm,
         popupType: 'notes'
       },
@@ -342,7 +349,8 @@ export class PropertyDetailComponent implements OnInit {
         totalRecords: this.parkingData?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Parking'
+        addButtonText: 'Parking',
+        addKey: 'web.parkings.lblAddParking'
       },
       {
         key: 'assets',
@@ -354,6 +362,7 @@ export class PropertyDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Asset',
+        addKey: 'web.property.lblAddAsset',
         redirect_addurl: '/facility/assets/create'
       }
 

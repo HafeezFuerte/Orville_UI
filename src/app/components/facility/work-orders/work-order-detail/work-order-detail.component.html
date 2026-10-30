@@ -1,17 +1,17 @@
 <!-- Work Order Detail — Figma 2941:95582 -->
 <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
   <div class="flex items-start gap-4">
-    <button type="button" class="ov-back" (click)="goBack()" title="Back to Work Orders" aria-label="Back">
+    <button type="button" class="ov-back" (click)="goBack()" [title]="'web.facility.workOrders.title' | translate" aria-label="Back">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </button>
     <div>
-      <h3 class="ov-page-title">Work Order details</h3>
+      <h3 class="ov-page-title">{{ 'web.facility.workOrders.workOrderDetails' | translate }}</h3>
       <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a href="javascript:void(0)" (click)="goBack()">Facility</a></li>
+        <li><a href="javascript:void(0)" (click)="goBack()">{{ 'web.facility.facility' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li><a href="javascript:void(0)" (click)="goBack()">Work Order</a></li>
+        <li><a href="javascript:void(0)" (click)="goBack()">{{ 'web.facility.workOrders.title' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li class="font-semibold text-defaulttextcolor">Work Order Details</li>
+        <li class="font-semibold text-defaulttextcolor">{{ 'web.facility.workOrders.workOrderDetails' | translate }}</li>
       </ol>
     </div>
   </div>
@@ -84,7 +84,7 @@
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
           <h4 class="ov-card-title !text-[16px]">{{ workOrderDetails.title }}</h4>
-          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">Order #{{ workOrderDetails.id }}</p>
+          <p class="ov-card-sub !text-[13px] tracking-[0.26px]">{{ 'web.facility.workOrders.lblOrder' | translate }} #{{ workOrderDetails.id }}</p>
         </div>
         <div class="flex flex-shrink-0 items-center gap-2.5">
           <span [ngClass]="priorityBadgeClass(workOrderDetails.priority)">{{ workOrderDetails.priority }}</span>
@@ -93,22 +93,22 @@
       </div>
       <div class="flex gap-5">
         <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
-          View Activity
+          {{ 'web.facility.workOrders.viewActivity' | translate }}
         </button>
         <button type="button" (click)="navigateToEdit()"
           class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor">
-          Edit Work Order
+          {{ 'web.facility.workOrders.editWorkOrder' | translate }}
           <img src="assets/images/work-order-detail/union-arrow.svg" alt="" width="16" height="8" class="wo-ico" />
         </button>
       </div>
 
       <div class="border-t border-defaultborder"></div>
-      <h5 class="ov-card-title m-0">Information</h5>
+      <h5 class="ov-card-title m-0">{{ 'web.facility.tickets.information' | translate }}</h5>
 
       <div class="ov-card py-5">
         <div class="px-5 flex flex-col gap-5">
           <div class="relative">
-            <label class="ov-label">Status</label>
+            <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
             <button type="button" class="wo-status-select" (click)="$event.stopPropagation(); showStatusDropdown = !showStatusDropdown">
               <span class="flex items-center gap-3 min-w-0">
                 <img src="assets/images/work-order-detail/check-circle.svg" alt="" width="18" height="18" class="wo-ico" />
@@ -122,12 +122,12 @@
             </div>
           </div>
           <div>
-            <label class="ov-label">Notes*</label>
+            <label class="ov-label">{{ 'web.common.lblNotes' | translate }}*</label>
             <textarea rows="3" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
           </div>
           <div>
             <button type="button" (click)="updateworkorder()" class="ov-btn ov-btn-primary !h-9 !text-[13px]" aria-label="Send">
-             Update workorder
+             {{ 'web.facility.workOrders.lblUpdateWorkOrder' | translate }}
             </button>
           </div>
         </div>
@@ -135,67 +135,67 @@
 
       <div class="ov-card py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Work Order Details</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.facility.workOrders.workOrderDetails' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder my-5"></div>
         <div class="px-5 flex flex-col gap-3">
-          <div class="wo-kv"><span class="wo-kv__label">ID:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.id }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Title:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.title }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Status:</span><span class="wo-badge wo-badge--dark">{{ workOrderDetails.closingStatus }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Priority:</span><span [ngClass]="priorityBadgeClass(workOrderDetails.priority)">{{ workOrderDetails.priority }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Category:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.category }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Subcategory:</span><span class="wo-kv__value">{{ workOrderDetails.subcategory || '-' }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Signature:</span><span class="wo-kv__value">{{ workOrderDetails.signatures || '-' }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.common.lblID' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.id }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.common.lblTitle' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.title }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.common.lblStatus' | translate }}:</span><span class="wo-badge wo-badge--dark">{{ workOrderDetails.closingStatus }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.leases.lblPriority' | translate }}:</span><span [ngClass]="priorityBadgeClass(workOrderDetails.priority)">{{ workOrderDetails.priority }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.contacts.lblCategories' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.category }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblSubcategory' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.subcategory || '-' }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblSignature' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.signatures || '-' }}</span></div>
         </div>
         <div class="border-t border-defaultborder my-5"></div>
         <button type="button" class="wo-more-btn" (click)="toggleMoreDetails()">
-          View more details
+          {{ 'web.facility.workOrders.viewMoreDetails' | translate }}
           <img src="assets/images/work-order-detail/chevron-down.svg" alt="" width="16" height="16"
             class="wo-ico" [class.wo-ico--flip]="showMoreDetails" />
         </button>
         <div class="px-5 flex flex-col gap-3 mt-4" *ngIf="showMoreDetails">
-          <div class="wo-kv"><span class="wo-kv__label">Details:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.description }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Due Date:</span><span class="wo-kv__value">{{ workOrderDetails.due_date }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Resolved Date:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.resolvedDate }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Created:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.createdDate }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Last Updated:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.lastUpdated }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Estimated Duration:</span><span class="wo-kv__value">{{ workOrderDetails.estimation }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Recurring Schedule:</span><span class="wo-kv__value">{{ workOrderDetails.recurringsch }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Recurring Interval:</span><span class="wo-kv__value">{{ workOrderDetails.recurringinterval }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Closing Status:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.closingStatus }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Escalated:</span><span class="ov-flag ov-flag--no">No</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Tenant Rejected:</span><span class="ov-flag ov-flag--no">{{ workOrderDetails.tenantRejected }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Tenant Rejection Note:</span><span class="wo-kv__value">{{ workOrderDetails.tenantrejectionnotes }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Asset:</span><span class="wo-kv__value">{{ workOrderDetails.assestname }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Available Date:</span><span class="wo-kv__value">{{ workOrderDetails.lastUpdated }}</span></div>
-          <div class="wo-kv"><span class="wo-kv__label">Visiting Slot:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.visiting_slot }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.requests.lblDetails' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.description }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.leases.lblDueDate' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.due_date }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblResolvedDate' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.resolvedDate }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.requests.lblCreated' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.createdDate }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.contacts.lblUpdatedAt' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.lastUpdated }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblEstimatedDuration' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.estimation }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblRecurringSchedule' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.recurringsch }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblRecurringInterval' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.recurringinterval }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblClosingStatus' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.closingStatus }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblEscalated' | translate }}:</span><span class="ov-flag ov-flag--no">{{ 'web.common.lblNo' | translate }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblTenantRejected' | translate }}:</span><span class="ov-flag ov-flag--no">{{ workOrderDetails.tenantRejected }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblTenantRejectionNote' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.tenantrejectionnotes }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.common.lblAsset' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.assestname }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblAvailableDate' | translate }}:</span><span class="wo-kv__value">{{ workOrderDetails.lastUpdated }}</span></div>
+          <div class="wo-kv"><span class="wo-kv__label">{{ 'web.facility.workOrders.lblVisitingSlot' | translate }}:</span><span class="wo-kv__value wo-kv__value--strong">{{ workOrderDetails.visiting_slot }}</span></div>
         </div>
       </div>
 
       <div class="ov-card p-6 flex flex-col gap-3.5">
         <div class="flex items-center gap-2.5">
           <img src="assets/images/work-order-detail/users.svg" alt="" width="20" height="20" class="wo-ico" />
-          <h5 class="ov-card-title m-0 !font-bold">Personnel</h5>
+          <h5 class="ov-card-title m-0 !font-bold">{{ 'web.facility.workOrders.personnel' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder"></div>
         <div class="flex flex-col gap-3 text-[14px] text-textmuted leading-[1.4]">
-          <p class="m-0">Active tenant: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('tenant')">{{ personnel.activeTenant }}</a></p>
-          <p class="m-0">Raised By: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('raisedBy')">{{ personnel.raisedBy }}</a></p>
-          <p class="m-0">Responsible Person(s): <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.responsiblePerson }}</a></p>
-          <p class="m-0">Support Technician: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.technician }}</a></p>
-          <p class="m-0">Vendor: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.vendor }}</a></p>
-          <p class="m-0">Vendor Technician: <span class="text-defaulttextcolor">{{ personnel.vendorTechnician }}</span></p>
-          <p class="m-0">Landlord: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.landlord }}</a></p>
+          <p class="m-0">{{ 'web.facility.workOrders.lblActiveTenant' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('tenant')">{{ personnel.activeTenant }}</a></p>
+          <p class="m-0">{{ 'web.facility.workOrders.lblRaisedBy' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium" (click)="togglePersonnelPopup('raisedBy')">{{ personnel.raisedBy }}</a></p>
+          <p class="m-0">{{ 'web.facility.workOrders.responsible' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.responsiblePerson }}</a></p>
+          <p class="m-0">{{ 'web.contacts.lblSupportTechnicians' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.technician }}</a></p>
+          <p class="m-0">{{ 'web.contacts.lblVendor' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.vendor }}</a></p>
+          <p class="m-0">{{ 'web.facility.workOrders.lblVendorTechnician' | translate }}: <span class="text-defaulttextcolor">{{ personnel.vendorTechnician }}</span></p>
+          <p class="m-0">{{ 'web.contacts.lblLandlord' | translate }}: <a href="javascript:void(0)" class="ov-link font-medium">{{ personnel.landlord }}</a></p>
         </div>
       </div>
 
       <div class="ov-card py-5">
         <div class="px-5">
-          <h5 class="ov-card-title m-0">Custom Fields</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.facility.workOrders.customFields' | translate }}</h5>
         </div>
         <div class="border-t border-defaultborder my-5"></div>
         <div class="px-5">
-          <p class="ov-kv-empty m-0">No value set</p>
+          <p class="ov-kv-empty m-0">{{ 'web.common.lblNoValueSet' | translate }}</p>
         </div>
       </div>
     </div>
@@ -207,18 +207,18 @@
       <div class="ov-detail-tabs">
         <button type="button" *ngFor="let tab of tabs" (click)="setActiveTab(tab)"
           class="ov-detail-tabs__btn" [class.is-active]="activeTab === tab">
-          {{ tab }}
+          {{ getTabLabel(tab) | translate }}
         </button>
       </div>
 
       <!-- OVERVIEW -->
       <div class="p-0" *ngIf="activeTab === 'Overview'">
         <section class="wo-section">
-          <h5 class="wo-section__title">Attachments</h5>
+          <h5 class="wo-section__title">{{ 'web.leases.lblAttachments' | translate }}</h5>
           <div class="wo-media-cols">
             <div class="wo-media-col">
-              <h6 class="wo-media-col__head">Before Images</h6>
-              <p class="wo-media-col__sub">Photos ({{ beforeImages.length }})</p>
+              <h6 class="wo-media-col__head">{{ 'web.facility.workOrders.beforeImages' | translate }}</h6>
+              <p class="wo-media-col__sub">{{ 'web.facility.workOrders.lblPhotos' | translate }} ({{ beforeImages.length }})</p>
               <div class="wo-thumb" *ngFor="let img of beforeImages">
                 <img [src]="img.file_path" [alt]="img.name" class="wo-thumb__img" />
                 <div class="wo-thumb__meta">
@@ -226,25 +226,22 @@
                     <img src="assets/images/work-order-detail/image-file.svg" alt="" width="14" height="14" />
                     {{ img.name }}
                   </span>
-                  <!-- <button type="button" class="border-0 bg-transparent p-0" aria-label="Delete">
-                    <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
-                  </button> -->
                 </div>
               </div>
               <div class="wo-empty" *ngIf="!beforeImages.length">
                 <img src="assets/images/work-order-detail/camera.svg" alt="" width="22" height="22" />
-                <p class="wo-empty__title">No before images</p>
-                <p class="wo-empty__sub">Before images will appear here when uploaded</p>
+                <p class="wo-empty__title">{{ 'web.facility.workOrders.noBeforeImages' | translate }}</p>
+                <p class="wo-empty__sub">{{ 'web.facility.workOrders.noBeforeImagesDesc' | translate }}</p>
               </div>
             </div>
 
             <div class="wo-media-col">
-              <h6 class="wo-media-col__head">After Images</h6>
-              <p class="wo-media-col__sub">Photos ({{ afterImages.length }})</p>
+              <h6 class="wo-media-col__head">{{ 'web.facility.workOrders.afterImages' | translate }}</h6>
+              <p class="wo-media-col__sub">{{ 'web.facility.workOrders.lblPhotos' | translate }} ({{ afterImages.length }})</p>
               <div class="wo-empty" *ngIf="!afterImages.length">
                 <img src="assets/images/work-order-detail/camera.svg" alt="" width="22" height="22" />
-                <p class="wo-empty__title">No after images</p>
-                <p class="wo-empty__sub">After images will appear here when uploaded</p>
+                <p class="wo-empty__title">{{ 'web.facility.workOrders.noAfterImages' | translate }}</p>
+                <p class="wo-empty__sub">{{ 'web.facility.workOrders.noAfterImagesDesc' | translate }}</p>
               </div>
               <div class="wo-thumb" *ngFor="let img of afterImages">
                 <img [src]="img.file_path" [alt]="img.name" class="wo-thumb__img" />
@@ -258,15 +255,15 @@
             </div>
 
             <div class="wo-media-col">
-              <h6 class="wo-media-col__head">Videos</h6>
-              <p class="wo-media-col__sub">Videos ({{ videos.length }})</p>
+              <h6 class="wo-media-col__head">{{ 'web.facility.workOrders.lblVideos' | translate }}</h6>
+              <p class="wo-media-col__sub">{{ 'web.facility.workOrders.lblVideos' | translate }} ({{ videos.length }})</p>
               <div class="wo-empty wo-empty--dashed" *ngIf="!videos.length">
                 <img src="assets/images/work-order-detail/video.svg" alt="" width="22" height="22" />
-                <p class="wo-empty__title">No videos</p>
-                <p class="wo-empty__sub">Videos will appear here when uploaded</p>
+                <p class="wo-empty__title">{{ 'web.facility.workOrders.noVideos' | translate }}</p>
+                <p class="wo-empty__sub">{{ 'web.facility.workOrders.noVideosDesc' | translate }}</p>
               </div>
               <div class="wo-thumb" *ngFor="let v of videos;let i =index">
-                <div class="wo-thumb__img wo-thumb__img--video"><a href="{{v.file_path}}" target="_blank">View File {{i+1}}</a></div>
+                <div class="wo-thumb__img wo-thumb__img--video"><a href="{{v.file_path}}" target="_blank">{{ 'web.common.lblViewFile' | translate }} {{i+1}}</a></div>
               </div>
             </div>
           </div>
@@ -274,18 +271,18 @@
 
         <section class="wo-section">
           <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h5 class="wo-section__title !mb-0">Costs</h5>
+            <h5 class="wo-section__title !mb-0">{{ 'web.facility.workOrders.lblCosts' | translate }}</h5>
             <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px]" (click)="openAddCostModal()">
               <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico" />
-              Add Additional Cost
+              {{ 'web.facility.workOrders.addAdditionalCost' | translate }}
             </button>
           </div>
           <div class="wo-cost-table">
             <div class="wo-cost-table__head">
-              <span class="flex-1">Detail</span>
-              <span class="w-[240px] max-w-[30%]">Category</span>
-              <span class="w-[180px] max-w-[22%]">Cost</span>
-              <span class="w-[100px] text-end">Actions</span>
+              <span class="flex-1">{{ 'web.leases.lblDescription' | translate }}</span>
+              <span class="w-[240px] max-w-[30%]">{{ 'web.contacts.lblCategories' | translate }}</span>
+              <span class="w-[180px] max-w-[22%]">{{ 'web.facility.workOrders.lblCost' | translate }}</span>
+              <span class="w-[100px] text-end">{{ 'web.common.lblAction' | translate }}</span>
             </div>
             <div class="wo-cost-table__row" *ngFor="let row of costs">
               <span class="flex-1 font-medium text-defaulttextcolor text-[14px]">{{ row.detail }}</span>
@@ -300,12 +297,12 @@
                 </button>
               </span>
             </div>
-            <p class="text-[13px] text-textmuted m-0 py-4" *ngIf="!costs.length">No costs added yet.</p>
+            <p class="text-[13px] text-textmuted m-0 py-4" *ngIf="!costs.length">{{ 'web.facility.workOrders.noCostsAdded' | translate }}</p>
           </div>
         </section>
 
         <section class="wo-section">
-          <h5 class="wo-section__title">Vendor Technician Time Track</h5>
+          <h5 class="wo-section__title">{{ 'web.facility.workOrders.vendorTechnicianTimeTrack' | translate }}</h5>
           <div class="overflow-x-auto">
             <app-shared-table [columns]="timeTrackColumns" [data]="timeTracks" [hasActions]="false"
               [totalRecords]="timeTracks.length" [pageSize]="10">
@@ -322,20 +319,20 @@
         </section>
 
         <section class="wo-section !border-b-0">
-          <h5 class="wo-section__title">Invoices</h5>
+          <h5 class="wo-section__title">{{ 'web.common.lblInvoices' | translate }}</h5>
           <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
             <div class="ov-search flex-1 max-w-[320px]">
               <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-              <input type="text" class="ov-input ov-search__input" placeholder="Search">
+              <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.phSearch' | translate">
             </div>
             <div class="ov-toolbar__btns">
               <button type="button" class="ov-btn ov-btn-toolbar">
                 <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-                Filter
+                {{ 'web.facility.workOrders.filter' | translate }}
               </button>
               <button type="button" class="ov-btn ov-btn-toolbar">
                 <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-                Column
+                {{ 'web.facility.workOrders.column' | translate }}
               </button>
             </div>
           </div>
@@ -366,7 +363,7 @@
         <div class="wo-messages">
           <aside class="wo-messages__list">
             <div class="wo-messages__list-head">
-              <h5 class="ov-card-title m-0">Messages</h5>
+              <h5 class="ov-card-title m-0">{{ 'web.facility.workOrders.tabMessages' | translate }}</h5>
             </div>
             <button type="button" class="wo-messages__item is-active">
               <span class="wo-avatar wo-avatar--lg"> {{ getInitials(personnel.activeTenant) }}</span>
@@ -383,13 +380,13 @@
             <div class="wo-messages__thread-head">
               <div>
                 <h5 class="ov-card-title m-0">{{ personnel.activeTenant }}</h5>
-                <span class="text-[12px] text-textmuted">Tenant</span>
+                <span class="text-[12px] text-textmuted">{{ 'web.contacts.lblTenant' | translate }}</span>
               </div>
-              <span class="wo-badge wo-badge--success">Active</span>
+              <span class="wo-badge wo-badge--success">{{ 'web.contacts.lblActive' | translate }}</span>
             </div>
             <div class="wo-messages__body">
               <div class="text-center">
-                <span class="wo-day-chip">Today</span>
+                <span class="wo-day-chip">{{ 'web.common.lblToday' | translate }}</span>
               </div>
               <div *ngFor="let msg of messages" class="flex flex-col w-full"
                 [class.items-end]="msg.isMe" [class.items-start]="!msg.isMe">
@@ -404,14 +401,14 @@
                   </div>
                 </div>
               </div>
-              <p class="text-[13px] text-textmuted text-center m-0" *ngIf="!messages.length">No messages yet.</p>
+              <p class="text-[13px] text-textmuted text-center m-0" *ngIf="!messages.length">{{ 'web.facility.workOrders.noMessagesYet' | translate }}</p>
             </div>
             <div class="wo-messages__composer">
               <button type="button" class="wo-composer-attach" aria-label="Attach">
                 <img src="assets/images/action-menu/paperclip.svg" alt="" width="18" height="18" />
               </button>
               <input type="text" [(ngModel)]="newMessage" (keydown.enter)="sendMessage()"
-                placeholder="Write a message..." class="wo-composer-input" />
+                [placeholder]="'web.facility.workOrders.phWriteMessage' | translate" class="wo-composer-input" />
               <button type="button" (click)="sendMessage()" class="wo-composer-send" aria-label="Send">
                 <i class="ri-send-plane-fill text-[14px]"></i>
               </button>
@@ -428,16 +425,16 @@
       <!-- QUOTATIONS -->
       <div class="p-5" *ngIf="activeTab === 'Quotations'">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h5 class="ov-card-title m-0">Quotations</h5>
-          <button type="button" class="ov-btn ov-btn-primary !h-9" data-tooltip="Request Quotation">
+          <h5 class="ov-card-title m-0">{{ 'web.facility.quotations.title' | translate }}</h5>
+          <button type="button" class="ov-btn ov-btn-primary !h-9" [attr.data-tooltip]="'web.facility.quotations.requestQuotation' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico wo-ico--on-primary" />
-            Request Quotation
+            {{ 'web.facility.quotations.requestQuotation' | translate }}
           </button>
         </div>
         <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
           <div class="ov-search flex-1 max-w-[280px]">
             <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-            <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate">
+            <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.phSearch' | translate">
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -456,7 +453,7 @@
                   }">{{ row.status }}</span>
                 </ng-container>
                 <ng-container *ngSwitchCase="'action'">
-                  <a href="javascript:void(0)" class="ov-link text-[12px] font-semibold">View Activity</a>
+                  <a href="javascript:void(0)" class="ov-link text-[12px] font-semibold">{{ 'web.facility.workOrders.viewActivity' | translate }}</a>
                 </ng-container>
               </ng-container>
             </ng-template>
@@ -467,16 +464,16 @@
       <!-- INVENTORY REQUEST -->
       <div class="p-5" *ngIf="activeTab === 'Inventory Request'">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h5 class="ov-card-title m-0">Inventory Requests</h5>
+          <h5 class="ov-card-title m-0">{{ 'web.facility.workOrders.lblInventoryRequests' | translate }}</h5>
           <button type="button" class="ov-btn ov-btn-primary !h-9" (click)="openInventoryRequestModal()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico wo-ico--on-primary" />
-            Add Inventory Request
+            {{ 'web.facility.workOrders.addInventoryRequest' | translate }}
           </button>
         </div>
         <div class="ov-toolbar !px-0 !border-0 !h-auto mb-3">
           <div class="ov-search flex-1 max-w-[280px]">
             <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-            <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate"
+            <input type="text" class="ov-input ov-search__input" [placeholder]="'web.common.phSearch' | translate"
               [(ngModel)]="inventoryRequestSearch">
           </div>
         </div>
@@ -513,39 +510,39 @@
     </button>
     <div class="ov-modal ov-modal--sm">
     <div class="ov-modal__header">
-      <h4 class="ov-modal__title">Add Additional Cost</h4>
+      <h4 class="ov-modal__title">{{ 'web.facility.workOrders.addAdditionalCost' | translate }}</h4>
     </div>
     <div class="ov-modal__body flex flex-col gap-4">
       <div>
-        <label class="ov-label">Cost Description <span class="text-danger">*</span></label>
+        <label class="ov-label">{{ 'web.facility.workOrders.costDescription' | translate }} <span class="text-danger">*</span></label>
         <input type="text" [(ngModel)]="costDescription" [placeholder]="'web.common.lblEnter' | translate" class="ov-input" />
       </div>
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">Category <span class="text-danger">*</span></label>
+          <label class="ov-label">{{ 'web.contacts.lblCategories' | translate }} <span class="text-danger">*</span></label>
           <select [(ngModel)]="costCategory" class="ov-input">
-            <option value="" disabled selected>Select Category</option>
+            <option value="" disabled selected>{{ 'web.facility.workOrders.phSelectCategory' | translate }}</option>
             <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
           </select>
         </div>
         <div>
-          <label class="ov-label">Cost <span class="text-danger">*</span></label>
+          <label class="ov-label">{{ 'web.facility.workOrders.lblCost' | translate }} <span class="text-danger">*</span></label>
           <input type="number" [(ngModel)]="costAmount" placeholder="0.00" class="ov-input" />
         </div>
       </div>
       <div>
-        <label class="ov-label">Date</label>
+        <label class="ov-label">{{ 'web.leases.lblDate' | translate }}</label>
         <input type="date" [(ngModel)]="costDate" class="ov-input" />
-        <span class="ov-modal__hint">Leaving this empty sets the cost to the date of the Work Order.</span>
+        <span class="ov-modal__hint">{{ 'web.facility.workOrders.costDateHint' | translate }}</span>
       </div>
       <label class="ov-modal__check">
         <input type="checkbox" [(ngModel)]="includeInTotal" />
-        <span>Include this cost to the total cost</span>
+        <span>{{ 'web.facility.workOrders.includeCostTotal' | translate }}</span>
       </label>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="closeAddCostModal()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" (click)="saveCost()" class="ov-btn ov-btn-primary">Save</button>
+      <button type="button" (click)="closeAddCostModal()" class="ov-btn ov-btn-ghost">{{ 'web.common.lblCancel' | translate }}</button>
+      <button type="button" (click)="saveCost()" class="ov-btn ov-btn-primary">{{ 'web.common.lblSave' | translate }}</button>
     </div>
   </div>
   </div>
@@ -559,67 +556,67 @@
     </button>
     <div class="ov-modal ov-modal--lg">
       <div class="ov-modal__header">
-        <h4 class="ov-modal__title">Inventory Request</h4>
+        <h4 class="ov-modal__title">{{ 'web.facility.workOrders.tabInventoryRequest' | translate }}</h4>
       </div>
       <div class="ov-modal__body">
         <div class="ov-fields ov-fields--2">
           <div class="ov-fields__full">
-            <label class="ov-label">Name <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.contacts.lblName' | translate }} <span class="text-danger">*</span></label>
             <input type="text" class="ov-input" [(ngModel)]="irForm.name" />
           </div>
           <div class="ov-fields__full">
-            <label class="ov-label">Description</label>
-            <textarea class="ov-input wo-textarea !h-auto" rows="3" placeholder="Type your description here"
+            <label class="ov-label">{{ 'web.leases.lblDescription' | translate }}</label>
+            <textarea class="ov-input wo-textarea !h-auto" rows="3" [placeholder]="'web.common.lblEnter' | translate"
               [(ngModel)]="irForm.description"></textarea>
           </div>
           <div>
-            <label class="ov-label">Requested Date</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblRequestedDate' | translate }}</label>
             <input type="text" class="ov-input" [value]="irForm.requestedDate" disabled />
           </div>
           <div>
-            <label class="ov-label">Required Date</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblRequiredDate' | translate }}</label>
             <input type="date" class="ov-input" [(ngModel)]="irForm.requiredDate" />
           </div>
           <div>
-            <label class="ov-label">Requested By</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblRequestedBy' | translate }}</label>
             <input type="text" class="ov-input" [value]="currentUserName" disabled />
           </div>
           <div>
-            <label class="ov-label">Requested For <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblRequestedFor' | translate }} <span class="text-danger">*</span></label>
             <select class="ov-input" [(ngModel)]="irForm.requestedFor">
-              <option value="" disabled>Select an option</option>
+              <option value="" disabled>{{ 'web.common.lblSelect' | translate }}</option>
               <option *ngFor="let p of requestedForOptions" [value]="p">{{ p }}</option>
             </select>
           </div>
           <div class="ov-fields__full">
-            <label class="ov-label">Site <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblSite' | translate }} <span class="text-danger">*</span></label>
             <input type="text" class="ov-input" [value]="workOrderDetails.site || '-'" disabled />
           </div>
           <div>
-            <label class="ov-label">Storeroom <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblStoreroom' | translate }} <span class="text-danger">*</span></label>
             <select class="ov-input" [(ngModel)]="irForm.storeroom">
-              <option value="" disabled>Select an option</option>
+              <option value="" disabled>{{ 'web.common.lblSelect' | translate }}</option>
               <option *ngFor="let s of storeroomOptions" [value]="s">{{ s }}</option>
             </select>
           </div>
           <div>
-            <label class="ov-label">Work Order</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.title' | translate }}</label>
             <input type="text" class="ov-input" [value]="(workOrderDetails.id || workOrderId) + ' ' + (workOrderDetails.title || '')" disabled />
           </div>
           <div class="ov-fields__full">
-            <label class="ov-label">Workorder Category</label>
+            <label class="ov-label">{{ 'web.facility.workOrders.lblWorkOrderCategory' | translate }}</label>
             <input type="text" class="ov-input" [value]="workOrderDetails.category || '-'" disabled />
           </div>
         </div>
 
-        <h5 class="wo-ir-section">Line Items</h5>
+        <h5 class="wo-ir-section">{{ 'web.facility.quotations.lineItems' | translate }}</h5>
         <div class="overflow-x-auto">
           <table class="wo-ir-table">
             <thead>
               <tr>
-                <th class="w-[96px]">Select</th>
-                <th>Name and Description</th>
-                <th class="w-[100px]">Available Qty</th>
+                <th class="w-[96px]">{{ 'web.common.lblSelect' | translate }}</th>
+                <th>{{ 'web.contacts.lblName' | translate }} & {{ 'web.leases.lblDescription' | translate }}</th>
+                <th class="w-[100px]">{{ 'web.leases.lblAvailable' | translate }} Qty</th>
                 <th class="w-[120px]">Qty</th>
                 <th class="w-[44px]"></th>
               </tr>
@@ -633,13 +630,13 @@
                 </td>
                 <td>
                   <select class="ov-input" [(ngModel)]="line.itemId">
-                    <option value="" disabled>Select</option>
+                    <option value="" disabled>{{ 'web.common.lblSelect' | translate }}</option>
                     <option *ngFor="let item of inventoryItems" [value]="item.id">{{ item.name }} / {{ item.location }}</option>
                   </select>
                 </td>
                 <td class="wo-ir-table__qty">{{ availableQty(line) }}</td>
                 <td>
-                  <input type="number" min="1" class="ov-input" placeholder="Enter Qty" [(ngModel)]="line.qty" />
+                  <input type="number" min="1" class="ov-input" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="line.qty" />
                 </td>
                 <td>
                   <button type="button" class="wo-icon-sq wo-icon-sq--danger" aria-label="Remove line"
@@ -653,12 +650,12 @@
         </div>
         <button type="button" class="ov-btn ov-btn-ghost !h-9 !text-[13px] mt-3" (click)="addLineItem()">
           <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico" />
-          Add New
+          {{ 'web.common.lblAddNew' | translate }}
         </button>
       </div>
       <div class="ov-modal__footer">
-        <button type="button" (click)="closeInventoryRequestModal()" class="ov-btn ov-btn-ghost">Cancel</button>
-        <button type="button" (click)="submitInventoryRequest()" class="ov-btn ov-btn-primary">Submit Details</button>
+        <button type="button" (click)="closeInventoryRequestModal()" class="ov-btn ov-btn-ghost">{{ 'web.common.lblCancel' | translate }}</button>
+        <button type="button" (click)="submitInventoryRequest()" class="ov-btn ov-btn-primary">{{ 'web.facility.workOrders.btnSubmitDetails' | translate }}</button>
       </div>
     </div>
   </div>

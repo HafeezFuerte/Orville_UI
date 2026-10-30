@@ -15,10 +15,23 @@ import { portfolioStatusClass } from '../../portfolio-status.util';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 import { Common_TabsService } from '../../services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { BulkImportModalComponent } from '../../../../shared/components/bulk-import-modal/bulk-import-modal.component';
+
 @Component({
   selector: 'app-properties-list',
   standalone: true,
-  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    DeleteConfirmationComponent,
+    SharedTableComponent,
+    NgSelectModule,
+    SharedModule,
+    RouterModule,
+    FilterDrawerComponent,
+    TranslateModule,
+    BulkImportModalComponent,
+  ],
   templateUrl: './properties-list.component.html',
   styleUrl: './properties-list.component.scss'
 })
@@ -28,6 +41,7 @@ export class PropertiesListComponent implements OnInit {
   categoryFilter: 'All' | 'Units' | 'Rooms' = 'All';
   searchQuery: string = '';
   showColumnDropdown = false;
+  isImportModalOpen = false;
   currentUser = this.commonservice.getCurrentUser();
   // Advanced Filters & Drawer States
   isDrawerOpen: boolean = false;
@@ -383,7 +397,7 @@ private loadMetrics(
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive");
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
               this.edit_code='';
               this.loadProperties();
               this.pageNo=0;
@@ -395,7 +409,7 @@ private loadMetrics(
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -478,5 +492,14 @@ private loadMetrics(
       this.pageNo=0;
       this.loadProperties();
     }
+  }
+
+  openImportModal(): void {
+    this.isImportModalOpen = true;
+  }
+
+  onImportCompleted(): void {
+    this.loadProperties();
+    this.loadMetrics(4, 0, '', '', '');
   }
 }

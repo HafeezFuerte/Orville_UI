@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { ACC_REPORT_CARDS, AccReportCard } from './accounting-reports.data';
 
 @Component({
   selector: 'app-accounting-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './accounting-reports.component.html',
   styleUrl: './accounting-reports.component.scss'
 })

@@ -1,12 +1,12 @@
 <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
   <div class="flex items-start gap-4">
-    <button type="button" class="ov-back" (click)="goBack()" title="Back to Invoices">
+    <button type="button" class="ov-back" (click)="goBack()" [title]="'web.accounting.invoices.backToList' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </button>
     <div>
-      <h3 class="ov-page-title">Invoice Details</h3>
+      <h3 class="ov-page-title">{{ 'web.accounting.invoices.invoiceDetails' | translate }}</h3>
       <p class="ov-page-sub mt-1">
-        Accounting / Invoice / <span class="ov-page-sub__current">Details</span>
+        {{ 'web.accounting.invoices.breadcrumbAccounting' | translate }} / {{ 'web.accounting.invoices.breadcrumbInvoice' | translate }} / <span class="ov-page-sub__current">{{ 'web.accounting.invoices.breadcrumbDetails' | translate }}</span>
       </p>
     </div>
   </div>
@@ -16,7 +16,7 @@
           <button type="button" (click)="toggleProgressPopover()"
             class="px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all font-semibold flex items-center gap-2 border border-blue-200/60 shadow-xs cursor-pointer">
             <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-            <span>In Progress</span>
+            <span>{{ 'web.accounting.invoices.inProgress' | translate }}</span>
             <img src="assets/images/common/chevron-down.svg" alt="" width="10" height="10" class="opacity-70" />
           </button>
   
@@ -27,10 +27,10 @@
             
             <!-- Popover Header -->
             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-              <h5 class="font-bold text-gray-800 text-sm m-0">Approval</h5>
+              <h5 class="font-bold text-gray-800 text-sm m-0">{{ 'web.accounting.invoices.approval' | translate }}</h5>
               <span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                In Progress
+                {{ 'web.accounting.invoices.inProgress' | translate }}
               </span>
             </div>
   
@@ -86,7 +86,7 @@
             <div class="mt-5 pt-3 border-t border-gray-100">
               <button type="button" (click)="sendApprovalReminder()"
                 class="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition-all border border-emerald-200/60 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                Send approval reminder
+                {{ 'web.accounting.invoices.sendApprovalReminder' | translate }}
               </button>
             </div>
   
@@ -96,7 +96,7 @@
     <!-- <button type="button" class="ov-btn ov-btn-ghost">Accept</button> -->
     <div class="relative">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleAction($event)" [attr.aria-expanded]="actionOpen">
-        Action
+        {{ 'web.accounting.invoices.colAction' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="actionOpen" class="ov-action-menu" (click)="$event.stopPropagation()">
@@ -110,7 +110,7 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -123,15 +123,15 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
       </div>
     </div>
     <div class="dropdown">
-      <button *ngIf="invoice?.status==261 && approvalUser && approvalUser.user_code==currentUser?.userCode" type="button" [attr.data-tooltip]="'Action Menu'" (click)="showApprovalMenu = !showApprovalMenu" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
-        Approval Request <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />
+      <button *ngIf="invoice?.status==261 && approvalUser && approvalUser.user_code==currentUser?.userCode" type="button" [attr.data-tooltip]="'web.accounting.invoices.approvalRequest' | translate" (click)="showApprovalMenu = !showApprovalMenu" class="px-4 py-1.5 text-xs rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-semibold shadow-sm flex items-center gap-1">
+        {{ 'web.accounting.invoices.approvalRequest' | translate }} <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" />
       </button>
       <div *ngIf="showApprovalMenu" class="ov-action-menu" role="menu">
         <div class="ov-action-menu__list">
@@ -139,7 +139,7 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
             </span>
-            <span>Approve</span>
+            <span>{{ 'web.accounting.invoices.approve' | translate }}</span>
           </a> 
         </div>
         <div class="ov-action-menu__footer">
@@ -147,7 +147,7 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
             </span>
-            <span>Reject</span>
+            <span>{{ 'web.accounting.invoices.reject' | translate }}</span>
           </button>
         </div>
       </div>
@@ -155,11 +155,11 @@
     </div>
     <button (click)="showPaymentmodal()" type="button" class="ov-btn ov-btn-primary" *ngIf="invoice.status==251 || invoice.status==252">
       <img src="assets/images/action-menu/inflow.svg" alt="" width="18" height="18" />
-      Receive Payment
+      {{ 'web.accounting.invoices.receivePayment' | translate }}
     </button>
     <button (click)="printInvoice()" type="button" class="ov-btn ov-btn-primary">
       <img src="assets/images/action-menu/printer.svg" alt="" width="18" height="18" />
-      Print
+      {{ 'web.accounting.invoices.print' | translate }}
     </button>
   </div>
 </div>
@@ -176,18 +176,18 @@
           <span class="inv-badge" [ngClass]="statusBadge(invoice.invoice_status || invoice.status)">{{ getArabicLookupName(invoice,'invoice_status') || invoice.invoice_status || invoice.status || 'Draft' }}</span>
         </div> 
         <div class="grid grid-cols-2 gap-4 mt-4">
-          <button type="button" [routerLink]="['/accounting/invoices/edit-invoice', invoice?.code]" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">View Activity</button>
-          <button type="button" (click)="printInvoice()" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">Print Invoice</button>
+          <button type="button" [routerLink]="['/accounting/invoices/edit-invoice', invoice?.code]" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">{{ 'web.accounting.invoices.viewActivity' | translate }}</button>
+          <button type="button" (click)="printInvoice()" class="ov-btn ov-btn-ghost w-full h-9 text-[13px] font-medium">{{ 'web.accounting.invoices.printInvoice' | translate }}</button>
         </div>
              <!-- Warning Message if Draft -->
              <div class="mb-3">
              <div *ngIf="invoice.status === 252" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
-              <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Invocie in Draft Mode</p>
-              <p class="m-0 text-[10px] leading-relaxed text-gray-600">Your invoice is in draft mode. Once you approved it, the invoices will be posted in the accounting.</p>
+              <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> {{ 'web.accounting.invoices.invoiceDraftMode' | translate }}</p>
+              <p class="m-0 text-[10px] leading-relaxed text-gray-600">{{ 'web.accounting.invoices.invoiceDraftModeDesc' | translate }}</p>
             </div>
             <div *ngIf="invoice.status === 261" class="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning-emphasis flex flex-col gap-1">
-              <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> Invoice in Approval Mode</p>
-              <p class="m-0 text-[10px] leading-relaxed text-gray-600">Invoice Approval is pending by 
+              <p class="font-bold m-0 flex items-center gap-1"><i class="ri-error-warning-line text-sm"></i> {{ 'web.accounting.invoices.invoiceApprovalMode' | translate }}</p>
+              <p class="m-0 text-[10px] leading-relaxed text-gray-600">{{ 'web.accounting.invoices.invoiceApprovalPendingBy' | translate }} 
                 <span class="font-bold text-gray-800">{{approvalUser && approvalUser.approver}}.</span>
                  </p>
             </div>
@@ -196,11 +196,11 @@
 
       <div class="invd-side__rule" aria-hidden="true"></div>
 
-      <h5 class="invd-side__heading">Information</h5>
+      <h5 class="invd-side__heading">{{ 'web.accounting.invoices.information' | translate }}</h5>
 
       <div class="invd-due" [ngClass]="dueCardClass">
         <div class="invd-due__head">
-          <p class="invd-due__label">Due Amount</p>
+          <p class="invd-due__label">{{ 'web.accounting.invoices.dueAmount' | translate }}</p>
           <p class="invd-due__value">{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</p>
           <div class="invd-due__badges">
             <span class="inv-badge" [ngClass]="statusBadge(invoice.invoice_status || invoice.status)">{{ getArabicLookupName(invoice,'invoice_status') || invoice.invoice_status || invoice.status || 'Draft' }}</span>
@@ -208,75 +208,75 @@
           </div>
         </div>
         <div class="invd-due__rows">
-          <div><span>Subtotal</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.subtotal || 0) | number:'1.2-2' }}</b></div>
-          <div><span>Tax</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.tax_amount || 0) | number:'1.2-2' }}</b></div>
-          <div><span>Discount</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.discount || 0) | number:'1.2-2' }}</b></div>
+          <div><span>{{ 'web.accounting.invoices.subtotal' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.subtotal || 0) | number:'1.2-2' }}</b></div>
+          <div><span>{{ 'web.accounting.invoices.tax' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.tax_amount || 0) | number:'1.2-2' }}</b></div>
+          <div><span>{{ 'web.accounting.invoices.discount' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.discount || 0) | number:'1.2-2' }}</b></div>
           <hr>
-          <div class="is-strong"><span>Balance</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></div>
-          <div><span>Amount Paid</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.paid_amount || 0) | number:'1.2-2' }}</b></div>
-          <div class="is-strong"><span>Amount Due</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></div>
+          <div class="is-strong"><span>{{ 'web.accounting.invoices.balance' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></div>
+          <div><span>{{ 'web.accounting.invoices.amountPaid' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.paid_amount || 0) | number:'1.2-2' }}</b></div>
+          <div class="is-strong"><span>{{ 'web.accounting.invoices.amountDue' | translate }}</span><b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></div>
         </div>
       </div>
 
       <section class="invd-block">
-        <h6>Invoice Information</h6>
+        <h6>{{ 'web.accounting.invoices.invoiceInformation' | translate }}</h6>
         <div class="invd-rows">
-          <p><span>Invoice ID:</span> <b>{{ invoice.code || '—' }}</b></p>
-          <p><span>Invoice No:</span> <b>{{ invoice.invoice_no || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.invoiceID' | translate }}:</span> <b>{{ invoice.code || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.invoiceNo' | translate }}:</span> <b>{{ invoice.invoice_no || '—' }}</b></p>
           <p>
-            <span>Tenant:</span>
+            <span>{{ 'web.accounting.invoices.tenant' | translate }}:</span>
             <a class="ov-link" [routerLink]="['/contacts/tenants/edit-tenant', invoice.tenant_code]">{{ invoice.tenant || '—' }}</a>
           </p>
           <p>
-            <span>Lease:</span>
+            <span>{{ 'web.accounting.invoices.lease' | translate }}:</span>
             <a class="ov-link" [routerLink]="['/leases', invoice.lease_id]">{{ invoice.active_lease || invoice.lease || '—' }}</a>
           </p>
-          <p><span>Issue Date:</span> <b>{{ (invoice.invoice_date | date:'dd-MM-yyyy') || '—' }}</b></p>
-          <p><span>Due Date:</span> <b>{{ (invoice.due_date | date:'dd-MM-yyyy') || '—' }}</b></p>
-          <p><span>Payment Via:</span> <b>{{ invoice.payment_type_name || '—' }}</b></p>
-          <p><span>Prepared by:</span> <b>{{ invoice.createdby || '—' }}</b></p>
-          <p><span>Amount Due:</span> <b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></p>
-          <p><span>Reference No:</span> <b>{{ invoice.reference_no || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.dateOfIssue' | translate }}:</span> <b>{{ (invoice.invoice_date | date:'dd-MM-yyyy') || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.dueDate' | translate }}:</span> <b>{{ (invoice.due_date | date:'dd-MM-yyyy') || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.paymentVia' | translate }}:</span> <b>{{ invoice.payment_type_name || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.preparedBy' | translate }}:</span> <b>{{ invoice.createdby || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.amountDue' | translate }}:</span> <b>{{ currentUser?.currencyCode || 'AED' }} {{ (invoice.balance_amount || 0) | number:'1.2-2' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.referenceNo' | translate }}:</span> <b>{{ invoice.reference_no || '—' }}</b></p>
         </div>
       </section>
 
       <section class="invd-block">
         <div class="invd-block__head">
-          <h6>Quickbooks Status</h6>
+          <h6>{{ 'web.accounting.invoices.quickbooksStatus' | translate }}</h6>
           <button type="button" class="invd-sync">
             <img src="assets/images/insights/lease-stats/refresh.svg" alt="" width="14" height="14">
-            Sync
+            {{ 'web.accounting.invoices.sync' | translate }}
           </button>
         </div>
         <div class="invd-rows">
           <p>
-            <span>Status:</span>
+            <span>{{ 'web.accounting.invoices.colStatus' | translate }}:</span>
             <span class="inv-badge inv-badge--synced">{{ invoice.qbStatus || 'Synced' }}</span>
           </p>
-          <p><span>Customer ID:</span> <b>{{ invoice.customerId || '—' }}</b></p>
+          <p><span>{{ 'web.accounting.invoices.customerID' | translate }}:</span> <b>{{ invoice.customerId || '—' }}</b></p>
         </div>
       </section>
 
       <section class="invd-block">
-        <h6>Notes</h6>
+        <h6>{{ 'web.accounting.invoices.notes' | translate }}</h6>
         <div class="invd-block__body">
           <!-- <app-notes-table [selectedTab]="selectedNotesTab"></app-notes-table> -->
         </div>
       </section>
 
       <section class="invd-block">
-        <h6>Attachment</h6>
+        <h6>{{ 'web.accounting.invoices.attachment' | translate }}</h6>
         <div class="invd-block__body">
-          <p class="invd-empty">No Attachment</p>
+          <p class="invd-empty">{{ 'web.accounting.invoices.noAttachment' | translate }}</p>
           <!-- <app-attachments-table [selectedTab]="selectedAttachmentTab"></app-attachments-table> -->
         </div>
       </section>
 
       <section class="invd-block">
-        <h6>Custom Fields</h6>
+        <h6>{{ 'web.accounting.invoices.customFields' | translate }}</h6>
         <div class="invd-custom">
-          <span class="invd-custom__label">Receipt No:</span>
-          <span class="invd-custom__value">No value set</span>
+          <span class="invd-custom__label">{{ 'web.accounting.invoices.receiptNo' | translate }}:</span>
+          <span class="invd-custom__value">{{ 'web.accounting.invoices.noValueSet' | translate }}</span>
         </div>
       </section>
     </div>
@@ -288,26 +288,26 @@
     </section>
 
     <section>
-      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">Cheques</h5>
+      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">{{ 'web.accounting.invoices.cheques' | translate }}</h5>
       <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'cheques'">
         <div class="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
           <div class="ov-search flex-1 max-w-[437px]">
             <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
-            <input type="text" class="ov-input ov-search__input" [(ngModel)]="chequeQuery" placeholder="Search">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="chequeQuery" [placeholder]="'web.accounting.invoices.search' | translate">
           </div>
           <div class="relative" (click)="$event.stopPropagation()">
             <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('cheques', $event)">
               <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
-              Column
+              {{ 'web.accounting.invoices.column' | translate }}
             </button>
             <div *ngIf="openColumnMenu === 'cheques'" class="invd-col-menu">
               <label>
                 <input type="checkbox" [checked]="allSelected(chequeCols)" (change)="toggleAll(chequeCols, $event)">
-                Select All
+                {{ 'web.accounting.invoices.selectAll' | translate }}
               </label>
               <label *ngFor="let col of chequeCols">
                 <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(chequeCols, col.key)">
-                {{ col.label }}
+                {{ col.label | translate }}
               </label>
             </div>
           </div>
@@ -338,7 +338,7 @@
                       <ng-container *ngSwitchCase="'attachment_path'">
                         <a class="text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium">
                           <i class="ri-file-pdf-line"></i>
-                          <a href="{{ row.attachment_path }}"  target="_blank">View File</a> 
+                          <a href="{{ row.attachment_path }}"  target="_blank">{{ 'web.accounting.invoices.viewFile' | translate }}</a> 
                         </a>
                       </ng-container>
                     </ng-container>
@@ -349,26 +349,26 @@
     </section>
 
     <section>
-      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">Transactions</h5>
+      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">{{ 'web.accounting.invoices.transactions' | translate }}</h5>
       <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'txns'">
         <div class="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
           <div class="ov-search flex-1 max-w-[437px]">
             <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
-            <input type="text" class="ov-input ov-search__input" [(ngModel)]="txnQuery" placeholder="Search">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="txnQuery" [placeholder]="'web.accounting.invoices.search' | translate">
           </div>
           <div class="relative" (click)="$event.stopPropagation()">
             <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('txns', $event)">
               <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
-              Column
+              {{ 'web.accounting.invoices.column' | translate }}
             </button>
             <div *ngIf="openColumnMenu === 'txns'" class="invd-col-menu">
               <label>
                 <input type="checkbox" [checked]="allSelected(txnCols)" (change)="toggleAll(txnCols, $event)">
-                Select All
+                {{ 'web.accounting.invoices.selectAll' | translate }}
               </label>
               <label *ngFor="let col of txnCols">
                 <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(txnCols, col.key)">
-                {{ col.label }}
+                {{ col.label | translate }}
               </label>
             </div>
           </div>
@@ -377,7 +377,7 @@
           <table class="invd-table">
             <thead>
               <tr>
-                <th *ngFor="let col of visible(txnCols)">{{ col.label }}</th>
+                <th *ngFor="let col of visible(txnCols)">{{ col.label | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -395,26 +395,26 @@
     </section>
 
     <section>
-      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">Penalties</h5>
+      <h5 class="m-0 mb-3 text-[16px] font-bold text-defaulttextcolor">{{ 'web.accounting.invoices.penalties' | translate }}</h5>
       <div class="box ov-card !mb-0 overflow-visible" [class.invd-card--open]="openColumnMenu === 'penalties'">
         <div class="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
           <div class="ov-search flex-1 max-w-[437px]">
             <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon">
-            <input type="text" class="ov-input ov-search__input" [(ngModel)]="penaltyQuery" placeholder="Search">
+            <input type="text" class="ov-input ov-search__input" [(ngModel)]="penaltyQuery" [placeholder]="'web.accounting.invoices.search' | translate">
           </div>
           <div class="relative" (click)="$event.stopPropagation()">
             <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnMenu('penalties', $event)">
               <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18">
-              Column
+              {{ 'web.accounting.invoices.column' | translate }}
             </button>
             <div *ngIf="openColumnMenu === 'penalties'" class="invd-col-menu">
               <label>
                 <input type="checkbox" [checked]="allSelected(penaltyCols)" (change)="toggleAll(penaltyCols, $event)">
-                Select All
+                {{ 'web.accounting.invoices.selectAll' | translate }}
               </label>
               <label *ngFor="let col of penaltyCols">
                 <input type="checkbox" [checked]="col.visible" (change)="toggleColumn(penaltyCols, col.key)">
-                {{ col.label }}
+                {{ col.label | translate }}
               </label>
             </div>
           </div>
@@ -423,7 +423,7 @@
           <table class="invd-table">
             <thead>
               <tr>
-                <th *ngFor="let col of visible(penaltyCols)">{{ col.label }}</th>
+                <th *ngFor="let col of visible(penaltyCols)">{{ col.label | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -460,13 +460,13 @@
       </div>
       <div class="ov-modal__body flex flex-col gap-4">
         <div>
-          <label class="ov-label">Notes</label>
-          <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" placeholder="Enter Comments....."></textarea>
+          <label class="ov-label">{{ 'web.accounting.invoices.notes' | translate }}</label>
+          <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" [placeholder]="'web.accounting.invoices.enterComments' | translate"></textarea>
         </div>
       </div>
       <div class="ov-modal__footer">
-        <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
-        <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">Save</button>
+        <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">{{ 'web.accounting.invoices.cancel' | translate }}</button>
+        <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">{{ 'web.common.lblSave' | translate }}</button>
       </div>
       </div>
     </div>
@@ -478,35 +478,35 @@
       </button>
       <div class="ov-modal">
       <div class="ov-modal__header">
-        <h4 class="ov-modal__title">Receive Full Payment</h4>
+        <h4 class="ov-modal__title">{{ 'web.accounting.invoices.receiveFullPayment' | translate }}</h4>
       </div>
       <div class="ov-modal__body flex flex-col gap-4">
       
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-4">
           <div>
-            <label class="ov-label">Invoice Amount {{ currentUser?.currencyCode || 'AED' }}</label>
+            <label class="ov-label">{{ 'web.accounting.invoices.invoiceAmount' | translate }} {{ currentUser?.currencyCode || 'AED' }}</label>
             <input type="number" disabled="true"   class="ov-input" [(ngModel)]="receivepayment.Amount">
           </div>
           <div>
-            <label class="ov-label">Paid Date</label>
+            <label class="ov-label">{{ 'web.accounting.invoices.paidDate' | translate }}</label>
             <input type="text" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
              class="ov-input" [(ngModel)]="receivepayment.paiddate">
           </div>
           <div>
-            <label class="ov-label">Payment Via</label>
-            <ng-select [(ngModel)]="receivepayment.payment_via" bindValue="id" bindLabel="name" [items]="paymentMethods" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+            <label class="ov-label">{{ 'web.accounting.invoices.paymentVia' | translate }}</label>
+            <ng-select [(ngModel)]="receivepayment.payment_via" bindValue="id" bindLabel="name" [items]="paymentMethods" [placeholder]="'web.leases.lblPaymentVia' | translate" class="ng-select-sm w-full"></ng-select>
           </div>
           <div>
-            <label class="ov-label">Account</label>
-            <ng-select [(ngModel)]="receivepayment.account" bindValue="account_code" bindLabel="account_name" [items]="coa_list" placeholder="{{ 'web.leases.lblPaymentVia' | translate }}" class="ng-select-sm w-full"></ng-select>
+            <label class="ov-label">{{ 'web.accounting.invoices.colAccount' | translate }}</label>
+            <ng-select [(ngModel)]="receivepayment.account" bindValue="account_code" bindLabel="account_name" [items]="coa_list" [placeholder]="'web.accounting.invoices.selectAccount' | translate" class="ng-select-sm w-full"></ng-select>
           </div>
         </div>
         <div>
-          <label class="ov-label">Notes</label>
-          <textarea rows="5" class="ov-input" [(ngModel)]="receivepayment.notes" placeholder="Enter remarks here..."></textarea>
+          <label class="ov-label">{{ 'web.accounting.invoices.notes' | translate }}</label>
+          <textarea rows="5" class="ov-input" [(ngModel)]="receivepayment.notes" [placeholder]="'web.accounting.invoices.enterRemarksHere' | translate"></textarea>
         </div>
         <div>
-          <label class="ov-label">Upload Proof</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.uploadProof' | translate }}</label>
           <app-file-upload
             [accept]="'image/*'"
             (filesChanged)="onFilesSelected($event)"
@@ -517,8 +517,8 @@
         </div>
       </div>
       <div class="ov-modal__footer">
-        <button type="button" (click)="showReceivePayment = false" class="ov-btn ov-btn-ghost">Cancel</button>
-        <button type="button" (click)="save_payment()" class="ov-btn ov-btn-primary">Receive</button>
+        <button type="button" (click)="showReceivePayment = false" class="ov-btn ov-btn-ghost">{{ 'web.accounting.invoices.cancel' | translate }}</button>
+        <button type="button" (click)="save_payment()" class="ov-btn ov-btn-primary">{{ 'web.accounting.invoices.receive' | translate }}</button>
       </div>
     </div>
     </div>
@@ -532,12 +532,12 @@
       </button>
       <div class="ov-modal">
         <div class="ov-modal__header flex justify-between items-center border-b pb-3 mb-4">
-          <h4 class="ov-modal__title text-lg font-semibold">Invoice Print Preview</h4>
+          <h4 class="ov-modal__title text-lg font-semibold">{{ 'web.accounting.invoices.invoicePrintPreview' | translate }}</h4>
           <div class="flex gap-2">
             <button type="button" (click)="triggerPrint()" class="ov-btn ov-btn-primary flex items-center gap-1">
-              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> Print PDF
+              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> {{ 'web.accounting.invoices.printPDF' | translate }}
             </button>
-            <button type="button" (click)="closePrintModal()" class="ov-btn ov-btn-ghost">Close</button>
+            <button type="button" (click)="closePrintModal()" class="ov-btn ov-btn-ghost">{{ 'web.accounting.invoices.close' | translate }}</button>
           </div>
         </div>
         <div class="ov-modal__body overflow-y-auto max-h-[75vh] p-2 bg-white rounded shadow-inner">
@@ -546,16 +546,16 @@
           <div class="printable-invoice-receipt-container">
             <div class="plr-header">
               <div class="plr-header-left">
-                <h1 class="plr-title">Receipt</h1>
+                <h1 class="plr-title">{{ 'web.accounting.invoices.receipt' | translate }}</h1>
                 <div class="plr-meta">
-                  <p><span>Billed To :</span> {{ invoice?.tenant || '—' }}</p>
-                  <p><span>Date of Issue :</span> {{ (invoice?.invoice_date | date:'dd-MM-yyyy') || (invoice?.created_date | date:'dd-MM-yyyy') || '—' }}</p>
-                  <p><span>Due Date :</span> {{ (invoice?.due_date | date:'dd-MM-yyyy') || '—' }}</p>
-                  <p><span>TRN Number :</span> Not Registered</p>
-                  <p><span>Prepared by :</span> {{ invoice?.createdby || currentUser?.userName || 'md hafeez' }}</p>
-                  <p><span>Receipt # :</span> {{ invoice?.invoice_no || invoice?.code || '—' }}</p>
-                  <p><span>Invoice Ref :</span> {{ invoice?.lease_id ? ('Lease - ' + invoice.lease_id + ' - ' + (invoice.property_name || '')) : (invoice?.invoice_no || '—') }}</p>
-                  <p><span>Bank Name :</span> {{ invoice?.bank_name || '—' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.billedTo' | translate }} :</span> {{ invoice?.tenant || '—' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.dateOfIssue' | translate }} :</span> {{ (invoice?.invoice_date | date:'dd-MM-yyyy') || (invoice?.created_date | date:'dd-MM-yyyy') || '—' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.dueDate' | translate }} :</span> {{ (invoice?.due_date | date:'dd-MM-yyyy') || '—' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.trnNumber' | translate }} :</span> {{ 'web.accounting.invoices.notRegistered' | translate }}</p>
+                  <p><span>{{ 'web.accounting.invoices.preparedBy' | translate }} :</span> {{ invoice?.createdby || currentUser?.userName || 'md hafeez' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.receiptNo' | translate }} # :</span> {{ invoice?.invoice_no || invoice?.code || '—' }}</p>
+                  <p><span>{{ 'web.accounting.invoices.invoiceRef' | translate }} :</span> {{ invoice?.lease_id ? ('Lease - ' + invoice.lease_id + ' - ' + (invoice.property_name || '')) : (invoice?.invoice_no || '—') }}</p>
+                  <p><span>{{ 'web.accounting.invoices.bankName' | translate }} :</span> {{ invoice?.bank_name || '—' }}</p>
                 </div>
               </div>
               <div class="plr-header-right">
@@ -571,15 +571,15 @@
 
             <div class="plr-addresses">
               <div class="plr-from">
-                <h4>Receipt From</h4>
+                <h4>{{ 'web.accounting.invoices.receiptFrom' | translate }}</h4>
                 <h3>Orville Real Estate</h3>
-                <p><span>Bank Name :</span> {{ invoice?.bank_name || '' }}</p>
-                <p><span>Bank Address :</span> {{ invoice?.bank_address || '' }}</p>
+                <p><span>{{ 'web.accounting.invoices.bankName' | translate }} :</span> {{ invoice?.bank_name || '' }}</p>
+                <p><span>{{ 'web.accounting.invoices.bankAddress' | translate }} :</span> {{ invoice?.bank_address || '' }}</p>
                 <p><span>IBAN : , SWIFT :</span> {{ invoice?.iban || '' }}</p>
-                <p><span>Tax Registration No:</span> Not Registered</p>
+                <p><span>{{ 'web.accounting.invoices.taxRegistrationNo' | translate }}:</span> {{ 'web.accounting.invoices.notRegistered' | translate }}</p>
               </div>
               <div class="plr-to">
-                <h4>Receipt To</h4>
+                <h4>{{ 'web.accounting.invoices.receiptTo' | translate }}</h4>
                 <h3>{{ invoice?.tenant || 'Tenant' }}</h3>
                 <p>Building : {{ invoice?.property_name || 'HAFEEZ BUILDING' }} - Apartment {{ invoice?.unit_code || '' }}</p>
               </div>
@@ -588,15 +588,15 @@
             <table class="plr-table">
               <thead>
                 <tr>
-                  <th>Sr.No</th>
-                  <th>Description</th>
-                  <th>Invoice amount</th>
-                  <th>Tax</th>
-                  <th>Paid Amount</th>
-                  <th>Account</th>
-                  <th>Payment Mode</th>
-                  <th>Due Date</th>
-                  <th>Paid Date</th>
+                  <th>{{ 'web.accounting.invoices.srNo' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.description' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.invoiceAmountCol' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.tax' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.paidAmountCol' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colAccount' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.paymentMode' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.dueDate' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.paidDate' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -617,39 +617,39 @@
             <div class="plr-summary-wrapper">
               <div class="plr-summary-box">
                 <div class="plr-sum-row">
-                  <span>Subtotal</span>
+                  <span>{{ 'web.accounting.invoices.subtotal' | translate }}</span>
                   <strong>AED {{ (invoice?.subtotal || invoice?.total_amount || 0) | number:'1.2-2' }}</strong>
                 </div>
                 <div class="plr-sum-row">
-                  <span>Tax</span>
+                  <span>{{ 'web.accounting.invoices.tax' | translate }}</span>
                   <strong>AED {{ (invoice?.tax_amount || 0) | number:'1.2-2' }}</strong>
                 </div>
                 <div class="plr-sum-row plr-sum-border">
-                  <span>Total Amount</span>
+                  <span>{{ 'web.accounting.invoices.totalAmount' | translate }}</span>
                   <strong>AED {{ (invoice?.total_amount || invoice?.subtotal || 0) | number:'1.2-2' }}</strong>
                 </div>
                 <div class="plr-sum-row">
-                  <span>Amount Paid</span>
+                  <span>{{ 'web.accounting.invoices.amountPaid' | translate }}</span>
                   <strong>AED {{ (invoice?.paid_amount || invoice?.total_amount || 0) | number:'1.2-2' }}</strong>
                 </div>
                 <div class="plr-sum-row">
-                  <span>Amount Due</span>
+                  <span>{{ 'web.accounting.invoices.amountDue' | translate }}</span>
                   <strong>AED {{ (invoice?.balance_amount || 0) | number:'1.2-2' }}</strong>
                 </div>
               </div>
             </div>
 
             <div class="plr-words-section">
-              <p class="plr-words-label">Amount in Words (Total Amount)</p>
+              <p class="plr-words-label">{{ 'web.accounting.invoices.amountInWords' | translate }}</p>
               <p class="plr-words-value">AED {{ numberToWords(invoice?.total_amount || invoice?.subtotal || 0) }}</p>
             </div>
 
             <hr class="plr-divider" />
 
             <div class="plr-footer flex justify-between items-center text-xs text-gray-500">
-              <span class="plr-disclaimer">This receipt is issued on behalf of the company</span>
+              <span class="plr-disclaimer">{{ 'web.accounting.invoices.receiptDisclaimer' | translate }}</span>
               <div class="plr-powered flex items-center gap-1">
-                <span>Powered By</span>
+                <span>{{ 'web.accounting.invoices.poweredBy' | translate }}</span>
                 <span class="plr-ht-badge bg-blue-600 text-white font-semibold px-2 py-0.5 rounded text-[10px]">Orville</span>
               </div>
             </div>

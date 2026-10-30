@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface ColumnMenuItem {
   key: string;
@@ -10,7 +11,7 @@ export interface ColumnMenuItem {
 @Component({
   selector: 'app-column-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './column-menu.component.html',
   styleUrl: './column-menu.component.scss'
 })

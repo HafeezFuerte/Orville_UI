@@ -16,6 +16,8 @@ import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { BulkImportModalComponent } from '../../../../shared/components/bulk-import-modal/bulk-import-modal.component';
+
 export interface Unit {
   id: number;
   name: string;
@@ -39,7 +41,18 @@ export interface Unit {
 @Component({
   selector: 'app-units-list',
   standalone: true,
-  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    DeleteConfirmationComponent,
+    SharedTableComponent,
+    NgSelectModule,
+    SharedModule,
+    RouterModule,
+    FilterDrawerComponent,
+    TranslateModule,
+    BulkImportModalComponent,
+  ],
   templateUrl: './units-list.component.html',
   styleUrl: './units-list.component.scss'
 })
@@ -48,6 +61,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   searchQuery: string = '';
+  isImportModalOpen = false;
  
   // Advanced Filters (Search Criteria Panel)
   selectedCategory: string | null = null;
@@ -102,39 +116,23 @@ export class UnitsListComponent implements OnInit, OnDestroy {
 
   // Columns definition for the shared table component
   tableColumns = [
-    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'category', label: 'Category', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'beds', label: 'Beds', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'property_Name', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'land_lord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unitType', label: 'Unit Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'market_rent', label: 'Market Rent', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unit_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'id', label: 'web.common.lblID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'name', label: 'web.common.lblName', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'category', label: 'web.Unit.lblCategory', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'beds', label: 'web.Unit.lblBeds', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'property_Name', label: 'web.leases.lblProperty', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'land_lord', label: 'web.Unit.lblLandlord', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'tags', label: 'web.property.lblTags', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unitType', label: 'web.Unit.lblUnitType', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'floor_no', label: 'web.Unit.lblFloorNumber', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'market_rent', label: 'web.Unit.lblMarketRent', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'management_fee', label: 'web.Unit.lblManagementFee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unit_status_name', label: 'web.Unit.lblStatus', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'web.common.lblAction', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   private translateColumns(): void {
-    const t = (key: string) => this.translate.instant(key);
-    const map: Record<string, string> = {
-      id:               t('web.common.lblID'),
-      name:             t('web.common.lblName'),
-      category:         t('web.Unit.lblCategory'),
-      beds:             t('web.Unit.lblBeds'),
-      property_Name:    t('web.property.lblProperty'),
-      land_lord:        t('web.Unit.lblLandlord'),
-      tags:             t('web.property.lblTags'),
-      unitType:         t('web.Unit.lblUnitType'),
-      floor_no:         t('web.Unit.lblFloorNumber'),
-      market_rent:      t('web.Unit.lblMarketRent') || 'Market Rent',
-      management_fee:   t('web.Unit.lblManagementFee'),
-      unit_status_name: t('web.Unit.lblStatus'),
-      action:           t('web.Unit.lblAction'),
-    };
-    this.tableColumns = this.tableColumns.map(col => ({ ...col, label: map[col.key] ?? col.label }));
+    // Labels are now standard translation keys handled by {{ col.label | translate }}
   }
 
   openActionCode: string | number | null = null;
@@ -301,7 +299,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: err => {
         console.error(err);
@@ -426,7 +424,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive");
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
               this.edit_code='';
               this.loadUnits();
               this.pageNo=0;
@@ -438,7 +436,7 @@ export class UnitsListComponent implements OnInit, OnDestroy {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -547,4 +545,13 @@ export class UnitsListComponent implements OnInit, OnDestroy {
       this.userChangedPageSize = true;
     this.loadUnits();
   } 
+
+  openImportModal(): void {
+    this.isImportModalOpen = true;
+  }
+
+  onImportCompleted(): void {
+    this.loadUnits();
+    this.loadMetrics();
+  }
 }

@@ -1,17 +1,17 @@
 <!-- Broadcasts List — Figma 2572:66308 -->
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="ov-page-title">Broadcasts</h3>
-    <p class="ov-page-sub">Manage and view all Broadcasts</p>
+    <h3 class="ov-page-title">{{ 'web.broadcasts.title' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.broadcasts.sub' | translate }}</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Export">
+    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.broadcasts.export' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="bc-ico" />
-      Export
+      {{ 'web.broadcasts.export' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" data-tooltip="Add Broadcasts">
+    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" [attr.data-tooltip]="'web.broadcasts.addBroadcast' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="bc-ico bc-ico--on-primary" />
-      Add Broadcasts
+      {{ 'web.broadcasts.addBroadcast' | translate }}
     </button>
   </div>
 </div>
@@ -20,26 +20,26 @@
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="broadcast-search">Search</label>
+        <label class="sr-only" for="broadcast-search">{{ 'web.broadcasts.phSearch' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="broadcast-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.broadcasts.phSearch' | translate">
       </div>
-      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [attr.title]="'web.broadcasts.phSearch' | translate">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
     <div class="ov-toolbar__btns">
       <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleDrawer(true)"
-        [attr.data-tooltip]="'web.dashboard.lblFilters' | translate">
+        [attr.data-tooltip]="'web.broadcasts.filter' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.broadcasts.filter' | translate }}
       </button>
       <div class="relative" (click)="$event.stopPropagation()">
         <button type="button" (click)="showColumnDropdown = !showColumnDropdown" class="ov-btn ov-btn-toolbar"
-          data-tooltip="Columns">
+          [attr.data-tooltip]="'web.broadcasts.column' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.broadcasts.column' | translate }}
         </button>
         <div *ngIf="showColumnDropdown"
           class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -47,13 +47,13 @@
             class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
             <input type="checkbox" [checked]="allColumnsSelected" (change)="toggleAllColumns($event)"
               class="h-3.5 w-3.5 rounded text-primary">
-            Select All
+            {{ 'web.broadcasts.selectAll' | translate }}
           </label>
           <label *ngFor="let col of tableColumns"
             class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
             <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)"
               class="h-3.5 w-3.5 rounded text-primary">
-            {{ col.label }}
+            {{ col.label | translate }}
           </label>
         </div>
       </div>
@@ -78,9 +78,9 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'preview'">
-            <button type="button" class="bc-preview" (click)="navigateToDetail(row.code)" data-tooltip="Quick View">
+            <button type="button" class="bc-preview" (click)="navigateToDetail(row.code)" [attr.data-tooltip]="'web.broadcasts.quickView' | translate">
               <img src="assets/images/broadcasts/eye.svg" alt="" width="14" height="14" />
-              Quick View
+              {{ 'web.broadcasts.quickView' | translate }}
             </button>
           </ng-container>
 
@@ -102,24 +102,24 @@
           <ng-container *ngSwitchCase="'scheduled'">
             <span class="ov-status" [class.ov-status--active]="!!row.scheduled"
               [class.ov-status--soft]="!row.scheduled">
-              {{ row.scheduled ? 'Yes' : 'No' }}
+              {{ (row.scheduled ? 'web.broadcasts.yes' : 'web.broadcasts.no') | translate }}
             </span>
           </ng-container>
 
           <ng-container *ngSwitchCase="'action'">
             <div class="relative inline-flex" (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare"
-                (click)="toggleRowAction(rowActionKey(row), $event)" aria-label="Action">
+                (click)="toggleRowAction(rowActionKey(row), $event)" [attr.aria-label]="'web.broadcasts.colAction' | translate">
                 <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
               <div *ngIf="openActionCode === rowActionKey(row)"
                 class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="navigateToDetail(row.code || row.id); openActionCode = null">View</button>
+                  (click)="navigateToDetail(row.code || row.id); openActionCode = null">{{ 'web.broadcasts.view' | translate }}</button>
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="navigateToEdit(row.code || row.id); openActionCode = null">Edit</button>
+                  (click)="navigateToEdit(row.code || row.id); openActionCode = null">{{ 'web.broadcasts.edit' | translate }}</button>
               </div>
             </div>
           </ng-container>

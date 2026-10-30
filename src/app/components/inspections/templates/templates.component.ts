@@ -1,24 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
   selector: 'app-templates',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
   templateUrl: './templates.component.html',
   styleUrls: []
 })
 export class TemplatesComponent implements OnInit {
+  private translate = inject(TranslateService);
+
   isLoading = false;
   activeFilter: 'All' | 'Admin' | 'User' = 'All';
   searchQuery = '';
   isDrawerOpen = false;
   isColumnDropdownOpen = false;
+
+  statusTabs: { id: 'All' | 'Admin' | 'User'; labelKey: string }[] = [
+    { id: 'All', labelKey: 'web.inspections.templates.tabAll' },
+    { id: 'Admin', labelKey: 'web.inspections.templates.tabAdminTemplate' },
+    { id: 'User', labelKey: 'web.inspections.templates.tabUserTemplate' }
+  ];
 
   // Filter properties
   filterCreatedBy: any = null;
@@ -48,17 +57,29 @@ export class TemplatesComponent implements OnInit {
   filteredData = [...this.templatesData];
 
   columns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'templateName', label: 'Template Name', visible: true, useTemplate: true },
-    { key: 'createdBy', label: 'Created By', visible: true, useTemplate: true },
-    { key: 'createdAt', label: 'Created At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'ID', labelKey: 'web.inspections.templates.colId', visible: true, useTemplate: true },
+    { key: 'templateName', label: 'Template Name', labelKey: 'web.inspections.templates.colTemplateName', visible: true, useTemplate: true },
+    { key: 'createdBy', label: 'Created By', labelKey: 'web.inspections.templates.colCreatedBy', visible: true, useTemplate: true },
+    { key: 'createdAt', label: 'Created At', labelKey: 'web.inspections.templates.colCreatedAt', visible: true },
+    { key: 'action', label: 'Action', labelKey: 'web.inspections.templates.colAction', visible: true, useTemplate: true }
   ];
 
   activeActionRow: any = null;
 
   ngOnInit() {
+    this.updateColumnLabels();
+    this.translate.onLangChange.subscribe(() => {
+      this.updateColumnLabels();
+    });
     this.applyFilters();
+  }
+
+  private updateColumnLabels() {
+    this.columns.forEach(col => {
+      if (col.labelKey) {
+        col.label = this.translate.instant(col.labelKey);
+      }
+    });
   }
 
   get visibleColumns() {

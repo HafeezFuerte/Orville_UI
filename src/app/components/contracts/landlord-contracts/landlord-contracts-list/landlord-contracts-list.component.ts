@@ -15,12 +15,12 @@ import {
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-landlord-contracts-list',
   standalone: true,
-  imports: [CommonModule,TranslateModule, FormsModule,DeleteConfirmationComponent, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, TranslateModule, FormsModule, DeleteConfirmationComponent, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
   templateUrl: './landlord-contracts-list.component.html',
   styleUrl: './landlord-contracts-list.component.scss'
 })
@@ -28,7 +28,8 @@ export class LandlordContractsListComponent implements OnInit {
   private router = inject(Router);
   private commontabservice = inject(Common_TabsService);
   private commonService = inject(CommonService);
-  private toastr =inject(ToastrService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
   searchQuery = '';
   statusFilter: 'All' | LandlordContractStatus = 'All';
   statusTabs = LANDLORD_CONTRACT_STATUS_TABS;
@@ -51,18 +52,18 @@ export class LandlordContractsListComponent implements OnInit {
   totalPagesCount = 0;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'landlord', label: 'Landlord', visible: true, useTemplate: true },
-    { key: 'name', label: 'Name', visible: true, useTemplate: true },
-    { key: 'properties', label: 'Properties', visible: true, useTemplate: true },
-    { key: 'unitsRooms', label: 'Units / Rooms', visible: true, useTemplate: true },
-    { key: 'startDate', label: 'Start Date', visible: true },
-    { key: 'endDate', label: 'End Date', visible: true },
-    { key: 'createDate', label: 'Create Date', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'value', label: 'Value', visible: true, useTemplate: true },
-    { key: 'daysLeft', label: 'Days Left', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'id', label: 'web.contracts.landlord.colID', visible: true, useTemplate: true },
+    { key: 'landlord', label: 'web.contracts.landlord.colLandlord', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.contracts.landlord.colName', visible: true, useTemplate: true },
+    { key: 'properties', label: 'web.contracts.landlord.colProperties', visible: true, useTemplate: true },
+    { key: 'unitsRooms', label: 'web.contracts.landlord.colUnitsRooms', visible: true, useTemplate: true },
+    { key: 'startDate', label: 'web.contracts.landlord.colStartDate', visible: true },
+    { key: 'endDate', label: 'web.contracts.landlord.colEndDate', visible: true },
+    { key: 'createDate', label: 'web.contracts.landlord.colCreateDate', visible: true },
+    { key: 'status', label: 'web.contracts.landlord.colStatus', visible: true, useTemplate: true },
+    { key: 'value', label: 'web.contracts.landlord.colValue', visible: true, useTemplate: true },
+    { key: 'daysLeft', label: 'web.contracts.landlord.colDaysLeft', visible: true },
+    { key: 'action', label: 'web.contracts.landlord.colAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   ngOnInit(): void {
@@ -90,7 +91,8 @@ export class LandlordContractsListComponent implements OnInit {
       const now = new Date();
       const diffTime = end.getTime() - now.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays > 0 ? `${diffDays} days` : '0 days';
+      const daysText = this.translate.instant('web.contracts.landlord.days');
+      return diffDays > 0 ? `${diffDays} ${daysText}` : `0 ${daysText}`;
     } catch {
       return '-';
     }
@@ -195,7 +197,7 @@ export class LandlordContractsListComponent implements OnInit {
             createDate: this.formatDateString(item.create_date || item.created_date || item.created_at || item.createDate || item.start_date),
             status: (item.status || item.status_nm || 'Active') as LandlordContractStatus,
             value: this.formatValue(item),
-            daysLeft: item.days_left || item.daysLeft ? String(item.days_left || item.daysLeft) : this.calculateDaysLeft(item.end_date || item.endDate)
+            daysLeft: item.days_left || item.daysLeft ? `${item.days_left || item.daysLeft} ${this.translate.instant('web.contracts.landlord.days')}` : this.calculateDaysLeft(item.end_date || item.endDate)
           }));
           this.allRowsData = [...this.allRows];
 
@@ -362,7 +364,7 @@ export class LandlordContractsListComponent implements OnInit {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive"); 
+              this.toastr.success(this.translate.instant('web.contracts.landlord.inactiveSuccess')); 
               setTimeout(() => {
                 window.location.reload();
               }, 2000);
@@ -371,7 +373,7 @@ export class LandlordContractsListComponent implements OnInit {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.contracts.landlord.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

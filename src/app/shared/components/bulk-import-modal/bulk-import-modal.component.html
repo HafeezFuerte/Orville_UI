@@ -1,0 +1,470 @@
+<div *ngIf="isOpen" class="ov-modal-backdrop" (click)="closeModal()" role="presentation">
+  <div
+    class="flex w-full max-w-[820px] flex-col items-end gap-2.5 p-4"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()">
+    
+    <!-- Modal Close Icon Button -->
+    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeModal()">
+      <img src="./assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
+    </button>
+
+    <!-- Modal Card Body -->
+    <div class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
+      
+      <!-- Modal Header -->
+      <div class="flex flex-col gap-3 px-6 pt-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="m-0 text-lg font-bold text-defaulttextcolor">
+              Import {{ entityPluralTitle }}
+            </h2>
+            <p class="m-0 text-xs text-textmuted mt-0.5">
+              Upload multiple {{ entityPluralTitle.toLowerCase() }} in bulk via file or quick manual entry.
+            </p>
+          </div>
+
+          <!-- Counters Badge Strip -->
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-black/20 dark:text-gray-300">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              {{ entityPluralTitle }} to be imported: <strong class="text-defaulttextcolor">{{ propertiesToBeImported }}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-success dark:bg-success/10">
+              <span class="w-2 h-2 rounded-full bg-success"></span>
+              {{ entityPluralTitle }} imported: <strong class="text-success">{{ propertiesImported }}</strong>
+            </span>
+            <span *ngIf="failedCount > 0" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-danger dark:bg-danger/10">
+              <span class="w-2 h-2 rounded-full bg-danger"></span>
+              Failed: <strong class="text-danger">{{ failedCount }}</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Mode Tabs (Visible when not actively importing or completed) -->
+        <div *ngIf="currentStep === 'input'" class="flex items-center gap-3 border-b border-defaultborder pt-2">
+          <button
+            type="button"
+            class="pb-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2"
+            [class.border-primary]="activeTab === 'manual'"
+            [class.text-primary]="activeTab === 'manual'"
+            [class.border-transparent]="activeTab !== 'manual'"
+            [class.text-textmuted]="activeTab !== 'manual'"
+            (click)="switchTab('manual')">
+            <i class="ri-edit-line text-[16px]"></i>
+            Manual Entry (Quick Add Required Fields)
+          </button>
+          <button
+            type="button"
+            class="pb-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2"
+            [class.border-primary]="activeTab === 'file'"
+            [class.text-primary]="activeTab === 'file'"
+            [class.border-transparent]="activeTab !== 'file'"
+            [class.text-textmuted]="activeTab !== 'file'"
+            (click)="switchTab('file')">
+            <i class="ri-file-excel-2-line text-[16px]"></i>
+            File Upload (.xlsx, .csv)
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body Content -->
+      <div class="p-6">
+
+        <!-- STEP 1: INPUT MODE -->
+        <ng-container *ngIf="currentStep === 'input'">
+
+          <!-- TAB 1: MANUAL ENTRY TABLE -->
+          <div *ngIf="activeTab === 'manual'" class="flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-textmuted">
+                Fill in the required fields below. Add more rows as needed.
+              </span>
+              <button
+                type="button"
+                class="ov-btn ov-btn-ghost text-xs text-primary font-semibold flex items-center gap-1"
+                (click)="addManualRow()">
+                <i class="ri-add-line text-sm"></i>
+                + Add Another {{ entityTitle }}
+              </button>
+            </div>
+
+            <!-- Manual Rows Table (Properties) -->
+            <div *ngIf="entityType === 'property'" class="overflow-x-auto max-h-[340px] rounded-lg border border-defaultborder">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-gray-50 dark:bg-black/10 sticky top-0 z-10 border-b border-defaultborder">
+                  <tr>
+                    <th class="py-2.5 px-3 w-10 text-center font-semibold text-textmuted">#</th>
+                    <th class="py-2.5 px-3 min-w-[200px] font-semibold text-defaulttextcolor">
+                      Property Name <span class="text-danger">*</span>
+                    </th>
+                    <th class="py-2.5 px-3 min-w-[160px] font-semibold text-defaulttextcolor">
+                      Property Type <span class="text-danger">*</span>
+                    </th>
+                    <th class="py-2.5 px-3 min-w-[100px] font-semibold text-defaulttextcolor">
+                      Total Units
+                    </th>
+                    <th class="py-2.5 px-3 min-w-[180px] font-semibold text-defaulttextcolor">
+                      Address / Location
+                    </th>
+                    <th class="py-2.5 px-3 w-12 text-center font-semibold text-textmuted"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-defaultborder">
+                  <tr *ngFor="let row of manualPropertyRows; let idx = index" class="hover:bg-gray-50/50 dark:hover:bg-black/5">
+                    <td class="py-2 px-3 text-center text-textmuted font-medium">{{ idx + 1 }}</td>
+                    <td class="py-2 px-3">
+                      <input
+                        type="text"
+                        class="ov-input h-8 text-xs w-full"
+                        placeholder="e.g. Marina Heights"
+                        [(ngModel)]="row.propertyName"
+                        (ngModelChange)="onManualFieldChange()" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <select
+                        class="ov-input h-8 text-xs w-full cursor-pointer"
+                        [(ngModel)]="row.propertyType"
+                        (ngModelChange)="onManualFieldChange()">
+                        <option *ngFor="let pt of propertyTypes" [ngValue]="pt.id">{{ pt.name }}</option>
+                      </select>
+                    </td>
+                    <td class="py-2 px-3">
+                      <input
+                        type="number"
+                        min="0"
+                        class="ov-input h-8 text-xs w-full"
+                        placeholder="e.g. 50"
+                        [(ngModel)]="row.totalUnits"
+                        (ngModelChange)="onManualFieldChange()" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <input
+                        type="text"
+                        class="ov-input h-8 text-xs w-full"
+                        placeholder="e.g. Dubai Marina"
+                        [(ngModel)]="row.address1"
+                        (ngModelChange)="onManualFieldChange()" />
+                    </td>
+                    <td class="py-2 px-3 text-center">
+                      <button
+                        type="button"
+                        class="text-textmuted hover:text-danger p-1 rounded transition-colors"
+                        title="Remove row"
+                        (click)="removeManualRow(idx)">
+                        <i class="ri-delete-bin-line text-[16px]"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Manual Rows Table (Units) -->
+            <div *ngIf="entityType === 'unit'" class="overflow-x-auto max-h-[340px] rounded-lg border border-defaultborder">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-gray-50 dark:bg-black/10 sticky top-0 z-10 border-b border-defaultborder">
+                  <tr>
+                    <th class="py-2.5 px-3 w-10 text-center font-semibold text-textmuted">#</th>
+                    <th class="py-2.5 px-3 min-w-[160px] font-semibold text-defaulttextcolor">Property <span class="text-danger">*</span></th>
+                    <th class="py-2.5 px-3 min-w-[160px] font-semibold text-defaulttextcolor">Unit Name <span class="text-danger">*</span></th>
+                    <th class="py-2.5 px-3 min-w-[120px] font-semibold text-defaulttextcolor">Unit No</th>
+                    <th class="py-2.5 px-3 min-w-[130px] font-semibold text-defaulttextcolor">Unit Type</th>
+                    <th class="py-2.5 px-3 min-w-[110px] font-semibold text-defaulttextcolor">Market Rent</th>
+                    <th class="py-2.5 px-3 w-12 text-center font-semibold text-textmuted"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-defaultborder">
+                  <tr *ngFor="let row of manualUnitRows; let idx = index" class="hover:bg-gray-50/50 dark:hover:bg-black/5">
+                    <td class="py-2 px-3 text-center text-textmuted font-medium">{{ idx + 1 }}</td>
+                    <td class="py-2 px-3">
+                      <select class="ov-input h-8 text-xs w-full cursor-pointer" [(ngModel)]="row.propertyId">
+                        <option *ngFor="let p of propertiesList" [ngValue]="p.id">{{ p.name }}</option>
+                      </select>
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="text" class="ov-input h-8 text-xs w-full" placeholder="e.g. Flat 101" [(ngModel)]="row.unitName" (ngModelChange)="onManualFieldChange()" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="text" class="ov-input h-8 text-xs w-full" placeholder="101" [(ngModel)]="row.unitNo" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <select class="ov-input h-8 text-xs w-full cursor-pointer" [(ngModel)]="row.unitType">
+                        <option *ngFor="let ut of unitTypesList" [ngValue]="ut.id">{{ ut.name }}</option>
+                      </select>
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="number" class="ov-input h-8 text-xs w-full" placeholder="60000" [(ngModel)]="row.marketRent" />
+                    </td>
+                    <td class="py-2 px-3 text-center">
+                      <button type="button" class="text-textmuted hover:text-danger p-1 rounded" (click)="removeManualRow(idx)">
+                        <i class="ri-delete-bin-line text-[16px]"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Manual Rows Table (Rooms) -->
+            <div *ngIf="entityType === 'room'" class="overflow-x-auto max-h-[340px] rounded-lg border border-defaultborder">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-gray-50 dark:bg-black/10 sticky top-0 z-10 border-b border-defaultborder">
+                  <tr>
+                    <th class="py-2.5 px-3 w-10 text-center font-semibold text-textmuted">#</th>
+                    <th class="py-2.5 px-3 min-w-[160px] font-semibold text-defaulttextcolor">Property <span class="text-danger">*</span></th>
+                    <th class="py-2.5 px-3 min-w-[160px] font-semibold text-defaulttextcolor">Room Name <span class="text-danger">*</span></th>
+                    <th class="py-2.5 px-3 min-w-[120px] font-semibold text-defaulttextcolor">Room No</th>
+                    <th class="py-2.5 px-3 min-w-[130px] font-semibold text-defaulttextcolor">Room Type</th>
+                    <th class="py-2.5 px-3 min-w-[110px] font-semibold text-defaulttextcolor">Rent</th>
+                    <th class="py-2.5 px-3 w-12 text-center font-semibold text-textmuted"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-defaultborder">
+                  <tr *ngFor="let row of manualRoomRows; let idx = index" class="hover:bg-gray-50/50 dark:hover:bg-black/5">
+                    <td class="py-2 px-3 text-center text-textmuted font-medium">{{ idx + 1 }}</td>
+                    <td class="py-2 px-3">
+                      <select class="ov-input h-8 text-xs w-full cursor-pointer" [(ngModel)]="row.propertyId">
+                        <option *ngFor="let p of propertiesList" [ngValue]="p.id">{{ p.name }}</option>
+                      </select>
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="text" class="ov-input h-8 text-xs w-full" placeholder="e.g. Master Bedroom" [(ngModel)]="row.roomName" (ngModelChange)="onManualFieldChange()" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="text" class="ov-input h-8 text-xs w-full" placeholder="R-101" [(ngModel)]="row.roomNo" />
+                    </td>
+                    <td class="py-2 px-3">
+                      <select class="ov-input h-8 text-xs w-full cursor-pointer" [(ngModel)]="row.roomType">
+                        <option *ngFor="let rt of roomTypesList" [ngValue]="rt.id">{{ rt.name }}</option>
+                      </select>
+                    </td>
+                    <td class="py-2 px-3">
+                      <input type="number" class="ov-input h-8 text-xs w-full" placeholder="2500" [(ngModel)]="row.marketRent" />
+                    </td>
+                    <td class="py-2 px-3 text-center">
+                      <button type="button" class="text-textmuted hover:text-danger p-1 rounded" (click)="removeManualRow(idx)">
+                        <i class="ri-delete-bin-line text-[16px]"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Add Row Button Bottom -->
+            <div>
+              <button
+                type="button"
+                class="ov-btn ov-btn-ghost text-xs border border-dashed border-defaultborder w-full py-2.5 flex items-center justify-center gap-1.5 text-textmuted hover:text-primary hover:border-primary"
+                (click)="addManualRow()">
+                <i class="ri-add-circle-line text-[18px]"></i>
+                Add Another {{ entityTitle }} Row
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 2: FILE UPLOAD -->
+          <div *ngIf="activeTab === 'file'" class="flex flex-col gap-4">
+            
+            <!-- Download Template Banner -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-primary/5 border border-primary/20">
+              <div class="flex items-center gap-2.5">
+                <i class="ri-file-download-line text-primary text-xl"></i>
+                <div>
+                  <h4 class="m-0 text-xs font-semibold text-defaulttextcolor">Need an Excel template?</h4>
+                  <p class="m-0 text-[11px] text-textmuted">Download our ready-to-use sample spreadsheet with all required columns.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="ov-btn ov-btn-ghost text-xs border border-primary text-primary hover:bg-primary/10 py-1.5 px-3"
+                (click)="downloadSampleTemplate()">
+                <i class="ri-download-2-line mr-1"></i>
+                Download Sample Template
+              </button>
+            </div>
+
+            <!-- Drag & Drop Zone -->
+            <div
+              class="relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-2xl transition-all cursor-pointer"
+              [class.border-primary]="isDragOver"
+              [class.bg-blue-50]="isDragOver"
+              [class.border-defaultborder]="!isDragOver"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onFileDrop($event)"
+              (click)="fileInput.click()">
+              
+              <input
+                #fileInput
+                type="file"
+                class="hidden"
+                accept=".xlsx, .xls, .csv"
+                (change)="onFileSelected($event)" />
+
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
+                <i class="ri-upload-cloud-2-line text-2xl"></i>
+              </div>
+
+              <p class="m-0 text-sm font-semibold text-defaulttextcolor">
+                Drag and drop your file here, or <span class="text-primary underline">browse</span>
+              </p>
+              <p class="m-0 text-xs text-textmuted mt-1">
+                Supports Microsoft Excel (.xlsx, .xls) and CSV (.csv) files
+              </p>
+
+              <!-- Selected File Card -->
+              <div
+                *ngIf="selectedFile"
+                class="mt-4 flex items-center gap-3 px-4 py-2 rounded-lg border border-defaultborder bg-white dark:bg-bodybg shadow-sm"
+                (click)="$event.stopPropagation()">
+                <i class="ri-file-excel-line text-success text-xl"></i>
+                <div class="flex flex-col text-left">
+                  <span class="text-xs font-semibold text-defaulttextcolor">{{ fileName }}</span>
+                  <span class="text-[11px] text-textmuted">{{ fileSize }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="ml-2 text-textmuted hover:text-danger text-sm"
+                  title="Remove file"
+                  (click)="selectedFile = null; fileName = ''; parsedFileRows = []; updateCounters()">
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- File Data Preview (if file parsed) -->
+            <div *ngIf="parsedFileRows.length > 0" class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-defaulttextcolor">
+                  Data Preview (First 5 of {{ parsedFileRows.length }} rows)
+                </span>
+                <span class="text-xs text-success font-medium">
+                  ✔ Valid records ready for import
+                </span>
+              </div>
+              <div class="overflow-x-auto max-h-[160px] rounded-lg border border-defaultborder">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead class="bg-gray-50 dark:bg-black/10 sticky top-0 border-b border-defaultborder">
+                    <tr>
+                      <th *ngFor="let h of filePreviewHeaders" class="py-2 px-3 font-semibold text-textmuted">{{ h }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-defaultborder">
+                    <tr *ngFor="let row of filePreviewRows">
+                      <td *ngFor="let h of filePreviewHeaders" class="py-1.5 px-3 text-defaulttextcolor">{{ row[h] || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- STEP 2: IMPORTING IN PROGRESS -->
+        <div *ngIf="currentStep === 'importing'" class="flex flex-col items-center justify-center py-10 px-4 text-center">
+          <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 animate-pulse">
+            <i class="ri-loader-4-line text-3xl animate-spin"></i>
+          </div>
+
+          <h3 class="m-0 text-base font-bold text-defaulttextcolor">
+            Importing {{ entityPluralTitle }}...
+          </h3>
+          <p class="m-0 text-xs text-textmuted mt-1 max-w-md">
+            Processing row <strong>{{ propertiesImported + failedCount + 1 }}</strong> of <strong>{{ propertiesToBeImported }}</strong>: {{ currentProcessingName }}
+          </p>
+
+          <!-- Animated Progress Bar -->
+          <div class="w-full max-w-md bg-gray-200 dark:bg-black/20 rounded-full h-3.5 mt-5 overflow-hidden">
+            <div
+              class="bg-primary h-3.5 rounded-full transition-all duration-300 flex items-center justify-end pr-2 text-[10px] font-bold text-white leading-none"
+              [style.width.%]="progressPercent">
+            </div>
+          </div>
+          <span class="text-xs font-semibold text-primary mt-2">{{ progressPercent }}% Complete</span>
+
+          <div class="flex items-center gap-6 mt-6 pt-4 border-t border-defaultborder text-xs text-textmuted">
+            <span>To be imported: <strong class="text-defaulttextcolor">{{ propertiesToBeImported }}</strong></span>
+            <span>Imported: <strong class="text-success">{{ propertiesImported }}</strong></span>
+            <span>Failed: <strong class="text-danger">{{ failedCount }}</strong></span>
+          </div>
+        </div>
+
+        <!-- STEP 3: COMPLETED -->
+        <div *ngIf="currentStep === 'completed'" class="flex flex-col items-center justify-center py-8 px-4 text-center">
+          <div
+            class="w-14 h-14 rounded-full flex items-center justify-center mb-4"
+            [ngClass]="propertiesImported > 0 ? 'bg-green-100 text-success' : 'bg-red-100 text-danger'">
+            <i *ngIf="propertiesImported > 0" class="ri-checkbox-circle-line text-4xl"></i>
+            <i *ngIf="propertiesImported === 0" class="ri-error-warning-line text-4xl"></i>
+          </div>
+
+          <h3 class="m-0 text-lg font-bold text-defaulttextcolor">
+            Import Finished
+          </h3>
+          <p class="m-0 text-xs text-textmuted mt-1">
+            Successfully imported <strong>{{ propertiesImported }}</strong> of <strong>{{ totalToImport }}</strong> {{ entityPluralTitle.toLowerCase() }}.
+          </p>
+
+          <!-- Error Details List if any failed -->
+          <div *ngIf="errorLog.length > 0" class="w-full max-w-lg mt-5 text-left rounded-xl border border-danger/30 bg-red-50/50 p-4">
+            <div class="flex items-center justify-between text-xs font-semibold text-danger mb-2">
+              <span>Failed Records ({{ errorLog.length }})</span>
+            </div>
+            <div class="max-h-32 overflow-y-auto space-y-1.5 text-xs">
+              <div *ngFor="let err of errorLog" class="flex items-start gap-1.5 text-danger">
+                <span>• Row {{ err.row }} ({{ err.name }}):</span>
+                <span class="text-textmuted">{{ err.message }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-defaultborder px-6 py-4 bg-gray-50/50 dark:bg-black/5">
+        <div class="text-xs text-textmuted font-medium">
+          <span *ngIf="currentStep === 'input'">
+            Ready to upload: <strong class="text-defaulttextcolor">{{ propertiesToBeImported }}</strong> {{ entityPluralTitle.toLowerCase() }}
+          </span>
+          <span *ngIf="currentStep === 'importing'">
+            Please do not close this window while the import is processing.
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button
+            type="button"
+            class="ov-btn ov-btn-ghost text-xs"
+            [disabled]="currentStep === 'importing'"
+            (click)="closeModal()">
+            {{ currentStep === 'completed' ? 'Close' : 'Cancel' }}
+          </button>
+
+          <button
+            *ngIf="currentStep === 'input'"
+            type="button"
+            class="ov-btn ov-btn-primary text-xs flex items-center gap-1.5"
+            [disabled]="propertiesToBeImported === 0"
+            (click)="startImport()">
+            <i class="ri-upload-2-line text-sm"></i>
+            <span>Start Import ({{ propertiesToBeImported }})</span>
+          </button>
+
+          <button
+            *ngIf="currentStep === 'completed'"
+            type="button"
+            class="ov-btn ov-btn-primary text-xs flex items-center gap-1.5"
+            (click)="closeModal()">
+            <i class="ri-check-line text-sm"></i>
+            <span>Done & Refresh List</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

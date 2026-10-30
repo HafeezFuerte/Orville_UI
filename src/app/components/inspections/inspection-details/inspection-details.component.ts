@@ -1,18 +1,21 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
 
 @Component({
   selector: 'app-inspection-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ReusableModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, SharedTableComponent, ReusableModalComponent],
   templateUrl: './inspection-details.component.html',
   styleUrl: './inspection-details.component.scss'
 })
 export class InspectionDetailsComponent implements OnInit {
+  private translate = inject(TranslateService);
+
   isLoading = false;
   showModal = false;
   imageIndex = 0;
@@ -27,13 +30,13 @@ export class InspectionDetailsComponent implements OnInit {
   showActionMenu = false;
 
   inspectionItemsColumns = [
-    { key: 'item', label: 'Item', visible: true, useTemplate: true },
-    { key: 'cleanliness', label: 'Cleanliness', visible: true, useTemplate: true },
-    { key: 'condition', label: 'Condition', visible: true, useTemplate: true },
-    { key: 'notes', label: 'Notes', visible: true, useTemplate: true },
-    { key: 'images', label: 'Images', visible: true, useTemplate: true },
-    { key: 'qty', label: 'Qty', visible: true, useTemplate: true },
-    { key: 'cost', label: 'Cost', visible: true, useTemplate: true }
+    { key: 'item', label: 'Item', labelKey: 'web.inspections.details.colItem', visible: true, useTemplate: true },
+    { key: 'cleanliness', label: 'Cleanliness', labelKey: 'web.inspections.details.colCleanliness', visible: true, useTemplate: true },
+    { key: 'condition', label: 'Condition', labelKey: 'web.inspections.details.colCondition', visible: true, useTemplate: true },
+    { key: 'notes', label: 'Notes', labelKey: 'web.inspections.details.colNotes', visible: true, useTemplate: true },
+    { key: 'images', label: 'Images', labelKey: 'web.inspections.details.colImages', visible: true, useTemplate: true },
+    { key: 'qty', label: 'Qty', labelKey: 'web.inspections.details.colQty', visible: true, useTemplate: true },
+    { key: 'cost', label: 'Cost', labelKey: 'web.inspections.details.colCost', visible: true, useTemplate: true }
   ];
 
   inspectionItemsData = [
@@ -43,7 +46,20 @@ export class InspectionDetailsComponent implements OnInit {
     { item: '31658', cleanliness: 'Clean', condition: 'Good', notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', images: ['img1'], qty: null, cost: null }
   ];
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.updateColumnLabels();
+    this.translate.onLangChange.subscribe(() => {
+      this.updateColumnLabels();
+    });
+  }
+
+  private updateColumnLabels() {
+    this.inspectionItemsColumns.forEach(col => {
+      if (col.labelKey) {
+        col.label = this.translate.instant(col.labelKey);
+      }
+    });
+  }
 
   @HostListener('document:click')
   onDocumentClick(): void {

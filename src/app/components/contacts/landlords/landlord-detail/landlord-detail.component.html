@@ -6,13 +6,13 @@
     <div>
       <h3 class="ov-page-title">{{ 'web.contacts.lblLandlordDetails' | translate }}</h3>
       <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']">Home</a></li>
+        <li><a [routerLink]="['/insights']">{{ 'web.contacts.lblHome' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li><a routerLink="/contacts/landlords">Contacts</a></li>
+        <li><a routerLink="/contacts/landlords">{{ 'web.contacts.lblContacts' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li><a routerLink="/contacts/landlords">Landlords</a></li>
+        <li><a routerLink="/contacts/landlords">{{ 'web.contacts.lblLandlords' | translate }}</a></li>
         <li class="px-2">/</li>
-        <li class="font-semibold text-defaulttextcolor">Details</li>
+        <li class="font-semibold text-defaulttextcolor">{{ 'web.contacts.lblDetails' | translate }}</li>
       </ol>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <div class="relative">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="showActionDropdown = !showActionDropdown"
         [attr.aria-expanded]="showActionDropdown">
-        Action
+        {{ 'web.contacts.lblAction' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="showActionDropdown" class="ov-action-menu" role="menu">
@@ -34,7 +34,7 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ getActionLabel(option.label) | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -47,7 +47,7 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ getActionLabel(option.label) | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -72,18 +72,18 @@
         </div>
         <div class="ov-detail-side__actions">
           <button type="button" class="ov-detail-side__action">{{ 'web.contacts.lblViewActivity' | translate }}</button>
-          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">Email Sub ({{ subscriptionSubscribedCount }}/{{ subscriptions.length }})</button>
+          <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="showSubscriptionsModal = true">{{ 'web.contacts.lblEmailSub' | translate }} ({{ subscriptionSubscribedCount }}/{{ subscriptions.length }})</button>
         </div>
       </div>
 
       <div class="ov-detail-side__rule"></div>
-      <h6 class="ov-detail-side__section-title">Information</h6>
+      <h6 class="ov-detail-side__section-title">{{ 'web.contacts.lblInformation' | translate }}</h6>
 
       <!-- Login Information -->
       <div class="ov-detail-panel">
         <div class="ov-detail-panel__head">
           <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblLoginInformation' | translate }}</h6>
-          <span class="ov-detail-chip ov-detail-chip--danger">Not Verified</span>
+          <span class="ov-detail-chip ov-detail-chip--danger">{{ 'web.contacts.lblNotVerified' | translate }}</span>
         </div>
         <div class="ov-detail-panel__body">
           <div class="ov-kv">
@@ -126,7 +126,7 @@
           <div class="my-1 flex justify-center">
             <a href="javascript:void(0)" (click)="showPersonalDetails = !showPersonalDetails"
               class="ov-link ov-more-toggle text-[12px] font-semibold">
-              <span>{{ showPersonalDetails ? 'View less details' : 'View more details' }}</span>
+              <span>{{ (showPersonalDetails ? 'web.contacts.lblViewLessDetails' : 'web.contacts.lblViewMoreDetails') | translate }}</span>
               <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" [class.rotate-180]="showPersonalDetails" />
             </a>
           </div>
@@ -137,7 +137,7 @@
               <span class="ov-kv__value">{{ landlord.personal.dob }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Marital Status:</span>
+              <span class="ov-kv__label">{{ 'web.contacts.lblMaritalStatus' | translate }}:</span>
               <span class="ov-kv__value">{{ landlord.personal.maritalStatus }}</span>
             </div>
             <div class="ov-kv">
@@ -165,8 +165,8 @@
               <span class="ov-kv__value">{{ landlord.personal.city }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Profile Verified:</span>
-              <span class="ov-detail-chip ov-detail-chip--danger">No</span>
+              <span class="ov-kv__label">{{ 'web.contacts.lblProfileVerified' | translate }}:</span>
+              <span class="ov-detail-chip ov-detail-chip--danger">{{ 'web.contacts.lblNo' | translate }}</span>
             </div>
           </div>
         </div>
@@ -188,7 +188,7 @@
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder mt-1">
-            <span class="text-[13px] text-defaulttextcolor">Negative Balance Allowed</span>
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblNegativeBalanceAllowed' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="negBalance" [(ngModel)]="landlord.wallet.negativeBalanceAllowed">
               <label for="negBalance" class="label-primary"></label>
@@ -196,7 +196,7 @@
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
-            <span class="text-[13px] text-defaulttextcolor">Hold Wallet Money</span>
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblHoldWalletMoney' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="holdWalletMoneyToggle" [(ngModel)]="landlord.wallet.holdWalletMoney">
               <label for="holdWalletMoneyToggle" class="label-primary"></label>
@@ -212,7 +212,7 @@
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
-            <span class="text-[13px] text-defaulttextcolor">Include Security Deposit (Non-Leasee)</span>
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblIncludeSecurityDepositNonLeasee' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="includeDepositNonLeasee" [(ngModel)]="landlord.wallet.includeSecurityDepositNonLeasee">
               <label for="includeDepositNonLeasee" class="label-primary"></label>
@@ -220,7 +220,7 @@
           </div>
 
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder">
-            <span class="text-[13px] text-defaulttextcolor">Include Contribution in Wallet Deposit</span>
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblIncludeContributionInWalletDeposit' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="includeContributionWallet" [(ngModel)]="landlord.wallet.includeContributionWalletDeposit">
               <label for="includeContributionWallet" class="label-primary"></label>
@@ -228,7 +228,7 @@
           </div>
 
           <div class="ov-kv border-t border-defaultborder pt-2.5">
-            <span class="ov-kv__label">Money Held By:</span>
+            <span class="ov-kv__label">{{ 'web.contacts.lblMoneyHeldBy' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.wallet.moneyHeldBy }}</span>
           </div>
         </div>
@@ -261,7 +261,7 @@
             <span class="ov-kv__value">{{ landlord.bank.accountNo }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Sort Code:</span>
+            <span class="ov-kv__label">{{ 'web.contacts.lblSortCode' | translate }}:</span>
             <span class="ov-kv__value">{{ landlord.bank.sortCode }}</span>
           </div>
         </div>
@@ -281,7 +281,7 @@
             </div>
           </div>
           <div class="flex justify-between items-center gap-3 py-1 border-t border-defaultborder pt-2">
-            <span class="text-[13px] text-defaulttextcolor">Signature Attached</span>
+            <span class="text-[13px] text-defaulttextcolor">{{ 'web.contacts.lblSignatureAttached' | translate }}</span>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="sigAttachedToggle" [(ngModel)]="landlord.signature.signatureAttached">
               <label for="sigAttachedToggle" class="label-primary"></label>
@@ -290,8 +290,8 @@
 
           <div class="ov-detail-panel__empty !mx-0 !mb-0">
             <i class="ri-image-line text-2xl text-textmuted"></i>
-            <span class="text-[12px] text-textmuted font-medium">No signature uploaded</span>
-            <span class="text-[11px] text-textmuted">Signature image will appear here when uploaded</span>
+            <span class="text-[12px] text-textmuted font-medium">{{ 'web.contacts.lblNoSignatureUploaded' | translate }}</span>
+            <span class="text-[11px] text-textmuted">{{ 'web.contacts.lblNoSignatureUploadedHint' | translate }}</span>
           </div>
         </div>
       </div>
@@ -299,7 +299,7 @@
       <!-- Emergency Contact -->
       <div class="ov-detail-panel">
         <div class="ov-detail-panel__head">
-          <h6 class="ov-detail-panel__title">Emergency Contact</h6>
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblEmergencyContact' | translate }}</h6>
           <button type="button" (click)="showAddEmergencyContactModal = true"
             class="ov-icon-btn !h-7 !w-7 !rounded-md bg-primary text-white border-0" aria-label="Add emergency contact">
             <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" />
@@ -315,15 +315,15 @@
             <span class="ov-kv__value">Zaid Rahman</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Relation:</span>
+            <span class="ov-kv__label">{{ 'web.contacts.lblRelation' | translate }}:</span>
             <span class="ov-kv__value">Brother</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Phone:</span>
+            <span class="ov-kv__label">{{ 'web.contacts.lblPhone' | translate }}:</span>
             <span class="ov-kv__value">05690 253 25</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Work Phone:</span>
+            <span class="ov-kv__label">{{ 'web.contacts.lblWorkPhone' | translate }}:</span>
             <span class="ov-kv__value">05682 605 52</span>
           </div>
         </div>
@@ -332,9 +332,9 @@
       <!-- Custom Fields -->
       <div class="ov-detail-panel">
         <div class="ov-detail-panel__head">
-          <h6 class="ov-detail-panel__title">Custom Fields</h6>
+          <h6 class="ov-detail-panel__title">{{ 'web.contacts.lblCustomFields' | translate }}</h6>
         </div>
-        <div class="ov-detail-panel__empty">No custom fields configured yet. Custom fields will appear here when configured.</div>
+        <div class="ov-detail-panel__empty">{{ 'web.contacts.lblNoCustomFields' | translate }}</div>
       </div>
     </div>
   </div>
@@ -343,28 +343,28 @@
     <div class="box ov-card overflow-visible shadow-none !mb-0">
     <div class="ov-detail-tabs">
       <button type="button" *ngFor="let tab of tabs" class="ov-detail-tabs__btn"
-        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ tab }}</button>
+        [class.is-active]="activeTab === tab" (click)="setTab(tab)">{{ getTabLabel(tab) | translate }}</button>
     </div>
 
     <div class="p-5">
     <!-- TAB: Wallet -->
     <div *ngIf="activeTab === 'Wallet'" class="flex flex-col gap-5 animate-fade-in">
-      <h4 class="ov-card-title m-0">Landlord Overview</h4>
+      <h4 class="ov-card-title m-0">{{ 'web.contacts.lblLandlordOverview' | translate }}</h4>
 
       <!-- Financial Summary (Figma 1467:56820) -->
       <section class="ov-finance-summary" aria-label="Financial Summary">
         <div class="ov-finance-summary__head">
           <div class="ov-finance-summary__head-text">
-            <h5 class="ov-finance-summary__title">Financial Summary</h5>
+            <h5 class="ov-finance-summary__title">{{ 'web.contacts.lblFinancialSummary' | translate }}</h5>
             <p class="ov-finance-summary__sub">
-              Important values are grouped first, so the user can understand the portfolio position quickly.
+              {{ 'web.contacts.lblLandlordOverviewSub' | translate }}
             </p>
           </div>
           <div class="ov-finance-summary__status" aria-label="Portfolio status Active">
             <span class="ov-finance-summary__status-dot" aria-hidden="true"></span>
             <div>
-              <span class="ov-finance-summary__status-label">Portfolio status</span>
-              <span class="ov-finance-summary__status-value">Active</span>
+              <span class="ov-finance-summary__status-label">{{ 'web.contacts.lblPortfolioStatus' | translate }}</span>
+              <span class="ov-finance-summary__status-value">{{ 'web.contacts.lblActive' | translate }}</span>
             </div>
           </div>
         </div>
@@ -374,16 +374,16 @@
             <article class="ov-finance-summary__cash">
               <img class="ov-finance-summary__blob" src="assets/images/contacts/finance-blob.svg" alt="" aria-hidden="true" />
               <div>
-                <span class="ov-finance-summary__cash-label">Cash Balance</span>
+                <span class="ov-finance-summary__cash-label">{{ 'web.contacts.lblCashBalance' | translate }}</span>
                 <p class="ov-finance-summary__cash-value">AED {{ (landlordData?.cash_balance || landlordData?.wallet_balance || landlord.wallet.openingBalance || 0) | number:'1.2-2' }}</p>
               </div>
               <div class="ov-finance-summary__cash-metrics">
                 <div class="ov-finance-summary__cash-metric">
-                  <span class="ov-finance-summary__cash-metric-label">Portfolio Total Income</span>
+                  <span class="ov-finance-summary__cash-metric-label">{{ 'web.contacts.lblPortfolioTotalIncome' | translate }}</span>
                   <span class="ov-finance-summary__cash-metric-value">AED {{ (landlordData?.total_income || landlordData?.income || 0) | number:'1.2-2' }}</span>
                 </div>
                 <div class="ov-finance-summary__cash-metric">
-                  <span class="ov-finance-summary__cash-metric-label">Wallet Deposit</span>
+                  <span class="ov-finance-summary__cash-metric-label">{{ 'web.contacts.lblWalletDeposit' | translate }}</span>
                   <span class="ov-finance-summary__cash-metric-value">AED {{ (landlordData?.wallet_deposit || landlordData?.deposit || 0) | number:'1.2-2' }}</span>
                 </div>
               </div>
@@ -432,7 +432,7 @@
             <button type="button" class="ov-btn ov-btn-toolbar"
               [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
               <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-              Columns
+              {{ 'web.contacts.lblColumn' | translate }}
             </button>
           </div>
         </div>
@@ -467,12 +467,12 @@
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
             <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-            Filter
+            {{ 'web.contacts.lblFilter' | translate }}
           </button>
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.contacts.lblColumn' | translate }}
           </button>
         </div>
       </div>
@@ -531,12 +531,12 @@
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
             <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-            Filter
+            {{ 'web.contacts.lblFilter' | translate }}
           </button>
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.contacts.lblColumn' | translate }}
           </button>
         </div>
       </div>
@@ -579,7 +579,7 @@
               <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" />
             </span>
             <input type="text" class="form-control form-control-sm pl-7.5 text-xs bg-gray-50"
-              placeholder="Search agreements...">
+              [placeholder]="'web.contacts.lblSearchAgreements' | translate">
           </div>
         </div>
       </div>
@@ -608,7 +608,7 @@
 
         <!-- Left Side: Messages list (4 cols) -->
         <div class="col-span-12 md:col-span-4 border-r border-gray-100 pr-3 flex flex-col gap-3">
-          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">Messages</h6>
+          <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblMessages' | translate }}</h6>
 
           <!-- Search box -->
           <div class="input-group input-group-sm w-full relative">
@@ -616,7 +616,7 @@
               <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" />
             </span>
             <input type="text" [(ngModel)]="chatSearchQuery" class="form-control form-control-sm pl-7.5 text-[11px] bg-gray-50 rounded-md"
-              placeholder="Search contacts...">
+              [placeholder]="'web.contacts.lblSearchContacts' | translate">
           </div>
 
           <!-- Contacts list -->
@@ -666,7 +666,7 @@
           <div class="flex gap-2 items-center border-t border-gray-100 pt-3">
             <input type="text" [(ngModel)]="newMessageText" (keyup.enter)="sendChatMessage()"
               class="form-control form-control-sm text-xs flex-grow bg-gray-50 border-gray-200 rounded-md py-2"
-              placeholder="Write a message...">
+              [placeholder]="'web.contacts.lblWriteAMessage' | translate">
             <button type="button" (click)="sendChatMessage()"
               class="w-8 h-8 rounded-md bg-primary text-white border-0 hover:bg-primary-hover flex items-center justify-center shadow-sm cursor-pointer">
               <i class="ri-send-plane-fill text-sm"></i>
@@ -691,11 +691,11 @@
     <div *ngIf="activeTab === 'User'" class="flex flex-col gap-3 animate-fade-in">
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2 pb-2 border-b border-gray-100">
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordUsers' | translate }}</h6>
-        <button type="button" (click)="showAddUserModal = true"
+        <button type="button" (click)="openAddUserModal()"
           class="ov-btn ov-btn-primary !h-9"
-          [attr.data-tooltip]="'Add User'" aria-label="Add user">
+          [attr.data-tooltip]="'web.contacts.lblAddUser' | translate" aria-label="Add user">
           <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-          Add User
+          {{ 'web.contacts.lblAddUser' | translate }}
         </button>
       </div>
 
@@ -709,28 +709,41 @@
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
             <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-            Filter
+            {{ 'web.contacts.lblFilter' | translate }}
           </button>
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.contacts.lblColumn' | translate }}
           </button>
         </div>
       </div>
 
-      <app-shared-table [columns]="userColumns" [data]="userData" [loading]="false" [hasActions]="false">
+      <app-shared-table [columns]="userColumns" [data]="userData" [loading]="false" [hasActions]="false" [totalRecords]="userData.length">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container *ngIf="col.key === 'id'">
             <div class="flex items-center gap-2">
               <span
-                class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">AY</span>
+                class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">
+                {{ row.initials || getInitials(row.name) }}
+              </span>
               <span class="text-primary font-bold cursor-pointer hover:underline">{{ row.id }}</span>
             </div>
           </ng-container>
           <ng-container *ngIf="col.key === 'status'">
-            <span class="badge rounded px-2 py-0.5 text-[9px] font-bold bg-primary/10 text-primary uppercase">{{
-              row.status }}</span>
+            <span class="ov-status" [class.ov-status--active]="row.status === 'Active'">
+              {{ row.status }}
+            </span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'Default'">
+            <span class="badge" [ngClass]="row.isDefault ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500'">
+              {{ row.isDefault ? 'Default' : '-' }}
+            </span>
+          </ng-container>
+          <ng-container *ngIf="col.key === 'Actions' || col.key === 'action'">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Action">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+            </button>
           </ng-container>
         </ng-template>
       </app-shared-table>
@@ -742,9 +755,9 @@
         <h6 class="box-title font-semibold text-gray-800 text-sm mb-0.5">{{ 'web.contacts.lblLandlordEmergencyContact' | translate }}</h6>
         <button type="button" (click)="showAddEmergencyContactModal = true"
           class="ov-btn ov-btn-primary !h-9"
-          [attr.data-tooltip]="'Add Emergency Contact'" aria-label="Add emergency contact">
+          [attr.data-tooltip]="'web.contacts.lblAddEmergencyContact' | translate" aria-label="Add emergency contact">
           <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-          Add Emergency Contact
+          {{ 'web.contacts.lblAddEmergencyContact' | translate }}
         </button>
       </div>
 
@@ -758,12 +771,12 @@
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
             <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-            Filter
+            {{ 'web.contacts.lblFilter' | translate }}
           </button>
           <button type="button" class="ov-btn ov-btn-toolbar"
             [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.contacts.lblColumn' | translate }}
           </button>
         </div>
       </div>
@@ -1015,55 +1028,56 @@
     </button>
     <div class="ov-modal">
     <div class="ov-modal__header">
-      <h4 class="ov-modal__title">Add User Contact</h4>
-      <p class="ov-modal__sub">Register a secondary contact/owner to this landlord account.</p>
+      <h4 class="ov-modal__title">Add New User</h4>
+      <p class="ov-modal__sub">Create a user profile with login details, contact information, and default user preference.</p>
     </div>
     <div class="ov-modal__body flex flex-col gap-4">
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">First Name</label>
-          <input type="text" class="ov-input" placeholder="Enter first name">
+          <label class="ov-label">Email *</label>
+          <input type="email" class="ov-input" placeholder="Enter Email" [(ngModel)]="userForm.email_address">
         </div>
         <div>
-          <label class="ov-label">Last Name</label>
-          <input type="text" class="ov-input" placeholder="Enter last name">
-        </div>
-      </div>
-      <div class="ov-fields ov-fields--2">
-        <div>
-          <label class="ov-label">User Name</label>
-          <input type="text" class="ov-input" placeholder="Enter username">
-        </div>
-        <div>
-          <label class="ov-label">Role Type</label>
-          <select class="ov-input">
-            <option>Owner</option>
-            <option>Landlord Representative</option>
-            <option>Agent</option>
-          </select>
+          <label class="ov-label">Username</label>
+          <input type="text" class="ov-input" placeholder="Enter Username" [(ngModel)]="userForm.username">
         </div>
       </div>
       <div>
-        <label class="ov-label">Email Address</label>
-        <input type="email" class="ov-input" placeholder="e.g. contact@domain.com">
+        <label class="ov-label">Password *</label>
+        <input type="password" class="ov-input" placeholder="Enter Password" [(ngModel)]="userForm.password">
+        <span class="ov-modal__hint">Use at least 8 characters with a mix of letters and numbers</span>
       </div>
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">Phone Number</label>
-          <input type="text" class="ov-input" placeholder="e.g. 0528613568">
+          <label class="ov-label">First Name *</label>
+          <input type="text" class="ov-input" placeholder="Enter First Name" [(ngModel)]="userForm.first_name">
         </div>
         <div>
-          <label class="ov-label">Status</label>
-          <select class="ov-input">
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
+          <label class="ov-label">Last Name *</label>
+          <input type="text" class="ov-input" placeholder="Enter Last Name" [(ngModel)]="userForm.last_name">
         </div>
       </div>
+      <div>
+        <label class="ov-label">Phone *</label>
+        <div class="ov-phone">
+          <select class="ov-phone__code" [(ngModel)]="userForm.phone_code" aria-label="Country code">
+            <option value="+971">AE (+971)</option>
+            <option value="+91">IN (+91)</option>
+            <option value="+1">US (+1)</option>
+            <option value="+966">SA (+966)</option>
+            <option value="+44">UK (+44)</option>
+          </select>
+          <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="userForm.phone">
+        </div>
+      </div>
+      <label class="ov-modal__check">
+        <input type="checkbox" id="makeDefaultCheck" [(ngModel)]="userForm.is_default">
+        <span>Make Default</span>
+      </label>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" (click)="showAddUserModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" (click)="showAddUserModal = false" class="ov-btn ov-btn-primary">Add User</button>
+      <button type="button" (click)="showAddUserModal = false" class="ov-btn ov-btn-ghost">Close</button>
+      <button type="button" (click)="saveUser()" class="ov-btn ov-btn-primary">Save</button>
     </div>
   </div>
   </div>

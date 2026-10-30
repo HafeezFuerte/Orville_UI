@@ -7,6 +7,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { RESERVATION_ROWS, ReservationRow, ReservationStatus } from '../reservations.data';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-reservations',
@@ -18,7 +19,8 @@ import { RESERVATION_ROWS, ReservationRow, ReservationStatus } from '../reservat
     NgSelectModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,
+    TranslateModule
   ],
   templateUrl: './reservations.component.html'
 })
@@ -34,17 +36,17 @@ export class ReservationsComponent {
   allRows = RESERVATION_ROWS;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'name', label: 'Reservation Name', visible: true, useTemplate: true },
-    { key: 'reserve', label: 'Reserve', visible: true },
-    { key: 'space', label: 'Space', visible: true, useTemplate: true },
-    { key: 'lease', label: 'Lease', visible: true },
-    { key: 'time', label: 'Time', visible: true },
-    { key: 'bookingDate', label: 'Booking Date', visible: true },
-    { key: 'phone', label: 'Phone Number', visible: true },
-    { key: 'email', label: 'Email', visible: true },
-    { key: 'createdAt', label: 'Create At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.bookings.reservations.colName', visible: true, useTemplate: true },
+    { key: 'reserve', label: 'web.bookings.reservations.colReserve', visible: true },
+    { key: 'space', label: 'web.bookings.reservations.colSpace', visible: true, useTemplate: true },
+    { key: 'lease', label: 'web.bookings.reservations.colLease', visible: true },
+    { key: 'time', label: 'web.bookings.reservations.colTime', visible: true },
+    { key: 'bookingDate', label: 'web.bookings.reservations.colBookingDate', visible: true },
+    { key: 'phone', label: 'web.bookings.reservations.colPhone', visible: true },
+    { key: 'email', label: 'web.bookings.reservations.colEmail', visible: true },
+    { key: 'createdAt', label: 'web.bookings.reservations.colCreatedAt', visible: true },
+    { key: 'action', label: 'web.bookings.reservations.colAction', visible: true, useTemplate: true }
   ];
 
   constructor(private router: Router) {}

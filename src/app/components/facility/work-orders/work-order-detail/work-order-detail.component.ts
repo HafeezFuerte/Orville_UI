@@ -1,4 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,11 +25,24 @@ export class WorkOrderDetailComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
   private commonService = inject(CommonService);
   private commonTabsService = inject(Common_TabsService);
-  private toastr=inject(ToastrService);
+  private toastr = inject(ToastrService);
+  public translate = inject(TranslateService);
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
   tabs = ['Overview', 'Messages', 'Notes', 'Quotations', 'Inventory Request', 'Attachments'];
+
+  getTabLabel(tab: string): string {
+    const map: Record<string, string> = {
+      'Overview': 'web.leases.lblOverview',
+      'Messages': 'web.facility.workOrders.tabMessages',
+      'Notes': 'web.leases.lblNotes',
+      'Quotations': 'web.facility.quotations.title',
+      'Inventory Request': 'web.facility.workOrders.tabInventoryRequest',
+      'Attachments': 'web.leases.lblAttachments'
+    };
+    return map[tab] || tab;
+  }
   notesForm: any = {};
   attachmentsForm: any = {};
   tabsList: any[] = [];
@@ -130,105 +143,105 @@ export class WorkOrderDetailComponent implements OnInit {
   costs: any[] = [];
 
   costColumns = [
-    { key: 'detail', label: 'Detail', visible: true },
-    { key: 'category', label: 'Category', visible: true },
-    { key: 'cost', label: 'Cost', visible: true },
-    { key: 'action', label: 'Actions', visible: true, useTemplate: true }
+    { key: 'detail', label: 'web.leases.lblDetails', visible: true },
+    { key: 'category', label: 'web.contacts.lblCategories', visible: true },
+    { key: 'cost', label: 'web.facility.workOrders.lblCost', visible: true },
+    { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
   timeTracks: any[] = [];
 
   timeTrackColumns = [
-    { key: 'technician', label: 'Technician', visible: true, useTemplate: true },
-    { key: 'date', label: 'Date', visible: true },
-    { key: 'time', label: 'Time', visible: true },
-    { key: 'duration', label: 'Duration', visible: true }
+    { key: 'technician', label: 'web.contacts.lblSupportTechnicians', visible: true, useTemplate: true },
+    { key: 'date', label: 'web.leases.lblDate', visible: true },
+    { key: 'time', label: 'web.common.lblTime', visible: true },
+    { key: 'duration', label: 'web.facility.workOrders.lblDuration', visible: true }
   ];
 
   invoices: any[] = [];
 
   invoiceColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'to', label: 'To', visible: true },
-    { key: 'unit', label: 'Unit / Common Area', visible: true },
-    { key: 'invoiceNumber', label: 'Invoice Number', visible: true },
-    { key: 'chequeNo', label: 'Cheque no', visible: true },
-    { key: 'invoiceDate', label: 'Invoice Date', visible: true },
-    { key: 'invoiceType', label: 'Invoice Type', visible: true },
-    { key: 'account', label: 'Account', visible: true },
-    { key: 'currency', label: 'Currency', visible: true },
-    { key: 'propertyName', label: 'Property Name', visible: true },
-    { key: 'propertyId', label: 'Property ID', visible: true },
-    { key: 'leaseId', label: 'Lease ID', visible: true },
-    { key: 'leaseStatus', label: 'Lease Status', visible: true },
-    { key: 'note', label: 'Note', visible: true },
-    { key: 'workOrder', label: 'Work Order', visible: true },
-    { key: 'amount', label: 'Amount', visible: true },
-    { key: 'grossAmount', label: 'Gross Amount', visible: true },
-    { key: 'paid', label: 'Paid', visible: true },
-    { key: 'paymentVia', label: 'Payment Via', visible: true },
-    { key: 'moneyHeldBy', label: 'Money Held By', visible: true },
-    { key: 'doRefNo', label: 'DO Ref No', visible: true },
-    { key: 'bankName', label: 'Bank Name', visible: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'amtDue', label: 'Amt. Due', visible: true },
-    { key: 'dueDate', label: 'Due Date', visible: true },
-    { key: 'paidDate', label: 'Paid Date', visible: true },
-    { key: 'cheques', label: 'Cheque(s)', visible: true },
-    { key: 'days', label: 'Days', visible: true },
-    { key: 'writeAmountOff', label: 'Write-Amount Off', visible: true },
-    { key: 'createdBy', label: 'Created By', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'to', label: 'web.facility.workOrders.colTo', visible: true },
+    { key: 'unit', label: 'web.facility.workOrders.colUnitCommonArea', visible: true },
+    { key: 'invoiceNumber', label: 'web.leases.lblInvoiceNumber', visible: true },
+    { key: 'chequeNo', label: 'web.leases.lblChequeNo', visible: true },
+    { key: 'invoiceDate', label: 'web.leases.lblInvoiceDate', visible: true },
+    { key: 'invoiceType', label: 'web.leases.lblInvoiceType', visible: true },
+    { key: 'account', label: 'web.leases.lblAccount', visible: true },
+    { key: 'currency', label: 'web.leases.lblCurrency', visible: true },
+    { key: 'propertyName', label: 'web.leases.lblPropertyName', visible: true },
+    { key: 'propertyId', label: 'web.leases.lblPropertyId', visible: true },
+    { key: 'leaseId', label: 'web.leases.lblLeaseId', visible: true },
+    { key: 'leaseStatus', label: 'web.leases.lblLeaseStatus', visible: true },
+    { key: 'note', label: 'web.leases.lblNote', visible: true },
+    { key: 'workOrder', label: 'web.leases.lblWorkOrders', visible: true },
+    { key: 'amount', label: 'web.leases.lblAmount', visible: true },
+    { key: 'grossAmount', label: 'web.leases.lblGrossAmount', visible: true },
+    { key: 'paid', label: 'web.leases.lblPaid', visible: true },
+    { key: 'paymentVia', label: 'web.leases.lblPaymentVia', visible: true },
+    { key: 'moneyHeldBy', label: 'web.leases.lblMoneyHeldBy', visible: true },
+    { key: 'doRefNo', label: 'web.leases.lblDoRefNo', visible: true },
+    { key: 'bankName', label: 'web.leases.lblBankName', visible: true },
+    { key: 'internalStatus', label: 'web.leases.lblInternalStatus', visible: true },
+    { key: 'amtDue', label: 'web.leases.lblAmtDue', visible: true },
+    { key: 'dueDate', label: 'web.leases.lblDueDate', visible: true },
+    { key: 'paidDate', label: 'web.leases.lblPaidDate', visible: true },
+    { key: 'cheques', label: 'web.leases.lblCheques', visible: true },
+    { key: 'days', label: 'web.leases.lblDays', visible: true },
+    { key: 'writeAmountOff', label: 'web.leases.lblWriteAmountOff', visible: true },
+    { key: 'createdBy', label: 'web.leases.lblCreatedBy', visible: true },
+    { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
   notes: any[] = [];
 
   noteColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'subject', label: 'Subject', visible: true },
-    { key: 'content', label: 'Content', visible: true, useTemplate: true },
-    { key: 'via', label: 'Via', visible: true },
-    { key: 'noteDate', label: 'Note Date', visible: true },
-    { key: 'createdAt', label: 'createdAt', visible: true },
-    { key: 'UpdatedBy', label: 'UpdatedBy', visible: true },
-    { key: 'createdBy', label: 'CreatedBy', visible: true },
-    { key: 'Action', label: 'Action', visible: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'subject', label: 'web.common.lblSubject', visible: true },
+    { key: 'content', label: 'web.common.lblContent', visible: true, useTemplate: true },
+    { key: 'via', label: 'web.leases.lblVia', visible: true },
+    { key: 'noteDate', label: 'web.leases.lblNoteDate', visible: true },
+    { key: 'createdAt', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'UpdatedBy', label: 'web.leases.lblUpdatedBy', visible: true },
+    { key: 'createdBy', label: 'web.leases.lblCreatedBy', visible: true },
+    { key: 'Action', label: 'web.common.lblAction', visible: true }
 
   ];
 
   quotations: any[] = [];
 
   quotationColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'vendorName', label: 'Vendor Name', visible: true },
-    { key: 'quotationTitle', label: 'Quotation Title', visible: true },
-    { key: 'quotationNumber', label: 'Quotation Number', visible: true },
-    { key: 'totalPrice', label: 'Total Price', visible: true },
-    { key: 'EstdPrice', label: 'Estd Price', visible: true },
-    { key: 'deliveryDate', label: 'Delivery Date', visible: true },
-    { key: 'quotationCategoryName', label: 'Quotation Category Name', visible: true },
-    { key: 'LandlordStatus', label: 'Landlord Status', visible: true },
-    { key: 'TenantStatus', label: 'Tenant Status', visible: true },
-    { key: 'Username', label: 'Username', visible: true },
-    { key: 'CreatedAt', label: 'Created At', visible: true },
-    { key: 'UpdatedAt', label: 'Updated At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'vendorName', label: 'web.contacts.lblVendor', visible: true },
+    { key: 'quotationTitle', label: 'web.facility.quotations.colTitle', visible: true },
+    { key: 'quotationNumber', label: 'web.facility.quotations.colQuoteNo', visible: true },
+    { key: 'totalPrice', label: 'web.facility.quotations.colAmount', visible: true },
+    { key: 'EstdPrice', label: 'web.facility.quotations.colEstdPrice', visible: true },
+    { key: 'deliveryDate', label: 'web.facility.quotations.colDeliveryDate', visible: true },
+    { key: 'quotationCategoryName', label: 'web.facility.quotations.colCategory', visible: true },
+    { key: 'LandlordStatus', label: 'web.facility.quotations.colLandlordStatus', visible: true },
+    { key: 'TenantStatus', label: 'web.facility.quotations.colTenantStatus', visible: true },
+    { key: 'Username', label: 'web.facility.quotations.colUsername', visible: true },
+    { key: 'CreatedAt', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'UpdatedAt', label: 'web.contacts.lblUpdatedAt', visible: true },
+    { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
   inventoryRequests: any[] = [];
   inventoryRequestSearch = '';
 
   inventoryRequestColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'name', label: 'Name', visible: true },
-    { key: 'storeroom', label: 'Storeroom', visible: true },
-    { key: 'requestedFor', label: 'Requested For', visible: true },
-    { key: 'requestedDate', label: 'Requested Date', visible: true },
-    { key: 'requiredDate', label: 'Required Date', visible: true },
-    { key: 'items', label: 'Line Items', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.common.lblName', visible: true },
+    { key: 'storeroom', label: 'web.facility.workOrders.lblStoreroom', visible: true },
+    { key: 'requestedFor', label: 'web.facility.workOrders.lblRequestedFor', visible: true },
+    { key: 'requestedDate', label: 'web.facility.workOrders.lblRequestedDate', visible: true },
+    { key: 'requiredDate', label: 'web.facility.workOrders.lblRequiredDate', visible: true },
+    { key: 'items', label: 'web.facility.quotations.lineItems', visible: true },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true }
   ];
 
   get filteredInventoryRequests(): any[] {
@@ -286,11 +299,11 @@ export class WorkOrderDetailComponent implements OnInit {
     const f = this.irForm;
     const lines = f.lines.filter((l: any) => l.itemId && Number(l.qty) > 0);
     if (!f.name.trim() || !f.requestedFor || !f.storeroom) {
-      this.toastr.error('Please fill all required fields');
+      this.toastr.error(this.translate.instant('web.common.msgRequiredField'));
       return;
     }
     if (!lines.length) {
-      this.toastr.error('Add at least one line item with quantity');
+      this.toastr.error(this.translate.instant('web.facility.workOrders.msgAddOneLineItemWithQty'));
       return;
     }
     this.inventoryRequests.unshift({
@@ -353,20 +366,19 @@ export class WorkOrderDetailComponent implements OnInit {
   attachments: any[] = [];
 
   attachmentColumns =[
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'fileType', label: 'File Type', visible: true },
-    { key: 'docId', label: 'Doc ID', visible: true },
-    { key: 'documentStatus', label: 'Document Status', visible: true, useTemplate: true },
-    { key: 'issueDate', label: 'Issue Date', visible: true },
-    { key: 'expiryDate', label: 'Expiry Date', visible: true },
-    { key: 'files', label: 'Files', visible: true, useTemplate: true,isLink:true },
-    { key: 'ShareLandlord', label: 'Share Landlord', visible: true },
-    { key: 'ShareTenant', label: 'Share Tenant ', visible: true },
-    { key: 'CreatedAt', label: 'Created At', visible: true },
-    { key: 'UpdatedAt', label: 'Updated At', visible: true },
-    { key: 'UploadedBy', label: 'Uploaded By', visible: true },
-    { key: 'UpdatedAt', label: 'Updated At', visible: true },
-    { key: 'Action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'fileType', label: 'web.common.lblType', visible: true },
+    { key: 'docId', label: 'web.leases.lblDocumentNo', visible: true },
+    { key: 'documentStatus', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'issueDate', label: 'web.leases.lblIssueDate', visible: true },
+    { key: 'expiryDate', label: 'web.leases.lblExpiryDate', visible: true },
+    { key: 'files', label: 'web.common.lblFiles', visible: true, useTemplate: true,isLink:true },
+    { key: 'ShareLandlord', label: 'web.leases.lblShareWithLandlord', visible: true },
+    { key: 'ShareTenant', label: 'web.leases.lblShareWithTenant', visible: true },
+    { key: 'CreatedAt', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'UpdatedAt', label: 'web.contacts.lblUpdatedAt', visible: true },
+    { key: 'UploadedBy', label: 'web.leases.lblUploadedBy', visible: true },
+    { key: 'Action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
   messages: any[] = [];
@@ -393,7 +405,7 @@ export class WorkOrderDetailComponent implements OnInit {
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult) {
           if(typeId==77){
-            this.toastr.success("Successfully updated the status");
+            this.toastr.success(this.translate.instant('web.facility.workOrders.msgStatusUpdatedSuccess'));
             setTimeout(() => {
               window.location.reload();
             }, 5000);
@@ -531,11 +543,11 @@ export class WorkOrderDetailComponent implements OnInit {
 
   updateworkorder(){
     if(this.workOrderDetails.updatestatusid==null || this.workOrderDetails.updatestatusid==""){
-      this.toastr.error("Invalid status id");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidStatusId'));
       return;
      }
     if(this.updatednotes==null || this.updatednotes==""){
-     this.toastr.error("Invalid comments");
+     this.toastr.error(this.translate.instant('web.facility.workOrders.invalidComments'));
      return;
     }
     else{

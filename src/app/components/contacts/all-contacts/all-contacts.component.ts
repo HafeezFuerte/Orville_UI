@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
@@ -28,7 +28,7 @@ export interface Contact {
   templateUrl: './all-contacts.component.html',
   styleUrl: './all-contacts.component.scss'
 })
-export class AllContactsComponent implements OnInit {
+export class AllContactsComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   openActionCode: string | number | null = null;
@@ -75,6 +75,10 @@ export class AllContactsComponent implements OnInit {
     private toastr: ToastrService,
     private router: Router
   ) {}
+
+  ngOnDestroy(): void {
+    this.isDrawerOpen = false;
+  }
 
   toggleDrawer(open: boolean): void {
     this.isDrawerOpen = open;

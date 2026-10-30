@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   CommissionAllocationRow,
   CommissionDetail,
@@ -12,7 +13,7 @@ import {
 @Component({
   selector: 'app-commission-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './commission-detail.component.html',
   styleUrl: './commission-detail.component.scss'
 })

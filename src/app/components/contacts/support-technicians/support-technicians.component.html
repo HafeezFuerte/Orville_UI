@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
     <h3 class="ov-page-title">{{ 'web.contacts.lblSupportTechnicians' | translate }}</h3>
-    <p class="ov-page-sub">Manage and view all your support technicians</p>
+    <p class="ov-page-sub">{{ 'web.contacts.lblManageSupportTechnicians' | translate }}</p>
     <p class="sr-only">Contacts / Support Technicians</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
@@ -21,7 +21,7 @@
 <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
     <div class="flex flex-wrap items-center gap-3">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Lists</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.contacts.lbllist' | translate }}</h5>
     </div>
     <div class="ov-seg ov-seg--solid">
       <button type="button" (click)="setStatusFilter('All')" class="ov-seg__btn"
@@ -39,7 +39,7 @@
         <label class="sr-only" for="technician-search">{{ 'web.contacts.lblSearchByName' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="technician-search" type="text" class="ov-input ov-search__input" [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search by name, email and phone">
+          (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="{{ 'web.contacts.lblSearchByName' | translate }}">
       </div>
       <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
         <i class="ri-search-line text-[18px]"></i>
@@ -49,13 +49,13 @@
       <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
         [attr.data-tooltip]="'web.contacts.lblFilter' | translate">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.contacts.lblFilter' | translate }}
       </button>
       <div class="relative" (click)="$event.stopPropagation()">
         <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar"
           [attr.data-tooltip]="'web.contacts.lblColumn' | translate">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contacts.lblColumn' | translate }}
         </button>
         <div *ngIf="showColumnDropdown"
           class="absolute end-0 z-30 mt-1.5 flex min-w-[180px] flex-col gap-2 rounded-lg border border-defaultborder bg-white p-3 shadow-lg dark:bg-bodybg">
@@ -140,10 +140,10 @@
               class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
               <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
                 [routerLink]="['/contacts/support-technicians', row.code]"
-                (click)="openActionCode = null">View</a>
+                (click)="openActionCode = null">{{ 'web.common.view' | translate }}</a>
               <button type="button"
                 class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                (click)="editTechnician(row.code)">Edit</button>
+                (click)="editTechnician(row.code)">{{ 'web.common.edit' | translate }}</button>
                    <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
                    (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
             </div>
@@ -155,7 +155,7 @@
 
   <div class="ov-page">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.show' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
           <option [ngValue]="5">5</option>
@@ -166,10 +166,10 @@
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.common.lblShowing' | translate }} {{ startRecord }} {{ 'web.common.lblTo' | translate }} {{ endRecord }} {{ 'web.common.lblOf' | translate }} {{ totalRecords }} {{ 'web.common.lblRecords' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.common.lblPage' | translate }} {{ displayPage }} {{ 'web.common.lblOf' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
         <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
@@ -189,22 +189,23 @@
 
 <app-filter-drawer
   [(isOpen)]="isDrawerOpen"
+  [showDefaultFilters]="false"
   (apply)="onSearch()"
   (clear)="clearFilters()">
 
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Name</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterName" placeholder="Enter name">
+      <label class="ov-label mb-1.5">{{ 'web.contacts.lblName' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterName" [placeholder]="'web.common.lblEnter' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Email</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterEmail" placeholder="Enter email">
+      <label class="ov-label mb-1.5">{{ 'web.contacts.lblEmail' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterEmail" [placeholder]="'web.common.lblEnter' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Status</label>
+      <label class="ov-label mb-1.5">{{ 'web.contacts.lblStatus' | translate }}</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.common.lblSelect' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

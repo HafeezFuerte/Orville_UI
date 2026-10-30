@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component'; 
@@ -48,6 +48,7 @@ export class ExpenseDetailComponent implements OnInit {
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
   private accountingservice = inject(AccountingService);
+  private translate = inject(TranslateService);
   receivepayment:any= { receivefull:1, Amount:0,paiddate:null,payment_via:0,account:'',notes:'',reciept_file:null}
   showApprovalMenu = false;
   showApprovalModal=false;
@@ -66,12 +67,12 @@ export class ExpenseDetailComponent implements OnInit {
     danger?: boolean;
     dangerIcon?: boolean;
   }[] = [
-      { label: 'Edit Expense', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+      { label: 'web.accounting.expenses.editExpense', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
       // { label: 'Request for Approval', icon: 'ri-checkbox-line' },
-      { label: 'Send reminder', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' }, 
-      { label: 'Back to list', icon: 'ri-mail-line' },
-      { label: 'View activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
-      { label: 'Archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
+      { label: 'web.accounting.expenses.sendReminder', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' }, 
+      { label: 'web.accounting.expenses.backToList', icon: 'ri-mail-line' },
+      { label: 'web.accounting.expenses.viewActivity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+      { label: 'web.accounting.expenses.archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
 
     ];
 
@@ -218,20 +219,20 @@ export class ExpenseDetailComponent implements OnInit {
 
           if(this.invoice.status==252){ // draft mode
             this.actionOptions.splice(1, 0, {
-              label: 'Request for Approval',
+              label: 'web.accounting.expenses.requestForApproval',
               icon: 'ri-checkbox-line'
             }); 
           } 
           if(this.invoice.status==251){ // If it is unpaid mode
             this.actionOptions.splice(2, 0, {
-              label: 'Mark as paid',
+              label: 'web.accounting.expenses.markAsPaid',
               icon: 'Mark as paid',
               asset: 'assets/images/action-menu/file-invoice.svg'
             }); 
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -243,7 +244,7 @@ export class ExpenseDetailComponent implements OnInit {
     return row[(selectedLang === "EN" ? key : key + '_ar')] || row[key] || '';
   }
   goBack(): void {
-    void this.router.navigate(['/accounting/invoices']);
+    void this.router.navigate(['/accounting/expenses']);
   }
   onFilesSelected(files: File[]) {
     if (files.length > 0) {
@@ -259,11 +260,11 @@ export class ExpenseDetailComponent implements OnInit {
   }
   save_payment(){
     if(this.receivepayment.Amount==0){
-      this.toastr.error("Invalid amount");
+      this.toastr.error(this.translate.instant('web.accounting.expenses.invalidAmount'));
       return;
     }
     else if(this.receivepayment.payment_via==0){
-      this.toastr.error("Invalid payment type");
+      this.toastr.error(this.translate.instant('web.accounting.expenses.invalidPaymentType'));
       return;
     } 
     else{ 
@@ -295,7 +296,7 @@ export class ExpenseDetailComponent implements OnInit {
         next: (res:any) => {
           this.isLoading = false;
           if (res["statusCode"] == "200") {
-            this.toastr.success('Successfully Received Payment');
+            this.toastr.success(this.translate.instant('web.accounting.expenses.successfullyReceivedPayment'));
             setTimeout(() => {
               window.location.reload()
             }, 3000);
@@ -372,24 +373,24 @@ export class ExpenseDetailComponent implements OnInit {
   }
   onActionClick(label: string): void {
     this.actionOpen = false;
-    if (label === 'Edit Expense') {
+    if (label === 'Edit Expense' || label === 'web.accounting.expenses.editExpense') {
       this.actionOpen = false;
       this.router.navigate(['/accounting/expenses/edit-expense', this.invoice?.code]);
     } 
-    else if (label === 'Request for Approval') {
+    else if (label === 'Request for Approval' || label === 'web.accounting.expenses.requestForApproval') {
       this.sendForApproval();
     }  
-    else if (label === 'Mark as paid') {
+    else if (label === 'Mark as paid' || label === 'web.accounting.expenses.markAsPaid') {
       this.showReceivePayment=!this.showReceivePayment;
       this.receivepayment.Amount=this.invoice?.total_amount;
       this.receivepayment.paiddate =this.commonService.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
     }
-    else if (label === 'Back to list') { 
-      this.router.navigate(['/accounting/invoices']);
+    else if (label === 'Back to list' || label === 'web.accounting.expenses.backToList') { 
+      this.router.navigate(['/accounting/expenses']);
     }
   }
   sendApprovalReminder(): void {
-    this.toastr.success('Approval reminder sent successfully');
+    this.toastr.success(this.translate.instant('web.accounting.expenses.approvalReminderSentSuccess'));
   }
   sendForApproval() {
     this.commontabservice.getMasterByType({
@@ -400,13 +401,13 @@ export class ExpenseDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully send to approval");
+          this.toastr.success(this.translate.instant('web.accounting.expenses.successfullySendToApproval'));
           setTimeout(() => {
              window.location.reload();
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -415,7 +416,7 @@ export class ExpenseDetailComponent implements OnInit {
   }
   ApproveRejectLease() {
     if(this.approveComments==null || this.approveComments==""){
-      this.toastr.error(`Invalid  ${this.ApprovalModalText} comments`)
+      this.toastr.error(this.translate.instant('web.accounting.expenses.invalidComments'));
       return;
     }
     this.commontabservice.getMasterByType({
@@ -426,13 +427,13 @@ export class ExpenseDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully updated status");
+          this.toastr.success(this.translate.instant('web.accounting.expenses.successfullyUpdatedStatus'));
           setTimeout(() => {
             this.router.navigate(['/accounting/expenses']);
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -495,7 +496,7 @@ export class ExpenseDetailComponent implements OnInit {
 
   printExpense(): void {
     if (!this.invoice || (!this.invoice.code && !this.invoice.invoice_no)) {
-      this.toastr.error('Expense details not loaded yet');
+      this.toastr.error(this.translate.instant('web.accounting.expenses.expenseDetailsNotLoaded'));
       return;
     }
     this.showPrintModal = true;

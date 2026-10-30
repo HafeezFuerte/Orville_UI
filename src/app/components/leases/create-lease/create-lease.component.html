@@ -119,13 +119,13 @@
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--1">
             <div>
-              <label class="ov-label">Assigned Lease Agent</label>
+              <label class="ov-label">{{ 'web.leases.lblAssignedLeaseAgent' | translate }}</label>
               <ng-select #agentSelect [(ngModel)]="selectedAgent"
                 [items]="agentsList"
                 bindValue="code"
                 [searchable]="true"
                 [clearable]="true"
-                placeholder="Assigned Lease Agent"
+                [placeholder]="'web.leases.lblAssignedLeaseAgent' | translate"
                 class="ov-select w-full"
                 appendTo="body">
                 <ng-template ng-header-tmp>
@@ -156,14 +156,14 @@
               <label class="ov-label">{{ 'web.leases.lblLeaseType' | translate }}</label>
               <ng-select [(ngModel)]="selectedLeaseType" (change)="onChangeSelect($event,'selectedLeaseType')"
                 bindLabel="name" [items]="leaseTypes"
-                placeholder="Select"
+                [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" appendTo="body"></ng-select>
             </div>
             <div>
               <label class="ov-label">{{ 'web.leases.lblLeaseCategory' | translate }}</label>
               <ng-select [(ngModel)]="selectedLeaseCategory" (change)="onChangeSelect($event,'selectedLeaseCategory')"
                 bindLabel="name" [items]="leaseCategories"
-                placeholder="Select"
+                [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" appendTo="body"></ng-select>
             </div>
             <div>
@@ -181,11 +181,11 @@
                   <input type="date" [(ngModel)]="endDate" (change)="calculatemonths()" class="ov-input" />
                 </div>
               </div>
-              <p class="lease-field-hint m-0">Dates overlapping is allowed in settings</p>
+              <p class="lease-field-hint m-0">{{ 'web.leases.lblDatesOverlappingAllowed' | translate }}</p>
             </div>
           </div>
           <div class="lease-duration-banner">
-            Total Duration: <strong>{{ totalDurationLabel }}</strong>
+            {{ 'web.leases.lblTotalDuration' | translate }}: <strong>{{ totalDurationLabel }}</strong>
           </div>
         </div>
       </div>
@@ -246,15 +246,15 @@
       <div class="ov-card">
         <div class="ov-card__head">
           <div class="lease-sched-head__row">
-            <h6 class="ov-card-title m-0">Payment Schedule</h6>
+            <h6 class="ov-card-title m-0">{{ 'web.leases.lblPaymentSchedule' | translate }}</h6>
             <div class="lease-sched-links">
               <button type="button" (click)="showPaymentBlock(0)"
                 [ngClass]="showAddPayment && addpaymentbloc.isSecurityDeposit === 0 ? 'lease-sched-btn' : 'lease-sched-link'">
-                Add Payment
+                {{ 'web.leases.lblAddPayment' | translate }}
               </button>
               <button type="button" (click)="showPaymentBlock(1)"
                 [ngClass]="showAddPayment && addpaymentbloc.isSecurityDeposit === 1 ? 'lease-sched-btn' : 'lease-sched-link'">
-                Add Security Deposit
+                {{ 'web.leases.lblAddSecurityDeposit' | translate }}
               </button>
             </div>
           </div>
@@ -264,48 +264,48 @@
           <div *ngIf="showAddPayment" class="lease-sched-form">
             <label class="lease-check">
               <input type="checkbox" [(ngModel)]="addpaymentbloc.includetax" />
-              <span>Inclusive Tax?</span>
+              <span>{{ 'web.leases.lblInclusiveTax' | translate }}</span>
             </label>
 
             <div class="ov-fields ov-fields--2">
               <div>
-                <label class="ov-label">Amount <span class="text-danger">*</span></label>
+                <label class="ov-label">{{ 'web.leases.lblAmount' | translate }} <span class="text-danger">*</span></label>
                 <div class="ov-input-addon">
                   <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
                   <input type="number" [(ngModel)]="addpaymentbloc.Amount" class="ov-input" placeholder="0.00" />
                 </div>
               </div>
               <div>
-                <label class="ov-label">Due On</label>
+                <label class="ov-label">{{ 'web.leases.lblDueOn' | translate }}</label>
                 <div class="ov-date">
                   <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16" />
                   <input type="date" [(ngModel)]="addpaymentbloc.DueDate" class="ov-input" />
                 </div>
               </div>
               <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-                <label class="ov-label">Account <span class="text-danger">*</span></label>
+                <label class="ov-label">{{ 'web.leases.lblAccount' | translate }} <span class="text-danger">*</span></label>
                 <ng-select [(ngModel)]="addpaymentbloc.AccountCode" bindValue="id" bindLabel="name" [items]="coaList"
-                  placeholder="Select Account" class="ov-select w-full" appendTo="body"></ng-select>
+                  [placeholder]="'web.leases.phSelectAccount' | translate" class="ov-select w-full" appendTo="body"></ng-select>
               </div>
               <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-                <label class="ov-label">Memo</label>
-                <input type="text" [(ngModel)]="addpaymentbloc.Memo" class="ov-input" placeholder="If left blank, will show 'Rent'" />
+                <label class="ov-label">{{ 'web.leases.lblMemo' | translate }}</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.Memo" class="ov-input" [placeholder]="'web.leases.phMemoHint' | translate" />
               </div>
             </div>
 
             <div *ngIf="addpaymentbloc.isSecurityDeposit==0" class="ov-fields ov-fields--1">
               <div>
-                <label class="ov-label">Recurring Cycle <span class="text-danger">*</span></label>
+                <label class="ov-label">{{ 'web.leases.lblRecurringCycle' | translate }} <span class="text-danger">*</span></label>
                 <ng-select [(ngModel)]="addpaymentbloc.Recurrence_id" bindValue="id" bindLabel="name" [items]="recurringList"
-                  placeholder="Select" class="ov-select w-full" appendTo="body"></ng-select>
+                  [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body"></ng-select>
               </div>
             </div>
 
             <div class="ov-fields" [ngClass]="addpaymentbloc.isSecurityDeposit === 0 ? 'ov-fields--4' : 'ov-fields--3'">
               <div>
-                <label class="ov-label">Tax Profile</label>
+                <label class="ov-label">{{ 'web.leases.lblTaxProfile' | translate }}</label>
                 <ng-select [(ngModel)]="addpaymentbloc.TaxProfileId" bindValue="id" bindLabel="name" [items]="taxProfilesList"
-                  placeholder="Select profile" class="ov-select w-full" appendTo="body"></ng-select>
+                  [placeholder]="'web.leases.phSelectProfile' | translate" class="ov-select w-full" appendTo="body"></ng-select>
               </div>
               <div>
                 <label class="ov-label">{{ 'web.leases.lblMoneyHeldBy' | translate }} <span class="text-danger">*</span></label>
@@ -318,8 +318,8 @@
                   [placeholder]="'web.leases.lblPaymentVia' | translate" class="ov-select w-full" appendTo="body"></ng-select>
               </div>
               <div *ngIf="addpaymentbloc.isSecurityDeposit==0">
-                <label class="ov-label">Invoice Number</label>
-                <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="ov-input" placeholder="Enter" />
+                <label class="ov-label">{{ 'web.leases.lblInvoiceNumber' | translate }}</label>
+                <input type="text" [(ngModel)]="addpaymentbloc.InvoiceNo" class="ov-input" [placeholder]="'web.common.lblEnter' | translate" />
               </div>
             </div>
 
@@ -336,8 +336,8 @@
             </div>
 
             <div class="lease-sched-actions">
-              <button type="button" (click)="savePayments()" class="ov-btn ov-btn-primary">Save</button>
-              <button type="button" (click)="clearPaymentForm()" class="lease-sched-clear">Clear</button>
+              <button type="button" (click)="savePayments()" class="ov-btn ov-btn-primary">{{ 'web.common.save' | translate }}</button>
+              <button type="button" (click)="clearPaymentForm()" class="lease-sched-clear">{{ 'web.common.lblClear' | translate }}</button>
             </div>
           </div>
 
@@ -345,13 +345,13 @@
             <table class="lease-table">
               <thead>
                 <tr>
-                  <th>Amount ({{ currentUser?.currencyCode }})</th>
-                  <th>Advance ({{ currentUser?.currencyCode }})</th>
-                  <th>Account</th>
-                  <th>Due Date</th>
-                  <th>Recurrence</th>
-                  <th>Payment Via</th>
-                  <th>Attachment</th>
+                  <th>{{ 'web.leases.lblAmount' | translate }} ({{ currentUser?.currencyCode }})</th>
+                  <th>{{ 'web.leases.lblAdvance' | translate }} ({{ currentUser?.currencyCode }})</th>
+                  <th>{{ 'web.leases.lblAccount' | translate }}</th>
+                  <th>{{ 'web.leases.lblDueDate' | translate }}</th>
+                  <th>{{ 'web.leases.lblRecurrence' | translate }}</th>
+                  <th>{{ 'web.leases.lblPaymentVia' | translate }}</th>
+                  <th>{{ 'web.leases.lblAttachment' | translate }}</th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -366,12 +366,12 @@
                   <td>{{ wo.PaymentType }}</td>
                   <td><a>{{ wo.attachmentName }}</a></td>
                   <td>
-                    <button type="button" (click)="edit_action(wo,'edit')" class="ov-icon-btn ov-icon-btn--primary" [attr.data-tooltip]="'Edit'">
+                    <button type="button" (click)="edit_action(wo,'edit')" class="ov-icon-btn ov-icon-btn--primary" [attr.data-tooltip]="'web.common.edit' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </td>
                   <td>
-                    <button type="button" (click)="edit_action(wo,'delete')" class="ov-icon-btn ov-icon-btn--danger" [attr.data-tooltip]="'Delete'">
+                    <button type="button" (click)="edit_action(wo,'delete')" class="ov-icon-btn ov-icon-btn--danger" [attr.data-tooltip]="'web.common.delete' | translate">
                       <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
                     </button>
                   </td>
@@ -380,7 +380,7 @@
             </table>
           </div>
           <button type="button" *ngIf="paymentSchedules.length > 0" (click)="showPaymentBlock(3)" class="lease-sched-delete">
-            Delete Schedules
+            {{ 'web.leases.lblDeleteSchedules' | translate }}
           </button>
         </div>
       </div>
@@ -401,7 +401,7 @@
               <input type="text" [(ngModel)]="additionalbloc.created_by" class="ov-input" disabled />
             </div>
             <div>
-              <label class="ov-label">Created At</label>
+              <label class="ov-label">{{ 'web.common.lblCreatedAt' | translate }}</label>
               <input type="date" [(ngModel)]="additionalbloc.created_date" class="ov-input" />
             </div>
             <div>
@@ -429,16 +429,16 @@
             <p class="lease-summary__label">{{ 'web.contacts.lblTenants' | translate }}</p>
             <div *ngIf="selectedTenantObj" class="lease-summary__pill">
               <span class="lease-summary__pill-text">{{ selectedTenantObj.name }}</span>
-              <span class="lease-summary__badge">Primary</span>
+              <span class="lease-summary__badge">{{ 'web.leases.lblPrimary' | translate }}</span>
             </div>
-            <div *ngIf="!selectedTenantObj" class="lease-summary__empty">No tenant selected</div>
+            <div *ngIf="!selectedTenantObj" class="lease-summary__empty">{{ 'web.leases.lblNoTenantSelected' | translate }}</div>
           </div>
 
           <!-- Occupants -->
           <div class="lease-summary__block">
             <div class="lease-summary__row">
               <p class="lease-summary__label">{{ 'web.leases.lblOccupants' | translate }}</p>
-              <button type="button" (click)="openOccupantsModal()" class="lease-summary__add" title="Add Occupant">
+              <button type="button" (click)="openOccupantsModal()" class="lease-summary__add" [attr.title]="'web.leases.lblAddOccupant' | translate">
                 <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
               </button>
             </div>
@@ -447,18 +447,18 @@
                 <span class="lease-summary__pill-text">{{ occ.name }}</span>
               </div>
             </div>
-            <div *ngIf="occupants.length === 0" class="lease-summary__empty">No occupants added</div>
+            <div *ngIf="occupants.length === 0" class="lease-summary__empty">{{ 'web.leases.lblNoOccupantsAdded' | translate }}</div>
           </div>
 
           <!-- Units -->
           <div class="lease-summary__block">
-            <p class="lease-summary__label">{{ 'web.leases.lblUnit' | translate }}s</p>
+            <p class="lease-summary__label">{{ 'web.common.lblUnits' | translate }}</p>
             <div *ngIf="selectedUnitObj" class="lease-summary__pill">
               <span class="lease-summary__pill-text">{{ selectedUnitObj.name }}</span>
-              <span class="lease-summary__badge">Primary</span>
+              <span class="lease-summary__badge">{{ 'web.leases.lblPrimary' | translate }}</span>
             </div>
-            <div *ngIf="!selectedPropertyObj" class="lease-summary__empty">Select a property first</div>
-            <div *ngIf="selectedPropertyObj && !selectedUnitObj" class="lease-summary__empty">Select a unit to see summary</div>
+            <div *ngIf="!selectedPropertyObj" class="lease-summary__empty">{{ 'web.leases.lblSelectPropertyFirst' | translate }}</div>
+            <div *ngIf="selectedPropertyObj && !selectedUnitObj" class="lease-summary__empty">{{ 'web.leases.lblSelectUnitToSeeSummary' | translate }}</div>
           </div>
 
           <hr class="lease-summary__rule" />
@@ -467,15 +467,15 @@
           <p class="lease-summary__details-title">{{ 'web.leases.lblLeaseDetails' | translate }}</p>
           <div class="lease-summary__kv">
             <div class="lease-summary__kv-row">
-              <span class="lease-summary__k">Type:</span>
-              <span class="lease-summary__v">{{ isShortTerm ? 'Short Term' : 'Long Term' }}</span>
+              <span class="lease-summary__k">{{ 'web.leases.lblType' | translate }}:</span>
+              <span class="lease-summary__v">{{ isShortTerm ? ('web.leases.lblShortTermVal' | translate) : ('web.leases.lblLongTermVal' | translate) }}</span>
             </div>
             <div class="lease-summary__kv-row">
-              <span class="lease-summary__k">Lease Type:</span>
+              <span class="lease-summary__k">{{ 'web.leases.lblLeaseType' | translate }}:</span>
               <span class="lease-summary__v">{{ selectedLeaseType?.name || '—' }}</span>
             </div>
             <div class="lease-summary__kv-row">
-              <span class="lease-summary__k">Category:</span>
+              <span class="lease-summary__k">{{ 'web.leases.lblCategory' | translate }}:</span>
               <span class="lease-summary__v">{{ selectedLeaseCategory?.name || '—' }}</span>
             </div>
           </div>
@@ -502,7 +502,7 @@
     <div class="ov-modal lease-occupant-modal">
       <div class="lease-occupant-modal__head">
         <h6 class="lease-occupant-modal__title">{{ 'web.leases.lblOccupants' | translate }}</h6>
-        <p class="lease-occupant-modal__sub">Add people who will live in this unit during the lease period.</p>
+        <p class="lease-occupant-modal__sub">{{ 'web.leases.lblAddPeopleOccupantsDesc' | translate }}</p>
       </div>
       <hr class="lease-occupant-modal__rule" />
 
@@ -510,19 +510,19 @@
         <div class="lease-occupant-modal__fields">
           <div class="lease-occupant-field">
             <label class="ov-label">{{ 'web.contacts.lblName' | translate }} <span class="text-danger">*</span></label>
-            <input type="text" [(ngModel)]="occupantName" placeholder="Enter full name" class="ov-input" />
+            <input type="text" [(ngModel)]="occupantName" [placeholder]="'web.leases.phEnterFullName' | translate" class="ov-input" />
           </div>
           <div class="ov-fields ov-fields--2">
             <div class="lease-occupant-field">
-              <label class="ov-label">Phone on Lease</label>
+              <label class="ov-label">{{ 'web.leases.lblPhoneOnLease' | translate }}</label>
               <div class="ov-phone">
                 <span class="ov-input-addon__prefix">🇦🇪</span>
-                <input type="text" [(ngModel)]="occupantPhone" placeholder="Enter" class="ov-input" />
+                <input type="text" [(ngModel)]="occupantPhone" [placeholder]="'web.common.phEnter' | translate" class="ov-input" />
               </div>
             </div>
             <div class="lease-occupant-field">
               <label class="ov-label">{{ 'web.contacts.lblEmail' | translate }}</label>
-              <input type="email" [(ngModel)]="occupantEmail" placeholder="Email" class="ov-input" />
+              <input type="email" [(ngModel)]="occupantEmail" [placeholder]="'web.contacts.lblEmail' | translate" class="ov-input" />
             </div>
           </div>
         </div>
@@ -538,36 +538,36 @@
       <div class="lease-occupant-modal__list-wrap">
         <div class="lease-occupant-list">
           <div class="lease-occupant-list__head">
-            <h6 class="lease-occupant-list__title">Added occupants</h6>
-            <span class="lease-occupant-list__count">{{ occupants.length }} added</span>
+            <h6 class="lease-occupant-list__title">{{ 'web.leases.lblAddedOccupants' | translate }}</h6>
+            <span class="lease-occupant-list__count">{{ occupants.length }} {{ 'web.leases.lblAddedSuffix' | translate }}</span>
           </div>
           <hr class="lease-occupant-modal__rule lease-occupant-modal__rule--inset" />
           <div class="lease-occupant-list__body">
             <div *ngFor="let occ of occupants; let idx = index" class="lease-occupant-row">
               <div class="lease-occupant-row__cols">
                 <div>
-                  <p class="lease-occupant-row__k">Name</p>
+                  <p class="lease-occupant-row__k">{{ 'web.contacts.lblName' | translate }}</p>
                   <p class="lease-occupant-row__v">{{ occ.name }}</p>
                 </div>
                 <div>
-                  <p class="lease-occupant-row__k">Phone</p>
+                  <p class="lease-occupant-row__k">{{ 'web.contacts.lblPhone' | translate }}</p>
                   <p class="lease-occupant-row__v">{{ occ.phone || '—' }}</p>
                 </div>
                 <div>
-                  <p class="lease-occupant-row__k">Email</p>
+                  <p class="lease-occupant-row__k">{{ 'web.contacts.lblEmail' | translate }}</p>
                   <p class="lease-occupant-row__v truncate" [title]="occ.email">{{ occ.email || '—' }}</p>
                 </div>
               </div>
               <div class="lease-occupant-row__actions">
-                <button type="button" (click)="editOccupant(idx)" class="lease-occupant-icon-btn" [attr.data-tooltip]="'Edit'">
+                <button type="button" (click)="editOccupant(idx)" class="lease-occupant-icon-btn" [attr.data-tooltip]="'web.common.edit' | translate">
                   <img src="assets/images/action-menu/pencil.svg" alt="" width="16" height="16" />
                 </button>
-                <button type="button" (click)="removeOccupant(idx)" class="lease-occupant-icon-btn" [attr.data-tooltip]="'Delete'">
+                <button type="button" (click)="removeOccupant(idx)" class="lease-occupant-icon-btn" [attr.data-tooltip]="'web.common.delete' | translate">
                   <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="16" height="16" />
                 </button>
               </div>
             </div>
-            <p *ngIf="occupants.length === 0" class="lease-occupant-list__empty">No occupants added yet</p>
+            <p *ngIf="occupants.length === 0" class="lease-occupant-list__empty">{{ 'web.leases.lblNoOccupantsAddedYet' | translate }}</p>
           </div>
         </div>
       </div>
@@ -575,8 +575,8 @@
       <hr class="lease-occupant-modal__rule" />
 
       <div class="lease-occupant-modal__footer">
-        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--close">Close</button>
-        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--save">Save</button>
+        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--close">{{ 'web.contacts.lblClose' | translate }}</button>
+        <button type="button" (click)="closeOccupantsModal()" class="lease-occupant-btn lease-occupant-btn--save">{{ 'web.common.save' | translate }}</button>
       </div>
     </div>
   </div>
@@ -585,21 +585,21 @@
 <ng-template #chequeDetails let-payment>
   <div class="ov-fields ov-fields--2">
     <div>
-      <label class="ov-label">Cheque No</label>
+      <label class="ov-label">{{ 'web.leases.lblChequeNo' | translate }}</label>
       <input type="text" [(ngModel)]="payment.cheque_no" class="ov-input" />
     </div>
     <div>
-      <label class="ov-label">Cheque Date</label>
+      <label class="ov-label">{{ 'web.leases.lblChequeDate' | translate }}</label>
       <input type="date" [(ngModel)]="payment.cheque_date" class="ov-input" />
     </div>
     <div>
-      <label class="ov-label">Bank</label>
+      <label class="ov-label">{{ 'web.leases.lblBank' | translate }}</label>
       <input type="text" [(ngModel)]="payment.bank" class="ov-input" />
     </div>
     <div>
-      <label class="ov-label">Held By</label>
+      <label class="ov-label">{{ 'web.leases.lblHeldBy' | translate }}</label>
       <ng-select [(ngModel)]="payment.held_by" [items]="heldByList" bindValue="id" bindLabel="name"
-        placeholder="Held By" class="ov-select w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.leases.lblHeldBy' | translate" class="ov-select w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </ng-template>

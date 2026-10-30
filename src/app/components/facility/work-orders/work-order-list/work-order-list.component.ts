@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
@@ -48,8 +48,9 @@ export class WorkOrderListComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
-  private commontabService=inject(Common_TabsService);
-  private toastr =inject(ToastrService);
+  private commontabService = inject(Common_TabsService);
+  private toastr = inject(ToastrService);
+  public translate = inject(TranslateService);
   currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
   viewMode: 'list' | 'grid' | 'board' = 'list';
@@ -58,7 +59,7 @@ export class WorkOrderListComponent implements OnInit {
   isLoading: boolean = false;
 
   activeTab: string = 'All';
-  tabs:any[] =[];
+  tabs: any[] = [];
   //tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
   /** Figma kanban column order (2946:97655) */
   kanbanColumns: string[] = [
@@ -85,23 +86,22 @@ export class WorkOrderListComponent implements OnInit {
   pageNo = 0;
   pageSize = 10;
   totalRecords = 0;
-  totalPages=0;
-//(localStorage.getItem("selectedLang")=="EN" ? 'status_nm' : 'status_nm_ar')
+  totalPages = 0;
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'title', label: 'Work order', visible: true },
-    { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
-    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
-    { key: 'vendor_name', label: 'Vendor', visible: true, useTemplate: true },
-    { key: 'maintenance_name', label: 'Category', visible: true },
-    { key: 'responsiblePerson', label: 'Responsible person(s)', visible: true, useTemplate: true },
-    { key: 'technician_name', label: 'Technician', visible: true, useTemplate: true },
-    { key: 'modified_date', label: 'Last Update', visible: true },
-    { key: 'created_date', label: 'Created At', visible: true },
-    { key: 'created_by_name', label: 'Created By', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'title', label: 'web.facility.workOrders.colTitle', visible: true },
+    { key: 'property', label: 'web.leases.lblProperty', visible: true, useTemplate: true },
+    { key: 'unit', label: 'web.leases.lblUnit', visible: true, useTemplate: true },
+    { key: 'priority', label: 'web.leases.lblPriority', visible: true, useTemplate: true },
+    { key: 'status_nm', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'vendor_name', label: 'web.contacts.lblVendor', visible: true, useTemplate: true },
+    { key: 'maintenance_name', label: 'web.contacts.lblCategories', visible: true },
+    { key: 'responsiblePerson', label: 'web.facility.workOrders.responsible', visible: true, useTemplate: true },
+    { key: 'technician_name', label: 'web.contacts.lblSupportTechnicians', visible: true, useTemplate: true },
+    { key: 'modified_date', label: 'web.contacts.lblUpdatedAt', visible: true },
+    { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'created_by_name', label: 'web.leases.lblCreatedBy', visible: true },
+    { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
   workOrderData: WorkOrder[] = [];
@@ -205,6 +205,14 @@ export class WorkOrderListComponent implements OnInit {
     return found || null;
   }
 
+  getKanbanColumnLabel(col: string): string {
+    const match = this.tabs.find(t => this.normalizeStatus(t.name) === this.normalizeStatus(col));
+    if (match) {
+      return this.getArabicLookupName(match, 'name') || match.name;
+    }
+    return col;
+  }
+
   cardsForColumn(column: string): any[] {
     return (this.workOrderData || []).filter((row) => this.matchKanbanColumn(row) === column);
   }
@@ -299,7 +307,7 @@ export class WorkOrderListComponent implements OnInit {
           this.tabs.push(...res.objResult.table); 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -341,7 +349,7 @@ export class WorkOrderListComponent implements OnInit {
           }
            
         }else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         this.isLoading = false;

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
@@ -21,7 +22,7 @@ import {
 @Component({
   selector: 'app-expenses',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
   templateUrl: './expenses.component.html',
   styleUrl: './expenses.component.scss'
 })
@@ -29,7 +30,8 @@ export class ExpensesComponent {
   constructor(private router: Router,
     private commonService: CommonService,
     private commontabservice : Common_TabsService,
-    private toastr:ToastrService) {}
+    private toastr:ToastrService,
+    public translate: TranslateService) {}
     isLoading:boolean=false;
   searchQuery = '';
   statusFilter:any= 'All';
@@ -59,18 +61,18 @@ export class ExpensesComponent {
   allRows: any = [];
   allRowsData: any = [];
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'invoice_no', label: 'Bill Number', visible: true , useTemplate: true },
-    { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'unit_code', label: 'Unit / Common Area', visible: true },
-    { key: 'lease', label: 'Lease Details', visible: true }, 
-    { key: 'account_name', label: 'Account', visible: true }, 
-    { key: 'total_amount', label: 'Total Amount', visible: true },
-    { key: 'due_date', label: 'Due Date', visible: true },
-    { key: 'invoice_date', label: 'Issue Date', visible: true },
-    { key: 'paidDate', label: 'Paid Date', visible: true },
-    { key: 'createdby', label: 'Created By', visible: true }, 
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'code', label: 'web.accounting.expenses.colID', visible: true, useTemplate: true },
+    { key: 'invoice_no', label: 'web.accounting.expenses.colBillNumber', visible: true , useTemplate: true },
+    { key: 'invoice_status', label: 'web.accounting.expenses.colStatus', visible: true, useTemplate: true },
+    { key: 'unit_code', label: 'web.accounting.expenses.colUnitCommonArea', visible: true },
+    { key: 'lease', label: 'web.accounting.expenses.colLeaseDetails', visible: true }, 
+    { key: 'account_name', label: 'web.accounting.expenses.colAccount', visible: true }, 
+    { key: 'total_amount', label: 'web.accounting.expenses.colTotalAmount', visible: true },
+    { key: 'due_date', label: 'web.accounting.expenses.colDueDate', visible: true },
+    { key: 'invoice_date', label: 'web.accounting.expenses.colIssueDate', visible: true },
+    { key: 'paidDate', label: 'web.accounting.expenses.colPaidDate', visible: true },
+    { key: 'createdby', label: 'web.accounting.expenses.colCreatedBy', visible: true }, 
+    { key: 'action', label: 'web.accounting.expenses.colAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   get visibleColumns() {
@@ -124,7 +126,7 @@ export class ExpensesComponent {
           this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
         }
       },
       error: (err: any) => {
@@ -312,7 +314,7 @@ export class ExpensesComponent {
           this.kpis=res.objResult.table;
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.accounting.expenses.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

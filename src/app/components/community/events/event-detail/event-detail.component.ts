@@ -5,11 +5,11 @@ import { EventRow, getEventById } from '../events.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './event-detail.component.html',
   styleUrl: './event-detail.component.scss'
 })
@@ -21,9 +21,9 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   showPreview = false;
 
   actionOptions = [
-    { label: 'Edit Event', asset: 'assets/images/action-menu/pencil.svg', danger: false },
-    { label: 'Publish', asset: 'assets/images/action-menu/files.svg', danger: false },
-    { label: 'Archive', asset: 'assets/images/action-menu/trash.svg', danger: true }
+    { label: 'web.community.events.editEvent', key: 'Edit Event', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { label: 'web.community.events.publish', key: 'Publish', asset: 'assets/images/action-menu/files.svg', danger: false },
+    { label: 'web.community.events.archive', key: 'Archive', asset: 'assets/images/action-menu/trash.svg', danger: true }
   ];
 
   constructor(
@@ -128,9 +128,10 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     this.showActionMenu = !this.showActionMenu;
   }
 
-  onAction(label: string): void {
+  onAction(option: any): void {
     this.showActionMenu = false;
-    if (label === 'Edit Event') {
+    const actionKey = typeof option === 'string' ? option : (option.key || option.label);
+    if (actionKey === 'Edit Event') {
       this.goToEdit();
     }
   }

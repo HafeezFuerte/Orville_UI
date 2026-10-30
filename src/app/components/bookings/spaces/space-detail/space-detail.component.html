@@ -1,17 +1,17 @@
 <div class="space-detail-page font-hanken">
   <div class="ov-add-header page-header sd-page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Spaces">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.bookings.spaces.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Space Details</h3>
-        <p class="ov-page-sub">Manage space details and operations.</p>
+        <h3 class="ov-page-title">{{ 'web.bookings.spaces.spaceDetails' | translate }}</h3>
+        <p class="ov-page-sub">{{ 'web.bookings.spaces.spaceDetailsSub' | translate }}</p>
       </div>
     </div>
     <div class="ov-add-header__actions relative" (click)="$event.stopPropagation()">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)" [attr.aria-expanded]="showActionMenu">
-        Action
+        {{ 'web.common.lblAction' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="showActionMenu" class="ov-action-menu" role="menu">
@@ -24,7 +24,7 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -37,7 +37,7 @@
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -53,31 +53,31 @@
         <div class="ov-detail-side__hero">
           <div>
             <h4 class="ov-detail-side__title">{{ detail.name }}</h4>
-            <p class="ov-detail-side__email">Space #{{ detail.id }}</p>
+            <p class="ov-detail-side__email">{{ 'web.bookings.spaces.title' | translate }} #{{ detail.id }}</p>
             <span class="inline-flex mt-2 h-7 items-center rounded-sm border border-defaultborder px-2.5 text-xs font-semibold text-defaulttextcolor">
               {{ detail.availability }}
             </span>
           </div>
           <div class="ov-detail-side__actions">
-            <button type="button" class="ov-detail-side__action">View Activity</button>
-            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">Edit Space</button>
+            <button type="button" class="ov-detail-side__action">{{ 'web.bookings.reservations.viewActivity' | translate }}</button>
+            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">{{ 'web.bookings.spaces.editSpace' | translate }}</button>
           </div>
         </div>
 
         <div class="ov-detail-side__rule"></div>
-        <h6 class="ov-detail-side__section-title">Information</h6>
+        <h6 class="ov-detail-side__section-title">{{ 'web.bookings.reservations.information' | translate }}</h6>
 
         <div class="ov-detail-panel">
           <div class="ov-detail-panel__head">
-            <h6 class="ov-detail-panel__title">Property &amp; Unit</h6>
+            <h6 class="ov-detail-panel__title">{{ 'web.bookings.reservations.propertyAndUnit' | translate }}</h6>
           </div>
           <div class="ov-detail-panel__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Property:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.property' | translate }}:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.property }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Unit:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.unit' | translate }}:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.unit }}</a>
             </div>
           </div>
@@ -85,31 +85,31 @@
 
         <div class="ov-detail-panel">
           <div class="ov-detail-panel__head">
-            <h6 class="ov-detail-panel__title">Space Details</h6>
+            <h6 class="ov-detail-panel__title">{{ 'web.bookings.spaces.spaceDetails' | translate }}</h6>
           </div>
           <div class="ov-detail-panel__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Lease ID:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colLease' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.id }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Space Name:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.colName' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.name }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Availability:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.colAvailability' | translate }}:</span>
               <span class="inline-flex h-5 items-center rounded-sm bg-light px-1.5 text-xs font-semibold">{{ detail.availability }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Reservations Closing In:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.reservationsClosingIn' | translate }}:</span>
               <span class="inline-flex h-5 items-center rounded-sm bg-primary px-1.5 text-xs font-semibold text-white">{{ detail.bookingClosesIn }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Location:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.location' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.location }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.spaces.colPhone' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.phone }}</span>
             </div>
 
@@ -118,7 +118,7 @@
                 type="button"
                 class="ov-link sd-more-toggle text-[12px] font-semibold"
                 (click)="showMore = !showMore">
-                <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
+                <span>{{ (showMore ? 'web.bookings.reservations.viewLessDetails' : 'web.bookings.reservations.viewMoreDetails') | translate }}</span>
                 <i
                   class="ti shrink-0"
                   [class.ti-chevron-up]="showMore"
@@ -129,46 +129,46 @@
 
             <ng-container *ngIf="showMore">
               <div class="ov-kv items-start">
-                <span class="ov-kv__label">Description:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.description' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.description }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Email:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.email' | translate }}:</span>
                 <span class="ov-kv__value ov-link">{{ detail.email }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Payment Enabled:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.paymentEnabled' | translate }}:</span>
                 <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
                   [ngClass]="detail.enablePayment === 'Enabled' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">
-                  {{ detail.enablePayment === 'Enabled' ? 'Yes' : 'No' }}
+                  {{ (detail.enablePayment === 'Enabled' ? 'web.bookings.spaces.yes' : 'web.bookings.spaces.no') | translate }}
                 </span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Start Date:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.startDate' | translate }}:</span>
                 <span class="ov-kv__value">{{ startDate }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">End Date:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.endDate' | translate }}:</span>
                 <span class="ov-kv__value">{{ endDate }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Slot Duration:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.slotDuration' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.slotDuration }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Slot Price:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.slotPrice' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.slotPrice }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Rules:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.rules' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.rules }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Created:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.created' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.createdAt }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Last Updated:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.spaces.lastUpdated' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.updatedAt }}</span>
               </div>
             </ng-container>
@@ -177,7 +177,7 @@
 
         <div class="ov-detail-panel">
           <div class="ov-detail-panel__head">
-            <h6 class="ov-detail-panel__title">Weekly Schedule</h6>
+            <h6 class="ov-detail-panel__title">{{ 'web.bookings.spaces.weeklySchedule' | translate }}</h6>
           </div>
           <div class="ov-detail-panel__body">
             <div class="ov-kv" *ngFor="let row of detail.schedule">
@@ -194,8 +194,8 @@
     <!-- RIGHT -->
     <section class="ov-detail-layout__right min-w-0 sd-main">
       <div class="mb-4">
-        <p class="m-0 text-[23px] font-semibold leading-[23px] text-defaulttextcolor">Space Details</p>
-        <p class="mb-0 mt-1.5 text-sm text-textmuted">Manage space details and operations</p>
+        <p class="m-0 text-[23px] font-semibold leading-[23px] text-defaulttextcolor">{{ 'web.bookings.spaces.spaceDetails' | translate }}</p>
+        <p class="mb-0 mt-1.5 text-sm text-textmuted">{{ 'web.bookings.spaces.spaceDetailsSub' | translate }}</p>
       </div>
 
       <div class="sd-shell">
@@ -205,14 +205,14 @@
             class="sd-tabnav__btn"
             [class.is-active]="activeTab === 'reservations'"
             (click)="setTab('reservations')">
-            Reservations
+            {{ 'web.bookings.spaces.reservationsTab' | translate }}
           </button>
           <button
             type="button"
             class="sd-tabnav__btn"
             [class.is-active]="activeTab === 'attachments'"
             (click)="setTab('attachments')">
-            Attachments
+            {{ 'web.bookings.spaces.attachmentsTab' | translate }}
           </button>
         </nav>
 
@@ -221,12 +221,12 @@
           <section *ngIf="activeTab === 'reservations'" class="sd-panel">
             <div class="sd-panel__head">
               <div>
-                <h4 class="sd-panel__title">Reservations</h4>
-                <p class="sd-panel__sub">All reservations booked for this space.</p>
+                <h4 class="sd-panel__title">{{ 'web.bookings.spaces.reservationsTab' | translate }}</h4>
+                <p class="sd-panel__sub">{{ 'web.bookings.spaces.reservationsSub' | translate }}</p>
               </div>
               <button type="button" class="ov-btn ov-btn-primary" (click)="onAction('Add Reservation')">
                 <i class="ti ti-plus" aria-hidden="true"></i>
-                Add Reservation
+                {{ 'web.bookings.reservations.addReservation' | translate }}
               </button>
             </div>
 
@@ -239,7 +239,7 @@
                   class="ov-input ov-search__input"
                   [(ngModel)]="reservationSearch"
                   (ngModelChange)="onReservationSearch()"
-                  placeholder="Search reservations..." />
+                  [placeholder]="'web.bookings.spaces.phSearchReservations' | translate" />
               </div>
             </div>
 
@@ -250,7 +250,7 @@
                 [loading]="false"
                 [hasActions]="false"
                 [showPaginator]="false"
-                [emptyMessage]="'No reservations found for this space.'"
+                [emptyMessage]="'web.bookings.spaces.noReservationsFound' | translate"
                 [totalRecords]="reservationTotal"
                 [pageSize]="reservationPageSize"
                 [pageIndex]="reservationPageIndex">
@@ -289,22 +289,22 @@
                           type="button"
                           class="sd-more"
                           (click)="toggleRowMenu(row.id, $event)"
-                          aria-label="Reservation actions">
+                          [attr.aria-label]="'web.common.lblAction' | translate">
                           <i class="ti ti-dots"></i>
                         </button>
                         <div *ngIf="showRowMenuId === row.id" class="sd-row-menu">
                           <button type="button" class="sd-row-menu__item" (click)="viewReservation(row)">
                             <i class="ti ti-eye" aria-hidden="true"></i>
-                            View
+                            {{ 'web.common.lblView' | translate }}
                           </button>
                           <button type="button" class="sd-row-menu__item" (click)="editReservation(row)">
                             <i class="ti ti-pencil" aria-hidden="true"></i>
-                            Edit
+                            {{ 'web.common.lblEdit' | translate }}
                           </button>
                           <div class="sd-row-menu__divider" role="separator"></div>
                           <button type="button" class="sd-row-menu__item sd-row-menu__item--danger" (click)="deleteReservation(row)">
                             <i class="ti ti-trash" aria-hidden="true"></i>
-                            Delete
+                            {{ 'web.common.lblDelete' | translate }}
                           </button>
                         </div>
                       </div>
@@ -318,7 +318,7 @@
 
             <div class="ov-page">
               <div class="ov-page__meta">
-                <span class="ov-page__label">Show</span>
+                <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
                 <div class="ov-page__size">
                   <select [(ngModel)]="reservationPageSize" (change)="onReservationPageSizeChange()">
                     <option [ngValue]="5">5</option>
@@ -328,17 +328,17 @@
                   </select>
                   <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
                 </div>
-                <span>Showing {{ reservationStart }} to {{ reservationEnd }} of {{ reservationTotal }} records</span>
+                <span>{{ 'web.common.lblShowing' | translate }} {{ reservationStart }} {{ 'web.common.lblTo' | translate }} {{ reservationEnd }} {{ 'web.common.lblOf' | translate }} {{ reservationTotal }} {{ 'web.common.lblRecords' | translate }}</span>
               </div>
               <div class="ov-page__nav">
-                <span class="ov-page__label">Page {{ reservationPageIndex + 1 }} of {{ reservationPages || 1 }}</span>
+                <span class="ov-page__label">{{ 'web.common.lblPage' | translate }} {{ reservationPageIndex + 1 }} {{ 'web.common.lblOf' | translate }} {{ reservationPages || 1 }}</span>
                 <div class="ov-page__btns">
                   <button
                     type="button"
                     class="ov-page__btn"
                     (click)="previousReservationPage()"
                     [disabled]="reservationPageIndex <= 0"
-                    aria-label="Previous page">
+                    [attr.aria-label]="'web.common.lblPreviousPage' | translate">
                     <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
                   </button>
                   <ng-container *ngFor="let item of reservationPager">
@@ -357,7 +357,7 @@
                     class="ov-page__btn"
                     (click)="nextReservationPage()"
                     [disabled]="reservationPageIndex + 1 >= reservationPages"
-                    aria-label="Next page">
+                    [attr.aria-label]="'web.common.lblNextPage' | translate">
                     <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
                   </button>
                 </div>
@@ -369,12 +369,12 @@
           <section *ngIf="activeTab === 'attachments'" class="sd-panel">
             <div class="sd-panel__head">
               <div>
-                <h4 class="sd-panel__title">Attachments</h4>
-                <p class="sd-panel__sub">Documents linked to this space.</p>
+                <h4 class="sd-panel__title">{{ 'web.bookings.spaces.attachmentsTab' | translate }}</h4>
+                <p class="sd-panel__sub">{{ 'web.bookings.spaces.attachmentsSub' | translate }}</p>
               </div>
               <button type="button" class="ov-btn ov-btn-primary">
                 <i class="ti ti-plus" aria-hidden="true"></i>
-                Add Attachment
+                {{ 'web.bookings.spaces.addAttachment' | translate }}
               </button>
             </div>
 
@@ -387,12 +387,12 @@
                   class="ov-input ov-search__input"
                   [(ngModel)]="attachmentSearch"
                   (ngModelChange)="onAttachmentSearch()"
-                  placeholder="Search attachments..." />
+                  [placeholder]="'web.bookings.spaces.phSearchAttachments' | translate" />
               </div>
               <div class="relative" (click)="$event.stopPropagation()">
                 <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleAttachmentColumns($event)">
                   <i class="ti ti-columns" aria-hidden="true"></i>
-                  Columns
+                  {{ 'web.common.lblColumns' | translate }}
                 </button>
                 <app-column-menu
                   *ngIf="showAttachmentColumns"
@@ -411,7 +411,7 @@
                 [loading]="false"
                 [hasActions]="false"
                 [showPaginator]="false"
-                [emptyMessage]="'No attachments found.'"
+                [emptyMessage]="'web.bookings.spaces.noAttachmentsFound' | translate"
                 [totalRecords]="attachmentTotal"
                 [pageSize]="attachmentPageSize"
                 [pageIndex]="attachmentPageIndex">
@@ -437,7 +437,7 @@
                       [class.sd-pill--muted]="row.shareTenant !== 'Yes'">
                       {{ row.shareTenant }}
                     </span>
-                    <button *ngSwitchCase="'action'" type="button" class="sd-more" aria-label="Attachment actions">
+                    <button *ngSwitchCase="'action'" type="button" class="sd-more" [attr.aria-label]="'web.common.lblAction' | translate">
                       <i class="ti ti-dots"></i>
                     </button>
                     <span *ngSwitchDefault>{{ row[col.key] }}</span>
@@ -448,7 +448,7 @@
 
             <div class="ov-page">
               <div class="ov-page__meta">
-                <span class="ov-page__label">Show</span>
+                <span class="ov-page__label">{{ 'web.common.lblShow' | translate }}</span>
                 <div class="ov-page__size">
                   <select [(ngModel)]="attachmentPageSize" (change)="onAttachmentPageSizeChange()">
                     <option [ngValue]="5">5</option>
@@ -458,17 +458,17 @@
                   </select>
                   <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
                 </div>
-                <span>Showing {{ attachmentStart }} to {{ attachmentEnd }} of {{ attachmentTotal }} records</span>
+                <span>{{ 'web.common.lblShowing' | translate }} {{ attachmentStart }} {{ 'web.common.lblTo' | translate }} {{ attachmentEnd }} {{ 'web.common.lblOf' | translate }} {{ attachmentTotal }} {{ 'web.common.lblRecords' | translate }}</span>
               </div>
               <div class="ov-page__nav">
-                <span class="ov-page__label">Page {{ attachmentPageIndex + 1 }} of {{ attachmentPages || 1 }}</span>
+                <span class="ov-page__label">{{ 'web.common.lblPage' | translate }} {{ attachmentPageIndex + 1 }} {{ 'web.common.lblOf' | translate }} {{ attachmentPages || 1 }}</span>
                 <div class="ov-page__btns">
                   <button
                     type="button"
                     class="ov-page__btn"
                     (click)="previousAttachmentPage()"
                     [disabled]="attachmentPageIndex <= 0"
-                    aria-label="Previous page">
+                    [attr.aria-label]="'web.common.lblPreviousPage' | translate">
                     <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
                   </button>
                   <ng-container *ngFor="let item of attachmentPager">
@@ -487,7 +487,7 @@
                     class="ov-page__btn"
                     (click)="nextAttachmentPage()"
                     [disabled]="attachmentPageIndex + 1 >= attachmentPages"
-                    aria-label="Next page">
+                    [attr.aria-label]="'web.common.lblNextPage' | translate">
                     <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
                   </button>
                 </div>

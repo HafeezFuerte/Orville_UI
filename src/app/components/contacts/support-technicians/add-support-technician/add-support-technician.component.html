@@ -5,21 +5,21 @@
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </a>
     <div>
-      <h3 class="ov-page-title">{{ isEditMode ? 'Edit User' : 'New User' }}</h3>
+      <h3 class="ov-page-title">{{ isEditMode ? ('web.contacts.lblEditUser' | translate) : ('web.contacts.lblNewUser' | translate) }}</h3>
       <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">Home</a></li>
+        <li><a [routerLink]="['/insights']" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblHome' | translate }}</a></li>
         <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">contacts</a></li>
+        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblContacts' | translate }}</a></li>
         <li class="px-2 text-gray-400">/</li>
-        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">Support Technicians</a></li>
+        <li><a routerLink="/contacts/support-technicians" class="hover:text-primary cursor-pointer">{{ 'web.contacts.lblSupportTechnicians' | translate }}</a></li>
         <li class="px-2 text-gray-400">/</li>
-        <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit User' : 'New User' }}</li>
+        <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? ('web.contacts.lblEditUser' | translate) : ('web.contacts.lblNewUser' | translate) }}</li>
       </ol>
     </div>
   </div>
   <div class="flex items-center gap-3">
-    <button type="button" routerLink="/contacts/support-technicians" class="ov-btn ov-btn-ghost">Cancel</button>
-    <button type="button" (click)="saveTechnician()" class="ov-btn ov-btn-primary px-6">Save</button>
+    <button type="button" routerLink="/contacts/support-technicians" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
+    <button type="button" (click)="saveTechnician()" class="ov-btn ov-btn-primary px-6">{{ 'web.contacts.lblSave' | translate }}</button>
   </div>
 </div>
 
@@ -27,7 +27,7 @@
   
   <!-- 1. Personal Information Card -->
   <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
-    <h6 class="font-bold text-gray-800 text-sm mb-6">Personal Information</h6>
+    <h6 class="font-bold text-gray-800 text-sm mb-6">{{ 'web.contacts.lblPersonalInformation' | translate }}</h6>
 
     <!-- Avatar & Upload -->
     <div class="flex items-center gap-4 mb-6">
@@ -38,20 +38,20 @@
       <div class="flex flex-col gap-1.5">
         <input type="file" #photoInput style="display: none" accept="image/*" (change)="onPhotoSelected($event)">
         <button type="button" (click)="photoInput.click()" class="px-4 py-2 text-xs rounded-md bg-[#d2a36b] text-white border-0 hover:bg-[#c29661] transition-all font-semibold shadow-xs flex items-center gap-1.5 w-fit">
-          <i class="ri-upload-2-line"></i> Upload Photo
+          <i class="ri-upload-2-line"></i> {{ 'web.contacts.lblUploadPhoto' | translate }}
         </button>
-        <span class="text-[10px] text-gray-500">JPG, PNG or GIF (max. 5MB)</span>
+        <span class="text-[10px] text-gray-500">{{ 'web.contacts.lblJPGHint' | translate }}</span>
       </div>
     </div>
 
     <!-- Row 1: Email, Username -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Email <span class="text-danger">*</span></label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
         <input type="email" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.email_address" [placeholder]="'web.common.lblEnter' | translate">
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Username</label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblUsername' | translate }}</label>
         <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.username" [placeholder]="'web.common.lblEnter' | translate">
       </div>
     </div>
@@ -59,15 +59,15 @@
     <!-- Row 2: Passwords, First Name, Last Name -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Passwords</label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblPasswords' | translate }}</label>
         <input type="password" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.password" [placeholder]="'web.common.lblEnter' | translate">
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">First Name <span class="text-danger">*</span></label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblFirstName' | translate }} <span class="text-danger">*</span></label>
         <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.first_name" [placeholder]="'web.common.lblEnter' | translate">
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Last Name <span class="text-danger">*</span></label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblLastName' | translate }} <span class="text-danger">*</span></label>
         <input type="text" class="form-control form-control-sm text-[12px] bg-gray-50 border-gray-200 focus:bg-white rounded-lg p-2.5" [(ngModel)]="technicianData.last_name" [placeholder]="'web.common.lblEnter' | translate">
       </div>
     </div>
@@ -75,8 +75,8 @@
     <!-- Row 3: Country, Phone Number, Spoken Languages -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Country <span class="text-danger">*</span></label>
-        <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id" [searchable]="true" placeholder="Select Country" class="ng-select-sm w-full" [(ngModel)]="technicianData.country_id" (change)="onCountryChange()">
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblCountry' | translate }} <span class="text-danger">*</span></label>
+        <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id" [searchable]="true" [placeholder]="'web.contacts.lblSelectCountry' | translate" class="ng-select-sm w-full" [(ngModel)]="technicianData.country_id" (change)="onCountryChange()">
           <ng-template ng-header-tmp>
             <div class="p-1.5 border-b border-gray-100">
               <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -95,7 +95,7 @@
         </ng-select>
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Phone Number</label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblPhoneNumber' | translate }}</label>
         <div class="flex input-group">
           <span class="input-group-text bg-gray-50 border-gray-200 !px-2 flex gap-1 items-center rounded-l-lg">
             <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3">
@@ -105,7 +105,7 @@
         </div>
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Spoken Languages</label>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblSpokenLanguages' | translate }}</label>
         <ng-select [items]="spokenLanguagesList" appendTo="body" [searchable]="true" [placeholder]="'web.common.lblSelect' | translate" class="ng-select-sm w-full" [(ngModel)]="technicianData.spoken_languages"></ng-select>
       </div>
     </div>
@@ -113,30 +113,30 @@
     <!-- Row 4: Time Zone, Role, Department -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Time Zone</label>
-        <ng-select [items]="timeZonesList" appendTo="body" [searchable]="true" placeholder="Select Time Zone" class="ng-select-sm w-full" [(ngModel)]="technicianData.time_zone"></ng-select>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblTimeZone' | translate }}</label>
+        <ng-select [items]="timeZonesList" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelectTimeZone' | translate" class="ng-select-sm w-full" [(ngModel)]="technicianData.time_zone"></ng-select>
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Role <span class="text-danger">*</span></label>
-        <ng-select [items]="rolesList" appendTo="body" [searchable]="true" placeholder="Support Technician" class="ng-select-sm w-full" [(ngModel)]="technicianData.role"></ng-select>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblRole' | translate }} <span class="text-danger">*</span></label>
+        <ng-select [items]="rolesList" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSupportTechnicians' | translate" class="ng-select-sm w-full" [(ngModel)]="technicianData.role"></ng-select>
       </div>
       <div>
-        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">Department</label>
-        <ng-select [items]="departmentsList" appendTo="body" [searchable]="true" placeholder="Select Department" class="ng-select-sm w-full" [(ngModel)]="technicianData.department"></ng-select>
+        <label class="form-label text-xs font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblDepartment' | translate }}</label>
+        <ng-select [items]="departmentsList" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelectDepartment' | translate" class="ng-select-sm w-full" [(ngModel)]="technicianData.department"></ng-select>
       </div>
     </div>
   </div>
 
   <!-- 2. Tenant Visibility Card -->
   <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
-    <h6 class="font-bold text-gray-800 text-sm mb-1">Tenant Visibility</h6>
+    <h6 class="font-bold text-gray-800 text-sm mb-1">{{ 'web.contacts.lblTenantVisibility' | translate }}</h6>
     <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-      This update will result in all tenants being visible to the user, regardless of whether they have been assigned to any units. However, users holding the Manager role will not be impacted by this change.
+      {{ 'web.contacts.lblTenantVisibilitySub' | translate }}
     </p>
     <div class="flex items-center justify-between p-4 bg-gray-50/60 rounded-xl border border-gray-100">
       <div>
-        <h6 class="text-xs font-bold text-gray-800 m-0">Display All Tenant</h6>
-        <p class="text-[11px] text-gray-500 m-0 mt-0.5">Enabling this will showcase all tenants to this user</p>
+        <h6 class="text-xs font-bold text-gray-800 m-0">{{ 'web.contacts.lblDisplayAllTenant' | translate }}</h6>
+        <p class="text-[11px] text-gray-500 m-0 mt-0.5">{{ 'web.contacts.lblDisplayAllTenantSub' | translate }}</p>
       </div>
       <div class="custom-toggle-switch flex-shrink-0">
         <input type="checkbox" id="displayAllTenants" [(ngModel)]="technicianData.display_all_tenants">
@@ -147,10 +147,10 @@
 
   <!-- 3. Email Subscriptions Card -->
   <div class="box bg-white rounded-xl shadow-xs border border-gray-100 p-6">
-    <h6 class="font-bold text-gray-800 text-sm mb-4">Email Subscriptions</h6>
+    <h6 class="font-bold text-gray-800 text-sm mb-4">{{ 'web.contacts.lblEmailSubscriptions' | translate }}</h6>
     <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
       <input type="checkbox" id="selectAllSubs" [checked]="selectAllSubscriptions" (change)="toggleSelectAllSubscriptions($event)" class="form-checkbox h-4 w-4 text-primary rounded">
-      <label for="selectAllSubs" class="text-xs font-bold text-gray-700 cursor-pointer">Select All</label>
+      <label for="selectAllSubs" class="text-xs font-bold text-gray-700 cursor-pointer">{{ 'web.contacts.lblSelectAll' | translate }}</label>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-y-3 gap-x-6 text-xs">
       <div *ngFor="let sub of emailSubscriptions" class="flex items-center gap-2.5">
@@ -165,10 +165,10 @@
   <!-- Bottom Centered Action Bar -->
   <div class="flex items-center flex-start gap-3 py-4">
     <button type="button" routerLink="/contacts/support-technicians" class="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all font-semibold text-xs border border-gray-200">
-      Cancel
+      {{ 'web.contacts.lblCancel' | translate }}
     </button>
     <button type="button" (click)="saveTechnician()" class="px-6 py-2 rounded-lg bg-[#1f2b45] text-white hover:bg-[#131b2e] transition-all font-semibold text-xs shadow-sm">
-      Save
+      {{ 'web.contacts.lblSave' | translate }}
     </button>
   </div>
 

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-add-inspection',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './add-inspection.component.html',
   styleUrls: []
 })

@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   COLLECTION_REQUEST_ROWS,
   COLLECTION_STATUS_TABS,
@@ -24,7 +25,8 @@ import {
     NgSelectModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,
+    TranslateModule
   ],
   templateUrl: './collection-requests.component.html'
 })
@@ -43,12 +45,12 @@ export class CollectionRequestsComponent {
   allRows = COLLECTION_REQUEST_ROWS;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'collector', label: 'Collector', visible: true },
-    { key: 'invoiceId', label: 'Invoice Id', visible: true, useTemplate: true },
-    { key: 'amount', label: 'Amount', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' },
-    { key: 'createdAt', label: 'Created At', visible: true }
+    { key: 'id', label: 'web.collectionRequests.colId', visible: true, useTemplate: true },
+    { key: 'collector', label: 'web.collectionRequests.colCollector', visible: true },
+    { key: 'invoiceId', label: 'web.collectionRequests.colInvoiceId', visible: true, useTemplate: true },
+    { key: 'amount', label: 'web.collectionRequests.colAmount', visible: true },
+    { key: 'status', label: 'web.collectionRequests.colStatus', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' },
+    { key: 'createdAt', label: 'web.collectionRequests.colCreatedAt', visible: true }
   ];
 
   get visibleColumns() {

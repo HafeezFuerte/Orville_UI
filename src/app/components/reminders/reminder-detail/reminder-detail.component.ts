@@ -1,13 +1,14 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { getReminderDetail, ReminderRow } from '../reminders.data';
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 @Component({
   selector: 'app-reminder-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './reminder-detail.component.html'
 })
 export class ReminderDetailComponent implements OnInit {
@@ -16,8 +17,8 @@ export class ReminderDetailComponent implements OnInit {
   reminderCode:any='';
   showActionMenu = false;
   actionOptions = [
-    { label: 'Edit Reminder', asset: 'assets/images/action-menu/pencil.svg', danger: false },
-    { label: 'Delete Reminder', asset: 'assets/images/action-menu/archive.svg', danger: true }
+    { labelKey: 'web.reminders.editReminder', label: 'Edit Reminder', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { labelKey: 'web.reminders.deleteReminder', label: 'Delete Reminder', asset: 'assets/images/action-menu/archive.svg', danger: true }
   ];
 
   constructor(

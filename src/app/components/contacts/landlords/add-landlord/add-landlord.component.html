@@ -6,20 +6,20 @@
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </a>
       <div>
-        <h3 class="ov-page-title">{{ isEditMode ? 'Edit Landlord' : 'New Landlord' }}</h3>
+        <h3 class="ov-page-title">{{ isEditMode ? ('web.contacts.lblEditLandlord' | translate) : ('web.contacts.lblAddLandlord' | translate) }}</h3>
         <ol class="ov-page-sub mt-1 flex flex-wrap items-center">
-          <li><a routerLink="/contacts/landlords">Contacts</a></li>
+          <li><a routerLink="/contacts/landlords">{{ 'web.contacts.lblContacts' | translate }}</a></li>
           <li class="px-2">/</li>
-          <li><a routerLink="/contacts/landlords">Landlords</a></li>
+          <li><a routerLink="/contacts/landlords">{{ 'web.contacts.lblLandlords' | translate }}</a></li>
           <li class="px-2">/</li>
-          <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? 'Edit Landlord' : 'New Landlord' }}</li>
+          <li class="font-semibold text-defaulttextcolor">{{ isEditMode ? ('web.contacts.lblEditLandlord' | translate) : ('web.contacts.lblAddLandlord' | translate) }}</li>
         </ol>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" routerLink="/contacts/landlords" class="ov-btn ov-btn-ghost">Cancel</button>
+      <button type="button" routerLink="/contacts/landlords" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="saveLandlord()">
-        {{ isEditMode ? 'Save Changes' : 'Save Landlord' }}
+        {{ isEditMode ? ('web.contacts.lblSaveChanges' | translate) : ('web.contacts.lblSaveLandlord' | translate) }}
       </button>
     </div>
   </div>
@@ -30,7 +30,7 @@
       <!-- Landlord Login Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Landlord Login Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblLandlordLoginInfo' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-photo-row">
@@ -41,19 +41,19 @@
             <div class="ov-photo-row__meta">
               <input type="file" #photoInput class="ov-sr" accept="image/*" (change)="onPhotoSelected($event)">
               <button type="button" class="ov-btn ov-btn-primary" (click)="photoInput.click()">
-                <i class="ri-upload-2-line"></i> Upload Photo
+                <i class="ri-upload-2-line"></i> {{ 'web.contacts.lblUploadPhoto' | translate }}
               </button>
-              <span class="ov-photo-row__hint">JPG, PNG or GIF (max. 5MB)</span>
+              <span class="ov-photo-row__hint">{{ 'web.contacts.lblJPGHint' | translate }}</span>
             </div>
           </div>
 
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Email <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
               <input type="email" class="ov-input" [(ngModel)]="landlordData.email_address" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Username</label>
+              <label class="ov-label">{{ 'web.contacts.lblUsername' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.username" [placeholder]="'web.common.lblEnter' | translate">
             </div>
           </div>
@@ -63,12 +63,12 @@
       <!-- General Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">General Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblGeneralInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Honorific</label>
+              <label class="ov-label">{{ 'web.contacts.lblHonorific' | translate }}</label>
               <ng-select #honorificSelect [items]="honorifics" appendTo="body" [searchable]="true" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" [(ngModel)]="landlordData.honorific">
                 <ng-template ng-header-tmp>
@@ -78,19 +78,19 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">First Name <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.contacts.lblFirstName' | translate }} <span class="text-danger">*</span></label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.first_name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Last Name <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.contacts.lblLastName' | translate }} <span class="text-danger">*</span></label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.last_name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Middle Name</label>
+              <label class="ov-label">{{ 'web.contacts.lblMiddleName' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.middle_name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Phone Number</label>
+              <label class="ov-label">{{ 'web.contacts.lblPhoneNumber' | translate }}</label>
               <div class="ov-phone">
                 <span class="ov-phone__code">
                   <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" alt="" width="16" height="12">
@@ -100,8 +100,8 @@
               </div>
             </div>
             <div>
-              <label class="ov-label">Gender</label>
-              <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true" placeholder="Select Gender"
+              <label class="ov-label">{{ 'web.contacts.lblGender' | translate }}</label>
+              <ng-select #genderSelect [items]="genders" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelect' | translate"
                 class="ov-select w-full" [(ngModel)]="landlordData.gender">
                 <ng-template ng-header-tmp>
                   <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="genderSelect.filter($any($event.target).value)"
@@ -116,20 +116,20 @@
       <!-- Address Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Address Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblAddressInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Address Line 1</label>
+              <label class="ov-label">{{ 'web.contacts.lblAddressLine1' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.address1" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Address Line 2</label>
+              <label class="ov-label">{{ 'web.contacts.lblAddressLine2' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.address2" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Nationality</label>
+              <label class="ov-label">{{ 'web.contacts.lblNationality' | translate }}</label>
               <ng-select #nationalitySelect [items]="countries" appendTo="body" bindLabel="name" [searchable]="true"
                 [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" [(ngModel)]="selectedNationality">
                 <ng-template ng-header-tmp>
@@ -139,9 +139,9 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Country <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.contacts.lblCountry' | translate }} <span class="text-danger">*</span></label>
               <ng-select #countrySelect [items]="countries" appendTo="body" bindLabel="name" bindValue="id"
-                [searchable]="true" placeholder="Select Country" class="ov-select w-full"
+                [searchable]="true" [placeholder]="'web.contacts.lblSelectCountry' | translate" class="ov-select w-full"
                 [(ngModel)]="landlordData.country_id" (change)="onCountryChange()">
                 <ng-template ng-header-tmp>
                   <input type="text" [placeholder]="'web.common.lblSearch' | translate" (input)="countrySelect.filter($any($event.target).value)"
@@ -165,7 +165,7 @@
 
           <div class="ov-fields ov-fields--3">
             <div>
-              <label class="ov-label">State/ Province</label>
+              <label class="ov-label">{{ 'web.contacts.lblStateProvince' | translate }}</label>
               <ng-select #stateSelect [items]="states" appendTo="body" [searchable]="true" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" [(ngModel)]="landlordData.stateid" bindValue="id" bindLabel="name"
                 (change)="onStateChange()">
@@ -176,7 +176,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">City</label>
+              <label class="ov-label">{{ 'web.contacts.lblCity' | translate }}</label>
               <ng-select #citySelect [items]="cities" appendTo="body" [searchable]="true" [placeholder]="'web.common.lblSelect' | translate"
                 class="ov-select w-full" [(ngModel)]="landlordData.city" bindValue="id" bindLabel="name">
                 <ng-template ng-header-tmp>
@@ -186,7 +186,7 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Postcode</label>
+              <label class="ov-label">{{ 'web.contacts.lblPostcode' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="landlordData.zipcode" [placeholder]="'web.common.lblEnter' | translate">
             </div>
           </div>
@@ -196,20 +196,20 @@
       <!-- Tenancy Lease Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Tenancy Lease Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblTenancyLeaseInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Name on Contract</label>
+              <label class="ov-label">{{ 'web.contacts.lblNameOnContract' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Email on Contract</label>
+              <label class="ov-label">{{ 'web.contacts.lblEmailOnContract' | translate }}</label>
               <input type="email" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Phone on Contract</label>
+              <label class="ov-label">{{ 'web.contacts.lblPhoneOnContract' | translate }}</label>
               <div class="ov-phone">
                 <span class="ov-phone__code">
                   <img src="https://flagcdn.com/w20/ae.png" alt="UAE" width="16" height="12">
@@ -225,22 +225,20 @@
       <div class="ov-card">
         <div class="ov-card__head ov-card__head--row">
           <div>
-            <h6 class="ov-card-title">Documents &amp; Attachments</h6>
-            <p class="ov-card-sub">Keep important documents organized and choose whether they are visible to tenants,
-              landlords, or kept private.</p>
+            <h6 class="ov-card-title">{{ 'web.contacts.lblDocumentsAttachments' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.contacts.lblKeepImportantDocsOrganized' | translate }}</p>
           </div>
           <button type="button" class="ov-link-info" (click)="toggleDocModal(true)">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Document
+            {{ 'web.contacts.lblAddDocument' | translate }}
           </button>
         </div>
         <div class="ov-card__body flex flex-col gap-3">
           <div *ngIf="uploadedDocuments.length === 0" class="ov-empty-docs">
             <div class="ov-empty-docs__icon"><i class="ri-file-text-line"></i></div>
-            <h6 class="ov-empty-docs__title">No documents uploaded yet</h6>
-            <p class="ov-empty-docs__sub">Keep important documents organized and choose whether they are visible to
-              tenants, landlords, or kept private.</p>
-            <button type="button" class="ov-btn ov-btn-primary" (click)="toggleDocModal(true)">Add Document</button>
+            <h6 class="ov-empty-docs__title">{{ 'web.contacts.lblNoDocumentsUploadedYet' | translate }}</h6>
+            <p class="ov-empty-docs__sub">{{ 'web.contacts.lblKeepImportantDocsOrganized' | translate }}</p>
+            <button type="button" class="ov-btn ov-btn-primary" (click)="toggleDocModal(true)">{{ 'web.contacts.lblAddDocument' | translate }}</button>
           </div>
 
           <div *ngFor="let doc of uploadedDocuments; let i = index" class="ov-doc-row">
@@ -258,7 +256,7 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="ov-btn ov-btn-ghost ov-doc-row__remove" (click)="removeDocument(i)">Remove</button>
+            <button type="button" class="ov-btn ov-btn-ghost ov-doc-row__remove" (click)="removeDocument(i)">{{ 'web.contacts.lblRemove' | translate }}</button>
           </div>
         </div>
       </div>
@@ -266,24 +264,24 @@
       <!-- Emergency Contact Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Emergency Contact Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblEmergencyContactInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="ov-fields ov-fields--3 ov-emergency-block">
             <div>
-              <label class="ov-label">Email</label>
+              <label class="ov-label">{{ 'web.contacts.lblEmail' | translate }}</label>
               <input type="email" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Name</label>
+              <label class="ov-label">{{ 'web.contacts.lblName' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Relation</label>
+              <label class="ov-label">{{ 'web.contacts.lblRelation' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Phone</label>
+              <label class="ov-label">{{ 'web.contacts.lblPhoneNumber' | translate }}</label>
               <div class="ov-phone">
                 <span class="ov-phone__code">
                   <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" alt="" width="16" height="12">
@@ -293,7 +291,7 @@
               </div>
             </div>
             <div class="ov-fields__span-2">
-              <label class="ov-label">Work Phone</label>
+              <label class="ov-label">{{ 'web.contacts.lblWorkPhone' | translate }}</label>
               <div class="ov-phone">
                 <span class="ov-phone__code">
                   <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" alt="" width="16" height="12">
@@ -302,13 +300,13 @@
                 <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
               </div>
               <div class="text-end mt-2">
-                <a href="javascript:void(0)" class="ov-link-danger">Remove Contact</a>
+                <a href="javascript:void(0)" class="ov-link-danger">{{ 'web.contacts.lblRemoveContact' | translate }}</a>
               </div>
             </div>
           </div>
 
           <div>
-            <a href="javascript:void(0)" class="ov-link-info">Add Emergency Contact</a>
+            <a href="javascript:void(0)" class="ov-link-info">{{ 'web.contacts.lblAddEmergencyContact' | translate }}</a>
           </div>
         </div>
       </div>
@@ -316,10 +314,10 @@
       <!-- Custom Fields -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Custom Fields</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblCustomFields' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <p class="ov-empty-inline">No fields available for landlords.</p>
+          <p class="ov-empty-inline">{{ 'web.contacts.lblNoFieldsAvailableLandlords' | translate }}</p>
         </div>
       </div>
 
@@ -331,13 +329,13 @@
       <!-- Company Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Company Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblCompanyInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="ov-switch-row">
             <div>
-              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">Display as Company</h6>
-              <small class="text-[14px] text-textmuted leading-normal block">If enabled it will be shown in the list page</small>
+              <h6 class="mb-1 text-[14px] font-medium text-defaulttextcolor">{{ 'web.contacts.lblDisplayAsCompany' | translate }}</h6>
+              <small class="text-[14px] text-textmuted leading-normal block">{{ 'web.contacts.lblDisplayAsCompanySub' | translate }}</small>
             </div>
             <div class="form-check form-switch mb-0 shrink-0">
               <input type="checkbox" id="displayAsCompany" [(ngModel)]="displayAsCompany"
@@ -348,19 +346,19 @@
           <hr class="border-defaultborder m-0">
 
           <div>
-            <label class="ov-label">Company Name</label>
+            <label class="ov-label">{{ 'web.contacts.lblCompanyName' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="landlordData.company_name"
-              placeholder="Select Company Name">
+              [placeholder]="'web.contacts.lblCompanyName' | translate">
           </div>
           <div>
-            <label class="ov-label">Tax Registration Number</label>
+            <label class="ov-label">{{ 'web.contacts.lblTaxRegistrationNumber' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="landlordData.tax_registration_no"
-              placeholder="Enter Tax Registration Number">
+              [placeholder]="'web.contacts.lblTaxRegistrationNumber' | translate">
           </div>
           <div>
-            <label class="ov-label">Trade License</label>
+            <label class="ov-label">{{ 'web.contacts.lblTradeLicense' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="landlordData.trade_license"
-              placeholder="Enter Trade License">
+              [placeholder]="'web.contacts.lblTradeLicense' | translate">
           </div>
         </div>
       </div>
@@ -368,28 +366,28 @@
       <!-- Bank Account Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Bank Account Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblBankAccountInfo' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="ov-label">Bank Name</label>
+            <label class="ov-label">{{ 'web.contacts.lblBankName' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="bankdtls.bank_name" [placeholder]="'web.common.lblEnter' | translate">
           </div>
           <div>
-            <label class="ov-label">Account Name</label>
+            <label class="ov-label">{{ 'web.contacts.lblBankAccountName' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="bankdtls.account_no" [placeholder]="'web.common.lblEnter' | translate">
           </div>
           <div>
-            <label class="ov-label">IBAN</label>
+            <label class="ov-label">{{ 'web.contacts.lblIban' | translate }}</label>
             <input type="text" class="ov-input" [(ngModel)]="bankdtls.iban" [placeholder]="'web.common.lblEnter' | translate">
           </div>
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Swift (BIC)</label>
+              <label class="ov-label">{{ 'web.contacts.lblSwift' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="bankdtls.code_swift" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Branch</label>
+              <label class="ov-label">{{ 'web.contacts.lblBranch' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="bankdtls.bank_address" [placeholder]="'web.common.lblEnter' | translate">
             </div>
           </div>
@@ -399,24 +397,24 @@
       <!-- Invoice Information -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Invoice Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblInvoiceDetails' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Invoice Number Prefix</label>
+              <label class="ov-label">{{ 'web.contacts.lblInvoiceNumberPrefix' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Next Invoice Number</label>
+              <label class="ov-label">{{ 'web.contacts.lblNextInvoiceNumber' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Receipt Number Prefix</label>
+              <label class="ov-label">{{ 'web.contacts.lblReceiptNumberPrefix' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Receipt Next Number</label>
+              <label class="ov-label">{{ 'web.contacts.lblReceiptNextNumber' | translate }}</label>
               <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate">
             </div>
           </div>
@@ -426,30 +424,30 @@
       <!-- Tenant Settings (existing — Figma Wallet Settings uses different fields) -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Tenant Settings</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblTenantSettings' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-checks">
             <label class="ov-check">
               <input type="checkbox" id="transferAmount" [(ngModel)]="transferAmount" class="form-check-input">
               <div>
-                <span>Transfer Amount*</span>
-                <small>Check this box to set specific payment terms per lease in landlord account.</small>
+                <span>{{ 'web.contacts.lblTransferAmount' | translate }}</span>
+                <small>{{ 'web.contacts.lblTransferAmountDesc' | translate }}</small>
               </div>
             </label>
             <label class="ov-check">
               <input type="checkbox" id="recordAmount" [(ngModel)]="recordAmount" class="form-check-input">
               <div>
-                <span>Record Amount (Security Deposit)*</span>
-                <small>Check this box to receive security deposit into lease if applicable.</small>
+                <span>{{ 'web.contacts.lblRecordAmount' | translate }}</span>
+                <small>{{ 'web.contacts.lblRecordAmountDesc' | translate }}</small>
               </div>
             </label>
             <label class="ov-check">
               <input type="checkbox" id="landlordContribution" [(ngModel)]="landlordContribution"
                 class="form-check-input">
               <div>
-                <span>Landlord Contribution*</span>
-                <small>Check this box if landlord is paying property management fee.</small>
+                <span>{{ 'web.contacts.lblLandlordContributionReq' | translate }}</span>
+                <small>{{ 'web.contacts.lblLandlordContributionDesc' | translate }}</small>
               </div>
             </label>
           </div>
@@ -459,19 +457,19 @@
       <!-- Signature -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Signature</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblSignature' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <label class="ov-check">
             <input type="checkbox" id="autoSign" [(ngModel)]="autoSignLeases" class="form-check-input">
             <div>
-              <span>Auto Sign Leases</span>
-              <small>Automatically add landlord signature to all leases.</small>
+              <span>{{ 'web.contacts.lblAutoSignLeases' | translate }}</span>
+              <small>{{ 'web.contacts.lblAutoSignLandlordSub' | translate }}</small>
             </div>
           </label>
 
           <div>
-            <label class="ov-label">Upload your signature</label>
+            <label class="ov-label">{{ 'web.contacts.lblUploadYourSignature' | translate }}</label>
             <input type="file" #sigFileInput class="ov-sr" accept="image/*" (change)="onSignatureSelected($event)">
             <div class="ov-sig-drop" (click)="sigFileInput.click()" role="button" tabindex="0">
               <div *ngIf="signaturePreviewUrl" class="ov-sig-drop__preview">
@@ -479,12 +477,11 @@
               </div>
               <ng-container *ngIf="!signaturePreviewUrl">
                 <div class="ov-sig-drop__icon"><i class="ri-upload-2-line"></i></div>
-                <span class="ov-sig-drop__text">Click to upload or drag and drop</span>
+                <span class="ov-sig-drop__text">{{ 'web.contacts.lblClickToUploadDragDrop' | translate }}</span>
               </ng-container>
-              <span class="ov-sig-drop__change" *ngIf="signaturePreviewUrl">Change Signature</span>
+              <span class="ov-sig-drop__change" *ngIf="signaturePreviewUrl">{{ 'web.contacts.lblChangeSignature' | translate }}</span>
             </div>
-            <p class="ov-card-sub mt-2 text-center leading-relaxed">Attached Signature will be automatically populated
-              in signature pad while approving lease.</p>
+            <p class="ov-card-sub mt-2 text-center leading-relaxed">{{ 'web.contacts.lblAttachedSignaturePadHint' | translate }}</p>
           </div>
         </div>
       </div>
@@ -492,29 +489,29 @@
       <!-- Notification Settings -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Notification Settings</h6>
+          <h6 class="ov-card-title">{{ 'web.contacts.lblNotificationSettings' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-checks">
             <label class="ov-check">
               <input type="checkbox" id="pushNotif" [(ngModel)]="sendPushNotifications" class="form-check-input">
               <div>
-                <span>Send Push Notifications</span>
-                <small>Send push notifications to the landlord.</small>
+                <span>{{ 'web.contacts.lblSendPushNotifications' | translate }}</span>
+                <small>{{ 'web.contacts.lblSendPushNotificationsSub' | translate }}</small>
               </div>
             </label>
             <label class="ov-check">
               <input type="checkbox" id="emailNotif" [(ngModel)]="sendEmailNotifications" class="form-check-input">
               <div>
-                <span>Send Email Notifications</span>
-                <small>Send email notifications to the landlord.</small>
+                <span>{{ 'web.contacts.lblSendEmailNotifications' | translate }}</span>
+                <small>{{ 'web.contacts.lblSendEmailNotificationsSub' | translate }}</small>
               </div>
             </label>
             <label class="ov-check">
               <input type="checkbox" id="autoBill" [(ngModel)]="autoBillWallet" class="form-check-input">
               <div>
-                <span>Auto bill all amount in Wallet</span>
-                <small>Auto pay bills with landlord wallet money.</small>
+                <span>{{ 'web.contacts.lblAutoBillWallet' | translate }}</span>
+                <small>{{ 'web.contacts.lblAutoBillWalletSub' | translate }}</small>
               </div>
             </label>
           </div>
@@ -525,9 +522,9 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" routerLink="/contacts/landlords" class="ov-btn ov-btn-ghost">Cancel</button>
+    <button type="button" routerLink="/contacts/landlords" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
     <button type="button" class="ov-btn ov-btn-primary" (click)="saveLandlord()">
-      {{ isEditMode ? 'Save Changes' : 'Save Landlord' }}
+      {{ isEditMode ? ('web.contacts.lblSaveChanges' | translate) : ('web.contacts.lblSaveLandlord' | translate) }}
     </button>
   </div>
 </div>
@@ -542,27 +539,27 @@
     <div class="ov-modal ov-modal--doc">
       <div class="ov-modal__header ov-modal__header--doc">
         <div>
-          <h6 class="ov-modal__title ov-modal__title--doc">Add Document</h6>
-          <p class="ov-modal__sub ov-modal__sub--doc">Select a document type, upload a file, and choose who can view it.</p>
+          <h6 class="ov-modal__title ov-modal__title--doc">{{ 'web.contacts.lblAddDocument' | translate }}</h6>
+          <p class="ov-modal__sub ov-modal__sub--doc">{{ 'web.contacts.lblDocumentTypeHint' | translate }}</p>
         </div>
       </div>
 
       <div class="ov-modal__body ov-modal__body--doc">
         <div>
-          <label class="ov-label">Document type <span class="text-danger">*</span></label>
-          <ng-select [items]="docTypes" appendTo="body" placeholder="Select Document Type" class="ov-select w-full"
+          <label class="ov-label">{{ 'web.contacts.lblDocumentType' | translate }} <span class="text-danger">*</span></label>
+          <ng-select [items]="docTypes" appendTo="body" [placeholder]="'web.contacts.lblSelectDocumentType' | translate" class="ov-select w-full"
             [(ngModel)]="docForm.document_type"></ng-select>
-          <span class="ov-modal__hint">Choose the category that best matches the uploaded document.</span>
+          <span class="ov-modal__hint">{{ 'web.contacts.lblDocumentTypeHint' | translate }}</span>
         </div>
 
         <div>
-          <label class="ov-label">Document Number</label>
+          <label class="ov-label">{{ 'web.contacts.lblDocumentNumber' | translate }}</label>
           <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="docForm.document_no">
         </div>
 
         <div class="ov-fields ov-fields--2">
           <div>
-            <label class="ov-label">Issue Date</label>
+            <label class="ov-label">{{ 'web.contacts.lblIssueDate' | translate }}</label>
             <div class="ov-date">
               <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
               <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
@@ -570,7 +567,7 @@
             </div>
           </div>
           <div>
-            <label class="ov-label">Expiry Date</label>
+            <label class="ov-label">{{ 'web.contacts.lblExpiryDate' | translate }}</label>
             <div class="ov-date">
               <img class="ov-date__icon" src="assets/images/myday/calendar.svg" alt="" width="14" height="14" />
               <input type="text" class="ov-input" appFlowbiteDatepicker placeholder="DD/MM/YYYY"
@@ -580,15 +577,15 @@
         </div>
 
         <div>
-          <label class="ov-label">Issuing Authority</label>
+          <label class="ov-label">{{ 'web.contacts.lblIssuingAuthority' | translate }}</label>
           <input type="text" class="ov-input" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="docForm.issuing_authority">
         </div>
 
         <div class="ov-modal__share-panel">
           <div class="ov-modal__share">
             <div class="ov-modal__share-copy">
-              <span class="ov-modal__share-title">Share with tenant</span>
-              <span class="ov-modal__hint">Visible in the tenant mobile app.</span>
+              <span class="ov-modal__share-title">{{ 'web.contacts.lblShareWithTenant' | translate }}</span>
+              <span class="ov-modal__hint">{{ 'web.contacts.lblShareWithTenantHint' | translate }}</span>
             </div>
             <div class="custom-toggle-switch flex-shrink-0">
               <input type="checkbox" id="llShareTenant" [(ngModel)]="docForm.share_with_tenant">
@@ -597,8 +594,8 @@
           </div>
           <div class="ov-modal__share">
             <div class="ov-modal__share-copy">
-              <span class="ov-modal__share-title">Share with landlord</span>
-              <span class="ov-modal__hint">Visible in the landlord mobile app.</span>
+              <span class="ov-modal__share-title">{{ 'web.contacts.lblShareWithLandlord' | translate }}</span>
+              <span class="ov-modal__hint">{{ 'web.contacts.lblShareWithLandlordHint' | translate }}</span>
             </div>
             <div class="custom-toggle-switch flex-shrink-0">
               <input type="checkbox" id="llShareLandlord" [(ngModel)]="docForm.share_with_landlord">
@@ -612,11 +609,11 @@
           (keydown.enter)="docFileInput.click()">
           <img class="ov-modal__drop-icon" src="assets/images/common/upload-doc.svg" alt="" width="35" height="35" />
           <div>
-            <p class="ov-modal__drop-title">Drag and drop your file here</p>
-            <p class="ov-modal__drop-sub">or browse from your device</p>
+            <p class="ov-modal__drop-title">{{ 'web.contacts.lblDragAndDropHere' | translate }}</p>
+            <p class="ov-modal__drop-sub">{{ 'web.contacts.lblOrBrowseFromDevice' | translate }}</p>
           </div>
-          <button type="button" class="ov-btn-accent" (click)="$event.stopPropagation(); docFileInput.click()">Browse files</button>
-          <p class="ov-modal__drop-hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
+          <button type="button" class="ov-btn-accent" (click)="$event.stopPropagation(); docFileInput.click()">{{ 'web.contacts.lblBrowseFiles' | translate }}</button>
+          <p class="ov-modal__drop-hint">{{ 'web.contacts.lblSupportedFormatsHint' | translate }}</p>
         </div>
 
         <div class="ov-modal__file" *ngIf="docForm.fileName">
@@ -633,13 +630,13 @@
               </div>
             </div>
           </div>
-          <button type="button" class="ov-modal__file-remove" (click)="clearDocFile()">Remove</button>
+          <button type="button" class="ov-modal__file-remove" (click)="clearDocFile()">{{ 'web.contacts.lblRemove' | translate }}</button>
         </div>
       </div>
 
       <div class="ov-modal__footer ov-modal__footer--doc">
-        <button type="button" class="ov-btn ov-btn-soft" (click)="toggleDocModal(false)">Close</button>
-        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">Save</button>
+        <button type="button" class="ov-btn ov-btn-soft" (click)="toggleDocModal(false)">{{ 'web.contacts.lblClose' | translate }}</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDocument()">{{ 'web.contacts.lblSave' | translate }}</button>
       </div>
     </div>
   </div>

@@ -67,19 +67,19 @@ export class FacilityRequestsComponent {
 
   readonly metrics = {
     total: '1,272',
-    totalSub: 'Across all buildings',
+    totalSub: 'web.facility.requests.metricAcrossAllBuildings',
     open: '284',
-    openSub: 'Require team action',
+    openSub: 'web.facility.requests.metricRequireTeamAction',
     awaiting: '96',
-    awaitingSub: 'Pending manager review',
+    awaitingSub: 'web.facility.requests.metricPendingManagerReview',
     due: '42',
-    dueSub: 'Need follow-up today'
+    dueSub: 'web.facility.requests.metricNeedFollowUpToday'
   };
 
   tableColumns = [
     {
       key: 'id',
-      label: 'ID',
+      label: 'web.facility.requests.lblID',
       visible: true,
       useTemplate: true,
       width: '90px',
@@ -88,18 +88,18 @@ export class FacilityRequestsComponent {
     },
     {
       key: 'title',
-      label: 'Title',
+      label: 'web.facility.requests.lblTitle',
       visible: true,
       useTemplate: true,
       width: '220px',
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'property', label: 'Property', visible: true, width: '180px' },
-    { key: 'unit', label: 'Unit', visible: true, width: '140px' },
+    { key: 'property', label: 'web.facility.tickets.colProperty', visible: true, width: '180px' },
+    { key: 'unit', label: 'web.facility.tickets.colUnit', visible: true, width: '140px' },
     {
       key: 'priority',
-      label: 'Priority',
+      label: 'web.facility.tickets.colPriority',
       visible: true,
       useTemplate: true,
       width: '110px',
@@ -108,29 +108,29 @@ export class FacilityRequestsComponent {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: 'web.facility.tickets.colStatus',
       visible: true,
       useTemplate: true,
       width: '120px',
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'department', label: 'Department', visible: true, width: '160px' },
+    { key: 'department', label: 'web.facility.requests.lblDepartment', visible: true, width: '160px' },
     {
       key: 'source',
-      label: 'Source',
+      label: 'web.facility.requests.lblSource',
       visible: true,
       useTemplate: true,
       width: '130px',
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'contact', label: 'Contact', visible: true, useTemplate: true, width: '180px' },
-    { key: 'created', label: 'Created', visible: true, width: '110px' },
-    { key: 'details', label: 'Details', visible: true, useTemplate: true, width: '240px' },
+    { key: 'contact', label: 'web.facility.requests.lblContact', visible: true, useTemplate: true, width: '180px' },
+    { key: 'created', label: 'web.facility.requests.lblCreated', visible: true, width: '110px' },
+    { key: 'details', label: 'web.facility.requests.lblDetails', visible: true, useTemplate: true, width: '240px' },
     {
       key: 'action',
-      label: 'Action',
+      label: 'web.common.lblAction',
       visible: true,
       useTemplate: true,
       width: '72px',

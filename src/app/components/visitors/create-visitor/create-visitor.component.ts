@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   VISITOR_ACCESS_PASS_TYPES,
   VISITOR_CONTACTS,
@@ -16,7 +17,7 @@ import {
 @Component({
   selector: 'app-create-visitor',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, TranslateModule],
   templateUrl: './create-visitor.component.html',
   styleUrl: './create-visitor.component.scss'
 })

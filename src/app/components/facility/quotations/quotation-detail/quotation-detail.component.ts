@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -14,8 +14,9 @@ import {
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FacilityService } from '../../facility.service';
+import { Subscription } from 'rxjs';
 type DetailTab = 'lineItems' | 'notes' | 'attachments';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
@@ -26,7 +27,7 @@ import { AttachmentsComponent } from '../../../child-tables/attachments/attachme
   templateUrl: './quotation-detail.component.html',
   styleUrl: './quotation-detail.component.scss'
 })
-export class QuotationDetailComponent {
+export class QuotationDetailComponent implements OnInit, OnDestroy {
   private facilityService=inject(FacilityService);
   private commontabservice=inject(Common_TabsService);
   private commonservice=inject(CommonService);
@@ -34,6 +35,7 @@ export class QuotationDetailComponent {
   currentUser = this.commonservice.getCurrentUser();
   private router =inject(ActivatedRoute);
   private route =inject(Router);
+  public translate = inject(TranslateService);
   activeTab: DetailTab = 'lineItems';
   selectedTab:any={};
   showActionMenu = false;
@@ -47,15 +49,16 @@ export class QuotationDetailComponent {
   options = QUOTATION_FORM_OPTIONS;
   quotation =QUOTATION_DETAIL;// { ...QUOTATION_DETAIL, id: this.route.snapshot.paramMap.get('id') || QUOTATION_DETAIL.id };
   lineItems: QuotationLineItem[] = [...QUOTATION_LINE_ITEMS];
+  private langSub?: Subscription;
 
   lineColumns = [
-    { key: 'title', label: 'Title', visible: true, useTemplate: true },
-    { key: 'qty', label: 'Qty', visible: true, useTemplate: true },
-    { key: 'amt', label: 'Amount / Item', visible: true, useTemplate: true },
-    { key: 'total_amt', label: 'Total', visible: true, useTemplate: true },
-    { key: 'category_text', label: 'Category', visible: true, useTemplate: true },
-    { key: 'tax_profile_text', label: 'Tax Profile', visible: true, useTemplate: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'title', label: 'Title', labelKey: 'web.facility.quotations.colLineTitle', visible: true, useTemplate: true },
+    { key: 'qty', label: 'Qty', labelKey: 'web.facility.quotations.colLineQty', visible: true, useTemplate: true },
+    { key: 'amt', label: 'Amount / Item', labelKey: 'web.facility.quotations.colAmountPerItem', visible: true, useTemplate: true },
+    { key: 'total_amt', label: 'Total', labelKey: 'web.facility.quotations.colLineTotal', visible: true, useTemplate: true },
+    { key: 'category_text', label: 'Category', labelKey: 'web.facility.quotations.colCategory', visible: true, useTemplate: true },
+    { key: 'tax_profile_text', label: 'Tax Profile', labelKey: 'web.facility.quotations.colTaxProfile', visible: true, useTemplate: true },
+    { key: 'action', label: 'Action', labelKey: 'web.facility.quotations.colAction', visible: true, useTemplate: true }
   ];
 
   modal = {
@@ -69,12 +72,28 @@ export class QuotationDetailComponent {
     baction:''
   };
   ngOnInit(): void {
+    this.updateLineColumns();
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.updateLineColumns();
+    });
     this.editId='';
     this.router.paramMap.subscribe((params) => {
       this.editId=params.get('code'); 
       if(this.editId)
       this.getquotationDetals(2,41, 'statusTabs', this.editId);
     });  
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
+
+  private updateLineColumns(): void {
+    this.lineColumns.forEach((col: any) => {
+      if (col.labelKey) {
+        col.label = this.translate.instant(col.labelKey);
+      }
+    });
   }
   
   getquotationDetals(Typeid:number,filterId: number, targetProperty: string, filterText: string) {

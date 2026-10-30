@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { COMMISSION_ROWS, CommissionKind, CommissionRow } from '../commissions.data';
 
 @Component({
@@ -16,9 +18,11 @@ import { COMMISSION_ROWS, CommissionKind, CommissionRow } from '../commissions.d
     FormsModule,
     RouterModule,
     NgSelectModule,
+    TranslateModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,
+    OvPaginatorComponent
   ],
   templateUrl: './commissions.component.html',
   styleUrl: './commissions.component.scss'
@@ -30,20 +34,23 @@ export class CommissionsComponent implements OnInit {
   showColumnDropdown = false;
   filterFrom = '';
   filterType: string | null = null;
-  typeOptions = ['Percentage', 'Fixed'];
+  typeOptions = [
+    { value: 'Percentage', labelKey: 'web.commissions.typePercentage' },
+    { value: 'Fixed', labelKey: 'web.commissions.typeFixed' }
+  ];
   pageIndex = 0;
   pageSize = 10;
   allRows = COMMISSION_ROWS;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'from', label: 'From', visible: true },
-    { key: 'type', label: 'Type', visible: true },
-    { key: 'commissionable', label: 'Commissionable', visible: true, useTemplate: true },
-    { key: 'amount', label: 'Amount', visible: true },
-    { key: 'toCompany', label: 'To Company', visible: true },
-    { key: 'toAgent', label: 'To Agent', visible: true },
-    { key: 'fixedAmount', label: 'Fixed Amount', visible: true }
+    { key: 'id', label: 'web.commissions.colId', visible: true, useTemplate: true },
+    { key: 'from', label: 'web.commissions.colFrom', visible: true },
+    { key: 'type', label: 'web.commissions.colType', visible: true },
+    { key: 'commissionable', label: 'web.commissions.colCommissionable', visible: true, useTemplate: true },
+    { key: 'amount', label: 'web.commissions.colAmount', visible: true },
+    { key: 'toCompany', label: 'web.commissions.colToCompany', visible: true },
+    { key: 'toAgent', label: 'web.commissions.colToAgent', visible: true },
+    { key: 'fixedAmount', label: 'web.commissions.colFixedAmount', visible: true }
   ];
 
   constructor(
@@ -166,6 +173,11 @@ export class CommissionsComponent implements OnInit {
 
   toggleAllColumns(checked: boolean): void {
     this.tableColumns.forEach((col) => (col.visible = checked));
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   onPageSizeChange(): void {

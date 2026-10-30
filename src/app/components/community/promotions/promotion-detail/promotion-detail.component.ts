@@ -5,11 +5,11 @@ import { PromotionRow, getPromotionById } from '../promotions.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 @Component({
   selector: 'app-promotion-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './promotion-detail.component.html',
   styleUrl: './promotion-detail.component.scss'
 })
@@ -21,9 +21,9 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
   event_code:any;
 
   actionOptions = [
-    { label: 'Edit Promotion', asset: 'assets/images/action-menu/pencil.svg', danger: false },
-    { label: 'Preview', asset: 'assets/images/broadcasts/eye.svg', danger: false },
-    { label: 'Delete', asset: 'assets/images/action-menu/trash.svg', danger: true }
+    { label: 'web.community.promotions.editPromotion', key: 'Edit Promotion', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { label: 'web.common.preview', key: 'Preview', asset: 'assets/images/broadcasts/eye.svg', danger: false },
+    { label: 'web.common.delete', key: 'Delete', asset: 'assets/images/action-menu/trash.svg', danger: true }
   ];
 
   constructor(
@@ -151,11 +151,12 @@ export class PromotionDetailComponent implements OnInit, OnDestroy {
     this.showActionMenu = !this.showActionMenu;
   }
 
-  onAction(label: string): void {
+  onAction(option: any): void {
     this.showActionMenu = false;
-    if (label === 'Edit Promotion') {
+    const actionKey = typeof option === 'string' ? option : (option.key || option.label);
+    if (actionKey === 'Edit Promotion') {
       this.goToEdit();
-    } else if (label === 'Preview') {
+    } else if (actionKey === 'Preview') {
       this.openPreview();
     }
   }

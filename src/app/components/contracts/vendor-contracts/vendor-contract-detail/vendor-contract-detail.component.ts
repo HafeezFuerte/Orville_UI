@@ -11,6 +11,7 @@ import {
 } from '../vendor-contracts.data';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 export interface LcdColumn {
   key: string;
@@ -21,7 +22,7 @@ export interface LcdColumn {
 @Component({
   selector: 'app-vendor-contract-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './vendor-contract-detail.component.html',
   styleUrl: './vendor-contract-detail.component.scss'
 })
@@ -30,15 +31,16 @@ export class VendorContractDetailComponent implements OnInit {
   private router = inject(Router);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
+  private translate = inject(TranslateService);
 
   activeTab: 'overview' | 'signatures' | 'financials' = 'overview';
   showActionMenu = false;
   openColumnMenu: 'properties' | 'units' | 'rooms' | null = null;
   actionOptions = [
-    { label: 'Edit Contract', asset: 'assets/images/action-menu/pencil.svg', icon: '', danger: false },
-    { label: 'Activate Contract', asset: '', icon: 'ri-save-line', danger: false },
-    { label: 'Print Contract Pdf', asset: 'assets/images/action-menu/printer.svg', icon: '', danger: false },
-    { label: 'Archive Contract', asset: 'assets/images/action-menu/archive.svg', icon: '', danger: true }
+    { label: 'web.contracts.common.editContract', asset: 'assets/images/action-menu/pencil.svg', icon: '', danger: false },
+    { label: 'web.contracts.common.activateContract', asset: '', icon: 'ri-save-line', danger: false },
+    { label: 'web.contracts.common.printContractPdf', asset: 'assets/images/action-menu/printer.svg', icon: '', danger: false },
+    { label: 'web.contracts.common.archiveContract', asset: 'assets/images/action-menu/archive.svg', icon: '', danger: true }
   ];
 
   contract: VendorContractRow = {
@@ -79,57 +81,57 @@ export class VendorContractDetailComponent implements OnInit {
   fileQuery = '';
 
   propertyColumns: LcdColumn[] = [
-    { key: 'id', label: 'ID', visible: true },
-    { key: 'name', label: 'Name', visible: true },
-    { key: 'type', label: 'Type', visible: true },
-    { key: 'unitsRooms', label: 'Units / Rooms', visible: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'tags', label: 'Tags', visible: true },
-    { key: 'activeLeases', label: 'Active Leases', visible: true },
-    { key: 'contracts', label: 'Contracts', visible: true },
-    { key: 'occupiedTotal', label: 'Occupied/ Total Units', visible: true },
-    { key: 'occupancyRate', label: 'Occupancy Rate', visible: true }
+    { key: 'id', label: 'web.contracts.vendor.colID', visible: true },
+    { key: 'name', label: 'web.contracts.vendor.colName', visible: true },
+    { key: 'type', label: 'web.contracts.common.type', visible: true },
+    { key: 'unitsRooms', label: 'web.contracts.vendor.colUnitsRooms', visible: true },
+    { key: 'internalStatus', label: 'web.contracts.common.colInternalStatus', visible: true },
+    { key: 'tags', label: 'web.contracts.common.colTags', visible: true },
+    { key: 'activeLeases', label: 'web.contracts.common.colActiveLeases', visible: true },
+    { key: 'contracts', label: 'web.contracts.common.colContracts', visible: true },
+    { key: 'occupiedTotal', label: 'web.contracts.common.colOccupiedTotal', visible: true },
+    { key: 'occupancyRate', label: 'web.contracts.common.colOccupancyRate', visible: true }
   ];
 
   unitColumns: LcdColumn[] = [
-    { key: 'id', label: 'ID', visible: true },
-    { key: 'name', label: 'Name', visible: true },
-    { key: 'category', label: 'Category', visible: true },
-    { key: 'beds', label: 'Beds', visible: true },
-    { key: 'property', label: 'Property', visible: true },
-    { key: 'vendor', label: 'Vendor', visible: true },
-    { key: 'tags', label: 'Tags', visible: true },
-    { key: 'unitType', label: 'Unit Type', visible: true },
-    { key: 'floorNumber', label: 'Floor Number', visible: true },
-    { key: 'managementFee', label: 'Management Fee', visible: true },
-    { key: 'status', label: 'Status', visible: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'size', label: 'Size', visible: true },
-    { key: 'marketRent', label: 'Market Rent', visible: true },
-    { key: 'deposited', label: 'Deposited', visible: true },
-    { key: 'published', label: 'Published', visible: true },
-    { key: 'forSale', label: 'For Sale', visible: true }
+    { key: 'id', label: 'web.contracts.vendor.colID', visible: true },
+    { key: 'name', label: 'web.contracts.vendor.colName', visible: true },
+    { key: 'category', label: 'web.contracts.common.colCategory', visible: true },
+    { key: 'beds', label: 'web.contracts.common.colBeds', visible: true },
+    { key: 'property', label: 'web.contracts.common.property', visible: true },
+    { key: 'vendor', label: 'web.contracts.vendor.vendor', visible: true },
+    { key: 'tags', label: 'web.contracts.common.colTags', visible: true },
+    { key: 'unitType', label: 'web.contracts.common.colUnitType', visible: true },
+    { key: 'floorNumber', label: 'web.contracts.common.colFloorNumber', visible: true },
+    { key: 'managementFee', label: 'web.contracts.common.colManagementFee', visible: true },
+    { key: 'status', label: 'web.contracts.vendor.colStatus', visible: true },
+    { key: 'internalStatus', label: 'web.contracts.common.colInternalStatus', visible: true },
+    { key: 'size', label: 'web.contracts.common.colSize', visible: true },
+    { key: 'marketRent', label: 'web.contracts.common.colMarketRent', visible: true },
+    { key: 'deposited', label: 'web.contracts.common.colDeposited', visible: true },
+    { key: 'published', label: 'web.contracts.common.colPublished', visible: true },
+    { key: 'forSale', label: 'web.contracts.common.colForSale', visible: true }
   ];
 
   roomColumns: LcdColumn[] = [
-    { key: 'id', label: 'ID', visible: true },
-    { key: 'name', label: 'Name', visible: true },
-    { key: 'category', label: 'Category', visible: true },
-    { key: 'beds', label: 'Beds', visible: true },
-    { key: 'property', label: 'Property', visible: true },
-    { key: 'vendor', label: 'Vendor', visible: true },
-    { key: 'tags', label: 'Tags', visible: true },
-    { key: 'unitType', label: 'Unit Type', visible: true },
-    { key: 'roomType', label: 'Room Type', visible: true },
-    { key: 'floorNumber', label: 'Floor Number', visible: true },
-    { key: 'managementFee', label: 'Management Fee', visible: true },
-    { key: 'status', label: 'Status', visible: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'size', label: 'Size', visible: true },
-    { key: 'marketRent', label: 'Market Rent', visible: true },
-    { key: 'deposited', label: 'Deposited', visible: true },
-    { key: 'published', label: 'Published', visible: true },
-    { key: 'forSale', label: 'For Sale', visible: true }
+    { key: 'id', label: 'web.contracts.vendor.colID', visible: true },
+    { key: 'name', label: 'web.contracts.vendor.colName', visible: true },
+    { key: 'category', label: 'web.contracts.common.colCategory', visible: true },
+    { key: 'beds', label: 'web.contracts.common.colBeds', visible: true },
+    { key: 'property', label: 'web.contracts.common.property', visible: true },
+    { key: 'vendor', label: 'web.contracts.vendor.vendor', visible: true },
+    { key: 'tags', label: 'web.contracts.common.colTags', visible: true },
+    { key: 'unitType', label: 'web.contracts.common.colUnitType', visible: true },
+    { key: 'roomType', label: 'web.contracts.common.colRoomType', visible: true },
+    { key: 'floorNumber', label: 'web.contracts.common.colFloorNumber', visible: true },
+    { key: 'managementFee', label: 'web.contracts.common.colManagementFee', visible: true },
+    { key: 'status', label: 'web.contracts.vendor.colStatus', visible: true },
+    { key: 'internalStatus', label: 'web.contracts.common.colInternalStatus', visible: true },
+    { key: 'size', label: 'web.contracts.common.colSize', visible: true },
+    { key: 'marketRent', label: 'web.contracts.common.colMarketRent', visible: true },
+    { key: 'deposited', label: 'web.contracts.common.colDeposited', visible: true },
+    { key: 'published', label: 'web.contracts.common.colPublished', visible: true },
+    { key: 'forSale', label: 'web.contracts.common.colForSale', visible: true }
   ];
 
   ngOnInit(): void {
@@ -184,7 +186,7 @@ export class VendorContractDetailComponent implements OnInit {
             createDate: this.formatDateString(detail.created_date) || '',
             status: detail.is_active ? 'Active' : 'Draft',
             value: `AED ${(detail.value || 0).toFixed(2)}`,
-            daysLeft: detail.days_left ? `${detail.days_left} days` : '—'
+            daysLeft: detail.days_left ? `${detail.days_left} ${this.translate.instant('web.contracts.vendor.days')}` : '—'
           };
 
           this.contractCycle = detail.contract_cycle || '';
@@ -332,7 +334,7 @@ export class VendorContractDetailComponent implements OnInit {
 
   onAction(label: string): void {
     this.showActionMenu = false;
-    if (label === 'Edit Contract') {
+    if (label === 'Edit Contract' || label === 'web.contracts.common.editContract') {
       this.goToEdit();
     }
   }

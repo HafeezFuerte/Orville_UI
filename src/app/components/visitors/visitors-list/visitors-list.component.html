@@ -2,37 +2,37 @@
 <div>
   <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
     <div>
-      <h3 class="ov-page-title">{{ pageTitle }}</h3>
-      <p class="ov-page-sub">{{ pageSubtitle }}</p>
+      <h3 class="ov-page-title">{{ pageTitleKey | translate }}</h3>
+      <p class="ov-page-sub">{{ pageSubtitleKey | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Add Visitor
+        {{ 'web.visitors.addVisitor' | translate }}
       </button>
     </div>
   </div>
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
     <div class="visitor-list__section-head border-b border-defaultborder px-5 pt-5 pb-4">
-      <span class="visitor-list__section-label">Lists</span>
+      <span class="visitor-list__section-label">{{ 'web.visitors.lists' | translate }}</span>
     </div>
 
     <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
       <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search by name">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" [placeholder]="'web.visitors.phSearch' | translate">
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.visitors.filter' | translate }}
         </button>
         <div class="relative" data-visitor-columns (click)="$event.stopPropagation()">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.visitors.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -71,13 +71,15 @@
               class="ov-status"
               [class.ov-status--outline]="row.status === 'Not Checked-in'"
               [class.ov-status--success]="row.status === 'Checked-in'"
-              [class.ov-status--info]="row.status === 'Checked-out'">{{ row.status }}</span>
+              [class.ov-status--info]="row.status === 'Checked-out'">
+              {{ (row.status === 'Not Checked-in' ? 'web.visitors.statusNotCheckedIn' : (row.status === 'Checked-in' ? 'web.visitors.statusCheckedIn' : 'web.visitors.statusCheckedOut')) | translate }}
+            </span>
             <span *ngSwitchCase="'contact'" class="visitor-name-cell">
               <img src="assets/images/create/user-square.svg" alt="" width="16" height="16" class="visitor-name-cell__icon" />
               <span>{{ row.contact }}</span>
             </span>
             <div *ngSwitchCase="'action'" class="visitor-action" data-visitor-action (click)="$event.stopPropagation()">
-              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.visitors.colAction' | translate"
                 [attr.aria-expanded]="openRowActionId === row.id"
                 (mousedown)="$event.stopPropagation()"
                 (click)="toggleRowAction(row.id, $event)">
@@ -90,33 +92,13 @@
       </app-shared-table>
     </div>
 
-    <div class="ov-page">
-      <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
-        <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-          </select>
-          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
-        </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
-      </div>
-      <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages }}</span>
-        <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-          </button>
-          <button type="button" class="ov-page__btn is-active" (click)="goPage(1)">1</button>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-ov-paginator
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (pageChange)="onPageChange($event)">
+    </app-ov-paginator>
   </div>
 
   <div *ngIf="openRowActionId && rowMenuStyle"
@@ -125,9 +107,9 @@
     data-visitor-action
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
-    <button type="button" role="menuitem" class="visitor-row-menu__item" (click)="navigateToCreate()">Edit</button>
+    <button type="button" role="menuitem" class="visitor-row-menu__item" (click)="navigateToCreate()">{{ 'web.visitors.edit' | translate }}</button>
     <a role="menuitem" class="visitor-row-menu__item"
       [routerLink]="['/visitors', openRowActionId!]"
-      (click)="closeRowAction()">View</a>
+      (click)="closeRowAction()">{{ 'web.visitors.view' | translate }}</a>
   </div>
 </div>

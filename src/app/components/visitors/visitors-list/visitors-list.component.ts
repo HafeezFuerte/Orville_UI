@@ -2,14 +2,16 @@ import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import { VISITOR_ROWS, VisitorRow } from '../visitors.data';
 
 @Component({
   selector: 'app-visitors-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule, OvPaginatorComponent],
   templateUrl: './visitors-list.component.html',
   styleUrl: './visitors-list.component.scss'
 })
@@ -33,41 +35,41 @@ export class VisitorsListComponent implements OnInit {
     });
   }
 
-  get pageTitle(): string {
+  get pageTitleKey(): string {
     if (this.view === 'check-in') {
-      return 'Check-In Visitors';
+      return 'web.visitors.titleCheckIn';
     }
     if (this.view === 'check-out') {
-      return 'Check-Out Visitors';
+      return 'web.visitors.titleCheckOut';
     }
-    return 'Visitors';
+    return 'web.visitors.title';
   }
 
-  get pageSubtitle(): string {
+  get pageSubtitleKey(): string {
     if (this.view === 'check-in') {
-      return 'View and manage visitors pending check-in';
+      return 'web.visitors.subCheckIn';
     }
     if (this.view === 'check-out') {
-      return 'View and manage visitors pending check-out';
+      return 'web.visitors.subCheckOut';
     }
-    return 'Manage and view all your visitors';
+    return 'web.visitors.sub';
   }
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '70px' },
-    { key: 'visitorName', label: 'Visitor Name', visible: true, useTemplate: true, width: '150px' },
-    { key: 'email', label: 'Email', visible: true, width: '180px' },
-    { key: 'phoneNumber', label: 'Phone Number', visible: true, width: '130px' },
-    { key: 'visitingDate', label: 'Visiting Date', visible: true, width: '110px' },
-    { key: 'visitType', label: 'Visit Type', visible: true, useTemplate: true, width: '100px' },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true, width: '130px' },
-    { key: 'passCode', label: 'Pass Code', visible: true, width: '100px' },
-    { key: 'numberOfVisitors', label: 'No.of Visitor', visible: true, width: '110px' },
-    { key: 'property', label: 'Property', visible: true, width: '160px' },
-    { key: 'unit', label: 'Unit', visible: true, width: '130px' },
-    { key: 'contact', label: 'Contact', visible: true, useTemplate: true, width: '160px' },
-    { key: 'created', label: 'Created', visible: true, width: '150px' },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
+    { key: 'id', label: 'web.visitors.colId', visible: true, useTemplate: true, width: '70px' },
+    { key: 'visitorName', label: 'web.visitors.colVisitorName', visible: true, useTemplate: true, width: '150px' },
+    { key: 'email', label: 'web.visitors.colEmail', visible: true, width: '180px' },
+    { key: 'phoneNumber', label: 'web.visitors.colPhoneNumber', visible: true, width: '130px' },
+    { key: 'visitingDate', label: 'web.visitors.colVisitingDate', visible: true, width: '110px' },
+    { key: 'visitType', label: 'web.visitors.colVisitType', visible: true, useTemplate: true, width: '100px' },
+    { key: 'status', label: 'web.visitors.colStatus', visible: true, useTemplate: true, width: '130px' },
+    { key: 'passCode', label: 'web.visitors.colPassCode', visible: true, width: '100px' },
+    { key: 'numberOfVisitors', label: 'web.visitors.colNumberOfVisitors', visible: true, width: '110px' },
+    { key: 'property', label: 'web.visitors.colProperty', visible: true, width: '160px' },
+    { key: 'unit', label: 'web.visitors.colUnit', visible: true, width: '130px' },
+    { key: 'contact', label: 'web.visitors.colContact', visible: true, useTemplate: true, width: '160px' },
+    { key: 'created', label: 'web.visitors.colCreated', visible: true, width: '150px' },
+    { key: 'action', label: 'web.visitors.colAction', visible: true, useTemplate: true, width: '70px' }
   ];
 
   get visibleColumns() {
@@ -119,6 +121,11 @@ export class VisitorsListComponent implements OnInit {
   get paginatedRows(): VisitorRow[] {
     const start = this.pageIndex * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: any): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   onSearch(): void {

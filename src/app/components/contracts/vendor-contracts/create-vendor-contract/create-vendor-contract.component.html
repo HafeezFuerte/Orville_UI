@@ -1,19 +1,19 @@
 <form class="ov-add-form" (ngSubmit)="save()">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Vendor Contracts">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.contracts.vendor.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">{{ isEdit ? 'Edit Contract' : 'New Contract' }}</h3>
+        <h3 class="ov-page-title">{{ (isEdit ? 'web.contracts.vendor.editTitle' : 'web.contracts.vendor.createTitle') | translate }}</h3>
         <p class="ov-page-sub">
-          Contract / Vendors Contract / <span class="ov-page-sub__current">{{ isEdit ? 'Edit Contract' : 'New Contract' }}</span>
+          {{ 'web.contracts.vendor.contract' | translate }} / {{ 'web.contracts.vendor.title' | translate }} / <span class="ov-page-sub__current">{{ (isEdit ? 'web.contracts.vendor.editTitle' : 'web.contracts.vendor.createTitle') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">{{ 'web.contracts.common.preview' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ 'web.contracts.common.save' | translate }}</button>
     </div>
   </div>
 
@@ -21,16 +21,16 @@
     <div class="ov-add-layout__main">
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Vendors</h6>
-          <p class="ov-card-sub">Select vendor for this contract</p>
+          <h6 class="ov-card-title">{{ 'web.contracts.vendor.vendor' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.contracts.vendor.selectVendor' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">Vendors</label>
+              <label class="ov-label">{{ 'web.contracts.vendor.vendor' | translate }}</label>
               <ng-select [(ngModel)]="form.vendor" name="vendor" [items]="vendors" [searchable]="true"
                 bindLabel="name" bindValue="code"
-                [clearable]="true" placeholder="Select Vendor" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.vendor.selectVendor' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -38,16 +38,16 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Contract Properties</h6>
-          <p class="ov-card-sub">Select properties for this contract. Only properties linked to this vendor are shown.</p>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.contractProperties' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.contracts.common.contractPropertiesSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">Property</label>
+              <label class="ov-label">{{ 'web.contracts.common.property' | translate }}</label>
               <ng-select [(ngModel)]="form.property" name="property" [items]="properties" [searchable]="true"
                 bindLabel="name" bindValue="code" (change)="onPropertyChange()"
-                [clearable]="true" placeholder="Select Property" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.selectProperty' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -56,24 +56,24 @@
       <div class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Contract Units</h6>
-            <p class="ov-card-sub">Select units from the contract properties above.</p>
+            <h6 class="ov-card-title">{{ 'web.contracts.common.contractUnits' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.contracts.common.contractUnitsSub' | translate }}</p>
           </div>
           <div class="llc-menu" (click)="$event.stopPropagation()">
-            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleUnitMenu($event)">Add Unit</button>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleUnitMenu($event)">{{ 'web.contracts.common.addUnit' | translate }}</button>
             <div class="llc-menu__list" *ngIf="unitMenuOpen">
-              <button type="button" (click)="addUnit()">Add Unit</button>
-              <button type="button" (click)="addAllUnits()">Add All Units</button>
+              <button type="button" (click)="addUnit()">{{ 'web.contracts.common.addUnit' | translate }}</button>
+              <button type="button" (click)="addAllUnits()">{{ 'web.contracts.common.addAllUnits' | translate }}</button>
             </div>
           </div>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">Unit</label>
+              <label class="ov-label">{{ 'web.contracts.common.units' | translate }}</label>
               <ng-select [(ngModel)]="pendingUnit" name="pendingUnit" [items]="units" [searchable]="true"
                 bindLabel="name" bindValue="code" (change)="addUnit()"
-                [clearable]="true" placeholder="Select Unit" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.addUnit' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
           <div class="mt-4 flex flex-col gap-2">
@@ -90,24 +90,24 @@
       <div class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Contract Rooms</h6>
-            <p class="ov-card-sub">Select rooms from the contract properties above.</p>
+            <h6 class="ov-card-title">{{ 'web.contracts.common.contractRooms' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.contracts.common.contractRoomsSub' | translate }}</p>
           </div>
           <div class="llc-menu" (click)="$event.stopPropagation()">
-            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleRoomMenu($event)">Add Room</button>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="toggleRoomMenu($event)">{{ 'web.contracts.common.addRoom' | translate }}</button>
             <div class="llc-menu__list" *ngIf="roomMenuOpen">
-              <button type="button" (click)="addRoom()">Add Room</button>
-              <button type="button" (click)="addAllRooms()">Add All Rooms</button>
+              <button type="button" (click)="addRoom()">{{ 'web.contracts.common.addRoom' | translate }}</button>
+              <button type="button" (click)="addAllRooms()">{{ 'web.contracts.common.addAllRooms' | translate }}</button>
             </div>
           </div>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">Room</label>
+              <label class="ov-label">{{ 'web.contracts.common.rooms' | translate }}</label>
               <ng-select [(ngModel)]="pendingRoom" name="pendingRoom" [items]="rooms" [searchable]="true"
                 bindLabel="name" bindValue="code" (change)="addRoom()"
-                [clearable]="true" placeholder="Select Room" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.addRoom' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
           <div class="mt-4 flex flex-col gap-2" *ngIf="selectedRooms.length">
@@ -123,18 +123,18 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Contract Information</h6>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.contractInfo' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Name</label>
-              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+              <label class="ov-label">{{ 'web.contracts.vendor.colName' | translate }}</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" [placeholder]="'web.contracts.common.enterContractName' | translate">
             </div>
             <div>
-              <label class="ov-label">Contract Cycle</label>
+              <label class="ov-label">{{ 'web.contracts.common.contractCycle' | translate }}</label>
               <ng-select [(ngModel)]="form.cycle" name="cycle" [items]="cycles" bindLabel="name" bindValue="id" [searchable]="true" [clearable]="true"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.contracts.common.selectCycle' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -142,19 +142,19 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Contract Duration</h6>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.contractDuration' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Start Date</label>
+              <label class="ov-label">{{ 'web.contracts.common.startDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="startDate" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div>
-              <label class="ov-label">End Date</label>
+              <label class="ov-label">{{ 'web.contracts.common.endDate' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="endDate" [(ngModel)]="form.endDate" placeholder="DD/MM/YYYY">
@@ -166,42 +166,42 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Payment Schedule</h6>
-          <p class="ov-card-sub">By default, this will create invoices of management fee income.</p>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.paymentSchedule' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.contracts.common.paymentScheduleSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--3">
             <div>
-              <label class="ov-label">Management Fee Type</label>
+              <label class="ov-label">{{ 'web.contracts.common.feeType' | translate }}</label>
               <ng-select [(ngModel)]="form.feeType" name="feeType" [items]="feeTypes" bindLabel="name" bindValue="id" [searchable]="true"
-                [clearable]="true" placeholder="Select Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.selectFeeType' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Value</label>
+              <label class="ov-label">{{ 'web.contracts.vendor.colValue' | translate }}</label>
               <div class="ov-input-addon">
                 <span class="ov-input-addon__prefix">AED</span>
                 <input type="text" class="ov-input" name="feeValue" [(ngModel)]="form.feeValue" placeholder="0.00">
               </div>
             </div>
             <div>
-              <label class="ov-label">Number of Payment</label>
-              <input type="text" class="ov-input" name="paymentCount" [(ngModel)]="form.paymentCount" placeholder="Enter">
+              <label class="ov-label">{{ 'web.contracts.common.noOfPayments' | translate }}</label>
+              <input type="text" class="ov-input" name="paymentCount" [(ngModel)]="form.paymentCount" placeholder="0">
             </div>
             <div>
-              <label class="ov-label">PMA Type</label>
+              <label class="ov-label">{{ 'web.contracts.common.pmaType' | translate }}</label>
               <ng-select [(ngModel)]="form.pmaType" name="pmaType" [items]="pmaTypes" [searchable]="true"
-                [clearable]="true" placeholder="Select Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.selectPmaType' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Payment Via</label>
+              <label class="ov-label">{{ 'web.contracts.common.paymentVia' | translate }}</label>
               <ng-select [(ngModel)]="form.paymentVia" name="paymentVia" [items]="paymentViaOptions" [searchable]="true"
                 bindLabel="name" bindValue="name"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.selectPaymentVia' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Tax Profile</label>
+              <label class="ov-label">{{ 'web.contracts.common.taxProfile' | translate }}</label>
               <ng-select [(ngModel)]="form.taxProfile" name="taxProfile" [items]="taxProfiles" [searchable]="true"
-                [clearable]="true" placeholder="Select Tax Profile" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.contracts.common.selectTaxProfile' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -210,26 +210,26 @@
       <div class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Payment Schedule</h6>
-            <p class="ov-card-sub">Select from the options below to set the payment schedule. You can set a recurring schedule or a one-time schedule, or use Generate Schedules above to auto-create from fee settings.</p>
+            <h6 class="ov-card-title">{{ 'web.contracts.common.paymentSchedule' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.contracts.common.paymentScheduleOptionsSub' | translate }}</p>
           </div>
-          <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="addPayment()">Add Payment</button>
+          <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="addPayment()">{{ 'web.contracts.common.addPayment' | translate }}</button>
         </div>
         <div class="ov-card__body">
           <div class="flex items-center justify-between gap-3">
-            <span class="ov-label !mb-0">Schedules</span>
-            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="clearSchedules()">Delete Schedules</button>
+            <span class="ov-label !mb-0">{{ 'web.contracts.common.schedules' | translate }}</span>
+            <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" (click)="clearSchedules()">{{ 'web.contracts.common.deleteSchedules' | translate }}</button>
           </div>
           <div class="llc-table-wrap">
             <table class="llc-table">
               <thead>
                 <tr>
-                  <th>Account</th>
-                  <th>Amount</th>
-                  <th>Due</th>
-                  <th>Recurrence</th>
-                  <th>Payment Via</th>
-                  <th>Action</th>
+                  <th>{{ 'web.contracts.common.colAccount' | translate }}</th>
+                  <th>{{ 'web.contracts.common.colAmount' | translate }}</th>
+                  <th>{{ 'web.contracts.common.colDue' | translate }}</th>
+                  <th>{{ 'web.contracts.common.colRecurrence' | translate }}</th>
+                  <th>{{ 'web.contracts.common.colPaymentVia' | translate }}</th>
+                  <th>{{ 'web.contracts.vendor.colAction' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -241,10 +241,10 @@
                   <td>{{ row.paymentVia }}</td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.contracts.common.edit' | translate">
                         <img src="assets/images/action-menu/pencil.svg" alt="" width="16" height="16">
                       </button>
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeSchedule(i)" aria-label="Delete">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeSchedule(i)" [attr.aria-label]="'web.contracts.common.delete' | translate">
                         <img src="assets/images/work-order-detail/trash.svg" alt="" width="16" height="16">
                       </button>
                     </div>
@@ -258,46 +258,46 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Commission Details</h6>
-          <p class="ov-card-sub">You can add vendor commission in percentage or fixed from below. You can add agents in specific commission.</p>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.commissionDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.contracts.common.commissionDetailsSub' | translate }}</p>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="llc-panel">
             <div class="llc-panel__head">
-              <span>Charge from Vendor</span>
+              <span>{{ 'web.contracts.vendor.chargeFromVendor' | translate }}</span>
               <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap">
-                View
+                {{ 'web.contracts.common.view' | translate }}
                 <img src="assets/images/myday/external-link.svg" alt="" width="14" height="14">
               </button>
             </div>
             <div class="ov-fields ov-fields--3">
               <div>
-                <label class="ov-label">Number of Payment</label>
-                <input type="text" class="ov-input" name="chargePayments" [(ngModel)]="form.chargePayments" placeholder="Enter">
+                <label class="ov-label">{{ 'web.contracts.common.noOfPayments' | translate }}</label>
+                <input type="text" class="ov-input" name="chargePayments" [(ngModel)]="form.chargePayments" placeholder="0">
               </div>
               <div>
-                <label class="ov-label">Percentage</label>
+                <label class="ov-label">{{ 'web.contracts.common.percentage' | translate }}</label>
                 <div class="ov-input-addon">
                   <span class="ov-input-addon__prefix">%</span>
                   <input type="text" class="ov-input" name="chargePercent" [(ngModel)]="form.chargePercent" placeholder="0.00">
                 </div>
               </div>
               <div>
-                <label class="ov-label">Commission</label>
+                <label class="ov-label">{{ 'web.contracts.common.commissions' | translate }}</label>
                 <div class="ov-input-addon">
                   <span class="ov-input-addon__prefix">AED</span>
                   <input type="text" class="ov-input" name="chargeCommission" [(ngModel)]="form.chargeCommission" placeholder="0.00">
                 </div>
               </div>
               <div>
-                <label class="ov-label">Fixed</label>
+                <label class="ov-label">{{ 'web.contracts.common.colFixedAmount' | translate }}</label>
                 <div class="ov-input-addon">
                   <span class="ov-input-addon__prefix">AED</span>
                   <input type="text" class="ov-input" name="chargeFixed" [(ngModel)]="form.chargeFixed" placeholder="0.00">
                 </div>
               </div>
               <div>
-                <label class="ov-label">Balance</label>
+                <label class="ov-label">{{ 'web.contracts.common.colBalance' | translate }}</label>
                 <div class="ov-input-addon">
                   <span class="ov-input-addon__prefix">AED</span>
                   <input type="text" class="ov-input" name="chargeBalance" [(ngModel)]="form.chargeBalance" placeholder="0.00">
@@ -308,31 +308,31 @@
           <div class="llc-panel">
             <div class="llc-panel__head">
               <div>
-                <span>Vendor Commission Agents</span>
-                <p class="llc-panel__meta">Available Balance: <strong>AED 0.00</strong></p>
+                <span>{{ 'web.contracts.vendor.commissionAgents' | translate }}</span>
+                <p class="llc-panel__meta">{{ 'web.contracts.common.availableBalance' | translate }}: <strong>AED 0.00</strong></p>
               </div>
               <div class="llc-panel__actions">
-                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>Add Company Commission</button>
-                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>Add Agent Commission</button>
+                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>{{ 'web.contracts.common.addCompanyCommission' | translate }}</button>
+                <button type="button" class="ov-btn ov-btn-ghost h-[34px] px-4 text-sm font-medium whitespace-nowrap" disabled>{{ 'web.contracts.common.addAgentCommission' | translate }}</button>
               </div>
             </div>
-            <p class="mt-2 mb-0 text-center text-sm text-textmuted">No agent commissions added yet.</p>
+            <p class="mt-2 mb-0 text-center text-sm text-textmuted">{{ 'web.contracts.common.noAgentCommissions' | translate }}</p>
           </div>
         </div>
       </div>
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Other</h6>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.other' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div class="ov-fields__full">
-              <label class="ov-label">Notes</label>
-              <textarea class="ov-input min-h-[100px] pt-3 resize-y" name="notes" [(ngModel)]="form.notes" placeholder="Note enter here..."></textarea>
+              <label class="ov-label">{{ 'web.contracts.common.notes' | translate }}</label>
+              <textarea class="ov-input min-h-[100px] pt-3 resize-y" name="notes" [(ngModel)]="form.notes" [placeholder]="'web.contracts.common.enterNotes' | translate"></textarea>
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Attachments</label>
+              <label class="ov-label">{{ 'web.contracts.common.attachments' | translate }}</label>
               <app-file-upload
                 [accept]="'image/*,application/pdf'"
                 [multiple]="true"
@@ -351,19 +351,19 @@
     <aside class="ov-add-layout__aside">
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Contract Summary</h6>
+          <h6 class="ov-card-title">{{ 'web.contracts.common.contractSummary' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <p class="m-0 mb-1 text-[13px] text-textmuted">Status</p>
-            <span class="ov-status ov-status--muted">Draft</span>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">{{ 'web.contracts.common.status' | translate }}</p>
+            <span class="ov-status ov-status--muted">{{ 'web.contracts.common.draft' | translate }}</span>
           </div>
           <div>
-            <p class="m-0 mb-1 text-[13px] text-textmuted">Vendor</p>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">{{ 'web.contracts.vendor.vendor' | translate }}</p>
             <span class="llc-chip llc-chip--summary">{{ selectedVendorName }}</span>
           </div>
           <div>
-            <p class="m-0 mb-1 text-[13px] text-textmuted">Properties</p>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">{{ 'web.contracts.common.properties' | translate }}</p>
             <div class="flex flex-wrap gap-2">
               <span class="llc-chip llc-chip--summary" *ngIf="form.property">
                 {{ selectedPropertyName }}
@@ -372,7 +372,7 @@
             </div>
           </div>
           <div>
-            <p class="m-0 mb-1 text-[13px] text-textmuted">Units</p>
+            <p class="m-0 mb-1 text-[13px] text-textmuted">{{ 'web.contracts.common.units' | translate }}</p>
             <div class="flex flex-wrap gap-2">
               <span class="llc-chip llc-chip--summary" *ngFor="let unit of selectedUnits">
                 {{ unit.name }}
@@ -387,7 +387,7 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">Preview</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save</button>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="preview()">{{ 'web.contracts.common.preview' | translate }}</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ 'web.contracts.common.save' | translate }}</button>
   </div>
 </form>

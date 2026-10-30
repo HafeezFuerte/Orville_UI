@@ -5,9 +5,9 @@
     </div>
     <button type="button" *ngIf="selectedTab?.label !== 'Broadcasts'" (click)="openModal()"
         class="ov-btn ov-btn-primary"
-        [attr.data-tooltip]="'Add ' + ('web.Unit.lblParkings' | translate)">
+        [attr.data-tooltip]="selectedTab?.addKey ? (selectedTab?.addKey | translate) : ('web.parkings.lblAddParking' | translate)">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Add {{ 'web.Unit.lblParkings' | translate }}
+        {{ selectedTab?.addKey ? (selectedTab?.addKey | translate) : ('web.parkings.lblAddParking' | translate) }}
     </button>
 </div>
 
@@ -15,7 +15,7 @@
     <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input [(ngModel)]="searchQuery" (keyup.enter)="search_with_keyword()" type="text"
-            class="ov-input ov-search__input" placeholder="Search">
+            class="ov-input ov-search__input" [placeholder]="'web.common.lblSearch' | translate">
     </div>
     <div class="ov-toolbar__btns">
         <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"

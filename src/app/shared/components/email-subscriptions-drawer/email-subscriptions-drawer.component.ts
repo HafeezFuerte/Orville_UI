@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -17,7 +17,7 @@ export type EmailSubFilter = 'All' | 'Subscribed' | 'Unsubscribed';
   templateUrl: './email-subscriptions-drawer.component.html',
   styleUrl: './email-subscriptions-drawer.component.scss'
 })
-export class EmailSubscriptionsDrawerComponent {
+export class EmailSubscriptionsDrawerComponent implements OnDestroy {
   @Input() isOpen = false;
   @Input() subscriptions: EmailSubscriptionItem[] = [];
   @Input() globalAllowed = true;
@@ -83,5 +83,11 @@ export class EmailSubscriptionsDrawerComponent {
       return;
     }
     sub.subscribed = !sub.subscribed;
+  }
+
+  ngOnDestroy(): void {
+    if (this.isOpen) {
+      this.closeDrawer();
+    }
   }
 }

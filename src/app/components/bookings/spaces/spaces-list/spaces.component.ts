@@ -9,6 +9,7 @@ import { ColumnMenuComponent } from '../../../../shared/components/column-menu/c
 import { SpaceAvailability, SpaceRow } from '../spaces.data';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../../services/common.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-spaces',
@@ -21,7 +22,8 @@ import { CommonService } from '../../../../services/common.service';
     NgSelectModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent
+    ColumnMenuComponent,
+    TranslateModule
   ],
   templateUrl: './spaces.component.html'
 })
@@ -47,19 +49,19 @@ export class SpacesComponent implements OnInit {
   totalPagesCount = 0;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '90px', headerClass: 'text-start' },
-    { key: 'name', label: 'Space Name', visible: true, useTemplate: true, width: '190px', headerClass: 'text-start' },
-    { key: 'location', label: 'Space Location', visible: true, useTemplate: true, width: '220px' },
-    { key: 'availability', label: 'Availability Option', visible: true, useTemplate: true },
-    { key: 'slotDuration', label: 'Slot Duration', visible: true },
-    { key: 'dateRange', label: 'Date Range', visible: true, useTemplate: true },
-    { key: 'enablePayment', label: 'Enable Payment', visible: true, useTemplate: true },
-    { key: 'phone', label: 'Phone Number', visible: true },
-    { key: 'email', label: 'Email', visible: true },
-    { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'createdAt', label: 'Create At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.bookings.spaces.colId', visible: true, useTemplate: true, width: '90px', headerClass: 'text-start' },
+    { key: 'name', label: 'web.bookings.spaces.colName', visible: true, useTemplate: true, width: '190px', headerClass: 'text-start' },
+    { key: 'location', label: 'web.bookings.spaces.colLocation', visible: true, useTemplate: true, width: '220px' },
+    { key: 'availability', label: 'web.bookings.spaces.colAvailability', visible: true, useTemplate: true },
+    { key: 'slotDuration', label: 'web.bookings.spaces.colSlotDuration', visible: true },
+    { key: 'dateRange', label: 'web.bookings.spaces.colDateRange', visible: true, useTemplate: true },
+    { key: 'enablePayment', label: 'web.bookings.spaces.colEnablePayment', visible: true, useTemplate: true },
+    { key: 'phone', label: 'web.bookings.spaces.colPhone', visible: true },
+    { key: 'email', label: 'web.bookings.spaces.colEmail', visible: true },
+    { key: 'property', label: 'web.bookings.spaces.colProperty', visible: true, useTemplate: true },
+    { key: 'unit', label: 'web.bookings.spaces.colUnit', visible: true, useTemplate: true },
+    { key: 'createdAt', label: 'web.bookings.spaces.colCreatedAt', visible: true },
+    { key: 'action', label: 'web.bookings.spaces.colAction', visible: true, useTemplate: true }
   ];
 
   ngOnInit(): void {

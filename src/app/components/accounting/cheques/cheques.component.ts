@@ -14,12 +14,12 @@ import {
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountingService } from '../accounting.service'; 
 @Component({
   selector: 'app-cheques',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './cheques.component.html',
   styleUrl: './cheques.component.scss'
 })
@@ -40,24 +40,24 @@ export class ChequesComponent {
   currentUser = this.commonservice.getCurrentUser();
 
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'invoice_no', label: 'Invoice ID', visible: true },
-    { key: 'cheque_no', label: 'Cheque No', visible: true }, 
-    { key: 'bank_name', label: 'Bank Name', visible: true },
-    { key: 'cheque_date', label: 'Cheque Date', visible: true },
-    { key: 'held_by_name', label: 'Held By', visible: true },
-    { key: 'amt', label: 'Amount Cents', visible: true },
-    { key: 'cheque_status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'created_date', label: 'Created At', visible: true },
-    { key: 'cheque_in_hand', label: 'In Hand', visible: true, useTemplate: true },
-    { key: 'returned', label: 'Returned', visible: true, useTemplate: true },
-    { key: 'returned_date', label: 'Returned Date', visible: true },
-    { key: 'bounce_date', label: 'Bounce Date', visible: true },
-    { key: 'bounce_reason', label: 'Bounce Reason', visible: true },
-    { key: 'withdrawal_reason', label: 'Withdrawal Reason', visible: true },
-    { key: 'Tenant', label: 'Tenant', visible: true, useTemplate: true  }, 
-    { key: 'unit_code', label: 'Unit', visible: true, useTemplate: true  },
-    { key: 'attachment_path', label: 'Attachment', visible: true , useTemplate: true }
+    { key: 'code', label: 'web.accounting.cheques.colID', visible: true, useTemplate: true },
+    { key: 'invoice_no', label: 'web.accounting.cheques.colInvoiceID', visible: true },
+    { key: 'cheque_no', label: 'web.accounting.cheques.colChequeNo', visible: true }, 
+    { key: 'bank_name', label: 'web.accounting.cheques.colBankName', visible: true },
+    { key: 'cheque_date', label: 'web.accounting.cheques.colChequeDate', visible: true },
+    { key: 'held_by_name', label: 'web.accounting.cheques.colHeldBy', visible: true },
+    { key: 'amt', label: 'web.accounting.cheques.colAmountCents', visible: true },
+    { key: 'cheque_status', label: 'web.accounting.cheques.colStatus', visible: true, useTemplate: true },
+    { key: 'created_date', label: 'web.accounting.cheques.colCreatedAt', visible: true },
+    { key: 'cheque_in_hand', label: 'web.accounting.cheques.colInHand', visible: true, useTemplate: true },
+    { key: 'returned', label: 'web.accounting.cheques.colReturned', visible: true, useTemplate: true },
+    { key: 'returned_date', label: 'web.accounting.cheques.colReturnedDate', visible: true },
+    { key: 'bounce_date', label: 'web.accounting.cheques.colBounceDate', visible: true },
+    { key: 'bounce_reason', label: 'web.accounting.cheques.colBounceReason', visible: true },
+    { key: 'withdrawal_reason', label: 'web.accounting.cheques.colWithdrawalReason', visible: true },
+    { key: 'Tenant', label: 'web.accounting.cheques.colTenant', visible: true, useTemplate: true  }, 
+    { key: 'unit_code', label: 'web.accounting.cheques.colUnit', visible: true, useTemplate: true  },
+    { key: 'attachment_path', label: 'web.accounting.cheques.colAttachment', visible: true , useTemplate: true }
   ];
   constructor(private toastr: ToastrService, private commontabservice: Common_TabsService,
     private commonservice: CommonService,public translate: TranslateService,
@@ -90,6 +90,11 @@ export class ChequesComponent {
     });
   }
 
+  getArabicLookupName(row: any, key: string): string {
+    const selectedLang = localStorage.getItem("selectedLang") || "EN";
+    return row[(selectedLang === "EN" ? key : key + '_ar')] || row[key] || '';
+  }
+
   ngOnInit() {
     
     this.loadCheques();  
@@ -110,13 +115,14 @@ export class ChequesComponent {
 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.accounting.cheques.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
   }
+
   loadCheques() {
     const filterList: any[] = [];
     if (this.statusFilter && this.statusFilter !== "All") {
@@ -153,7 +159,7 @@ export class ChequesComponent {
           this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.cheques.noRecordsFound'));
         }
       },
       error: (err: any) => {

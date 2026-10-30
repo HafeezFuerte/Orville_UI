@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
   REMINDER_ROWS,
   ReminderPriority,
@@ -36,9 +38,11 @@ export interface CalendarDay {
     FormsModule,
     RouterModule,
     NgSelectModule,
+    TranslateModule,
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent,
+    OvPaginatorComponent,
     DeleteConfirmationComponent
   ],
   templateUrl: './reminders.component.html',
@@ -49,6 +53,7 @@ export class RemindersComponent implements OnInit {
   private commonService = inject(CommonService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   viewMode: ViewMode = 'list';
   statusTab: StatusTab = 'all';
@@ -81,25 +86,25 @@ export class RemindersComponent implements OnInit {
   calendarCursor = new Date(2026, 7, 1);
   readonly weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  readonly statusTabs: { id: StatusTab; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'Pending', label: 'Pending' },
-    { id: 'Completed', label: 'Completed' },
+  readonly statusTabs: { id: StatusTab; labelKey: string }[] = [
+    { id: 'all', labelKey: 'web.reminders.all' },
+    { id: 'Pending', labelKey: 'web.reminders.pending' },
+    { id: 'Completed', labelKey: 'web.reminders.completed' },
   ];
 
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true, width: '80px' },
-    { key: 'title', label: 'Title', visible: true, useTemplate: true },
+    { key: 'code', label: 'web.reminders.colId', visible: true, useTemplate: true, width: '80px' },
+    { key: 'title', label: 'web.reminders.colTitle', visible: true, useTemplate: true },
     // { key: 'to_do', label: 'Todo', visible: true,useTemplate: true  },
-    { key: 'priority', label: 'Priority', visible: true, useTemplate: true, width: '110px' },
-    { key: 'status_name', label: 'Status', visible: true, useTemplate: true, width: '120px' },
-    { key: 'reminder_date', label: 'Due Date', visible: true, width: '170px' },
-    { key: 'recurring', label: 'Recurring', visible: true, useTemplate: true, width: '100px' },
-    { key: 'assignee', label: 'Assignee', visible: true, useTemplate: true },
-    { key: 'Users', label: 'Users', visible: true, useTemplate: true, width: '100px' },
-    { key: 'created_date', label: 'Created', visible: false },
-    { key: 'modified_date', label: 'Last Updated', visible: false },
-    { key: 'actions', label: '', visible: true, useTemplate: true, width: '56px' },
+    { key: 'priority', label: 'web.reminders.colPriority', visible: true, useTemplate: true, width: '110px' },
+    { key: 'status_name', label: 'web.reminders.colStatus', visible: true, useTemplate: true, width: '120px' },
+    { key: 'reminder_date', label: 'web.reminders.colDueDate', visible: true, width: '170px' },
+    { key: 'recurring', label: 'web.reminders.colRecurring', visible: true, useTemplate: true, width: '100px' },
+    { key: 'assignee', label: 'web.reminders.colAssignee', visible: true, useTemplate: true },
+    { key: 'Users', label: 'web.reminders.colUsers', visible: true, useTemplate: true, width: '100px' },
+    { key: 'created_date', label: 'web.reminders.colCreated', visible: false },
+    { key: 'modified_date', label: 'web.reminders.colLastUpdated', visible: false },
+    { key: 'actions', label: 'web.reminders.colAction', visible: true, useTemplate: true, width: '56px' },
   ];
 
   ngOnInit(): void {
@@ -184,13 +189,13 @@ export class RemindersComponent implements OnInit {
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) { 
           if(Typeid==71){
-            this.toastr.success("Successfully marked as completed");
+            this.toastr.success(this.translate.instant('web.reminders.msgMarkedCompleted'));
             this.e_code='';
             this.loadReminders();
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.reminders.msgNoRecords'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -390,8 +395,8 @@ export class RemindersComponent implements OnInit {
       item.id === row.id ? { ...item, status: next } : item
     );
     this.toastr.success(
-      next === 'Completed' ? 'Reminder marked complete.' : 'Reminder marked pending.',
-      'Reminders'
+      next === 'Completed' ? this.translate.instant('web.reminders.msgReminderComplete') : this.translate.instant('web.reminders.msgReminderPending'),
+      this.translate.instant('web.reminders.title')
     );
   }
 
@@ -418,7 +423,7 @@ export class RemindersComponent implements OnInit {
   }
 
   statusActionLabel(row: ReminderRow): string {
-    return row.status === 'Completed' ? 'Mark as Pending' : 'Mark as Completed';
+    return row.status === 'Completed' ? this.translate.instant('web.reminders.markAsPending') : this.translate.instant('web.reminders.markAsCompleted');
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -533,7 +538,13 @@ export class RemindersComponent implements OnInit {
   }
 
   exportList(): void {
-    this.toastr.info('Export is presentation only.', 'Reminders');
+    this.toastr.info(this.translate.instant('web.reminders.msgExportDemo'), this.translate.instant('web.reminders.title'));
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadReminders();
   }
 
   @HostListener('document:click')

@@ -6,13 +6,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import {CommunityService} from '../../community.services'
 @Component({
   selector: 'app-event-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule,FlowbiteDatepickerDirective],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, TranslateModule],
   templateUrl: './event-add.component.html',
   styleUrl: './event-add.component.scss'
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-add-support-technician',
@@ -31,6 +32,8 @@ export class AddSupportTechnicianComponent implements OnInit {
   private toastr = inject(ToastrService);
   private portfolioService = inject(PortfolioService);
   private propertiesService = inject(PropertiesService);
+  private commonService = inject(CommonService);
+  private translate = inject(TranslateService);
 
   isEditMode = false;
   technicianId: any = null;
@@ -390,10 +393,11 @@ export class AddSupportTechnicianComponent implements OnInit {
     this.loadLookup(15, 'technicianTypes', 'lookup_name');
     this.loadLookup(30, 'categories', 'lookup_name'); // Maintenance Category
 
+    const currentUser = this.commonService.getCurrentUser();
     this.propertiesService.getTenants({
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       page_no: 0,
@@ -569,7 +573,7 @@ export class AddSupportTechnicianComponent implements OnInit {
 
   saveTechnician() {
     if (!this.technicianData.first_name || !this.technicianData.last_name || !this.technicianData.email_address) {
-      this.toastr.warning('Please fill in all required fields (First Name, Last Name, Email).', 'Missing Info');
+      this.toastr.warning(this.translate.instant('web.common.msgFillRequiredFields'), this.translate.instant('web.contacts.lblMissingInfo'));
       return;
     }
 
@@ -586,14 +590,15 @@ export class AddSupportTechnicianComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      this.toastr.warning(this.translate.instant('web.contacts.errDuplicateEmailOrMobile'), this.translate.instant('web.contacts.lblDuplicateFound'));
       return;
     }
 
+    const currentUser = this.commonService.getCurrentUser();
     const requestJson = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       email: this.technicianData.email_address,
@@ -643,19 +648,19 @@ export class AddSupportTechnicianComponent implements OnInit {
             }
           }
           if (duplicateError) {
-            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', 'Error');
+            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', this.translate.instant('web.common.lblError'));
             return;
           }
 
-          this.toastr.success(this.isEditMode ? 'Support technician updated successfully!' : 'Support technician saved successfully!', 'Success');
+          this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgTechnicianUpdated' : 'web.contacts.msgTechnicianSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/support-technicians']);
         } else {
-          this.toastr.error(res.message || 'Failed to save technician.', 'Error');
+          this.toastr.error(res.message || this.translate.instant('web.contacts.errFailedToSaveTechnician'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         console.error('Error saving technician:', err);
-        this.toastr.error('Server error encountered while saving.', 'Error');
+        this.toastr.error(this.translate.instant('web.contacts.errServerErrorSaving'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -687,11 +692,11 @@ export class AddSupportTechnicianComponent implements OnInit {
 
   saveDocument() {
     if (!this.docForm.document_type) {
-      this.toastr.error("Document Type is required.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errDocTypeRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.docForm.file) {
-      this.toastr.error("Please attach a file.", "Validation Error");
+      this.toastr.error(this.translate.instant('web.contacts.errAttachFile'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     
@@ -717,11 +722,11 @@ export class AddSupportTechnicianComponent implements OnInit {
       fileSize: ''
     };
     this.isAddDocModalOpen = false;
-    this.toastr.success("Document attached successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocAttachedSuccess'));
   }
 
   removeDocument(index: number) {
     this.uploadedDocuments.splice(index, 1);
-    this.toastr.success("Document removed successfully.");
+    this.toastr.success(this.translate.instant('web.contacts.msgDocRemovedSuccess'));
   }
 }

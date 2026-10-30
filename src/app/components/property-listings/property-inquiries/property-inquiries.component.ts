@@ -1,7 +1,8 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
@@ -17,6 +18,7 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    TranslateModule,
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent
@@ -24,7 +26,9 @@ import {
   templateUrl: './property-inquiries.component.html',
   styleUrl: './property-inquiries.component.scss'
 })
-export class PropertyInquiriesComponent {
+export class PropertyInquiriesComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
+
   isDrawerOpen = false;
   showColumnDropdown = false;
   pageIndex = 0;
@@ -35,20 +39,35 @@ export class PropertyInquiriesComponent {
   filterUnit = '';
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true },
-    { key: 'fullName', label: 'Full Name', visible: true },
-    { key: 'email', label: 'Email', visible: true },
-    { key: 'phone', label: 'Phone', visible: true },
-    { key: 'inquiryType', label: 'Inquiry Type', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true },
-    { key: 'message', label: 'Message', visible: true, useTemplate: true },
-    { key: 'submittedAt', label: 'Submitted At', visible: true }
+    { key: 'id', label: 'ID', labelKey: 'web.propertyListings.inquiries.colId', visible: true },
+    { key: 'fullName', label: 'Full Name', labelKey: 'web.propertyListings.inquiries.colFullName', visible: true },
+    { key: 'email', label: 'Email', labelKey: 'web.propertyListings.inquiries.colEmail', visible: true },
+    { key: 'phone', label: 'Phone', labelKey: 'web.propertyListings.inquiries.colPhone', visible: true },
+    { key: 'inquiryType', label: 'Inquiry Type', labelKey: 'web.propertyListings.inquiries.colInquiryType', visible: true, useTemplate: true },
+    { key: 'unit', label: 'Unit', labelKey: 'web.propertyListings.inquiries.colUnit', visible: true },
+    { key: 'message', label: 'Message', labelKey: 'web.propertyListings.inquiries.colMessage', visible: true, useTemplate: true },
+    { key: 'submittedAt', label: 'Submitted At', labelKey: 'web.propertyListings.inquiries.colSubmittedAt', visible: true }
   ];
 
   constructor(
     private readonly location: Location,
     private readonly router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.updateColumnLabels();
+    this.translate.onLangChange.subscribe(() => {
+      this.updateColumnLabels();
+    });
+  }
+
+  private updateColumnLabels(): void {
+    this.tableColumns.forEach(col => {
+      if (col.labelKey) {
+        col.label = this.translate.instant(col.labelKey);
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);

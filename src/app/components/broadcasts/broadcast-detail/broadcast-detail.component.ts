@@ -2,13 +2,14 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
   selector: 'app-broadcast-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './broadcast-detail.component.html',
   styleUrl: './broadcast-detail.component.scss'
 })

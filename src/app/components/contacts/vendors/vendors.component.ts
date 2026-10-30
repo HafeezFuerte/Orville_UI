@@ -1,10 +1,10 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PropertiesService } from '../../portfolio/services/properties.service';
 import { Router } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
@@ -34,12 +34,13 @@ export interface Vendor {
   templateUrl: './vendors.component.html',
   styleUrl: './vendors.component.scss'
 })
-export class VendorsComponent implements OnInit {
+export class VendorsComponent implements OnInit, OnDestroy {
   private propertiesService = inject(PropertiesService);
   private router = inject(Router);
   private commonService = inject(CommonService);
-  private toastr =inject(ToastrService);
+  private toastr = inject(ToastrService);
   private commontabservice = inject(Common_TabsService);
+  private translate = inject(TranslateService);
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   openActionCode: string | number | null = null;
@@ -55,6 +56,10 @@ export class VendorsComponent implements OnInit {
   filterStatus: string | null = null;
 
   statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  ngOnDestroy() {
+    this.isDrawerOpen = false;
+  }
 
   toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
 
@@ -79,11 +84,11 @@ export class VendorsComponent implements OnInit {
     { key: 'contact', label: 'web.contacts.lblContact', visible: true, useTemplate: true },
     { key: 'phoneNumber', label: 'web.contacts.lblPhoneNumber', visible: true, useTemplate: true },
     { key: 'location', label: 'web.contacts.lblLocation', visible: true, useTemplate: true },
-    { key: 'VendorType', label: 'Vendor Type', visible: true, useTemplate: true },
+    { key: 'VendorType', label: 'web.contacts.lblVendorType', visible: true, useTemplate: true },
     { key: 'categories', label: 'web.contacts.lblCategories', visible: true, useTemplate: true },
     { key: 'tag', label: 'web.contacts.lblTag', visible: true, useTemplate: true },
     { key: 'status', label: 'web.contacts.lblStatus', visible: true, useTemplate: true },
-    { key: 'autoAssign', label: 'Auto Assign', visible: true, useTemplate: true },
+    { key: 'autoAssign', label: 'web.contacts.lblAutoAssign', visible: true, useTemplate: true },
     { key: 'created', label: 'web.contacts.lblCreated', visible: true, useTemplate: true },
     { key: 'action', label: 'web.contacts.lblAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
@@ -201,7 +206,7 @@ export class VendorsComponent implements OnInit {
           }
         }
         else
-          this.toastr.error("No record[s] found"); 
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound')); 
       },
       error: (err) => {
         this.isLoading = false;
@@ -281,7 +286,7 @@ export class VendorsComponent implements OnInit {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive"); 
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess')); 
               setTimeout(() => {
                 window.location.reload();
               }, 2000);
@@ -290,7 +295,7 @@ export class VendorsComponent implements OnInit {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

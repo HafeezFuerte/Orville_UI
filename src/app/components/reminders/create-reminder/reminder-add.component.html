@@ -1,17 +1,17 @@
 <form class="ov-add-form reminder-add font-hanken">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="cancel()" title="Back to Reminders">
+      <button type="button" class="ov-back" (click)="cancel()" [title]="'web.reminders.backToReminders' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Reminder</h3>
-        <p class="ov-page-sub">Create a reminder for you or your team.</p>
+        <h3 class="ov-page-title">{{ (reminderCode=='' || reminderCode==null ? 'web.reminders.newReminder' : 'web.reminders.editReminder') | translate }}</h3>
+        <p class="ov-page-sub">{{ (reminderCode=='' || reminderCode==null ? 'web.reminders.newReminderSub' : 'web.reminders.editReminderSub') | translate }}</p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{reminderCode=='' || reminderCode==null ? 'Create' : 'Update'}} Reminder</button>
+      <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">{{ 'web.reminders.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ (reminderCode=='' || reminderCode==null ? 'web.reminders.createReminder' : 'web.reminders.updateReminder') | translate }}</button>
     </div>
   </div>
 
@@ -21,31 +21,31 @@
         <div class="reminder-add__card-head">
           <span class="reminder-add__icon" data-tone="primary"><i class="ti ti-bell"></i></span>
           <div>
-            <h4 class="reminder-add__card-title">Reminder Details</h4>
-            <p class="reminder-add__card-sub">Basic task info and assignee configuration.</p>
+            <h4 class="reminder-add__card-title">{{ 'web.reminders.reminderDetails' | translate }}</h4>
+            <p class="reminder-add__card-sub">{{ 'web.reminders.reminderDetailsSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0">
           <div class="ov-fields">
             <div class="ov-fields__full">
-              <label class="ov-label">Assign to <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.reminders.assignTo' | translate }} <span class="text-danger">*</span></label>
               <ng-select #PropertySelect  [(ngModel)]="form.assignees"  bindValue="code"  name="assignees" [items]="userOptions" [searchable]="true"
-                [multiple]="true" bindLabel="name" placeholder="Select users" class="ov-select ng-select-sm w-full" appendTo="body">
+                [multiple]="true" bindLabel="name" [placeholder]="'web.reminders.phSelectUsers' | translate" class="ov-select ng-select-sm w-full" appendTo="body">
                   <ng-template ng-header-tmp>
                     <div class="p-1.5 border-b border-gray-100">
-                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="PropertySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.reminders.phSearchUsers' | translate" (input)="PropertySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                     </div>
                   </ng-template>
                 </ng-select>
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Title <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" name="title" [(ngModel)]="form.title" placeholder="Enter reminder title" />
+              <label class="ov-label">{{ 'web.reminders.reminderTitle' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" name="title" [(ngModel)]="form.title" [placeholder]="'web.reminders.phReminderTitle' | translate" />
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">To do</label>
+              <label class="ov-label">{{ 'web.reminders.toDo' | translate }}</label>
               <textarea class="ov-input reminder-add__textarea" name="todo" rows="4" [(ngModel)]="form.todo"
-                placeholder="Enter what needs to be done..."></textarea>
+                [placeholder]="'web.reminders.phToDo' | translate"></textarea>
             </div>
           </div>
         </div>
@@ -55,26 +55,26 @@
         <div class="reminder-add__card-head">
           <span class="reminder-add__icon" data-tone="info"><i class="ti ti-calendar"></i></span>
           <div>
-            <h4 class="reminder-add__card-title">Date &amp; Status</h4>
-            <p class="reminder-add__card-sub">Schedule when the reminder should trigger.</p>
+            <h4 class="reminder-add__card-title">{{ 'web.reminders.dateAndStatus' | translate }}</h4>
+            <p class="reminder-add__card-sub">{{ 'web.reminders.dateAndStatusSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0">
           <div class="ov-fields ov-fields--2">
             <div class="ov-fields__full">
-              <label class="ov-label">Reminder date &amp; time <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.reminders.reminderDateTime' | translate }} <span class="text-danger">*</span></label>
               <div class="reminder-add__datetime">
-                <input type="text" appFlowbiteDatepicker class="ov-input" name="date" [(ngModel)]="form.date" placeholder="DD/MM/YYYY" />
+                <input type="text" appFlowbiteDatepicker class="ov-input" name="date" [(ngModel)]="form.date" [placeholder]="'web.reminders.phDateFormat' | translate" />
                 <input type="time" class="ov-input" name="time" [(ngModel)]="form.time" placeholder="--:-- --" />
               </div>
             </div>
             <div>
-              <label class="ov-label">Priority</label>
+              <label class="ov-label">{{ 'web.reminders.priority' | translate }}</label>
               <ng-select [(ngModel)]="form.priority" name="priority" [items]="priorityOptions" [clearable]="false"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <!-- <div>
-              <label class="ov-label">Status</label>
+              <label class="ov-label">{{ 'web.reminders.status' | translate }}</label>
               <ng-select [(ngModel)]="form.status"  name="status" [items]="statusOptions" [clearable]="false"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div> -->
@@ -86,16 +86,16 @@
         <div class="reminder-add__card-head">
           <span class="reminder-add__icon" data-tone="success"><i class="ti ti-refresh"></i></span>
           <div>
-            <h4 class="reminder-add__card-title">Recurrence &amp; Automation</h4>
-            <p class="reminder-add__card-sub">Configure recurring schedules and pause controls.</p>
+            <h4 class="reminder-add__card-title">{{ 'web.reminders.recurrenceAutomation' | translate }}</h4>
+            <p class="reminder-add__card-sub">{{ 'web.reminders.recurrenceAutomationSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0">
           <div class="reminder-add__toggles">
             <label class="reminder-add__toggle">
               <span class="reminder-add__toggle-text">
-                <span class="reminder-add__toggle-title">Recurring reminder</span>
-                <span class="reminder-add__toggle-sub">Automatically repeat this reminder on a schedule.</span>
+                <span class="reminder-add__toggle-title">{{ 'web.reminders.recurringReminder' | translate }}</span>
+                <span class="reminder-add__toggle-sub">{{ 'web.reminders.recurringReminderSub' | translate }}</span>
               </span>
               <span class="reminder-add__switch" [class.is-on]="form.recurring">
                 <input type="checkbox" class="sr-only" [(ngModel)]="form.recurring" name="recurring" />
@@ -104,8 +104,8 @@
             </label>
             <label class="reminder-add__toggle">
               <span class="reminder-add__toggle-text">
-                <span class="reminder-add__toggle-title">Pause reminder</span>
-                <span class="reminder-add__toggle-sub">Temporarily disable notifications for this reminder.</span>
+                <span class="reminder-add__toggle-title">{{ 'web.reminders.pauseReminder' | translate }}</span>
+                <span class="reminder-add__toggle-sub">{{ 'web.reminders.pauseReminderSub' | translate }}</span>
               </span>
               <span class="reminder-add__switch" [class.is-on]="form.paused">
                 <input type="checkbox" class="sr-only" [(ngModel)]="form.paused" name="paused" />
@@ -115,12 +115,12 @@
           </div>
           <div *ngIf="form.recurring" class="ov-fields ov-fields--2 mt-4">
             <div>
-              <label class="ov-label">Repeat Every</label>
+              <label class="ov-label">{{ 'web.reminders.repeatEvery' | translate }}</label>
               <ng-select [(ngModel)]="form.repeatEvery" name="repeatEvery" bindValue="id" bindLabel="name" [items]="repeatOptions" [clearable]="true"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.reminders.select' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Interval</label>
+              <label class="ov-label">{{ 'web.reminders.interval' | translate }}</label>
               <input type="text" class="ov-input" name="interval" [(ngModel)]="form.interval" placeholder="1" />
             </div>
           </div>
@@ -131,17 +131,17 @@
         <div class="reminder-add__card-head">
           <span class="reminder-add__icon" data-tone="warning"><i class="ti ti-paperclip"></i></span>
           <div>
-            <h4 class="reminder-add__card-title">Attachments</h4>
-            <p class="reminder-add__card-sub">You can add files here.</p>
+            <h4 class="reminder-add__card-title">{{ 'web.reminders.attachments' | translate }}</h4>
+            <p class="reminder-add__card-sub">{{ 'web.reminders.attachmentsSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0">
           <input #fileInput type="file" class="hidden" multiple (change)="onFilesSelected($event)" />
           <div class="reminder-add__drop" (click)="fileInput.click()">
             <i class="ti ti-cloud-upload reminder-add__drop-ico"></i>
-            <p class="reminder-add__drop-title">Drag &amp; drop files here, or click to browse</p>
-            <p class="reminder-add__drop-hint">Supported formats: PDF, JPG, PNG · Maximum size: 10 MB</p>
-            <button type="button" class="ov-btn ov-btn-toolbar" (click)="$event.stopPropagation(); fileInput.click()">Select Files</button>
+            <p class="reminder-add__drop-title">{{ 'web.reminders.dropFilesOrBrowse' | translate }}</p>
+            <p class="reminder-add__drop-hint">{{ 'web.reminders.supportedFormats' | translate }}</p>
+            <button type="button" class="ov-btn ov-btn-toolbar" (click)="$event.stopPropagation(); fileInput.click()">{{ 'web.reminders.selectFiles' | translate }}</button>
           </div>
           <ul *ngIf="selectedFiles.length" class="reminder-add__files">
             <li *ngFor="let file of selectedFiles" class="reminder-add__file">
@@ -151,7 +151,7 @@
           </ul>
           <ul *ngIf="attachments.length" class="reminder-add__files">
             <li *ngFor="let file of attachments" class="reminder-add__file">
-              <a href="{{file.file_path}}" target="_blank">View file</a> 
+              <a href="{{file.file_path}}" target="_blank">{{ 'web.reminders.viewFile' | translate }}</a> 
             </li>
           </ul>
         </div>
@@ -160,7 +160,7 @@
   </div>
 
   <div class="ov-add-footer reminder-add__footer">
-    <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{reminderCode=='' || reminderCode==null ? 'Create' : 'Update'}} Reminder</button>
+    <button type="button" class="ov-btn reminder-add__cancel" (click)="cancel()">{{ 'web.reminders.cancel' | translate }}</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ (reminderCode=='' || reminderCode==null ? 'web.reminders.createReminder' : 'web.reminders.updateReminder') | translate }}</button>
   </div>
 </form>

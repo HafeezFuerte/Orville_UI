@@ -1,17 +1,17 @@
 <div class="exp-page">
   <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
     <div>
-      <h3 class="ov-page-title">Expense</h3>
-      <p class="ov-page-sub">View all the Expense based on the status.</p>
+      <h3 class="ov-page-title">{{ 'web.accounting.expenses.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.accounting.expenses.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-        Export
+        {{ 'web.accounting.expenses.export' | translate }}
       </button>
       <a routerLink="/accounting/expenses/create" class="ov-btn ov-btn-primary">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Create Expense
+        {{ 'web.accounting.expenses.createExpense' | translate }}
       </a>
     </div>
   </div>
@@ -26,7 +26,7 @@
       [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
       [class.border-transparent]="statusFilter !== tab.id" 
       (click)="setStatusFilter(tab.id)">
-      {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+      {{ tab.id === 'All' ? ('web.common.lblAll' | translate) : tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
     </button>
     </div>
   </div>
@@ -43,7 +43,7 @@
     <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
         <div class="ov-search flex-1">
-          <label class="sr-only" for="expense-search">Search by name</label>
+          <label class="sr-only" for="expense-search">{{ 'web.accounting.expenses.searchByName' | translate }}</label>
           <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
           <input
             id="expense-search"
@@ -52,21 +52,21 @@
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
             (input)="applyLocalSearch()"
-            placeholder="Search by name">
+            [placeholder]="'web.accounting.expenses.searchByName' | translate">
         </div>
-        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.accounting.expenses.search' | translate">
           <i class="ri-search-line text-[18px]"></i>
         </button>
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.accounting.expenses.filter' | translate }}
         </button>
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.accounting.expenses.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -142,7 +142,7 @@
                 <div *ngIf="openActionId === row.id"
                   class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                    (click)="openActionId = null">View</button>
+                    (click)="openActionId = null">{{ 'web.accounting.expenses.view' | translate }}</button>
                 </div>
               </div>
             </ng-container>
@@ -153,7 +153,7 @@
 
     <div class="ov-page">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.accounting.expenses.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
             <option [ngValue]="5">5</option>
@@ -164,12 +164,12 @@
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.accounting.expenses.showing' | translate }} {{ startRecord }} {{ 'web.accounting.expenses.to' | translate }} {{ endRecord }} {{ 'web.accounting.expenses.of' | translate }} {{ totalRecords }} {{ 'web.accounting.expenses.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.accounting.expenses.page' | translate }} {{ displayPage }} {{ 'web.accounting.expenses.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.accounting.expenses.prev' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
           <ng-container *ngFor="let item of pagerItems">
@@ -177,7 +177,7 @@
             <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
               [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
           </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.accounting.expenses.next' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
         </div>
@@ -189,17 +189,17 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Name</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterName" placeholder="Enter name">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.expenses.filterByName' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterName" [placeholder]="'web.accounting.expenses.enterName' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Account</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterAccount" placeholder="Enter account">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.expenses.filterByAccount' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterAccount" [placeholder]="'web.accounting.expenses.enterAccount' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Status</label>
+      <label class="ov-label mb-1.5">{{ 'web.accounting.expenses.filterByStatus' | translate }}</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Status" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.accounting.expenses.selectStatus' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

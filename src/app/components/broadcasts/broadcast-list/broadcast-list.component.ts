@@ -44,19 +44,18 @@ export class BroadcastListComponent implements OnInit {
   pageSize = 20;
   totalRecords = 0;
 
-  /** Figma 2574:68703 — ID, Subject, Preview, Status, Broadcast Type, Sendable, Scheduled, Date, Created At, Updated At, Action */
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'subject', label: 'Subject', visible: true },
-    { key: 'preview', label: 'Preview', visible: true, useTemplate: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'type', label: 'Broadcast Type', visible: true, useTemplate: true },
-    { key: 'contact', label: 'Sendable', visible: true, useTemplate: true },
-    { key: 'scheduled', label: 'Scheduled', visible: true, useTemplate: true },
-    { key: 'scheduled_date', label: 'Date', visible: true },
-    { key: 'created_date', label: 'Created At', visible: true },
-    { key: 'modified_date', label: 'Updated At', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true },
+    { key: 'id', label: 'web.broadcasts.colId', visible: true, useTemplate: true },
+    { key: 'subject', label: 'web.broadcasts.colSubject', visible: true },
+    { key: 'preview', label: 'web.broadcasts.colPreview', visible: true, useTemplate: true },
+    { key: 'status', label: 'web.broadcasts.colStatus', visible: true, useTemplate: true },
+    { key: 'type', label: 'web.broadcasts.colType', visible: true, useTemplate: true },
+    { key: 'contact', label: 'web.broadcasts.colSendable', visible: true, useTemplate: true },
+    { key: 'scheduled', label: 'web.broadcasts.colScheduled', visible: true, useTemplate: true },
+    { key: 'scheduled_date', label: 'web.broadcasts.colDate', visible: true },
+    { key: 'created_date', label: 'web.broadcasts.colCreatedAt', visible: true },
+    { key: 'modified_date', label: 'web.broadcasts.colUpdatedAt', visible: true },
+    { key: 'action', label: 'web.broadcasts.colAction', visible: true, useTemplate: true },
   ];
 
   broadcastData: Broadcast[] = [];

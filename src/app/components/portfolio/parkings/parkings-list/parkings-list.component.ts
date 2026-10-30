@@ -84,18 +84,18 @@ export class ParkingsListComponent implements OnInit {
   currentUser =this.commonService.getCurrentUser();
   // Columns definition for the shared table component
   tableColumns = [
-    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'parkingNo', label: 'Parking No.', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'property', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unit', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true }, 
-    { key: 'parking_status_nm', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'type', label: 'Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'fee', label: 'Fee (' + this.currentUser?.currencyCode+ ' )', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'cycle', label: 'Cycle', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'remarks', label: 'Remarks', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'created_date', label: 'Created', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'modified_date', label: 'Updated', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'id', label: 'web.common.lblID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'parkingNo', label: 'web.parkings.lblParkingNo', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'property', label: 'web.leases.lblProperty', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unit', label: 'web.common.lblUnits', headerClass: 'text-start', useTemplate: true, visible: true }, 
+    { key: 'parking_status_nm', label: 'web.common.lblStatus', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'type', label: 'web.parkings.lblParkingType', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'fee', label: 'web.parkings.lblParkingfee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'cycle', label: 'web.leases.lblRecurringCycle', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'remarks', label: 'web.common.lblRemarks', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'created_date', label: 'web.common.lblCreated', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'modified_date', label: 'web.common.lblUpdated', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'web.common.lblAction', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   openActionCode: string | number | null = null;
@@ -250,7 +250,7 @@ export class ParkingsListComponent implements OnInit {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
 
       },
       error: (err: any) => {
@@ -345,11 +345,11 @@ export class ParkingsListComponent implements OnInit {
 
   saveParking(): void {
     if (!this.parkingForm.property_code || !this.parkingForm.unit_code || !this.parkingForm.parking_no || !this.parkingForm.parking_type) {
-      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+      this.toastr.warning(this.translate.instant('web.common.msgFillRequiredFields'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if(this.parkingForm.parking_type=="89" && (this.parkingForm.parkingfee==null ||  this.parkingForm.parkingfee==0)){
-      this.toastr.error("Invalid parking fee","Error");
+      this.toastr.error(this.translate.instant('web.parkings.errInvalidParkingFee'), this.translate.instant('web.common.lblError'));
       return;
     }
     const payload = {
@@ -373,13 +373,14 @@ export class ParkingsListComponent implements OnInit {
 
     this.propertiesService.addParking(payload).subscribe({
       next: (res: any) => {
-        this.toastr.success(`Parking ${this.isEditMode ? 'updated' : 'created'} successfully.`, 'Success');
+        const msg = this.translate.instant(this.isEditMode ? 'web.parkings.msgParkingUpdated' : 'web.parkings.msgParkingCreated');
+        this.toastr.success(msg, this.translate.instant('web.common.lblSuccess'));
         this.toggleAddModal(false);
         this.loadParkings();
       },
       error: (err: any) => {
         console.error('Failed to save parking:', err);
-        this.toastr.error('Failed to save parking.', 'Error');
+        this.toastr.error(this.translate.instant('web.parkings.errFailedToSaveParking'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -408,7 +409,7 @@ export class ParkingsListComponent implements OnInit {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive");
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
               this.edit_code='';
               this.loadParkings();
               this.pageNo=0;
@@ -420,7 +421,7 @@ export class ParkingsListComponent implements OnInit {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
