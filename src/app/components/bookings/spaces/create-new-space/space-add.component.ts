@@ -9,6 +9,7 @@ import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowb
 import { SpaceAvailability } from '../spaces.data';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface WeekDayRow {
   day: string;
@@ -20,7 +21,7 @@ interface WeekDayRow {
 @Component({
   selector: 'app-space-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FileUploadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FileUploadComponent, TranslateModule],
   templateUrl: './space-add.component.html'
 })
 export class SpaceAddComponent implements OnInit {
@@ -74,7 +75,8 @@ export class SpaceAddComponent implements OnInit {
     private route: ActivatedRoute,
     private portfolioService: PortfolioService,
     private commonService: CommonService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -283,16 +285,16 @@ export class SpaceAddComponent implements OnInit {
 
   save(): void {
     const errors: string[] = [];
-    if (!this.form.name) errors.push('Space name is required.');
-    if (!this.form.location) errors.push('Space Location is required.');
-    if (!this.form.phone) errors.push('Phone Number is required.');
-    if (!this.form.property) errors.push('Property is required.');
-    if (!this.form.unit) errors.push('Unit is required.');
-    if (!this.form.startDate) errors.push('Start Date is required.');
-    if (!this.form.endDate) errors.push('End Date is required.');
+    if (!this.form.name) errors.push(this.translate.instant('web.bookings.spaces.errSpaceNameReq'));
+    if (!this.form.location) errors.push(this.translate.instant('web.bookings.spaces.errSpaceLocReq'));
+    if (!this.form.phone) errors.push(this.translate.instant('web.bookings.spaces.errPhoneReq'));
+    if (!this.form.property) errors.push(this.translate.instant('web.bookings.spaces.errPropertyReq'));
+    if (!this.form.unit) errors.push(this.translate.instant('web.bookings.spaces.errUnitReq'));
+    if (!this.form.startDate) errors.push(this.translate.instant('web.bookings.spaces.errStartDateReq'));
+    if (!this.form.endDate) errors.push(this.translate.instant('web.bookings.spaces.errEndDateReq'));
 
     if (errors.length > 0) {
-      this.toastr.error(errors.join('<br>'), 'Validation', {
+      this.toastr.error(errors.join('<br>'), this.translate.instant('web.common.lblValidation'), {
         enableHtml: true,
         timeOut: 5000,
         positionClass: 'toast-top-right'
@@ -380,21 +382,21 @@ export class SpaceAddComponent implements OnInit {
             }
           }
 
-          let msg = res.message || 'Space saved successfully';
+          let msg = res.message || this.translate.instant('web.bookings.spaces.msgSavedSuccess');
           if (!msg || msg.trim() === 'LBL_SUCCESS' || msg.toUpperCase().includes('LBL_SUCCESS')) {
-            msg = 'Success';
+            msg = this.translate.instant('web.bookings.spaces.msgSavedSuccess');
           }
           this.toastr.success(msg);
           void this.router.navigate(['/bookings/spaces']);
         } else {
-          let msg = res.message || 'Failed to save space';
-          if (msg.includes('LBL_')) msg = 'Failed to save space';
+          let msg = res.message || this.translate.instant('web.bookings.spaces.msgSaveFailed');
+          if (msg.includes('LBL_')) msg = this.translate.instant('web.bookings.spaces.msgSaveFailed');
           this.toastr.error(msg);
         }
       },
       error: (err) => {
         console.error('Error saving space:', err);
-        this.toastr.error('An error occurred while saving the space');
+        this.toastr.error(this.translate.instant('web.bookings.spaces.msgSaveError'));
       }
     });
   }

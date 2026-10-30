@@ -1,19 +1,19 @@
 <form class="ov-add-form ra-page font-hanken" (ngSubmit)="save()">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="cancel()" title="Back to Reservations">
+      <button type="button" class="ov-back" (click)="cancel()" [title]="'web.bookings.reservations.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Reservation</h3>
-        <p class="ov-page-sub">Book a space and capture reserver details in a few steps.</p>
+        <h3 class="ov-page-title">{{ 'web.bookings.reservations.newReservation' | translate }}</h3>
+        <p class="ov-page-sub">{{ 'web.bookings.reservations.newReservationSub' | translate }}</p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">{{ 'web.bookings.reservations.cancel' | translate }}</button>
       <button type="submit" class="ov-btn ov-btn-primary" [disabled]="!canBook">
         <i class="ti ti-calendar-check" aria-hidden="true"></i>
-        Book Reservation
+        {{ 'web.bookings.reservations.bookReservation' | translate }}
       </button>
     </div>
   </div>
@@ -23,7 +23,7 @@
     <section class="ov-card ra-card ra-space-bar">
       <div class="ra-space-bar__inner">
         <div class="ra-space-bar__field">
-          <label class="ov-label">Space</label>
+          <label class="ov-label">{{ 'web.bookings.reservations.colSpace' | translate }}</label>
           <ng-select
             [(ngModel)]="form.space"
             name="space"
@@ -56,19 +56,19 @@
         <div class="ra-card__head">
           <span class="ra-card__ico" data-tone="info" aria-hidden="true"><i class="ti ti-calendar-event"></i></span>
           <div>
-            <h4 class="ra-card__title">Date &amp; Time</h4>
-            <p class="ra-card__sub">Select date, then pick an available time slot.</p>
+            <h4 class="ra-card__title">{{ 'web.bookings.reservations.dateTime' | translate }}</h4>
+            <p class="ra-card__sub">{{ 'web.bookings.reservations.dateTimeSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0 ra-col__body">
           <div class="ra-cal-toolbar">
-            <p class="ov-label mb-0">Select date</p>
+            <p class="ov-label mb-0">{{ 'web.bookings.reservations.selectDate' | translate }}</p>
             <div class="ra-cal-nav">
-              <button type="button" class="ra-cal-nav__btn" (click)="prevMonth()" aria-label="Previous month">
+              <button type="button" class="ra-cal-nav__btn" (click)="prevMonth()" [attr.aria-label]="'web.common.lblPreviousPage' | translate">
                 <i class="ti ti-chevron-left"></i>
               </button>
               <span class="ra-cal-nav__label">{{ monthLabel }}</span>
-              <button type="button" class="ra-cal-nav__btn" (click)="nextMonth()" aria-label="Next month">
+              <button type="button" class="ra-cal-nav__btn" (click)="nextMonth()" [attr.aria-label]="'web.common.lblNextPage' | translate">
                 <i class="ti ti-chevron-right"></i>
               </button>
             </div>
@@ -96,7 +96,7 @@
           <div class="ra-duration">
             <div class="ra-slots__head">
               <i class="ti ti-hourglass" aria-hidden="true"></i>
-              <span>Duration</span>
+              <span>{{ 'web.bookings.reservations.duration' | translate }}</span>
             </div>
             <div class="ra-slots__list">
               <button
@@ -109,14 +109,14 @@
               </button>
             </div>
             <div class="ra-duration__custom" *ngIf="isCustomDuration">
-              <label class="ov-label" for="custom-duration">Custom duration</label>
+              <label class="ov-label" for="custom-duration">{{ 'web.bookings.reservations.customDuration' | translate }}</label>
               <input
                 id="custom-duration"
                 type="text"
                 class="ov-input"
                 name="customDuration"
                 [(ngModel)]="form.customDuration"
-                placeholder="e.g. 90 mins or 2.5 Hours" />
+                [placeholder]="'web.bookings.reservations.phCustomDuration' | translate" />
             </div>
           </div>
 
@@ -124,7 +124,7 @@
             <div class="ra-slots__block">
               <div class="ra-slots__head">
                 <i class="ti ti-sunrise" aria-hidden="true"></i>
-                <span>Morning</span>
+                <span>{{ 'web.bookings.reservations.morning' | translate }}</span>
               </div>
               <div class="ra-slots__list">
                 <button
@@ -141,7 +141,7 @@
             <div class="ra-slots__block">
               <div class="ra-slots__head">
                 <i class="ti ti-sun" aria-hidden="true"></i>
-                <span>After Noon</span>
+                <span>{{ 'web.bookings.reservations.afternoon' | translate }}</span>
               </div>
               <div class="ra-slots__list">
                 <button
@@ -158,7 +158,7 @@
             <div class="ra-slots__block">
               <div class="ra-slots__head">
                 <i class="ti ti-moon" aria-hidden="true"></i>
-                <span>Evening</span>
+                <span>{{ 'web.bookings.reservations.evening' | translate }}</span>
               </div>
               <div class="ra-slots__list">
                 <button
@@ -180,46 +180,46 @@
         <div class="ra-card__head">
           <span class="ra-card__ico" data-tone="success" aria-hidden="true"><i class="ti ti-user"></i></span>
           <div>
-            <h4 class="ra-card__title">Reservation Details</h4>
-            <p class="ra-card__sub">Choose an existing contact or enter the reserver’s information.</p>
+            <h4 class="ra-card__title">{{ 'web.bookings.reservations.reservationDetails' | translate }}</h4>
+            <p class="ra-card__sub">{{ 'web.bookings.reservations.reservationDetailsSub' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body !pt-0 ra-col__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">Reserve</label>
+              <label class="ov-label">{{ 'web.bookings.reservations.colReserve' | translate }}</label>
               <ng-select
                 [(ngModel)]="form.reserve"
                 name="reserve"
                 [items]="reservers"
                 [clearable]="true"
-                placeholder="Select"
+                [placeholder]="'web.bookings.reservations.phSelect' | translate"
                 class="ov-select ng-select-sm w-full"
                 appendTo="body">
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Email <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter email" />
+              <label class="ov-label">{{ 'web.bookings.reservations.colEmail' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" [placeholder]="'web.bookings.reservations.phEnterEmail' | translate" />
             </div>
             <div>
-              <label class="ov-label">Phone Number</label>
-              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter phone" />
+              <label class="ov-label">{{ 'web.bookings.reservations.colPhone' | translate }}</label>
+              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" [placeholder]="'web.bookings.reservations.phEnterPhone' | translate" />
             </div>
             <div>
-              <label class="ov-label">Lease</label>
+              <label class="ov-label">{{ 'web.bookings.reservations.colLease' | translate }}</label>
               <ng-select
                 [(ngModel)]="form.lease"
                 name="lease"
                 [items]="leases"
                 [clearable]="true"
-                placeholder="Select"
+                [placeholder]="'web.bookings.reservations.phSelect' | translate"
                 class="ov-select ng-select-sm w-full"
                 appendTo="body">
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Status</label>
+              <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
               <ng-select
                 [(ngModel)]="form.status"
                 name="status"
@@ -229,12 +229,12 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Notes</label>
+              <label class="ov-label">{{ 'web.bookings.reservations.notes' | translate }}</label>
               <textarea
                 class="ov-input ra-notes"
                 name="notes"
                 [(ngModel)]="form.notes"
-                placeholder="Add booking notes (optional)"></textarea>
+                [placeholder]="'web.bookings.reservations.phNotes' | translate"></textarea>
             </div>
           </div>
         </div>
@@ -245,58 +245,58 @@
         <div class="ra-summary__head">
           <span class="ra-card__ico" data-tone="primary" aria-hidden="true"><i class="ti ti-clipboard-list"></i></span>
           <div>
-            <h4 class="ra-summary__title">Summary</h4>
-            <p class="ra-summary__sub">Review before booking</p>
+            <h4 class="ra-summary__title">{{ 'web.bookings.reservations.summary' | translate }}</h4>
+            <p class="ra-summary__sub">{{ 'web.bookings.reservations.summarySub' | translate }}</p>
           </div>
         </div>
         <div class="ra-summary__body">
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Space</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.colSpace' | translate }}</span>
             <span class="ra-summary__value">{{ form.space || '—' }}</span>
           </div>
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Date</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.selectDate' | translate }}</span>
             <span class="ra-summary__value">{{ selectedDateShort }}</span>
           </div>
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Time</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.colTime' | translate }}</span>
             <span class="ra-summary__value">{{ form.selectedSlot || '—' }}</span>
           </div>
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Duration</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.duration' | translate }}</span>
             <span class="ra-summary__value">{{ displayDuration }}</span>
           </div>
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Price</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.price' | translate }}</span>
             <span class="ra-summary__value ra-summary__value--price">{{ activeSpaceMeta.price }}</span>
           </div>
           <div class="ra-summary__row">
-            <span class="ra-summary__label">Status</span>
+            <span class="ra-summary__label">{{ 'web.common.lblStatus' | translate }}</span>
             <span class="ra-status" [attr.data-status]="form.status">{{ form.status }}</span>
           </div>
           <div class="ra-summary__row" *ngIf="form.reserve">
-            <span class="ra-summary__label">Reserver</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.reserver' | translate }}</span>
             <span class="ra-summary__value">{{ form.reserve }}</span>
           </div>
           <div class="ra-summary__row" *ngIf="form.email">
-            <span class="ra-summary__label">Email</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.colEmail' | translate }}</span>
             <span class="ra-summary__value ra-summary__value--clip" [title]="form.email">{{ form.email }}</span>
           </div>
           <div class="ra-summary__row" *ngIf="form.phone">
-            <span class="ra-summary__label">Phone</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.colPhone' | translate }}</span>
             <span class="ra-summary__value">{{ form.phone }}</span>
           </div>
           <div class="ra-summary__row" *ngIf="form.lease">
-            <span class="ra-summary__label">Lease</span>
+            <span class="ra-summary__label">{{ 'web.bookings.reservations.colLease' | translate }}</span>
             <span class="ra-summary__value">{{ form.lease }}</span>
           </div>
         </div>
         <div class="ra-summary__footer">
           <button type="submit" class="ov-btn ov-btn-primary w-full" [disabled]="!canBook">
             <i class="ti ti-calendar-check" aria-hidden="true"></i>
-            Book Reservation
+            {{ 'web.bookings.reservations.bookReservation' | translate }}
           </button>
-          <button type="button" class="ov-btn ov-btn-ghost w-full" (click)="cancel()">Cancel</button>
+          <button type="button" class="ov-btn ov-btn-ghost w-full" (click)="cancel()">{{ 'web.bookings.reservations.cancel' | translate }}</button>
         </div>
       </aside>
     </div>

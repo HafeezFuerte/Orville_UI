@@ -6,16 +6,17 @@
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Preventive Maintenance</h3>
+        <h3 class="ov-page-title">{{ 'web.facility.preventiveMaintenance.title' | translate }}</h3>
         <p class="ov-page-sub">
-          Facility / Preventive Maintenance /
-          <span class="ov-page-sub__current">New Preventive Maintenance</span>
+          {{ 'web.facility.preventiveMaintenance.breadcrumbFacility' | translate }} /
+          {{ 'web.facility.preventiveMaintenance.breadcrumbPM' | translate }} /
+          <span class="ov-page-sub__current">{{ (editId ? 'web.facility.preventiveMaintenance.updatePM' : 'web.facility.preventiveMaintenance.newPM') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{editId==null || editId=='' ? 'Create' : 'Update'}} Preventive Maintenance</button>
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.facility.preventiveMaintenance.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{ (editId ? 'web.facility.preventiveMaintenance.updatePM' : 'web.facility.preventiveMaintenance.createPM') | translate }}</button>
     </div>
   </div>
 
@@ -24,15 +25,15 @@
       <!-- Trigger Details -->
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Trigger Details</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.triggerDetails' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div>
-            <label class="ov-label">Name <span class="text-danger">*</span></label>
-            <input type="text" class="ov-input" [(ngModel)]="form.name" placeholder="Enter name" />
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.name' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="form.name" [placeholder]="'web.facility.preventiveMaintenance.phEnterName' | translate" />
           </div>
           <div>
-            <label class="ov-label">Start Date</label>
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.startDate' | translate }}</label>
             <div class="pm-date">
               <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
               <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.startDate" placeholder="DD/MM/YYYY" />
@@ -40,14 +41,14 @@
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="ov-label">1st PPM Date <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.firstPpmDate' | translate }} <span class="text-danger">*</span></label>
               <div class="pm-date">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
                 <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.firstPpmDate" placeholder="DD/MM/YYYY" />
               </div>
             </div>
             <div>
-              <label class="ov-label">Ends On</label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.endsOn' | translate }}</label>
               <div class="pm-date">
                 <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="pm-date__icon" />
                 <input appFlowbiteDatepicker type="text" class="ov-input pm-date__input" [(ngModel)]="form.endsOn" placeholder="DD/MM/YYYY" />
@@ -60,24 +61,30 @@
       <!-- Work order due -->
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Work order due</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.workOrderDue' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <label class="ov-label">Every <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.every' | translate }} <span class="text-danger">*</span></label>
               <input type="number" class="ov-input" [(ngModel)]="form.every" min="1" />
             </div>
             <div>
-              <label class="ov-label">Time span <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.timeSpan' | translate }} <span class="text-danger">*</span></label>
               <ng-select [items]="timeSpans" [(ngModel)]="form.timeSpan"
                 [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
+                <ng-template ng-label-tmp let-item="item">
+                  {{ getTimeSpanLabel(item) }}
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  {{ getTimeSpanLabel(item) }}
+                </ng-template>
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Create <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.createDaysBefore' | translate }} <span class="text-danger">*</span></label>
               <input type="number" class="ov-input" [(ngModel)]="form.createDaysBefore" min="0" />
-              <p class="pm-form__hint">It will be triggered X days before the planned date</p>
+              <p class="pm-form__hint">{{ 'web.facility.preventiveMaintenance.triggerHint' | translate }}</p>
             </div>
           </div>
         </div>
@@ -86,14 +93,14 @@
       <!-- Property Information -->
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Property Information</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.propertyInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.property' | translate }} <span class="text-danger">*</span></label>
               <ng-select #PropSelect [items]="properties" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedProperty"
-                placeholder="Select Property" (change)="onPropertyChange($event)" class="ov-select w-full" appendTo="body">
+                [placeholder]="'web.facility.preventiveMaintenance.phSelectProperty' | translate" (change)="onPropertyChange($event)" class="ov-select w-full" appendTo="body">
                    <ng-template ng-header-tmp>
                     <div class="p-1.5 border-b border-gray-100">
                       <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.lblSearch' | translate" (input)="PropSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
@@ -102,14 +109,14 @@
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Unit</label>
+              <label class="ov-label">{{ 'web.facility.preventiveMaintenance.unit' | translate }}</label>
               <ng-select [items]="units" (change)="onUnitChange($event)" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedUnit"
-              placeholder="Select Unit" class="ov-select w-full" appendTo="body">
+              [placeholder]="'web.facility.preventiveMaintenance.phSelectUnit' | translate" class="ov-select w-full" appendTo="body">
             </ng-select>
             </div>
           </div>
           <div>
-            <label class="ov-label">Common Area</label>
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.commonArea' | translate }}</label>
             <ng-select [items]="commonAreas" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedCommonArea"
             [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
@@ -120,11 +127,11 @@
       <!-- Asset -->
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Asset</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.asset' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <p class="pm-form__intro">Select Asset for the work order.</p>
-          <label class="ov-label">Search Asset</label>
+          <p class="pm-form__intro">{{ 'web.facility.preventiveMaintenance.assetIntro' | translate }}</p>
+          <label class="ov-label">{{ 'web.facility.preventiveMaintenance.searchAsset' | translate }}</label>
           <ng-select [items]="assets"  bindValue="code" bindLabel="name"   [(ngModel)]="form.selectedAsset"
           [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
         </ng-select>
@@ -134,20 +141,20 @@
       <!-- Work order details -->
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Work order details</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.workOrderDetails' | translate }}</h6>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div>
-            <label class="ov-label">Title <span class="text-danger">*</span></label>
-            <input type="text" class="ov-input" [(ngModel)]="form.workOrderTitle" placeholder="Enter title" />
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.workOrderTitle' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="form.workOrderTitle" [placeholder]="'web.facility.preventiveMaintenance.phEnterTitle' | translate" />
           </div>
           <div>
-            <label class="ov-label">Details</label>
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.details' | translate }}</label>
             <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
-              [(ngModel)]="form.workOrderDetails" placeholder="Enter details..."></textarea>
+              [(ngModel)]="form.workOrderDetails" [placeholder]="'web.facility.preventiveMaintenance.phEnterDetails' | translate"></textarea>
           </div>
           <div>
-            <label class="ov-label">Maintenance Category <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.facility.preventiveMaintenance.maintenanceCategory' | translate }} <span class="text-danger">*</span></label>
             <ng-select [items]="categories"  bindValue="code" bindLabel="name"   [(ngModel)]="form.selectedCategory"
             [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
@@ -159,10 +166,10 @@
     <div class="pm-form__side">
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Assign To Responsible Person</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.assignToResponsible' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <p class="pm-form__intro">Assign this work order to a responsible person directly without quotation.</p>
+          <p class="pm-form__intro">{{ 'web.facility.preventiveMaintenance.assignResponsibleIntro' | translate }}</p>
      
               <ng-select [items]="responsibleusers"  bindValue="code" bindLabel="name"   [(ngModel)]="form.responsiblePerson"
               [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
@@ -172,52 +179,52 @@
 
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Technicians</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.technicians' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <ng-select [items]="technicians" bindValue="code" bindLabel="name"  [(ngModel)]="form.selectedTechnicians"  
-            placeholder="Search or select technicians..." class="ov-select w-full" appendTo="body">
+            [placeholder]="'web.facility.preventiveMaintenance.phSelectTechnicians' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>
       </div>
 
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Assign Vendor</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.assignVendor' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <ng-select [items]="vendors" bindValue="code" bindLabel="name" [(ngModel)]="form.selectedVendor"
-            placeholder="Choose Vendor" class="ov-select w-full" appendTo="body">
+            [placeholder]="'web.facility.preventiveMaintenance.phSelectVendor' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>
       </div>
 
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Post-PPM Inspection</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.postPpmInspection' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <p class="pm-form__intro">Select the checkbox below to create post PPM inspections.</p>
+          <p class="pm-form__intro">{{ 'web.facility.preventiveMaintenance.postPpmIntro' | translate }}</p>
           <label class="pm-check">
             <input type="checkbox" [(ngModel)]="form.allowPostPpm" />
-            <span>Allow Post-PPM Inspection</span>
+            <span>{{ 'web.facility.preventiveMaintenance.allowPostPpm' | translate }}</span>
           </label>
         </div>
       </div>
 
       <div class="ov-card pm-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Add CheckList</h6>
+          <h6 class="ov-card-title">{{ 'web.facility.preventiveMaintenance.addChecklist' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="pm-check-row" *ngFor="let item of form.checklistItems; let i = index; trackBy: trackByIndex">
-            <input type="text" class="ov-input" [(ngModel)]="form.checklistItems[i]" [placeholder]="'web.common.lblEnter' | translate" />
+            <input type="text" class="ov-input" [(ngModel)]="form.checklistItems[i]" [placeholder]="'web.facility.preventiveMaintenance.phChecklistItem' | translate" />
             <button type="button" class="pm-check-row__del" (click)="removeChecklistItem(i)" aria-label="Remove checklist item">
               <img src="assets/images/action-menu/trash.svg" alt="" width="16" height="16" />
             </button>
           </div>
           <div class="pm-check-footer">
-            <p class="pm-form__hint m-0">You can add multiple fields here</p>
+            <p class="pm-form__hint m-0">{{ 'web.facility.preventiveMaintenance.checklistHint' | translate }}</p>
             <button type="button" class="pm-check-add" (click)="addChecklistItem()" aria-label="Add checklist item">+</button>
           </div>
         </div>
@@ -226,7 +233,7 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{editId==null || editId=='' ? 'Create' : 'Update'}} Preventive Maintenance</button>
+    <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.facility.preventiveMaintenance.cancel' | translate }}</button>
+    <button type="button" class="ov-btn ov-btn-primary" (click)="create()">{{ (editId ? 'web.facility.preventiveMaintenance.updatePM' : 'web.facility.preventiveMaintenance.createPM') | translate }}</button>
   </div>
 </div>

@@ -1,18 +1,18 @@
 <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
   <div class="flex items-start gap-4">
-    <a routerLink="/inspections/templates" class="ov-back" title="Back to Templates">
+    <a routerLink="/inspections/templates" class="ov-back" [title]="'web.inspections.templateDetails.backToTemplates' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </a>
     <div>
-      <h3 class="ov-page-title">Template Details</h3>
+      <h3 class="ov-page-title">{{ 'web.inspections.templateDetails.title' | translate }}</h3>
       <p class="ov-page-sub mt-1">
-        Template / <span class="ov-page-sub__current">Template Details</span>
+        {{ 'web.inspections.templateDetails.breadcrumbTemplate' | translate }} / <span class="ov-page-sub__current">{{ 'web.inspections.templateDetails.title' | translate }}</span>
       </p>
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
     <button type="button" routerLink="/inspections/create-template" [queryParams]="{ id: '31658' }" class="ov-btn ov-btn-primary">
-      Edit Template
+      {{ 'web.inspections.templateDetails.editTemplate' | translate }}
     </button>
   </div>
 </div>
@@ -22,24 +22,24 @@
     <div class="tpl-side">
       <div class="tpl-side__hero">
         <h4 class="tpl-side__title">Move Out Inspection</h4>
-        <p class="tpl-side__sub">Template #31658</p>
+        <p class="tpl-side__sub">{{ 'web.inspections.templateDetails.templateNum' | translate }}31658</p>
       </div>
 
       <div class="tpl-side__rule" aria-hidden="true"></div>
 
-      <h5 class="tpl-side__heading">Information</h5>
+      <h5 class="tpl-side__heading">{{ 'web.inspections.templateDetails.information' | translate }}</h5>
 
       <section class="tpl-block">
-        <h6>Template Details</h6>
+        <h6>{{ 'web.inspections.templateDetails.templateDetails' | translate }}</h6>
         <div class="tpl-rows">
-          <p><span>ID:</span> <b>31658</b></p>
-          <p><span>Template Name:</span> <b>Move Out Inspection</b></p>
-          <p><span>Create at:</span> <b>15-07-2026</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblId' | translate }}</span> <b>31658</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblTemplateName' | translate }}</span> <b>Move Out Inspection</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblCreatedAt' | translate }}</span> <b>15-07-2026</b></p>
           <p>
-            <span>Created By:</span>
+            <span>{{ 'web.inspections.templateDetails.lblCreatedBy' | translate }}</span>
             <span class="tpl-pill">Admin</span>
           </p>
-          <p><span>Update Date:</span> <b>15-07-2026</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblUpdateDate' | translate }}</span> <b>15-07-2026</b></p>
         </div>
       </section>
     </div>
@@ -49,8 +49,8 @@
     <div class="tpl-areas">
       <div class="tpl-areas__head">
         <div>
-          <h5 class="tpl-areas__title">Inspection areas</h5>
-          <p class="tpl-areas__sub">Review the areas and sections included in this template.</p>
+          <h5 class="tpl-areas__title">{{ 'web.inspections.templateDetails.inspectionAreas' | translate }}</h5>
+          <p class="tpl-areas__sub">{{ 'web.inspections.templateDetails.inspectionAreasDesc' | translate }}</p>
         </div>
         <span class="tpl-areas__metric">2 areas · 2 sections</span>
       </div>
@@ -58,9 +58,9 @@
       <div class="tpl-areas__bar">
         <div class="ov-search max-w-[320px] flex-1">
           <img src="assets/images/work-orders/search.svg" alt="" width="16" height="16" class="ov-search__icon" />
-          <input type="text" class="ov-input ov-search__input" placeholder="Search areas or sections">
+          <input type="text" class="ov-input ov-search__input" [placeholder]="'web.inspections.templateDetails.phSearchAreasOrSections' | translate">
         </div>
-        <button type="button" class="tpl-areas__expand" (click)="expandAll()">Expand all</button>
+        <button type="button" class="tpl-areas__expand" (click)="expandAll()">{{ 'web.inspections.templateDetails.expandAll' | translate }}</button>
       </div>
 
       <div class="flex w-full flex-col gap-4">
@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="tpl-area__right">
-              <p class="tpl-area__count">{{ area.sections.length }} {{ area.sections.length === 1 ? 'section' : 'sections' }}</p>
+              <p class="tpl-area__count">{{ area.sections.length }} {{ (area.sections.length === 1 ? ('web.inspections.templateDetails.sectionSingular' | translate) : ('web.inspections.templateDetails.sectionPlural' | translate)) }}</p>
               <img
                 class="tpl-area__chevron"
                 [class.is-open]="expandedAreas[idx]"

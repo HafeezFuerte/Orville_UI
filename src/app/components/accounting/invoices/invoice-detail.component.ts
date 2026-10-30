@@ -10,7 +10,7 @@ import { NotesComponent } from '../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../child-tables/attachments/attachments.component';
 import { AccountingService } from '../accounting.service';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   CHEQUE_COLUMNS,
   INVOICE_CHEQUE_ROWS,
@@ -56,6 +56,7 @@ export class InvoiceDetailComponent implements OnInit {
   receiptslist:any=[];
   invoicesList:any=[];
   overviewRows: InvoiceOverviewRow[] = INVOICE_OVERVIEW_ROWS;
+  public translate = inject(TranslateService);
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
@@ -78,13 +79,11 @@ export class InvoiceDetailComponent implements OnInit {
     danger?: boolean;
     dangerIcon?: boolean;
   }[] = [
-      { label: 'Edit Invoice', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
-      // { label: 'Request for Approval', icon: 'ri-checkbox-line' },
-      { label: 'Send reminder', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' }, 
-      { label: 'Back to list', icon: 'ri-mail-line' },
-      { label: 'View activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
-      { label: 'Archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
-
+      { label: 'web.accounting.invoices.editInvoice', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+      { label: 'web.accounting.invoices.sendReminder', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' }, 
+      { label: 'web.accounting.invoices.backToList', icon: 'ri-mail-line' },
+      { label: 'web.accounting.invoices.viewActivity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+      { label: 'web.accounting.invoices.archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
     ];
 
   // get invoicesList(): any[] {
@@ -231,20 +230,20 @@ export class InvoiceDetailComponent implements OnInit {
 
           if(this.invoice.status==252){ // draft mode
             this.actionOptions.splice(1, 0, {
-              label: 'Request for Approval',
+              label: 'web.accounting.invoices.requestForApproval',
               icon: 'ri-checkbox-line'
             }); 
           } 
           if(this.invoice.status==251){ // If it is unpaid mode
             this.actionOptions.splice(2, 0, {
-              label: 'Mark as paid',
+              label: 'web.accounting.invoices.markAsPaid',
               icon: 'Mark as paid',
               asset: 'assets/images/action-menu/file-invoice.svg'
             }); 
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -284,11 +283,11 @@ export class InvoiceDetailComponent implements OnInit {
   }
   save_payment(){
     if(this.receivepayment.Amount==0){
-      this.toastr.error("Invalid amount");
+      this.toastr.error(this.translate.instant('web.accounting.invoices.invalidAmount'));
       return;
     }
     else if(this.receivepayment.payment_via==0){
-      this.toastr.error("Invalid payment type");
+      this.toastr.error(this.translate.instant('web.accounting.invoices.invalidPaymentType'));
       return;
     } 
     else{ 
@@ -320,7 +319,7 @@ export class InvoiceDetailComponent implements OnInit {
         next: (res:any) => {
           this.isLoading = false;
           if (res["statusCode"] == "200") {
-            this.toastr.success('Successfully Received Payment');
+            this.toastr.success(this.translate.instant('web.accounting.invoices.successfullyReceivedPayment'));
             setTimeout(() => {
               window.location.reload()
             }, 3000);
@@ -382,24 +381,24 @@ export class InvoiceDetailComponent implements OnInit {
   }
   onActionClick(label: string): void {
     this.actionOpen = false;
-    if (label === 'Edit Invoice') {
+    if (label === 'Edit Invoice' || label === 'web.accounting.invoices.editInvoice') {
       this.actionOpen = false;
       this.router.navigate(['/accounting/invoices/edit-invoice', this.invoice?.code]);
     } 
-    else if (label === 'Request for Approval') {
+    else if (label === 'Request for Approval' || label === 'web.accounting.invoices.requestForApproval') {
       this.sendForApproval();
     }  
-    else if (label === 'Mark as paid') {
+    else if (label === 'Mark as paid' || label === 'web.accounting.invoices.markAsPaid') {
       this.showReceivePayment=!this.showReceivePayment;
       this.receivepayment.Amount=this.invoice?.total_amount;
       this.receivepayment.paiddate =this.commonService.formatDateForInput(formatDate(new Date(), 'yyyy-MM-dd', 'en-US'));
     }
-    else if (label === 'Back to list') { 
+    else if (label === 'Back to list' || label === 'web.accounting.invoices.backToList') { 
       this.router.navigate(['/accounting/invoices']);
     }
   }
   sendApprovalReminder(): void {
-    this.toastr.success('Approval reminder sent successfully');
+    this.toastr.success(this.translate.instant('web.accounting.invoices.approvalReminderSentSuccess'));
   }
   sendForApproval() {
     this.commontabservice.getMasterByType({
@@ -410,13 +409,13 @@ export class InvoiceDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully send to approval");
+          this.toastr.success(this.translate.instant('web.accounting.invoices.successfullySendToApproval'));
           setTimeout(() => {
              window.location.reload();
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -425,7 +424,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
   ApproveRejectLease() {
     if(this.approveComments==null || this.approveComments==""){
-      this.toastr.error(`Invalid  ${this.ApprovalModalText} comments`)
+      this.toastr.error(this.translate.instant('web.accounting.invoices.invalidComments'));
       return;
     }
     this.commontabservice.getMasterByType({
@@ -436,13 +435,13 @@ export class InvoiceDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully updated status");
+          this.toastr.success(this.translate.instant('web.accounting.invoices.successfullyUpdatedStatus'));
           setTimeout(() => {
             this.router.navigate(['/accounting/invoices']);
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -506,7 +505,7 @@ export class InvoiceDetailComponent implements OnInit {
 
   printInvoice(): void {
     if (!this.invoice || (!this.invoice.code && !this.invoice.invoice_no)) {
-      this.toastr.error('Invoice details not loaded yet');
+      this.toastr.error(this.translate.instant('web.accounting.invoices.invoiceDetailsNotLoaded'));
       return;
     }
     this.showPrintModal = true;

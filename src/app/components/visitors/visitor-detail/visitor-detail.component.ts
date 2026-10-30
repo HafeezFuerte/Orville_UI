@@ -1,12 +1,13 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { getVisitorDetail, VisitorDetail, VisitorStatus } from '../visitors.data';
 
 @Component({
   selector: 'app-visitor-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './visitor-detail.component.html',
   styleUrl: './visitor-detail.component.scss'
 })

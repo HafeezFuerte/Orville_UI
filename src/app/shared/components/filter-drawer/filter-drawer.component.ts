@@ -1,20 +1,30 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { Router, NavigationEnd } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-filter-drawer',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, TranslateModule],
   templateUrl: './filter-drawer.component.html',
   styleUrl: './filter-drawer.component.scss'
 })
-export class FilterDrawerComponent {
+export class FilterDrawerComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private destroy$ = new Subject<void>();
+
   @Input() isOpen = false;
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() apply = new EventEmitter<void>();
   @Output() clear = new EventEmitter<void>();
+  @Output() closeDrawer = new EventEmitter<void>();
+
+  @Input() showDefaultFilters: boolean = true;
 
   // Filter properties
   @Input() selectedTag: string | null = null;
@@ -44,14 +54,34 @@ export class FilterDrawerComponent {
   offPlanStatuses: string[] = ['Yes', 'No'];
   internalStatuses: string[] = ['Active', 'Draft', 'Suspended'];
 
-  closeDrawer() {
+  ngOnInit() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      if (this.isOpen) {
+        this.close();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.isOpen) {
+      this.close();
+    }
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  close() {
     this.isOpen = false;
     this.isOpenChange.emit(false);
+    this.closeDrawer.emit();
   }
 
   applyFilters() {
     this.apply.emit();
-    this.closeDrawer();
+    this.close();
   }
 
   clearFilters() {

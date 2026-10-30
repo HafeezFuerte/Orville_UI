@@ -1,10 +1,10 @@
-import { TranslateModule } from '@ngx-translate/core';
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
 import {
   PM_ROWS,
   PmPriority,
@@ -14,15 +14,18 @@ import {
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateService, TranslateModule } from '@ngx-translate/core'; 
+import { Subject, takeUntil } from 'rxjs';
+
 @Component({
   selector: 'app-preventive-maintenance-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, OvPaginatorComponent, TranslateModule],
   templateUrl: './preventive-maintenance-list.component.html',
   styleUrl: './preventive-maintenance-list.component.scss'
 })
-export class PreventiveMaintenanceListComponent { 
+export class PreventiveMaintenanceListComponent implements OnInit, OnDestroy { 
+  private destroy$ = new Subject<void>();
 
   searchQuery = '';
   showColumnDropdown = false;
@@ -38,28 +41,52 @@ export class PreventiveMaintenanceListComponent {
   rowMenuStyle: Record<string, string> | null = null;
 
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true, width: '90px' },
-    { key: 'title', label: 'Title', visible: true, useTemplate: true, width: '160px' },
-    { key: 'name', label: 'Trigger', visible: true, width: '180px' },
-    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true, width: '110px' }, 
-    { key: 'schedule', label: 'Schedule', visible: true, width: '100px' },
-    { key: 'nextSchedule', label: 'Next Schedule', visible: true, width: '120px' },
-    { key: 'property', label: 'Property', visible: true,useTemplate: true, width: '180px' },
-    { key: 'unitcode', label: 'Unit', visible: true,useTemplate: true, width: '140px' },
-    { key: 'catergory_nm', label: 'Category', visible: true, width: '150px' },
-    { key: 'vendor', label: 'Vendor', visible: true,useTemplate: true, width: '150px' },
-    { key: 'asset_name', label: 'Asset', visible: true, useTemplate: true,width: '120px' },
-    { key: 'common_area', label: 'Common Area', visible: true, width: '130px' },
-    { key: 'lastWorkOrder', label: 'Last work Order', visible: true, width: '130px' },
-    { key: 'created_date', label: 'Created At', visible: true, width: '150px' },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
+    { key: 'code', label: 'ID', labelKey: 'web.facility.preventiveMaintenance.colId', visible: true, useTemplate: true, width: '90px' },
+    { key: 'title', label: 'Title', labelKey: 'web.facility.preventiveMaintenance.colTitle', visible: true, useTemplate: true, width: '160px' },
+    { key: 'name', label: 'Trigger', labelKey: 'web.facility.preventiveMaintenance.colTrigger', visible: true, width: '180px' },
+    { key: 'status_nm', label: 'Status', labelKey: 'web.facility.preventiveMaintenance.colStatus', visible: true, useTemplate: true, width: '110px' }, 
+    { key: 'schedule', label: 'Schedule', labelKey: 'web.facility.preventiveMaintenance.colSchedule', visible: true, width: '100px' },
+    { key: 'nextSchedule', label: 'Next Schedule', labelKey: 'web.facility.preventiveMaintenance.colNextSchedule', visible: true, width: '120px' },
+    { key: 'property', label: 'Property', labelKey: 'web.facility.preventiveMaintenance.colProperty', visible: true, useTemplate: true, width: '180px' },
+    { key: 'unitcode', label: 'Unit', labelKey: 'web.facility.preventiveMaintenance.colUnit', visible: true, useTemplate: true, width: '140px' },
+    { key: 'catergory_nm', label: 'Category', labelKey: 'web.facility.preventiveMaintenance.colCategory', visible: true, width: '150px' },
+    { key: 'vendor', label: 'Vendor', labelKey: 'web.facility.preventiveMaintenance.colVendor', visible: true, useTemplate: true, width: '150px' },
+    { key: 'asset_name', label: 'Asset', labelKey: 'web.facility.preventiveMaintenance.colAsset', visible: true, useTemplate: true, width: '120px' },
+    { key: 'common_area', label: 'Common Area', labelKey: 'web.facility.preventiveMaintenance.colCommonArea', visible: true, width: '130px' },
+    { key: 'lastWorkOrder', label: 'Last work Order', labelKey: 'web.facility.preventiveMaintenance.colLastWorkOrder', visible: true, width: '130px' },
+    { key: 'created_date', label: 'Created At', labelKey: 'web.facility.preventiveMaintenance.colCreatedAt', visible: true, width: '150px' },
+    { key: 'action', label: 'Action', labelKey: 'web.facility.preventiveMaintenance.colAction', visible: true, useTemplate: true, width: '70px' }
   ];
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
     private commonservice: CommonService,public translate: TranslateService) {}
 
   ngOnInit() {
-    
+    this.updateTableColumnLabels();
+    this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.updateTableColumnLabels();
+    });
     this.loadTickets();   
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  updateTableColumnLabels(): void {
+    this.tableColumns = this.tableColumns.map(col => {
+      const colAny = col as any;
+      if (colAny.labelKey) {
+        return { ...col, label: this.translate.instant(colAny.labelKey) };
+      }
+      return col;
+    });
+  }
+
+  onPaginatorChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadTickets();
   }
   get visibleColumns() {
     return this.tableColumns.filter((c) => c.visible !== false);
@@ -261,9 +288,9 @@ export class PreventiveMaintenanceListComponent {
     this.router.navigate(['/facility/preventive-maintenance', id]);
   }
 
-  navigateToEdit(id:string): void {
+  navigateToEdit(id: string): void {
     this.closeRowAction();
-    this.router.navigate(['/facility/create-preventive-maintenance/create',id]);
+    this.router.navigate(['/facility/preventive-maintenance/edit', id]);
   }
   toggleRowAction(id: string, event: MouseEvent): void {
     event.stopPropagation();

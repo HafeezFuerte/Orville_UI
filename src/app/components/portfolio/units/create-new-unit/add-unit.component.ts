@@ -229,7 +229,7 @@ export class AddUnitComponent implements OnInit {
       error: (err: any) => {
         this.isLoading = false;
         console.error('Error fetching unit details:', err);
-        this.toastr.error('Failed to load unit details.', 'Error');
+        this.toastr.error(this.translate.instant('web.Unit.errFailedToLoadDetails'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -624,7 +624,7 @@ export class AddUnitComponent implements OnInit {
 
   onSubmit() {
     if (this.unitForm.invalid) {
-      this.toastr.error('Please fill in all required fields.', 'Error');
+      this.toastr.error(this.translate.instant('web.common.msgFillRequiredFields'), this.translate.instant('web.common.lblValidationError'));
       this.unitForm.markAllAsTouched();
       return;
     }
@@ -730,17 +730,17 @@ export class AddUnitComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.statusCode === "200") {
-          this.toastr.success('Unit created successfully!', 'Success');
+          this.toastr.success(this.translate.instant('web.Unit.msgUnitCreatedSuccess'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/units']);
         } else {
-          this.toastr.error(res?.message || 'Failed to save unit', 'Error');
+          this.toastr.error(res?.message || this.translate.instant('web.Unit.errFailedToSaveUnit'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         this.isLoading = false;
         console.error('Error saving unit:', err);
         const errMsg = err.error?.message || err.message || 'Internal Server Error';
-        this.toastr.error(errMsg, 'Error');
+        this.toastr.error(errMsg, this.translate.instant('web.common.lblError'));
       }
     });
   }

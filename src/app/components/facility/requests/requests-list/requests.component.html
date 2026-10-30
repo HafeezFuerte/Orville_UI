@@ -7,41 +7,41 @@
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-        {{ 'web.facility.requests.btnExport' | translate }}
+        {{ 'web.facility.requests.export' | translate }}
       </button>
       <button type="button" class="ov-btn ov-btn-primary">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        {{ 'web.facility.requests.btnCreate' | translate }}
+        {{ 'web.facility.requests.createRequest' | translate }}
       </button>
     </div>
   </div>
 
   <div class="ov-kpi-row mb-5">
     <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.facility.requests.kpiTotal' | translate }}</span>
+      <span class="ov-kpi__badge">{{ 'web.common.lblAll' | translate }}</span>
       <div class="ov-kpi__val">{{ metrics.total }}</div>
-      <div class="ov-kpi__sub">{{ metrics.totalSub }}</div>
+      <div class="ov-kpi__sub">{{ metrics.totalSub | translate }}</div>
     </div>
     <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.facility.requests.kpiOpen' | translate }}</span>
+      <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiOpen' | translate }}</span>
       <div class="ov-kpi__val">{{ metrics.open }}</div>
-      <div class="ov-kpi__sub">{{ metrics.openSub }}</div>
+      <div class="ov-kpi__sub">{{ metrics.openSub | translate }}</div>
     </div>
     <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.facility.requests.kpiAwaiting' | translate }}</span>
+      <span class="ov-kpi__badge">{{ 'web.common.lblPending' | translate }}</span>
       <div class="ov-kpi__val">{{ metrics.awaiting }}</div>
-      <div class="ov-kpi__sub">{{ metrics.awaitingSub }}</div>
+      <div class="ov-kpi__sub">{{ metrics.awaitingSub | translate }}</div>
     </div>
     <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.facility.requests.kpiDue' | translate }}</span>
+      <span class="ov-kpi__badge">{{ 'web.leases.lblDueDate' | translate }}</span>
       <div class="ov-kpi__val">{{ metrics.due }}</div>
-      <div class="ov-kpi__sub">{{ metrics.dueSub }}</div>
+      <div class="ov-kpi__sub">{{ metrics.dueSub | translate }}</div>
     </div>
   </div>
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
     <div class="flex flex-col gap-3 border-b border-defaultborder px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.facility.requests.tblTitle' | translate }}</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.facility.requests.requestsList' | translate }}</h5>
       <div class="overflow-x-auto" role="tablist" aria-label="Request status">
         <div class="ov-seg ov-seg--solid !w-max max-w-none">
           <button
@@ -50,7 +50,7 @@
             class="ov-seg__btn"
             [class.is-active]="statusFilter === tab"
             (click)="setStatusFilter(tab)">
-            {{ tab }}
+            {{ tab === 'All' ? ('web.common.all' | translate) : tab }}
           </button>
         </div>
       </div>
@@ -66,12 +66,12 @@
       <div class="ov-toolbar__btns">
         <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          {{ 'web.facility.requests.btnFilter' | translate }}
+          {{ 'web.facility.requests.filter' | translate }}
         </button>
         <div class="relative" data-requests-columns (click)="$event.stopPropagation()">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            {{ 'web.facility.requests.btnColumn' | translate }}
+            {{ 'web.facility.requests.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"

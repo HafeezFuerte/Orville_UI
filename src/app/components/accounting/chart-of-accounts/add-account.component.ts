@@ -13,7 +13,7 @@ import { AccountingService } from '../accounting.service';
 @Component({
   selector: 'app-add-account',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './add-account.component.html',
   styleUrl: './add-account.component.scss'
 })
@@ -70,7 +70,7 @@ export class AddAccountComponent {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -83,19 +83,19 @@ export class AddAccountComponent {
 
   saveAccount(): void {
      if(this.accountNumber==null || this.accountNumber==""){
-      this.toastr.error("Invalid account no");
+      this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.invalidAccountNo'));
       return;
      }
      else  if(this.accountName==null || this.accountName==""){
-      this.toastr.error("Invalid account name");
+      this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.invalidAccountName'));
       return;
      }
      else if(this.accountType==null || this.accountType==0){
-      this.toastr.error("Invalid account type");
+      this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.invalidAccountType'));
       return;
      }
      else if(this.accountSubType==null || this.accountSubType==0){
-      this.toastr.error("Invalid account sub type");
+      this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.invalidAccountSubType'));
       return;
      }
      else{
@@ -119,7 +119,7 @@ export class AddAccountComponent {
       this.accountingService.save_update_coa(payload).subscribe({
         next: (response: any) => {
           if (response && response.statusCode === "200" && response.objResult) { 
-            this.toastr.success("Successfully created")
+            this.toastr.success(this.translate.instant('web.accounting.chartOfAccounts.successfullyCreated'));
             this.router.navigate(['/accounting/chart-of-accounts'])
           }
         },

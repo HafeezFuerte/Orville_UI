@@ -1,18 +1,18 @@
 <div class="pb-16">
   <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
     <div class="flex items-start gap-4">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Reservations">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.bookings.reservations.title' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Reservation Details</h3>
-        <p class="ov-page-sub mt-1">Booking / Reservation / <span class="ov-page-sub__current">Details</span></p>
+        <h3 class="ov-page-title">{{ 'web.bookings.reservations.reservationDetails' | translate }}</h3>
+        <p class="ov-page-sub mt-1">{{ 'web.bookings.reservations.breadcrumbSub' | translate }} <span class="ov-page-sub__current">{{ 'web.bookings.reservations.details' | translate }}</span></p>
       </div>
     </div>
     <div class="ov-action-wrap">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
         [attr.aria-expanded]="showActionMenu">
-        Action
+        {{ 'web.common.lblAction' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
@@ -23,7 +23,7 @@
               <span class="ov-action-menu__icon-box">
                 <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -34,7 +34,7 @@
               <span class="ov-action-menu__icon-box">
                 <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -49,32 +49,32 @@
         <div class="ov-detail-side__hero">
           <div>
             <h4 class="ov-detail-side__title">{{ detail.name }}</h4>
-            <p class="ov-detail-side__email">Reservation #{{ detail.id.slice(-3) }}</p>
+            <p class="ov-detail-side__email">{{ 'web.bookings.reservations.title' | translate }} #{{ detail.id.slice(-3) }}</p>
             <span class="inline-flex mt-2 h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
               [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
               {{ detail.status }}
             </span>
           </div>
           <div class="ov-detail-side__actions">
-            <button type="button" class="ov-detail-side__action">View Activity</button>
-            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">Edit Reservation</button>
+            <button type="button" class="ov-detail-side__action">{{ 'web.bookings.reservations.viewActivity' | translate }}</button>
+            <button type="button" class="ov-detail-side__action ov-detail-side__action--emphasis" (click)="goToEdit()">{{ 'web.bookings.reservations.editReservation' | translate }}</button>
           </div>
         </div>
 
         <div class="ov-detail-side__rule"></div>
-        <h6 class="ov-detail-side__section-title">Information</h6>
+        <h6 class="ov-detail-side__section-title">{{ 'web.bookings.reservations.information' | translate }}</h6>
 
         <div class="ov-detail-panel">
           <div class="ov-detail-panel__head">
-            <h6 class="ov-detail-panel__title">Property &amp; Unit</h6>
+            <h6 class="ov-detail-panel__title">{{ 'web.bookings.reservations.propertyAndUnit' | translate }}</h6>
           </div>
           <div class="ov-detail-panel__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Property:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.property' | translate }}:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.property }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Unit:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.unit' | translate }}:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.unit }}</a>
             </div>
           </div>
@@ -82,31 +82,31 @@
 
         <div class="ov-detail-panel">
           <div class="ov-detail-panel__head">
-            <h6 class="ov-detail-panel__title">Reservation Details</h6>
+            <h6 class="ov-detail-panel__title">{{ 'web.bookings.reservations.reservationDetails' | translate }}</h6>
           </div>
           <div class="ov-detail-panel__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">ID:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colId' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.id }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Reservation Name:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colName' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.name }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Reserve:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colReserve' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.reserve }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Space Name:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.spaceName' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.space }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Lease:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colLease' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.lease }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__label">{{ 'web.bookings.reservations.colPhone' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.phone }}</span>
             </div>
 
@@ -115,7 +115,7 @@
                 type="button"
                 class="ov-link sd-more-toggle text-[12px] font-semibold"
                 (click)="showMore = !showMore">
-                <span>{{ showMore ? 'View less details' : 'View more details' }}</span>
+                <span>{{ (showMore ? 'web.bookings.reservations.viewLessDetails' : 'web.bookings.reservations.viewMoreDetails') | translate }}</span>
                 <i
                   class="ti shrink-0"
                   [class.ti-chevron-up]="showMore"
@@ -126,27 +126,27 @@
 
             <ng-container *ngIf="showMore">
               <div class="ov-kv">
-                <span class="ov-kv__label">Email:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.colEmail' | translate }}:</span>
                 <span class="ov-kv__value ov-link">{{ detail.email }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Booking Date:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.colBookingDate' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.bookingDate }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Time:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.colTime' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.time }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Slot Duration:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.slotDuration' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.slotDuration }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Created:</span>
+                <span class="ov-kv__label">{{ 'web.bookings.reservations.created' | translate }}:</span>
                 <span class="ov-kv__value">{{ detail.createdAt }}</span>
               </div>
               <div class="ov-kv">
-                <span class="ov-kv__label">Status:</span>
+                <span class="ov-kv__label">{{ 'web.common.lblStatus' | translate }}:</span>
                 <span class="inline-flex h-5 items-center rounded-sm px-1.5 text-xs font-semibold"
                   [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
                   {{ detail.status }}
@@ -161,8 +161,8 @@
 
     <section class="ov-detail-layout__right min-w-0">
       <div class="mb-4">
-        <p class="m-0 text-[23px] font-semibold leading-[23px] text-defaulttextcolor">Space Details</p>
-        <p class="mb-0 mt-1.5 text-sm text-textmuted">Manage space details and operations</p>
+        <p class="m-0 text-[23px] font-semibold leading-[23px] text-defaulttextcolor">{{ 'web.bookings.reservations.spaceDetails' | translate }}</p>
+        <p class="mb-0 mt-1.5 text-sm text-textmuted">{{ 'web.bookings.reservations.spaceDetailsSub' | translate }}</p>
       </div>
       <div class="box ov-card !mb-0 overflow-hidden">
         <div class="border-b border-defaultborder px-5 py-4">
@@ -171,19 +171,19 @@
         </div>
         <div class="flex flex-col gap-3 px-5 py-4">
           <div class="ov-kv">
-            <span class="ov-kv__label">Date:</span>
+            <span class="ov-kv__label">{{ 'web.bookings.reservations.selectDate' | translate }}:</span>
             <span class="ov-kv__value">{{ detail.bookingDate }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Time:</span>
+            <span class="ov-kv__label">{{ 'web.bookings.reservations.colTime' | translate }}:</span>
             <span class="ov-kv__value">{{ detail.time }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Duration:</span>
+            <span class="ov-kv__label">{{ 'web.bookings.reservations.duration' | translate }}:</span>
             <span class="ov-kv__value">{{ detail.slotDuration }}</span>
           </div>
           <div class="ov-kv items-start">
-            <span class="ov-kv__label">Notes:</span>
+            <span class="ov-kv__label">{{ 'web.bookings.reservations.notes' | translate }}:</span>
             <span class="ov-kv__value">{{ detail.notes }}</span>
           </div>
         </div>

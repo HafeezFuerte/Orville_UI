@@ -1,46 +1,46 @@
 <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
   <div>
-    <h3 class="ov-page-title">Landlord Contracts</h3>
-    <p class="ov-page-sub">Manage and view landlord contracts</p>
+    <h3 class="ov-page-title">{{ 'web.contracts.landlord.title' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.contracts.landlord.subtitle' | translate }}</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
     <button type="button" class="ov-btn ov-btn-primary" (click)="goToCreate()">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-      Add Contract
+      {{ 'web.contracts.landlord.addContract' | translate }}
     </button>
   </div>
 </div>
 
 <div class="box mb-5 rounded-2xl overflow-visible bg-white border border-defaultborder shadow-none dark:bg-bodybg">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
-    <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Lists</h5>
+    <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.contracts.common.lists' | translate }}</h5>
     <div class="ov-seg ov-seg--solid">
       <button type="button" *ngFor="let tab of statusTabs" (click)="setStatusFilter(tab)" class="ov-seg__btn"
-        [class.is-active]="statusFilter === tab">{{ tab }}</button>
+        [class.is-active]="statusFilter === tab">{{ ('web.contracts.common.' + tab.toLowerCase()) | translate }}</button>
     </div>
   </div>
 
   <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
     <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
       <div class="ov-search flex-1">
-        <label class="sr-only" for="landlord-contract-search">Search by name</label>
+        <label class="sr-only" for="landlord-contract-search">{{ 'web.contracts.common.searchByName' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="landlord-contract-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search by name">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.contracts.common.searchByName' | translate">
       </div>
-      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+      <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.contracts.common.search' | translate">
         <i class="ri-search-line text-[18px]"></i>
       </button>
     </div>
     <div class="ov-toolbar__btns">
       <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter
+        {{ 'web.contracts.common.filter' | translate }}
       </button>
       <div class="relative" (click)="$event.stopPropagation()">
         <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-          Column
+          {{ 'web.contracts.common.column' | translate }}
         </button>
         <app-column-menu
           *ngIf="showColumnDropdown"
@@ -90,11 +90,11 @@
               <div *ngIf="openActionId === row.id"
                 class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                 <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="goToDetail(row.id); openActionId = null">View</button>
+                  (click)="goToDetail(row.id); openActionId = null">{{ 'web.contracts.common.view' | translate }}</button>
                 <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                  (click)="goToEdit(row.id); openActionId = null">Edit</button>
-                    <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                    (click)="goToDelete(row.id); openActionId = null">{{ 'web.common.lblDelete' | translate }}</button>
+                  (click)="goToEdit(row.id); openActionId = null">{{ 'web.contracts.common.edit' | translate }}</button>
+                <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                  (click)="goToDelete(row.id); openActionId = null">{{ 'web.contracts.common.delete' | translate }}</button>
               </div>
             </div>
           </ng-container>
@@ -105,7 +105,7 @@
 
   <div class="ov-page">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.contracts.common.show' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
           <option [ngValue]="5">5</option>
@@ -116,12 +116,12 @@
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+      <span>{{ 'web.contracts.common.showing' | translate }} {{ startRecord }} {{ 'web.contracts.common.to' | translate }} {{ endRecord }} {{ 'web.contracts.common.of' | translate }} {{ totalRecords }} {{ 'web.contracts.common.records' | translate }}</span>
     </div>
     <div class="ov-page__nav">
-      <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+      <span class="ov-page__label">{{ 'web.contracts.common.page' | translate }} {{ displayPage }} {{ 'web.contracts.common.of' | translate }} {{ totalPages || 1 }}</span>
       <div class="ov-page__btns">
-        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+        <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.contracts.common.prev' | translate">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
         </button>
         <ng-container *ngFor="let item of pagerItems">
@@ -129,7 +129,7 @@
           <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
             [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
         </ng-container>
-        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+        <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.contracts.common.next' | translate">
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
         </button>
       </div>
@@ -140,17 +140,17 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="onSearch()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Landlord</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterLandlord" placeholder="Enter landlord">
+      <label class="ov-label mb-1.5">{{ 'web.contracts.landlord.filterByLandlord' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterLandlord" [placeholder]="'web.contracts.landlord.enterLandlord' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Property</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterProperty" placeholder="Enter property">
+      <label class="ov-label mb-1.5">{{ 'web.contracts.common.filterByProperty' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterProperty" [placeholder]="'web.contracts.common.enterProperty' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Status</label>
+      <label class="ov-label mb-1.5">{{ 'web.contracts.common.filterByStatus' | translate }}</label>
       <ng-select [(ngModel)]="filterStatus" [items]="statusOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Status" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.contracts.common.selectStatus' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

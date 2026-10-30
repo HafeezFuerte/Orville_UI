@@ -1,34 +1,34 @@
 <form class="ov-add-form" (ngSubmit)="saveAccount()">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Chart of Accounts">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.accounting.chartOfAccounts.backToCOA' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Account</h3>
+        <h3 class="ov-page-title">{{ (account_code != '' ? 'web.accounting.chartOfAccounts.editAccount' : 'web.accounting.chartOfAccounts.newAccount') | translate }}</h3>
         <p class="ov-page-sub">
-          Accounting / Chart of Account / <span class="ov-page-sub__current">New Account</span>
+          {{ 'web.accounting.chartOfAccounts.accounting' | translate }} / {{ 'web.accounting.chartOfAccounts.chartOfAccount' | translate }} / <span class="ov-page-sub__current">{{ (account_code != '' ? 'web.accounting.chartOfAccounts.editAccount' : 'web.accounting.chartOfAccounts.newAccount') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-      <button type="submit" class="ov-btn ov-btn-primary">{{account_code!='' ? 'Update' : 'Create' }} Account</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="submit" class="ov-btn ov-btn-primary">{{ (account_code != '' ? 'web.accounting.chartOfAccounts.updateAccount' : 'web.accounting.chartOfAccounts.createAccount') | translate }}</button>
     </div>
   </div>
 
   <div class="w-full max-w-[1188px] mx-auto">
     <div class="ov-card">
       <div class="ov-card__head">
-        <h6 class="ov-card-title">Account details</h6>
-        <p class="ov-card-sub">Define the account hierarchy, classification, and identifying details.</p>
+        <h6 class="ov-card-title">{{ 'web.accounting.chartOfAccounts.accountDetails' | translate }}</h6>
+        <p class="ov-card-sub">{{ 'web.accounting.chartOfAccounts.accountDetailsSub' | translate }}</p>
       </div>
       <div class="ov-card__body">
         <div class="ov-fields">
           <div class="flex items-center justify-between gap-4 px-4 py-3.5 rounded-[10px] bg-primary/10 dark:bg-primary/20 ov-fields__full">
             <div>
-              <p class="m-0 text-sm font-semibold text-defaulttextcolor">Sub account</p>
-              <p class="mt-1 mb-0 text-[13px] text-textmuted">This will enable you to add this account as a sub account.</p>
+              <p class="m-0 text-sm font-semibold text-defaulttextcolor">{{ 'web.accounting.chartOfAccounts.subAccount' | translate }}</p>
+              <p class="mt-1 mb-0 text-[13px] text-textmuted">{{ 'web.accounting.chartOfAccounts.subAccountDesc' | translate }}</p>
             </div>
             <div class="custom-toggle-switch shrink-0">
               <input type="checkbox" id="coa-sub-account" name="isSubAccount" [(ngModel)]="isSubAccount">
@@ -37,43 +37,43 @@
           </div>
 
           <div class="ov-fields__full" *ngIf="isSubAccount">
-            <label class="ov-label">Parent account *</label>
+            <label class="ov-label">{{ 'web.accounting.chartOfAccounts.parentAccount' | translate }} *</label>
             <ng-select [(ngModel)]="parentAccount" name="parentAccount" bindValue="id" bindLabel="name" [items]="parents" [searchable]="true"
-              [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              [clearable]="true" [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
           </div>
 
           <div class="ov-fields ov-fields--2 ov-fields__full">
           
             <div>
-              <label class="ov-label">Account Type *</label>
+              <label class="ov-label">{{ 'web.accounting.chartOfAccounts.accountType' | translate }} *</label>
               <ng-select [(ngModel)]="accountType" name="accountType"  bindValue="id" bindLabel="name" [items]="types"
-                placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Account Sub Type*</label>
+              <label class="ov-label">{{ 'web.accounting.chartOfAccounts.accountSubType' | translate }}*</label>
               <ng-select [(ngModel)]="accountSubType" name="accountSubType"  bindValue="id" bindLabel="name" [items]="accounts" [searchable]="true"
-                [clearable]="true" placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
 
           <div class="ov-fields__full">
-            <label class="ov-label">Account Name *</label>
-            <input type="text" class="ov-input" name="accountName" [(ngModel)]="accountName" placeholder="Enter">
+            <label class="ov-label">{{ 'web.accounting.chartOfAccounts.accountName' | translate }} *</label>
+            <input type="text" class="ov-input" name="accountName" [(ngModel)]="accountName" [placeholder]="'web.accounting.chartOfAccounts.enterName' | translate">
           </div>
 
           <div class="ov-fields__full">
-            <label class="ov-label">Account Number *</label>
-            <input type="text" class="ov-input" name="accountNumber" [(ngModel)]="accountNumber" placeholder="Enter">
+            <label class="ov-label">{{ 'web.accounting.chartOfAccounts.accountNumber' | translate }} *</label>
+            <input type="text" class="ov-input" name="accountNumber" [(ngModel)]="accountNumber" [placeholder]="'web.accounting.chartOfAccounts.enterName' | translate">
           </div>
 
           <div class="ov-fields__full">
-            <label class="ov-label">Remote GL Code</label>
-            <input type="text" class="ov-input" name="remoteGlCode" [(ngModel)]="remoteGlCode" placeholder="Enter">
+            <label class="ov-label">{{ 'web.accounting.chartOfAccounts.remoteGlCode' | translate }}</label>
+            <input type="text" class="ov-input" name="remoteGlCode" [(ngModel)]="remoteGlCode" [placeholder]="'web.accounting.chartOfAccounts.enterName' | translate">
           </div>
 
           <div class="ov-fields__full">
-            <label class="ov-label">Description</label>
-            <textarea class="ov-input min-h-[120px] resize-y" name="description" [(ngModel)]="description" placeholder="Enter"></textarea>
+            <label class="ov-label">{{ 'web.accounting.chartOfAccounts.description' | translate }}</label>
+            <textarea class="ov-input min-h-[120px] resize-y" name="description" [(ngModel)]="description" [placeholder]="'web.accounting.chartOfAccounts.enterName' | translate"></textarea>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-    <button type="submit" class="ov-btn ov-btn-primary">{{account_code!='' ? 'Update' : 'Create' }} Account</button>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">{{ 'web.common.cancel' | translate }}</button>
+    <button type="submit" class="ov-btn ov-btn-primary">{{ (account_code != '' ? 'web.accounting.chartOfAccounts.updateAccount' : 'web.accounting.chartOfAccounts.createAccount') | translate }}</button>
   </div>
 </form>

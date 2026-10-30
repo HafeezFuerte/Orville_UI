@@ -1,7 +1,7 @@
-<div class="ov-col-menu" (click)="$event.stopPropagation()" role="dialog" aria-label="Column">
+<div class="ov-col-menu" (click)="$event.stopPropagation()" role="dialog" [attr.aria-label]="'web.common.lblColumn' | translate">
   <div class="ov-col-menu__head">
-    <p class="ov-col-menu__title">Column</p>
-    <button type="button" class="ov-col-menu__x" (click)="close()" aria-label="Close">
+    <p class="ov-col-menu__title">{{ 'web.common.lblColumn' | translate }}</p>
+    <button type="button" class="ov-col-menu__x" (click)="close()" [attr.aria-label]="'web.common.lblClose' | translate">
       <img src="assets/images/common/close-plus.svg" alt="" width="16" height="16" class="ov-ico-x">
     </button>
   </div>
@@ -12,22 +12,22 @@
         type="checkbox"
         [checked]="allSelected"
         (change)="onToggleAll($event)"
-        aria-label="Select all columns">
-      Select All
+        [attr.aria-label]="'web.common.selectAll' | translate">
+      {{ 'web.common.selectAll' | translate }}
     </label>
     <label class="ov-col-menu__item" *ngFor="let col of columns">
       <input
         type="checkbox"
         [checked]="col.visible !== false"
         (change)="onToggle(col.key)"
-        [attr.aria-label]="col.label">
-      {{ col.label }}
+        [attr.aria-label]="col.label | translate">
+      {{ col.label | translate }}
     </label>
   </div>
 
   <div class="ov-col-menu__foot">
-    <button type="button" class="ov-col-menu__foot-btn" (click)="clear()">Clear</button>
+    <button type="button" class="ov-col-menu__foot-btn" (click)="clear()">{{ 'web.common.lblClear' | translate }}</button>
     <span class="ov-col-menu__foot-rule" aria-hidden="true"></span>
-    <button type="button" class="ov-col-menu__foot-btn" (click)="close()">Close</button>
+    <button type="button" class="ov-col-menu__foot-btn" (click)="close()">{{ 'web.common.lblClose' | translate }}</button>
   </div>
 </div>

@@ -10,7 +10,7 @@ import { ColumnMenuComponent } from '../../../shared/components/column-menu/colu
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountingService } from '../accounting.service'; 
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 
@@ -30,7 +30,8 @@ import {
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent,
-    DeleteConfirmationComponent
+    DeleteConfirmationComponent,
+    TranslateModule
   ],
   templateUrl: './credit-notes.component.html',
   styleUrl: './credit-notes.component.scss'
@@ -65,16 +66,16 @@ export class CreditNotesComponent {
     private commonservice: CommonService, private fb: FormBuilder,public translate: TranslateService,
     public accountingService:AccountingService) { }
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'note_date', label: 'Date', visible: true },
-    { key: 'tenant', label: 'Contact', visible: true, useTemplate: true },
-    { key: 'account_name', label: 'Account', visible: true },
-    { key: 'amount', label: 'Amount', visible: true, useTemplate: true },
-    { key: 'remainingamt', label: 'Remaining Credit', visible: true, useTemplate: true },
-    { key: 'details', label: 'Notes', visible: true },
-    { key: 'createdby', label: 'Created By', visible: true },
-    { key: 'created_date', label: 'Created', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'code', label: 'web.accounting.creditNotes.colID', visible: true, useTemplate: true },
+    { key: 'note_date', label: 'web.accounting.creditNotes.colDate', visible: true },
+    { key: 'tenant', label: 'web.accounting.creditNotes.colContact', visible: true, useTemplate: true },
+    { key: 'account_name', label: 'web.accounting.creditNotes.colAccount', visible: true },
+    { key: 'amount', label: 'web.accounting.creditNotes.colAmount', visible: true, useTemplate: true },
+    { key: 'remainingamt', label: 'web.accounting.creditNotes.colRemainingCredit', visible: true, useTemplate: true },
+    { key: 'details', label: 'web.accounting.creditNotes.colNotes', visible: true },
+    { key: 'createdby', label: 'web.accounting.creditNotes.colCreatedBy', visible: true },
+    { key: 'created_date', label: 'web.accounting.creditNotes.colCreated', visible: true },
+    { key: 'action', label: 'web.accounting.creditNotes.colAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   get visibleColumns() {
@@ -147,11 +148,11 @@ export class CreditNotesComponent {
   }
 
   get modalTitle(): string {
-    return this.editingId ? 'Credit Note' : 'Credit Note';
+    return this.editingId ? 'web.accounting.creditNotes.editCreditNote' : 'web.accounting.creditNotes.issueCreditNote';
   }
 
   get modalSub(): string {
-    return this.editingId ? 'Edit an existing credit note.' : 'Issue a new credit note';
+    return this.editingId ? 'web.accounting.creditNotes.editCreditNoteSub' : 'web.accounting.creditNotes.issueCreditNoteSub';
   }
 
   onSearch(): void {
@@ -270,14 +271,14 @@ export class CreditNotesComponent {
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
           if(Typeid==66){
-              this.toastr.success("Successfully marked as inactive");
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
               this.editingId='';
               this.loadcreditnotes();
           }else
           (this as any)[targetProperty] = res.objResult.table;
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.accounting.creditNotes.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -316,7 +317,7 @@ export class CreditNotesComponent {
           this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.creditNotes.noRecordsFound'));
         }
       },
       error: (err: any) => {
@@ -330,11 +331,11 @@ export class CreditNotesComponent {
   }
   saveCreditNote(): void {
     if (this.draft.tenant=="" || this.draft.tenant == null) {
-      this.toastr.error("Invalid tenant selection")
+      this.toastr.error(this.translate.instant('web.accounting.creditNotes.invalidTenant'));
       return;
     }
     if (this.draft.amount==null || this.draft.amount == 0) {
-      this.toastr.error("Invalid tenant selection")
+      this.toastr.error(this.translate.instant('web.accounting.creditNotes.invalidAmount'));
       return;
     }
     // const amountLabel = this.formatAed(Number(this.draft.amount) || 0);
@@ -358,7 +359,7 @@ export class CreditNotesComponent {
     this.accountingService.save_credit_note(payload).subscribe({
       next: (response: any) => {
         if (response && response.statusCode === "200" && response.objResult) { 
-          this.toastr.success("Successfully created")
+          this.toastr.success(this.translate.instant('web.accounting.creditNotes.successfullyCreated'));
           this.closeModal();
           this.pageIndex = 0;
           this.editingId='';

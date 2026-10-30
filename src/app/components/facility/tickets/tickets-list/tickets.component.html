@@ -53,7 +53,7 @@
        [class.text-gray-500]="statusFilter !== tab.id"
        [class.border-transparent]="statusFilter !== tab.id" 
        (click)="setStatusFilter(tab.id)">
-           {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+           {{ tab.id === 'All' ? ('web.common.all' | translate) : tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
      </button> 
 
       </div>
@@ -240,18 +240,18 @@
   <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col">
-        <label class="ov-label">{{ 'web.facility.tickets.filterTitle' | translate }}</label>
-        <input type="text" class="ov-input" [(ngModel)]="filterTitle" [placeholder]="'web.facility.tickets.filterTitlePlaceholder' | translate">
+        <label class="ov-label">{{ 'web.facility.tickets.lblTitle' | translate }}</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterTitle" [placeholder]="'web.common.lblEnter' | translate">
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">{{ 'web.facility.tickets.filterStatus' | translate }}</label>
+        <label class="ov-label">{{ 'web.facility.tickets.colStatus' | translate }}</label>
         <select class="ov-input" [(ngModel)]="filterStatus">
           <option [ngValue]="null">{{ 'web.common.all' | translate }}</option>
           <option *ngFor="let status of statusOptions" [ngValue]="status">{{ status }}</option>
         </select>
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">{{ 'web.facility.tickets.filterPriority' | translate }}</label>
+        <label class="ov-label">{{ 'web.facility.tickets.colPriority' | translate }}</label>
         <select class="ov-input" [(ngModel)]="filterPriority">
           <option [ngValue]="null">{{ 'web.common.all' | translate }}</option>
           <option *ngFor="let priority of priorityOptions" [ngValue]="priority">{{ priority }}</option>

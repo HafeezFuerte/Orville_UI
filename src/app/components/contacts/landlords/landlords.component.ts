@@ -1,10 +1,10 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PropertiesService } from '../../portfolio/services/properties.service';
 import { Router } from '@angular/router';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
@@ -35,11 +35,12 @@ export interface Landlord {
   templateUrl: './landlords.component.html',
   styleUrl: './landlords.component.scss'
 })
-export class LandlordsComponent implements OnInit {
+export class LandlordsComponent implements OnInit, OnDestroy {
   private propertiesService = inject(PropertiesService);
   private router = inject(Router);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
+  private translate = inject(TranslateService);
   currentUser: AuthPayload | null = null;
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
@@ -56,6 +57,10 @@ export class LandlordsComponent implements OnInit {
   filterStatus: string | null = null;
 
   statusOptions = ['Active', 'Inactive', 'Blocked'];
+
+  ngOnDestroy() {
+    this.isDrawerOpen = false;
+  }
 
   toggleDrawer(open: boolean): void { this.isDrawerOpen = open; }
 
@@ -149,7 +154,7 @@ export class LandlordsComponent implements OnInit {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         this.isLoading = false;
@@ -228,7 +233,7 @@ export class LandlordsComponent implements OnInit {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive"); 
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess')); 
               setTimeout(() => {
                 window.location.reload();
               }, 2000);
@@ -237,7 +242,7 @@ export class LandlordsComponent implements OnInit {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

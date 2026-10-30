@@ -1,18 +1,18 @@
 <div class="chq-page">
   <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
     <div>
-      <h3 class="ov-page-title">Cheques</h3>
-      <p class="ov-page-sub">View and manage all your cheques</p>
+      <h3 class="ov-page-title">{{ 'web.accounting.cheques.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.accounting.cheques.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-        Export
+        {{ 'web.accounting.cheques.export' | translate }}
       </button>
     </div>
   </div>
 
-  <div class="chq-status-tabs mb-5 overflow-x-auto" role="tablist" aria-label="Cheque status">
+  <div class="chq-status-tabs mb-5 overflow-x-auto" role="tablist" [attr.aria-label]="'web.accounting.cheques.title' | translate">
     <div class="ov-seg ov-seg--tabs">
       <button
          type="button"
@@ -22,7 +22,7 @@
         [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
         [class.border-transparent]="statusFilter !== tab.id" 
         (click)="setStatusFilter(tab.id)">
-            {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+            {{ tab.id === 'All' ? ('web.common.lblAll' | translate) : (getArabicLookupName(tab, 'name')) }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
       </button>
     </div>
   </div>
@@ -39,7 +39,7 @@
     <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
         <div class="ov-search flex-1">
-          <label class="sr-only" for="cheque-search">Search</label>
+          <label class="sr-only" for="cheque-search">{{ 'web.accounting.cheques.search' | translate }}</label>
           <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
           <input
             id="cheque-search"
@@ -48,9 +48,9 @@
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
             (input)="applyLocalSearch()"
-            placeholder="Search">
+            [placeholder]="'web.accounting.cheques.search' | translate">
         </div>
-        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.accounting.cheques.search' | translate">
           <i class="ri-search-line text-[18px]"></i>
         </button>
       </div>
@@ -58,7 +58,7 @@
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.accounting.cheques.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -84,7 +84,7 @@
               <span [ngClass]="statusClass(row.cheque_status)">{{ row.cheque_status }}</span>
             </ng-container>
               <ng-container *ngSwitchCase="'attachment_path'">
-              <a href="{{row.attachment_path}}" target="_blank" *ngIf="row.attachment_path">View File</a>
+              <a href="{{row.attachment_path}}" target="_blank" *ngIf="row.attachment_path">{{ 'web.accounting.cheques.viewFile' | translate }}</a>
             </ng-container>
             <ng-container *ngSwitchCase="'cheque_in_hand'">
               <span [ngClass]="yesNoClass(row.cheque_in_hand)">{{ row.cheque_in_hand }}</span>
@@ -99,19 +99,19 @@
 
     <div class="ov-page">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.accounting.cheques.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
             <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.accounting.cheques.showing' | translate }} {{ startRecord }} {{ 'web.accounting.cheques.to' | translate }} {{ endRecord }} {{ 'web.accounting.cheques.of' | translate }} {{ totalRecords }} {{ 'web.accounting.cheques.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.accounting.cheques.page' | translate }} {{ displayPage }} {{ 'web.accounting.cheques.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.accounting.cheques.prev' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
           <ng-container *ngFor="let item of pagerItems">
@@ -119,7 +119,7 @@
             <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
               [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
           </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.accounting.cheques.next' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
         </div>

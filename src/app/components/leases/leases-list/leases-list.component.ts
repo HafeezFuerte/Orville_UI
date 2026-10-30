@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
@@ -36,6 +36,7 @@ export class LeasesListComponent implements OnInit {
  private commontabservice = inject(Common_TabsService);
  private commonService =inject(CommonService);
  private toastr=inject(ToastrService);
+ private translate = inject(TranslateService);
   searchQuery: string = '';
   isLoading: boolean = false;
   activeStatusFilter: string = 'All';
@@ -55,16 +56,16 @@ export class LeasesListComponent implements OnInit {
   pageSizeOptions = [5, 10, 25, 50, 100];
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'active_lease', label: 'Lease Name', visible: true, useTemplate: true },
-    { key: 'tenant', label: 'Tenant', visible: true, useTemplate: true },
-    { key: 'legal_case', label: 'Legal Case', visible: true },
-    { key: 'unit_code', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'status_nm', label: 'Status', visible: true, useTemplate: true },
-    { key: 'rent_amount', label: 'Rent'+' ('+ this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
-    { key: 'start_date', label: 'Start Date', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'active_lease', label: 'web.leases.lblLeaseName', visible: true, useTemplate: true },
+    { key: 'tenant', label: 'web.leases.lblTenant', visible: true, useTemplate: true },
+    { key: 'legal_case', label: 'web.leases.lblLegalCase', visible: true },
+    { key: 'unit_code', label: 'web.leases.lblUnit', visible: true, useTemplate: true },
+    { key: 'property', label: 'web.leases.lblProperty', visible: true, useTemplate: true },
+    { key: 'status_nm', label: 'web.leases.lblStatus', visible: true, useTemplate: true },
+    { key: 'rent_amount', label: 'web.leases.lblRent', visible: true, useTemplate: true },
+    { key: 'start_date', label: 'web.leases.lblStartDate', visible: true },
+    { key: 'action', label: 'web.leases.lblAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   metrics = {
@@ -135,7 +136,7 @@ export class LeasesListComponent implements OnInit {
           this.paginatedLeases = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
         }
       },
       error: (err: any) => {
@@ -179,7 +180,7 @@ export class LeasesListComponent implements OnInit {
           this.tabs.push(...res.objResult.table); 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

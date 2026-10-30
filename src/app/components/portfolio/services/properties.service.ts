@@ -54,6 +54,11 @@ export class PropertiesService {
     return this.http.post(url, formData,  { headers: this.commonservice.updateHeaders() });
   }
 
+  saveUsers(formData: FormData): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/save_update_users';
+    return this.http.post(url, formData, { headers: this.commonservice.updateHeaders() });
+  }
+
   getUnits(payload: any): Observable<any> {
     const getUnitsUrl = environment.apiurl+'api/Masters/get_masters_by_paging';
      

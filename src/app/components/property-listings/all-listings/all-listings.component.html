@@ -1,48 +1,48 @@
 <div class="pl-page font-hanken">
   <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
     <div class="min-w-0">
-      <h3 class="ov-page-title">Property Listings</h3>
+      <h3 class="ov-page-title">{{ 'web.propertyListings.allListings.title' | translate }}</h3>
       <p class="ov-page-sub">
-        Units marked for sale or for rent and published to your public listing site.
+        {{ 'web.propertyListings.allListings.subtitle' | translate }}
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-2 shrink-0">
       <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
         <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        Filter{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}
+        {{ 'web.propertyListings.allListings.filter' | translate }}{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}
       </button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="viewPublicWebsite()">
-        View Public Website
+        {{ 'web.propertyListings.allListings.viewPublicWebsite' | translate }}
       </button>
     </div>
   </div>
 
   <div class="pl-stats mb-5">
     <div class="pl-stat">
-      <span class="pl-stat__label">Total listings</span>
+      <span class="pl-stat__label">{{ 'web.propertyListings.allListings.totalListings' | translate }}</span>
       <span class="pl-stat__val">{{ totalCatalog }}</span>
-      <span class="pl-stat__hint">Across your portfolio</span>
+      <span class="pl-stat__hint">{{ 'web.propertyListings.allListings.totalListingsHint' | translate }}</span>
     </div>
     <div class="pl-stat">
-      <span class="pl-stat__label">Showing</span>
+      <span class="pl-stat__label">{{ 'web.propertyListings.allListings.showing' | translate }}</span>
       <span class="pl-stat__val">{{ filteredCount }}</span>
-      <span class="pl-stat__hint">Match current filters</span>
+      <span class="pl-stat__hint">{{ 'web.propertyListings.allListings.showingHint' | translate }}</span>
     </div>
     <div class="pl-stat">
-      <span class="pl-stat__label">Available</span>
+      <span class="pl-stat__label">{{ 'web.propertyListings.allListings.available' | translate }}</span>
       <span class="pl-stat__val">{{ availableCount }}</span>
-      <span class="pl-stat__hint">Vacant right now</span>
+      <span class="pl-stat__hint">{{ 'web.propertyListings.allListings.availableHint' | translate }}</span>
     </div>
     <div class="pl-stat">
-      <span class="pl-stat__label">Published</span>
+      <span class="pl-stat__label">{{ 'web.propertyListings.allListings.published' | translate }}</span>
       <span class="pl-stat__val">{{ publishedCount }}</span>
-      <span class="pl-stat__hint">Live on public site</span>
+      <span class="pl-stat__hint">{{ 'web.propertyListings.allListings.publishedHint' | translate }}</span>
     </div>
   </div>
 
   <div class="pl-toolbar mb-5">
     <div class="ov-search flex-1 max-w-none sm:max-w-[420px]">
-      <label class="sr-only" for="listing-search">Search listings</label>
+      <label class="sr-only" for="listing-search">{{ 'web.propertyListings.allListings.searchAria' | translate }}</label>
       <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
       <input
         id="listing-search"
@@ -50,7 +50,7 @@
         class="ov-input ov-search__input"
         [(ngModel)]="searchQuery"
         (ngModelChange)="onSearch()"
-        placeholder="Search by name, unit, or reference" />
+        [placeholder]="'web.propertyListings.allListings.phSearch' | translate" />
       <button
         *ngIf="searchQuery"
         type="button"
@@ -66,9 +66,9 @@
         type="button"
         class="ov-seg__btn whitespace-nowrap"
         *ngFor="let tab of offerTabs"
-        [class.is-active]="offerTab === tab"
-        (click)="setOfferTab(tab)">
-        {{ tab }}
+        [class.is-active]="offerTab === tab.id"
+        (click)="setOfferTab(tab.id)">
+        {{ tab.labelKey | translate }}
       </button>
     </div>
   </div>
@@ -79,7 +79,7 @@
       *ngFor="let card of pageCards"
       role="link"
       tabindex="0"
-      [attr.aria-label]="'View ' + card.title"
+      [attr.aria-label]="('web.propertyListings.allListings.viewListingAria' | translate) + ' ' + card.title"
       (click)="openListing(card.id)"
       (keydown.enter)="openListing(card.id)"
       (keydown.space)="$event.preventDefault(); openListing(card.id)">
@@ -92,7 +92,7 @@
         <ng-template #noPhoto>
           <div class="pl-card__empty">
             <img src="assets/images/settings/image.svg" alt="" width="28" height="28" />
-            <span>No photos</span>
+            <span>{{ 'web.propertyListings.allListings.noPhotos' | translate }}</span>
           </div>
         </ng-template>
 
@@ -112,11 +112,13 @@
                 role="menuitem"
                 class="pl-card__menu-item"
                 (click)="openListing(card.id)">
-                View Details
+                {{ 'web.propertyListings.allListings.menuViewDetails' | translate }}
               </button>
-              <button type="button" role="menuitem" class="pl-card__menu-item">Edit Listing</button>
+              <button type="button" role="menuitem" class="pl-card__menu-item">
+                {{ 'web.propertyListings.allListings.menuEditListing' | translate }}
+              </button>
               <button type="button" role="menuitem" class="pl-card__menu-item pl-card__menu-item--danger">
-                Unpublish
+                {{ 'web.propertyListings.allListings.menuUnpublish' | translate }}
               </button>
             </div>
           </div>
@@ -142,17 +144,17 @@
   <ng-template #emptyState>
     <div class="pl-empty">
       <img src="assets/images/work-orders/search.svg" alt="" width="24" height="24" />
-      <h4 class="pl-empty__title">No listings found</h4>
-      <p class="pl-empty__text">Try a different search or clear your filters to see more results.</p>
+      <h4 class="pl-empty__title">{{ 'web.propertyListings.allListings.noResultsTitle' | translate }}</h4>
+      <p class="pl-empty__text">{{ 'web.propertyListings.allListings.noResultsDesc' | translate }}</p>
       <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilters(); clearSearch(); setOfferTab('All')">
-        Reset filters
+        {{ 'web.propertyListings.allListings.resetFilters' | translate }}
       </button>
     </div>
   </ng-template>
 
   <div class="ov-page !px-0 !border-0 !bg-transparent mt-5" *ngIf="filteredCount">
     <div class="ov-page__meta">
-      <span class="ov-page__label">Show</span>
+      <span class="ov-page__label">{{ 'web.common.showing' | translate }}</span>
       <div class="ov-page__size">
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
           <option [ngValue]="12">12</option>
@@ -161,7 +163,7 @@
         </select>
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </div>
-      <span>Showing {{ startRecord }}–{{ endRecord }} of {{ filteredCount }}</span>
+      <span>{{ 'web.propertyListings.allListings.showing' | translate }} {{ startRecord }}–{{ endRecord }} {{ 'web.propertyListings.allListings.ofWord' | translate }} {{ filteredCount }}</span>
     </div>
     <div class="ov-page__nav">
       <div class="ov-page__btns">
@@ -186,7 +188,7 @@
             height="14"
             class="ov-page__chevron ov-page__chevron--prev" />
         </button>
-        <span class="ov-page__label px-2">Page {{ displayPage }} of {{ totalPages }}</span>
+        <span class="ov-page__label px-2">{{ 'web.propertyListings.allListings.showingPage' | translate }} {{ displayPage }} {{ 'web.propertyListings.allListings.ofWord' | translate }} {{ totalPages }}</span>
         <button
           type="button"
           class="ov-page__btn"
@@ -216,28 +218,28 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4">
     <div>
-      <label class="ov-label">Offer</label>
+      <label class="ov-label">{{ 'web.propertyListings.allListings.filterOfferType' | translate }}</label>
       <select class="ov-input" [(ngModel)]="filterOffer">
-        <option value="">All</option>
-        <option value="For Rent">For Rent</option>
-        <option value="For Sale">For Sale</option>
+        <option value="">{{ 'web.propertyListings.allListings.filterAllOffers' | translate }}</option>
+        <option value="For Rent">{{ 'web.propertyListings.allListings.tabForRent' | translate }}</option>
+        <option value="For Sale">{{ 'web.propertyListings.allListings.tabForSale' | translate }}</option>
       </select>
     </div>
     <div>
-      <label class="ov-label">Publish status</label>
+      <label class="ov-label">{{ 'web.propertyListings.allListings.filterStatus' | translate }}</label>
       <select class="ov-input" [(ngModel)]="filterStatus">
-        <option value="">All</option>
-        <option value="Published">Published</option>
-        <option value="Draft">Draft</option>
-        <option value="Unpublished">Unpublished</option>
+        <option value="">{{ 'web.propertyListings.allListings.filterAllStatuses' | translate }}</option>
+        <option value="Published">{{ 'web.propertyListings.allListings.statusPublished' | translate }}</option>
+        <option value="Draft">{{ 'web.propertyListings.allListings.statusDraft' | translate }}</option>
+        <option value="Unpublished">{{ 'web.propertyListings.allListings.statusUnpublished' | translate }}</option>
       </select>
     </div>
     <div>
-      <label class="ov-label">Occupancy</label>
+      <label class="ov-label">{{ 'web.propertyListings.allListings.filterOccupancy' | translate }}</label>
       <select class="ov-input" [(ngModel)]="filterOccupancy">
-        <option value="">All</option>
-        <option value="Vacant">Vacant</option>
-        <option value="Occupied">Occupied</option>
+        <option value="">{{ 'web.propertyListings.allListings.filterAllOccupancies' | translate }}</option>
+        <option value="Vacant">{{ 'web.propertyListings.allListings.occupancyVacant' | translate }}</option>
+        <option value="Occupied">{{ 'web.propertyListings.allListings.occupancyOccupied' | translate }}</option>
       </select>
     </div>
   </div>

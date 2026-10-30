@@ -2,20 +2,20 @@
 <div class="ov-form ov-add-form visitor-form">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" (click)="goBack()" class="ov-back" title="Back to Visitors">
+      <button type="button" (click)="goBack()" class="ov-back" [attr.title]="'web.visitors.backToVisitors' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Visitor</h3>
+        <h3 class="ov-page-title">{{ 'web.visitors.newVisitor' | translate }}</h3>
         <p class="ov-page-sub">
-          Guests /
-          <span class="ov-page-sub__current">New Visitor</span>
+          {{ 'web.visitors.breadcrumbGuests' | translate }} /
+          <span class="ov-page-sub__current">{{ 'web.visitors.newVisitor' | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Visitor</button>
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.visitors.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ 'web.visitors.saveVisitor' | translate }}</button>
     </div>
   </div>
 
@@ -25,30 +25,30 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Visitor Information</h6>
-            <p class="visitor-form__card-desc">Basic identification details of the incoming visitor.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.visitorInformation' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.visitorInfoDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="ov-label">Full Name <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="fullName" placeholder="Enter visitor's full name" />
+              <label class="ov-label">{{ 'web.visitors.fullName' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" [(ngModel)]="fullName" [placeholder]="'web.visitors.phFullName' | translate" />
             </div>
             <div>
-              <label class="ov-label">Email Address <span class="text-danger">*</span></label>
-              <input type="email" class="ov-input" [(ngModel)]="email" placeholder="Enter email address" />
+              <label class="ov-label">{{ 'web.visitors.emailAddress' | translate }} <span class="text-danger">*</span></label>
+              <input type="email" class="ov-input" [(ngModel)]="email" [placeholder]="'web.visitors.phEmail' | translate" />
             </div>
           </div>
           <div>
-            <label class="ov-label">Phone Number <span class="text-danger">*</span></label>
+            <label class="ov-label">{{ 'web.visitors.phoneNumber' | translate }} <span class="text-danger">*</span></label>
             <div class="visitor-phone">
               <ng-select [items]="['+971', '+966', '+974']" [(ngModel)]="countryCode"
                 [clearable]="false" [searchable]="false" class="visitor-phone__code ov-select" appendTo="body">
               </ng-select>
-              <input type="text" class="ov-input visitor-phone__number" [(ngModel)]="phone" placeholder="Enter mobile number" />
+              <input type="text" class="ov-input visitor-phone__number" [(ngModel)]="phone" [placeholder]="'web.visitors.phPhone' | translate" />
             </div>
-            <p class="visitor-form__help">Use a mobile number that can receive visitor notifications.</p>
+            <p class="visitor-form__help">{{ 'web.visitors.phoneHelp' | translate }}</p>
           </div>
         </div>
       </div>
@@ -57,32 +57,32 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Visit Details</h6>
-            <p class="visitor-form__card-desc">Define the duration, timing and validity of the visit.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.visitDetails' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.visitDetailsDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="ov-label">Visit Date <span class="text-danger">*</span></label>
-              <ng-select [items]="[]" [(ngModel)]="visitDate" placeholder="Select visit date"
+              <label class="ov-label">{{ 'web.visitors.visitDate' | translate }} <span class="text-danger">*</span></label>
+              <ng-select [items]="[]" [(ngModel)]="visitDate" [placeholder]="'web.visitors.phSelectVisitDate' | translate"
                 class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Number of Visitors <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.visitors.numberOfVisitors' | translate }} <span class="text-danger">*</span></label>
               <input type="text" class="ov-input" [(ngModel)]="numberOfVisitors" />
             </div>
             <div>
-              <label class="ov-label">Visit Type <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.visitors.visitType' | translate }} <span class="text-danger">*</span></label>
               <ng-select [items]="options.visitTypes" [(ngModel)]="visitType"
                 class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Expected Duration</label>
+              <label class="ov-label">{{ 'web.visitors.expectedDuration' | translate }}</label>
               <ng-select [items]="options.durations" [(ngModel)]="expectedDuration"
-                placeholder="Expected duration (Optional)" class="ov-select w-full" appendTo="body">
+                [placeholder]="'web.visitors.phExpectedDuration' | translate" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
           </div>
@@ -92,16 +92,16 @@
           <div class="flex flex-col gap-3">
             <label class="visitor-form__radio">
               <input type="radio" name="validityMode" value="one-time" [(ngModel)]="validityMode" />
-              <span>One Time Validity</span>
+              <span>{{ 'web.visitors.oneTimeValidity' | translate }}</span>
             </label>
             <label class="visitor-form__radio">
               <input type="radio" name="validityMode" value="set-validity" [(ngModel)]="validityMode" />
-              <span>Set Validity</span>
+              <span>{{ 'web.visitors.setValidity' | translate }}</span>
             </label>
           </div>
 
           <div>
-            <label class="ov-label">Set Validity</label>
+            <label class="ov-label">{{ 'web.visitors.setValidity' | translate }}</label>
             <ng-select [items]="options.validity" [(ngModel)]="setValidity"
               class="ov-select w-full" appendTo="body">
             </ng-select>
@@ -113,22 +113,22 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Property &amp; Unit</h6>
-            <p class="visitor-form__card-desc">Specify the building property and unit number being visited.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.propertyAndUnit' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.propertyAndUnitDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="ov-label">Property <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.visitors.property' | translate }} <span class="text-danger">*</span></label>
               <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
-                placeholder="Select property" class="ov-select w-full" appendTo="body">
+                [placeholder]="'web.visitors.phSelectProperty' | translate" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
             <div>
-              <label class="ov-label">Unit <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.visitors.unit' | translate }} <span class="text-danger">*</span></label>
               <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
-                placeholder="Select unit" class="ov-select w-full" appendTo="body">
+                [placeholder]="'web.visitors.phSelectUnit' | translate" class="ov-select w-full" appendTo="body">
               </ng-select>
             </div>
           </div>
@@ -139,15 +139,15 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Relationships</h6>
-            <p class="visitor-form__card-desc">Link the visitor to an existing primary tenant or contact.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.relationships' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.relationshipsDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body">
           <div>
-            <label class="ov-label">Contact (Optional)</label>
+            <label class="ov-label">{{ 'web.visitors.contactOptional' | translate }}</label>
             <ng-select [items]="options.contacts" [(ngModel)]="selectedContact"
-              placeholder="Select contact" class="ov-select w-full" appendTo="body">
+              [placeholder]="'web.visitors.phSelectContact' | translate" class="ov-select w-full" appendTo="body">
             </ng-select>
           </div>
         </div>
@@ -157,15 +157,15 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Notes</h6>
-            <p class="visitor-form__card-desc">Any additional context or security instructions for gate staff.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.notes' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.notesDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body">
           <div>
-            <label class="ov-label">Notes</label>
+            <label class="ov-label">{{ 'web.visitors.notes' | translate }}</label>
             <textarea class="ov-input visitor-form__textarea" [(ngModel)]="notes"
-              placeholder="Enter any additional notes" rows="4"></textarea>
+              [placeholder]="'web.visitors.phNotes' | translate" rows="4"></textarea>
           </div>
         </div>
       </div>
@@ -176,13 +176,13 @@
       <div class="ov-card visitor-form__card bg-white dark:bg-bodybg">
         <div class="ov-card__head visitor-form__card-head">
           <div>
-            <h6 class="ov-card-title">Access Details</h6>
-            <p class="visitor-form__card-desc">Access parameters and credentials.</p>
+            <h6 class="ov-card-title">{{ 'web.visitors.accessDetails' | translate }}</h6>
+            <p class="visitor-form__card-desc">{{ 'web.visitors.accessDetailsDesc' | translate }}</p>
           </div>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="ov-label !font-semibold !text-defaulttextcolor">Access Pass Type</label>
+            <label class="ov-label !font-semibold !text-defaulttextcolor">{{ 'web.visitors.accessPassType' | translate }}</label>
             <ng-select [items]="options.accessPassTypes" [(ngModel)]="accessPassType"
               class="ov-select w-full" appendTo="body">
             </ng-select>
@@ -192,8 +192,8 @@
 
           <div class="visitor-form__toggle">
             <div>
-              <p class="visitor-form__toggle-label">Parking Required</p>
-              <p class="visitor-form__toggle-desc">Enable parking access for visitor vehicle</p>
+              <p class="visitor-form__toggle-label">{{ 'web.visitors.parkingRequired' | translate }}</p>
+              <p class="visitor-form__toggle-desc">{{ 'web.visitors.parkingRequiredDesc' | translate }}</p>
             </div>
             <label class="visitor-form__switch">
               <input type="checkbox" [(ngModel)]="parkingRequired" />
@@ -202,8 +202,8 @@
           </div>
 
           <div>
-            <label class="ov-label !font-semibold !text-defaulttextcolor">Vehicle Number</label>
-            <input type="text" class="ov-input" [(ngModel)]="vehicleNumber" placeholder="Enter vehicle license plate" />
+            <label class="ov-label !font-semibold !text-defaulttextcolor">{{ 'web.visitors.vehicleNumber' | translate }}</label>
+            <input type="text" class="ov-input" [(ngModel)]="vehicleNumber" [placeholder]="'web.visitors.phVehicleNumber' | translate" />
           </div>
         </div>
       </div>
@@ -212,8 +212,8 @@
 
   <div class="visitor-form__footer">
     <div class="border-t border-defaultborder pt-4 flex flex-wrap items-center gap-2">
-      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">Save Visitor</button>
+      <button type="button" (click)="goBack()" class="ov-btn ov-btn-ghost">{{ 'web.visitors.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="save()">{{ 'web.visitors.saveVisitor' | translate }}</button>
     </div>
   </div>
 </div>

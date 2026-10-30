@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 import { RouterModule, Router,ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
@@ -27,6 +27,7 @@ export class CreateLeaseComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
   private commontab_service=inject(Common_TabsService);
   private lease_service=inject(LeasesService);
    private commonService=inject(CommonService);
@@ -192,7 +193,7 @@ export class CreateLeaseComponent implements OnInit {
             }
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -277,10 +278,10 @@ export class CreateLeaseComponent implements OnInit {
   }
   savePayments(){
     if(this.addpaymentbloc.Amount==null || this.addpaymentbloc.Amount==0){
-      this.toastr.error("Invalid   amount");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidAmount'));
     }
     else  if(this.addpaymentbloc.DueDate==null || this.addpaymentbloc.DueDate==''){
-      this.toastr.error("Invalid   due Date");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidDueDate'));
     }
     // else  if(this.addpaymentbloc.account==null || this.addpaymentbloc.account==''){
     //   this.toastr.error("Invalid  account");
@@ -336,29 +337,29 @@ export class CreateLeaseComponent implements OnInit {
   }
   generatePayments(){
     if(this.startDate==null || this.startDate==""){
-      this.toastr.error("Invalid start Date");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidStartDate'));
     }
     else  if(this.endDate==null || this.endDate==""){
-      this.toastr.error("Invalid end Date");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidEndDate'));
     }
     else if(this.rentAmount==null || this.rentAmount==0){
-      this.toastr.error("Invalid rent amount");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidRentAmount'));
     }
     else if(this.totalPayments==null || this.totalPayments==0){
-      this.toastr.error("Invalid total payments");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidTotalPayments'));
     }
     else if(this.moneyHeldBy==null || this.moneyHeldBy==0){
-      this.toastr.error("Invalid money held by");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidMoneyHeldBy'));
     }
     else if(this.paymentMethod==null || this.paymentMethod==0){
-      this.toastr.error("Invalid payment method");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidPaymentMethod'));
     }
     else if(this.annualRent==null || this.annualRent==0){
-      this.toastr.error("Invalid annualRent");
+      this.toastr.error(this.translate.instant('web.leases.errInvalidAnnualRent'));
     }
     else if (this.paymentMethod==169 && (this.addpaymentbloc.cheque_no=="" || this.addpaymentbloc.cheque_no==null))
     {
-      this.toastr.error("Enter atleast one cheque no");
+      this.toastr.error(this.translate.instant('web.leases.errEnterAtleastOneCheque'));
     }
     else{
       this.monthlyRent= Number((this.rentAmount / this.totalPayments).toFixed(2));
@@ -549,7 +550,7 @@ export class CreateLeaseComponent implements OnInit {
   }
   addOccupant() {
     if (!this.occupantName.trim()) {
-      this.toastr.warning('Please enter an occupant name');
+      this.toastr.warning(this.translate.instant('web.leases.warnEnterOccupantName'));
       return;
     }
 
@@ -561,10 +562,10 @@ export class CreateLeaseComponent implements OnInit {
 
     if (this.editingOccupantIndex !== null) {
       this.occupants[this.editingOccupantIndex] = occupant;
-      this.toastr.success('Occupant updated successfully');
+      this.toastr.success(this.translate.instant('web.leases.msgOccupantUpdated'));
     } else {
       this.occupants.push(occupant);
-      this.toastr.success('Occupant added successfully');
+      this.toastr.success(this.translate.instant('web.leases.msgOccupantAdded'));
     }
     
     this.closeOccupantsModal();
@@ -586,28 +587,28 @@ export class CreateLeaseComponent implements OnInit {
   }
   removeOccupant(index: number) {
     this.occupants.splice(index, 1);
-    this.toastr.info('Occupant removed');
+    this.toastr.info(this.translate.instant('web.leases.msgOccupantRemoved'));
   }
 
   saveLease() {
     if (!this.selectedTenant || !this.selectedProperty || !this.selectedUnit) {
-      this.toastr.error('Please complete all required fields (Tenant, Property, Unit)');
+      this.toastr.error(this.translate.instant('web.leases.errCompleteRequiredFields'));
       return;
     }
     else if (this.startDate=='' || this.startDate==null){
-      this.toastr.error('Invalid start date');
+      this.toastr.error(this.translate.instant('web.leases.errInvalidStartDate'));
       return;
     }
     else if (this.endDate=='' || this.endDate==null){
-      this.toastr.error('Invalid end date');
+      this.toastr.error(this.translate.instant('web.leases.errInvalidEndDate'));
       return;
     }
     else if (this.rentAmount==0 || this.rentAmount==null){
-      this.toastr.error('Invalid rent amount');
+      this.toastr.error(this.translate.instant('web.leases.errInvalidRentAmount'));
       return;
     }
     else if (this.paymentSchedules.length==0){
-      this.toastr.error('Invalid payment schedules');
+      this.toastr.error(this.translate.instant('web.leases.errInvalidPaymentSchedules'));
       return;
     }
     else{
@@ -675,7 +676,7 @@ export class CreateLeaseComponent implements OnInit {
         next: (res) => {
           this.isLoading = false;
           if (res["statusCode"] == "200") {
-            this.toastr.success('Lease agreement registered successfully');
+            this.toastr.success(this.translate.instant('web.leases.msgLeaseRegistered'));
             this.router.navigate(['/leases']); 
           }
           else{

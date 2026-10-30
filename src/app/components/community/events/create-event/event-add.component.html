@@ -1,17 +1,17 @@
 <form class="ov-add-form" (ngSubmit)="save()">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="cancel()" title="Back to Events">
+      <button type="button" class="ov-back" (click)="cancel()" [attr.title]="'web.community.events.backToEvents' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">New Event</h3>
-        <p class="ov-page-sub">Community / Events / <span class="ov-page-sub__current">New Event</span></p>
+        <h3 class="ov-page-title">{{ (event_code ? 'web.community.events.editEventTitle' : 'web.community.events.newEvent') | translate }}</h3>
+        <p class="ov-page-sub">{{ 'web.community.events.title' | translate }} / <span class="ov-page-sub__current">{{ (event_code ? 'web.community.events.editEventTitle' : 'web.community.events.newEvent') | translate }}</span></p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">Cancel</button>
-      <button type="submit" class="ov-btn ov-btn-primary">{{event_code=='' || event_code==null  ? 'Create' : 'Update'}} Event</button>
+      <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="submit" class="ov-btn ov-btn-primary">{{ (event_code ? 'web.community.events.updateEvent' : 'web.community.events.createEvent') | translate }}</button>
     </div>
   </div>
 
@@ -19,22 +19,22 @@
     <div class="event-add-main mx-auto flex w-full max-w-[1000px] flex-col gap-4">
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Event Information</h6>
+          <h6 class="ov-card-title">{{ 'web.community.events.eventInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Event Name *</label>
-              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" placeholder="Enter">
+              <label class="ov-label">{{ 'web.community.events.eventName' | translate }} *</label>
+              <input type="text" class="ov-input" name="name" [(ngModel)]="form.name" [placeholder]="'web.common.phEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Location *</label>
-              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" placeholder="Enter">
+              <label class="ov-label">{{ 'web.community.events.location' | translate }} *</label>
+              <input type="text" class="ov-input" name="location" [(ngModel)]="form.location" [placeholder]="'web.common.phEnter' | translate">
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Description</label>
+              <label class="ov-label">{{ 'web.common.description' | translate }}</label>
               <textarea class="ov-input !h-[100px] resize-none py-3" name="description"
-                [(ngModel)]="form.description" placeholder="Write the note content here..."></textarea>
+                [(ngModel)]="form.description" [placeholder]="'web.community.events.phDescription' | translate"></textarea>
             </div>
           </div>
         </div>
@@ -42,20 +42,20 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Date &amp; Time</h6>
+          <h6 class="ov-card-title">{{ 'web.community.events.dateTime' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--3">
             <div>
-              <label class="ov-label">Event Date *</label>
+              <label class="ov-label">{{ 'web.community.events.eventDate' | translate }} *</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input !pl-[44px]" name="eventDate" [(ngModel)]="form.eventDate"
-                appFlowbiteDatepicker  placeholder="DD/MM/YYYY">
+                appFlowbiteDatepicker placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div>
-              <label class="ov-label">Start Time</label>
+              <label class="ov-label">{{ 'web.common.startTime' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
                 <input type="time" class="ov-input !pl-[44px]" name="startTime" [(ngModel)]="form.startTime"
@@ -63,7 +63,7 @@
               </div>
             </div>
             <div>
-              <label class="ov-label">End Time</label>
+              <label class="ov-label">{{ 'web.common.endTime' | translate }}</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
                 <input type="time" class="ov-input !pl-[44px]" name="endTime" [(ngModel)]="form.endTime"
@@ -76,17 +76,17 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Contact Information</h6>
+          <h6 class="ov-card-title">{{ 'web.community.events.contactInformation' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Email</label>
-              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" placeholder="Enter">
+              <label class="ov-label">{{ 'web.common.lblEmail' | translate }}</label>
+              <input type="text" class="ov-input" name="email" [(ngModel)]="form.email" [placeholder]="'web.common.phEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Phone Number</label>
-              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" placeholder="Enter">
+              <label class="ov-label">{{ 'web.common.lblPhone' | translate }}</label>
+              <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" [placeholder]="'web.common.phEnter' | translate">
             </div>
           </div>
         </div>
@@ -94,57 +94,64 @@
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Event Image</h6>
+          <h6 class="ov-card-title">{{ 'web.community.events.eventImage' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <label class="ov-label">Attachments</label>
+          <label class="ov-label">{{ 'web.common.attachments' | translate }}</label>
           <input #imageInput type="file" class="hidden" accept="image/*" (change)="onImageSelected($event)">
           <div class="event-add-drop" (click)="imageInput.click()">
             <div class="event-add-drop__lead">
               <i class="ri-upload-2-line event-add-drop__ico" aria-hidden="true"></i>
-              <p class="event-add-drop__sub mb-0">Drop your image here or Browse</p>
+              <p class="event-add-drop__sub mb-0">{{ 'web.common.dropImageOrBrowse' | translate }}</p>
             </div>
             <button type="button" class="ov-btn ov-btn-primary shrink-0"
               (click)="$event.stopPropagation(); imageInput.click()">
               <i class="ri-upload-2-line me-2" aria-hidden="true"></i>
-              Upload Image
+              {{ 'web.community.events.uploadImage' | translate }}
             </button>
           </div>
           <p class="event-add-drop__hint mb-0">
-            No image selected. An image helps attendees quickly recognize the event.
+            {{ 'web.community.events.noImageHint' | translate }}
           </p>
           <div *ngIf="event_code && selectedImageName" class="mt-3 flex items-center justify-between rounded-md border border-defaultborder p-3">
-            <a href="{{selectedImageName}}" target="_blank" class="text-sm font-medium text-defaulttextcolor">View Image</a>
-            <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-sm" (click)="clearImage()">Remove</button>
+            <a href="{{selectedImageName}}" target="_blank" class="text-sm font-medium text-defaulttextcolor">{{ 'web.community.events.viewImage' | translate }}</a>
+            <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-sm" (click)="clearImage()">{{ 'web.common.remove' | translate }}</button>
           </div>
-          <div *ngIf="event_code=='' && selectedImageName" class="mt-3 flex items-center justify-between rounded-md border border-defaultborder p-3">
-            <span  class="text-sm font-medium text-defaulttextcolor">{{ selectedImageName }}</span>
-            <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-sm" (click)="clearImage()">Remove</button>
+          <div *ngIf="!event_code && selectedImageName" class="mt-3 flex items-center justify-between rounded-md border border-defaultborder p-3">
+            <span class="text-sm font-medium text-defaulttextcolor">{{ selectedImageName }}</span>
+            <button type="button" class="ov-btn ov-btn-ghost !h-8 !px-3 text-sm" (click)="clearImage()">{{ 'web.common.remove' | translate }}</button>
           </div>
         </div>
       </section>
 
       <section class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Event Settings</h6>
+          <h6 class="ov-card-title">{{ 'web.community.events.eventSettings' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Max Attendance</label>
+              <label class="ov-label">{{ 'web.community.events.maxAttendance' | translate }}</label>
               <input type="text" class="ov-input" name="maxAttendance" [(ngModel)]="form.maxAttendance"
-                placeholder="Enter">
+                [placeholder]="'web.common.phEnter' | translate">
             </div>
             <div>
-              <label class="ov-label">Sendable to</label>
+              <label class="ov-label">{{ 'web.community.events.sendableTo' | translate }}</label>
               <ng-select [(ngModel)]="form.sendableTo" name="sendableTo" [items]="sendableOptions"
-                [clearable]="true" placeholder="Property" (change)="filldata($event)" class="ov-select ng-select-sm w-full"
-                appendTo="body"></ng-select>
+                [clearable]="true" [placeholder]="'web.community.entities.property' | translate" (change)="filldata($event)" class="ov-select ng-select-sm w-full"
+                appendTo="body">
+                <ng-template ng-label-tmp let-item="item">
+                  {{ (item === 'Property' ? ('web.community.entities.property' | translate) : item === 'All Tenants' ? ('web.community.entities.allTenants' | translate) : ('web.community.entities.units' | translate)) }}
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  {{ (item === 'Property' ? ('web.community.entities.property' | translate) : item === 'All Tenants' ? ('web.community.entities.allTenants' | translate) : ('web.community.entities.units' | translate)) }}
+                </ng-template>
+              </ng-select>
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">{{selectedType}}</label>
-              <ng-select  [multiple]="true"  [closeOnSelect]="false"  [(ngModel)]="form.selectedList" name="property" [items]="selectedData" [clearable]="true"
-                placeholder="Select Property" bindValue="code" bindLabel="name" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <label class="ov-label">{{ selectedType === 'Property' ? ('web.community.entities.property' | translate) : selectedType === 'All Tenants' ? ('web.community.entities.allTenants' | translate) : ('web.community.entities.units' | translate) }}</label>
+              <ng-select [multiple]="true" [closeOnSelect]="false" [(ngModel)]="form.selectedList" name="property" [items]="selectedData" [clearable]="true"
+                [placeholder]="'web.community.events.phSelectProperty' | translate" bindValue="code" bindLabel="name" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -153,7 +160,7 @@
   </div>
 
   <div class="ov-add-footer event-add-footer">
-    <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">Cancel</button>
-    <button type="submit" class="ov-btn ov-btn-primary">{{event_code=='' || event_code==null ? 'Create' : 'Update'}} Event</button>
+    <button type="button" class="ov-btn event-add-cancel" (click)="cancel()">{{ 'web.common.cancel' | translate }}</button>
+    <button type="submit" class="ov-btn ov-btn-primary">{{ (event_code ? 'web.community.events.updateEvent' : 'web.community.events.createEvent') | translate }}</button>
   </div>
 </form>

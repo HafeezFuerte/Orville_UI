@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ViewChild, HostListener } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DetailPageLayoutComponent } from '../../portfolio/detail-page-layout/detail-page-layout.component';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { NotesComponent } from '../../child-tables/notes/notes.component';
@@ -29,6 +29,7 @@ export class LeaseDetailComponent implements OnInit {
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
+  private translate = inject(TranslateService);
   leaseId: string = '';
   approveComments: string = '';
   Form!: FormGroup;
@@ -105,7 +106,7 @@ export class LeaseDetailComponent implements OnInit {
   }
 
   sendApprovalReminder(): void {
-    this.toastr.success('Approval reminder sent successfully');
+    this.toastr.success(this.translate.instant('web.leases.msgApprovalReminderSent'));
   }
 
   @ViewChild(DetailPageLayoutComponent)
@@ -128,24 +129,25 @@ export class LeaseDetailComponent implements OnInit {
   OnApproveClick(strText:string) {
     this.showApprovalModal = true;
     this.showApprovalMenu=false;
-    this.ApprovalModalText=strText + " Lease";
+    this.ApprovalModalText= strText === 'Approve' ? 'web.leases.lblApproveLease' : 'web.leases.lblRejectLease';
   }
   // Sidebar / Left panel metadata
   leaseInfo: any = {};
   actionOptions: {
     label: string;
+    actionKey?: string;
     icon: string;
     asset?: string;
     danger?: boolean;
     dangerIcon?: boolean;
   }[] = [
-      { label: 'Edit Lease', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
+      { label: 'web.leases.lblEditLease', actionKey: 'edit', icon: 'ri-pencil-line', asset: 'assets/images/action-menu/pencil.svg' },
       // { label: 'Request for Approval', icon: 'ri-checkbox-line' },
-      { label: 'Add Attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
-      { label: 'Add Notes', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
-      { label: 'Send Email', icon: 'ri-mail-line' },
-      { label: 'View activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
-      { label: 'Archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
+      { label: 'web.leases.lblAddAttachment', actionKey: 'attachment', icon: 'ri-attachment-2', asset: 'assets/images/action-menu/paperclip.svg' },
+      { label: 'web.leases.lblAddNotes', actionKey: 'notes', icon: 'ri-file-text-line', asset: 'assets/images/action-menu/file-invoice.svg' },
+      { label: 'web.leases.lblSendEmail', actionKey: 'email', icon: 'ri-mail-line' },
+      { label: 'web.leases.lblViewActivity', actionKey: 'activity', icon: 'ri-time-line', asset: 'assets/images/action-menu/clock.svg' },
+      { label: 'web.contacts.lblArchive', actionKey: 'archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
 
     ];
   get hasDangerAction(): boolean {
@@ -153,13 +155,13 @@ export class LeaseDetailComponent implements OnInit {
   }
   // Sub-grid columns
   invoiceColumns = [
-    { key: 'amt', label: 'Amount' + ' (' + this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
-    { key: 'adv_amt', label: 'Adv.Amount' + ' (' + this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true },
+    { key: 'amt', label: 'web.leases.lblAmount', visible: true, useTemplate: true },
+    { key: 'adv_amt', label: 'web.leases.lblAdvAmount', visible: true, useTemplate: true },
     { key: 'account_name', label: 'web.leases.lblAccount', visible: true, useTemplate: true },
-    { key: 'due_date', label: 'web.leases.lblEndDate', visible: true, useTemplate: true },
+    { key: 'due_date', label: 'web.leases.lblDueDate', visible: true, useTemplate: true },
     { key: 'recurring_cycle', label: 'web.leases.lblRecurringCycle', visible: true, useTemplate: true },
-    { key: 'payment_type', label: 'Payment Type', visible: true, useTemplate: true },
-    { key: 'attachment_path', label: 'Attachment', visible: true, useTemplate: true }
+    { key: 'payment_type', label: 'web.leases.lblPaymentType', visible: true, useTemplate: true },
+    { key: 'attachment_path', label: 'web.leases.lblAttachment', visible: true, useTemplate: true }
   ];
 
   tenantColumns = [
@@ -210,7 +212,7 @@ export class LeaseDetailComponent implements OnInit {
 
   chequeColumns = [
     { key: 'id', label: 'web.common.lblID', visible: true },
-    { key: 'rcp_no', label: 'Receipt No', visible: true, useTemplate: true },
+    { key: 'rcp_no', label: 'web.leases.lblReceiptNo', visible: true, useTemplate: true },
     { key: 'cheque_no', label: 'web.leases.lblChequeNo', visible: true }, 
     { key: 'bank_name', label: 'web.leases.lblBankName', visible: true },
     { key: 'cheque_date', label: 'web.leases.lblChequeDate', visible: true },
@@ -218,20 +220,20 @@ export class LeaseDetailComponent implements OnInit {
     { key: 'amt', label: 'web.common.lblAmount', visible: true, useTemplate: true },
     { key: 'cheque_status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
     { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
-    { key: 'cheque_in_hand', label: 'In Hand', visible: true },
-    { key: 'returned', label: 'Returned', visible: true },
-    { key: 'returnedDate', label: 'Returned Date', visible: true },
-    { key: 'bounceDate', label: 'Bounce Date', visible: true },
-    { key: 'bounceReason', label: 'Bounce Reason', visible: true },
-    { key: 'withdrawalReason', label: 'Withdrawal Reason', visible: true },
-    { key: 'Tenant', label: 'Contact Name', visible: true, useTemplate: true },
+    { key: 'cheque_in_hand', label: 'web.leases.lblInHand', visible: true },
+    { key: 'returned', label: 'web.leases.lblReturned', visible: true },
+    { key: 'returnedDate', label: 'web.leases.lblReturnedDate', visible: true },
+    { key: 'bounceDate', label: 'web.leases.lblBounceDate', visible: true },
+    { key: 'bounceReason', label: 'web.leases.lblBounceReason', visible: true },
+    { key: 'withdrawalReason', label: 'web.leases.lblWithdrawalReason', visible: true },
+    { key: 'Tenant', label: 'web.leases.lblContactName', visible: true, useTemplate: true },
     { key: 'landlord', label: 'web.leases.lblLandlord', visible: true, useTemplate: true },
     { key: 'unit_code', label: 'web.leases.lblUnit', visible: true , useTemplate: true},
-    { key: 'attachment_path', label: 'Attachment', visible: true  , useTemplate: true}
+    { key: 'attachment_path', label: 'web.leases.lblAttachment', visible: true  , useTemplate: true}
   ];
 
   inspectionsColumns = [
-    { key: 'id', label: 'Inspection ID', visible: true, useTemplate: true },
+    { key: 'id', label: 'web.leases.lblInspectionID', visible: true, useTemplate: true },
     { key: 'name', label: 'web.common.lblName', visible: true },
     { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
     { key: 'type', label: 'web.common.lblType', visible: true },
@@ -256,12 +258,12 @@ export class LeaseDetailComponent implements OnInit {
 
   workOrdersColumns = [
     { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'title', label: 'Title', visible: true },
+    { key: 'title', label: 'web.common.lblName', visible: true },
     { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'closingStatus', label: 'Closing Status', visible: true, useTemplate: true },
-    { key: 'internalStatus', label: 'Internal Status', visible: true },
-    { key: 'dueDate', label: 'Due Date', visible: true },
-    { key: 'priority', label: 'Priority', visible: true, useTemplate: true },
+    { key: 'closingStatus', label: 'web.leases.lblClosingStatus', visible: true, useTemplate: true },
+    { key: 'internalStatus', label: 'web.contacts.lblInternalStatus', visible: true },
+    { key: 'dueDate', label: 'web.contacts.lblDueDate', visible: true },
+    { key: 'priority', label: 'web.leases.lblPriority', visible: true, useTemplate: true },
     { key: 'property', label: 'web.leases.lblProperty', visible: true },
     { key: 'vendor', label: 'web.contacts.lblVendor', visible: true },
     { key: 'user', label: 'web.contacts.lblUser', visible: true }
@@ -351,7 +353,7 @@ export class LeaseDetailComponent implements OnInit {
 
   ApproveRejectLease() {
     if(this.approveComments==null || this.approveComments==""){
-      this.toastr.error(`Invalid  ${this.ApprovalModalText} comments`)
+      this.toastr.error(this.translate.instant('web.leases.errInvalidComments'));
       return;
     }
     this.commontabservice.getMasterByType({
@@ -362,13 +364,13 @@ export class LeaseDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully updated status");
+          this.toastr.success(this.translate.instant('web.leases.msgStatusUpdated'));
           setTimeout(() => {
             this.router.navigate(['/leases']);
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -384,40 +386,41 @@ export class LeaseDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully send to approval");
+          this.toastr.success(this.translate.instant('web.leases.msgSendToApproval'));
           setTimeout(() => {
              window.location.reload();
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
       }
     });
   }
-  onActionClick(label: string): void {
+  onActionClick(option: any): void {
     this.showActionMenu = false;
-    if (label === 'Edit Lease') {
+    const label = typeof option === 'string' ? option : (option.actionKey || option.label);
+    if (label === 'edit' || label === 'Edit Lease' || label === 'web.leases.lblEditLease') {
       this.editLease();
     }
-    else if (label === 'Request for Approval') {
+    else if (label === 'approval' || label === 'Request for Approval' || label === 'web.leases.lblRequestApproval') {
       this.sendForApproval();
     }
-    else if (label === 'Add Notes') {
+    else if (label === 'notes' || label === 'Add Notes' || label === 'web.leases.lblAddNotes') {
       this.showActionMenu = false;
       this.activeTab = 'notes';
       setTimeout(() => this.detailLayout?.openModal(), 0);
     }
-    else if (label === 'Add Attachment') {
+    else if (label === 'attachment' || label === 'Add Attachment' || label === 'web.leases.lblAddAttachment') {
       this.showActionMenu = false;
       this.activeTab = 'attachments';
       setTimeout(() => this.detailLayout?.openModal(), 0);
     }
-    else if (label === 'Add User') this.showActionMenu = false;
-    else if (label === 'Add Emergency Contact') this.showActionMenu = false;
-    else if (label === 'Print Lease') this.printLease();
+    else if (label === 'email' || label === 'Send Email' || label === 'web.leases.lblSendEmail') this.showActionMenu = false;
+    else if (label === 'activity' || label === 'View activity' || label === 'web.leases.lblViewActivity') this.showActionMenu = false;
+    else if (label === 'print' || label === 'Print Lease' || label === 'web.leases.lblPrintLease') this.printLease();
   }
 
   showPrintModal: boolean = false;
@@ -470,7 +473,7 @@ export class LeaseDetailComponent implements OnInit {
 
   printLease(): void {
     if (!this.leaseId) {
-      this.toastr.error('Lease ID is missing');
+      this.toastr.error(this.translate.instant('web.leases.errLeaseIdMissing'));
       return;
     }
     this.commontabservice.getMasterByType({
@@ -484,14 +487,14 @@ export class LeaseDetailComponent implements OnInit {
           const printRecord = res.objResult.table ? res.objResult.table[0] : res.objResult;
           this.parsePrintData(printRecord);
           this.showPrintModal = true;
-          this.toastr.success('Lease agreement details fetched successfully');
+          this.toastr.success(this.translate.instant('web.leases.msgLeaseDetailsFetched'));
         } else {
-          this.toastr.error('No print record found for this lease');
+          this.toastr.error(this.translate.instant('web.leases.errNoPrintRecord'));
         }
       },
       error: (err: any) => {
         console.error('Error fetching lease print details (typeId: 80):', err);
-        this.toastr.error('Failed to fetch lease print details');
+        this.toastr.error(this.translate.instant('web.leases.errFailedToFetchPrint'));
       }
     });
   }
@@ -626,10 +629,10 @@ export class LeaseDetailComponent implements OnInit {
   initializeTabs() {
 
     this.tabs = [
-      { key: 'Overview', label: 'Overview', layout: 'content' },
-      { key: 'Tenant', label: 'Tenant', layout: 'content' },
-      { key: 'Financials', label: 'Financials', layout: 'content' },
-      { key: 'Cheques', label: 'Cheques', layout: 'content' },
+      { key: 'Overview', label: 'web.common.lblOverview', layout: 'content' },
+      { key: 'Tenant', label: 'web.common.lblTenant', layout: 'content' },
+      { key: 'Financials', label: 'web.common.lblFinancials', layout: 'content' },
+      { key: 'Cheques', label: 'web.leases.lblCheques', layout: 'content' },
       {
         key: 'units',
         label: 'web.common.lblUnits',
@@ -641,7 +644,7 @@ export class LeaseDetailComponent implements OnInit {
         addButtonText: 'Unit'
       },
       {
-        key: 'Work Orders', label: 'Work Orders', layout: 'content',
+        key: 'Work Orders', label: 'web.common.lblWorkOrders', layout: 'content',
         entity: "Lease",
         entity_id: this.leaseId,
         data: this.workOrdersData,
@@ -653,7 +656,7 @@ export class LeaseDetailComponent implements OnInit {
       },
       {
         key: 'E-Documents',
-        label: 'E-Documents',
+        label: 'web.common.lblEDocuments',
         layout: 'content',
         entity: "Lease",
         entity_id: this.leaseId,
@@ -667,7 +670,7 @@ export class LeaseDetailComponent implements OnInit {
       },
       {
         key: 'Notices',
-        label: 'Notices',
+        label: 'web.common.lblBroadcasts',
         layout: 'content',
         data: this.noticesData,
         totalRecords: this.noticesData?.length || 0,
@@ -690,7 +693,7 @@ export class LeaseDetailComponent implements OnInit {
         form: this.Form,
         popupType: 'attachment'
       },
-      { key: 'Legal', label: 'Legal', layout: 'content' },
+      { key: 'Legal', label: 'web.common.lblLegal', layout: 'content' },
       {
         key: 'notes',
         label: 'web.common.lblNotes',
@@ -705,7 +708,7 @@ export class LeaseDetailComponent implements OnInit {
         form: this.Form,
         popupType: 'notes'
       },
-      { key: 'Inspections', label: 'Inspections', layout: 'content' }
+      { key: 'Inspections', label: 'web.common.lblInspections', layout: 'content' }
 
     ];
 
@@ -773,13 +776,14 @@ export class LeaseDetailComponent implements OnInit {
 
           if(this.leaseInfo.status==176){ // draft mode
             this.actionOptions.splice(1, 0, {
-              label: 'Request for Approval',
+              label: 'web.leases.lblRequestApproval',
+              actionKey: 'approval',
               icon: 'ri-checkbox-line'
             }); 
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);

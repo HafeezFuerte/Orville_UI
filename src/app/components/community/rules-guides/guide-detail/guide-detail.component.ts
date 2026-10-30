@@ -5,13 +5,13 @@ import { GuideRow, getGuideById } from '../rules-guides.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import {CommunityService} from '../../community.services'
 @Component({
   selector: 'app-guide-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './guide-detail.component.html',
   styleUrl: './guide-detail.component.scss'
 })
@@ -21,9 +21,9 @@ export class GuideDetailComponent implements OnInit {
   showActionMenu = false;
   guide_code:any;
   actionOptions = [
-    { label: 'Edit Guide', asset: 'assets/images/action-menu/pencil.svg', danger: false },
+    { id: 'edit', label: 'web.community.rulesGuides.editGuide', asset: 'assets/images/action-menu/pencil.svg', danger: false },
     // { label: 'Publish', asset: 'assets/images/action-menu/files.svg', danger: false },
-    { label: 'Delete', asset: 'assets/images/action-menu/trash.svg', danger: true }
+    { id: 'delete', label: 'web.community.rulesGuides.delete', asset: 'assets/images/action-menu/trash.svg', danger: true }
   ];
  
 
@@ -87,12 +87,13 @@ export class GuideDetailComponent implements OnInit {
     this.showActionMenu = !this.showActionMenu;
   }
 
-  onAction(label: string): void {
+  onAction(option: any): void {
     this.showActionMenu = false;
-    if (label === 'Edit Guide') {
+    const action = typeof option === 'string' ? option : (option.id || option.label);
+    if (action === 'edit' || action === 'Edit Guide' || action === 'web.community.rulesGuides.editGuide') {
       this.goToEdit();
     }
-    else if (label === 'Delete') {
+    else if (action === 'delete' || action === 'Delete' || action === 'web.community.rulesGuides.delete') {
       this.goToEdit();
     } 
   }

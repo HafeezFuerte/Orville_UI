@@ -2,25 +2,25 @@
 <div class="ov-form ov-add-form bc-create">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" (click)="goBack()" class="ov-back" title="Back to Broadcasts" aria-label="Back">
+      <button type="button" (click)="goBack()" class="ov-back" [attr.title]="'web.broadcasts.backToBroadcasts' | translate" [attr.aria-label]="'web.broadcasts.backToBroadcasts' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
         <div class="flex flex-wrap items-center gap-2">
-          <h3 class="ov-page-title m-0">{{ editId ? 'Edit Broadcast' : 'Create Broadcast' }}</h3>
-          <span class="ov-status ov-status--soft">Draft</span>
+          <h3 class="ov-page-title m-0">{{ (editId ? 'web.broadcasts.editBroadcast' : 'web.broadcasts.createBroadcast') | translate }}</h3>
+          <span class="ov-status ov-status--soft">{{ 'web.broadcasts.statusDraft' | translate }}</span>
         </div>
         <p class="ov-page-sub">
-          <a href="javascript:void(0)" (click)="goBack()">Broadcasts</a>
+          <a href="javascript:void(0)" (click)="goBack()">{{ 'web.broadcasts.title' | translate }}</a>
           /
-          <span class="ov-page-sub__current">{{ editId ? 'Edit' : 'Create' }}</span>
+          <span class="ov-page-sub__current">{{ (editId ? 'web.broadcasts.edit' : 'web.common.btnNew') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" data-tooltip="Preview">Preview</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()" data-tooltip="Save Draft">
-        {{ editId ? 'Save Changes' : 'Save Draft' }}
+      <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.broadcasts.preview' | translate">{{ 'web.broadcasts.preview' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()" [attr.data-tooltip]="(editId ? 'web.broadcasts.saveChanges' : 'web.broadcasts.saveDraft') | translate">
+        {{ (editId ? 'web.broadcasts.saveChanges' : 'web.broadcasts.saveDraft') | translate }}
       </button>
     </div>
   </div>
@@ -31,19 +31,25 @@
       <!-- 1. Choose recipients -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Choose recipients</h6>
-          <p class="ov-card-sub">Select who should receive this broadcast.</p>
+          <h6 class="ov-card-title">{{ 'web.broadcasts.chooseRecipients' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.broadcasts.chooseRecipientsSub' | translate }}</p>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div>
-            <label class="ov-label">Broadcast audience <span class="text-danger">*</span></label>
-            <ng-select #audSelect [items]="audiences" [(ngModel)]="selectedAudience" placeholder="Select"
+            <label class="ov-label">{{ 'web.broadcasts.broadcastAudience' | translate }} <span class="text-danger">*</span></label>
+            <ng-select #audSelect [items]="audiences" [(ngModel)]="selectedAudience" [placeholder]="'web.broadcasts.phSelect' | translate"
               class="ov-select w-full">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-defaultborder">
-                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.broadcasts.phSearch' | translate"
                     (input)="audSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                {{ ('web.broadcasts.' + item.toLowerCase()) | translate }}
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                {{ ('web.broadcasts.' + item.toLowerCase()) | translate }}
               </ng-template>
             </ng-select>
           </div>
@@ -51,23 +57,23 @@
           <div class="bc-audience-grid">
             <label class="bc-audience-card" [class.is-on]="allTenants">
               <input type="checkbox" [(ngModel)]="allTenants" class="bc-audience-card__check">
-              <span class="bc-audience-card__title">All tenants</span>
-              <span class="bc-audience-card__sub">Send to every tenant record</span>
+              <span class="bc-audience-card__title">{{ 'web.broadcasts.allTenants' | translate }}</span>
+              <span class="bc-audience-card__sub">{{ 'web.broadcasts.allTenantsDesc' | translate }}</span>
             </label>
             <label class="bc-audience-card" [class.is-on]="activeTenants">
               <input type="checkbox" [(ngModel)]="activeTenants" class="bc-audience-card__check">
-              <span class="bc-audience-card__title">Active tenants</span>
-              <span class="bc-audience-card__sub">Only tenants with active leases</span>
+              <span class="bc-audience-card__title">{{ 'web.broadcasts.activeTenants' | translate }}</span>
+              <span class="bc-audience-card__sub">{{ 'web.broadcasts.activeTenantsDesc' | translate }}</span>
             </label>
             <label class="bc-audience-card" [class.is-on]="inactiveTenants">
               <input type="checkbox" [(ngModel)]="inactiveTenants" class="bc-audience-card__check">
-              <span class="bc-audience-card__title">Inactive tenants</span>
-              <span class="bc-audience-card__sub">Tenants without an active lease</span>
+              <span class="bc-audience-card__title">{{ 'web.broadcasts.inactiveTenants' | translate }}</span>
+              <span class="bc-audience-card__sub">{{ 'web.broadcasts.inactiveTenantsDesc' | translate }}</span>
             </label>
           </div>
 
           <div>
-            <label class="ov-label">Specific recipients</label>
+            <label class="ov-label">{{ 'web.broadcasts.specificRecipients' | translate }}</label>
             <div class="bc-chip-input">
               <span *ngFor="let rec of recipientList; let i = index" class="bc-chip">
                 {{ rec }}
@@ -76,7 +82,7 @@
                 </button>
               </span>
               <input type="text" [(ngModel)]="specificRecipients" (keydown.enter)="addRecipient($event)"
-                [placeholder]="recipientList.length === 0 ? 'Type a name or email and press Enter' : ''"
+                [placeholder]="recipientList.length === 0 ? ('web.broadcasts.phRecipientInput' | translate) : ''"
                 class="bc-chip-input__field" />
             </div>
           </div>
@@ -86,14 +92,14 @@
       <!-- 2. Schedule -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Schedule</h6>
-          <p class="ov-card-sub">Choose when the broadcast should be delivered.</p>
+          <h6 class="ov-card-title">{{ 'web.broadcasts.schedule' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.broadcasts.scheduleSub' | translate }}</p>
         </div>
         <div class="ov-card__body flex flex-col gap-5">
           <div class="bc-schedule-toggle">
             <div>
-              <p class="bc-schedule-toggle__title">Schedule for later</p>
-              <p class="bc-schedule-toggle__sub">Turn this on to set a future date and time.</p>
+              <p class="bc-schedule-toggle__title">{{ 'web.broadcasts.scheduleForLater' | translate }}</p>
+              <p class="bc-schedule-toggle__sub">{{ 'web.broadcasts.scheduleForLaterSub' | translate }}</p>
             </div>
             <label class="bc-switch">
               <input type="checkbox" [(ngModel)]="isScheduled">
@@ -102,11 +108,11 @@
           </div>
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Send date <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.broadcasts.sendDate' | translate }} <span class="text-danger">*</span></label>
               <input type="date" [(ngModel)]="scheduleDate" class="ov-input" [disabled]="!isScheduled" />
             </div>
             <div>
-              <label class="ov-label">Send time <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.broadcasts.sendTime' | translate }} <span class="text-danger">*</span></label>
               <input type="time" [(ngModel)]="scheduleTime" class="ov-input" [disabled]="!isScheduled" />
             </div>
           </div>
@@ -116,17 +122,17 @@
       <!-- 3. Message setup -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Message setup</h6>
-          <p class="ov-card-sub">Choose a template and define the broadcast information.</p>
+          <h6 class="ov-card-title">{{ 'web.broadcasts.messageSetup' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.broadcasts.messageSetupSub' | translate }}</p>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <label class="ov-label">Broadcast template <span class="text-danger">*</span></label>
-            <ng-select #tempSelect [items]="templates" [(ngModel)]="selectedTemplate" placeholder="Select"
+            <label class="ov-label">{{ 'web.broadcasts.broadcastTemplate' | translate }} <span class="text-danger">*</span></label>
+            <ng-select #tempSelect [items]="templates" [(ngModel)]="selectedTemplate" [placeholder]="'web.broadcasts.phSelect' | translate"
               class="ov-select w-full">
               <ng-template ng-header-tmp>
                 <div class="p-1.5 border-b border-defaultborder">
-                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                  <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.broadcasts.phSearch' | translate"
                     (input)="tempSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                 </div>
               </ng-template>
@@ -134,16 +140,16 @@
           </div>
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Subject <span class="text-danger">*</span></label>
-              <input type="text" [(ngModel)]="subjectInput" placeholder="Enter" class="ov-input" />
+              <label class="ov-label">{{ 'web.broadcasts.subject' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="subjectInput" [placeholder]="'web.broadcasts.phEnter' | translate" class="ov-input" />
             </div>
             <div>
-              <label class="ov-label">Broadcast type</label>
+              <label class="ov-label">{{ 'web.broadcasts.broadcastType' | translate }}</label>
               <ng-select #typeSelect [items]="broadcastTypes" bindLabel="name" bindValue="id"
-                [(ngModel)]="selectedBroadcastType" placeholder="Select type" class="ov-select w-full">
+                [(ngModel)]="selectedBroadcastType" [placeholder]="'web.broadcasts.phSelectType' | translate" class="ov-select w-full">
                 <ng-template ng-header-tmp>
                   <div class="p-1.5 border-b border-defaultborder">
-                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" placeholder="Search..."
+                    <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.broadcasts.phSearch' | translate"
                       (input)="typeSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                   </div>
                 </ng-template>
@@ -156,11 +162,11 @@
       <!-- 4. Message details -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Message details</h6>
-          <p class="ov-card-sub">Write the message recipients will receive.</p>
+          <h6 class="ov-card-title">{{ 'web.broadcasts.messageDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.broadcasts.messageDetailsSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
-          <label class="ov-label">Details</label>
+          <label class="ov-label">{{ 'web.broadcasts.details' | translate }}</label>
           <div class="bc-editor">
             <div class="bc-editor__toolbar" aria-hidden="true">
               <button type="button" class="bc-editor__tool">H</button>
@@ -182,7 +188,7 @@
               <button type="button" class="bc-editor__tool"><i class="ri-format-clear"></i></button>
               <button type="button" class="bc-editor__tool"><i class="ri-code-view"></i></button>
             </div>
-            <textarea [(ngModel)]="messageBody" rows="7" placeholder="Write the note content here..."
+            <textarea [(ngModel)]="messageBody" rows="7" [placeholder]="'web.broadcasts.phMessageBody' | translate"
               class="bc-editor__body"></textarea>
           </div>
         </div>
@@ -191,69 +197,69 @@
       <!-- 5. Attachments -->
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Attachments</h6>
+          <h6 class="ov-card-title">{{ 'web.broadcasts.attachments' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="bc-upload" (click)="fileInput.click()">
             <input #fileInput type="file" multiple class="hidden" (change)="onFileSelected($event)" />
-            <p class="bc-upload__hint">Drop your image here or Browse</p>
+            <p class="bc-upload__hint">{{ 'web.broadcasts.dropImageOrBrowse' | translate }}</p>
             <button type="button" class="bc-upload__btn" (click)="$event.stopPropagation(); fileInput.click()">
-              <i class="ri-upload-2-line"></i> Upload Image
+              <i class="ri-upload-2-line"></i> {{ 'web.broadcasts.uploadImage' | translate }}
             </button>
           </div>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-3 pb-6 pt-1">
-        <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
-        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()">Save Preview</button>
+        <button type="button" class="ov-btn ov-btn-ghost">{{ 'web.broadcasts.preview' | translate }}</button>
+        <button type="button" class="ov-btn ov-btn-primary" (click)="saveDraft()">{{ 'web.broadcasts.savePreview' | translate }}</button>
       </div>
     </div>
 
     <aside class="ov-add-layout__aside flex flex-col gap-4">
       <div class="ov-card">
         <div class="ov-card__head !flex-row !items-center !justify-between !gap-2">
-          <h6 class="ov-card-title m-0">Broadcast summary</h6>
-          <span class="ov-status ov-status--soft">Draft</span>
+          <h6 class="ov-card-title m-0">{{ 'web.broadcasts.broadcastSummary' | translate }}</h6>
+          <span class="ov-status ov-status--soft">{{ 'web.broadcasts.statusDraft' | translate }}</span>
         </div>
         <div class="ov-card__body flex flex-col gap-4">
           <div>
-            <p class="bc-summary__label">Broadcasted to</p>
-            <p class="bc-summary__value">{{ selectedAudience || 'Tenant' }}</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.broadcastedTo' | translate }}</p>
+            <p class="bc-summary__value">{{ selectedAudience ? (('web.broadcasts.' + selectedAudience.toLowerCase()) | translate) : ('web.broadcasts.tenant' | translate) }}</p>
           </div>
           <div>
-            <p class="bc-summary__label">Recipients</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.recipients' | translate }}</p>
             <p class="bc-summary__value">{{ summaryRecipient }}</p>
           </div>
           <div>
-            <p class="bc-summary__label">Schedule</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.schedule' | translate }}</p>
             <p class="bc-summary__value">
-              {{ isScheduled && scheduleDate ? (scheduleDate + (scheduleTime ? ', ' + scheduleTime : '')) : 'Select date and time' }}
+              {{ isScheduled && scheduleDate ? (scheduleDate + (scheduleTime ? ', ' + scheduleTime : '')) : ('web.broadcasts.selectDateTime' | translate) }}
             </p>
           </div>
           <div>
-            <p class="bc-summary__label">Template</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.template' | translate }}</p>
             <p class="bc-summary__value">{{ selectedTemplate || 'Lease Agreement Notice' }}</p>
           </div>
           <div>
-            <p class="bc-summary__label">Broadcast type</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.broadcastType' | translate }}</p>
             <p class="bc-summary__value">Announcement</p>
           </div>
           <div>
-            <p class="bc-summary__label">Subject</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.subject' | translate }}</p>
             <p class="bc-summary__value">{{ subjectInput || 'Default Broadcast' }}</p>
           </div>
           <div>
-            <p class="bc-summary__label">Created at</p>
+            <p class="bc-summary__label">{{ 'web.broadcasts.createdAt' | translate }}</p>
             <p class="bc-summary__value">13 Jul 2026</p>
           </div>
         </div>
       </div>
 
       <div class="bc-estimate">
-        <p class="bc-estimate__label">Estimated delivery</p>
+        <p class="bc-estimate__label">{{ 'web.broadcasts.estimatedDelivery' | translate }}</p>
         <p class="bc-estimate__num">245</p>
-        <p class="bc-estimate__sub">recipients based on current selection</p>
+        <p class="bc-estimate__sub">{{ 'web.broadcasts.recipientsEstimateSub' | translate }}</p>
       </div>
     </aside>
   </div>

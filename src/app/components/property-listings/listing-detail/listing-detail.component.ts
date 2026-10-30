@@ -1,6 +1,7 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   getListingDetail,
   listingOccupancyClass,
@@ -13,7 +14,7 @@ import {
 @Component({
   selector: 'app-listing-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './listing-detail.component.html',
   styleUrl: './listing-detail.component.scss'
 })
@@ -31,10 +32,10 @@ export class ListingDetailComponent {
   readonly offerClass = listingOfferClass;
   readonly yesNoClass = listingYesNoClass;
 
-  readonly tabs: { key: 'overview' | 'amenities' | 'location'; label: string }[] = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'amenities', label: 'Amenities' },
-    { key: 'location', label: 'Location' }
+  readonly tabs: { key: 'overview' | 'amenities' | 'location'; labelKey: string }[] = [
+    { key: 'overview', labelKey: 'web.propertyListings.detail.tabOverview' },
+    { key: 'amenities', labelKey: 'web.propertyListings.detail.tabAmenities' },
+    { key: 'location', labelKey: 'web.propertyListings.detail.tabLocation' }
   ];
 
   constructor() {
@@ -53,16 +54,16 @@ export class ListingDetailComponent {
     return this.detail.offer === 'For Sale' ? this.detail.salePrice : this.detail.monthlyRent;
   }
 
-  get primaryPriceLabel(): string {
-    return this.detail.offer === 'For Sale' ? 'Sale price' : 'Monthly rent';
+  get primaryPriceLabelKey(): string {
+    return this.detail.offer === 'For Sale' ? 'web.propertyListings.detail.salePrice' : 'web.propertyListings.detail.monthlyRent';
   }
 
   get secondaryPrice(): string {
     return this.detail.offer === 'For Sale' ? this.detail.monthlyRent : this.detail.salePrice;
   }
 
-  get secondaryPriceLabel(): string {
-    return this.detail.offer === 'For Sale' ? 'Monthly rent' : 'Sale price';
+  get secondaryPriceLabelKey(): string {
+    return this.detail.offer === 'For Sale' ? 'web.propertyListings.detail.monthlyRent' : 'web.propertyListings.detail.salePrice';
   }
 
   goBack(): void {

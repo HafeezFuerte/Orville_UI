@@ -1,8 +1,8 @@
-<div class="ov-filter-drawer__container" [class.active]="isOpen">
+<div *ngIf="isOpen" class="ov-filter-drawer__container active">
   <!-- Backdrop -->
   <div
     class="ov-filter-drawer__backdrop"
-    (click)="closeDrawer()">
+    (click)="close()">
   </div>
 
   <!-- Panel -->
@@ -13,14 +13,14 @@
     aria-label="Filters">
 
     <div class="flex items-center justify-between border-b border-defaultborder px-5 py-4">
-      <h5 class="m-0 text-sm font-bold text-defaulttextcolor">Filters</h5>
-      <button type="button" (click)="closeDrawer()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor" aria-label="Close filters">
+      <h5 class="m-0 text-sm font-bold text-defaulttextcolor">{{ 'web.contacts.lblFilter' | translate }}</h5>
+      <button type="button" (click)="close()" class="flex items-center justify-center border-0 bg-transparent p-0 text-textmuted hover:text-defaulttextcolor" aria-label="Close filters">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
     </div>
 
     <div class="flex-1 space-y-4 overflow-y-auto p-5">
-      <div class="flex flex-col gap-4">
+      <div *ngIf="showDefaultFilters" class="flex flex-col gap-4">
         <div class="flex flex-col">
           <label class="ov-label">Filter by Tags</label>
           <ng-select [ngModel]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" [items]="tagsList" [searchable]="true" [clearable]="true"
@@ -69,10 +69,10 @@
 
     <div class="flex gap-3 border-t border-defaultborder bg-bodybg p-4 mt-auto">
       <button type="button" (click)="clearFilters()" class="ov-btn ov-btn-ghost flex-1">
-        Clear
+        {{ 'web.contacts.lblResetFilters' | translate }}
       </button>
-      <button type="button" (click)="closeDrawer()" class="ov-btn ov-btn-ghost flex-1">
-        Apply
+      <button type="button" (click)="applyFilters()" class="ov-btn ov-btn-primary flex-1">
+        {{ 'web.contacts.lblFilter' | translate }}
       </button>
     </div>
   </div>

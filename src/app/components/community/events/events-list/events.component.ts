@@ -9,7 +9,7 @@ import { EVENT_ROWS, EventRow, EventStatus } from '../events.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 type StatusTab = 'All' | EventStatus;
 
@@ -22,7 +22,9 @@ type StatusTab = 'All' | EventStatus;
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent,DeleteConfirmationComponent
+    ColumnMenuComponent,
+    DeleteConfirmationComponent,
+    TranslateModule
   ],
   templateUrl: './events.component.html',
   styleUrl: './events.component.scss'
@@ -53,7 +55,7 @@ export class EventsComponent {
   tableColumns = [
     {
       key: 'code',
-      label: 'ID',
+      label: 'web.community.events.colId',
       visible: true,
       useTemplate: true,
       width: '90px',
@@ -62,18 +64,18 @@ export class EventsComponent {
     },
     {
       key: 'event_name',
-      label: 'Event Name',
+      label: 'web.community.events.colEventName',
       visible: true,
       useTemplate: true,
       width: '200px',
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'location', label: 'Location', visible: true, width: '240px' },
-    { key: 'status_name', label: 'Status', visible: true, useTemplate: true },
-    { key: 'event_date', label: 'Date', visible: true },
-    { key: 'max_attendences', label: 'Max Attendance', visible: true, useTemplate: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '80px' }
+    { key: 'location', label: 'web.community.events.colLocation', visible: true, width: '240px' },
+    { key: 'status_name', label: 'web.community.events.colStatus', visible: true, useTemplate: true },
+    { key: 'event_date', label: 'web.community.events.colDate', visible: true },
+    { key: 'max_attendences', label: 'web.community.events.colMaxAttendance', visible: true, useTemplate: true },
+    { key: 'action', label: 'web.community.events.colAction', visible: true, useTemplate: true, width: '80px' }
   ];
 
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,

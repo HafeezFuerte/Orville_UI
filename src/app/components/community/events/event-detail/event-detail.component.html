@@ -1,42 +1,42 @@
 <div class="pb-16">
   <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
     <div class="flex items-start gap-4">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Events">
+      <button type="button" class="ov-back" (click)="goBack()" [attr.title]="'web.community.events.backToEvents' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Event Details</h3>
-        <p class="ov-page-sub mt-1">Community / Events / <span class="ov-page-sub__current">Details</span></p>
+        <h3 class="ov-page-title">{{ 'web.community.events.eventDetails' | translate }}</h3>
+        <p class="ov-page-sub mt-1">{{ 'web.community.events.title' | translate }} / <span class="ov-page-sub__current">{{ 'web.common.lblDetails' | translate }}</span></p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="openPreview()">Preview</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="openPreview()">{{ 'web.common.preview' | translate }}</button>
       <div class="ov-action-wrap">
         <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
           [attr.aria-expanded]="showActionMenu">
-          Action
+          {{ 'web.common.action' | translate }}
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </button>
         <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
           <div class="ov-action-menu__list">
             <ng-container *ngFor="let option of actionOptions">
               <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
-                (click)="onAction(option.label)">
+                (click)="onAction(option)">
                 <span class="ov-action-menu__icon-box">
                   <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 </span>
-                <span>{{ option.label }}</span>
+                <span>{{ option.label | translate }}</span>
               </button>
             </ng-container>
           </div>
           <div class="ov-action-menu__footer">
             <ng-container *ngFor="let option of actionOptions">
               <button *ngIf="option.danger" type="button" role="menuitem"
-                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
+                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option)">
                 <span class="ov-action-menu__icon-box">
                   <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 </span>
-                <span>{{ option.label }}</span>
+                <span>{{ option.label | translate }}</span>
               </button>
             </ng-container>
           </div>
@@ -65,32 +65,32 @@
 
         <div class="flex gap-5">
           <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
-            View Activity
+            {{ 'web.common.viewActivity' | translate }}
           </button>
           <button type="button" (click)="goToEdit()"
             class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor">
-            Edit Event
+            {{ 'web.community.events.editEvent' | translate }}
           </button>
         </div>
 
         <div class="border-t border-defaultborder"></div>
-        <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
+        <h5 class="ov-card-title !text-[16px] m-0">{{ 'web.common.information' | translate }}</h5>
 
         <div class="ed-info-card">
           <div class="ed-info-card__head">
-            <h6 class="ed-info-card__title">Sendable</h6>
+            <h6 class="ed-info-card__title">{{ 'web.community.events.sendable' | translate }}</h6>
           </div>
           <div class="ed-info-card__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Email:</span>
+              <span class="ov-kv__label">{{ 'web.common.lblEmail' | translate }}:</span>
               <a class="ov-link" href="mailto:{{ detail.email }}">{{ detail.email }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Phone:</span>
+              <span class="ov-kv__label">{{ 'web.common.lblPhone' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.phone }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Sendable To:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.sendableTo' | translate }}:</span>
               <a class="ov-link" href="javascript:void(0)">{{ detail.sendableTo }}</a>
             </div>
           </div>
@@ -98,72 +98,72 @@
 
         <div class="ed-info-card">
           <div class="ed-info-card__head">
-            <h6 class="ed-info-card__title">Event Information</h6>
+            <h6 class="ed-info-card__title">{{ 'web.community.events.eventInformation' | translate }}</h6>
           </div>
           <div class="ed-info-card__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Event Name:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.eventName' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.name }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Event Date:</span>
-              <span class="ov-kv__value">{{ detail.date.split('T')[0] }}</span>
+              <span class="ov-kv__label">{{ 'web.community.events.eventDate' | translate }}:</span>
+              <span class="ov-kv__value">{{ detail.date?.split('T')[0] }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Start Time:</span>
+              <span class="ov-kv__label">{{ 'web.common.startTime' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.startTime }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">End Time:</span>
+              <span class="ov-kv__label">{{ 'web.common.endTime' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.endTime }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Location:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.location' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.location }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Event Image:</span>
-              <a href="{{ detail.event_image_path }}" target="_blank" class="ov-link">View Image</a>
+              <span class="ov-kv__label">{{ 'web.community.events.eventImage' | translate }}:</span>
+              <a href="{{ detail.event_image_path }}" target="_blank" class="ov-link">{{ 'web.community.events.viewImage' | translate }}</a>
             </div>
             <div class="ov-kv items-start">
-              <span class="ov-kv__label">Description:</span>
+              <span class="ov-kv__label">{{ 'web.common.description' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.description }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Email:</span>
+              <span class="ov-kv__label">{{ 'web.common.lblEmail' | translate }}:</span>
               <a class="ov-link" href="mailto:{{ detail.email }}">{{ detail.email }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Status:</span>
+              <span class="ov-kv__label">{{ 'web.common.status' | translate }}:</span>
               <span class="ed-status ed-status--sm">{{ detail.status_nm }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">{{ detail.createdAt.split('T')[0] }}</span>
+              <span class="ov-kv__label">{{ 'web.common.lblCreated' | translate }}:</span>
+              <span class="ov-kv__value">{{ detail.createdAt?.split('T')[0] }}</span>
             </div>
           </div>
         </div>
 
         <div class="ed-info-card">
           <div class="ed-info-card__head">
-            <h6 class="ed-info-card__title">Event Settings</h6>
+            <h6 class="ed-info-card__title">{{ 'web.community.events.eventSettings' | translate }}</h6>
           </div>
           <div class="ed-info-card__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Attendees:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.attendees' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.attendees }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Max Attendees:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.maxAttendees' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.maxAttendance }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Sendable to:</span>
+              <span class="ov-kv__label">{{ 'web.community.events.sendableTo' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.sendableTo }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Created:</span>
-              <span class="ov-kv__value">{{ detail.createdAt.split('T')[0] }}</span>
+              <span class="ov-kv__label">{{ 'web.common.lblCreated' | translate }}:</span>
+              <span class="ov-kv__value">{{ detail.createdAt?.split('T')[0] }}</span>
             </div>
           </div>
         </div>
@@ -173,21 +173,21 @@
     <div class="ov-detail-layout__right">
       <div class="box ov-card overflow-visible !mb-0">
         <div class="border-b border-defaultborder px-5 py-3.5 flex items-center justify-between">
-          <h6 class="ov-card-title m-0">Attendees</h6>
+          <h6 class="ov-card-title m-0">{{ 'web.community.events.attendees' | translate }}</h6>
         </div>
         <div *ngIf="attendees.length==0" class="flex flex-col items-center justify-center gap-2 px-5 py-16 text-center">
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-light text-textmuted">
             <img src="assets/images/work-order-detail/users.svg" alt="" width="24" height="24" />
           </div>
-          <p class="m-0 text-base font-semibold text-defaulttextcolor">No attendees found</p>
-          <p class="m-0 text-sm text-textmuted">No attendees are registered for this event.</p>
+          <p class="m-0 text-base font-semibold text-defaulttextcolor">{{ 'web.community.events.noAttendeesFound' | translate }}</p>
+          <p class="m-0 text-sm text-textmuted">{{ 'web.community.events.noAttendeesDesc' | translate }}</p>
         </div>
-        <div *ngIf="attendees.length>0" class="flex flex-col items-center justify-center gap-2 px-5   text-center"> 
+        <div *ngIf="attendees.length>0" class="flex flex-col items-center justify-center gap-2 px-5 text-center"> 
           <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
             <thead class="bg-info/10">
               <tr class="border-b border-defaultborder">
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sno </th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Contacts</th> 
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.common.sno' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.community.events.colContacts' | translate }}</th> 
               </tr>
             </thead>
             <tbody> 
@@ -203,10 +203,10 @@
   </div>
 
   <!-- Event Preview — Figma 2782:141636 -->
-  <div *ngIf="showPreview" class="event-preview" role="dialog" aria-modal="true" aria-label="Event preview"
+  <div *ngIf="showPreview" class="event-preview" role="dialog" aria-modal="true" [attr.aria-label]="'web.common.preview' | translate"
     (click)="closePreview()">
     <div class="event-preview__stack" (click)="$event.stopPropagation()">
-      <button type="button" class="event-preview__close" (click)="closePreview()" aria-label="Close preview">
+      <button type="button" class="event-preview__close" (click)="closePreview()" [attr.aria-label]="'web.common.close' | translate">
         <img src="assets/images/event-preview/close-plus.svg" alt="" width="20" height="20" class="event-preview__close-ico" />
       </button>
 
@@ -222,11 +222,11 @@
               </div>
             </div>
             <div class="event-preview__nav">
-              <button type="button" class="event-preview__nav-btn" aria-label="Back" (click)="closePreview()">
+              <button type="button" class="event-preview__nav-btn" [attr.aria-label]="'web.common.previous' | translate" (click)="closePreview()">
                 <img src="assets/images/event-preview/chevron-left.svg" alt="" width="16" height="16" />
               </button>
-              <p class="event-preview__nav-title">Event Information</p>
-              <button type="button" class="event-preview__nav-btn" aria-label="More">
+              <p class="event-preview__nav-title">{{ 'web.community.events.eventInformation' | translate }}</p>
+              <button type="button" class="event-preview__nav-btn" [attr.aria-label]="'web.common.action' | translate">
                 <img src="assets/images/event-preview/more-horizontal.svg" alt="" width="16" height="16" />
               </button>
             </div>
@@ -242,36 +242,36 @@
           <div class="event-preview__scroll">
             <section class="event-preview__card">
               <div class="event-preview__row">
-                <p class="event-preview__label">Event Name</p>
+                <p class="event-preview__label">{{ 'web.community.events.eventName' | translate }}</p>
                 <p class="event-preview__value">{{ detail.name }}</p>
               </div>
               <div class="event-preview__row">
-                <p class="event-preview__label">Event Location</p>
+                <p class="event-preview__label">{{ 'web.community.events.location' | translate }}</p>
                 <p class="event-preview__value">{{ detail.location }}</p>
               </div>
               <div class="event-preview__row">
-                <p class="event-preview__label">Email</p>
+                <p class="event-preview__label">{{ 'web.common.lblEmail' | translate }}</p>
                 <p class="event-preview__value">{{ detail.email }}</p>
               </div>
               <div class="event-preview__row">
-                <p class="event-preview__label">Phone Number</p>
+                <p class="event-preview__label">{{ 'web.common.lblPhone' | translate }}</p>
                 <p class="event-preview__value">{{ detail.phone }}</p>
               </div>
               <div class="event-preview__row">
-                <p class="event-preview__label">Event Date</p>
+                <p class="event-preview__label">{{ 'web.community.events.eventDate' | translate }}</p>
                 <p class="event-preview__value">{{ detail.date }}</p>
               </div>
               <div class="event-preview__row">
-                <p class="event-preview__label">Event Time</p>
+                <p class="event-preview__label">{{ 'web.common.lblTime' | translate }}</p>
                 <p class="event-preview__value">{{ eventTimeRange }}</p>
               </div>
               <div class="event-preview__row event-preview__row--last">
-                <p class="event-preview__label">Max Attendees</p>
+                <p class="event-preview__label">{{ 'web.community.events.maxAttendees' | translate }}</p>
                 <span class="event-preview__attendees">{{ detail.maxAttendance }}</span>
               </div>
               <div class="event-preview__row event-preview__row--last">
-                <p class="event-preview__label">Event Image</p>
-                <a href="{{ detail.event_image_path }}" target="_blank" class="event-preview__attendees">View Image</a>
+                <p class="event-preview__label">{{ 'web.community.events.eventImage' | translate }}</p>
+                <a href="{{ detail.event_image_path }}" target="_blank" class="event-preview__attendees">{{ 'web.community.events.viewImage' | translate }}</a>
               </div>
             </section>
 
@@ -279,14 +279,14 @@
               <div class="event-preview__row">
                 <div class="event-preview__label-row">
                   <img src="assets/images/event-preview/map-pin.svg" alt="" width="14" height="14" />
-                  <p class="event-preview__label mb-0">Address</p>
+                  <p class="event-preview__label mb-0">{{ 'web.common.address' | translate }}</p>
                 </div>
                 <p class="event-preview__value">{{ detail.location }}</p>
               </div>
               <div class="event-preview__row event-preview__row--last">
                 <div class="event-preview__label-row">
                   <img src="assets/images/event-preview/globe.svg" alt="" width="14" height="14" />
-                  <p class="event-preview__label mb-0">City</p>
+                  <p class="event-preview__label mb-0">{{ 'web.common.city' | translate }}</p>
                 </div>
                 <p class="event-preview__value">{{ eventCity }}</p>
               </div>
@@ -294,7 +294,7 @@
           </div>
 
           <div class="event-preview__cta-wrap">
-            <button type="button" class="event-preview__cta">Join Event</button>
+            <button type="button" class="event-preview__cta">{{ 'web.community.events.joinEvent' | translate }}</button>
           </div>
           <div class="event-preview__home">
             <span class="event-preview__home-bar"></span>

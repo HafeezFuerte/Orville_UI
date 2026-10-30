@@ -1,4 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ export class CreateWorkOrderComponent implements OnInit {
   private commonService = inject(CommonService);
   private propertiesService = inject(PropertiesService);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
   private sanitizer = inject(DomSanitizer);
 
   editId: string | null = null;
@@ -150,19 +151,19 @@ export class CreateWorkOrderComponent implements OnInit {
 
   saveWorkOrder() {
     if(this.title== null || this.title==""){
-      this.toastr.error("Invalid Title");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidTitle'));
       return;
     }
     else if(this.selectedProperty== null || this.selectedProperty==""){
-      this.toastr.error("Invalid Property");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidProperty'));
       return;
     } 
     else if(this.selectedCategory== null || this.selectedCategory==""){
-      this.toastr.error("Invalid Category");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidCategory'));
       return;
     }
     else if(this.selectedPriority== null || this.selectedPriority==""){
-      this.toastr.error("Invalid Priority");
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidPriority'));
       return;
     } 
 
@@ -221,26 +222,26 @@ export class CreateWorkOrderComponent implements OnInit {
           if (uploadTasks.length > 0) {
             forkJoin(uploadTasks).subscribe({
               next: () => {
-                this.toastr.success("Work order and all files saved successfully");
+                this.toastr.success(this.translate.instant('web.facility.workOrders.savedWithFilesSuccess'));
                 this.goBack();
               },
               error: (err) => {
                  
-                this.toastr.warning("Work order saved, but some files failed to upload");
+                this.toastr.warning(this.translate.instant('web.facility.workOrders.savedFilesUploadFailed'));
                 this.goBack();
               }
             });
           } else {
-            this.toastr.success( "Work order saved successfully");
+            this.toastr.success(this.translate.instant('web.facility.workOrders.savedSuccess'));
             this.goBack();
           }
         } else {
-          this.toastr.error(res.message || "Failed to save work order");
+          this.toastr.error(res.message || this.translate.instant('web.facility.workOrders.saveFailed'));
         }
       },
       error: (err: any) => {
          
-        this.toastr.error("An error occurred while saving the work order");
+        this.toastr.error(this.translate.instant('web.facility.workOrders.saveError'));
       }
     });
   }

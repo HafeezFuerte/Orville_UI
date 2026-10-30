@@ -6,6 +6,7 @@ import { SharedTableComponent } from '../../../../shared/components/shared-table
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'app-support-technician-detail',
@@ -17,6 +18,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 export class SupportTechnicianDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
+  private commonService = inject(CommonService);
   private router = inject(Router);
   
   technicianId: any = null;
@@ -32,14 +34,15 @@ export class SupportTechnicianDetailComponent implements OnInit {
   }
 
   getTechnicianDetails() {
+    const currentUser = this.commonService.getCurrentUser();
     const payload = {
       typeId: 33,
       filterId: 0,
       filterText: this.technicianId,
       filterText1: "",
-      userId: Number(localStorage.getItem('userId')) || 1,
-      clientId: "74BB6922",
-      companyId: Number(localStorage.getItem('companyId')) || 1
+      userId: currentUser?.userId,
+      clientId: currentUser?.clientId,
+      companyId: currentUser?.companyId
     };
 
     this.propertiesService.getMasterDetails(payload).subscribe({
@@ -91,6 +94,21 @@ export class SupportTechnicianDetailComponent implements OnInit {
 
   activeTab = 'Work Orders';
   tabs = ['Work Orders'];
+
+  getTabLabel(tab: string): string {
+    const map: { [k: string]: string } = {
+      'Work Orders': 'web.contacts.tabWorkOrders'
+    };
+    return map[tab] || tab;
+  }
+
+  getActionLabel(label: string): string {
+    const map: { [k: string]: string } = {
+      'Edit Technician': 'web.contacts.lblEditTechnician',
+      'Block Technician': 'web.contacts.lblBlockTechnician'
+    };
+    return map[label] || label;
+  }
 
   showActionDropdown = false;
 

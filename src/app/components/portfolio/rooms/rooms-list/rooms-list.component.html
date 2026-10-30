@@ -9,7 +9,7 @@
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
       {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.rooms.lblImport' | translate">
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="openImportModal()" [attr.data-tooltip]="'web.rooms.lblImport' | translate">
       <i class="ri-upload-2-line text-[18px]"></i>
       {{ 'web.rooms.lblImport' | translate }}
     </button>
@@ -103,7 +103,7 @@
           </label>
           <label *ngFor="let col of tableColumns" class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
             <input type="checkbox" [checked]="col.visible !== false" (change)="toggleColumn(col.key)" class="h-3.5 w-3.5 rounded text-primary">
-            {{ col.label }}
+            {{ col.label | translate }}
           </label>
         </div>
       </div>
@@ -357,3 +357,9 @@
 </app-filter-drawer>
 <app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
 </app-delete-confirmation>
+
+<app-bulk-import-modal
+  [(isOpen)]="isImportModalOpen"
+  entityType="room"
+  (importCompleted)="onImportCompleted()">
+</app-bulk-import-modal>

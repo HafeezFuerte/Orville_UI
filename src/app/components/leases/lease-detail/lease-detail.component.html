@@ -4,16 +4,16 @@
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </button>
     <div>
-      <h3 class="ov-page-title">{{ leaseInfo.name || leaseInfo.active_lease || 'Lease Details' }}</h3>
+      <h3 class="ov-page-title">{{ leaseInfo.name || leaseInfo.active_lease || ('web.leases.lblLeaseDetails' | translate) }}</h3>
       <p class="ov-page-sub">
-        Home / Lease / {{ leaseInfo.active_lease || leaseInfo.name || 'Lease' }} /
-        <span class="ov-page-sub__current">Details</span>
+        {{ 'web.common.lblHome' | translate }} / {{ 'web.common.lblLeases' | translate }} / {{ leaseInfo.active_lease || leaseInfo.name || ('web.common.lblLeases' | translate) }} /
+        <span class="ov-page-sub__current">{{ 'web.common.lblDetails' | translate }}</span>
       </p>
       <ol class="ov-sr">
         <li><a [routerLink]="['/insights']">{{ 'web.common.lblHome' | translate }}</a></li>
         <li><a (click)="goBack()" class="cursor-pointer">{{ 'web.common.lblLeases' | translate }}</a></li>
         <li>{{ leaseInfo.active_lease || leaseInfo.name }}</li>
-        <li>Details</li>
+        <li>{{ 'web.common.lblDetails' | translate }}</li>
       </ol>
     </div>
   </div>
@@ -22,16 +22,16 @@
     <div *ngIf="leaseInfo?.status==228" class="relative">
       <button type="button" (click)="toggleProgressPopover($event)" class="ld-progress-btn">
         <span class="ld-progress-btn__dot"></span>
-        <span>In Progress</span>
+        <span>{{ 'web.leases.lblInProgress' | translate }}</span>
         <img src="assets/images/common/chevron-down.svg" alt="" width="10" height="10" class="ld-progress-btn__chev" />
       </button>
 
       <div *ngIf="showProgressPopover" class="ld-approval-pop" (click)="$event.stopPropagation()">
         <div class="ld-approval-pop__head">
-          <h5 class="ld-approval-pop__title">Approval</h5>
+          <h5 class="ld-approval-pop__title">{{ 'web.leases.lblApproval' | translate }}</h5>
           <span class="ld-progress-btn ld-progress-btn--sm">
             <span class="ld-progress-btn__dot"></span>
-            In Progress
+            {{ 'web.leases.lblInProgress' | translate }}
           </span>
         </div>
 
@@ -59,15 +59,15 @@
         </div>
 
         <button type="button" (click)="sendApprovalReminder()" class="ld-approval-pop__cta">
-          Send approval reminder
+          {{ 'web.leases.btnSendApprovalReminder' | translate }}
         </button>
       </div>
     </div>
 
     <div class="relative">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
-        [attr.data-tooltip]="'Action Menu'" [attr.aria-expanded]="showActionMenu">
-        Action
+        [attr.data-tooltip]="'web.common.lblAction' | translate" [attr.aria-expanded]="showActionMenu">
+        {{ 'web.common.lblAction' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
@@ -75,12 +75,12 @@
           <ng-container *ngFor="let option of actionOptions">
             <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
               [class.ov-action-menu__item--danger-icon]="option.dangerIcon"
-              (click)="$event.stopPropagation(); onActionClick(option.label)">
+              (click)="$event.stopPropagation(); onActionClick(option)">
               <span class="ov-action-menu__icon-box">
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -88,12 +88,12 @@
           <ng-container *ngFor="let option of actionOptions">
             <button *ngIf="option.danger" type="button" role="menuitem"
               class="ov-action-menu__item ov-action-menu__item--danger"
-              (click)="$event.stopPropagation(); onActionClick(option.label)">
+              (click)="$event.stopPropagation(); onActionClick(option)">
               <span class="ov-action-menu__icon-box">
                 <img *ngIf="option.asset" class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 <i *ngIf="!option.asset" [class]="option.icon + ' text-[14px]'"></i>
               </span>
-              <span>{{ option.label }}</span>
+              <span>{{ option.label | translate }}</span>
             </button>
           </ng-container>
         </div>
@@ -103,16 +103,16 @@
     <div class="relative" *ngIf="leaseInfo?.status==228 && approvalUser && approvalUser.user_code==currentUser?.userCode">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleApprovalMenu($event)"
         [attr.aria-expanded]="showApprovalMenu">
-        Approval Request
+        {{ 'web.leases.lblRequestApproval' | translate }}
         <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
       </button>
       <div *ngIf="showApprovalMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
         <div class="ov-action-menu__list">
-          <a role="menuitem" class="ov-action-menu__item" (click)="OnApproveClick('Approve')">
+          <a role="menuitem" class="ov-action-menu__item cursor-pointer" (click)="OnApproveClick('Approve')">
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14">
             </span>
-            <span>Approve</span>
+            <span>{{ 'web.leases.lblApproveLease' | translate }}</span>
           </a>
         </div>
         <div class="ov-action-menu__footer">
@@ -121,20 +121,20 @@
             <span class="ov-action-menu__icon-box">
               <img class="ov-action-menu__icon" src="assets/images/action-menu/archive.svg" alt="" width="14" height="14">
             </span>
-            <span>Reject</span>
+            <span>{{ 'web.leases.lblRejectLease' | translate }}</span>
           </button>
         </div>
       </div>
     </div>
 
     <button *ngIf="activeTab === 'Overview'" type="button" class="ov-btn ov-btn-primary ld-header__cta"
-      (click)="printLease()" [attr.data-tooltip]="'Print Lease'">
+      (click)="printLease()" [attr.data-tooltip]="'web.leases.lblPrintLease' | translate">
       <img src="assets/images/action-menu/printer.svg" alt="" width="18" height="18" />
-      Print Lease
+      {{ 'web.leases.lblPrintLease' | translate }}
     </button>
     <button *ngIf="activeTab !== 'Overview'" type="button" (click)="editLease()"
-      class="ov-btn ov-btn-primary ld-header__cta" [attr.data-tooltip]="'Edit Lease'">
-      Edit Lease
+      class="ov-btn ov-btn-primary ld-header__cta" [attr.data-tooltip]="'web.leases.lblEditLease' | translate">
+      {{ 'web.leases.lblEditLease' | translate }}
     </button>
   </div>
 </div>
@@ -162,32 +162,32 @@
                 </span>
               </div>
             </div>
-            <span *ngIf="leaseInfo.is_renewed == true" class="ld-badge ld-badge--dark ld-badge--renewed">Renewed</span>
+            <span *ngIf="leaseInfo.is_renewed == true" class="ld-badge ld-badge--dark ld-badge--renewed">{{ 'web.leases.lblRenewed' | translate }}</span>
           </div>
           <div class="ld-hero__actions">
-            <button type="button" class="ld-hero__btn" [attr.data-tooltip]="'View Activity'">View Activity</button>
-            <button type="button" (click)="editLease()" class="ld-hero__btn ld-hero__btn--edit" [attr.data-tooltip]="'Edit Lease'">
-              Edit Lease
+            <button type="button" class="ld-hero__btn" [attr.data-tooltip]="'web.leases.lblViewActivity' | translate">{{ 'web.leases.lblViewActivity' | translate }}</button>
+            <button type="button" (click)="editLease()" class="ld-hero__btn ld-hero__btn--edit" [attr.data-tooltip]="'web.leases.lblEditLease' | translate">
+              {{ 'web.leases.lblEditLease' | translate }}
               <img src="assets/images/common/chevron-down.svg" alt="" width="12" height="12" class="ld-hero__btn-chev" />
             </button>
           </div>
         </div>
 
         <div class="ld-side__rule"></div>
-        <h6 class="ld-side__section-title">Information</h6>
+        <h6 class="ld-side__section-title">{{ 'web.leases.lblInformation' | translate }}</h6>
 
         <div *ngIf="leaseInfo.status === 176" class="ld-alert">
           <i class="ri-information-line ld-alert__ico" aria-hidden="true"></i>
           <div>
-            <p class="ld-alert__title">Lease in Draft Mode</p>
-            <p class="ld-alert__text">Your lease is in draft mode. Once you activate it, the invoices will be posted in the accounting.</p>
+            <p class="ld-alert__title">{{ 'web.leases.lblLeaseInDraftMode' | translate }}</p>
+            <p class="ld-alert__text">{{ 'web.leases.msgLeaseDraftModeDesc' | translate }}</p>
           </div>
         </div>
         <div *ngIf="leaseInfo.status === 228" class="ld-alert">
           <i class="ri-information-line ld-alert__ico" aria-hidden="true"></i>
           <div>
-            <p class="ld-alert__title">Lease in Approval Mode</p>
-            <p class="ld-alert__text">Lease Approval is pending by
+            <p class="ld-alert__title">{{ 'web.leases.lblLeaseInApprovalMode' | translate }}</p>
+            <p class="ld-alert__text">{{ 'web.leases.msgLeaseApprovalPendingBy' | translate }}
               <strong>{{ approvalUser && approvalUser.approver }}</strong>.
             </p>
           </div>
@@ -196,48 +196,48 @@
         <!-- Lease Information -->
         <div class="ld-panel">
           <div class="ld-panel__head">
-            <h6 class="ld-panel__title">Lease Information</h6>
+            <h6 class="ld-panel__title">{{ 'web.leases.lblLeaseInformation' | translate }}</h6>
           </div>
           <div class="ld-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Lease ID:</span><span class="ov-kv__value">{{ leaseInfo.code }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblLeaseID' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.code }}</span></div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Tenant:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblTenant' | translate }}:</span>
               <a [routerLink]="['/contacts/tenants/edit-tenant', leaseInfo?.tenant_code]" class="ov-link ov-kv__value">{{ leaseInfo.tenant }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Property:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblProperty' | translate }}:</span>
               <a [routerLink]="['/properties', leaseInfo?.property_code]" class="ov-link ov-kv__value">{{ leaseInfo.property }}</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Unit:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblUnit' | translate }}:</span>
               <a [routerLink]="['/units', leaseInfo?.unit_code]" class="ov-link ov-kv__value">{{ leaseInfo.unitcode }}</a>
             </div>
-            <div class="ov-kv"><span class="ov-kv__label">Duration:</span><span class="ov-kv__value">{{ leaseInfo.total_months }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">No of Occupants:</span><span class="ov-kv__value">{{ leaseInfo.no_of_persons }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Start Date:</span><span class="ov-kv__value">{{ leaseInfo.start_date | date:'MM-dd-yyyy' }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">End Date:</span><span class="ov-kv__value">{{ leaseInfo.end_date | date:'MM-dd-yyyy' }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Lease Days Left:</span><span class="ov-kv__value">{{ leaseInfo.leaseDaysLeft || 'N/A' }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Collector:</span><span class="ov-kv__value">{{ leaseInfo.collectedby }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblDuration' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.total_months }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblNoOfOccupants' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.no_of_persons }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblStartDate' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.start_date | date:'MM-dd-yyyy' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblEndDate' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.end_date | date:'MM-dd-yyyy' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblLeaseDaysLeft' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.leaseDaysLeft || 'N/A' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblCollector' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.collectedby }}</span></div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Short Term:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblShortTerm' | translate }}:</span>
               <span class="ld-pill" [class.ld-pill--yes]="leaseInfo.is_lease_short_term == true" [class.ld-pill--no]="leaseInfo.is_lease_short_term != true">
-                {{ leaseInfo.is_lease_short_term == true ? 'Yes' : 'No' }}
+                {{ leaseInfo.is_lease_short_term == true ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}
               </span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Renewed:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblRenewed' | translate }}:</span>
               <span class="ld-pill" [class.ld-pill--yes]="leaseInfo.is_renewed == true" [class.ld-pill--no]="leaseInfo.is_renewed != true">
-                {{ leaseInfo.is_renewed == true ? 'Yes' : 'No' }}
+                {{ leaseInfo.is_renewed == true ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}
               </span>
             </div>
             <div class="ov-kv" *ngIf="leaseInfo.is_renewed == true">
-              <span class="ov-kv__label">Renewed From:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblRenewedFrom' | translate }}:</span>
               <span class="ov-link ov-kv__value cursor-pointer">{{ leaseInfo.renewed_from || '-' }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Is Multi Unit:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblIsMultiUnit' | translate }}:</span>
               <span class="ld-pill" [class.ld-pill--yes]="leaseInfo.is_multi_unit == true" [class.ld-pill--no]="leaseInfo.is_multi_unit != true">
-                {{ leaseInfo.is_multi_unit == true ? 'Yes' : 'No' }}
+                {{ leaseInfo.is_multi_unit == true ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}
               </span>
             </div>
           </div>
@@ -245,38 +245,38 @@
           <div class="ld-panel__rule"></div>
 
           <button type="button" class="ld-more" (click)="showMoreLeaseInfo = !showMoreLeaseInfo">
-            {{ showMoreLeaseInfo ? 'Hide details' : 'View more details' }}
+            {{ showMoreLeaseInfo ? ('web.leases.lblHideDetails' | translate) : ('web.leases.lblViewMoreDetails' | translate) }}
             <img src="assets/images/common/chevron-down.svg" alt="" width="16" height="16"
               [class.rotate-180]="showMoreLeaseInfo" />
           </button>
 
           <div class="ld-panel__body" *ngIf="showMoreLeaseInfo">
-            <div class="ov-kv"><span class="ov-kv__label">Previous Lease Rent:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.previous_rent || '—' }}</span></div>
-            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">Remark:</span><span class="ov-kv__value">{{ leaseInfo.remark || '—' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblPreviousLeaseRent' | translate }}:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.previous_rent || '—' }}</span></div>
+            <div class="ov-kv ov-kv--stack"><span class="ov-kv__label">{{ 'web.leases.lblRemark' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.remark || '—' }}</span></div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Legal Case:</span>
+              <span class="ov-kv__label">{{ 'web.leases.lblLegalCase' | translate }}:</span>
               <span class="ld-pill" [class.ld-pill--yes]="leaseInfo.legal_case" [class.ld-pill--no]="!leaseInfo.legal_case">
-                {{ leaseInfo.legal_case ? 'Yes' : 'No' }}
+                {{ leaseInfo.legal_case ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}
               </span>
             </div>
-            <div class="ov-kv"><span class="ov-kv__label">Internal Status:</span><span class="ov-kv__value">{{ leaseInfo.internal_status || 'None' }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Created:</span><span class="ov-kv__value">{{ leaseInfo.created_date | date:'MM-dd-yyyy' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.contacts.lblInternalStatus' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.internal_status || 'None' }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.contacts.lblCreatedAt' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.created_date | date:'MM-dd-yyyy' }}</span></div>
           </div>
         </div>
 
         <!-- Financial Information -->
         <div class="ld-panel">
           <div class="ld-panel__head">
-            <h6 class="ld-panel__title">Financial Information</h6>
+            <h6 class="ld-panel__title">{{ 'web.leases.lblFinancialInformation' | translate }}</h6>
           </div>
           <div class="ld-panel__rule"></div>
           <div class="ld-panel__body">
-            <div class="ov-kv"><span class="ov-kv__label">Total Rent:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.rent_amount }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Annual Rent:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.annual_rent }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Monthly Rent:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.monthly_rent }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">No of Payments:</span><span class="ov-kv__value">{{ leaseInfo.total_payments }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">No of Rent Payments:</span><span class="ov-kv__value">{{ leaseInfo.total_rent_payments ?? leaseInfo.rent_payments ?? 0 }}</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Unit Market Rent:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.market_rent }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblTotalRent' | translate }}:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.rent_amount }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblAnnualRent' | translate }}:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.annual_rent }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblMonthlyRent' | translate }}:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.monthly_rent }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblTotalPayments' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.total_payments }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblNoOfRentPayments' | translate }}:</span><span class="ov-kv__value">{{ leaseInfo.total_rent_payments ?? leaseInfo.rent_payments ?? 0 }}</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblUnitMarketRent' | translate }}:</span><span class="ov-kv__value">{{ currentUser?.currencyCode }} {{ leaseInfo.market_rent }}</span></div>
           </div>
         </div>
 
@@ -292,13 +292,13 @@
               <a class="ov-link font-semibold cursor-pointer">Lease - 31650 - Marina Heights Towers</a>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Status:</span>
-              <span class="ld-pill ld-pill--yes">Active</span>
+              <span class="ov-kv__label">{{ 'web.common.lblStatus' | translate }}:</span>
+              <span class="ld-pill ld-pill--yes">{{ 'web.contacts.lblActive' | translate }}</span>
             </div>
-            <div class="ov-kv"><span class="ov-kv__label">Start Date:</span><span class="ov-kv__value">08-01-2025</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">End Date:</span><span class="ov-kv__value">06-30-2026</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Monthly Rent:</span><span class="ov-kv__value">AED 2,200.00</span></div>
-            <div class="ov-kv"><span class="ov-kv__label">Days Left:</span><span class="ov-kv__value">4 days</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblStartDate' | translate }}:</span><span class="ov-kv__value">08-01-2025</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblEndDate' | translate }}:</span><span class="ov-kv__value">06-30-2026</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblMonthlyRent' | translate }}:</span><span class="ov-kv__value">AED 2,200.00</span></div>
+            <div class="ov-kv"><span class="ov-kv__label">{{ 'web.leases.lblDaysLeft' | translate }}:</span><span class="ov-kv__value">4 days</span></div>
           </div>
         </div>
 
@@ -309,7 +309,7 @@
           </div>
           <div class="ld-panel__rule"></div>
           <div class="ld-panel__body ld-panel__body--tight">
-            <p class="ld-empty mb-0">No lease terms configured</p>
+            <p class="ld-empty mb-0">{{ 'web.leases.msgNoLeaseTerms' | translate }}</p>
           </div>
           <button type="button" class="ld-link-row" [attr.data-tooltip]="'web.leases.lblViewTerms' | translate">
             {{ 'web.leases.lblViewTerms' | translate }}
@@ -320,14 +320,14 @@
         <!-- Move In Checklist -->
         <div class="ld-panel ld-panel--cta">
           <div class="ld-panel__head">
-            <h6 class="ld-panel__title">Move In Checklist</h6>
+            <h6 class="ld-panel__title">{{ 'web.leases.lblMoveInChecklist' | translate }}</h6>
           </div>
           <div class="ld-panel__rule"></div>
           <div class="ld-panel__body ld-panel__body--tight">
-            <p class="ld-empty mb-0">No checklist items configured</p>
+            <p class="ld-empty mb-0">{{ 'web.leases.msgNoChecklistItems' | translate }}</p>
           </div>
-          <button type="button" class="ld-link-row">
-            View Checklist
+          <button type="button" class="ld-link-row" [attr.data-tooltip]="'web.leases.lblViewChecklist' | translate">
+            {{ 'web.leases.lblViewChecklist' | translate }}
             <img src="assets/images/common/chevron-down.svg" alt="" width="16" height="16" class="ld-link-row__chev" />
           </button>
         </div>
@@ -335,34 +335,34 @@
         <!-- Custom Fields -->
         <div class="ld-panel">
           <div class="ld-panel__head">
-            <h6 class="ld-panel__title">Custom Fields</h6>
+            <h6 class="ld-panel__title">{{ 'web.leases.lblCustomFields' | translate }}</h6>
           </div>
           <div class="ld-panel__rule"></div>
           <div class="ld-panel__body ld-panel__body--stack">
             <div class="ld-cf" *ngFor="let c of customFields">
               <span class="ld-cf__label">{{ c.field_name }}:</span>
-              <span class="ld-cf__value" [class.ld-cf__value--empty]="!c.field_value">{{ c.field_value || 'No value set' }}</span>
+              <span class="ld-cf__value" [class.ld-cf__value--empty]="!c.field_value">{{ c.field_value || ('web.leases.lblNoValueSet' | translate) }}</span>
             </div>
             <ng-container *ngIf="customFields.length==0">
               <div class="ld-cf">
-                <span class="ld-cf__label">No of Person:</span>
-                <span class="ld-cf__value ld-cf__value--empty">No value set</span>
+                <span class="ld-cf__label">{{ 'web.leases.lblNoOfPerson' | translate }}:</span>
+                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
               </div>
               <div class="ld-cf">
-                <span class="ld-cf__label">Move in Date:</span>
-                <span class="ld-cf__value ld-cf__value--empty">No value set</span>
+                <span class="ld-cf__label">{{ 'web.leases.lblMoveInDate' | translate }}:</span>
+                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
               </div>
               <div class="ld-cf">
-                <span class="ld-cf__label">Created By:</span>
-                <span class="ld-cf__value ld-cf__value--empty">No value set</span>
+                <span class="ld-cf__label">{{ 'web.leases.lblCreatedBy' | translate }}:</span>
+                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
               </div>
               <div class="ld-cf">
-                <span class="ld-cf__label">Created Date:</span>
-                <span class="ld-cf__value ld-cf__value--empty">No value set</span>
+                <span class="ld-cf__label">{{ 'web.contacts.lblCreatedAt' | translate }}:</span>
+                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
               </div>
               <div class="ld-cf">
-                <span class="ld-cf__label">Paying Date:</span>
-                <span class="ld-cf__value ld-cf__value--empty">No value set</span>
+                <span class="ld-cf__label">{{ 'web.leases.lblPayingDate' | translate }}:</span>
+                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
               </div>
             </ng-container>
           </div>
@@ -377,20 +377,20 @@
         
         <!-- Overview Content -->
         <div *ngIf="activeTab === 'Overview'" class="ld-right flex flex-col gap-4">
-          <h5 class="ld-right__title">Lease Overview</h5>
+          <h5 class="ld-right__title">{{ 'web.leases.lblLeaseOverview' | translate }}</h5>
 
           <!-- Financial Summary — Figma 5723:105568 -->
           <div class="ld-fin">
             <div class="ld-fin__head">
               <div class="ld-fin__head-text">
-                <h6 class="ld-fin__title">Financial Summary</h6>
-                <p class="ld-fin__sub">Important values are grouped first, so the user can understand the lease position quickly.</p>
+                <h6 class="ld-fin__title">{{ 'web.leases.lblFinancialSummary' | translate }}</h6>
+                <p class="ld-fin__sub">{{ 'web.leases.lblFinancialSummarySub' | translate }}</p>
               </div>
               <div class="ld-fin__response">
                 <span class="ld-fin__response-dot"></span>
                 <div>
-                  <span class="ld-fin__response-label">Payment response</span>
-                  <span class="ld-fin__response-value">No Response</span>
+                  <span class="ld-fin__response-label">{{ 'web.leases.lblPaymentResponse' | translate }}</span>
+                  <span class="ld-fin__response-value">{{ 'web.leases.lblNoResponse' | translate }}</span>
                 </div>
               </div>
             </div>
@@ -407,7 +407,7 @@
                     aria-hidden="true" />
                   <div class="ld-fin__balance-inner">
                     <div class="ld-fin__balance-top">
-                      <span class="ld-fin__label ld-fin__label--on-dark">Current Balance</span>
+                      <span class="ld-fin__label ld-fin__label--on-dark">{{ 'web.leases.lblCurrentBalance' | translate }}</span>
                       <h4 class="ld-fin__balance-amt">
                         {{ currentUser?.currencyCode || 'AED' }}
                         {{ ((invoiceData.length > 0 ? invoiceData[0].total_amount : totalPrice) || 0) | number:'1.2-2' }}
@@ -415,14 +415,14 @@
                     </div>
                     <div class="ld-fin__balance-row">
                       <div class="ld-fin__balance-cell">
-                        <span class="ld-fin__label ld-fin__label--on-dark">Total Income</span>
+                        <span class="ld-fin__label ld-fin__label--on-dark">{{ 'web.leases.lblTotalIncome' | translate }}</span>
                         <span class="ld-fin__balance-sub">
                           {{ currentUser?.currencyCode || 'AED' }}
                           {{ (leaseInfo?.income_amt || 0) | number:'1.2-2' }}
                         </span>
                       </div>
                       <div class="ld-fin__balance-cell">
-                        <span class="ld-fin__label ld-fin__label--on-dark">Security Deposit</span>
+                        <span class="ld-fin__label ld-fin__label--on-dark">{{ 'web.leases.lblSecurityDeposit' | translate }}</span>
                         <span class="ld-fin__balance-sub">
                           {{ currentUser?.currencyCode || 'AED' }}
                           {{ (leaseInfo?.security_income_amt || 0) | number:'1.2-2' }}
@@ -434,40 +434,40 @@
 
                 <div class="ld-fin__metrics">
                   <div class="ld-fin__metric">
-                    <span class="ld-fin__label">Paid</span>
+                    <span class="ld-fin__label">{{ 'web.leases.lblPaid' | translate }}</span>
                     <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].paid_amount | number:'1.2-2') : (0 | number:'1.2-2') }}</span>
                   </div>
                   <div class="ld-fin__metric">
-                    <span class="ld-fin__label">Upcoming</span>
+                    <span class="ld-fin__label">{{ 'web.leases.lblUpcoming' | translate }}</span>
                     <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ 0 | number:'1.2-2' }}</span>
                   </div>
                   <div class="ld-fin__metric">
-                    <span class="ld-fin__label">Bounced</span>
+                    <span class="ld-fin__label">{{ 'web.leases.lblBounced' | translate }}</span>
                     <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ 0 | number:'1.2-2' }}</span>
                   </div>
                   <div class="ld-fin__metric">
-                    <span class="ld-fin__label">Write Off</span>
+                    <span class="ld-fin__label">{{ 'web.leases.lblWriteOff' | translate }}</span>
                     <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ invoiceData.length>0 ? (invoiceData[0].round_off | number:'1.2-2') : (0 | number:'1.2-2') }}</span>
                   </div>
                 </div>
               </div>
 
-              <h6 class="ld-fin__other-title">Other amounts</h6>
+              <h6 class="ld-fin__other-title">{{ 'web.leases.lblOtherAmounts' | translate }}</h6>
               <div class="ld-fin__other">
                 <div class="ld-fin__metric">
-                  <span class="ld-fin__label">Equity</span>
+                  <span class="ld-fin__label">{{ 'web.leases.lblEquity' | translate }}</span>
                   <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ 0 | number:'1.2-2' }}</span>
                 </div>
                 <div class="ld-fin__metric">
-                  <span class="ld-fin__label">Outstanding Cheques</span>
+                  <span class="ld-fin__label">{{ 'web.leases.lblOutstandingCheques' | translate }}</span>
                   <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ 0 | number:'1.2-2' }}</span>
                 </div>
                 <div class="ld-fin__metric">
-                  <span class="ld-fin__label">Refundable Amount</span>
+                  <span class="ld-fin__label">{{ 'web.leases.lblRefundableAmount' | translate }}</span>
                   <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ (leaseInfo?.security_income_amt || 0) | number:'1.2-2' }}</span>
                 </div>
                 <div class="ld-fin__metric">
-                  <span class="ld-fin__label">Pending Adjustments</span>
+                  <span class="ld-fin__label">{{ 'web.leases.lblPendingAdjustments' | translate }}</span>
                   <span class="ld-fin__metric-amt">{{ currentUser?.currencyCode || 'AED' }} {{ 0 | number:'1.2-2' }}</span>
                 </div>
               </div>
@@ -485,7 +485,7 @@
 
           <div *ngIf="paymentSchedules.length>0" class="ov-card overflow-hidden">
             <div class="ov-card__head flex items-center justify-between">
-              <h6 class="ov-card-title">Payment Schedules</h6>
+              <h6 class="ov-card-title">{{ 'web.leases.lblPaymentSchedules' | translate }}</h6>
             </div>
             <div class="ov-card__body">
               <app-shared-table [columns]="invoiceColumns" [data]="paymentSchedules" [hasActions]="true">
@@ -520,7 +520,7 @@
 
           <div *ngIf="chequesData.length>0" class="ov-card overflow-hidden">
             <div class="ov-card__head">
-              <h6 class="ov-card-title">Cheques</h6>
+              <h6 class="ov-card-title">{{ 'web.leases.lblCheques' | translate }}</h6>
             </div>
             <div class="ov-card__body">
               <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
@@ -556,11 +556,11 @@
         <!-- TENANT TAB — match Lease Financials / Units title + CTA pattern (Figma 1267:57158) -->
         <div *ngIf="activeTab === 'Tenant'" class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
           <div class="ld-fin-tab__head">
-            <h5 class="ld-fin-tab__title">Lease Tenants</h5>
+            <h5 class="ld-fin-tab__title">{{ 'web.leases.lblLeaseTenants' | translate }}</h5>
             <button [routerLink]="['/contacts/tenants/add-tenant']" type="button" class="ov-btn ov-btn-primary"
-              [attr.data-tooltip]="'Add Tenant'">
+              [attr.data-tooltip]="'web.contacts.lblAddTenant' | translate">
               <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-              Add Tenant
+              {{ 'web.contacts.lblAddTenant' | translate }}
             </button>
           </div>
           <div class="ov-card overflow-hidden !mb-0">
@@ -578,7 +578,7 @@
                       <span class="ld-badge ld-badge--dark">{{ row.leasesCount }}</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="'status'">
-                      <span class="ov-status ov-status--success">Active</span>
+                      <span class="ov-status ov-status--success">{{ 'web.contacts.lblActive' | translate }}</span>
                     </ng-container>
                   </ng-container>
                 </ng-template>
@@ -590,7 +590,7 @@
         <!-- CHEQUES TAB -->
         <div *ngIf="activeTab === 'Cheques'" class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
           <div class="ld-fin-tab__head">
-            <h5 class="ld-fin-tab__title">Cheques</h5>
+            <h5 class="ld-fin-tab__title">{{ 'web.leases.lblCheques' | translate }}</h5>
           </div>
           <app-shared-table [columns]="chequeColumns" [data]="chequesData" [hasActions]="true">
             <ng-template #colTemplate let-row="row" let-col="col">
@@ -627,7 +627,7 @@
     <ng-template #financialsTpl>
       <div class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
         <div class="ld-fin-tab__head">
-          <h5 class="ld-fin-tab__title">Lease Financials</h5>
+          <h5 class="ld-fin-tab__title">{{ 'web.leases.lblLeaseFinancials' | translate }}</h5>
           <button [routerLink]="['/accounting/invoices/create']" type="button" [attr.data-tooltip]="'web.leases.lblAddInvoice' | translate" class="ov-btn ov-btn-primary">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.leases.lblAddInvoice' | translate }}
           </button>
@@ -674,19 +674,19 @@
     <ng-template #legalTpl>
       <div class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
         <div class="ld-fin-tab__head">
-          <h5 class="ld-fin-tab__title">Lease Legal Cases</h5>
-          <button type="button" [attr.data-tooltip]="'Add Legal Case'" class="ov-btn ov-btn-primary">
-            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> Add Legal Case
+          <h5 class="ld-fin-tab__title">{{ 'web.leases.lblLeaseLegalCases' | translate }}</h5>
+          <button type="button" [attr.data-tooltip]="'web.leases.lblAddLegalCase' | translate" class="ov-btn ov-btn-primary">
+            <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" /> {{ 'web.leases.lblAddLegalCase' | translate }}
           </button>
         </div>
         <app-shared-table [columns]="legalColumns" [data]="legalData" [hasActions]="false">
           <ng-template #colTemplate let-row="row" let-col="col">
             <ng-container [ngSwitch]="col.key">
               <ng-container *ngSwitchCase="'unitBlocked'">
-                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.unitBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.unitBlocked === 'No'">{{ row.unitBlocked }}</span>
+                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.unitBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.unitBlocked === 'No'">{{ row.unitBlocked === 'Yes' ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}</span>
               </ng-container>
               <ng-container *ngSwitchCase="'tenantBlocked'">
-                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.tenantBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.tenantBlocked === 'No'">{{ row.tenantBlocked }}</span>
+                <span class="ov-outline-chip" [class.ov-outline-chip--danger]="row.tenantBlocked === 'Yes'" [class.ov-outline-chip--muted]="row.tenantBlocked === 'No'">{{ row.tenantBlocked === 'Yes' ? ('web.common.lblYes' | translate) : ('web.common.lblNo' | translate) }}</span>
               </ng-container>
             </ng-container>
           </ng-template>
@@ -698,11 +698,11 @@
     <ng-template #inspectionsTpl>
       <div class="ld-fin-tab flex flex-col gap-4 animate-fade-in">
         <div class="ld-fin-tab__head">
-          <h5 class="ld-fin-tab__title">Lease Inspections</h5>
+          <h5 class="ld-fin-tab__title">{{ 'web.leases.lblLeaseInspections' | translate }}</h5>
           <button (click)="openInspectionModal()" type="button" class="ov-btn ov-btn-primary"
-            [attr.data-tooltip]="'Add Inspection'">
+            [attr.data-tooltip]="'web.leases.lblAddInspection' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Inspection
+            {{ 'web.leases.lblAddInspection' | translate }}
           </button>
         </div>
         <app-shared-table [columns]="inspectionsColumns" [data]="inspectionsData" [hasActions]="true">
@@ -712,12 +712,12 @@
                 <span class="text-primary font-semibold hover:underline cursor-pointer">{{ row.id }}</span>
               </ng-container>
               <ng-container *ngSwitchCase="'status'">
-                <span *ngIf="row.status === 'Completed'" class="ov-status ov-status--success">Completed</span>
-                <span *ngIf="row.status === 'Pending'" class="ov-status ov-status--warning">Pending</span>
+                <span *ngIf="row.status === 'Completed'" class="ov-status ov-status--success">{{ 'web.common.lblCompleted' | translate }}</span>
+                <span *ngIf="row.status === 'Pending'" class="ov-status ov-status--warning">{{ 'web.common.lblPending' | translate }}</span>
               </ng-container>
               <ng-container *ngSwitchCase="'scheduled'">
-                <span *ngIf="row.scheduled === 'Yes'" class="ld-badge ld-badge--dark">Yes</span>
-                <span *ngIf="row.scheduled === 'No'" class="ov-status ov-status--muted">No</span>
+                <span *ngIf="row.scheduled === 'Yes'" class="ld-badge ld-badge--dark">{{ 'web.common.lblYes' | translate }}</span>
+                <span *ngIf="row.scheduled === 'No'" class="ov-status ov-status--muted">{{ 'web.common.lblNo' | translate }}</span>
               </ng-container>
             </ng-container>
           </ng-template>
@@ -753,57 +753,57 @@
     <div class="bg-white rounded-xl shadow-lg w-full max-w-xl overflow-hidden animate-fade-in text-xs">
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div>
-          <h5 class="text-xs font-bold text-gray-800 m-0">Add New Invoice</h5>
-          <p class="text-[10px] text-gray-600 m-0">Create an invoice for this lease.</p>
+          <h5 class="text-xs font-bold text-gray-800 m-0">{{ 'web.leases.lblAddNewInvoice' | translate }}</h5>
+          <p class="text-[10px] text-gray-600 m-0">{{ 'web.leases.lblCreateInvoiceSub' | translate }}</p>
         </div>
-        <button (click)="closeInvoiceModal()" class="text-gray-600 hover:text-gray-600 transition-all">
+        <button (click)="closeInvoiceModal()" class="text-gray-600 hover:text-gray-600 transition-all" [attr.aria-label]="'web.common.lblClose' | translate">
           <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
         </button>
       </div>
       <div class="p-6 flex flex-col gap-4">
-        <h6 class="font-bold text-primary m-0 uppercase tracking-wider text-[10px]">Invoice Details</h6>
+        <h6 class="font-bold text-primary m-0 uppercase tracking-wider text-[10px]">{{ 'web.leases.lblInvoiceDetails' | translate }}</h6>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Amount *</label>
+            <label class="font-bold text-gray-700">{{ 'web.common.lblAmount' | translate }} *</label>
             <input type="text" class="form-control text-xs" placeholder="0.00">
           </div>
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Account *</label>
+            <label class="font-bold text-gray-700">{{ 'web.leases.lblAccount' | translate }} *</label>
             <select class="form-control text-xs">
-              <option>Select Account</option>
+              <option>{{ 'web.leases.phSelectAccount' | translate }}</option>
               <option>Rental Income</option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Due On *</label>
+            <label class="font-bold text-gray-700">{{ 'web.leases.lblDueOn' | translate }} *</label>
             <input type="date" class="form-control text-xs">
           </div>
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Invoice Number</label>
-            <input type="text" class="form-control text-xs" placeholder="Enter invoice number">
+            <label class="font-bold text-gray-700">{{ 'web.leases.lblInvoiceNumber' | translate }}</label>
+            <input type="text" class="form-control text-xs" [placeholder]="'web.leases.phEnterInvoiceNumber' | translate">
           </div>
         </div>
         
-        <h6 class="font-bold text-primary m-0 mt-2 uppercase tracking-wider text-[10px]">Payment Setup</h6>
+        <h6 class="font-bold text-primary m-0 mt-2 uppercase tracking-wider text-[10px]">{{ 'web.leases.lblPaymentSetup' | translate }}</h6>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Recurring Cycle *</label>
+            <label class="font-bold text-gray-700">{{ 'web.leases.lblRecurringCycle' | translate }} *</label>
             <select class="form-control text-xs">
-              <option>Select</option>
+              <option>{{ 'web.common.lblSelect' | translate }}</option>
               <option>Fixed</option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-            <label class="font-bold text-gray-700">Tax Profile</label>
+            <label class="font-bold text-gray-700">{{ 'web.leases.lblTaxProfile' | translate }}</label>
             <select class="form-control text-xs">
-              <option>Select Account</option>
+              <option>{{ 'web.leases.phSelectAccount' | translate }}</option>
             </select>
           </div>
         </div>
       </div>
       <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-        <button (click)="closeInvoiceModal()" class="ti-btn ti-btn-light !py-2 font-bold text-xs rounded-lg shadow-sm">Close</button>
-        <button (click)="closeInvoiceModal()" class="ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">Save Invoice</button>
+        <button (click)="closeInvoiceModal()" class="ti-btn ti-btn-light !py-2 font-bold text-xs rounded-lg shadow-sm">{{ 'web.common.lblClose' | translate }}</button>
+        <button (click)="closeInvoiceModal()" class="ti-btn bg-primary hover:bg-primary-hover text-white !py-2 font-bold text-xs rounded-lg shadow-sm">{{ 'web.leases.btnSaveInvoice' | translate }}</button>
       </div>
     </div>
   </div>
@@ -811,63 +811,63 @@
   <!-- ADD INSPECTION MODAL -->
   <div *ngIf="showInspectionModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
     <div class="ov-modal-stack" style="max-width: 600px">
-      <button type="button" class="ov-modal__float-close" (click)="closeInspectionModal()" aria-label="Close">
+      <button type="button" class="ov-modal__float-close" (click)="closeInspectionModal()" [attr.aria-label]="'web.common.lblClose' | translate">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
       <div class="ov-modal">
         <div class="ov-modal__header">
-          <h5 class="ov-modal__title">Add Inspection</h5>
-          <p class="ov-modal__sub">Schedule an inspection for this lease.</p>
+          <h5 class="ov-modal__title">{{ 'web.leases.lblAddInspection' | translate }}</h5>
+          <p class="ov-modal__sub">{{ 'web.leases.lblScheduleInspectionSub' | translate }}</p>
         </div>
         <div class="ov-modal__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Inspection ID <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblInspectionID' | translate }} <span class="text-danger">*</span></label>
               <input type="text" class="ov-input" placeholder="e.g. 31668" />
             </div>
             <div>
-              <label class="ov-label">Inspection Name <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblInspectionName' | translate }} <span class="text-danger">*</span></label>
               <input type="text" class="ov-input" placeholder="e.g. Move Out" />
             </div>
             <div>
-              <label class="ov-label">Inspection Type <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblInspectionType' | translate }} <span class="text-danger">*</span></label>
               <select class="ov-input">
                 <option>Move Out</option>
                 <option>Move In</option>
               </select>
             </div>
             <div>
-              <label class="ov-label">Inspection Date <span class="text-danger">*</span></label>
+              <label class="ov-label">{{ 'web.leases.lblInspectionDate' | translate }} <span class="text-danger">*</span></label>
               <input type="date" class="ov-input" />
             </div>
           </div>
         </div>
         <div class="ov-modal__footer">
-          <button type="button" class="ov-btn ov-btn-ghost" (click)="closeInspectionModal()">Cancel</button>
-          <button type="button" class="ov-btn ov-btn-primary" (click)="closeInspectionModal()">Save Inspection</button>
+          <button type="button" class="ov-btn ov-btn-ghost" (click)="closeInspectionModal()">{{ 'web.contacts.lblCancel' | translate }}</button>
+          <button type="button" class="ov-btn ov-btn-primary" (click)="closeInspectionModal()">{{ 'web.leases.btnSaveInspection' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
   <div *ngIf="showApprovalModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
     <div class="ov-modal-stack" style="max-width: 520px">
-      <button type="button" class="ov-modal__float-close" (click)="showApprovalModal = false" aria-label="Close">
+      <button type="button" class="ov-modal__float-close" (click)="showApprovalModal = false" [attr.aria-label]="'web.common.lblClose' | translate">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
       <div class="ov-modal">
       <div class="ov-modal__header">
-        <h4 class="ov-modal__title">{{ApprovalModalText}}</h4>
+        <h4 class="ov-modal__title">{{ ApprovalModalText | translate }}</h4>
         <!-- <p class="ov-modal__sub">Send a direct message email to this Tenant.</p> -->
       </div>
       <div class="ov-modal__body flex flex-col gap-4">
         <div>
-          <label class="ov-label">Notes</label>
-          <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" placeholder="Enter Comments....."></textarea>
+          <label class="ov-label">{{ 'web.common.lblNotes' | translate }}</label>
+          <textarea rows="5" class="ov-input" [(ngModel)]="approveComments" [placeholder]="'web.leases.phEnterComments' | translate"></textarea>
         </div>
       </div>
       <div class="ov-modal__footer">
-        <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">Cancel</button>
-        <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">Save</button>
+        <button type="button" (click)="showApprovalModal = false" class="ov-btn ov-btn-ghost">{{ 'web.contacts.lblCancel' | translate }}</button>
+        <button type="button" (click)="ApproveRejectLease()" class="ov-btn ov-btn-primary">{{ 'web.common.lblSave' | translate }}</button>
       </div>
       </div>
     </div>
@@ -876,17 +876,17 @@
   <!-- PRINT PREVIEW MODAL & PRINTABLE EJARI TENANCY CONTRACT TEMPLATE -->
   <div *ngIf="showPrintModal" class="ov-modal-backdrop" role="dialog" aria-modal="true">
     <div class="ov-modal-stack" style="max-width: 920px; width: 95%;">
-      <button type="button" class="ov-modal__float-close" (click)="closePrintModal()" aria-label="Close">
+      <button type="button" class="ov-modal__float-close" (click)="closePrintModal()" [attr.aria-label]="'web.common.lblClose' | translate">
         <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
       </button>
       <div class="ov-modal">
         <div class="ov-modal__header flex justify-between items-center border-b pb-3 mb-4">
-          <h4 class="ov-modal__title text-lg font-semibold">Dubai Tenancy Contract Preview (Ejari Format)</h4>
+          <h4 class="ov-modal__title text-lg font-semibold">{{ 'web.leases.lblDubaiTenancyPreview' | translate }}</h4>
           <div class="flex gap-2">
             <button type="button" (click)="triggerPrint()" class="ov-btn ov-btn-primary flex items-center gap-1">
-              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> Print Contract
+              <img src="assets/images/action-menu/printer.svg" alt="" width="16" height="16" /> {{ 'web.leases.lblPrintContract' | translate }}
             </button>
-            <button type="button" (click)="closePrintModal()" class="ov-btn ov-btn-ghost">Close</button>
+            <button type="button" (click)="closePrintModal()" class="ov-btn ov-btn-ghost">{{ 'web.common.lblClose' | translate }}</button>
           </div>
         </div>
         <div class="ov-modal__body overflow-y-auto max-h-[78vh] p-4 bg-white rounded shadow-inner">

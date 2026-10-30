@@ -1,4 +1,4 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +40,7 @@ export class TicketDetailComponent {
   private commonService = inject(CommonService);
   private commonTabsService = inject(Common_TabsService);
   private toastr=inject(ToastrService);
+  public translate = inject(TranslateService);
   currentUser = this.commonService.getCurrentUser(); 
   activeTab: DetailTab = 'overview';
   showActionMenu = false;
@@ -201,20 +202,20 @@ activities:any=[];
   initializeTabs() {
     this.tabsList = [
       {
-        key: 'Overview',
-        label: 'Overview',
+        key: 'overview',
+        label: 'web.facility.tickets.overview',
         layout: 'content',
         data: []
       },
       {
-        key: 'Messages',
-        label: 'Messages',
+        key: 'messages',
+        label: 'web.facility.workOrders.tabMessages',
         layout: 'content',
         data: []
       },
       {
         key: 'notes',
-        label: 'Notes',
+        label: 'web.common.lblNotes',
         entity: 'Tickets',
         entity_id: this.ticketId,
         data: this.noteRows || [],
@@ -229,7 +230,7 @@ activities:any=[];
   } 
   ApproveRejectLease() {
     if(this.approveComments==null || this.approveComments==""){
-      this.toastr.error(`Invalid  ${this.ApprovalModalText} comments`)
+      this.toastr.error(this.translate.instant('web.facility.tickets.invalidComments'));
       return;
     }
     this.commonTabsService.getMasterByType({
@@ -240,14 +241,14 @@ activities:any=[];
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
-          this.toastr.success("Successfully updated status");
+          this.toastr.success(this.translate.instant('web.facility.tickets.msgStatusUpdatedSuccess'));
           this.showApprovalModal=false;
           setTimeout(() => {
             this.router.navigate(['/facility/tickets']);
           }, 2000);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -264,7 +265,7 @@ activities:any=[];
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult) {
           if(typeId==83){
-            this.toastr.success("Successfully updated the status");
+            this.toastr.success(this.translate.instant('web.facility.tickets.msgStatusUpdatedSuccess'));
             setTimeout(() => {
               window.location.reload();
             }, 5000);
@@ -280,12 +281,12 @@ activities:any=[];
   }
   updateticketstaus(){
     if(this.ticket.statusid==null || this.ticket.statusid==""){
-      this.toastr.error("Invalid status id");
+      this.toastr.error(this.translate.instant('web.facility.tickets.invalidStatusId'));
       return;
      }
     if(this.updatednotes==null || this.updatednotes==""){
-     this.toastr.error("Invalid comments");
-     return;
+      this.toastr.error(this.translate.instant('web.facility.tickets.invalidComments'));
+      return;
     }
     else{
       this.loadlookup(83,this.ticket.statusid,'',this.ticketId,this.updatednotes);

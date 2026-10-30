@@ -4,8 +4,9 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
+import { CommonService } from '../../../../services/common.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
@@ -25,8 +26,10 @@ export class VendorDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   @ViewChild(AttachmentsComponent) attachmentsTable!: AttachmentsComponent;
   @ViewChild(NotesComponent) notesTable!: NotesComponent;
@@ -88,14 +91,15 @@ export class VendorDetailComponent implements OnInit {
   }
 
   getVendorDetails() {
+    const currentUser = this.commonService.getCurrentUser();
     const payload = {
       typeId: 29,
       filterId: 0,
       filterText: this.vendorId,
       filterText1: "",
-      userId: Number(localStorage.getItem('userId')) || 1,
-      clientId: "74BB6922",
-      companyId: Number(localStorage.getItem('companyId')) || 1
+      userId: currentUser?.userId,
+      clientId: currentUser?.clientId,
+      companyId: currentUser?.companyId
     };
 
     this.propertiesService.getMasterDetails(payload).subscribe({
@@ -127,7 +131,7 @@ export class VendorDetailComponent implements OnInit {
           if (result.quotations) this.quotationData = result.quotations;
           if (result.notes) this.noteData = result.notes;
           else if (result.note) this.noteData = result.note;
-          if (result.users) this.userData = result.users;
+          if (result.users) this.userData = this.mapUserData(result.users);
           if (result.emergency_dtls) this.emergencyContactData = result.emergency_dtls;
           
           if (this.vendorData) {
@@ -239,8 +243,48 @@ export class VendorDetailComponent implements OnInit {
   activeTab = 'Overview';
   tabs = ['Overview', 'Unit', 'Work Orders', 'Financials', 'Attachments', 'Quotations', 'Notes', 'Users', 'Technicians', 'Emergency Contact'];
 
+  getTabLabel(tab: string): string {
+    const map: { [k: string]: string } = {
+      'Overview': 'web.contacts.tabOverview',
+      'Unit': 'web.contacts.tabUnit',
+      'Work Orders': 'web.contacts.tabWorkOrders',
+      'Financials': 'web.contacts.tabFinancials',
+      'Attachments': 'web.contacts.tabAttachments',
+      'Quotations': 'web.contacts.tabQuotations',
+      'Notes': 'web.contacts.tabNotes',
+      'Users': 'web.contacts.tabUsers',
+      'Technicians': 'web.contacts.tabTechnicians',
+      'Emergency Contact': 'web.contacts.tabEmergencyContact'
+    };
+    return map[tab] || tab;
+  }
+
   activeFinancialSubTab = 'Bills';
   financialSubTabs = ['Bills', 'Purchase Orders'];
+
+  getSubTabLabel(sub: string): string {
+    const map: { [k: string]: string } = {
+      'Bills': 'web.contacts.lblBills',
+      'Purchase Orders': 'web.contacts.lblPurchaseOrders'
+    };
+    return map[sub] || sub;
+  }
+
+  getActionLabel(label: string): string {
+    const map: { [k: string]: string } = {
+      'Edit Vendor': 'web.contacts.lblEditVendor',
+      'Add Attachment': 'web.contacts.lblAddAttachment',
+      'Add Broadcast': 'web.contacts.lblAddBroadcast',
+      'Add Quotation': 'web.contacts.lblAddQuotation',
+      'Add User': 'web.contacts.lblAddUser',
+      'Add Emergency Contact': 'web.contacts.lblAddEmergencyContact',
+      'Send Email': 'web.contacts.lblSendEmail',
+      'View Activity': 'web.contacts.lblViewActivity',
+      'Assign Properties': 'web.contacts.lblAssignProperties',
+      'Block Vendor': 'web.contacts.lblBlockVendor'
+    };
+    return map[label] || label;
+  }
 
   showPersonalDetails = true;
   showActionDropdown = false;
@@ -332,7 +376,7 @@ export class VendorDetailComponent implements OnInit {
     }
     else if (label === 'Add User') {
       this.activeTab = 'Users';
-      this.showAddUserModal = true;
+      this.openAddUserModal();
     }
     else if (label === 'Add Emergency Contact') {
       this.activeTab = 'Emergency Contact';
@@ -346,13 +390,14 @@ export class VendorDetailComponent implements OnInit {
 
   saveEmergencyContact(): void {
     if (!this.emergencyForm.email_address) {
-      this.toastr.error('Please enter email address');
+      this.toastr.error(this.translate.instant('web.contacts.errPleaseEnterEmail'));
       return;
     }
+    const currentUser = this.commonService.getCurrentUser();
     const payload = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: "74BB6922",
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: "web",
       languageid: 1,
       code: "",
@@ -370,17 +415,17 @@ export class VendorDetailComponent implements OnInit {
     this.propertiesService.saveEmergencyDetails(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
-          this.toastr.success(res.message || 'Emergency contact saved successfully');
+          this.toastr.success(res.message || this.translate.instant('web.contacts.msgEmergencyContactSaved'));
           this.showAddEmergencyContactModal = false;
           this.resetEmergencyForm();
           this.getVendorDetails();
         } else {
-          this.toastr.error(res?.message || 'Failed to save emergency contact');
+          this.toastr.error(res?.message || this.translate.instant('web.contacts.errFailedToSaveEmergencyContact'));
         }
       },
       error: (err: any) => {
         console.error('Error saving emergency contact:', err);
-        this.toastr.error('Failed to save emergency contact');
+        this.toastr.error(this.translate.instant('web.contacts.errFailedToSaveEmergencyContact'));
       }
     });
   }
@@ -623,6 +668,166 @@ export class VendorDetailComponent implements OnInit {
   ];
 
   userData: any[] = [];
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0).toUpperCase() + (parts.length > 1 ? parts[1].charAt(0).toUpperCase() : '');
+  }
+
+  mapUserData(users: any[]): any[] {
+    if (!Array.isArray(users)) return [];
+    return users.map((u: any) => {
+      const fullName = u.column1 || u.name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '-';
+      const userCode = u.user_code || u.id || u.code || '-';
+      const username = u.username || u.userName || '-';
+      const email = u.email_address || u.email || '-';
+      const roleName = u.role_name || u.role || 'Vendors';
+      const roleType = u.role_type || u.type || (u.role_type === 'V' ? 'Vendor' : u.role_type === 'T' ? 'Tenant' : u.role_type === 'L' ? 'Landlord' : '-');
+      const isActive = u.is_active === true || u.is_active === 1 || u.is_active === 'Active' || u.status === 'Active';
+      const isDefault = u.is_parent === 1 || u.is_parent === true || u.is_default === true;
+      const timezone = u.time_zone || u.timezone || '-';
+      const country = u.country || u.country_name || '-';
+      return {
+        ...u,
+        id: userCode,
+        user_code: userCode,
+        name: fullName,
+        column1: fullName,
+        userName: username,
+        username: username,
+        email: email,
+        email_address: email,
+        phone: u.phone || u.phone_no || u.mobile_no || '-',
+        role: roleName,
+        role_name: roleName,
+        type: roleType,
+        role_type: roleType,
+        status: isActive ? 'Active' : 'Inactive',
+        is_active: isActive,
+        timezone: timezone,
+        Timezone: timezone,
+        country: country,
+        Country: country,
+        isDefault: isDefault,
+        Default: isDefault ? 'Yes' : 'No',
+        initials: this.getInitials(fullName)
+      };
+    });
+  }
+
+  userForm = {
+    email_address: '',
+    username: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+    phone_code: '+971',
+    phone: '',
+    is_default: false
+  };
+
+  openAddUserModal(): void {
+    this.resetUserForm();
+    this.showAddUserModal = true;
+  }
+
+  resetUserForm(): void {
+    this.userForm = {
+      email_address: '',
+      username: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone_code: '+971',
+      phone: '',
+      is_default: false
+    };
+  }
+
+  saveUser(): void {
+    if (!this.userForm.email_address) {
+      this.toastr.error('Please enter email address.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.password || this.userForm.password.length < 8) {
+      this.toastr.error('Password must be at least 8 characters.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.first_name || !this.userForm.last_name) {
+      this.toastr.error('Please enter first and last name.', 'Validation Error');
+      return;
+    }
+    if (!this.userForm.phone) {
+      this.toastr.error('Please enter phone number.', 'Validation Error');
+      return;
+    }
+
+    const currentUser = this.commonService.getCurrentUser();
+    const fullPhone = (this.userForm.phone_code ? this.userForm.phone_code + ' ' : '') + (this.userForm.phone || '');
+
+    const requestJson = {
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
+      source: 'web',
+      languageid: 1,
+      email_address: this.userForm.email_address,
+      username: this.userForm.username || this.userForm.email_address,
+      password: this.userForm.password,
+      first_name: this.userForm.first_name,
+      last_name: this.userForm.last_name,
+      name: `${this.userForm.first_name} ${this.userForm.last_name}`.trim(),
+      mobile_no: fullPhone,
+      phone: fullPhone,
+      code: '',
+      roleid: 4,
+      role_id: 4,
+      role_code: 'V',
+      parent_code: this.vendorData?.code || this.vendorId,
+      is_default: this.userForm.is_default || false,
+      gender: 'Male',
+      profileImage_path: '',
+      status: 'Active'
+    };
+
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(requestJson));
+
+    this.propertiesService.saveUsers(formData).subscribe({
+      next: (res: any) => {
+        if (res && (res.statusCode == 200 || res.statusCode == '200' || res.status == 'success')) {
+          let duplicateError: string | null = null;
+          if (res.objResult?.table?.[0]) {
+            const firstRow = res.objResult.table[0];
+            const keys = Object.keys(firstRow);
+            for (const key of keys) {
+              const val = firstRow[key];
+              if (key.toLowerCase().includes('duplicate') || (typeof val === 'number' && val < 0)) {
+                duplicateError = typeof val === 'string' ? val : key;
+                break;
+              }
+            }
+          }
+          if (duplicateError) {
+            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', 'Error');
+            return;
+          }
+
+          this.toastr.success(res.message || 'User saved successfully!', 'Success');
+          this.showAddUserModal = false;
+          this.resetUserForm();
+          this.getVendorDetails();
+        } else {
+          this.toastr.error(res?.message || 'Failed to save user.', 'Error');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error saving user:', err);
+        this.toastr.error(err.error?.message || 'Server error encountered while saving user.', 'Error');
+      }
+    });
+  }
 
   // --- TAB 9: TECHNICIANS ---
   technicianColumns = [

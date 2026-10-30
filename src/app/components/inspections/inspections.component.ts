@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../shared/components/filter-drawer/filter-drawer.component';
 
 @Component({
   selector: 'app-inspections',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
   templateUrl: './inspections.component.html',
   styleUrls: []
 })
@@ -19,6 +20,12 @@ export class InspectionsComponent implements OnInit {
   searchQuery = '';
   isDrawerOpen = false;
   isColumnDropdownOpen = false;
+
+  statusTabs: { id: 'All' | 'Scheduled' | 'Not Scheduled'; labelKey: string }[] = [
+    { id: 'All', labelKey: 'web.inspections.list.tabAll' },
+    { id: 'Scheduled', labelKey: 'web.inspections.list.tabScheduled' },
+    { id: 'Not Scheduled', labelKey: 'web.inspections.list.tabNotScheduled' }
+  ];
 
   // Filter properties from sidebar
   filterTags = '';
@@ -48,16 +55,16 @@ export class InspectionsComponent implements OnInit {
 
   // Column checkbox list matching Figma column selector
   columns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true },
-    { key: 'name', label: 'Name', visible: true },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'type', label: 'Type', visible: true, useTemplate: true },
-    { key: 'property', label: 'Property', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', visible: true, useTemplate: true },
-    { key: 'scheduled', label: 'Scheduled', visible: true, useTemplate: true },
-    { key: 'userId', label: 'User Id', visible: true, useTemplate: true },
-    { key: 'created', label: 'Created', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true }
+    { key: 'id', label: 'web.inspections.list.colId', visible: true, useTemplate: true },
+    { key: 'name', label: 'web.inspections.list.colName', visible: true },
+    { key: 'status', label: 'web.inspections.list.colStatus', visible: true, useTemplate: true },
+    { key: 'type', label: 'web.inspections.list.colType', visible: true, useTemplate: true },
+    { key: 'property', label: 'web.inspections.list.colProperty', visible: true, useTemplate: true },
+    { key: 'unit', label: 'web.inspections.list.colUnit', visible: true, useTemplate: true },
+    { key: 'scheduled', label: 'web.inspections.list.colScheduled', visible: true, useTemplate: true },
+    { key: 'userId', label: 'web.inspections.list.colUserId', visible: true, useTemplate: true },
+    { key: 'created', label: 'web.inspections.list.colCreated', visible: true },
+    { key: 'action', label: 'web.inspections.list.colAction', visible: true, useTemplate: true }
   ];
 
   // Dropdown menu state

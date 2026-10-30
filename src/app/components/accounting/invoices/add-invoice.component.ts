@@ -141,7 +141,7 @@ export class AddInvoiceComponent {
 
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -174,7 +174,7 @@ export class AddInvoiceComponent {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -355,7 +355,7 @@ validateForm(
 
     if (control?.invalid) {
       errors.push(
-        `${fieldLabels[controlName]} ${'IsRequired'}`
+        `${fieldLabels[controlName]} ${this.translate.instant('web.accounting.invoices.isRequired')}`
       );
     }
 
@@ -366,12 +366,12 @@ validateForm(
 
   onSubmit() { 
     const invoiceformLabels = {
-      tenant_code:"Tenant",
-      lease_code: "Lease", 
-      paymentVia: "Payment Type",
-      issueDate: "Issue Date", 
-      dueDate: "Due Date", 
-      invoiceNumber: "Invoice Number", 
+      tenant_code: this.translate.instant('web.accounting.invoices.tenant'),
+      lease_code: this.translate.instant('web.accounting.invoices.lease'), 
+      paymentVia: this.translate.instant('web.accounting.invoices.paymentVia'),
+      issueDate: this.translate.instant('web.accounting.invoices.dateOfIssue'), 
+      dueDate: this.translate.instant('web.accounting.invoices.dueDate'), 
+      invoiceNumber: this.translate.instant('web.accounting.invoices.invoiceNo'), 
     };
 
     
@@ -382,7 +382,7 @@ validateForm(
  if (errors.length > 0) { 
    this.toastr.error(
      errors.join('<br>'),
-     'Validation',
+     this.translate.instant('web.accounting.invoices.validation'),
      {
        enableHtml: true,
        timeOut: 5000,
@@ -431,23 +431,23 @@ validateForm(
       this.accountingService.save_invoice(formData).subscribe({
         next: (res: any) => {
           if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-            this.toastr.success("Successfully saved");
+            this.toastr.success(this.translate.instant('web.accounting.invoices.successfullySaved'));
             this.router.navigate(['/accounting/invoices']);
 
           } else {
-            this.toastr.error(res.message || "Failed to save legal cases");
+            this.toastr.error(res.message || (this.translate.instant('web.accounting.invoices.saveInvoice') + ' failed'));
           }
         },
         error: (err: any) => {
-          console.error("Error saving work order:", err);
-          this.toastr.error("An error occurred while saving the legal cases : " + err);
+          console.error("Error saving invoice:", err);
+          this.toastr.error(this.translate.instant('web.common.lblSomethingWentWrong') + ' : ' + err);
         }
       });
 
 
     }  
     else{
-      this.toastr.error("Please fill all required fields : ");
+      this.toastr.error(this.translate.instant('web.accounting.invoices.pleaseFillAllRequired'));
       return;
     }
   }

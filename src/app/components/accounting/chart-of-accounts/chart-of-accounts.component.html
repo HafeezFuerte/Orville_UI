@@ -1,13 +1,13 @@
 <div class="coa-page">
   <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between page-header !py-4">
     <div>
-      <h3 class="ov-page-title">Chart of Accounts</h3>
-      <p class="ov-page-sub">View and manage all your accounts</p>
+      <h3 class="ov-page-title">{{ 'web.accounting.chartOfAccounts.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.accounting.chartOfAccounts.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
       <a routerLink="/accounting/chart-of-accounts/create" class="ov-btn ov-btn-primary">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Add Account
+        {{ 'web.accounting.chartOfAccounts.addAccount' | translate }}
       </a>
     </div>
   </div>
@@ -22,7 +22,7 @@
         [class.is-active]="typeFilter === tab.id" [class.text-gray-500]="typeFilter !== tab.id"
         [class.border-transparent]="typeFilter !== tab.id" 
         (click)="setTypeFilter(tab.id)">
-         {{ tab.name }}
+         {{ tab.id === 'All' ? ('web.common.lblAll' | translate) : getArabicLookupName(tab) }}
         <!-- {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span> -->
       </button>
     </div>
@@ -32,7 +32,7 @@
     <div class="ov-toolbar !border-b-0 !px-5 !h-auto min-h-10 !pt-5 !pb-0 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
         <div class="ov-search flex-1">
-          <label class="sr-only" for="coa-search">Search by name</label>
+          <label class="sr-only" for="coa-search">{{ 'web.accounting.chartOfAccounts.searchByName' | translate }}</label>
           <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
           <input
             id="coa-search"
@@ -41,21 +41,21 @@
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
             (input)="applyLocalSearch()"
-            placeholder="Search by name">
+            [placeholder]="'web.accounting.chartOfAccounts.searchByName' | translate">
         </div>
-        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [title]="'web.accounting.chartOfAccounts.search' | translate">
           <i class="ri-search-line text-[18px]"></i>
         </button>
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.accounting.chartOfAccounts.filter' | translate }}
         </button>
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.accounting.chartOfAccounts.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -85,17 +85,17 @@
             </ng-container>
             <ng-container *ngSwitchCase="'action'">
               <div class="relative inline-flex" (click)="$event.stopPropagation()">
-                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" aria-label="Row actions">
+                <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="toggleRowAction(row.id, $event)" [attr.aria-label]="'web.accounting.chartOfAccounts.colAction' | translate">
                   <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
                 </button>
                 <div *ngIf="openActionId === row.id"
                   class="absolute end-0 z-20 mt-1 min-w-[156px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                    (click)="openAccount(row.code)">View Account</button>
+                    (click)="openAccount(row.code)">{{ 'web.accounting.chartOfAccounts.viewAccount' | translate }}</button>
                   <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
-                    (click)="openAccount(row.code)">Edit Account</button>
+                    (click)="openAccount(row.code)">{{ 'web.accounting.chartOfAccounts.editAccount' | translate }}</button>
                   <button type="button" class="coa-delete-action block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
-                    (click)="deleteAccount(row.code)">Delete Account</button>
+                    (click)="deleteAccount(row.code)">{{ 'web.accounting.chartOfAccounts.deleteAccount' | translate }}</button>
                 </div>
               </div>
             </ng-container>
@@ -106,19 +106,19 @@
 
     <div class="ov-page">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.accounting.chartOfAccounts.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
             <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.accounting.chartOfAccounts.showing' | translate }} {{ startRecord }} {{ 'web.accounting.chartOfAccounts.to' | translate }} {{ endRecord }} {{ 'web.accounting.chartOfAccounts.of' | translate }} {{ totalRecords }} {{ 'web.accounting.chartOfAccounts.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.accounting.chartOfAccounts.page' | translate }} {{ displayPage }} {{ 'web.accounting.chartOfAccounts.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.accounting.chartOfAccounts.prev' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
           <ng-container *ngFor="let item of pagerItems">
@@ -126,7 +126,7 @@
             <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
               [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
           </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.accounting.chartOfAccounts.next' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
         </div>
@@ -138,18 +138,18 @@
 <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Name</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterName" placeholder="Enter name">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.chartOfAccounts.filterByName' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterName" [placeholder]="'web.accounting.chartOfAccounts.enterName' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Type</label>
+      <label class="ov-label mb-1.5">{{ 'web.accounting.chartOfAccounts.filterByType' | translate }}</label>
       <ng-select [(ngModel)]="filterType" [items]="typeOptions" [searchable]="true" [clearable]="true"
-        placeholder="Select Type" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.accounting.chartOfAccounts.selectType' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Sub Account</label>
+      <label class="ov-label mb-1.5">{{ 'web.accounting.chartOfAccounts.filterBySubAccount' | translate }}</label>
       <ng-select [(ngModel)]="filterSubAccount" [items]="subAccountOptions" [clearable]="true"
-        placeholder="Select" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.common.lblSelect' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

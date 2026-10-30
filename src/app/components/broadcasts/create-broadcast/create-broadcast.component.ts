@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
   selector: 'app-create-broadcast',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './create-broadcast.component.html',
   styleUrl: './create-broadcast.component.scss'
 })
@@ -18,12 +19,13 @@ export class CreateBroadcastComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
+  public translate = inject(TranslateService);
 
   editId: string = '';
   editDbId: number = 0;
 
   // 1. Choose Recipients
-  audiences = ['Select', 'Tenant', 'Property', 'Landlord'];
+  audiences = ['Tenant', 'Property', 'Landlord'];
   selectedAudience: string | null = null;
   
   allTenants: boolean = true;
@@ -39,7 +41,7 @@ export class CreateBroadcastComponent implements OnInit {
   scheduleTime: string = '';
 
   // 3. Message setup
-  templates = ['Select', 'Lease Agreement Notice', 'Rent Reminder', 'Maintenance Update'];
+  templates = ['Lease Agreement Notice', 'Rent Reminder', 'Maintenance Update'];
   selectedTemplate: string | null = null;
   
   subjectInput: string = '';
@@ -55,9 +57,10 @@ export class CreateBroadcastComponent implements OnInit {
 
   // Summary computed
   get summaryRecipient(): string {
-    if (this.allTenants) return 'All Tenants';
-    if (this.activeTenants) return 'Active Tenants';
-    return this.recipientList.join(', ') || 'None selected';
+    if (this.allTenants) return this.translate.instant('web.broadcasts.allTenants');
+    if (this.activeTenants) return this.translate.instant('web.broadcasts.activeTenants');
+    if (this.inactiveTenants) return this.translate.instant('web.broadcasts.inactiveTenants');
+    return this.recipientList.join(', ') || '';
   }
 
   ngOnInit() {

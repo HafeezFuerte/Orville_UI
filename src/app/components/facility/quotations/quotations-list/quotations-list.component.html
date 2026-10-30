@@ -2,8 +2,8 @@
 <div>
   <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
     <div>
-      <h3 class="ov-page-title">Quotations</h3>
-      <p class="ov-page-sub">Manage and view all your quotations</p>
+      <h3 class="ov-page-title">{{ 'web.facility.quotations.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.facility.quotations.subtitle' | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <button type="button" class="ov-btn ov-btn-ghost" (click)="navigateToRequest()">
@@ -22,20 +22,20 @@
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-defaultborder px-5 py-3">
-      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">Quotations List</h5>
+      <h5 class="m-0 text-[16px] font-semibold leading-[21px] text-defaulttextcolor">{{ 'web.facility.quotations.quotationsList' | translate }}</h5>
     </div>
 
     <div class="border-b border-defaultborder px-5 py-3 overflow-x-auto">
-      <div class="ov-seg ov-seg--solid !w-max max-w-none" role="tablist" aria-label="Quotation status">
+      <div class="ov-seg ov-seg--solid !w-max max-w-none" role="tablist" [attr.aria-label]="'web.facility.quotations.colQuotationStatus' | translate">
         <button
         type="button"
        *ngFor="let tab of statusTabs"
        class="ov-seg__btn"
        [class.is-active]="statusFilter === tab.id"
-       [class.is-active]="statusFilter === tab.id" [class.text-gray-500]="statusFilter !== tab.id"
+       [class.text-gray-500]="statusFilter !== tab.id"
        [class.border-transparent]="statusFilter !== tab.id" 
        (click)="setStatusFilter(tab.id)">
-           {{ tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+           {{ (tab.id === 'All' ? ('web.facility.quotations.all' | translate) : tab.name) }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
      </button> 
       </div>
     </div>
@@ -43,23 +43,24 @@
     <div class="ov-toolbar !h-auto min-h-10 !border-b-0 !px-5 !pt-5 !pb-0 flex-col items-stretch sm:flex-row sm:items-center">
       <div class="flex items-center gap-2 flex-1 max-w-none sm:max-w-[490px]">
         <div class="ov-search flex-1">
+          <label class="sr-only" for="qt-search">{{ 'web.facility.quotations.phSearch' | translate }}</label>
           <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
-          <input type="text" class="ov-input ov-search__input"
-            [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" placeholder="Search">
+          <input id="qt-search" type="text" class="ov-input ov-search__input"
+            [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyLocalSearch()" [placeholder]="'web.facility.quotations.phSearch' | translate">
         </div>
-        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" title="Search">
+        <button type="button" (click)="onSearch()" class="ov-btn ov-btn-primary !h-10 !px-3" [attr.aria-label]="'web.facility.quotations.phSearch' | translate" [title]="'web.facility.quotations.phSearch' | translate">
           <i class="ri-search-line text-[18px]"></i>
         </button>
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.facility.quotations.filter' | translate }}
         </button>
         <div class="relative" data-qt-columns (click)="$event.stopPropagation()">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.facility.quotations.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -93,7 +94,7 @@
               {{ row.status_nm }}
             </span>
             <div *ngSwitchCase="'action'" class="qt-action" data-qt-action (click)="$event.stopPropagation()">
-              <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.colAction' | translate"
                 [attr.aria-expanded]="openRowActionId === row.code"
                 (mousedown)="$event.stopPropagation()"
                 (click)="toggleRowAction(row.code, $event)">
@@ -106,34 +107,13 @@
       </app-shared-table>
     </div>
 
-    <div class="ov-page">
-      <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
-        <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
-            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
-          </select>
-          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
-        </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
-      </div>
-      <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
-        <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-          </button>
-          <ng-container *ngFor="let item of pagerItems">
-            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
-          </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-ov-paginator
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChange)="onPaginatorChange($event)">
+    </app-ov-paginator>
   </div>
 
   <div *ngIf="openRowActionId && rowMenuStyle"
@@ -143,27 +123,27 @@
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
     <button type="button" role="menuitem" class="qt-row-menu__item"
-      (click)="navigateToDetail(openRowActionId!)">View</button>
+      (click)="navigateToDetail(openRowActionId!)">{{ 'web.facility.quotations.view' | translate }}</button>
     <button type="button" role="menuitem" class="qt-row-menu__item"
-      (click)="navigateToedit(openRowActionId)">Edit</button>
+      (click)="navigateToedit(openRowActionId)">{{ 'web.facility.quotations.edit' | translate }}</button>
   </div>
 
   <app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col">
-        <label class="ov-label">Title</label>
-        <input type="text" class="ov-input" [(ngModel)]="filterTitle" placeholder="Enter title">
+        <label class="ov-label">{{ 'web.facility.quotations.filterTitle' | translate }}</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterTitle" [placeholder]="'web.facility.quotations.phEnterTitle' | translate">
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">Status</label>
+        <label class="ov-label">{{ 'web.facility.quotations.filterStatus' | translate }}</label>
         <select class="ov-input" [(ngModel)]="filterStatus">
-          <option [ngValue]="null">All</option>
+          <option [ngValue]="null">{{ 'web.facility.quotations.all' | translate }}</option>
           <option *ngFor="let status of statusTabs.slice(1)" [ngValue]="status">{{ status }}</option>
         </select>
       </div>
       <div class="flex flex-col">
-        <label class="ov-label">Vendor</label>
-        <input type="text" class="ov-input" [(ngModel)]="filterVendor" placeholder="Enter vendor">
+        <label class="ov-label">{{ 'web.facility.quotations.filterVendor' | translate }}</label>
+        <input type="text" class="ov-input" [(ngModel)]="filterVendor" [placeholder]="'web.facility.quotations.phEnterVendor' | translate">
       </div>
     </div>
   </app-filter-drawer>

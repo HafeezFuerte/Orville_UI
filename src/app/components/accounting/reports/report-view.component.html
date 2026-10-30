@@ -1,20 +1,20 @@
 <div class="flex flex-col gap-4 pb-8" *ngIf="report">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to reports">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.accounting.reports.backToReports' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
         <h3 class="ov-page-title">{{ report.title }}</h3>
         <p class="ov-page-sub">
-          Accounting / Report / <span class="ov-page-sub__current">{{ report.crumb }}</span>
+          {{ 'web.accounting.reports.accounting' | translate }} / {{ 'web.accounting.reports.report' | translate }} / <span class="ov-page-sub__current">{{ report.crumb }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions" *ngIf="report.showExport">
       <button type="button" class="ov-btn ov-btn-ghost">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
-        Export
+        {{ 'web.accounting.reports.export' | translate }}
       </button>
     </div>
   </div>
@@ -26,7 +26,7 @@
   <div class="ov-card flex flex-wrap items-end justify-between gap-4 p-5" *ngIf="!report.hideDateFilter">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-w-0 md:max-w-[576px]">
       <div>
-        <label class="ov-label">From date</label>
+        <label class="ov-label">{{ 'web.accounting.reports.fromDate' | translate }}</label>
         <div class="ov-date">
           <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
           <input type="text" class="ov-input" name="fromDate" [(ngModel)]="fromDate"
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div>
-        <label class="ov-label">End Date</label>
+        <label class="ov-label">{{ 'web.accounting.reports.endDate' | translate }}</label>
         <div class="ov-date">
           <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
           <input type="text" class="ov-input" name="toDate" [(ngModel)]="toDate"
@@ -43,15 +43,15 @@
       </div>
     </div>
     <div class="flex shrink-0 items-center gap-2.5">
-      <button type="button" class="ov-btn ov-btn-primary" (click)="applyFilter()">Apply Filter</button>
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilter()">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="applyFilter()">{{ 'web.accounting.reports.applyFilter' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilter()">{{ 'web.common.cancel' | translate }}</button>
     </div>
   </div>
 
   <div class="ov-card flex flex-wrap items-end justify-between gap-4 p-5" *ngIf="report.yearFilter">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-w-0 md:max-w-[576px]">
       <div>
-        <label class="ov-label">Financial year</label>
+        <label class="ov-label">{{ 'web.accounting.reports.financialYear' | translate }}</label>
         <ng-select [(ngModel)]="year" [items]="report.yearOptions || []" [clearable]="false"
           name="reportYear" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
       </div>
@@ -69,7 +69,7 @@
   <section class="ov-card rpt-stmt" *ngIf="layout === 'statement'">
     <div class="rpt-stmt__head">
       <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
-      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+      <p class="rpt-stmt__period">{{ 'web.accounting.reports.forThePeriod' | translate }} {{ periodLabel }}</p>
     </div>
     <div class="rpt-section" *ngFor="let section of report.sections">
       <button
@@ -114,24 +114,24 @@
   <section class="ov-card rpt-stmt" *ngIf="layout === 'table'">
     <div class="rpt-stmt__head">
       <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
-      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+      <p class="rpt-stmt__period">{{ 'web.accounting.reports.forThePeriod' | translate }} {{ periodLabel }}</p>
     </div>
     <div class="ov-toolbar !border-b-0 !px-0 !h-auto min-h-10 !pt-0 !pb-4 flex-col sm:flex-row items-stretch sm:items-center">
       <div class="ov-search flex-1 max-w-none sm:max-w-[437px]">
-        <label class="sr-only" for="trial-search">Search</label>
+        <label class="sr-only" for="trial-search">{{ 'web.accounting.reports.search' | translate }}</label>
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input id="trial-search" type="text" class="ov-input ov-search__input"
-          [(ngModel)]="tableQuery" (keyup.enter)="onSearch()" placeholder="Search">
+          [(ngModel)]="tableQuery" (keyup.enter)="onSearch()" [placeholder]="'web.accounting.reports.search' | translate">
       </div>
       <div class="ov-toolbar__btns">
         <button type="button" (click)="isDrawerOpen = true" class="ov-btn ov-btn-toolbar">
           <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-          Filter
+          {{ 'web.accounting.reports.filter' | translate }}
         </button>
         <div class="relative" (click)="$event.stopPropagation()">
           <button type="button" (click)="toggleColumnDropdown($event)" class="ov-btn ov-btn-toolbar">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.accounting.reports.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -147,7 +147,7 @@
       <table class="rpt-table">
         <thead>
           <tr>
-            <th *ngFor="let col of visibleTableColumns" [class.is-num]="col.key !== 'account' && col.key !== 'type'">{{ col.label }}</th>
+            <th *ngFor="let col of visibleTableColumns" [class.is-num]="col.key !== 'account' && col.key !== 'type'">{{ col.label | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -162,7 +162,7 @@
     </div>
     <div class="ov-page">
       <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
+        <span class="ov-page__label">{{ 'web.accounting.reports.show' | translate }}</span>
         <div class="ov-page__size">
           <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
             <option [ngValue]="5">5</option>
@@ -171,12 +171,12 @@
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
+        <span>{{ 'web.accounting.reports.showing' | translate }} {{ startRecord }} {{ 'web.accounting.reports.to' | translate }} {{ endRecord }} {{ 'web.accounting.reports.of' | translate }} {{ totalRecords }} {{ 'web.accounting.reports.records' | translate }}</span>
       </div>
       <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages || 1 }}</span>
+        <span class="ov-page__label">{{ 'web.accounting.reports.page' | translate }} {{ displayPage }} {{ 'web.accounting.reports.of' | translate }} {{ totalPages || 1 }}</span>
         <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
+          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" [attr.aria-label]="'web.accounting.reports.prev' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
           </button>
           <ng-container *ngFor="let item of pagerItems">
@@ -184,7 +184,7 @@
             <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
               [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
           </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
+          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" [attr.aria-label]="'web.accounting.reports.next' | translate">
             <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
           </button>
         </div>
@@ -195,7 +195,7 @@
   <section class="ov-card rpt-stmt" *ngIf="layout === 'simple'">
     <div class="rpt-stmt__head" *ngIf="report.statementTitle">
       <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
-      <p class="rpt-stmt__period" *ngIf="periodLabel">For the period {{ periodLabel }}</p>
+      <p class="rpt-stmt__period" *ngIf="periodLabel">{{ 'web.accounting.reports.forThePeriod' | translate }} {{ periodLabel }}</p>
     </div>
     <div class="rpt-simple-head">
       <span>{{ report.simpleLeftLabel || 'Account' }}</span>
@@ -218,7 +218,7 @@
   <section class="ov-card rpt-stmt" *ngIf="layout === 'grouped'">
     <div class="rpt-stmt__head">
       <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
-      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+      <p class="rpt-stmt__period">{{ 'web.accounting.reports.forThePeriod' | translate }} {{ periodLabel }}</p>
     </div>
     <div class="rpt-ledger" *ngFor="let group of report.ledgerGroups">
       <button type="button" class="rpt-ledger__head" (click)="toggleLedgerGroup(group)">
@@ -233,10 +233,10 @@
         <table class="rpt-table">
           <thead>
             <tr>
-              <th>Account name</th>
-              <th class="is-num">Debit</th>
-              <th class="is-num">Credit</th>
-              <th class="is-num">Balance</th>
+              <th>{{ 'web.accounting.reports.colAccountName' | translate }}</th>
+              <th class="is-num">{{ 'web.accounting.reports.colDebit' | translate }}</th>
+              <th class="is-num">{{ 'web.accounting.reports.colCredit' | translate }}</th>
+              <th class="is-num">{{ 'web.accounting.reports.colBalance' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -255,16 +255,16 @@
   <section class="ov-card rpt-stmt" *ngIf="layout === 'journal'">
     <div class="rpt-stmt__head">
       <h6 class="rpt-stmt__title">{{ report.statementTitle }}</h6>
-      <p class="rpt-stmt__period">For the period {{ periodLabel }}</p>
+      <p class="rpt-stmt__period">{{ 'web.accounting.reports.forThePeriod' | translate }} {{ periodLabel }}</p>
     </div>
     <div class="rpt-table-wrap">
       <table class="rpt-table">
         <thead>
           <tr>
-            <th>Account name</th>
-            <th>Date</th>
-            <th class="is-num">Credit</th>
-            <th class="is-num">Debit</th>
+            <th>{{ 'web.accounting.reports.colAccountName' | translate }}</th>
+            <th>{{ 'web.accounting.reports.colDate' | translate }}</th>
+            <th class="is-num">{{ 'web.accounting.reports.colCredit' | translate }}</th>
+            <th class="is-num">{{ 'web.accounting.reports.colDebit' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -293,8 +293,8 @@
       <table class="rpt-table rpt-annual">
         <thead>
           <tr>
-            <th>Account</th>
-            <th class="is-num">Total</th>
+            <th>{{ 'web.accounting.reports.colAccount' | translate }}</th>
+            <th class="is-num">{{ 'web.accounting.reports.colTotal' | translate }}</th>
             <th class="is-num" *ngFor="let month of report.annualMonths">{{ month }}</th>
           </tr>
         </thead>
@@ -322,13 +322,13 @@
 <app-filter-drawer *ngIf="layout === 'table'" [(isOpen)]="isDrawerOpen" (apply)="applyTableFilters()" (clear)="clearTableFilters()">
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Account</label>
-      <input type="text" class="ov-input" [(ngModel)]="filterAccount" placeholder="Enter account">
+      <label class="ov-label mb-1.5">{{ 'web.accounting.reports.filterByAccount' | translate }}</label>
+      <input type="text" class="ov-input" [(ngModel)]="filterAccount" [placeholder]="'web.accounting.reports.enterAccount' | translate">
     </div>
     <div class="flex flex-col">
-      <label class="ov-label mb-1.5">Filter by Type</label>
+      <label class="ov-label mb-1.5">{{ 'web.accounting.reports.filterByType' | translate }}</label>
       <ng-select [(ngModel)]="filterType" [items]="typeOptions" [clearable]="true"
-        placeholder="Select Type" class="ng-select-sm w-full" appendTo="body"></ng-select>
+        [placeholder]="'web.accounting.reports.selectType' | translate" class="ng-select-sm w-full" appendTo="body"></ng-select>
     </div>
   </div>
 </app-filter-drawer>

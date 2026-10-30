@@ -1,23 +1,23 @@
 <form class="ov-add-form" [formGroup]="invoiceForm">
   <div class="ov-add-header page-header">
     <div class="ov-add-header__start">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Invoices">
+      <button type="button" class="ov-back" (click)="goBack()" [title]="'web.accounting.invoices.backToList' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
         <div class="flex items-center gap-2.5">
-          <h3 class="ov-page-title">{{ invoice_no == ''  ? 'New' : 'Edit'}} Invoice</h3>
+          <h3 class="ov-page-title">{{ (invoice_no == '' ? 'web.accounting.invoices.newInvoice' : 'web.accounting.invoices.editInvoice') | translate }}</h3>
           <span class="inv-add__draft">{{invoice.invoice_status}}</span>
         </div>
         <p class="ov-page-sub">
-          Accounting / Invoice / <span class="ov-page-sub__current">{{ invoice_no == ''  ? 'New' : 'Edit'}} Invoice</span>
+          {{ 'web.accounting.invoices.breadcrumbAccounting' | translate }} / {{ 'web.accounting.invoices.breadcrumbInvoice' | translate }} / <span class="ov-page-sub__current">{{ (invoice_no == '' ? 'web.accounting.invoices.newInvoice' : 'web.accounting.invoices.editInvoice') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-ghost">Preview</button>
-      <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)"  (click)="onSubmit()">Save Invoice</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-ghost">{{ 'web.accounting.invoices.preview' | translate }}</button>
+      <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">{{ 'web.accounting.invoices.saveInvoice' | translate }}</button>
     </div>
   </div>
 
@@ -25,51 +25,51 @@
     <div class="ov-add-layout__main">
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Customer &amp; Lease Details</h6>
-          <p class="ov-card-sub">Billing contact, lease selection, and receipt ownership.</p>
+          <h6 class="ov-card-title">{{ 'web.accounting.invoices.customerLeaseDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.accounting.invoices.customerLeaseSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Billed to *</label>
-              <ng-select #tenantSelect    [searchable]="true" formControlName="billedTo" bindValue="code" bindLabel="tenant"
-               [items]="customers" (change)="onTenantChange($event)" [searchable]="true"
-                [clearable]="true" placeholder="Select Tenant" class="ov-select ng-select-sm w-full" appendTo="body">
+              <label class="ov-label">{{ 'web.accounting.invoices.billedTo' | translate }} *</label>
+              <ng-select #tenantSelect [searchable]="true" formControlName="billedTo" bindValue="code" bindLabel="tenant"
+               [items]="customers" (change)="onTenantChange($event)"
+                [clearable]="true" [placeholder]="'web.accounting.invoices.selectTenant' | translate" class="ov-select ng-select-sm w-full" appendTo="body">
                   <ng-template ng-header-tmp>
                     <div class="p-1.5 border-b border-gray-100">
-                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.search' | translate" (input)="tenantSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                     </div>
                   </ng-template>
                 </ng-select>
             </div>
             <div>
-              <label class="ov-label">Lease *</label>
-              <ng-select #leaseSelect formControlName="lease_code"  [searchable]="true" 
-              name="lease_code" [items]="leases" [searchable]="true" bindValue="lease_code" bindLabel="lease"
-                [clearable]="true" placeholder="Select Lease" class="ov-select ng-select-sm w-full" appendTo="body">
+              <label class="ov-label">{{ 'web.accounting.invoices.lease' | translate }} *</label>
+              <ng-select #leaseSelect formControlName="lease_code" [searchable]="true" 
+              name="lease_code" [items]="leases" bindValue="lease_code" bindLabel="lease"
+                [clearable]="true" [placeholder]="'web.accounting.invoices.selectLease' | translate" class="ov-select ng-select-sm w-full" appendTo="body">
                    <ng-template ng-header-tmp>
                     <div class="p-1.5 border-b border-gray-100">
-                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" placeholder="Search..." (input)="leaseSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+                      <input type="text" class="form-control form-control-sm !text-xs !bg-gray-50" [placeholder]="'web.common.search' | translate" (input)="leaseSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
                     </div>
                   </ng-template>
                 </ng-select>
             </div>
             <div>
-              <label class="ov-label">Payment Via</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.paymentVia' | translate }}</label>
               <ng-select formControlName="paymentVia" bindValue="id" bindLabel="name" name="paymentVia" [items]="paymentViaOptions"
-                placeholder="Select Payment Type" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+                [placeholder]="'web.accounting.invoices.selectPaymentType' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Money Held By</label>
-              <ng-select formControlName="moneyHeldBy"  bindValue="id" bindLabel="name" name="moneyHeldBy" [items]="moneyHeldByOptions"
-                placeholder="Select Money Held" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+              <label class="ov-label">{{ 'web.accounting.invoices.moneyHeldBy' | translate }}</label>
+              <ng-select formControlName="moneyHeldBy" bindValue="id" bindLabel="name" name="moneyHeldBy" [items]="moneyHeldByOptions"
+                [placeholder]="'web.accounting.invoices.selectMoneyHeld' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div class="ov-label">
               <!-- ov-fields__full -->
-              <label class="ov-label">Lease Account</label>
-              <ng-select formControlName="leaseAccount"  bindValue="id" bindLabel="name" name="leaseAccount" 
+              <label class="ov-label">{{ 'web.accounting.invoices.leaseAccount' | translate }}</label>
+              <ng-select formControlName="leaseAccount" bindValue="id" bindLabel="name" name="leaseAccount" 
               [items]="coaaccountlist"
-              placeholder="Select Account" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select> 
+              [placeholder]="'web.accounting.invoices.selectAccount' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select> 
             </div>
           </div>
         </div>
@@ -77,30 +77,30 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Invoice Details</h6>
-          <p class="ov-card-sub">Core invoice dates, type, reference, and numbering.</p>
+          <h6 class="ov-card-title">{{ 'web.accounting.invoices.invoiceDetails' | translate }}</h6>
+          <p class="ov-card-sub">{{ 'web.accounting.invoices.customerLeaseSub' | translate }}</p>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields ov-fields--2">
             <div>
-              <label class="ov-label">Type *</label>
-              <ng-select formControlName="type" name="type" bindValue="id" bindLabel="name" [items]="types" placeholder="Select type"
+              <label class="ov-label">{{ 'web.accounting.invoices.type' | translate }} *</label>
+              <ng-select formControlName="type" name="type" bindValue="id" bindLabel="name" [items]="types" [placeholder]="'web.accounting.invoices.selectType' | translate"
                 class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
             </div>
             <div>
-              <label class="ov-label">Invoice Number</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.colInvoiceNumber' | translate }}</label>
               <input type="text" readonly="true" class="ov-input" name="invoiceNumber" formControlName="invoiceNumber">
             </div>
             <div>
-              <label class="ov-label">Date of Issue *</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.dateOfIssue' | translate }} *</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="issueDate" formControlName="issueDate" id="issueDate"
-                  appFlowbiteDatepicker  placeholder="DD/MM/YYYY">
+                  appFlowbiteDatepicker placeholder="DD/MM/YYYY">
               </div>
             </div>
             <div>
-              <label class="ov-label">Due Date *</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.dueDate' | translate }} *</label>
               <div class="ov-date">
                 <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
                 <input type="text" class="ov-input" name="dueDate" formControlName="dueDate"
@@ -108,7 +108,7 @@
               </div>
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Reference</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.reference' | translate }}</label>
               <input type="text" class="ov-input" name="reference" formControlName="reference" placeholder="PO#253">
             </div>
           </div>
@@ -118,12 +118,12 @@
       <div class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Cheque Details</h6>
-            <p class="ov-card-sub">Add cheque records when the payment method is cheque.</p>
+            <h6 class="ov-card-title">{{ 'web.accounting.invoices.chequeDetails' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.accounting.invoices.chequeDetailsSub' | translate }}</p>
           </div>
           <button type="button" class="ov-btn ov-btn-ghost h-9 px-4 whitespace-nowrap" (click)="openChequeModal()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18">
-            Add Cheque
+            {{ 'web.accounting.invoices.addCheque' | translate }}
           </button>
         </div>
         <div class="ov-card__body">
@@ -131,15 +131,15 @@
             <table class="inv-add__table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Cheque No</th>
-                  <th>Bank Name</th>
-                  <th>Cheque Date</th>
-                  <th>Amount</th>
-                  <th>Cheque In Hand</th>
-                  <th>Status</th>
-                  <th>Attachment</th>
-                  <th>Action</th>
+                  <th>{{ 'web.common.lblID' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.chequeNo' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.bankName' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.chequeDate' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colAmount' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.chequeInHand' | translate }}</th>
+                  <th>{{ 'web.common.lblStatus' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.attachment' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colAction' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,14 +151,14 @@
                   <td>{{ formatAed(row.amount) }}</td>
                   <td>{{ row.inHand }}</td>
                   <td><span class="inv-add__pill">{{ row.status }}</span></td> 
-                  <td *ngIf="row.attachment?.includes('https') || row.attachment?.includes('http')"><a href="{{row.attachment}}" target="_blank">View File</a></td>
+                  <td *ngIf="row.attachment?.includes('https') || row.attachment?.includes('http')"><a href="{{row.attachment}}" target="_blank">{{ 'web.accounting.invoices.viewFile' | translate }}</a></td>
                   <td *ngIf="!row.attachment?.includes('http')">{{ row.attachment || '—' }}</td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChequeModal(i)" aria-label="Edit cheque">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openChequeModal(i)" [attr.aria-label]="'web.accounting.invoices.editCheque' | translate">
                         <img src="assets/images/work-order-detail/pencil.svg" alt="" width="16" height="16">
                       </button>
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeCheque(i)" aria-label="Delete cheque">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeCheque(i)" [attr.aria-label]="'web.common.delete' | translate">
                         <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="16" height="16">
                       </button>
                     </div>
@@ -173,12 +173,12 @@
       <div class="ov-card">
         <div class="ov-card__head flex items-start justify-between gap-4">
           <div>
-            <h6 class="ov-card-title">Line Items</h6>
-            <p class="ov-card-sub">Add charges, taxes, discounts, and account allocation.</p>
+            <h6 class="ov-card-title">{{ 'web.accounting.invoices.lineItems' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.accounting.invoices.lineItemsSub' | translate }}</p>
           </div>
           <button type="button" class="ov-btn ov-btn-ghost h-9 px-4 whitespace-nowrap" (click)="openLineModal()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18">
-            Add Line Item
+            {{ 'web.accounting.invoices.addLineItem' | translate }}
           </button>
         </div>
         <div class="ov-card__body">
@@ -186,19 +186,19 @@
             <table class="inv-add__table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Inclusive Tax?</th>
-                  <th>Description</th>
-                  <th>Price</th>
-                  <th>Tax</th>
-                  <th>Discount</th>
-                  <th>Discount %</th>
-                  <th>Total</th>
-                  <th>Paid</th>
-                  <th>Balance</th>
-                  <th>Account</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>{{ 'web.common.lblID' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.inclusiveTax' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.description' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.price' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.tax' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.discount' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.discountPct' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.total' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colPaid' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.balance' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colAccount' | translate }}</th>
+                  <th>{{ 'web.common.lblStatus' | translate }}</th>
+                  <th>{{ 'web.accounting.invoices.colAction' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,10 +217,10 @@
                   <td>{{ row.status }}</td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openLineModal(i)" aria-label="Edit line item">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="openLineModal(i)" [attr.aria-label]="'web.accounting.invoices.editLineItem' | translate">
                         <img src="assets/images/work-order-detail/pencil.svg" alt="" width="16" height="16">
                       </button>
-                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLine(i)" aria-label="Delete line item">
+                      <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLine(i)" [attr.aria-label]="'web.common.delete' | translate">
                         <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="16" height="16">
                       </button>
                     </div>
@@ -234,22 +234,22 @@
 
       <div class="ov-card">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Others</h6>
+          <h6 class="ov-card-title">{{ 'web.accounting.invoices.others' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="ov-fields">
             <div class="ov-fields__full">
-              <label class="ov-label">Notes</label>
-              <textarea class="ov-input min-h-[100px] resize-y" name="notes" formControlName="notes" placeholder="Enter note here..."></textarea>
+              <label class="ov-label">{{ 'web.accounting.invoices.notes' | translate }}</label>
+              <textarea class="ov-input min-h-[100px] resize-y" name="notes" formControlName="notes" [placeholder]="'web.accounting.invoices.enterNoteHere' | translate"></textarea>
             </div>
             <div class="ov-fields__full">
-              <label class="ov-label">Attachments</label>
+              <label class="ov-label">{{ 'web.accounting.invoices.attachments' | translate }}</label>
               <div class="inv-add__drop">
-                <p>{{ invoiceAttachment.name || 'Drop your image here or Browse' }}</p>  
-                <p *ngIf="invoice?.attachment_path"><a href="{{invoice?.attachment_path}}" target="_blank">View File</a></p>  
+                <p>{{ invoiceAttachment.name || ('web.accounting.invoices.dropImageOrBrowse' | translate) }}</p>  
+                <p *ngIf="invoice?.attachment_path"><a href="{{invoice?.attachment_path}}" target="_blank">{{ 'web.accounting.invoices.viewFile' | translate }}</a></p>  
                 <label class="inv-add__upload">
                   <i class="ri ri-camera-line" aria-hidden="true"></i>
-                  Upload Image
+                  {{ 'web.accounting.invoices.uploadImage' | translate }}
                   <input type="file" class="ov-sr" accept="image/*,.pdf" (change)="onInvoiceAttachment($event)">
                 </label>
 
@@ -263,25 +263,25 @@
     <aside class="ov-add-layout__aside">
       <div class="ov-card">
         <div class="ov-card__head">
-          <p class="m-0 text-sm text-textmuted">Due Amount</p>
+          <p class="m-0 text-sm text-textmuted">{{ 'web.accounting.invoices.dueAmount' | translate }}</p>
           <p class="mt-1.5 mb-2.5 text-[22px] font-bold leading-7 text-defaulttextcolor">{{ formatAed(dueTotal) }}</p>
-          <span class="inv-add__draft">Draft</span>
+          <span class="inv-add__draft">{{ 'web.accounting.invoices.draft' | translate }}</span>
         </div>
         <div class="ov-card__body flex flex-col gap-3">
           <div class="flex items-center justify-between gap-3 text-sm text-textmuted">
-            <span>Subtotal</span>
+            <span>{{ 'web.accounting.invoices.subtotal' | translate }}</span>
             <span>{{ formatAed(lineTotal - taxTotal + discountTotal) }}</span>
           </div>
           <div class="flex items-center justify-between gap-3 text-sm text-textmuted">
-            <span>Tax</span>
+            <span>{{ 'web.accounting.invoices.tax' | translate }}</span>
             <span>{{ formatAed(taxTotal) }}</span>
           </div>
           <div class="flex items-center justify-between gap-3 text-sm text-textmuted">
-            <span>Discount</span>
+            <span>{{ 'web.accounting.invoices.discount' | translate }}</span>
             <span>{{ formatAed(discountTotal) }}</span>
           </div>
           <div class="flex items-center justify-between gap-3 pt-2 border-t border-defaultborder text-sm font-semibold text-defaulttextcolor">
-            <span>Total</span>
+            <span>{{ 'web.accounting.invoices.total' | translate }}</span>
             <span>{{ formatAed(lineTotal) }}</span>
           </div>
         </div>
@@ -290,84 +290,84 @@
   </div>
 
   <div class="ov-add-footer">
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">Cancel</button>
+    <button type="button" class="ov-btn ov-btn-ghost" (click)="goBack()">{{ 'web.common.cancel' | translate }}</button>
     <!-- <button type="button" class="ov-btn ov-btn-ghost">Accept Invoice</button> --> 
     <!--   able to save invoice only if status not in paid/hold/void -->
-    <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">Save Invoice</button>
+    <button type="submit" class="ov-btn ov-btn-primary" *ngIf="invoice_no == '' || [251, 260, 258].includes(invoice.status)" (click)="onSubmit()">{{ 'web.accounting.invoices.saveInvoice' | translate }}</button>
   </div>
 </form>
 
 <div *ngIf="lineModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="add-line-title">
   <div class="ov-modal-stack" style="max-width: 640px">
-    <button type="button" class="ov-modal__float-close" (click)="closeLineModal()" aria-label="Close">
+    <button type="button" class="ov-modal__float-close" (click)="closeLineModal()" [attr.aria-label]="'web.common.close' | translate">
       <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
     </button>
     <div class="ov-modal ov-modal--lg">
     <div class="ov-modal__header">
-      <h6 class="ov-modal__title" id="add-line-title">{{ editingLineIndex != null ? 'Edit Line Item' : 'Add Line Item' }}</h6>
-      <p class="ov-modal__sub">Add charges, taxes, discounts, and account allocation.</p>
+      <h6 class="ov-modal__title" id="add-line-title">{{ (editingLineIndex != null ? 'web.accounting.invoices.editLineItem' : 'web.accounting.invoices.addLineItem') | translate }}</h6>
+      <p class="ov-modal__sub">{{ 'web.accounting.invoices.lineItemsSub' | translate }}</p>
     </div>
     <div class="ov-modal__body">
       <div class="ov-fields ov-fields--2">
         <div class="ov-fields__full">
-          <label class="ov-label">Description *</label>
-          <input type="text" class="ov-input" name="lineDescription" [(ngModel)]="lineDraft.description" placeholder="Enter">
+          <label class="ov-label">{{ 'web.accounting.invoices.description' | translate }} *</label>
+          <input type="text" class="ov-input" name="lineDescription" [(ngModel)]="lineDraft.description" [placeholder]="'web.common.lblEnter' | translate">
         </div>
         <div>
-          <label class="ov-label">Inclusive Tax?</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.inclusiveTax' | translate }}</label>
           <ng-select [(ngModel)]="lineDraft.inclusiveTax" name="inclusiveTax" [items]="['Yes', 'No']"
             class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div>
-          <label class="ov-label">Account *</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.colAccount' | translate }} *</label>
           <ng-select [(ngModel)]="lineDraft.account" bindValue="id" bindLabel="name" name="lineAccount" [items]="coaaccountlist"
-            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
+            [placeholder]="'web.common.lblSelect' | translate" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div>
-          <label class="ov-label">Price *</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.price' | translate }} *</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="linePrice" [(ngModel)]="lineDraft.price" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Tax</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.tax' | translate }}</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="lineTax" [(ngModel)]="lineDraft.tax" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Discount</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.discount' | translate }}</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="lineDiscount" [(ngModel)]="lineDraft.discount" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Discount %</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.discountPct' | translate }}</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">%</span>
             <input type="number" class="ov-input" name="lineDiscountPct" [(ngModel)]="lineDraft.discountPct" placeholder="0">
           </div>
         </div>
         <div>
-          <label class="ov-label">Paid</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.colPaid' | translate }}</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="linePaid" [(ngModel)]="lineDraft.paid" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Status</label>
+          <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
           <ng-select [(ngModel)]="lineDraft.statusid" bindValue="id" bindLabel="name" name="lineStatus" [items]="lineStatuses"
             class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeLineModal()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveLineItem()">Save</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeLineModal()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveLineItem()">{{ 'web.common.lblSave' | translate }}</button>
     </div>
   </div>
   </div>
@@ -375,29 +375,26 @@
 
 <div *ngIf="chequeModalOpen" class="ov-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="add-cheque-title">
   <div class="ov-modal-stack" style="max-width: 640px">
-    <button type="button" class="ov-modal__float-close" (click)="closeChequeModal()" aria-label="Close">
+    <button type="button" class="ov-modal__float-close" (click)="closeChequeModal()" [attr.aria-label]="'web.common.close' | translate">
       <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x">
     </button>
     <div class="ov-modal ov-modal--lg">
     <div class="ov-modal__header">
-      <h6 class="ov-modal__title" id="add-cheque-title">{{ editingChequeIndex != null ? 'Edit Cheque' : 'Add Cheque' }}</h6>
-      <p class="ov-modal__sub">Add cheque records when the payment method is cheque.</p>
+      <h6 class="ov-modal__title" id="add-cheque-title">{{ (editingChequeIndex != null ? 'web.accounting.invoices.editCheque' : 'web.accounting.invoices.addCheque') | translate }}</h6>
+      <p class="ov-modal__sub">{{ 'web.accounting.invoices.chequeDetailsSub' | translate }}</p>
     </div>
     <div class="ov-modal__body">
       <div class="ov-fields ov-fields--2">
         <div>
-          <label class="ov-label">Cheque No *</label>
-          <input type="text" class="ov-input" name="chequeNo" [(ngModel)]="chequeDraft.chequeNo" placeholder="Enter">
+          <label class="ov-label">{{ 'web.accounting.invoices.chequeNo' | translate }} *</label>
+          <input type="text" class="ov-input" name="chequeNo" [(ngModel)]="chequeDraft.chequeNo" [placeholder]="'web.common.lblEnter' | translate">
         </div>
         <div>
-          <label class="ov-label">Bank Name *</label>
-          <input type="text" class="ov-input" name="bankName" [(ngModel)]="chequeDraft.bankName" placeholder="Enter">
-<!-- 
-          <ng-select [(ngModel)]="chequeDraft.bankName" name="bankName" [items]="banks"
-            placeholder="Select" class="ov-select ng-select-sm w-full" appendTo="body"></ng-select> -->
+          <label class="ov-label">{{ 'web.accounting.invoices.bankName' | translate }} *</label>
+          <input type="text" class="ov-input" name="bankName" [(ngModel)]="chequeDraft.bankName" [placeholder]="'web.common.lblEnter' | translate">
         </div>
         <div>
-          <label class="ov-label">Cheque Date *</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.chequeDate' | translate }} *</label>
           <div class="ov-date">
             <img class="ov-date__icon" src="assets/images/work-orders/calendar-week.svg" alt="" width="16" height="16">
             <input type="date" class="ov-input" name="chequeDate" [(ngModel)]="chequeDraft.chequeDate"
@@ -405,29 +402,29 @@
           </div>
         </div>
         <div>
-          <label class="ov-label">Amount *</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.colAmount' | translate }} *</label>
           <div class="ov-input-addon">
             <span class="ov-input-addon__prefix">AED</span>
             <input type="number" class="ov-input" name="chequeAmount" [(ngModel)]="chequeDraft.amount" placeholder="0.00">
           </div>
         </div>
         <div>
-          <label class="ov-label">Cheque In Hand</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.chequeInHand' | translate }}</label>
           <ng-select [(ngModel)]="chequeDraft.inHand" name="inHand" [items]="chequeInHandOptions"
             class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div>
-          <label class="ov-label">Status</label>
+          <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
           <ng-select [(ngModel)]="chequeDraft.statusid" bindValue="id" bindLabel="name" name="chequeStatus" [items]="chequeStatuses"
             class="ov-select ng-select-sm w-full" appendTo="body"></ng-select>
         </div>
         <div class="ov-fields__full">
-          <label class="ov-label">Attachment</label>
+          <label class="ov-label">{{ 'web.accounting.invoices.attachment' | translate }}</label>
           <div class="inv-add__drop">
-            <p>{{ chequeDraft.attachment || 'Drop your image here or Browse' }}</p>
+            <p>{{ chequeDraft.attachment || ('web.accounting.invoices.dropImageOrBrowse' | translate) }}</p>
             <label class="inv-add__upload">
               <i class="ri ri-camera-line" aria-hidden="true"></i>
-              Upload Image
+              {{ 'web.accounting.invoices.uploadImage' | translate }}
               <input type="file" class="ov-sr" accept="image/*,.pdf" (change)="onChequeFile($event)">
             </label>
           </div>
@@ -435,8 +432,8 @@
       </div>
     </div>
     <div class="ov-modal__footer">
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeChequeModal()">Cancel</button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="saveCheque()">Save</button>
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="closeChequeModal()">{{ 'web.common.cancel' | translate }}</button>
+      <button type="button" class="ov-btn ov-btn-primary" (click)="saveCheque()">{{ 'web.common.lblSave' | translate }}</button>
     </div>
   </div>
   </div>

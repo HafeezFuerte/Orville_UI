@@ -331,7 +331,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.financials?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Financials'
+        addButtonText: 'Financials',
+        addKey: 'web.property.lblAddFinancial'
       },
       {
         key: 'inventory',
@@ -343,7 +344,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.inventoryItems?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Inventory'
+        addButtonText: 'Inventory',
+        addKey: 'web.property.lblAddAsset'
       },
       {
         key: 'workorders',
@@ -353,7 +355,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.workOrders?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Work Order'
+        addButtonText: 'Work Order',
+        addKey: 'web.facility.lblAddWorkOrder'
       },
       {
         key: 'attachments',
@@ -366,6 +369,7 @@ export class UnitDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Attachments',
+        addKey: 'web.property.lblAddAttachment',
         form: this.attachmentsForm,
         popupType: 'attachment'      
       },
@@ -380,6 +384,7 @@ export class UnitDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Legal Case',
+        addKey: 'web.common.lblAddHearing',
         form: FormGroup,
         popupType: 'legal'
       },
@@ -394,7 +399,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.parkings?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Parking'
+        addButtonText: 'Parking',
+        addKey: 'web.parkings.lblAddParking'
       },
       {
         key: 'notes',
@@ -407,6 +413,7 @@ export class UnitDetailComponent implements OnInit {
         loading: this.loading,
         hasActions: true,
         addButtonText: 'Notes',
+        addKey: 'web.property.lblAddNotes',
         form: this.notesForm,
         popupType: 'notes'
       },
@@ -419,7 +426,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.broadcasts?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Broadcasts'
+        addButtonText: 'Broadcasts',
+        addKey: 'web.common.lblAddBroadcast'
       },
       {
         key: 'inspections',
@@ -430,7 +438,8 @@ export class UnitDetailComponent implements OnInit {
         totalRecords: this.inpectionsColumns?.length || 0,
         loading: this.loading,
         hasActions: true,
-        addButtonText: 'Inspection'
+        addButtonText: 'Inspection',
+        addKey: 'web.common.lblAddInspection'
       }
   
     ];

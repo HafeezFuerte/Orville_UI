@@ -9,7 +9,7 @@ import { PROMOTION_ROWS, PromotionRow, PromotionStatus } from '../promotions.dat
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 type StatusTab = 'All' | PromotionStatus;
 
@@ -23,7 +23,8 @@ type StatusTab = 'All' | PromotionStatus;
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent,
-    DeleteConfirmationComponent
+    DeleteConfirmationComponent,
+    TranslateModule
   ],
   templateUrl: './promotions.component.html',
   styleUrl: './promotions.component.scss'
@@ -54,7 +55,7 @@ export class PromotionsComponent {
   tableColumns = [
     {
       key: 'code',
-      label: 'ID',
+      label: 'web.community.promotions.colId',
       visible: true,
       useTemplate: true,
       width: '90px',
@@ -63,20 +64,20 @@ export class PromotionsComponent {
     },
     {
       key: 'promotion_name',
-      label: 'Promotion Name',
+      label: 'web.community.promotions.colPromotionName',
       visible: true,
       useTemplate: true,
       width: '220px',
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'category_name', label: 'Category', visible: true, width: '140px' },
-    { key: 'status_name', label: 'Status', visible: true, useTemplate: true },
-    { key: 'start_date', label: 'Start Date', visible: true },
-    { key: 'end_date', label: 'End Date', visible: true },
-    { key: 'createdby', label: 'Created By', visible: true, width: '140px' },
-    { key: 'created_date', label: 'Created', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '80px' }
+    { key: 'category_name', label: 'web.community.promotions.colCategory', visible: true, width: '140px' },
+    { key: 'status_name', label: 'web.community.promotions.colStatus', visible: true, useTemplate: true },
+    { key: 'start_date', label: 'web.community.promotions.colStartDate', visible: true },
+    { key: 'end_date', label: 'web.community.promotions.colEndDate', visible: true },
+    { key: 'createdby', label: 'web.community.promotions.colCreatedBy', visible: true, width: '140px' },
+    { key: 'created_date', label: 'web.community.promotions.colCreated', visible: true },
+    { key: 'action', label: 'web.community.promotions.colAction', visible: true, useTemplate: true, width: '80px' }
   ];
 
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,

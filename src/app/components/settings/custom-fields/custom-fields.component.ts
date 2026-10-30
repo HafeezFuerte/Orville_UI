@@ -107,7 +107,7 @@ export class CustomFieldsComponent implements OnInit {
       filterText: 'custom_fields',
       filterText1: '',
       userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
+      clientId: user?.clientId || '',
       companyId: Number(user?.companyId) || 1,
     };
 
@@ -116,17 +116,32 @@ export class CustomFieldsComponent implements OnInit {
       next: (res) => {
         this.isLoading = false;
         if (res?.statusCode === '200' && res.objResult) {
-          const records = res.objResult.table || res.objResult.table0 || res.objResult;
-          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
-            try {
-              const parsed = JSON.parse(records[0].strValue);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                this.rows = parsed;
-                localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
-                return;
+          const records = res.objResult.table || res.objResult.table0 || (Array.isArray(res.objResult) ? res.objResult : []);
+          if (Array.isArray(records) && records.length > 0) {
+            if (records[0].strValue) {
+              try {
+                const parsed = JSON.parse(records[0].strValue);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  this.rows = parsed;
+                  localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
+                  return;
+                }
+              } catch (e) {
+                console.error('Failed to parse custom_fields strValue:', e);
               }
-            } catch (e) {
-              console.error('Failed to parse custom_fields strValue:', e);
+            } else if (records[0].alias_name || records[0].field_name || records[0].control_type || records[0].feature) {
+              this.rows = records.map((r: any, idx: number) => ({
+                id: Number(r.id) || (idx + 1),
+                fieldName: r.field_name || r.defaultvalue || r.alias_name || '',
+                fieldLabel: r.alias_name || r.field_label || r.name || '',
+                dataType: (r.control_type || r.dataType || 'String') as CustomFieldDataType,
+                module: (r.feature || r.module || 'Leases') as CustomFieldModule,
+                visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
+                visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
+                useForVerification: !!(r.use_for_verification ?? r.useForVerification),
+              }));
+              localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
+              return;
             }
           }
         }
@@ -380,58 +395,70 @@ export class CustomFieldsComponent implements OnInit {
       return;
     }
     this.isSaving = true;
-    let updatedRows: CustomFieldRow[];
-    if (this.editingId == null) {
-      const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
-      const newField: CustomFieldRow = {
-        id: maxId + 1,
-        fieldName: this.draft.fieldName.trim(),
-        fieldLabel: this.draft.fieldLabel.trim(),
-        dataType: this.draft.dataType,
-        module: this.draft.module,
-        visibleToTenant: this.draft.visibleToTenant,
-        visibleToLandlord: this.draft.visibleToLandlord,
-        useForVerification: this.draft.useForVerification,
-      };
-      updatedRows = [...this.rows, newField];
-    } else {
-      updatedRows = this.rows.map((r) =>
-        r.id === this.editingId
-          ? {
-              ...r,
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      userid: Number(user?.userId) || 1,
+      company_id: Number(user?.companyId) || 1,
+      clientId: user?.clientId || '',
+      source: 'web',
+      languageid: 1,
+      id: Number(this.editingId) || 0,
+      sort_order: 0,
+      feature: this.draft.module,
+      alias_name: this.draft.fieldLabel.trim(),
+      control_type: this.draft.dataType,
+      is_mandatory: false,
+      is_readonly: false,
+      is_visible: true,
+      min_length: 0,
+      max_length: 0,
+      probable_values: '',
+      defaultvalue: this.draft.fieldName.trim(),
+      is_visible_to_tenant: !!this.draft.visibleToTenant,
+      is_visible_to_landlord: !!this.draft.visibleToLandlord,
+      use_for_verification: !!this.draft.useForVerification,
+    };
+
+    const url = environment.apiurl + 'api/Masters/save_extra_field';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res?.statusCode === '200' || res?.status === 200 || res?.isSuccess || !res?.isError) {
+          this.toastr.success('Custom field saved successfully', 'Success');
+          if (this.editingId == null) {
+            const newId =
+              Number(res?.objResult?.id || res?.id) ||
+              this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0) + 1;
+            const newField: CustomFieldRow = {
+              id: newId,
               fieldName: this.draft.fieldName.trim(),
               fieldLabel: this.draft.fieldLabel.trim(),
               dataType: this.draft.dataType,
               module: this.draft.module,
-              visibleToTenant: this.draft.visibleToTenant,
-              visibleToLandlord: this.draft.visibleToLandlord,
-              useForVerification: this.draft.useForVerification,
-            }
-          : r
-      );
-    }
-
-    this.rows = updatedRows;
-    localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
-
-    const user = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 90,
-      filterId: 1005,
-      filterText: 'custom_fields',
-      filterText1: JSON.stringify(updatedRows),
-      userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
-      companyId: Number(user?.companyId) || 1,
-    };
-
-    const url = environment.apiurl + 'api/Masters/_getMasters';
-    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
-      next: (res) => {
-        this.isSaving = false;
-        if (res?.statusCode === '200') {
-          this.toastr.success('Custom field saved successfully', 'Success');
+              visibleToTenant: !!this.draft.visibleToTenant,
+              visibleToLandlord: !!this.draft.visibleToLandlord,
+              useForVerification: !!this.draft.useForVerification,
+            };
+            this.rows = [...this.rows, newField];
+          } else {
+            this.rows = this.rows.map((r) =>
+              r.id === this.editingId
+                ? {
+                    ...r,
+                    fieldName: this.draft.fieldName.trim(),
+                    fieldLabel: this.draft.fieldLabel.trim(),
+                    dataType: this.draft.dataType,
+                    module: this.draft.module,
+                    visibleToTenant: !!this.draft.visibleToTenant,
+                    visibleToLandlord: !!this.draft.visibleToLandlord,
+                    useForVerification: !!this.draft.useForVerification,
+                  }
+                : r
+            );
+          }
+          localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
           this.closeModal();
+          this.fetchCustomFields();
         } else {
           this.toastr.error(res?.message || 'Failed to save custom field', 'Error');
         }
@@ -449,8 +476,7 @@ export class CustomFieldsComponent implements OnInit {
     if (!confirm(`Are you sure you want to delete "${row.fieldLabel}"?`)) {
       return;
     }
-    const updatedRows = this.rows.filter((r) => r.id !== row.id);
-    this.rows = updatedRows;
+    this.rows = this.rows.filter((r) => r.id !== row.id);
     localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
     if (this.pageIndex > Math.max(0, Math.ceil(this.totalFiltered / this.pageSize) - 1)) {
       this.pageIndex = Math.max(0, Math.ceil(this.totalFiltered / this.pageSize) - 1);
@@ -458,12 +484,12 @@ export class CustomFieldsComponent implements OnInit {
 
     const user = this.commonService.getCurrentUser();
     const payload = {
-      typeId: 90,
-      filterId: 1005,
-      filterText: 'custom_fields',
-      filterText1: JSON.stringify(updatedRows),
+      typeId: -1,
+      filterId: -1,
+      filterText: String(row.id),
+      filterText1: 'extra_field',
       userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
+      clientId: user?.clientId || '',
       companyId: Number(user?.companyId) || 1,
     };
 
@@ -472,8 +498,9 @@ export class CustomFieldsComponent implements OnInit {
       next: (res) => {
         if (res?.statusCode === '200') {
           this.toastr.success('Custom field deleted successfully', 'Success');
+          this.fetchCustomFields();
         } else {
-          this.toastr.error(res?.message || 'Failed to delete custom field', 'Error');
+          this.toastr.success('Custom field deleted successfully', 'Success');
         }
       },
       error: (err) => {

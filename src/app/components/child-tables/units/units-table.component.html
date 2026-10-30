@@ -1,9 +1,9 @@
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
     <h4 class="ov-card-title m-0">{{ selectedTab?.label | translate }}</h4>
     <button type="button" (click)="redirect_link()" class="ov-btn ov-btn-primary"
-        [attr.data-tooltip]="'Add ' + (selectedTab?.addButtonText || (selectedTab?.label | translate))">
+        [attr.data-tooltip]="selectedTab?.addKey ? (selectedTab?.addKey | translate) : (selectedTab?.key === 'rooms' ? ('web.rooms.lblAddRoom' | translate) : ('web.property.lblAddUnit' | translate))">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-        Add {{ selectedTab?.addButtonText || (selectedTab?.label | translate) }}
+        {{ selectedTab?.addKey ? (selectedTab?.addKey | translate) : (selectedTab?.key === 'rooms' ? ('web.rooms.lblAddRoom' | translate) : ('web.property.lblAddUnit' | translate)) }}
     </button>
 </div>
 
@@ -12,7 +12,7 @@
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input [(ngModel)]="searchQuery" (keyup.enter)="search_with_keyword()" type="text"
             class="ov-input ov-search__input"
-            [placeholder]="selectedTab?.key === 'rooms' ? 'Filter items by Room No' : 'Filter items by Unit No'">
+            [placeholder]="selectedTab?.key === 'rooms' ? ('web.rooms.phFilterByRoomNo' | translate) : ('web.Unit.phFilterByUnitNo' | translate)">
     </div>
     <div class="ov-toolbar__btns">
         <button type="button" (click)="toggleDrawer(true)" class="ov-btn ov-btn-toolbar"
@@ -32,7 +32,7 @@
                 <label class="mb-1 flex cursor-pointer items-center gap-2 border-b border-defaultborder pb-1.5 text-[10px] font-bold uppercase text-defaulttextcolor">
                     <input type="checkbox" class="h-3.5 w-3.5 rounded text-primary"
                         [checked]="allColumnsVisible" (change)="toggleAllColumns($event)">
-                    Select All
+                    {{ 'web.contacts.lblSelectAll' | translate }}
                 </label>
                 <label *ngFor="let col of columns"
                     class="flex cursor-pointer items-center gap-2 text-xs text-textmuted hover:text-defaulttextcolor">
@@ -139,10 +139,10 @@
                     <!-- Action Column (Injected via ng-template) -->
                     <td *ngIf="hasActions">
                         <div class="flex gap-1">
-                            <button (click)="edit_action(row,'edit')" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" data-tooltip="Edit">
+                            <button (click)="edit_action(row,'edit')" class="w-7 h-7 rounded-md bg-primary/10 text-primary border-0 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-200" [attr.data-tooltip]="'web.common.lblEdit' | translate">
                               <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                             </button>
-                            <button  (click)="edit_action(row,'delete')" class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" data-tooltip="Delete">
+                            <button  (click)="edit_action(row,'delete')" class="w-7 h-7 rounded-md bg-danger/10 text-danger border-0 flex items-center justify-center hover:bg-danger hover:text-white transition-all duration-200" [attr.data-tooltip]="'web.common.lblDelete' | translate">
                               <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
                             </button>
                           </div>
@@ -177,35 +177,35 @@
   
   <div class="flex flex-col gap-4 text-[11px]">
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Tags</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.Unit.lblFilterByTags' | translate }}</label>
       <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterTags" (keyup.enter)="applyFilters()">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Area (sqft)</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.Unit.lblFilterByArea' | translate }}</label>
       <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterArea" (keyup.enter)="applyFilters()">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by ID</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblID' | translate }}</label>
       <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterId" (keyup.enter)="applyFilters()">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Reference No</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblReference' | translate }}</label>
       <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterRefNo" (keyup.enter)="applyFilters()">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Off Plan Status</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.common.lblOffPlanStatus' | translate }}</label>
       <select class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterOffPlanStatus" (change)="applyFilters()">
-        <option value="">Select Status</option>
+        <option value="">{{ 'web.common.lblSelectStatus' | translate }}</option>
       </select>
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Filter by Landlord</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblLandlord' | translate }}</label>
       <input type="text" class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterLandlord" (keyup.enter)="applyFilters()">
     </div>
     <div class="flex flex-col">
-      <label class="form-label font-semibold text-gray-600 mb-1.5 block">Internal Status</label>
+      <label class="form-label font-semibold text-gray-600 mb-1.5 block">{{ 'web.contacts.lblInternalStatus' | translate }}</label>
       <select class="form-control form-control-sm !text-[11px] bg-gray-50 border-gray-200" [(ngModel)]="filterInternalStatus" (change)="applyFilters()">
-        <option value="">Select Status</option>
+        <option value="">{{ 'web.common.lblSelectStatus' | translate }}</option>
       </select>
     </div>
   </div>

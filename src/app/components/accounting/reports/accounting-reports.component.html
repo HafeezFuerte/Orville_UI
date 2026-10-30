@@ -1,22 +1,22 @@
 <div class="flex flex-col gap-5 pb-8">
   <div class="page-header !py-4 !mb-0">
-    <h3 class="ov-page-title">Accounting Reports</h3>
-    <p class="ov-page-sub">Generate, view and manage financial and rental reports from one place.</p>
+    <h3 class="ov-page-title">{{ 'web.accounting.reports.title' | translate }}</h3>
+    <p class="ov-page-sub">{{ 'web.accounting.reports.subtitle' | translate }}</p>
   </div>
 
   <div class="ov-search max-w-[437px]">
-    <label class="sr-only" for="acc-reports-search">Search by name</label>
+    <label class="sr-only" for="acc-reports-search">{{ 'web.accounting.reports.searchByName' | translate }}</label>
     <img src="assets/images/reports/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
     <input
       id="acc-reports-search"
       type="text"
       class="ov-input ov-search__input"
-      placeholder="Search by name"
+      [placeholder]="'web.accounting.reports.searchByName' | translate"
       [(ngModel)]="searchQuery">
   </div>
 
   <section class="flex flex-col gap-4" aria-labelledby="acc-report-library-title">
-    <h4 class="m-0 text-[16px] font-bold leading-[21px] tracking-[0.32px] text-defaulttextcolor" id="acc-report-library-title">Report library</h4>
+    <h4 class="m-0 text-[16px] font-bold leading-[21px] tracking-[0.32px] text-defaulttextcolor" id="acc-report-library-title">{{ 'web.accounting.reports.reportLibrary' | translate }}</h4>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       <article class="acc-reports-card ov-card !mb-0 flex flex-col min-h-[196px] p-5 pb-4" *ngFor="let report of filteredReports" [attr.data-tone]="report.tone">
@@ -26,11 +26,11 @@
         <h5 class="m-0 mb-2 text-[16px] font-bold leading-[21px] text-defaulttextcolor">{{ report.title }}</h5>
         <p class="flex-1 m-0 text-[13px] leading-[18px] text-textmuted">{{ report.description }}</p>
         <div class="h-px my-4 bg-defaultborder" aria-hidden="true"></div>
-        <a *ngIf="report.hasView" class="acc-reports-card__link" [routerLink]="['/accounting/reports', report.id]">View Report →</a>
-        <button *ngIf="!report.hasView" type="button" class="acc-reports-card__link">View Report →</button>
+        <a *ngIf="report.hasView" class="acc-reports-card__link" [routerLink]="['/accounting/reports', report.id]">{{ 'web.accounting.reports.viewReport' | translate }} →</a>
+        <button *ngIf="!report.hasView" type="button" class="acc-reports-card__link">{{ 'web.accounting.reports.viewReport' | translate }} →</button>
       </article>
     </div>
 
-    <p *ngIf="filteredReports.length === 0" class="m-0 text-sm text-textmuted">No reports match your search.</p>
+    <p *ngIf="filteredReports.length === 0" class="m-0 text-sm text-textmuted">{{ 'web.accounting.reports.noReportsMatch' | translate }}</p>
   </section>
 </div>

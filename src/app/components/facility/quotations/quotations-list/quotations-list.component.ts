@@ -1,32 +1,38 @@
-import { TranslateModule } from '@ngx-translate/core';
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule, } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
+import { PageEvent } from '@angular/material/paginator';
 import { QUOTATION_ROWS, QuotationRow, QuotationStatus } from '../quotations.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { Subscription } from 'rxjs';
 type StatusTab = 'All' | QuotationStatus;
 
 @Component({
   selector: 'app-quotations-list',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     FormsModule,
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent, TranslateModule],
+    ColumnMenuComponent,
+    OvPaginatorComponent,
+    TranslateModule
+  ],
   templateUrl: './quotations-list.component.html',
   styleUrl: './quotations-list.component.scss'
 })
-export class QuotationsListComponent { 
+export class QuotationsListComponent implements OnInit, OnDestroy { 
 
   searchQuery = '';
   statusFilter: StatusTab = 'All';
@@ -43,31 +49,53 @@ export class QuotationsListComponent {
   currentUser = this.commonservice.getCurrentUser(); 
   openRowActionId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
+  private langSub?: Subscription;
 
   filterTitle = '';
   filterStatus: QuotationStatus | null = null;
   filterVendor = '';
 
   tableColumns = [
-    { key: 'code', label: 'Quotation ID', visible: true, useTemplate: true, width: '120px' },
-    { key: 'workorder_id', label: 'Work Order ID', visible: true, useTemplate: true, width: '130px' },
-    { key: 'title', label: 'Quotation Title', visible: true, useTemplate: true, width: '220px' },
-    { key: 'quotation_no', label: 'Quotation Number', visible: true, width: '150px' },
-    { key: 'selected_vendors', label: 'Vendor', visible: true, useTemplate: true, width: '200px' },
-    { key: 'category_name', label: 'Quotation Category Name', visible: true, width: '180px' },
-    { key: 'status_nm', label: 'Quotation Status', visible: true, useTemplate: true, width: '140px' },
-    { key: 'total_amt', label: 'Quotation Amount', visible: true, width: '140px' },
-    { key: 'created_date', label: 'Quotation Date', visible: true, width: '130px' },
-    { key: 'estimation_date', label: 'Quotation Validity', visible: true, width: '140px' },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
+    { key: 'code', label: 'Quotation ID', labelKey: 'web.facility.quotations.colQuotationId', visible: true, useTemplate: true, width: '120px' },
+    { key: 'workorder_id', label: 'Work Order ID', labelKey: 'web.facility.quotations.colWorkOrderId', visible: true, useTemplate: true, width: '130px' },
+    { key: 'title', label: 'Quotation Title', labelKey: 'web.facility.quotations.colQuotationTitle', visible: true, useTemplate: true, width: '220px' },
+    { key: 'quotation_no', label: 'Quotation Number', labelKey: 'web.facility.quotations.colQuotationNumber', visible: true, width: '150px' },
+    { key: 'selected_vendors', label: 'Vendor', labelKey: 'web.facility.quotations.colVendor', visible: true, useTemplate: true, width: '200px' },
+    { key: 'category_name', label: 'Quotation Category Name', labelKey: 'web.facility.quotations.colQuotationCategoryName', visible: true, width: '180px' },
+    { key: 'status_nm', label: 'Quotation Status', labelKey: 'web.facility.quotations.colQuotationStatus', visible: true, useTemplate: true, width: '140px' },
+    { key: 'total_amt', label: 'Quotation Amount', labelKey: 'web.facility.quotations.colQuotationAmount', visible: true, width: '140px' },
+    { key: 'created_date', label: 'Quotation Date', labelKey: 'web.facility.quotations.colQuotationDate', visible: true, width: '130px' },
+    { key: 'estimation_date', label: 'Quotation Validity', labelKey: 'web.facility.quotations.colQuotationValidity', visible: true, width: '140px' },
+    { key: 'action', label: 'Action', labelKey: 'web.facility.quotations.colAction', visible: true, useTemplate: true, width: '70px' }
   ];
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
     private commonservice: CommonService,public translate: TranslateService) {}
 
   ngOnInit() {
-    
+    this.updateTableColumnLabels();
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.updateTableColumnLabels();
+    });
     this.loadQuotations();  
     this.loadLookup(78,41, 'statusTabs', '');
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
+
+  private updateTableColumnLabels(): void {
+    this.tableColumns.forEach((col: any) => {
+      if (col.labelKey) {
+        col.label = this.translate.instant(col.labelKey);
+      }
+    });
+  }
+
+  onPaginatorChange(event: PageEvent): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadQuotations();
   }
   loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
     this.commontabservice.getMasterByType({

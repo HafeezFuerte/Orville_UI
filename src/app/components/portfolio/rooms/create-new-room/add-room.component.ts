@@ -126,7 +126,7 @@ export class AddRoomComponent implements OnInit {
       error: (err: any) => {
         this.isLoading = false;
         console.error('Error fetching room details:', err);
-        this.toastr.error('Failed to load room details.', 'Error');
+        this.toastr.error(this.translate.instant('web.rooms.errFailedToLoadDetails'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -372,7 +372,7 @@ export class AddRoomComponent implements OnInit {
       }
       console.warn('Invalid fields:', invalidFields);
       
-      this.toastr.warning('Please fill in all required fields: ' + invalidFields.join(', '), 'Validation Error');
+      this.toastr.warning(this.translate.instant('web.common.msgFillRequiredFields') + ': ' + invalidFields.join(', '), this.translate.instant('web.common.lblValidationError'));
       return;
     }
 
@@ -473,16 +473,16 @@ export class AddRoomComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.statusCode === "200") {
-          this.toastr.success('Room created successfully.', 'Success');
+          this.toastr.success(this.translate.instant('web.rooms.msgRoomCreatedSuccess'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/rooms']);
         } else {
-          this.toastr.error(res?.message || 'Failed to save room', 'Error');
+          this.toastr.error(res?.message || this.translate.instant('web.rooms.errFailedToSaveRoom'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         this.isLoading = false;
         const errMsg = err.error?.message || err.message || 'Internal Server Error';
-        this.toastr.error(errMsg, 'Error');
+        this.toastr.error(errMsg, this.translate.instant('web.common.lblError'));
       }
     });
   }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service'; 
 import { ToastrService } from 'ngx-toastr';
 import { CommonService } from '../../../services/common.service';
@@ -11,7 +12,7 @@ import {FlowbiteDatepickerDirective} from '../../../shared/directives/flowbite-d
 @Component({
   selector: 'app-add-litigation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FlowbiteDatepickerDirective, FormsModule,RouterModule, NgSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, FlowbiteDatepickerDirective, FormsModule, RouterModule, NgSelectModule, TranslateModule],
   templateUrl: './add-litigation.component.html',
   styleUrls: []
 })
@@ -22,6 +23,7 @@ export class AddLitigationComponent implements OnInit {
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
+  private translate = inject(TranslateService);
 
   litigationForm!: FormGroup;
   isEdit = false;
@@ -31,9 +33,9 @@ export class AddLitigationComponent implements OnInit {
   // Dropdown lists
   currentUser = this.commonService.getCurrentUser();
   escalationOptions = [
-    { value: 'After 10 days', label: 'After 10 days' },
-    { value: 'After 20 days', label: 'After 20 days' },
-    { value: 'After 30 days', label: 'After 30 days' }, 
+    { value: 'After 10 days', labelKey: 'web.legal.addLitigation.optAfter10Days' },
+    { value: 'After 20 days', labelKey: 'web.legal.addLitigation.optAfter20Days' },
+    { value: 'After 30 days', labelKey: 'web.legal.addLitigation.optAfter30Days' }, 
   ];
 
   propertiesList:any=[];
@@ -156,7 +158,7 @@ export class AddLitigationComponent implements OnInit {
          this.loadLitigationDetails(legalinfo);
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant("web.common.noRecordsFound"));
       },
       error: (err) => {
         console.error(`Error fetching typeid: 22:`, err);
@@ -211,23 +213,24 @@ export class AddLitigationComponent implements OnInit {
     this.commonService.saveLegalCases(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-          this.toastr.success("Successfully saved");
+          this.toastr.success(this.translate.instant("web.legal.addLitigation.msgSavedSuccess"));
           this.router.navigate(['/legal/litigations']); 
            
         } else {
-          this.toastr.error(res.message || "Failed to save legal cases");
+          this.toastr.error(res.message || this.translate.instant("web.legal.addLitigation.msgSaveFailed"));
         }
       },
       error: (err: any) => {
         console.error("Error saving work order:", err);
-        this.toastr.error("An error occurred while saving the legal cases : "+ err);
+        this.toastr.error(this.translate.instant("web.legal.addLitigation.msgSaveError") + err);
       }
     });
      
     
     } else {
-      this.toastr.error("Please fill required fields case name,case date,legal firm",
-        'Validation',
+      this.toastr.error(
+        this.translate.instant("web.legal.addLitigation.valRequiredFields"),
+        this.translate.instant("web.common.validation"),
         {
           enableHtml: true,
           timeOut: 5000,

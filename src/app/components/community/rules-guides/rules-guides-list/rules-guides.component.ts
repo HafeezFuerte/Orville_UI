@@ -9,7 +9,7 @@ import { GUIDE_ROWS, GuideRow } from '../rules-guides.data';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 @Component({
   selector: 'app-rules-guides',
@@ -20,8 +20,9 @@ import { DeleteConfirmationComponent } from '../../../../shared/components/delet
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent,DeleteConfirmationComponent
-
+    ColumnMenuComponent,
+    DeleteConfirmationComponent,
+    TranslateModule
   ],
   templateUrl: './rules-guides.component.html',
   styleUrl: './rules-guides.component.scss'
@@ -49,7 +50,7 @@ export class RulesGuidesComponent {
   tableColumns = [
     {
       key: 'code',
-      label: 'ID',
+      label: 'web.community.rulesGuides.colId',
       visible: true,
       useTemplate: true,
       width: '110px',
@@ -58,15 +59,15 @@ export class RulesGuidesComponent {
     },
     {
       key: 'name',
-      label: 'Guide Name',
+      label: 'web.community.rulesGuides.colGuideName',
       visible: true,
       useTemplate: true,
       width: '260px'
     },
-    { key: 'entity_type', label: 'Entity', visible: true, width: '240px',      useTemplate: true },
-    { key: 'entity_name', label: 'Entity Name', visible: true, width: '240px',      useTemplate: true, },
-    { key: 'created_date', label: 'Date', visible: true, width: '140px' },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '80px' }
+    { key: 'entity_type', label: 'web.community.rulesGuides.colEntity', visible: true, width: '240px', useTemplate: true },
+    { key: 'entity_name', label: 'web.community.rulesGuides.colEntityName', visible: true, width: '240px', useTemplate: true },
+    { key: 'created_date', label: 'web.community.rulesGuides.colDate', visible: true, width: '140px' },
+    { key: 'action', label: 'web.community.rulesGuides.colAction', visible: true, useTemplate: true, width: '80px' }
   ];
 
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,

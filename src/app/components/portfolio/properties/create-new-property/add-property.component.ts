@@ -258,7 +258,7 @@ isAmenitySelected(id: number | string): boolean {
   return this.selectedAmenities.some((x) => Number(x) === amenityId);
 }
 showValidationError(message: string): void {
-  this.toastr.error(message, 'Validation', {
+  this.toastr.error(message, this.translate.instant('web.common.lblValidation'), {
     timeOut: 3000,
     positionClass: 'toast-top-right'
   });
@@ -381,7 +381,7 @@ onPropertyImageSelected(files: File[]): void {
 
     if (errors.length > 0) {
       this.isLoading = false;
-      this.toastr.error(errors.join('<br>'), 'Validation', {
+      this.toastr.error(errors.join('<br>'), this.translate.instant('web.common.lblValidation'), {
         enableHtml: true,
         timeOut: 5000,
         positionClass: 'toast-top-right'
@@ -468,7 +468,7 @@ onPropertyImageSelected(files: File[]): void {
           });
         } else {
           this.isLoading = false;
-          this.toastr.error(res["message"] || 'Failed to save property');
+          this.toastr.error(res["message"] || this.translate.instant('web.property.errFailedToSaveProperty'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err) => {

@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
+import { CommonService } from '../../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -27,9 +28,11 @@ import { ToastrService } from 'ngx-toastr';
 export class AddTenantComponent implements OnInit {
   private propertiesService = inject(PropertiesService);
   private portfolioService = inject(PortfolioService);
+  private commonService = inject(CommonService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
 
   isEditMode = false;
   tenantId: any = null;
@@ -346,10 +349,11 @@ export class AddTenantComponent implements OnInit {
   ngOnInit() {
     this.loadCountries();
 
+    const currentUser = this.commonService.getCurrentUser();
     this.propertiesService.getTenants({
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       page_no: 0,
@@ -547,7 +551,7 @@ export class AddTenantComponent implements OnInit {
   saveTenant() {
     if (!this.tenantData.first_name || !this.tenantData.last_name || !this.tenantData.email_address
       || !this.tenantData.mobile_no) {
-      this.toastr.warning('Please fill in all required fields (First Name, Last Name, Email,Phone no).', 'Missing Info');
+      this.toastr.warning(this.translate.instant('web.common.msgFillRequiredFields'), this.translate.instant('web.contacts.lblMissingInfo'));
       return;
     }
 
@@ -564,14 +568,15 @@ export class AddTenantComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      this.toastr.warning("This email address or mobile number already exists.", "Duplicate Found");
+      this.toastr.warning(this.translate.instant('web.contacts.errDuplicateEmailOrMobile'), this.translate.instant('web.contacts.lblDuplicateFound'));
       return;
     }
 
+    const currentUser = this.commonService.getCurrentUser();
     const requestJson = {
-      userid: Number(localStorage.getItem('userId')) || 1,
-      company_id: Number(localStorage.getItem('companyId')) || 1,
-      clientId: '74BB6922',
+      userid: currentUser?.userId,
+      company_id: currentUser?.companyId,
+      clientId: currentUser?.clientId,
       source: 'web',
       languageid: 1,
       email_address: this.tenantData.email_address,
@@ -641,19 +646,19 @@ export class AddTenantComponent implements OnInit {
             }
           }
           if (duplicateError) {
-            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', 'Error');
+            this.toastr.error(duplicateError.charAt(0).toUpperCase() + duplicateError.slice(1) + '.', this.translate.instant('web.common.lblError'));
             return;
           }
 
-          this.toastr.success(this.isEditMode ? 'Tenant updated successfully!' : 'Tenant saved successfully!', 'Success');
+          this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgTenantUpdated' : 'web.contacts.msgTenantSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/tenants']);
         } else {
-          this.toastr.error(res.message || 'Failed to save tenant.', 'Error');
+          this.toastr.error(res.message || this.translate.instant('web.contacts.errFailedToSaveTenant'), this.translate.instant('web.common.lblError'));
         }
       },
       error: (err: any) => {
         console.error('Failed to save tenant:', err);
-        this.toastr.error('An error occurred while saving the tenant.', 'Error');
+        this.toastr.error(this.translate.instant('web.contacts.errServerErrorSaving'), this.translate.instant('web.common.lblError'));
       }
     });
   }
@@ -711,11 +716,11 @@ export class AddTenantComponent implements OnInit {
 
   saveDocument(): void {
     if (!this.docForm.document_type) {
-      this.toastr.error('Document Type is required.', 'Validation Error');
+      this.toastr.error(this.translate.instant('web.contacts.errDocTypeRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
     if (!this.docForm.file) {
-      this.toastr.error('Please attach a file.', 'Validation Error');
+      this.toastr.error(this.translate.instant('web.contacts.errAttachFile'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
 
@@ -734,11 +739,11 @@ export class AddTenantComponent implements OnInit {
 
     this.resetDocForm();
     this.isAddDocModalOpen = false;
-    this.toastr.success('Document attached successfully.');
+    this.toastr.success(this.translate.instant('web.contacts.msgDocAttachedSuccess'));
   }
 
   removeDocument(index: number): void {
     this.uploadedDocuments.splice(index, 1);
-    this.toastr.success('Document removed successfully.');
+    this.toastr.success(this.translate.instant('web.contacts.msgDocRemovedSuccess'));
   }
 }

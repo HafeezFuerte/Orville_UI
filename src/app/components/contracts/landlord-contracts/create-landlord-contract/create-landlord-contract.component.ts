@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface ScheduleRow {
   account: string;
@@ -19,7 +20,7 @@ interface ScheduleRow {
 @Component({
   selector: 'app-create-landlord-contract',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FileUploadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FileUploadComponent, TranslateModule],
   templateUrl: './create-landlord-contract.component.html',
   styleUrl: './create-landlord-contract.component.scss'
 })
@@ -83,7 +84,8 @@ export class CreateLandlordContractComponent implements OnInit {
     private route: ActivatedRoute,
     private portfolioService: PortfolioService,
     private commonService: CommonService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -486,7 +488,7 @@ export class CreateLandlordContractComponent implements OnInit {
   }
 
   preview(): void {
-    this.toastr.info('Preview uses the current form values. No file is generated.');
+    this.toastr.info(this.translate.instant('web.contracts.common.previewInfo'));
   }
 
   goBack(): void {
@@ -537,15 +539,15 @@ export class CreateLandlordContractComponent implements OnInit {
 
   save(): void {
     const errors: string[] = [];
-    if (!this.form.landlord) errors.push('Landlord is required.');
-    if (!this.form.property) errors.push('Property is required.');
+    if (!this.form.landlord) errors.push(this.translate.instant('web.contracts.landlord.landlordRequired'));
+    if (!this.form.property) errors.push(this.translate.instant('web.contracts.landlord.propertyRequired'));
 
     if (!this.form.name && this.form.landlord) {
       this.form.name = `${this.selectedLandlordName} - Contract`;
     }
 
     if (errors.length > 0) {
-      this.toastr.error(errors.join('<br>'), 'Validation', {
+      this.toastr.error(errors.join('<br>'), this.translate.instant('web.contracts.common.validation'), {
         enableHtml: true,
         timeOut: 5000,
         positionClass: 'toast-top-right'
@@ -627,15 +629,15 @@ export class CreateLandlordContractComponent implements OnInit {
     this.portfolioService.saveLandlordContract(formData).subscribe({
       next: (res) => {
         if (res && (res.statusCode === 200 || res.statusCode === '200' || res.isSuccess)) {
-          this.toastr.success(res.message || 'Contract saved successfully');
+          this.toastr.success(res.message || this.translate.instant('web.contracts.landlord.contractSavedSuccess'));
           this.goBack();
         } else {
-          this.toastr.error(res.message || 'Failed to save contract');
+          this.toastr.error(res.message || this.translate.instant('web.contracts.landlord.contractSaveFailed'));
         }
       },
       error: (err) => {
         console.error('Error saving contract:', err);
-        this.toastr.error('An error occurred while saving the contract');
+        this.toastr.error(this.translate.instant('web.contracts.landlord.contractSaveError'));
       }
     });
   }

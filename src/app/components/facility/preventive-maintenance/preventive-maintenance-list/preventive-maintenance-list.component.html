@@ -2,8 +2,8 @@
 <div>
   <div class="page-header !py-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
     <div>
-      <h3 class="ov-page-title">Preventive Maintenance</h3>
-      <p class="ov-page-sub">Manage and view all Preventive Maintenance</p>
+      <h3 class="ov-page-title">{{ 'web.facility.preventiveMaintenance.title' | translate }}</h3>
+      <p class="ov-page-sub">{{ 'web.facility.preventiveMaintenance.subtitle' | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
@@ -18,13 +18,13 @@
       <div class="ov-search max-w-none flex-1 sm:max-w-[437px]">
         <img src="assets/images/work-orders/search.svg" alt="" width="15" height="15" class="ov-search__icon" />
         <input type="text" class="ov-input ov-search__input"
-          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" placeholder="Search">
+          [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="pageIndex = 0" [placeholder]="'web.facility.preventiveMaintenance.phSearch' | translate">
       </div>
       <div class="ov-toolbar__btns">
         <div class="relative" data-pm-columns (click)="$event.stopPropagation()">
           <button type="button" class="ov-btn ov-btn-toolbar" (click)="toggleColumnDropdown($event)">
             <img src="assets/images/work-orders/columns.svg" alt="" width="18" height="18" />
-            Column
+            {{ 'web.facility.preventiveMaintenance.column' | translate }}
           </button>
           <app-column-menu
             *ngIf="showColumnDropdown"
@@ -74,34 +74,13 @@
       </app-shared-table>
     </div>
 
-    <div class="ov-page">
-      <div class="ov-page__meta">
-        <span class="ov-page__label">Show</span>
-        <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
-            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
-          </select>
-          <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
-        </div>
-        <span>Showing {{ startRecord }} to {{ endRecord }} of {{ totalRecords }} records</span>
-      </div>
-      <div class="ov-page__nav">
-        <span class="ov-page__label">Page {{ displayPage }} of {{ totalPages }}</span>
-        <div class="ov-page__btns">
-          <button type="button" class="ov-page__btn" (click)="previousPage()" [disabled]="displayPage <= 1" aria-label="Previous page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--prev" />
-          </button>
-          <ng-container *ngFor="let item of pagerItems">
-            <span *ngIf="item === '...'" class="ov-page__ellipsis">...</span>
-            <button *ngIf="item !== '...'" type="button" class="ov-page__btn"
-              [class.is-active]="item === displayPage" (click)="goToPage(+item)">{{ item }}</button>
-          </ng-container>
-          <button type="button" class="ov-page__btn" (click)="nextPage()" [disabled]="displayPage >= totalPages" aria-label="Next page">
-            <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" class="ov-page__chevron ov-page__chevron--next" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-ov-paginator
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChange)="onPaginatorChange($event)">
+    </app-ov-paginator>
   </div>
 
   <div *ngIf="openRowActionId && rowMenuStyle"
@@ -110,7 +89,7 @@
     data-pm-action
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
-    <button type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToCreate()">Edit</button>
-    <button type="button" role="menuitem" class="pm-row-menu__item" (click)="closeRowAction()">View</button>
+    <button type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToEdit(openRowActionId)">{{ 'web.facility.preventiveMaintenance.edit' | translate }}</button>
+    <button type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToDetail(openRowActionId)">{{ 'web.facility.preventiveMaintenance.view' | translate }}</button>
   </div>
 </div>

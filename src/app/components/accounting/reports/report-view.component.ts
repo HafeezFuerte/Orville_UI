@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FlowbiteDatepickerDirective } from '../../../shared/directives/flowbite-datepicker.directive';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   LedgerGroup,
   REPORT_VIEWS,
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-report-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, FilterDrawerComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './report-view.component.html',
   styleUrl: './report-view.component.scss'
 })
@@ -37,16 +38,17 @@ export class ReportViewComponent implements OnInit {
   pageIndex = 0;
   pageSize = 5;
   tableColumns = [
-    { key: 'account', label: 'Account name', visible: true },
-    { key: 'type', label: 'Type', visible: true },
-    { key: 'debit', label: 'Debit', visible: true },
-    { key: 'credit', label: 'Credit', visible: true },
-    { key: 'balance', label: 'Balance', visible: true }
+    { key: 'account', label: 'web.accounting.reports.colAccountName', visible: true },
+    { key: 'type', label: 'web.accounting.reports.colType', visible: true },
+    { key: 'debit', label: 'web.accounting.reports.colDebit', visible: true },
+    { key: 'credit', label: 'web.accounting.reports.colCredit', visible: true },
+    { key: 'balance', label: 'web.accounting.reports.colBalance', visible: true }
   ];
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {

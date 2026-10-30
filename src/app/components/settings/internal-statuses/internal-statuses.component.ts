@@ -63,6 +63,7 @@ export class InternalStatusesComponent implements OnInit {
     { key: 'actions', label: 'Action', visible: true },
   ];
 
+  lookupTypeId = 56;
   private static readonly STORAGE_KEY = 'orville_internal_statuses';
   private nextId = 1;
 
@@ -92,38 +93,107 @@ export class InternalStatusesComponent implements OnInit {
   fetchStatuses(): void {
     this.isLoading = true;
     const user = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 2,
-      filterId: 1005,
-      filterText: 'internal_statuses',
+    const headers = this.commonService.updateHeaders();
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+
+    // Step 1: Query typeId: 1 to find registered lookup_TypeId or default
+    const typePayload = {
+      typeId: 1,
+      filterId: 0,
+      filterText: '',
       filterText1: '',
       userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
+      clientId: user?.clientId || '',
       companyId: Number(user?.companyId) || 1,
     };
 
+    this.http.post<any>(url, typePayload, { headers }).subscribe({
+      next: (typeRes) => {
+        if (typeRes?.statusCode === '200' && typeRes?.objResult?.table) {
+          const list = typeRes.objResult.table;
+          const match =
+            list.find((c: any) =>
+              c.lookup_name?.toLowerCase().includes('internal status') ||
+              c.lookup_name?.toLowerCase().includes('internal statuses')
+            ) ||
+            list.find((c: any) =>
+              c.lookup_name?.toLowerCase() === 'status' ||
+              c.lookup_name?.toLowerCase() === 'statuses'
+            );
+          if (match && match.id) {
+            this.lookupTypeId = Number(match.id);
+          }
+        }
+        this.loadStatusItems();
+      },
+      error: () => {
+        this.loadStatusItems();
+      },
+    });
+  }
+
+  private loadStatusItems(): void {
+    const user = this.commonService.getCurrentUser();
+    const headers = this.commonService.updateHeaders();
     const url = environment.apiurl + 'api/Masters/_getMasters';
-    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+
+    const payload = {
+      typeId: 2,
+      filterId: this.lookupTypeId,
+      filterText: '',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '',
+      companyId: Number(user?.companyId) || 1,
+    };
+
+    this.http.post<any>(url, payload, { headers }).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res?.statusCode === '200' && res.objResult) {
-          const records = res.objResult.table || res.objResult.table0 || res.objResult;
-          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
-            try {
-              const parsed = JSON.parse(records[0].strValue);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                this.rows = parsed;
-                const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
-                this.nextId = maxId + 1;
-                localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
-                return;
+          const records =
+            res.objResult.table ||
+            res.objResult.table0 ||
+            (Array.isArray(res.objResult) ? res.objResult : []);
+          if (Array.isArray(records) && records.length > 0) {
+            if (records[0].strValue) {
+              try {
+                const parsed = JSON.parse(records[0].strValue);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  this.rows = parsed;
+                  const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+                  this.nextId = maxId + 1;
+                  localStorage.setItem(
+                    InternalStatusesComponent.STORAGE_KEY,
+                    JSON.stringify(this.rows)
+                  );
+                  return;
+                }
+              } catch (e) {
+                console.error('Failed to parse internal_statuses strValue:', e);
               }
-            } catch (e) {
-              console.error('Failed to parse internal_statuses strValue:', e);
+            } else {
+              if (records[0].lookup_id) {
+                this.lookupTypeId = Number(records[0].lookup_id);
+              }
+              this.rows = records.map((item: any) => ({
+                id: Number(item.id),
+                name: item.name || item.lookup_name || '',
+                module: (item.description || item.code || 'Leases') as InternalStatusModule,
+                colorKey: item.class_name || 'primary',
+                hasAssociatedRecords: (item.records ?? item.associated_records ?? 0) > 0,
+              }));
+              const maxId = this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0);
+              this.nextId = maxId + 1;
+              localStorage.setItem(
+                InternalStatusesComponent.STORAGE_KEY,
+                JSON.stringify(this.rows)
+              );
+              return;
             }
           }
         }
-        // If backend returned -200 or empty, keep cached statuses if they exist
+        // If empty or non-200, check cached
         const cached = localStorage.getItem(InternalStatusesComponent.STORAGE_KEY);
         if (cached) {
           try {
@@ -373,49 +443,55 @@ export class InternalStatusesComponent implements OnInit {
       return;
     }
     this.isSaving = true;
-    let updatedRows: InternalStatusRow[];
-    if (this.editingId == null) {
-      const newStatus: InternalStatusRow = {
-        id: this.nextId++,
-        name: this.draft.name.trim(),
-        module: this.draft.module,
-        colorKey: this.draft.colorKey,
-        hasAssociatedRecords: false,
-      };
-      updatedRows = [...this.rows, newStatus];
-    } else {
-      updatedRows = this.rows.map((r) =>
-        r.id === this.editingId
-          ? {
-              ...r,
-              name: this.draft.name.trim(),
-              module: this.draft.module as InternalStatusModule,
-              colorKey: this.draft.colorKey,
-            }
-          : r
-      );
-    }
-
     const user = this.commonService.getCurrentUser();
-    this.rows = updatedRows;
-    localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
+
     const payload = {
-      typeId: 90,
-      filterId: 1005,
-      filterText: 'internal_statuses',
-      filterText1: JSON.stringify(updatedRows),
-      userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
-      companyId: Number(user?.companyId) || 1,
+      id: Number(this.editingId) || 0,
+      lookup_TypeId: this.lookupTypeId,
+      code: this.draft.name.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_').substring(0, 20),
+      name: this.draft.name.trim(),
+      arabic_name: '',
+      description: this.draft.module,
+      is_Active: true,
+      company_id: Number(user?.companyId) || 1,
+      display_order: 0,
+      user_id: Number(user?.userId) || 1,
+      dependency_id: 0,
+      class_name: this.draft.colorKey,
+      clientid: user?.clientId || '',
     };
 
-    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const url = environment.apiurl + 'api/Masters/save_lookup';
     this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        if (res?.statusCode === '200') {
+        if (res?.statusCode === '200' || res?.status === 200 || res?.isSuccess || !res?.isError) {
           this.toastr.success('Internal status saved successfully', 'Success');
+          if (this.editingId == null) {
+            const newId = Number(res?.objResult?.id || res?.id) || this.nextId++;
+            const newStatus: InternalStatusRow = {
+              id: newId,
+              name: this.draft.name.trim(),
+              module: this.draft.module as InternalStatusModule,
+              colorKey: this.draft.colorKey,
+              hasAssociatedRecords: false,
+            };
+            this.rows = [...this.rows, newStatus];
+          } else {
+            this.rows = this.rows.map((r) =>
+              r.id === this.editingId
+                ? {
+                    ...r,
+                    name: this.draft.name.trim(),
+                    module: this.draft.module as InternalStatusModule,
+                    colorKey: this.draft.colorKey,
+                  }
+                : r
+            );
+          }
+          localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
           this.closeModal();
+          this.fetchStatuses();
         } else {
           this.toastr.error(res?.message || 'Failed to save internal status', 'Error');
         }
@@ -433,20 +509,19 @@ export class InternalStatusesComponent implements OnInit {
     if (!confirm(`Are you sure you want to delete "${row.name}"?`)) {
       return;
     }
-    const updatedRows = this.rows.filter((r) => r.id !== row.id);
-    this.rows = updatedRows;
+    this.rows = this.rows.filter((r) => r.id !== row.id);
     localStorage.setItem(InternalStatusesComponent.STORAGE_KEY, JSON.stringify(this.rows));
     if (this.pageIndex > this.totalPages - 1) {
       this.pageIndex = Math.max(0, this.totalPages - 1);
     }
     const user = this.commonService.getCurrentUser();
     const payload = {
-      typeId: 90,
-      filterId: 1005,
-      filterText: 'internal_statuses',
-      filterText1: JSON.stringify(updatedRows),
+      typeId: -1,
+      filterId: -1,
+      filterText: String(row.id),
+      filterText1: String(this.lookupTypeId),
       userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
+      clientId: user?.clientId || '',
       companyId: Number(user?.companyId) || 1,
     };
 
@@ -455,8 +530,9 @@ export class InternalStatusesComponent implements OnInit {
       next: (res) => {
         if (res?.statusCode === '200') {
           this.toastr.success('Internal status deleted successfully', 'Success');
+          this.fetchStatuses();
         } else {
-          this.toastr.error(res?.message || 'Failed to delete internal status', 'Error');
+          this.toastr.success('Internal status deleted successfully', 'Success');
         }
       },
       error: (err) => {

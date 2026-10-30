@@ -1,14 +1,14 @@
 <!-- Quotation Detail — Figma 3062:83663 + Add Item modal 3062:87544 -->
 <div class="flex flex-col gap-4 page-header !py-4 md:flex-row md:items-start md:justify-between">
   <div class="flex items-start gap-4">
-    <button type="button" class="ov-back" (click)="goBack()" title="Back to Quotations" aria-label="Back">
+    <button type="button" class="ov-back" (click)="goBack()" [title]="'web.facility.quotations.title' | translate" [attr.aria-label]="'web.facility.quotations.title' | translate">
       <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
     </button>
     <div>
-      <h3 class="ov-page-title">Quotation Details</h3>
+      <h3 class="ov-page-title">{{ 'web.facility.quotations.quotationDetails' | translate }}</h3>
       <p class="ov-page-sub mt-1">
-        Facility / Quotations /
-        <span class="ov-page-sub__current">Quotation Details</span>
+        {{ 'web.facility.quotations.breadcrumbFacility' | translate }} / {{ 'web.facility.quotations.title' | translate }} /
+        <span class="ov-page-sub__current">{{ 'web.facility.quotations.quotationDetails' | translate }}</span>
       </p>
     </div>
   </div>
@@ -56,59 +56,59 @@
       </div>
 
       <div class="border-t border-defaultborder"></div>
-      <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
+      <h5 class="ov-card-title !text-[16px] m-0">{{ 'web.facility.quotations.information' | translate }}</h5>
 
       <div class="qd-info-card">
         <div class="qd-info-card__head">
-          <h6 class="qd-info-card__title">Quotation Information</h6>
+          <h6 class="qd-info-card__title">{{ 'web.facility.quotations.quotationInformation' | translate }}</h6>
         </div>
         <div class="qd-info-card__body">
           <div class="ov-kv">
-            <span class="ov-kv__label">Quotation ID:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblQuotationId' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.id }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Work Order:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblWorkOrder' | translate }}</span>
             <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.workOrderId }}</a>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Vendor:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblVendor' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.vendor }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Category:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblCategory' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.category }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Amount:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblAmount' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.amount }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Property:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblProperty' | translate }}</span>
             <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.property }}</a>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Unit:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblUnit' | translate }}</span>
             <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.unit }}</a>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Contact:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblContact' | translate }}</span>
             <a class="ov-link font-bold" href="javascript:void(0)">{{ quotation.contact }}</a>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Date:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblDate' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.date }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Validity:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblValidity' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.validity }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Created:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblCreated' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.created }}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">Description:</span>
+            <span class="ov-kv__label">{{ 'web.facility.quotations.lblDescription' | translate }}</span>
             <span class="ov-kv__value">{{ quotation.notes }}</span>
           </div>
         </div>
@@ -120,19 +120,19 @@
     <div class="box ov-card overflow-visible shadow-none !mb-0">
       <div class="ov-detail-tabs">
         <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'lineItems'"
-          (click)="setTab('lineItems')">Line Items</button>
+          (click)="setTab('lineItems')">{{ 'web.facility.quotations.tabLineItems' | translate }}</button>
         <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'notes'"
-          (click)="setTab('notes')">Notes</button>
+          (click)="setTab('notes')">{{ 'web.facility.quotations.tabNotes' | translate }}</button>
         <button type="button" class="ov-detail-tabs__btn" [class.is-active]="activeTab === 'attachments'"
-          (click)="setTab('attachments')">Attachments</button>
+          (click)="setTab('attachments')">{{ 'web.facility.quotations.tabAttachments' | translate }}</button>
       </div>
 
       <div *ngIf="activeTab === 'lineItems'" class="p-5">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h5 class="ov-card-title m-0 !text-[18px]">Line Items</h5>
+          <h5 class="ov-card-title m-0 !text-[18px]">{{ 'web.facility.quotations.lineItems' | translate }}</h5>
           <button type="button" class="ov-btn ov-btn-primary !h-10" (click)="openAddLineItem()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
-            Add Item
+            {{ 'web.facility.quotations.addItem' | translate }}
           </button>
         </div>
 
@@ -155,12 +155,12 @@
                   <span *ngSwitchCase="'total_amt'" class="font-semibold">{{ formatMoney(row.total_amt) }}</span>
                   <span *ngSwitchCase="'category_text'" class="text-textmuted">{{ row.category_text }}</span>
                   <span *ngSwitchCase="'tax_profile_text'" class="text-textmuted">{{ row.tax_profile_text }}</span>
-                  <div *ngSwitchCase="'action'" class="flex items-center gap-2">
-                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Edit line item"
+                  <div *ngIf="col.key === 'action'" class="flex items-center gap-2">
+                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.edit' | translate"
                       (click)="openEditLineItem(row)">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Remove line item"
+                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.remove' | translate"
                       (click)="removeLineItem(row.id)">
                       <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
                     </button>
@@ -170,7 +170,7 @@
             </app-shared-table>
           </div>
           <div class="qd-lines-footer">
-            <span class="qd-lines-footer__label">Line items total</span>
+            <span class="qd-lines-footer__label">{{ 'web.facility.quotations.lineItemsTotal' | translate }}</span>
             <span class="qd-lines-footer__value">{{ formatMoney(lineItemsTotal) }}</span>
           </div>
         </div>
@@ -191,19 +191,19 @@
 <div *ngIf="showLineItemModal" class="ov-modal-backdrop" role="dialog" aria-modal="true"
   (click)="closeLineItemModal()">
   <div class="ov-modal-stack" style="max-width: 600px" (click)="$event.stopPropagation()">
-    <button type="button" class="ov-modal__float-close" (click)="closeLineItemModal()" aria-label="Close">
+    <button type="button" class="ov-modal__float-close" (click)="closeLineItemModal()" [attr.aria-label]="'web.facility.quotations.cancel' | translate">
       <img src="assets/images/common/close-plus.svg" alt="" width="20" height="20" class="ov-ico-x" />
     </button>
 
     <div class="qt-item-modal bg-white dark:bg-bodybg">
       <div class="qt-item-modal__head">
         <h5 class="qt-item-modal__title">
-          {{ editingItem ? 'Edit Vendor Quotation Line Item' : 'Add Vendor Quotation Line Item' }}
+          {{ (editingItem ? 'web.facility.quotations.editVendorLineItem' : 'web.facility.quotations.addVendorLineItem') | translate }}
         </h5>
         <p class="qt-item-modal__sub">
-          {{ editingItem
-            ? 'Modify specifications and parameters for this quotation item'
-            : 'Add specifications and parameters for this quotation item' }}
+          {{ (editingItem
+            ? 'web.facility.quotations.lineItemModalSubEdit'
+            : 'web.facility.quotations.lineItemModalSubAdd') | translate }}
         </p>
       </div>
 
@@ -211,20 +211,20 @@
 
       <div class="qt-item-modal__fields">
         <div class="qt-item-modal__field">
-          <label class="qt-item-modal__label">Title</label>
+          <label class="qt-item-modal__label">{{ 'web.facility.quotations.title' | translate }}</label>
           <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.title"
-            placeholder="Enter line item title" />
+            [placeholder]="'web.facility.quotations.phEnterLineItemTitle' | translate" />
         </div>
 
         <div class="qt-item-modal__field">
-          <label class="qt-item-modal__label">Quantity</label>
+          <label class="qt-item-modal__label">{{ 'web.facility.quotations.quantity' | translate }}</label>
           <div class="qt-item-modal__stepper">
             <span class="qt-item-modal__stepper-value">{{ modal.quantity }}</span>
             <div class="qt-item-modal__stepper-btns">
-              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(-1)" aria-label="Decrease">
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(-1)" [attr.aria-label]="'web.common.paginator.previous' | translate">
                 <img src="assets/images/quotations/minus.svg" alt="" />
               </button>
-              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(1)" aria-label="Increase">
+              <button type="button" class="qt-item-modal__stepper-btn" (click)="bumpQuantity(1)" [attr.aria-label]="'web.common.paginator.next' | translate">
                 <img src="assets/images/quotations/plus.svg" alt="" />
               </button>
             </div>
@@ -233,17 +233,17 @@
 
         <div class="qt-item-modal__row">
           <div class="qt-item-modal__field">
-            <label class="qt-item-modal__label">Amount per item</label>
+            <label class="qt-item-modal__label">{{ 'web.facility.quotations.amountPerItem' | translate }}</label>
             <div class="qt-item-modal__money">
-              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">{{ 'web.facility.quotations.currencyAed' | translate }}</span>
               <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.amountPerItem"
                 min="0" step="0.01" placeholder="0" />
             </div>
           </div>
           <div class="qt-item-modal__field">
-            <label class="qt-item-modal__label">Total amount</label>
+            <label class="qt-item-modal__label">{{ 'web.facility.quotations.totalAmount' | translate }}</label>
             <div class="qt-item-modal__money qt-item-modal__money--readonly">
-              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
+              <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">{{ 'web.facility.quotations.currencyAed' | translate }}</span>
               <input type="text" class="qt-item-modal__money-input" [value]="modalTotal.toFixed(2)" readonly />
             </div>
           </div>
@@ -251,32 +251,32 @@
 
         <div class="qt-item-modal__row">
           <div class="qt-item-modal__field">
-            <label class="qt-item-modal__label">Quotation Category</label>
+            <label class="qt-item-modal__label">{{ 'web.facility.quotations.quotationCategory' | translate }}</label>
             <ng-select [items]="options.categories" [(ngModel)]="modal.category"
-              placeholder="Select Quotation Category" class="ov-select w-full" appendTo="body">
+              [placeholder]="'web.facility.quotations.phSelectCategory' | translate" class="ov-select w-full" appendTo="body">
             </ng-select>
           </div>
           <div class="qt-item-modal__field">
-            <label class="qt-item-modal__label">Tax Profile</label>
+            <label class="qt-item-modal__label">{{ 'web.facility.quotations.colTaxProfile' | translate }}</label>
             <ng-select [items]="options.taxProfiles" [(ngModel)]="modal.taxProfile"
-              placeholder="Select tax profile" class="ov-select w-full" appendTo="body">
+              [placeholder]="'web.facility.quotations.phSelectTaxProfile' | translate" class="ov-select w-full" appendTo="body">
             </ng-select>
           </div>
         </div>
 
         <div class="qt-item-modal__field">
-          <label class="qt-item-modal__label">Description</label>
+          <label class="qt-item-modal__label">{{ 'web.facility.quotations.description' | translate }}</label>
           <textarea class="qt-item-modal__textarea" rows="4"
             [(ngModel)]="modal.description"
-            placeholder="Enter description / notes here..."></textarea>
+            [placeholder]="'web.facility.quotations.phLineItemDescription' | translate"></textarea>
         </div>
       </div>
 
       <hr class="qt-item-modal__divider" />
 
       <div class="qt-item-modal__footer">
-        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg" (click)="closeLineItemModal()">Cancel</button>
-        <button type="button" class="qt-item-modal__save" (click)="saveLineItem()">Save</button>
+        <button type="button" class="qt-item-modal__cancel bg-white dark:bg-bodybg" (click)="closeLineItemModal()">{{ 'web.facility.quotations.cancel' | translate }}</button>
+        <button type="button" class="qt-item-modal__save" (click)="saveLineItem()">{{ 'web.facility.quotations.save' | translate }}</button>
       </div>
     </div>
   </div>

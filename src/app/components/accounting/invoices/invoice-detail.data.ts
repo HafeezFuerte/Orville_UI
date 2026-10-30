@@ -154,57 +154,57 @@ export const INVOICE_PENALTY_ROWS: InvoicePenaltyRow[] = [
 ];
 
 export const OVERVIEW_COLUMNS: InvoiceCol[] = [
-  { key: 'id', label: 'ID', visible: true },
-  { key: 'inclusiveTax', label: 'Inclusive Tax?', visible: true },
-  { key: 'description', label: 'Description', visible: true },
-  { key: 'price', label: 'Price', visible: true },
-  { key: 'tax', label: 'Tax', visible: true },
-  { key: 'discount', label: 'Discount', visible: true },
-  { key: 'discountPct', label: 'Discount %', visible: true },
-  { key: 'total', label: 'Total', visible: true }
+  { key: 'id', label: 'web.common.lblID', visible: true },
+  { key: 'inclusiveTax', label: 'web.accounting.invoices.inclusiveTax', visible: true },
+  { key: 'description', label: 'web.accounting.invoices.description', visible: true },
+  { key: 'price', label: 'web.accounting.invoices.price', visible: true },
+  { key: 'tax', label: 'web.accounting.invoices.tax', visible: true },
+  { key: 'discount', label: 'web.accounting.invoices.discount', visible: true },
+  { key: 'discountPct', label: 'web.accounting.invoices.discountPct', visible: true },
+  { key: 'total', label: 'web.accounting.invoices.total', visible: true }
 ];
 
 export const CHEQUE_COLUMNS: InvoiceCol[] = [
   { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'rcp_no', label: 'Receipt No', visible: true, useTemplate: true },
-    { key: 'cheque_no', label: 'web.leases.lblChequeNo', visible: true }, 
-    { key: 'bank_name', label: 'web.leases.lblBankName', visible: true },
-    { key: 'cheque_date', label: 'web.leases.lblChequeDate', visible: true },
-    { key: 'heldBy', label: 'web.leases.lblHeldBy', visible: true },
-    { key: 'amt', label: 'web.common.lblAmount', visible: true, useTemplate: true },
-    { key: 'cheque_status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
-    { key: 'cheque_in_hand', label: 'In Hand', visible: true },
-    { key: 'is_returned', label: 'Returned', visible: true },
-    { key: 'returnedDate', label: 'Returned Date', visible: true },
-    { key: 'bounce_date', label: 'Bounce Date', visible: true },
-    { key: 'bounce_reason', label: 'Bounce Reason', visible: true },
-    { key: 'withdrawalReason', label: 'Withdrawal Reason', visible: true },
-    { key: 'Tenant', label: 'Contact Name', visible: true, useTemplate: true },
-    { key: 'landlord', label: 'web.leases.lblLandlord', visible: true, useTemplate: true },
-    { key: 'unit_code', label: 'web.leases.lblUnit', visible: true , useTemplate: true},
-    { key: 'attachment_path', label: 'Attachment', visible: true  , useTemplate: true}
+  { key: 'rcp_no', label: 'web.leases.lblReceiptNo', visible: true, useTemplate: true },
+  { key: 'cheque_no', label: 'web.leases.lblChequeNo', visible: true }, 
+  { key: 'bank_name', label: 'web.leases.lblBankName', visible: true },
+  { key: 'cheque_date', label: 'web.leases.lblChequeDate', visible: true },
+  { key: 'heldBy', label: 'web.leases.lblHeldBy', visible: true },
+  { key: 'amt', label: 'web.common.lblAmount', visible: true, useTemplate: true },
+  { key: 'cheque_status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+  { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
+  { key: 'cheque_in_hand', label: 'web.accounting.invoices.chequeInHand', visible: true },
+  { key: 'is_returned', label: 'web.leases.lblReturned', visible: true },
+  { key: 'returnedDate', label: 'web.leases.lblReturnedDate', visible: true },
+  { key: 'bounce_date', label: 'web.leases.lblBounceDate', visible: true },
+  { key: 'bounce_reason', label: 'web.leases.lblBounceReason', visible: true },
+  { key: 'withdrawalReason', label: 'web.leases.lblWithdrawalReason', visible: true },
+  { key: 'Tenant', label: 'web.contacts.lblContactName', visible: true, useTemplate: true },
+  { key: 'landlord', label: 'web.leases.lblLandlord', visible: true, useTemplate: true },
+  { key: 'unit_code', label: 'web.leases.lblUnit', visible: true , useTemplate: true},
+  { key: 'attachment_path', label: 'web.accounting.invoices.attachment', visible: true  , useTemplate: true}
 ];
 
 export const TXN_COLUMNS: InvoiceCol[] = [
-  { key: 'id', label: 'ID', visible: true },
-  { key: 'qbStatus', label: 'Quickbooks Status', visible: true },
-  { key: 'lineItemId', label: 'Line Item ID', visible: true },
-  { key: 'account', label: 'Account', visible: true },
-  { key: 'receivingAccount', label: 'Receiving Account', visible: true },
-  { key: 'paymentMethod', label: 'Payment Method', visible: true },
-  { key: 'details', label: 'Details', visible: true },
-  { key: 'paidDate', label: 'Paid Date', visible: true },
-  { key: 'amount', label: 'Amount', visible: true }
+  { key: 'id', label: 'web.common.lblID', visible: true },
+  { key: 'qbStatus', label: 'web.accounting.invoices.quickbooksStatus', visible: true },
+  { key: 'lineItemId', label: 'web.accounting.invoices.lineItems', visible: true },
+  { key: 'account', label: 'web.accounting.invoices.colAccount', visible: true },
+  { key: 'receivingAccount', label: 'web.accounting.invoices.leaseAccount', visible: true },
+  { key: 'paymentMethod', label: 'web.accounting.invoices.paymentMode', visible: true },
+  { key: 'details', label: 'web.common.lblDetails', visible: true },
+  { key: 'paidDate', label: 'web.accounting.invoices.paidDate', visible: true },
+  { key: 'amount', label: 'web.common.lblAmount', visible: true }
 ];
 
 export const PENALTY_COLUMNS: InvoiceCol[] = [
-  { key: 'id', label: 'ID', visible: true },
-  { key: 'paymentMethod', label: 'Payment Method', visible: true },
-  { key: 'invoiceNumber', label: 'Invoice Number', visible: true },
-  { key: 'issueDate', label: 'Issue Date', visible: true },
-  { key: 'dueDate', label: 'Due Date', visible: true },
-  { key: 'amount', label: 'Amount', visible: true },
-  { key: 'note', label: 'Note', visible: true },
-  { key: 'action', label: 'Action', visible: true }
+  { key: 'id', label: 'web.common.lblID', visible: true },
+  { key: 'paymentMethod', label: 'web.accounting.invoices.paymentMode', visible: true },
+  { key: 'invoiceNumber', label: 'web.accounting.invoices.colInvoiceNumber', visible: true },
+  { key: 'issueDate', label: 'web.accounting.invoices.dateOfIssue', visible: true },
+  { key: 'dueDate', label: 'web.accounting.invoices.dueDate', visible: true },
+  { key: 'amount', label: 'web.common.lblAmount', visible: true },
+  { key: 'note', label: 'web.accounting.invoices.notes', visible: true },
+  { key: 'action', label: 'web.accounting.invoices.colAction', visible: true }
 ];

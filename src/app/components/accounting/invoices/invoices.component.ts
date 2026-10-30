@@ -10,6 +10,7 @@ import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   INVOICE_KPIS, 
   INVOICE_STATUS_TABS,
@@ -20,7 +21,7 @@ import {
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.scss'
 })
@@ -28,7 +29,8 @@ export class InvoicesComponent {
   constructor(private router: Router,
     private commonService: CommonService,
     private commontabservice : Common_TabsService,
-    private toastr:ToastrService) {}
+    private toastr:ToastrService,
+    public translate: TranslateService) {}
     isLoading:boolean=false;
   searchQuery = '';
   statusFilter:any= 'All';
@@ -59,25 +61,25 @@ export class InvoicesComponent {
   allRowsData: any = [];
 
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'invoice_status', label: 'Status', visible: true, useTemplate: true },
-    { key: 'Tenant', label: 'To', visible: true, useTemplate: true },
-    { key: 'unit_code', label: 'Unit / Common Area', visible: true , useTemplate: true},
-    { key: 'invoice_no', label: 'Invoice Number', visible: true, useTemplate: true }, 
-    { key: 'invoice_date', label: 'Invoice Date', visible: true },
-    { key: 'invoice_type', label: 'Invoice Type', visible: true },
-    { key: 'account_name', label: 'Account', visible: true },
-    { key: 'currency_symbol', label: 'Currency', visible: true, useTemplate: true },
-    { key: 'property_name', label: 'Property Name', visible: true, useTemplate: true },
-    { key: 'property_code', label: 'Property ID', visible: true },
-    { key: 'lease_id', label: 'Lease ID', visible: true, useTemplate: true },
-    { key: 'lease_status', label: 'Lease Status', visible: true, useTemplate: true }, 
-    { key: 'total_amount', label: 'Amount', visible: true },
-    { key: 'total_amount', label: 'Gross Amount', visible: true },
-    { key: 'paid_amount', label: 'Paid', visible: true },
-    { key: 'payment_type_name', label: 'Payment Via', visible: true },   
-    { key: 'createdby', label: 'Created By', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'code', label: 'web.accounting.invoices.colID', visible: true, useTemplate: true },
+    { key: 'invoice_status', label: 'web.accounting.invoices.colStatus', visible: true, useTemplate: true },
+    { key: 'Tenant', label: 'web.accounting.invoices.colTo', visible: true, useTemplate: true },
+    { key: 'unit_code', label: 'web.accounting.invoices.colUnitCommonArea', visible: true , useTemplate: true},
+    { key: 'invoice_no', label: 'web.accounting.invoices.colInvoiceNumber', visible: true, useTemplate: true }, 
+    { key: 'invoice_date', label: 'web.accounting.invoices.colInvoiceDate', visible: true },
+    { key: 'invoice_type', label: 'web.accounting.invoices.colInvoiceType', visible: true },
+    { key: 'account_name', label: 'web.accounting.invoices.colAccount', visible: true },
+    { key: 'currency_symbol', label: 'web.accounting.invoices.colCurrency', visible: true, useTemplate: true },
+    { key: 'property_name', label: 'web.accounting.invoices.colPropertyName', visible: true, useTemplate: true },
+    { key: 'property_code', label: 'web.accounting.invoices.colPropertyID', visible: true },
+    { key: 'lease_id', label: 'web.accounting.invoices.colLeaseID', visible: true, useTemplate: true },
+    { key: 'lease_status', label: 'web.accounting.invoices.colLeaseStatus', visible: true, useTemplate: true }, 
+    { key: 'total_amount', label: 'web.accounting.invoices.colAmount', visible: true },
+    { key: 'total_amount', label: 'web.accounting.invoices.colGrossAmount', visible: true },
+    { key: 'paid_amount', label: 'web.accounting.invoices.colPaid', visible: true },
+    { key: 'payment_type_name', label: 'web.accounting.invoices.colPaymentVia', visible: true },   
+    { key: 'createdby', label: 'web.accounting.invoices.colCreatedBy', visible: true },
+    { key: 'action', label: 'web.accounting.invoices.colAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   get visibleColumns() {
@@ -130,7 +132,7 @@ export class InvoicesComponent {
           this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
         }
       },
       error: (err: any) => {
@@ -343,7 +345,7 @@ export class InvoicesComponent {
           this.kpis=res.objResult.table;
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.accounting.invoices.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);

@@ -1,41 +1,41 @@
 <div class="pb-16">
   <div class="page-header !py-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
     <div class="flex items-start gap-4">
-      <button type="button" class="ov-back" (click)="goBack()" title="Back to Guides">
+      <button type="button" class="ov-back" (click)="goBack()" [attr.title]="'web.community.rulesGuides.backToGuides' | translate">
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </button>
       <div>
-        <h3 class="ov-page-title">Guide Details</h3>
-        <p class="ov-page-sub mt-1">Community / Guide / <span class="ov-page-sub__current">Details</span></p>
+        <h3 class="ov-page-title">{{ 'web.community.rulesGuides.guideDetails' | translate }}</h3>
+        <p class="ov-page-sub mt-1">Community / Guide / <span class="ov-page-sub__current">{{ 'web.community.rulesGuides.viewDetails' | translate }}</span></p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2">
       <div class="ov-action-wrap">
         <button type="button" class="ov-btn ov-btn-ghost" (click)="toggleActionMenu($event)"
           [attr.aria-expanded]="showActionMenu">
-          Action
+          {{ 'web.community.rulesGuides.action' | translate }}
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </button>
         <div *ngIf="showActionMenu" class="ov-action-menu" role="menu" (click)="$event.stopPropagation()">
           <div class="ov-action-menu__list">
             <ng-container *ngFor="let option of actionOptions">
               <button *ngIf="!option.danger" type="button" role="menuitem" class="ov-action-menu__item"
-                (click)="onAction(option.label)">
+                (click)="onAction(option)">
                 <span class="ov-action-menu__icon-box">
                   <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 </span>
-                <span>{{ option.label }}</span>
+                <span>{{ option.label | translate }}</span>
               </button>
             </ng-container>
           </div>
           <div class="ov-action-menu__footer">
             <ng-container *ngFor="let option of actionOptions">
               <button *ngIf="option.danger" type="button" role="menuitem"
-                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option.label)">
+                class="ov-action-menu__item ov-action-menu__item--danger" (click)="onAction(option)">
                 <span class="ov-action-menu__icon-box">
                   <img class="ov-action-menu__icon" [src]="option.asset" alt="" width="14" height="14">
                 </span>
-                <span>{{ option.label }}</span>
+                <span>{{ option.label | translate }}</span>
               </button>
             </ng-container>
           </div>
@@ -54,24 +54,24 @@
 
         <div class="flex gap-5">
           <button type="button" class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-textmuted">
-            View Activity
+            {{ 'web.community.rulesGuides.viewActivity' | translate }}
           </button>
           <button type="button" (click)="goToEdit()"
             class="flex-1 ov-btn ov-btn-ghost !h-9 !text-[13px] !font-semibold !text-defaulttextcolor">
-            Edit Guide
+            {{ 'web.community.rulesGuides.editGuide' | translate }}
           </button>
         </div>
 
         <div class="border-t border-defaultborder"></div>
-        <h5 class="ov-card-title !text-[16px] m-0">Information</h5>
+        <h5 class="ov-card-title !text-[16px] m-0">{{ 'web.community.rulesGuides.information' | translate }}</h5>
 
         <div class="gd-info-card">
           <div class="gd-info-card__head">
-            <h6 class="gd-info-card__title">{{detail.entity}}</h6>
+            <h6 class="gd-info-card__title">{{ detail.entity ? (('web.community.entities.' + detail.entity.toLowerCase()) | translate) : '' }}</h6>
           </div>
           <div class="gd-info-card__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">Property:</span>
+              <span class="ov-kv__label">{{ 'web.community.rulesGuides.filterProperty' | translate }}:</span>
               <span class="ov-kv__value">{{detail.entity_name}} </span>
             </div>
           </div>
@@ -79,23 +79,23 @@
 
         <div class="gd-info-card">
           <div class="gd-info-card__head">
-            <h6 class="gd-info-card__title">Guide Information</h6>
+            <h6 class="gd-info-card__title">{{ 'web.community.rulesGuides.guideInformation' | translate }}</h6>
           </div>
           <div class="gd-info-card__body">
             <div class="ov-kv">
-              <span class="ov-kv__label">ID:</span>
+              <span class="ov-kv__label">{{ 'web.community.rulesGuides.colId' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.code }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Guide Name:</span>
+              <span class="ov-kv__label">{{ 'web.community.rulesGuides.guideName' | translate }}:</span>
               <span class="ov-kv__value">{{ detail.name }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Created:</span>
+              <span class="ov-kv__label">{{ 'web.community.rulesGuides.created' | translate }}</span>
               <span class="ov-kv__value">{{ detail.createdAt?.split('T')[0] }}</span>
             </div>
             <div class="ov-kv">
-              <span class="ov-kv__label">Updated:</span>
+              <span class="ov-kv__label">{{ 'web.community.rulesGuides.updated' | translate }}</span>
               <span class="ov-kv__value">{{ detail.updatedAt?.split('T')[0] }}</span>
             </div>
           </div>
@@ -106,28 +106,28 @@
     <section class="ov-detail-layout__right">
       <div class="box ov-card !mb-0">
         <div class="ov-card__head">
-          <h6 class="ov-card-title">Attachments</h6>
+          <h6 class="ov-card-title">{{ 'web.community.rulesGuides.attachments' | translate }}</h6>
         </div>
         <div class="ov-card__body">
           <div class="guide-attachments-empty" *ngIf="attachments.length==0">
             <span class="guide-attachments-empty__icon">
               <i class="ri-attachment-2" aria-hidden="true"></i>
             </span>
-            <p class="m-0 text-sm font-semibold text-defaulttextcolor">No attachments found</p>
-            <p class="m-0 text-xs text-textmuted">No files are attached to this guide</p>
+            <p class="m-0 text-sm font-semibold text-defaulttextcolor">{{ 'web.community.rulesGuides.noAttachmentsFound' | translate }}</p>
+            <p class="m-0 text-xs text-textmuted">{{ 'web.community.rulesGuides.noAttachmentsDesc' | translate }}</p>
           </div>
           <div *ngIf="attachments.length>0" class="guide-attachments-empty"> 
             <table class="table whitespace-nowrap ti-striped-table table-bordered min-w-full">
               <thead class="bg-info/10">
                 <tr class="border-b border-defaultborder">
-                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">Sno </th>
-                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">File</th> 
+                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.community.rulesGuides.sno' | translate }} </th>
+                  <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.community.rulesGuides.colFile' | translate }}</th> 
                 </tr>
               </thead>
               <tbody> 
                 <tr *ngFor="let wo of attachments;let i=index" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
                   <td class="py-3 px-4 font-bold text-gray-800 text-xs">{{i+1}}</td>
-                  <td class="py-3 px-4 font-semibold text-gray-800 text-xs"><a href="{{wo.file_path}}" target="_blank">Click to view</a></td>   
+                  <td class="py-3 px-4 font-semibold text-gray-800 text-xs"><a href="{{wo.file_path}}" target="_blank">{{ 'web.community.rulesGuides.clickToView' | translate }}</a></td>   
                 </tr>
               </tbody>
             </table>

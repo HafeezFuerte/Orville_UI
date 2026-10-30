@@ -15,6 +15,8 @@ import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { portfolioStatusClass } from '../../portfolio-status.util';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { BulkImportModalComponent } from '../../../../shared/components/bulk-import-modal/bulk-import-modal.component';
+
 export interface Room {
   id: number;
   name: string;
@@ -38,7 +40,18 @@ export interface Room {
 @Component({
   selector: 'app-rooms-list',
   standalone: true,
-  imports: [FormsModule, CommonModule,DeleteConfirmationComponent, SharedTableComponent, NgSelectModule, SharedModule, RouterModule, FilterDrawerComponent, TranslateModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    DeleteConfirmationComponent,
+    SharedTableComponent,
+    NgSelectModule,
+    SharedModule,
+    RouterModule,
+    FilterDrawerComponent,
+    TranslateModule,
+    BulkImportModalComponent,
+  ],
   templateUrl: './rooms-list.component.html',
   styleUrl: './rooms-list.component.scss'
 })
@@ -47,6 +60,7 @@ export class RoomsListComponent implements OnInit {
   viewMode: 'list' | 'grid' = 'list';
   categoryFilter: 'All' | 'Residential' | 'Commercial' = 'All';
   searchQuery: string = '';
+  isImportModalOpen = false;
  
   // Advanced Filters (Search Criteria Panel)
   selectedCategory: string | null = null;
@@ -101,19 +115,19 @@ export class RoomsListComponent implements OnInit {
 
   // Columns definition for the shared table component
   tableColumns = [
-    { key: 'id', label: 'ID', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'name', label: 'Name', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'category', label: 'Category', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'beds', label: 'Beds', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'property_Name', label: 'Property', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'unitcode', label: 'Unit', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'land_lord', label: 'Landlord', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'tags', label: 'Tags', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'room_type_name', label: 'Room Type', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'floor_no', label: 'Floor Number', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'management_fee', label: 'Management Fee', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'room_status_name', label: 'Status', headerClass: 'text-start', useTemplate: true, visible: true },
-    { key: 'action', label: 'Action', headerClass: 'text-start', useTemplate: true, visible: true }
+    { key: 'id', label: 'web.common.lblID', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'name', label: 'web.common.lblName', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'category', label: 'web.common.lblCategory', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'beds', label: 'web.common.lblBeds', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'property_Name', label: 'web.leases.lblProperty', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'unitcode', label: 'web.common.lblUnits', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'land_lord', label: 'web.property.lblLandlord', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'tags', label: 'web.property.lblTags', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'room_type_name', label: 'web.common.lblRoomType', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'floor_no', label: 'web.common.lblFloorNumber', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'management_fee', label: 'web.Unit.lblManagementFee', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'room_status_name', label: 'web.common.lblStatus', headerClass: 'text-start', useTemplate: true, visible: true },
+    { key: 'action', label: 'web.common.lblAction', headerClass: 'text-start', useTemplate: true, visible: true }
   ];
 
   openActionCode: string | number | null = null;
@@ -265,7 +279,7 @@ export class RoomsListComponent implements OnInit {
           }
         }
         else
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: err => {
         console.error(err);
@@ -316,7 +330,7 @@ export class RoomsListComponent implements OnInit {
               return;
             }
             else{
-              this.toastr.success("Successfully marked as inactive");
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
               this.edit_code='';
               this.loadRooms();
               this.pageNo=0;
@@ -328,7 +342,7 @@ export class RoomsListComponent implements OnInit {
         } 
         }
         else
-        this.toastr.error("No record[s] found");
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
@@ -555,5 +569,14 @@ export class RoomsListComponent implements OnInit {
       this.pageNo=0;
       this.loadRooms();
     }
+  }
+
+  openImportModal(): void {
+    this.isImportModalOpen = true;
+  }
+
+  onImportCompleted(): void {
+    this.loadRooms();
+    this.loadMetrics();
   }
 }

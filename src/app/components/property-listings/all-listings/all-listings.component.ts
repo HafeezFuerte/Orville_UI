@@ -11,12 +11,14 @@ import {
   listingPublishClass
 } from '../property-listings.data';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 type OfferTab = 'All' | 'For Rent' | 'For Sale';
 
 @Component({
   selector: 'app-all-listings',
   standalone: true,
-  imports: [CommonModule, FormsModule, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, FilterDrawerComponent, TranslateModule],
   templateUrl: './all-listings.component.html',
   styleUrl: './all-listings.component.scss'
 })
@@ -26,7 +28,11 @@ export class AllListingsComponent {
   readonly publishClass = listingPublishClass;
   readonly offerClass = listingOfferClass;
   readonly occupancyClass = listingOccupancyClass;
-  readonly offerTabs: OfferTab[] = ['All', 'For Rent', 'For Sale'];
+  readonly offerTabs: { id: OfferTab; labelKey: string }[] = [
+    { id: 'All', labelKey: 'web.propertyListings.allListings.tabAll' },
+    { id: 'For Rent', labelKey: 'web.propertyListings.allListings.tabForRent' },
+    { id: 'For Sale', labelKey: 'web.propertyListings.allListings.tabForSale' }
+  ];
 
   /** Catalog size shown in chrome; cards are presentation mock. */
   readonly totalCatalog = 412;

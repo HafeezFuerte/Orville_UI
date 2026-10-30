@@ -9,7 +9,7 @@ import { ColumnMenuComponent } from '../../../shared/components/column-menu/colu
 import { CommonService } from '../../../services/common.service';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountingService } from '../accounting.service'; 
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
 
@@ -23,7 +23,7 @@ import {
 @Component({
   selector: 'app-chart-of-accounts',
   standalone: true,
-  imports: [CommonModule,DeleteConfirmationComponent, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent],
+  imports: [CommonModule,DeleteConfirmationComponent, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, FilterDrawerComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './chart-of-accounts.component.html',
   styleUrl: './chart-of-accounts.component.scss'
 })
@@ -50,16 +50,16 @@ export class ChartOfAccountsComponent {
   allRowsData: any[] = [];
   currentUser = this.commonservice.getCurrentUser();
   tableColumns = [
-    { key: 'code', label: 'ID', visible: true, useTemplate: true },
-    { key: 'account_no', label: 'Account Number', visible: true },
-    { key: 'account_name', label: 'Name', visible: true },
-    { key: 'description', label: 'Description', visible: true },
-    { key: 'account_type_nm', label: 'Type', visible: true, useTemplate: true },
-    { key: 'account_sub_type_nm', label: 'Sub Type', visible: true },
-    { key: 'subAccount', label: 'Sub Account', visible: true, useTemplate: true },
-    { key: 'createdby', label: 'Created By', visible: true },
-    { key: 'created_date', label: 'Created', visible: true },
-    { key: 'action', label: 'Action', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
+    { key: 'code', label: 'web.accounting.chartOfAccounts.colID', visible: true, useTemplate: true },
+    { key: 'account_no', label: 'web.accounting.chartOfAccounts.colAccountNo', visible: true },
+    { key: 'account_name', label: 'web.accounting.chartOfAccounts.colName', visible: true },
+    { key: 'description', label: 'web.accounting.chartOfAccounts.colDescription', visible: true },
+    { key: 'account_type_nm', label: 'web.accounting.chartOfAccounts.colType', visible: true, useTemplate: true },
+    { key: 'account_sub_type_nm', label: 'web.accounting.chartOfAccounts.colSubType', visible: true },
+    { key: 'subAccount', label: 'web.accounting.chartOfAccounts.colSubAccount', visible: true, useTemplate: true },
+    { key: 'createdby', label: 'web.accounting.chartOfAccounts.colCreatedBy', visible: true },
+    { key: 'created_date', label: 'web.accounting.chartOfAccounts.colCreated', visible: true },
+    { key: 'action', label: 'web.accounting.chartOfAccounts.colAction', visible: true, useTemplate: true, headerClass: 'text-center', cellClass: 'text-center' }
   ];
 
   constructor(private router: Router,private toastr: ToastrService, private commontabservice: Common_TabsService,
@@ -193,13 +193,19 @@ export class ChartOfAccountsComponent {
           this.typeTabs.push(...res.objResult.table); 
         }
         else
-        this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.noRecordsFound'));
       },
       error: (err) => {
         console.error(`Error fetching lookup ${filterId}:`, err);
       }
     });
   }
+
+  getArabicLookupName(item: any): string {
+    if (!item) return '';
+    return (this.translate.currentLang === 'ar' || localStorage.getItem('selectedLang') === 'AR') && item.name_ar ? item.name_ar : (item.name || '');
+  }
+
   loadCOA() {
     const filterList: any[] = [];
     if (this.typeFilter && this.typeFilter !== "All") {
@@ -236,7 +242,7 @@ export class ChartOfAccountsComponent {
           this.allRowsData = [];
           this.totalRecords = 0;
           this.totalPages = 0;
-          this.toastr.error("No record[s] found");
+          this.toastr.error(this.translate.instant('web.accounting.chartOfAccounts.noRecordsFound'));
         }
       },
       error: (err: any) => {
