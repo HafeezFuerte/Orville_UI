@@ -206,7 +206,7 @@
             </div>
             <div>
               <label class="ov-label">{{ 'web.leases.lblTotalPayments' | translate }}</label>
-              <input type="number" [(ngModel)]="totalPayments" class="ov-input" />
+              <input type="number" [(ngModel)]="totalPayments" (change)="calculateMonthlyRent()" class="ov-input" />
             </div>
             <div>
               <label class="ov-label">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
@@ -594,7 +594,8 @@
     </div>
     <div>
       <label class="ov-label">{{ 'web.leases.lblBank' | translate }}</label>
-      <input type="text" [(ngModel)]="payment.bank" class="ov-input" />
+      <ng-select [(ngModel)]="payment.bank" [items]="bankList" bindValue="name" bindLabel="name"
+      [placeholder]="'web.leases.bank' | translate" class="ov-select w-full" appendTo="body"></ng-select> 
     </div>
     <div>
       <label class="ov-label">{{ 'web.leases.lblHeldBy' | translate }}</label>

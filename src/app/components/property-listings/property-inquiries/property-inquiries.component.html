@@ -38,28 +38,61 @@
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
     <div class="overflow-x-auto px-5 pb-5 pt-5">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [hasActions]="false"
-        [emptyMessage]="'web.propertyListings.inquiries.emptyMessage' | translate"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        [pageSizeOptions]="[10, 25, 50]"
-        (pageChange)="onSharedTablePageChange($event)">
-        <ng-template #colTemplate let-row="row" let-col="col">
-          <ng-container [ngSwitch]="col.key">
-            <span *ngSwitchCase="'inquiryType'" [class]="inquiryTypeClass(row.inquiryType)">
-              {{ row.inquiryType }}
+      <app-shared-table  [columns]="visibleColumns" [data]="allRows" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo" (pageChange)="onSharedTablePageChange($event)" [hasActions]="false" [showPaginator]="false">
+
+      <ng-template #colTemplate let-row="row" let-col="col">
+        <ng-container *ngIf="col.key === 'code'">
+          <a class="ov-link">{{row.code}}</a>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'name'">
+          <div class="flex flex-col">
+            <span class="font-semibold text-defaulttextcolor">{{row.name}}</span>
+            <span class="flex items-center gap-1 text-[12px] text-textmuted font-normal">
+              <img src="assets/images/work-orders/map-pin.svg" alt="" width="14" height="14" />
+              {{row.address_1}}
             </span>
-            <span *ngSwitchCase="'message'" class="pi-message" [title]="row.message">
-              {{ row.message }}
-            </span>
-            <span *ngSwitchDefault>{{ row[col.key] }}</span>
-          </ng-container>
-        </ng-template>
-      </app-shared-table>
+          </div>
+        </ng-container>
+
+       
+        <ng-container *ngIf="col.key === 'internal Status'">
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{row['internal Status'] || 'All'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'tags'">
+          <span class="text-[14px] font-medium text-defaulttextcolor">{{row.tags || 'Tags'}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'total_leases'">
+          <span>{{row.total_leases || 0}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="col.key === 'contracts'">
+          <span>{{row.contracts || 0}}</span>
+        </ng-container>
+ 
+
+        <!-- <ng-container *ngIf="col.key === 'action'">
+          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+              (click)="toggleRowAction(row.code, $event)">
+              <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+            </button>
+            <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="viewProperty(row.code)">{{ 'web.common.lblView' | translate }}</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                (click)="editProperty(row.code)">{{ 'web.common.lblEdit' | translate }}</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
+            </div>
+          </div>
+        </ng-container> -->
+      </ng-template>
+
+    </app-shared-table>
     </div>
   </div>
 </div>
