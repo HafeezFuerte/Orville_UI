@@ -118,4 +118,11 @@ savePdfTemplate(payload: any): Observable<any> {
     payload
   );
 }
+saveWorkflow(payload: any): Observable<any> {
+  return this.http.post(
+    environment.apiurl + 'api/Configuration/save_update_workflow',
+    payload,
+    { headers: this.commonService.updateHeaders() }
+  );
+}
 }

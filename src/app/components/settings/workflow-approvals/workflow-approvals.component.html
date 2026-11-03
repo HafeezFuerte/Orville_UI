@@ -93,10 +93,10 @@
           appendTo="body"
           class="wa-select">
           <ng-template ng-label-tmp let-item="item">
-            {{ item.code }} - {{ item.name }}
+            {{ item.name && item.name !== item.code ? (item.code + ' - ' + item.name) : item.code }}
           </ng-template>
           <ng-template ng-option-tmp let-item="item">
-            {{ item.code }} - {{ item.name }}
+            {{ item.name && item.name !== item.code ? (item.code + ' - ' + item.name) : item.code }}
           </ng-template>
         </ng-select>
       </div>
@@ -220,10 +220,10 @@
               appendTo="body"
               class="wa-select">
               <ng-template ng-label-tmp let-item="item">
-                {{ item.code }} - {{ item.name }}
+                {{ item.name && item.name !== item.code ? (item.code + ' - ' + item.name) : item.code }}
               </ng-template>
               <ng-template ng-option-tmp let-item="item">
-                {{ item.code }} - {{ item.name }}
+                {{ item.name && item.name !== item.code ? (item.code + ' - ' + item.name) : item.code }}
               </ng-template>
             </ng-select>
           </div>
@@ -288,8 +288,9 @@
       <button type="button" class="ov-btn ov-btn-ghost" (click)="onCancel()">
         {{ 'web.common.btnCancel' | translate }}
       </button>
-      <button type="button" class="ov-btn ov-btn-primary" (click)="onSave()">
-        {{ 'web.common.btnSave' | translate }}
+      <button type="button" class="ov-btn ov-btn-primary flex items-center gap-1.5" [disabled]="isSaving" (click)="onSave()">
+        <span *ngIf="isSaving" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span>{{ 'web.common.btnSave' | translate }}</span>
       </button>
     </div>
   </div>
