@@ -36,6 +36,7 @@ export class CreateLeaseComponent implements OnInit {
   currentUser: AuthPayload | null = null;
   attachedFiles:any=[];
   attachedFile:any=''; 
+  is_edit_grid_payment:boolean=false;
   addpaymentbloc:any= {    includetax:false,    isSecurityDeposit:0,Amount:0, AdvAmt:0,   attachedFile:null,    DueDate:null,Memo:'',
   money_held_by_id:null,    Recurrence_id:null,cheque_no:'',cheque_date:'',bank:'',held_by:null,  TaxProfileId:null,  AccountCode:null,  PaymentTypeid:null,InvoiceNo:''}
   showAddPayment:boolean=false; 
@@ -79,6 +80,7 @@ export class CreateLeaseComponent implements OnInit {
   roomsList: any[] = [];
   allroomsList: any[] = [];
    
+  bankList:any[]=[];
   heldByList:any[]=[];
   taxProfilesList:any[]=[];
   recurringList:any[]=[];
@@ -287,7 +289,11 @@ export class CreateLeaseComponent implements OnInit {
     //   this.toastr.error("Invalid  account");
     // }
     else{
-      
+      if(this.is_edit_grid_payment){
+        let editRow=this.paymentSchedules.findIndex((item:any)=>item.row_no==this.addpaymentbloc.row_no);
+        this.paymentSchedules[editRow]= { ...this.addpaymentbloc };
+      }
+      else{
       this.paymentSchedules.push({
         "includetax":this.addpaymentbloc.includetax,
         "Amount":Number(this.addpaymentbloc.Amount.toFixed(2)),
@@ -323,6 +329,7 @@ export class CreateLeaseComponent implements OnInit {
         "InvoiceNo":this.addpaymentbloc.InvoiceNo,
         "isEdit":0,
         "row_no":this.paymentSchedules.length+1});
+      }
         if(this.attachedFile)
           this.attachedFiles.push({"row_no":this.paymentSchedules.length,"file":this.attachedFile})
         this.showAddPayment=false;
@@ -331,7 +338,7 @@ export class CreateLeaseComponent implements OnInit {
         this.addpaymentbloc.cheque_no='';
         this.addpaymentbloc.AccountCode="";
         this.addpaymentbloc.Recurrence_id=this.addpaymentbloc.held_by=this.addpaymentbloc.money_held_by_id=this.addpaymentbloc.PaymentTypeid=this.addpaymentbloc.TaxProfileId=0;
-
+        this.is_edit_grid_payment=false;
         this.addpaymentbloc.cheque_date= this.addpaymentbloc.DueDate=''
     }
   }
@@ -439,7 +446,15 @@ export class CreateLeaseComponent implements OnInit {
 
   calculateRentDetails() {
     this.annualRent = this.rentAmount;
-    //this.monthlyRent = Number((this.rentAmount / 12).toFixed(2));
+    if(this.months>0){
+    this.monthlyRent = Number((this.rentAmount / this.months).toFixed(2));
+    this.totalPayments=this.months;
+    }
+  }
+  calculateMonthlyRent() { 
+    if(this.totalPayments>0){
+    this.monthlyRent = Number((this.rentAmount / this.totalPayments).toFixed(2)); 
+    }
   }
   calculatemonths(){
     if (!this.startDate || !this.endDate) return;
@@ -456,8 +471,9 @@ export class CreateLeaseComponent implements OnInit {
     if (d2.getDate() < d1.getDate()) {
       months--;
     } 
+     
     // Set the signal value (taking absolute value to prevent negative numbers)
-    this.months=(Math.abs(months));
+    this.months=(Math.abs(months+1));
   }
   calculateEndDate(){
     if (!this.startDate || !this.months) return;
@@ -475,8 +491,8 @@ export class CreateLeaseComponent implements OnInit {
   edit_action(row:any,action:string){ 
     if(action=="edit"){ 
         this.addpaymentbloc=row;
-      this.showAddPayment=true;
-      
+        this.showAddPayment=true;
+        this.is_edit_grid_payment=true;
     }
     else if(action=="delete"){
       let _remlist=this.paymentSchedules.filter((item:any)=>{
@@ -521,7 +537,7 @@ export class CreateLeaseComponent implements OnInit {
             this.coaList=this.allagentsList=res.objResult.table7 || [];
             this.taxProfilesList=this.allagentsList=res.objResult.table8 || []; 
             this.heldByList=this.allagentsList=res.objResult.table9 || [];
-
+            this.bankList=this.allagentsList=res.objResult.table10 || [];
             const tenantCode = this.route.snapshot.queryParams['tenantCode'];
             if (tenantCode) {
               const found = this.tenantsList.find(t => t.code === tenantCode || t.id === tenantCode || t.tenant_code === tenantCode);

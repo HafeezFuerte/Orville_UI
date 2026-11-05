@@ -6,6 +6,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../shared/components/column-menu/column-menu.component';
+import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import {
   PROPERTY_INQUIRY_ROWS,
   PropertyInquiryRow,
@@ -28,25 +30,30 @@ import {
 })
 export class PropertyInquiriesComponent implements OnInit {
   private readonly translate = inject(TranslateService);
-
+  private readonly commonservice=inject(CommonService);
+  private readonly  commontabservice=inject(Common_TabsService);
   isDrawerOpen = false;
   showColumnDropdown = false;
-  pageIndex = 0;
+  currentUser = this.commonservice.getCurrentUser();
+  pageNo = 0;
   pageSize = 10;
-  allRows: PropertyInquiryRow[] = PROPERTY_INQUIRY_ROWS;
-
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows: any[] = [];
+  searchQuery:any='';
   filterInquiryType: '' | PropertyInquiryType = '';
   filterUnit = '';
 
   tableColumns = [
-    { key: 'id', label: 'ID', labelKey: 'web.propertyListings.inquiries.colId', visible: true },
-    { key: 'fullName', label: 'Full Name', labelKey: 'web.propertyListings.inquiries.colFullName', visible: true },
+    { key: 'code', label: 'ID', labelKey: 'web.propertyListings.inquiries.colId', visible: true },
+    { key: 'name', label: 'Name', labelKey: 'web.propertyListings.inquiries.colFullName', visible: true },
     { key: 'email', label: 'Email', labelKey: 'web.propertyListings.inquiries.colEmail', visible: true },
-    { key: 'phone', label: 'Phone', labelKey: 'web.propertyListings.inquiries.colPhone', visible: true },
-    { key: 'inquiryType', label: 'Inquiry Type', labelKey: 'web.propertyListings.inquiries.colInquiryType', visible: true, useTemplate: true },
-    { key: 'unit', label: 'Unit', labelKey: 'web.propertyListings.inquiries.colUnit', visible: true },
-    { key: 'message', label: 'Message', labelKey: 'web.propertyListings.inquiries.colMessage', visible: true, useTemplate: true },
-    { key: 'submittedAt', label: 'Submitted At', labelKey: 'web.propertyListings.inquiries.colSubmittedAt', visible: true }
+    { key: 'phone_no', label: 'Phone', labelKey: 'web.propertyListings.inquiries.colPhone', visible: true },
+    { key: 'entity_type', label: 'Inquiry Type', labelKey: 'web.propertyListings.inquiries.colInquiryType', visible: true },
+    { key: 'entity', label: 'entity', labelKey: 'web.propertyListings.inquiries.colUnit', visible: true },
+    { key: 'additional_info', label: 'Message', labelKey: 'web.propertyListings.inquiries.colMessage', visible: true},
+    { key: 'created_date', label: 'Submitted At', labelKey: 'web.propertyListings.inquiries.colSubmittedAt', visible: true }
   ];
 
   constructor(
@@ -55,12 +62,49 @@ export class PropertyInquiriesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadEnquires();
     this.updateColumnLabels();
     this.translate.onLangChange.subscribe(() => {
       this.updateColumnLabels();
     });
   }
+  loadEnquires(append = false): void {
+    const filterList: any[] = [];
+    
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize, // Load all to handle advanced dashboard filters locally for interactive UX
+      filter_by: '', 
+      filter_list: JSON.stringify(filterList),
+      featureid: 'ENQUIRES'
+    };
 
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (res: any) => { 
+        if (res && res.statusCode === "200") {
+         
+        if(res.objResult.rows_info)
+        {
+          this.totalRecords=res.objResult.rows_info[0].totalrecords;
+          //this.pageNo=res.objResult.rows_info[0].currentpage; 
+          this.totalPages=res.objResult.rows_info[0].noofpages;
+        }
+         
+        this.allRows = res.objResult.enquires; 
+        }
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+  }
   private updateColumnLabels(): void {
     this.tableColumns.forEach(col => {
       if (col.labelKey) {
@@ -88,13 +132,9 @@ export class PropertyInquiriesComponent implements OnInit {
       return true;
     });
   }
-
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
+ 
   get paginatedRows(): PropertyInquiryRow[] {
-    const start = this.pageIndex * this.pageSize;
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
@@ -130,19 +170,27 @@ export class PropertyInquiriesComponent implements OnInit {
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
     this.isDrawerOpen = false;
   }
 
   clearFilters(): void {
     this.filterInquiryType = '';
     this.filterUnit = '';
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
-  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void { 
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize; 
+      this.loadEnquires();
   }
 
   inquiryTypeClass(type: PropertyInquiryType): string {

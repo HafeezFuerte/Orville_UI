@@ -118,14 +118,15 @@ export class WorkflowApprovalsComponent implements OnInit {
     this.common_TabsService.getMasterByType({
       typeId: 19,
       filterId: 0,
-      filterText: 'S',
+      filterText: '',
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        if (res?.statusCode == 200 && res?.objResult?.table) {
-          this.users = res.objResult.table.map((u: any) => ({
+        if (res?.statusCode == 200 && res?.objResult?.table) { 
+          let temp_user=res.objResult.table.filter((item:any)=>item.role_type!="L" && item.role_type!="T");
+          this.users = temp_user.map((u: any) => ({
             code: String(u.code || u.id || u.user_code || ''),
-            name: u.name || u.lookup_name || u.user_name || u.full_name || u.first_name || ''
+            name: u.name + ' - ' + u.role_name
           }));
         }
       },
@@ -334,10 +335,7 @@ export class WorkflowApprovalsComponent implements OnInit {
     this.isSaving = true;
     this.common_TabsService.saveWorkflow(payload).subscribe({
       next: (res: any) => {
-        this.isSaving = false;
-        // Backend USP_APP_WORKFLOW executes an INSERT/UPDATE without SELECT,
-        // so ConfigurationService returns statusCode: "-200" with message: "No record[s] found"
-        // Both '200' and '-200' (with "No record[s] found") indicate successful execution.
+        this.isSaving = false; 
         const isSuccess = (res && (res.statusCode === '200' || res.statusCode === 200)) ||
                           (res && res.statusCode === '-200' && (res.message?.toLowerCase().includes('record') || res.message?.toLowerCase().includes('no record')));
 
@@ -350,7 +348,7 @@ export class WorkflowApprovalsComponent implements OnInit {
             ? res.message
             : defaultSuccessMsg;
 
-          this.toastr.success(toastMsg, 'Success');
+          this.toastr.success(defaultSuccessMsg, 'Success');
 
           this.saved = true;
           if (this.savedTimer) {

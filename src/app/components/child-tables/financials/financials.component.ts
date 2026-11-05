@@ -193,14 +193,14 @@ export class FinancialsComponent implements OnInit, OnChanges {
       this.toast.error("Invalid payment type");
       return;
     } 
-    else{ 
+    else{  
       const request = {
         userid: this.currentUser?.userId,
         code: this.payment_code || '',
         source: 'web',
         company_id: this.currentUser?.companyId, 
         clientId: this.currentUser?.clientId, 
-        rcp_code: this.selectedReceipt?.rcp_code,
+        rcp_code: this.selectedReceipt?.code,
         invoice_code: this.selectedReceipt?.invoicecode,
         payment_type: this.receivepayment.payment_via,
         account_code: this.receivepayment.account,

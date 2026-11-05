@@ -103,7 +103,7 @@ countryOptions :any=[];
             this.firstName = temp.first_name|| '';
             this.lastName = temp.last_name || '';
             this.phone = temp.phone;
-            this.role = temp.role_type;
+            this.role = temp.role_id;
             this.spokenLanguages=temp.spoken_languages;
             this.gender=temp.gender;
             this.country=temp.country_id;
@@ -396,8 +396,8 @@ countryOptions :any=[];
       last_name: this.lastName,
       mobile_no: this.phone || '', 
       country_id: Number(this.country) || 0,
-      role_id: this.roleOptions.filter((item:any)=>item.code==this.role)[0]?.id || 0, // default 
-      role_code: this.role, // default
+      role_id:this.role, // default 
+      role_code:  this.roleOptions.filter((item:any)=>item.id==this.role)[0]?.role_code || 'C', // default
       department: Number(this.group) || 0,
       display_all_tenants: this.displayAllTenants,
       technician_actions: Array.from(this.selectedNotifications) ? Array.from(this.selectedNotifications).join(',') 

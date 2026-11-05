@@ -365,6 +365,7 @@ export class LeaseDetailComponent implements OnInit {
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
           this.toastr.success(this.translate.instant('web.leases.msgStatusUpdated'));
+          this.showApprovalModal=false;
           setTimeout(() => {
             this.router.navigate(['/leases']);
           }, 2000);
