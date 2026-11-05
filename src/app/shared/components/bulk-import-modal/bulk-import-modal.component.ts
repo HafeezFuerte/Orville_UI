@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -17,7 +17,7 @@ export interface ManualPropertyRow {
 }
 
 export interface ManualUnitRow {
-  propertyId: number | null;
+  propertyId: any;
   unitName: string;
   unitNo: string;
   unitType: number | null;
@@ -26,12 +26,20 @@ export interface ManualUnitRow {
 }
 
 export interface ManualRoomRow {
-  propertyId: number | null;
-  unitId: number | null;
+  propertyId: any;
+  unitId: any;
   roomName: string;
   roomNo: string;
   roomType: number | null;
   marketRent: number | null;
+}
+
+export interface ManualContactRow {
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile: string;
+  companyName: string;
 }
 
 export interface ImportResultSummary {
@@ -48,9 +56,9 @@ export interface ImportResultSummary {
   templateUrl: './bulk-import-modal.component.html',
   styleUrls: ['./bulk-import-modal.component.scss'],
 })
-export class BulkImportModalComponent implements OnInit {
+export class BulkImportModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
-  @Input() entityType: 'property' | 'unit' | 'room' = 'property';
+  @Input() entityType: 'property' | 'unit' | 'room' | 'tenant' | 'landlord' | 'technician' | 'vendor' = 'property';
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() importCompleted = new EventEmitter<ImportResultSummary>();
 
@@ -69,6 +77,7 @@ export class BulkImportModalComponent implements OnInit {
   unitsList: any[] = [];
   unitTypesList: any[] = [];
   roomTypesList: any[] = [];
+  unitsByProperty: { [propertyCode: string]: any[] } = {};
 
   // File Upload State
   selectedFile: File | null = null;
@@ -83,6 +92,7 @@ export class BulkImportModalComponent implements OnInit {
   manualPropertyRows: ManualPropertyRow[] = [];
   manualUnitRows: ManualUnitRow[] = [];
   manualRoomRows: ManualRoomRow[] = [];
+  manualContactRows: ManualContactRow[] = [];
 
   // Progress & Execution Counters
   totalToImport = 0;
@@ -98,27 +108,55 @@ export class BulkImportModalComponent implements OnInit {
     this.loadLookups();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue) {
+      this.currentStep = 'input';
+      this.initRows();
+      this.loadLookups();
+    }
+  }
+
+  get isContactEntity(): boolean {
+    return ['tenant', 'landlord', 'technician', 'vendor'].includes(this.entityType);
+  }
+
   get entityTitle(): string {
     switch (this.entityType) {
       case 'unit':
-        return 'Unit';
+        return this.translate.instant('web.bulkImport.entityUnit');
       case 'room':
-        return 'Room';
+        return this.translate.instant('web.bulkImport.entityRoom');
+      case 'tenant':
+        return this.translate.instant('web.bulkImport.entityTenant');
+      case 'landlord':
+        return this.translate.instant('web.bulkImport.entityLandlord');
+      case 'technician':
+        return this.translate.instant('web.bulkImport.entityTechnician');
+      case 'vendor':
+        return this.translate.instant('web.bulkImport.entityVendor');
       case 'property':
       default:
-        return 'Property';
+        return this.translate.instant('web.bulkImport.entityProperty');
     }
   }
 
   get entityPluralTitle(): string {
     switch (this.entityType) {
       case 'unit':
-        return 'Units';
+        return this.translate.instant('web.bulkImport.entityUnits');
       case 'room':
-        return 'Rooms';
+        return this.translate.instant('web.bulkImport.entityRooms');
+      case 'tenant':
+        return this.translate.instant('web.bulkImport.entityTenants');
+      case 'landlord':
+        return this.translate.instant('web.bulkImport.entityLandlords');
+      case 'technician':
+        return this.translate.instant('web.bulkImport.entityTechnicians');
+      case 'vendor':
+        return this.translate.instant('web.bulkImport.entityVendors');
       case 'property':
       default:
-        return 'Properties';
+        return this.translate.instant('web.bulkImport.entityProperties');
     }
   }
 
@@ -129,6 +167,8 @@ export class BulkImportModalComponent implements OnInit {
       this.manualUnitRows = [this.createEmptyUnitRow()];
     } else if (this.entityType === 'room') {
       this.manualRoomRows = [this.createEmptyRoomRow()];
+    } else if (this.isContactEntity) {
+      this.manualContactRows = [this.createEmptyContactRow()];
     }
     this.updateCounters();
   }
@@ -144,8 +184,9 @@ export class BulkImportModalComponent implements OnInit {
   }
 
   createEmptyUnitRow(): ManualUnitRow {
+    const defaultProp = this.propertiesList.length > 0 ? (this.propertiesList[0].code || this.propertiesList[0].id) : null;
     return {
-      propertyId: this.propertiesList.length > 0 ? this.propertiesList[0].id : null,
+      propertyId: defaultProp,
       unitName: '',
       unitNo: '',
       unitType: this.unitTypesList.length > 0 ? this.unitTypesList[0].id : null,
@@ -155,9 +196,11 @@ export class BulkImportModalComponent implements OnInit {
   }
 
   createEmptyRoomRow(): ManualRoomRow {
+    const defaultProp = this.propertiesList.length > 0 ? (this.propertiesList[0].code || this.propertiesList[0].id) : null;
+    const defaultUnits = defaultProp ? this.getUnitsForProperty(defaultProp) : [];
     return {
-      propertyId: this.propertiesList.length > 0 ? this.propertiesList[0].id : null,
-      unitId: this.unitsList.length > 0 ? this.unitsList[0].id : null,
+      propertyId: defaultProp,
+      unitId: defaultUnits.length > 0 ? (defaultUnits[0].code || defaultUnits[0].unit_code || defaultUnits[0].id) : null,
       roomName: '',
       roomNo: '',
       roomType: this.roomTypesList.length > 0 ? this.roomTypesList[0].id : null,
@@ -165,20 +208,76 @@ export class BulkImportModalComponent implements OnInit {
     };
   }
 
+  createEmptyContactRow(): ManualContactRow {
+    return {
+      firstName: '',
+      lastName: '',
+      email: '',
+      mobile: '',
+      companyName: '',
+    };
+  }
+
+  getUnitsForProperty(propertyId: any): any[] {
+    if (!propertyId) return [];
+    const propKey = String(propertyId);
+    if (!this.unitsByProperty[propKey]) {
+      this.unitsByProperty[propKey] = [];
+      const prop = this.propertiesList.find((p) => p.code === propertyId || p.id === propertyId);
+      const propCode = prop?.code || prop?.property_code || propKey;
+      this.portfolioService
+        .getMasterByType({
+          typeId: 3,
+          filterId: 0,
+          filterText: propCode,
+          filterText1: '',
+        })
+        .subscribe({
+          next: (res: any) => {
+            if ((res?.statusCode == 200 || res?.statusCode === '200') && res?.objResult?.table) {
+              this.unitsByProperty[propKey] = res.objResult.table;
+              this.manualRoomRows.forEach((r) => {
+                if (String(r.propertyId) === propKey && !r.unitId && res.objResult.table.length > 0) {
+                  r.unitId = res.objResult.table[0].code || res.objResult.table[0].unit_code || res.objResult.table[0].id;
+                }
+              });
+            }
+          },
+          error: (err: any) => {
+            console.error('Error fetching units for property:', propCode, err);
+          }
+        });
+    }
+    return this.unitsByProperty[propKey] || [];
+  }
+
+  onRoomPropertyChange(row: ManualRoomRow): void {
+    row.unitId = null;
+    if (row.propertyId) {
+      const units = this.getUnitsForProperty(row.propertyId);
+      if (units && units.length > 0) {
+        row.unitId = units[0].code || units[0].unit_code || units[0].id;
+      }
+    }
+    this.onManualFieldChange();
+  }
+
   loadLookups(): void {
     // Load Property Types (typeId: 2, filterId: 1)
-    this.portfolioService
-      .getMasterByType({ typeId: 2, filterId: 1, filterText: '', filterText1: '' })
-      .subscribe({
-        next: (res: any) => {
-          if (res?.statusCode === '200' && res?.objResult?.table) {
-            this.propertyTypes = res.objResult.table;
-            if (this.manualPropertyRows.length > 0 && !this.manualPropertyRows[0].propertyType) {
-              this.manualPropertyRows[0].propertyType = this.propertyTypes[0]?.id || null;
+    if (this.entityType === 'property') {
+      this.portfolioService
+        .getMasterByType({ typeId: 2, filterId: 1, filterText: '', filterText1: '' })
+        .subscribe({
+          next: (res: any) => {
+            if (res?.statusCode === '200' && res?.objResult?.table) {
+              this.propertyTypes = res.objResult.table;
+              if (this.manualPropertyRows.length > 0 && !this.manualPropertyRows[0].propertyType) {
+                this.manualPropertyRows[0].propertyType = this.propertyTypes[0]?.id || null;
+              }
             }
-          }
-        },
-      });
+          },
+        });
+    }
 
     // If unit or room, load properties list
     if (this.entityType === 'unit' || this.entityType === 'room') {
@@ -188,6 +287,20 @@ export class BulkImportModalComponent implements OnInit {
           next: (res: any) => {
             if (res?.statusCode === '200' && res?.objResult?.table) {
               this.propertiesList = res.objResult.table;
+              if (this.propertiesList.length > 0) {
+                const firstPropCode = this.propertiesList[0].code || this.propertiesList[0].id;
+                if (this.entityType === 'unit') {
+                  this.manualUnitRows.forEach((r) => {
+                    if (!r.propertyId) r.propertyId = firstPropCode;
+                  });
+                }
+                if (this.entityType === 'room') {
+                  this.manualRoomRows.forEach((r) => {
+                    if (!r.propertyId) r.propertyId = firstPropCode;
+                  });
+                  this.getUnitsForProperty(firstPropCode);
+                }
+              }
             }
           },
         });
@@ -234,6 +347,8 @@ export class BulkImportModalComponent implements OnInit {
       this.manualUnitRows.push(this.createEmptyUnitRow());
     } else if (this.entityType === 'room') {
       this.manualRoomRows.push(this.createEmptyRoomRow());
+    } else if (this.isContactEntity) {
+      this.manualContactRows.push(this.createEmptyContactRow());
     }
     this.updateCounters();
   }
@@ -256,6 +371,12 @@ export class BulkImportModalComponent implements OnInit {
         this.manualRoomRows.splice(index, 1);
       } else {
         this.manualRoomRows[0] = this.createEmptyRoomRow();
+      }
+    } else if (this.isContactEntity) {
+      if (this.manualContactRows.length > 1) {
+        this.manualContactRows.splice(index, 1);
+      } else {
+        this.manualContactRows[0] = this.createEmptyContactRow();
       }
     }
     this.updateCounters();
@@ -282,6 +403,12 @@ export class BulkImportModalComponent implements OnInit {
       } else if (this.entityType === 'room') {
         const valid = this.manualRoomRows.filter(
           (r) => r.roomName && r.roomName.trim().length > 0
+        );
+        this.propertiesToBeImported = valid.length;
+        this.totalToImport = valid.length;
+      } else if (this.isContactEntity) {
+        const valid = this.manualContactRows.filter(
+          (r) => (r.firstName && r.firstName.trim().length > 0) || (r.lastName && r.lastName.trim().length > 0)
         );
         this.propertiesToBeImported = valid.length;
         this.totalToImport = valid.length;
@@ -427,7 +554,7 @@ export class BulkImportModalComponent implements OnInit {
         floor: Number(getVal('Floor', 'floor')) || 0,
         marketRent: Number(getVal('Market Rent', 'MarketRent', 'Rent')) || 0,
       };
-    } else {
+    } else if (this.entityType === 'room') {
       const name = getVal('Room Name', 'RoomName', 'Name', 'room_name');
       const roomNo = getVal('Room No', 'Room Number', 'RoomNo', 'room_no') || name;
       return {
@@ -437,6 +564,20 @@ export class BulkImportModalComponent implements OnInit {
         unitId: Number(getVal('Unit ID', 'UnitId', 'Unit')) || (this.unitsList[0]?.id || 0),
         roomType: Number(getVal('Room Type', 'RoomType')) || (this.roomTypesList[0]?.id || 1),
         marketRent: Number(getVal('Market Rent', 'MarketRent', 'Rent')) || 0,
+      };
+    } else {
+      const firstName = getVal('First Name', 'FirstName', 'First_Name', 'first_name');
+      const lastName = getVal('Last Name', 'LastName', 'Last_Name', 'last_name');
+      const email = getVal('Email', 'Email Address', 'email', 'email_address');
+      const mobile = getVal('Mobile', 'Phone', 'mobile_no', 'mobile', 'Phone Number', 'phone');
+      const company = getVal('Company Name', 'Company', 'company_name');
+      return {
+        name: `${firstName} ${lastName}`.trim() || String(company).trim(),
+        firstName: String(firstName).trim(),
+        lastName: String(lastName).trim(),
+        email: String(email).trim(),
+        mobile: String(mobile).trim(),
+        companyName: String(company).trim(),
       };
     }
   }
@@ -476,15 +617,50 @@ export class BulkImportModalComponent implements OnInit {
         Floor: 1,
         'Market Rent': 65000,
       };
-    } else {
+    } else if (this.entityType === 'room') {
       headers = ['Room Name', 'Room No', 'Property ID', 'Unit ID', 'Room Type', 'Market Rent'];
       sampleRow = {
         'Room Name': 'Master Bedroom',
         'Room No': 'MB-01',
-        'Property ID': 1,
+        'Property ID': this.propertiesList[0]?.id || 1,
         'Unit ID': 1,
         'Room Type': 'Master',
         'Market Rent': 2500,
+      };
+    } else if (this.entityType === 'tenant') {
+      headers = ['First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
+      sampleRow = {
+        'First Name': 'Ahmed',
+        'Last Name': 'Ali',
+        Email: 'ahmed.ali@example.com',
+        Mobile: '+971501234567',
+        'Company Name': 'Al Futtaim LLC',
+      };
+    } else if (this.entityType === 'landlord') {
+      headers = ['First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
+      sampleRow = {
+        'First Name': 'Mohammed',
+        'Last Name': 'Al Maktoum',
+        Email: 'mohammed.m@example.com',
+        Mobile: '+971509876543',
+        'Company Name': 'Emaar Properties',
+      };
+    } else if (this.entityType === 'technician') {
+      headers = ['First Name', 'Last Name', 'Email', 'Mobile'];
+      sampleRow = {
+        'First Name': 'Suresh',
+        'Last Name': 'Kumar',
+        Email: 'suresh.k@example.com',
+        Mobile: '+971505551234',
+      };
+    } else if (this.entityType === 'vendor') {
+      headers = ['Company Name', 'First Name', 'Last Name', 'Email', 'Mobile'];
+      sampleRow = {
+        'Company Name': 'Rapid AC Maintenance',
+        'First Name': 'Tariq',
+        'Last Name': 'Mansoor',
+        Email: 'tariq@rapidfms.com',
+        Mobile: '+971504449876',
       };
     }
 
@@ -557,6 +733,24 @@ export class BulkImportModalComponent implements OnInit {
             marketRent: Number(r.marketRent) || 0,
           });
         }
+      } else if (this.isContactEntity) {
+        const valid = this.manualContactRows.filter(
+          (r) => (r.firstName && r.firstName.trim().length > 0) || (r.lastName && r.lastName.trim().length > 0)
+        );
+        if (valid.length === 0) {
+          this.toastr.warning(`Please enter at least one ${this.entityTitle}.`, 'Validation Warning');
+          return;
+        }
+        for (const r of valid) {
+          rowsToProcess.push({
+            name: `${r.firstName} ${r.lastName}`.trim() || r.companyName || 'Contact',
+            firstName: r.firstName?.trim() || '',
+            lastName: r.lastName?.trim() || '',
+            email: r.email?.trim() || '',
+            mobile: r.mobile?.trim() || '',
+            companyName: r.companyName?.trim() || '',
+          });
+        }
       }
     } else {
       if (this.parsedFileRows.length === 0) {
@@ -588,6 +782,14 @@ export class BulkImportModalComponent implements OnInit {
           await this.saveUnitRow(item, user);
         } else if (this.entityType === 'room') {
           await this.saveRoomRow(item, user);
+        } else if (this.entityType === 'tenant') {
+          await this.saveTenantRow(item, user);
+        } else if (this.entityType === 'landlord') {
+          await this.saveLandlordRow(item, user);
+        } else if (this.entityType === 'technician') {
+          await this.saveTechnicianRow(item, user);
+        } else if (this.entityType === 'vendor') {
+          await this.saveVendorRow(item, user);
         }
         this.propertiesImported++;
         this.propertiesToBeImported = Math.max(0, this.totalToImport - this.propertiesImported - this.failedCount);
@@ -678,6 +880,7 @@ export class BulkImportModalComponent implements OnInit {
 
   private saveUnitRow(row: any, user: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      const propCode = String(row.propertyId || '');
       const request = {
         userid: Number(user?.userId) || 1,
         company_id: Number(user?.companyId) || 1,
@@ -685,6 +888,7 @@ export class BulkImportModalComponent implements OnInit {
         clientId: user?.clientId || '',
         unit_id: 0,
         property_id: Number(row.propertyId) || 0,
+        property_code: propCode,
         unit_name: row.name,
         unit_no: row.unitNo || row.name,
         unit_type: Number(row.unitType) || 1,
@@ -712,6 +916,8 @@ export class BulkImportModalComponent implements OnInit {
 
   private saveRoomRow(row: any, user: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      const propCode = String(row.propertyId || '');
+      const unitCode = String(row.unitId || '');
       const request = {
         userid: Number(user?.userId) || 1,
         company_id: Number(user?.companyId) || 1,
@@ -720,8 +926,13 @@ export class BulkImportModalComponent implements OnInit {
         room_id: 0,
         property_id: Number(row.propertyId) || 0,
         unit_id: Number(row.unitId) || 0,
+        property_code: propCode,
+        unit_code: unitCode,
+        category: 1,
+        room_status: 1,
         room_name: row.name,
         room_no: row.roomNo || row.name,
+        room_code: row.roomNo || row.name,
         room_type: Number(row.roomType) || 1,
         market_rent: Number(row.marketRent) || 0,
         desc: '',
@@ -736,6 +947,245 @@ export class BulkImportModalComponent implements OnInit {
             resolve(res);
           } else {
             reject(new Error(res?.message || 'Failed to save room'));
+          }
+        },
+        error: (err: any) => reject(err),
+      });
+    });
+  }
+
+  private saveTenantRow(row: any, user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request = {
+        userid: Number(user?.userId) || 1,
+        company_id: Number(user?.companyId) || 1,
+        clientId: user?.clientId || '',
+        source: 'web',
+        languageid: 1,
+        email_address: row.email || '',
+        code: '',
+        id: 0,
+        username: '',
+        profileImage_path: '',
+        honorific: '',
+        tenant: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        first_name: row.firstName || '',
+        last_name: row.lastName || '',
+        middle_name: '',
+        mobile_no: row.mobile || '',
+        gender: '',
+        dob: '1900-01-01T00:00:00',
+        status: 'Active',
+        address1: '',
+        address2: '',
+        nationality: 0,
+        country_id: 0,
+        stateid: 0,
+        city: 0,
+        zipcode: '',
+        addionalphone1: '',
+        addionalphone2: '',
+        landline_no: '',
+        name_on_lease: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        email_on_lease: row.email || '',
+        phone_on_lease: row.mobile || '',
+        notes: '',
+        is_auto_schedule: false,
+        schedule_day: 1,
+        signature_path: '',
+        is_auto_sign_leases: false,
+        disabled_property_listing: false,
+        company_name: row.companyName || '',
+        tax_registration_no: '',
+        trade_license: '',
+        display_as_company: !!(row.companyName && !row.firstName),
+        fax_no: '',
+      };
+
+      const formData = new FormData();
+      formData.append('reqObject', JSON.stringify(request));
+
+      this.propertiesService.saveTenant(formData).subscribe({
+        next: (res: any) => {
+          if (res?.statusCode === '200' || res?.status === 200 || res?.message === 'Success') {
+            resolve(res);
+          } else {
+            reject(new Error(res?.message || 'Failed to save tenant'));
+          }
+        },
+        error: (err: any) => reject(err),
+      });
+    });
+  }
+
+  private saveLandlordRow(row: any, user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request = {
+        userid: Number(user?.userId) || 1,
+        company_id: Number(user?.companyId) || 1,
+        clientId: user?.clientId || '',
+        source: 'web',
+        languageid: 1,
+        email_address: row.email || '',
+        code: '',
+        id: 0,
+        username: '',
+        profileImage_path: '',
+        honorific: '',
+        landlord: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        first_name: row.firstName || '',
+        last_name: row.lastName || '',
+        middle_name: '',
+        mobile_no: row.mobile || '',
+        gender: '',
+        dob: '1900-01-01T00:00:00',
+        reference: '',
+        tags: '',
+        status: 'Active',
+        address1: '',
+        address2: '',
+        nationality: 0,
+        country_id: 0,
+        stateid: 0,
+        city: 0,
+        name_on_contract: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        email_on_contract: row.email || '',
+        phone_on_contract: row.mobile || '',
+        lessor_name: '',
+        notes: '',
+        signature_path: '',
+        is_auto_sign_leases: false,
+        company_name: row.companyName || '',
+        tax_registration_no: '',
+        display_as_company: !!(row.companyName && !row.firstName),
+        negative_balances: false,
+        security_deposit_leases: false,
+        security_deposit_non_leases: false,
+        landlord_contribution: false,
+        send_push_notifications: false,
+        send_email_notifications: false,
+        auto_hold_amount_in_wallet: false,
+        emergencydtls: [],
+        bankdtls: {
+          bank_name: '',
+          bank_address: '',
+          iban: '',
+          account_no: '',
+          sort_code: '',
+          code_swift: '',
+        },
+      };
+
+      const formData = new FormData();
+      formData.append('reqObject', JSON.stringify(request));
+
+      this.propertiesService.saveLandlord(formData).subscribe({
+        next: (res: any) => {
+          if (res?.statusCode === '200' || res?.status === 200 || res?.message === 'Success') {
+            resolve(res);
+          } else {
+            reject(new Error(res?.message || 'Failed to save landlord'));
+          }
+        },
+        error: (err: any) => reject(err),
+      });
+    });
+  }
+
+  private saveTechnicianRow(row: any, user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request = {
+        userid: Number(user?.userId) || 1,
+        company_id: Number(user?.companyId) || 1,
+        clientId: user?.clientId || '',
+        source: 'web',
+        languageid: 1,
+        email: row.email || '',
+        email_address: row.email || '',
+        email_id: row.email || '',
+        emailid: row.email || '',
+        emailId: row.email || '',
+        code: '',
+        id: 0,
+        username: '',
+        profileImage_path: '',
+        password: '',
+        technician_name: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        first_name: row.firstName || '',
+        last_name: row.lastName || '',
+        mobile_no: row.mobile || '',
+        phone: row.mobile || '',
+        phone_number: row.mobile || '',
+        country_id: 0,
+        role_id: 0,
+        department: 0,
+        display_all_tenants: false,
+        technician_actions: '',
+        spoken_languages: '',
+        time_zone: '',
+      };
+
+      const formData = new FormData();
+      formData.append('reqObject', JSON.stringify(request));
+
+      this.propertiesService.saveTechnician(formData).subscribe({
+        next: (res: any) => {
+          if (res?.statusCode === '200' || res?.status === 200 || res?.message === 'Success') {
+            resolve(res);
+          } else {
+            reject(new Error(res?.message || 'Failed to save technician'));
+          }
+        },
+        error: (err: any) => reject(err),
+      });
+    });
+  }
+
+  private saveVendorRow(row: any, user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request = {
+        userid: Number(user?.userId) || 1,
+        company_id: Number(user?.companyId) || 1,
+        clientId: user?.clientId || '',
+        source: 'web',
+        languageid: 1,
+        email_address: row.email || '',
+        code: '',
+        id: 0,
+        username: '',
+        profileImage_path: '',
+        honorific: '',
+        company_name: row.companyName || '',
+        contact_name: `${row.firstName || ''} ${row.lastName || ''}`.trim() || row.name || '',
+        mobile_no: row.mobile || '',
+        gender: '',
+        dob: '1900-01-01T00:00:00',
+        address1: '',
+        address2: '',
+        nationality: 0,
+        country_id: 0,
+        stateid: 0,
+        city: 0,
+        tax_registration_no: '',
+        notes: '',
+        signature_path: '',
+        display_as_company: true,
+        vendor_type: 0,
+        auto_assign_assignment: false,
+        allow_create_work_order: false,
+        allow_create_quotation: false,
+        maintainance_categories: '',
+      };
+
+      const formData = new FormData();
+      formData.append('reqObject', JSON.stringify(request));
+
+      this.propertiesService.saveVendor(formData).subscribe({
+        next: (res: any) => {
+          if (res?.statusCode === '200' || res?.status === 200 || res?.message === 'Success') {
+            resolve(res);
+          } else {
+            reject(new Error(res?.message || 'Failed to save vendor'));
           }
         },
         error: (err: any) => reject(err),

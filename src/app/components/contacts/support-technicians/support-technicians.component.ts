@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { BulkImportModalComponent } from '../../../shared/components/bulk-import-modal/bulk-import-modal.component';
 export interface Technician {
   id: number;
   code: string;
@@ -29,7 +30,7 @@ export interface Technician {
 @Component({
   selector: 'app-support-technicians',
   standalone: true,
-  imports: [CommonModule, FilterDrawerComponent,DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule, BulkImportModalComponent],
   templateUrl: './support-technicians.component.html',
   styleUrl: './support-technicians.component.scss'
 })
@@ -49,6 +50,18 @@ export class SupportTechniciansComponent implements OnInit, OnDestroy {
   isDrawerOpen = false;
   edit_code:string='';
   deleteModal:boolean=false;
+  isImportModalOpen = false;
+
+  openImportModal(): void {
+    this.isImportModalOpen = true;
+  }
+
+  onImportCompleted(summary: any): void {
+    if (summary && summary.imported > 0) {
+      this.loadTechnicians();
+    }
+  }
+
   // Filter criteria
   filterName: string = '';
   filterEmail: string = '';
