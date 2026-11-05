@@ -175,7 +175,7 @@
                   (click)="handleEditAction(row); openActionCode = null">{{ 'web.common.edit' | translate }}</button>
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                  (click)="openActionCode = null">{{ 'web.common.delete' | translate }}</button>
+                  (click)="deleteWorkorder(row.code)">{{ 'web.common.delete' | translate }}</button>
               </div>
             </div>
           </ng-container>
@@ -327,3 +327,5 @@
     </div>
   </div>
 </div>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

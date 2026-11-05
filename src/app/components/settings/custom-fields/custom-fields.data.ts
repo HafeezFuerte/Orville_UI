@@ -23,6 +23,9 @@ export interface CustomFieldRow {
   visibleToTenant: boolean;
   visibleToLandlord: boolean;
   useForVerification: boolean;
+  isMandatory?:boolean;
+  isReadonly?:boolean;
+  defaultValue?:string;
 }
 
 export interface CustomFieldDraft {
@@ -33,6 +36,9 @@ export interface CustomFieldDraft {
   visibleToTenant: boolean;
   visibleToLandlord: boolean;
   useForVerification: boolean;
+  isMandatory?:boolean;
+  isReadonly?:boolean;
+  defaultValue?:string;
 }
 
 export const EMPTY_CUSTOM_FIELD: CustomFieldDraft = {

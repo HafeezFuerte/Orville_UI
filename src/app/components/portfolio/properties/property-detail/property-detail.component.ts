@@ -21,6 +21,7 @@ import { CommonAreaComponent } from '../../../child-tables/commonarea/commonarea
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
 import {BroadcastsTableComponent}from '../../../child-tables/broadcasts/broadcasts.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Common_TabsService } from '../../services/common_tabs.service';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
@@ -87,6 +88,7 @@ export class PropertyDetailComponent implements OnInit {
     private commonService: CommonService,
     private toastr: ToastrService,
     private translate: TranslateService,
+    private commontabservice:Common_TabsService,
     private sanitizer: DomSanitizer) {
 
   }
@@ -384,7 +386,29 @@ export class PropertyDetailComponent implements OnInit {
   handleEditNotification(selectedObject: any) {
 
   }
-
+  loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string) {
+    this.commontabservice.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: filterText1
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200) {   
+          this.toastr.success(res.message);
+          setTimeout(() => {
+            window.location.reload()
+          }, 3000);
+        }
+      },
+      error: (err:any) => {
+         
+      }
+    });
+  }
+  updateProperty(flg:any){
+    this.loadLookup(71,flg,'',this.property?.code,'')
+  }
   onActionAddAttachment(): void {
     this.showActionMenu = false;
     this.activeTab = 'attachments';

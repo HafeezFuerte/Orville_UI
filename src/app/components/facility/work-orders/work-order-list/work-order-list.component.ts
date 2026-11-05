@@ -9,6 +9,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 export interface WorkOrder {
   id?: string;
   code?: string;
@@ -40,7 +41,7 @@ export interface WorkOrder {
 @Component({
   selector: 'app-work-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule,DeleteConfirmationComponent, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
   templateUrl: './work-order-list.component.html',
   styleUrl: './work-order-list.component.scss'
 })
@@ -57,7 +58,8 @@ export class WorkOrderListComponent implements OnInit {
   branches = ['Main Branch', 'Branch A'];
   buildings = ['All Buildings', 'Building 1'];
   isLoading: boolean = false;
-
+  deleteModal:boolean=false;
+  workorderid:string='';
   activeTab: string = 'All';
   tabs: any[] = [];
   //tabs = ['All', 'New', 'Open', 'In Progress', 'On Hold', 'Resolved', 'Rejected', 'Accepted', 'Tenant Rejected', 'Canceled', 'Re-opened'];
@@ -292,19 +294,26 @@ export class WorkOrderListComponent implements OnInit {
   ngOnInit() {
     this.loadData();
     this.loadMetrics();
-    this.loadLookup(29, 'tabs', 'lookup_name');
+    this.loadLookup(2,29, 'tabs', 'lookup_name');
   }
-  loadLookup(filterId: number, targetProperty: string, nameField: string) {
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
     this.portfolioService.getMasterByType({
-      typeId: 2,
+      typeId: Typeid,
       filterId: filterId,
-      filterText: '',
+      filterText: filterText,
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {
+          if(Typeid==71){
+            this.toastr.success("Successfully marked as inactive");
+            this.workorderid='';
+            this.loadData();
+        }
+        else{
           this.tabs.push({"id":"All","name":"All"}); 
           this.tabs.push(...res.objResult.table); 
+        }
         }
         else
         this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
@@ -404,7 +413,17 @@ export class WorkOrderListComponent implements OnInit {
     this.pageNo = 0;
     this.loadData();
   }
-
+  deleteWorkorder(id: string): void { 
+    this.deleteModal=!this.deleteModal;  
+    this.workorderid=id;
+  } 
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,19, '', this.workorderid);
+  }
+  closeModal(){
+    this.deleteModal=false;
+  }
   navigateToCreate() {
     this.router.navigate(['/facility/work-orders/create']);
   }

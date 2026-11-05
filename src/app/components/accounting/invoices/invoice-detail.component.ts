@@ -470,6 +470,7 @@ export class InvoiceDetailComponent implements OnInit {
       Rejected: 'inv-badge--rejected',
       Deposited: 'inv-badge--pending',
       Unpaid: 'inv-badge--rejected',
+      Uncleared: 'inv-badge--rejected',
       Overdue: 'inv-badge--rejected',
       Hold: 'inv-badge--pending',
       'Pending Approvals': 'inv-badge--pending',
@@ -490,6 +491,7 @@ export class InvoiceDetailComponent implements OnInit {
       'Pending Approvals': 'invd-due--pending',
       Rejected: 'invd-due--rejected',
       Unpaid: 'invd-due--rejected',
+      Uncleared: 'invd-due--rejected',
       Overdue: 'invd-due--rejected',
       Bounced: 'invd-due--rejected'
     };
