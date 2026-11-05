@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { DeleteConfirmationComponent } from '../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { BulkImportModalComponent } from '../../../shared/components/bulk-import-modal/bulk-import-modal.component';
 export interface Vendor {
   id: number;
   code: string;
@@ -30,7 +31,7 @@ export interface Vendor {
 @Component({
   selector: 'app-vendors',
   standalone: true,
-  imports: [CommonModule, FilterDrawerComponent,DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FilterDrawerComponent, DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule, BulkImportModalComponent],
   templateUrl: './vendors.component.html',
   styleUrl: './vendors.component.scss'
 })
@@ -50,6 +51,18 @@ export class VendorsComponent implements OnInit, OnDestroy {
   isDrawerOpen = false;
   edit_code:string='';
   deleteModal:boolean=false;
+  isImportModalOpen = false;
+
+  openImportModal(): void {
+    this.isImportModalOpen = true;
+  }
+
+  onImportCompleted(summary: any): void {
+    if (summary && summary.imported > 0) {
+      this.loadVendors();
+    }
+  }
+
   // Filter criteria
   filterName: string = '';
   filterEmail: string = '';
