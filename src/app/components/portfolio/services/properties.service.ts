@@ -116,5 +116,37 @@ export class PropertiesService {
     const url = environment.apiurl + 'api/Masters/save_emergency_dtls';
     return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
   }
-  
+
+  getExtraFields(feature: string): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const payload = {
+      typeId: -8,
+      filterId: 0,
+      filterText: feature,
+      filterText1: '',
+      userId: Number(localStorage.getItem('userId')) || 1,
+      companyId: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922'
+    };
+    return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
+  }
+
+  getExtraFieldsData(entity: string, entityCode: string): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const payload = {
+      typeId: 9,
+      filterId: 0,
+      filterText: entity,
+      filterText1: entityCode,
+      userId: Number(localStorage.getItem('userId')) || 1,
+      companyId: Number(localStorage.getItem('companyId')) || 1,
+      clientId: '74BB6922'
+    };
+    return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
+  }
+
+  saveExtraFieldData(payload: any): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/save_extra_field_data';
+    return this.http.post(url, payload, { headers: this.commonservice.updateHeaders() });
+  }
 }

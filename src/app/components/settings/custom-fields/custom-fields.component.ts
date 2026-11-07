@@ -13,10 +13,12 @@ import {
   CUSTOM_FIELD_MODULES,
   CustomFieldColumnDef,
   CustomFieldDataType,
+  CustomFieldDataTypeOption,
   CustomFieldDraft,
   CustomFieldModule,
   CustomFieldRow,
   DEFAULT_CUSTOM_FIELDS,
+  DEFAULT_DATA_TYPES,
   EMPTY_CUSTOM_FIELD,
 } from './custom-fields.data';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -47,7 +49,7 @@ export class CustomFieldsComponent implements OnInit {
   searchQuery = '';
   columnSearch = '';
   filterModule: CustomFieldModule | '' = '';
-  filterDataType: CustomFieldDataType | '' = '';
+  filterDataType: string = '';
   showColumns = false;
   showFilters = false;
   modalOpen = false;
@@ -56,6 +58,7 @@ export class CustomFieldsComponent implements OnInit {
   isSaving = false;
   selectedScreen: string | null = null;
   screens = ['Leases', 'Workorder', 'Invoices', 'Quotations', 'Expenses', 'Property'];
+  fieldNameManuallyEdited = false;
   sortKey: SortKey = 'fieldName';
   sortDir: SortDir = 'asc';
   pageSize = 10;
@@ -65,16 +68,18 @@ export class CustomFieldsComponent implements OnInit {
   rows: CustomFieldRow[] = [];
 
   readonly modules = CUSTOM_FIELD_MODULES;
-  readonly dataTypes = CUSTOM_FIELD_DATA_TYPES;
+  dataTypes: CustomFieldDataTypeOption[] = [...DEFAULT_DATA_TYPES];
 
   columns: CustomFieldColumnDef[] = [
-    //{ key: 'alias_name', label: 'Field Name', visible: true },
-    { key: 'alias_name', label: 'Field Label', visible: true },
-    { key: 'control_type', label: 'Data Type', visible: true },
-    { key: 'feature', label: 'Module', visible: true },
-    { key: 'is_visible_to_tenant', label: 'Visible to Tenant', visible: true },
-    { key: 'is_visible_to_landlord', label: 'Visible to Landlord', visible: true },
-    { key: 'is_used_for_verification', label: 'Use For Verification', visible: true },
+    { key: 'fieldName', label: 'Field Name', visible: true },
+    { key: 'fieldLabel', label: 'Field Label', visible: true },
+    { key: 'dataType', label: 'Data Type', visible: true },
+    { key: 'module', label: 'Module', visible: true },
+    { key: 'sortOrder', label: 'Sort Order', visible: true },
+    { key: 'isMandatory', label: 'Mandatory', visible: true },
+    { key: 'visibleToTenant', label: 'Visible to Tenant', visible: true },
+    { key: 'visibleToLandlord', label: 'Visible to Landlord', visible: true },
+    { key: 'useForVerification', label: 'Use For Verification', visible: true },
     { key: 'actions', label: 'Action', visible: true },
   ];
 
@@ -108,9 +113,9 @@ export class CustomFieldsComponent implements OnInit {
     this.isLoading = true;
     const user = this.commonService.getCurrentUser();
     const payload = {
-      typeId: 8,
+      typeId: -8,
       filterId: 0,
-      filterText: this.selectedScreen,
+      filterText: this.selectedScreen || this.filterModule || '',
       filterText1: '',
       userId: Number(user?.userId) || 1,
       clientId: user?.clientId || '',
@@ -122,9 +127,65 @@ export class CustomFieldsComponent implements OnInit {
       next: (res) => {
         this.isLoading = false; 
         if (res?.statusCode === '200' && res.objResult) {
-          const records = res.objResult.table || res.objResult.table0 || (Array.isArray(res.objResult) ? res.objResult : []);
-          this.rows =records;
-        } 
+          // 1. Dynamic Data Types from table1 (USP_APP_GETMASTERS typeId: -8)
+          if (Array.isArray(res.objResult.table1) && res.objResult.table1.length > 0) {
+            this.dataTypes = res.objResult.table1.map((t: any) => ({
+              id: t.id,
+              name: t.name,
+            }));
+          }
+
+          // 2. Custom Fields Records from table
+          const records =
+            res.objResult.table ||
+            res.objResult.table0 ||
+            (Array.isArray(res.objResult) ? res.objResult : []);
+
+          if (Array.isArray(records) && records.length > 0) {
+            if (
+              records[0].alias_name ||
+              records[0].column_name ||
+              records[0].field_name ||
+              records[0].control_type ||
+              records[0].feature
+            ) {
+              this.rows = records.map((r: any, idx: number) => ({
+                id: Number(r.id) || idx + 1,
+                fieldName: r.column_name || r.field_name || r.alias_name || '',
+                fieldLabel: r.alias_name || r.field_label || r.name || '',
+                dataType: r.control_type || 'TX',
+                module: r.feature || r.module || 'Property',
+                sortOrder: Number(r.sort_order) || 0,
+                isMandatory: !!r.is_mandatory,
+                isReadonly: !!r.is_readonly,
+                isVisible: r.is_visible !== false,
+                minLength: Number(r.min_length) || 0,
+                maxLength: Number(r.max_length) || 0,
+                probableValues: r.probable_values || '',
+                defaultValue: r.defaultvalue || '',
+                visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
+                visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
+                useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
+                dependencyId: Number(r.dependency_id) || 0,
+                dependencyType: Number(r.dependency_type) || 0,
+              }));
+              localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
+              return;
+            }
+          }
+        }
+        // If backend returned empty or -200, check cache
+        const cached = localStorage.getItem(CustomFieldsComponent.STORAGE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              this.rows = parsed;
+              return;
+            }
+          } catch (e) {}
+        }
+        this.rows = DEFAULT_CUSTOM_FIELDS.map((r) => ({ ...r }));
       },
       error: (err) => {
         this.isLoading = false; 
@@ -187,6 +248,12 @@ export class CustomFieldsComponent implements OnInit {
     if (this.isColumnVisible('module')) {
       parts.push('minmax(100px, 0.8fr)');
     }
+    if (this.isColumnVisible('sortOrder')) {
+      parts.push('90px');
+    }
+    if (this.isColumnVisible('isMandatory')) {
+      parts.push('100px');
+    }
     if (this.isColumnVisible('visibleToTenant')) {
       parts.push('120px');
     }
@@ -230,7 +297,24 @@ export class CustomFieldsComponent implements OnInit {
   }
 
   get canSubmit(): boolean {
-    return this.draft.fieldLabel.trim().length > 0 && this.draft.fieldLabel.trim().length > 0;
+    return !!(
+      (this.draft.fieldName && this.draft.fieldName.trim().length > 0) ||
+      (this.draft.fieldLabel && this.draft.fieldLabel.trim().length > 0)
+    );
+  }
+
+  onFieldLabelInput(): void {
+    if (!this.editingId && !this.fieldNameManuallyEdited) {
+      this.draft.fieldName = (this.draft.fieldLabel || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+    }
+  }
+
+  onFieldNameInput(): void {
+    this.fieldNameManuallyEdited = true;
   }
 
   isColumnVisible(key: string): boolean {
@@ -239,6 +323,14 @@ export class CustomFieldsComponent implements OnInit {
 
   yesNo(value: boolean): string {
     return value ? 'Yes' : 'No';
+  }
+
+  getDataTypeLabel(val: string): string {
+    if (!val) return '';
+    const match = this.dataTypes.find(
+      (t) => t.id === val || t.name?.toLowerCase() === val?.toLowerCase()
+    );
+    return match ? match.name : val;
   }
 
   toggleSort(key: SortKey): void {
@@ -270,14 +362,16 @@ export class CustomFieldsComponent implements OnInit {
     this.filterModule = '';
     this.filterDataType = '';
     this.pageIndex = 0;
+    this.fetchCustomFields();
   }
 
   applyFilterModule(value: CustomFieldModule | ''): void {
     this.filterModule = value;
     this.pageIndex = 0;
+    this.fetchCustomFields();
   }
 
-  applyFilterDataType(value: CustomFieldDataType | ''): void {
+  applyFilterDataType(value: string): void {
     this.filterDataType = value;
     this.pageIndex = 0;
   }
@@ -324,22 +418,47 @@ export class CustomFieldsComponent implements OnInit {
 
   openCreate(): void {
     this.editingId = null;
-    this.draft = { ...EMPTY_CUSTOM_FIELD };
-    this.modalOpen = true;
-  }
-
-  openEdit(row:any): void {
-    this.editingId = row.id;
+    this.fieldNameManuallyEdited = false;
     this.draft = {
-      fieldName: "",
-      fieldLabel: row.alias_name,
-      dataType: row.control_type,
-      module: row.feature,
-      visibleToTenant: row.is_visible_to_tenant,
-      visibleToLandlord: row.is_visible_to_landlord,
-      useForVerification: row.is_used_for_verification,
+      ...EMPTY_CUSTOM_FIELD,
+      module: this.filterModule || 'Property',
+      dataType: this.dataTypes.length > 0 ? this.dataTypes[0].id : 'TX',
+      sortOrder: this.rows.length + 1,
     };
     this.modalOpen = true;
+    setTimeout(() => {
+      const el = document.querySelector('.cf-modal-body');
+      if (el) el.scrollTop = 0;
+    }, 0);
+  }
+
+  openEdit(row: any): void {
+    this.editingId = row.id;
+    this.fieldNameManuallyEdited = true;
+    this.draft = {
+      fieldName: row.fieldName || row.column_name || row.field_name || '',
+      fieldLabel: row.fieldLabel || row.alias_name || row.field_label || '',
+      dataType: row.dataType || row.control_type || 'TX',
+      module: row.module || row.feature || 'Property',
+      sortOrder: row.sortOrder ?? row.sort_order ?? 0,
+      isMandatory: !!(row.isMandatory ?? row.is_mandatory),
+      isReadonly: !!(row.isReadonly ?? row.is_readonly),
+      isVisible: (row.isVisible ?? row.is_visible) !== false,
+      minLength: row.minLength ?? row.min_length ?? 0,
+      maxLength: row.maxLength ?? row.max_length ?? 0,
+      probableValues: row.probableValues || row.probable_values || '',
+      defaultValue: row.defaultValue || row.defaultvalue || '',
+      visibleToTenant: !!(row.visibleToTenant ?? row.is_visible_to_tenant),
+      visibleToLandlord: !!(row.visibleToLandlord ?? row.is_visible_to_landlord),
+      useForVerification: !!(row.useForVerification ?? row.is_used_for_verification),
+      dependencyId: row.dependencyId ?? row.dependency_id ?? 0,
+      dependencyType: row.dependencyType ?? row.dependency_type ?? 0,
+    };
+    this.modalOpen = true;
+    setTimeout(() => {
+      const el = document.querySelector('.cf-modal-body');
+      if (el) el.scrollTop = 0;
+    }, 0);
   }
 
   closeModal(): void {
@@ -347,9 +466,30 @@ export class CustomFieldsComponent implements OnInit {
   }
 
   save(): void {
-    if (!this.canSubmit || this.isSaving) {
+    if (this.isSaving) {
       return;
     }
+
+    const fieldLabel = (this.draft.fieldLabel || '').trim();
+    let fieldName = (this.draft.fieldName || '').trim();
+
+    if (!fieldLabel && !fieldName) {
+      this.toastr.warning('Please enter a Field Label and Field Name.', 'Validation Warning');
+      return;
+    }
+
+    if (!fieldName) {
+      fieldName = fieldLabel
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+      this.draft.fieldName = fieldName;
+    }
+    if (!fieldLabel) {
+      this.draft.fieldLabel = fieldName;
+    }
+
     this.isSaving = true;
     const user = this.commonService.getCurrentUser();
     const payload = {
@@ -359,17 +499,19 @@ export class CustomFieldsComponent implements OnInit {
       source: 'web',
       languageid: 1,
       id: Number(this.editingId) || 0,
-      sort_order: 0,
+      sort_order: Number(this.draft.sortOrder) || 0,
+      dependency_id: Number(this.draft.dependencyId) || 0,
+      dependency_type: Number(this.draft.dependencyType) || 0,
       feature: this.draft.module,
-      alias_name: this.draft.fieldLabel.trim(),
-      control_type: this.draft.dataType,
-      is_mandatory: false,
-      is_readonly: false,
-      is_visible: true,
-      min_length: 0,
-      max_length: 0,
-      probable_values: '',
-      defaultvalue: this.draft.fieldName.trim(),
+      alias_name: (this.draft.fieldLabel || '').trim(),
+      control_type: this.draft.dataType || 'TX',
+      is_mandatory: !!this.draft.isMandatory,
+      is_readonly: !!this.draft.isReadonly,
+      is_visible: !!this.draft.isVisible,
+      min_length: Number(this.draft.minLength) || 0,
+      max_length: Number(this.draft.maxLength) || 0,
+      probable_values: this.draft.probableValues || '',
+      defaultvalue: this.draft.defaultValue?.trim() || this.draft.fieldName?.trim() || '',
       is_visible_to_tenant: !!this.draft.visibleToTenant,
       is_visible_to_landlord: !!this.draft.visibleToLandlord,
       use_for_verification: !!this.draft.useForVerification,
@@ -381,40 +523,40 @@ export class CustomFieldsComponent implements OnInit {
         this.isSaving = false;
         if (res?.statusCode === '200' || res?.status === 200 || res?.isSuccess || !res?.isError) {
           this.toastr.success('Custom field saved successfully', 'Success');
-          if (this.editingId == null) {
-            const newId =
-              Number(res?.objResult?.id || res?.id) ||
-              this.rows.reduce((m, r) => (r.id > m ? r.id : m), 0) + 1;
-            const newField: CustomFieldRow = {
-              id: newId,
-              fieldName: this.draft.fieldName.trim(),
-              fieldLabel: this.draft.fieldLabel.trim(),
-              dataType: this.draft.dataType,
-              module: this.draft.module,
-              visibleToTenant: !!this.draft.visibleToTenant,
-              visibleToLandlord: !!this.draft.visibleToLandlord,
-              useForVerification: !!this.draft.useForVerification,
-            };
-            this.rows = [...this.rows, newField];
-          } else {
-            this.rows = this.rows.map((r) =>
-              r.id === this.editingId
-                ? {
-                    ...r,
-                    fieldName: this.draft.fieldName.trim(),
-                    fieldLabel: this.draft.fieldLabel.trim(),
-                    dataType: this.draft.dataType,
-                    module: this.draft.module,
-                    visibleToTenant: !!this.draft.visibleToTenant,
-                    visibleToLandlord: !!this.draft.visibleToLandlord,
-                    useForVerification: !!this.draft.useForVerification,
-                  }
-                : r
-            );
+          const savedRecords = res?.objResult?.table || res?.objResult?.table0 || (Array.isArray(res?.objResult) ? res.objResult : []);
+          if (Array.isArray(savedRecords) && savedRecords.length > 0) {
+            const mappedRows = savedRecords.map((r: any, idx: number) => ({
+              id: Number(r.id) || idx + 1,
+              fieldName: r.column_name || r.field_name || r.alias_name || '',
+              fieldLabel: r.alias_name || r.field_label || r.name || '',
+              dataType: r.control_type || 'TX',
+              module: r.feature || r.module || 'Property',
+              sortOrder: Number(r.sort_order) || 0,
+              isMandatory: !!r.is_mandatory,
+              isReadonly: !!r.is_readonly,
+              isVisible: r.is_visible !== false,
+              minLength: Number(r.min_length) || 0,
+              maxLength: Number(r.max_length) || 0,
+              probableValues: r.probable_values || '',
+              defaultValue: r.defaultvalue || '',
+              visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
+              visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
+              useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
+              dependencyId: Number(r.dependency_id) || 0,
+              dependencyType: Number(r.dependency_type) || 0,
+            }));
+            mappedRows.forEach((newR: any) => {
+              const idx = this.rows.findIndex((existing) => existing.id === newR.id);
+              if (idx >= 0) {
+                this.rows[idx] = newR;
+              } else {
+                this.rows.unshift(newR);
+              }
+            });
+            localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
           }
-          localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
-          this.closeModal();
           this.fetchCustomFields();
+          this.closeModal();
         } else {
           this.toastr.error(res?.message || 'Failed to save custom field', 'Error');
         }

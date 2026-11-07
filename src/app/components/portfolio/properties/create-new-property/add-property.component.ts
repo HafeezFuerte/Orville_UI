@@ -37,6 +37,8 @@ amenities: any = [];
 accounts: any = [];
   selectedAmenities: number[] = [];
   existingPropertyImage: string = '';
+  extraFields: any[] = [];
+  extraFieldValues: { [key: string]: any } = {};
   propertyCode: string = '';
   is_edit:boolean=false;
   commonData: any = [];
@@ -55,6 +57,7 @@ accounts: any = [];
   ngOnInit(){
 
     this.initializeForm();
+    this.loadExtraFields();
     this.loadMasterDataByType(2,1, 'propertyTypes', '','');
     this.loadMasterDataByType(2,1000, 'countries', '','');
     this.loadMasterDataByType(2,1003, 'accounts', '','');
@@ -69,6 +72,65 @@ accounts: any = [];
       this.initializeForm();
     } 
     console.log("r"+this.propertyCode);
+  }
+
+  loadExtraFields(): void {
+    this.propertiesService.getExtraFields('Property').subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200' && res.objResult) {
+          const fields = res.objResult.table || res.objResult.table0 || [];
+          if (Array.isArray(fields)) {
+            this.extraFields = fields.filter((f: any) => f.is_visible !== false);
+            if (!this.propertyCode) {
+              this.extraFields.forEach((f: any) => {
+                if (f.defaultvalue && !this.extraFieldValues[f.column_name]) {
+                  this.extraFieldValues[f.column_name] = f.defaultvalue;
+                }
+              });
+            } else {
+              this.loadExtraFieldsData();
+            }
+          }
+        }
+      },
+      error: (err) => console.error('Error loading extra fields:', err)
+    });
+  }
+
+  loadExtraFieldsData(): void {
+    if (!this.propertyCode) return;
+    this.propertiesService.getExtraFieldsData('Property', this.propertyCode).subscribe({
+      next: (res) => {
+        if (res?.statusCode === '200' && res.objResult) {
+          const dataRows = res.objResult.table || res.objResult.table0 || [];
+          if (Array.isArray(dataRows) && dataRows.length > 0) {
+            const data = dataRows[0];
+            this.extraFields.forEach((f: any) => {
+              if (data[f.column_name] !== undefined && data[f.column_name] !== null && data[f.column_name] !== '') {
+                this.extraFieldValues[f.column_name] = data[f.column_name];
+              } else if (f.defaultvalue && !this.extraFieldValues[f.column_name]) {
+                this.extraFieldValues[f.column_name] = f.defaultvalue;
+              }
+            });
+
+            // Also sync makaniNo if a field is related to makani
+            const makaniField = this.extraFields.find((f: any) =>
+              (f.alias_name && f.alias_name.toLowerCase().includes('makani')) ||
+              (f.column_name && f.column_name.toLowerCase().includes('makani'))
+            );
+            if (makaniField && this.extraFieldValues[makaniField.column_name]) {
+              this.propertyForm.patchValue({ makaniNo: this.extraFieldValues[makaniField.column_name] });
+            }
+          }
+        }
+      },
+      error: (err) => console.error('Error loading extra fields data:', err)
+    });
+  }
+
+  getProbableValuesList(val: string): string[] {
+    if (!val) return [];
+    return val.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
   }
   initializeForm(){
    this.propertyForm = this.formBuilder.group({
@@ -443,6 +505,31 @@ onPropertyImageSelected(files: File[]): void {
       next: (res: any) => {
         if (res["statusCode"] == "200") {
           const propCode = this.propertyCode || res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.property_code || '';
+
+          if (this.extraFields && this.extraFields.length > 0) {
+            const pairs = this.extraFields
+              .map((f: any) => {
+                const val = (this.extraFieldValues[f.column_name] ?? f.defaultvalue ?? '').toString().replace(/'/g, "''");
+                return `${f.column_name}='${val}'`;
+              })
+              .join(',');
+
+            const extraDataPayload = {
+              userid: Number(localStorage.getItem('userId')) || 1,
+              company_id: Number(localStorage.getItem('companyId')) || 1,
+              clientId: '74BB6922',
+              source: 'web',
+              languageid: 1,
+              entity: 'Property',
+              entity_code: propCode,
+              extrafields_data: pairs
+            };
+            this.propertiesService.saveExtraFieldData(extraDataPayload).subscribe({
+              next: () => console.log('Extra fields data saved successfully'),
+              error: (err) => console.error('Error saving extra fields data:', err)
+            });
+          }
+
           const propertyInfoPayload = {
             userid: Number(localStorage.getItem('userId')) || 1,
             company_id: Number(localStorage.getItem('companyId')) || 1,

@@ -344,19 +344,90 @@
     </div>
 </div>
 
-<div class="ov-card">
+<div class="ov-card" *ngIf="extraFields && extraFields.length > 0; else defaultCustomFields">
     <div class="ov-card__head">
         <h6 class="ov-card-title">{{ 'web.property.lblCustomFields' | translate }}</h6>
         <p class="ov-card-sub">{{ 'web.property.lblAdditionalFieldsSpecificToProperty' | translate }}</p>
     </div>
-    <div class="ov-card__body">
-        <label class="ov-label">{{ 'web.property.lblMakaniNo' | translate }}</label>
-        <input
-            type="text" formControlName="makaniNo"
-            class="ov-input"
-            [placeholder]="'web.property.lblEnter' | translate">
+    <div class="ov-card__body grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div *ngFor="let cf of extraFields" class="flex flex-col gap-2">
+            <label class="ov-label">
+                {{ cf.alias_name || cf.column_name }}
+                <span *ngIf="cf.is_mandatory" class="text-danger">*</span>
+            </label>
+
+            <!-- Textbox -->
+            <input *ngIf="cf.control_type === 'TX' || !cf.control_type"
+                type="text"
+                class="ov-input"
+                [readonly]="cf.is_readonly"
+                [placeholder]="cf.defaultvalue || ('web.property.lblEnter' | translate)"
+                [(ngModel)]="extraFieldValues[cf.column_name]"
+                [ngModelOptions]="{standalone: true}">
+
+            <!-- Numeric -->
+            <input *ngIf="cf.control_type === 'NM'"
+                type="number"
+                class="ov-input"
+                [readonly]="cf.is_readonly"
+                [placeholder]="cf.defaultvalue || '0'"
+                [(ngModel)]="extraFieldValues[cf.column_name]"
+                [ngModelOptions]="{standalone: true}">
+
+            <!-- Date -->
+            <input *ngIf="cf.control_type === 'DT'"
+                type="date"
+                class="ov-input"
+                [readonly]="cf.is_readonly"
+                [(ngModel)]="extraFieldValues[cf.column_name]"
+                [ngModelOptions]="{standalone: true}">
+
+            <!-- Time -->
+            <input *ngIf="cf.control_type === 'TI'"
+                type="time"
+                class="ov-input"
+                [readonly]="cf.is_readonly"
+                [(ngModel)]="extraFieldValues[cf.column_name]"
+                [ngModelOptions]="{standalone: true}">
+
+            <!-- Select / Dropdown -->
+            <select *ngIf="cf.control_type === 'DL' || cf.control_type === 'DP'"
+                class="ov-input"
+                [disabled]="cf.is_readonly"
+                [(ngModel)]="extraFieldValues[cf.column_name]"
+                [ngModelOptions]="{standalone: true}">
+                <option value="">{{ 'web.property.lblSelect' | translate }}</option>
+                <option *ngFor="let opt of getProbableValuesList(cf.probable_values)" [value]="opt">{{ opt }}</option>
+            </select>
+
+            <!-- Checkbox -->
+            <label *ngIf="cf.control_type === 'CK'" class="flex items-center gap-2 cursor-pointer mt-2">
+                <input type="checkbox"
+                    class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+                    [disabled]="cf.is_readonly"
+                    [(ngModel)]="extraFieldValues[cf.column_name]"
+                    [ngModelOptions]="{standalone: true}">
+                <span class="text-xs text-defaulttextcolor">{{ cf.alias_name }}</span>
+            </label>
+        </div>
     </div>
 </div>
+
+<ng-template #defaultCustomFields>
+    <div class="ov-card">
+        <div class="ov-card__head">
+            <h6 class="ov-card-title">{{ 'web.property.lblCustomFields' | translate }}</h6>
+            <p class="ov-card-sub">{{ 'web.property.lblAdditionalFieldsSpecificToProperty' | translate }}</p>
+        </div>
+        <div class="ov-card__body">
+            <label class="ov-label">{{ 'web.property.lblMakaniNo' | translate }}</label>
+            <input
+                type="text" formControlName="makaniNo"
+                class="ov-input"
+                [placeholder]="'web.property.lblEnter' | translate">
+        </div>
+    </div>
+</ng-template>
 
 <div class="ov-card ov-amenities">
     <div class="ov-card__head">

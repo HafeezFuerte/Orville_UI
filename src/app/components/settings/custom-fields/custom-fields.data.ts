@@ -1,12 +1,39 @@
+export interface CustomFieldDataTypeOption {
+  id: string;
+  name: string;
+}
+
 export type CustomFieldDataType =
+  | 'TX'
+  | 'NM'
+  | 'DT'
+  | 'TI'
+  | 'DL'
+  | 'DP'
+  | 'FU'
+  | 'IM'
+  | 'RB'
+  | 'CK'
   | 'Single Select'
   | 'Date'
   | 'String'
   | 'Integer'
   | 'Boolean'
-  | 'Text';
+  | 'Text'
+  | string;
 
-export type CustomFieldModule = 'Leases' | 'Units' | 'Properties' | 'Contacts';
+export type CustomFieldModule =
+  | 'Property'
+  | 'Units'
+  | 'Rooms'
+  | 'Leases'
+  | 'Contacts'
+  | 'Tenants'
+  | 'Landlords'
+  | 'Vendors'
+  | 'Technicians'
+  | 'Work Orders'
+  | string;
 
 export interface CustomFieldColumnDef {
   key: string;
@@ -18,53 +45,90 @@ export interface CustomFieldRow {
   id: number;
   fieldName: string;
   fieldLabel: string;
-  dataType: CustomFieldDataType;
-  module: CustomFieldModule;
+  dataType: string;
+  dataTypeId?: string;
+  module: string;
+  sortOrder?: number;
+  isMandatory?: boolean;
+  isReadonly?: boolean;
+  isVisible?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  probableValues?: string;
+  defaultValue?: string;
   visibleToTenant: boolean;
   visibleToLandlord: boolean;
   useForVerification: boolean;
-  isMandatory?:boolean;
-  isReadonly?:boolean;
-  defaultValue?:string;
+  dependencyId?: number;
+  dependencyType?: number;
 }
 
 export interface CustomFieldDraft {
   fieldName: string;
   fieldLabel: string;
-  dataType: CustomFieldDataType;
-  module: CustomFieldModule;
+  dataType: string;
+  module: string;
+  sortOrder: number;
+  isMandatory: boolean;
+  isReadonly: boolean;
+  isVisible: boolean;
+  minLength: number;
+  maxLength: number;
+  probableValues: string;
+  defaultValue: string;
   visibleToTenant: boolean;
   visibleToLandlord: boolean;
   useForVerification: boolean;
-  isMandatory?:boolean;
-  isReadonly?:boolean;
-  defaultValue?:string;
+  dependencyId: number;
+  dependencyType: number;
 }
 
 export const EMPTY_CUSTOM_FIELD: CustomFieldDraft = {
   fieldName: '',
   fieldLabel: '',
-  dataType: 'String',
-  module: 'Leases',
+  dataType: 'TX',
+  module: 'Property',
+  sortOrder: 1,
+  isMandatory: false,
+  isReadonly: false,
+  isVisible: true,
+  minLength: 0,
+  maxLength: 0,
+  probableValues: '',
+  defaultValue: '',
   visibleToTenant: false,
   visibleToLandlord: false,
   useForVerification: false,
+  dependencyId: 0,
+  dependencyType: 0,
 };
 
-export const CUSTOM_FIELD_DATA_TYPES: CustomFieldDataType[] = [
-  'Single Select',
-  'Date',
-  'String',
-  'Integer',
-  'Boolean',
-  'Text',
+export const DEFAULT_DATA_TYPES: CustomFieldDataTypeOption[] = [
+  { id: 'TX', name: 'Textbox' },
+  { id: 'NM', name: 'Numeric' },
+  { id: 'DT', name: 'Date' },
+  { id: 'TI', name: 'Time' },
+  { id: 'DL', name: 'Select' },
+  { id: 'DP', name: 'SelectPicker' },
+  { id: 'FU', name: 'FileUpload' },
+  { id: 'IM', name: 'Image' },
+  { id: 'RB', name: 'RadioButton' },
+  { id: 'CK', name: 'CheckBox' },
 ];
 
-export const CUSTOM_FIELD_MODULES: CustomFieldModule[] = [
-  'Leases',
+export const CUSTOM_FIELD_DATA_TYPES = DEFAULT_DATA_TYPES;
+
+export const CUSTOM_FIELD_MODULES: string[] = [
+  'Property',
   'Units',
-  'Properties',
+  'Rooms',
+  'Leases',
   'Contacts',
+  'Tenants',
+  'Landlords',
+  'Vendors',
+  'Technicians',
+  'Work Orders',
 ];
 
 /** 17 rows — page 1 matches the Custom Fields screenshot when sorted by field name. */

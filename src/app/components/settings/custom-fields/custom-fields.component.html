@@ -86,9 +86,9 @@
             type="button"
             class="cf-menu__item"
             *ngFor="let t of dataTypes"
-            [class.is-active]="filterDataType === t"
-            (click)="applyFilterDataType(t)">
-            {{ t }}
+            [class.is-active]="filterDataType === t.id"
+            (click)="applyFilterDataType(t.id)">
+            {{ t.name }}
           </button>
 
           <div class="cf-menu__footer">
@@ -199,6 +199,18 @@
           </button>
         </div>
         <div
+          *ngIf="isColumnVisible('sortOrder')"
+          class="cf-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          Sort Order
+        </div>
+        <div
+          *ngIf="isColumnVisible('isMandatory')"
+          class="cf-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          Mandatory
+        </div>
+        <div
           *ngIf="isColumnVisible('visibleToTenant')"
           class="cf-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
@@ -253,23 +265,31 @@
           class="cf-table__row"
           role="row"
           [style.grid-template-columns]="tableGridTemplate"> 
-          <div *ngIf="isColumnVisible('alias_name')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-defaulttextcolor">{{ row.alias_name }}</span>
+          <div *ngIf="isColumnVisible('fieldLabel')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-defaulttextcolor">{{ row.fieldLabel || row.alias_name }}</span>
           </div>
-          <div *ngIf="isColumnVisible('control_type')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-defaulttextcolor">{{ row.control_type }}</span>
+          <div *ngIf="isColumnVisible('dataType')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-defaulttextcolor">{{ getDataTypeLabel(row.dataType || row.control_type) }}</span>
           </div>
-          <div *ngIf="isColumnVisible('feature')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-defaulttextcolor">{{ row.feature }}</span>
+          <div *ngIf="isColumnVisible('module')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-defaulttextcolor">{{ row.module || row.feature }}</span>
           </div>
-          <div *ngIf="isColumnVisible('is_visible_to_tenant')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-textmuted">{{ yesNo(row.is_visible_to_tenant) }}</span>
+          <div *ngIf="isColumnVisible('sortOrder')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-defaulttextcolor">{{ row.sortOrder ?? row.sort_order ?? 0 }}</span>
           </div>
-          <div *ngIf="isColumnVisible('is_visible_to_landlord')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-textmuted">{{ yesNo(row.is_visible_to_landlord) }}</span>
+          <div *ngIf="isColumnVisible('isMandatory')" class="cf-table__cell" role="cell">
+            <span class="text-xs font-medium" [class.text-danger]="row.isMandatory || row.is_mandatory" [class.text-textmuted]="!(row.isMandatory || row.is_mandatory)">
+              {{ yesNo(!!(row.isMandatory || row.is_mandatory)) }}
+            </span>
           </div>
-          <div *ngIf="isColumnVisible('is_used_for_verification')" class="cf-table__cell" role="cell">
-            <span class="text-sm text-textmuted">{{ yesNo(row.is_used_for_verification) }}</span>
+          <div *ngIf="isColumnVisible('visibleToTenant')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-textmuted">{{ yesNo(row.visibleToTenant ?? row.is_visible_to_tenant) }}</span>
+          </div>
+          <div *ngIf="isColumnVisible('visibleToLandlord')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-textmuted">{{ yesNo(row.visibleToLandlord ?? row.is_visible_to_landlord) }}</span>
+          </div>
+          <div *ngIf="isColumnVisible('useForVerification')" class="cf-table__cell" role="cell">
+            <span class="text-sm text-textmuted">{{ yesNo(row.useForVerification ?? row.is_used_for_verification) }}</span>
           </div>
           <div *ngIf="isColumnVisible('actions')" class="cf-table__cell flex items-center gap-1.5" role="cell">
             <button
@@ -315,7 +335,7 @@
   (click)="closeModal()"
   role="presentation">
   <div
-    class="flex w-full max-w-[520px] flex-col items-end gap-2.5"
+    class="flex w-full max-w-[620px] flex-col items-end gap-2.5"
     role="dialog"
     aria-modal="true"
     aria-labelledby="cf-modal-title"
@@ -338,8 +358,8 @@
         <div class="h-px w-full bg-defaultborder"></div>
       </div>
 
-      <div class="flex flex-col gap-4 p-5">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"> 
+      <div class="cf-modal-body flex flex-col gap-4 p-5 max-h-[72vh] overflow-y-auto">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="cf-field-label">
               Field Label <span class="text-danger">*</span>
@@ -348,21 +368,25 @@
               id="cf-field-label"
               type="text"
               class="ov-input"
-              placeholder="e.g. Makani No"
-              [(ngModel)]="draft.fieldLabel" />
+              placeholder="e.g. Makani Number"
+              [(ngModel)]="draft.fieldLabel"
+              (input)="onFieldLabelInput()" />
           </div>
+
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="cf-field-label">
-              Default Value <span class="text-danger">*</span>
+            <label class="ov-label" for="cf-field-name">
+              Field Name <span class="text-danger">*</span>
             </label>
             <input
-              id="cf-field-label"
+              id="cf-field-name"
               type="text"
               class="ov-input"
-              placeholder="e.g. Makani No"
-              [(ngModel)]="draft.defaultValue" />
+              placeholder="e.g. makani_number"
+              [(ngModel)]="draft.fieldName"
+              (input)="onFieldNameInput()" />
           </div>
-        </div>  
+        </div>
+
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="cf-module">
@@ -393,7 +417,7 @@
                 id="cf-datatype"
                 class="ov-input cursor-pointer appearance-none pr-8"
                 [(ngModel)]="draft.dataType">
-                <option *ngFor="let t of dataTypes" [ngValue]="t">{{ t }}</option>
+                <option *ngFor="let t of dataTypes" [ngValue]="t.id">{{ t.name }} ({{ t.id }})</option>
               </select>
               <img
                 src="./assets/images/settings/chevron-down.svg"
@@ -405,55 +429,116 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-1"> 
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
-            <label class="ov-label" for="cf-field-label">
-              Probable Values 
+            <label class="ov-label" for="cf-sort-order">
+              Sort Order
             </label>
             <input
-              id="cf-field-label"
+              id="cf-sort-order"
+              type="number"
+              class="ov-input"
+              placeholder="1"
+              [(ngModel)]="draft.sortOrder" />
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="cf-default-val">
+              Default Value
+            </label>
+            <input
+              id="cf-default-val"
               type="text"
               class="ov-input"
-              placeholder="a,b,c,d,e"
+              placeholder="e.g. Standard"
               [(ngModel)]="draft.defaultValue" />
           </div>
         </div>
 
-        <div class="flex flex-col gap-2.5 pt-2">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="cf-min-length">
+              Min Length
+            </label>
+            <input
+              id="cf-min-length"
+              type="number"
+              min="0"
+              class="ov-input"
+              placeholder="0"
+              [(ngModel)]="draft.minLength" />
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="cf-max-length">
+              Max Length
+            </label>
+            <input
+              id="cf-max-length"
+              type="number"
+              min="0"
+              class="ov-input"
+              placeholder="100"
+              [(ngModel)]="draft.maxLength" />
+          </div>
+        </div>
+
+        <!-- Probable Values (for options-based controls) -->
+        <div class="flex min-w-0 flex-col gap-2">
+          <label class="ov-label" for="cf-probable-values">
+            Options / Probable Values
+            <span class="text-[11px] text-textmuted font-normal">(Comma-separated for dropdown / radio / checkbox)</span>
+          </label>
+          <input
+            id="cf-probable-values"
+            type="text"
+            class="ov-input"
+            placeholder="e.g. Option 1, Option 2, Option 3"
+            [(ngModel)]="draft.probableValues" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-defaultborder">
           <label class="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [(ngModel)]="draft.isMandatory" />
-            <span class="text-sm text-defaulttextcolor">Is Mandatory</span>
+            <span class="text-xs font-medium text-defaulttextcolor">Mandatory / Required</span>
           </label>
           <label class="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [(ngModel)]="draft.isReadonly" />
-            <span class="text-sm text-defaulttextcolor">Is Visible</span>
-          </label> 
+            <span class="text-xs font-medium text-defaulttextcolor">Read Only</span>
+          </label>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
+              [(ngModel)]="draft.isVisible" />
+            <span class="text-xs font-medium text-defaulttextcolor">Visible</span>
+          </label>
           <label class="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [(ngModel)]="draft.visibleToTenant" />
-            <span class="text-sm text-defaulttextcolor">Is Readonly</span>
+            <span class="text-xs font-medium text-defaulttextcolor">Visible to Tenant</span>
           </label>
           <label class="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [(ngModel)]="draft.visibleToLandlord" />
-            <span class="text-sm text-defaulttextcolor">Visible to Landlord</span>
+            <span class="text-xs font-medium text-defaulttextcolor">Visible to Landlord</span>
           </label>
           <label class="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               class="form-checkbox h-4 w-4 rounded border-defaultborder text-primary"
               [(ngModel)]="draft.useForVerification" />
-            <span class="text-sm text-defaulttextcolor">Use For Verification</span>
+            <span class="text-xs font-medium text-defaulttextcolor">Use For Verification</span>
           </label>
         </div>
       </div>
@@ -464,7 +549,7 @@
         <button
           type="button"
           class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
-          [disabled]="!canSubmit || isSaving"
+          [disabled]="isSaving"
           (click)="save()">
           <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
           <span>{{ isSaving ? ('web.settings.propertyTypes.lblSaving' | translate) : 'Submit' }}</span>
