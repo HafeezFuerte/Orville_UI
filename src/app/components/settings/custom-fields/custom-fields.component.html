@@ -416,7 +416,8 @@
               <select
                 id="cf-datatype"
                 class="ov-input cursor-pointer appearance-none pr-8"
-                [(ngModel)]="draft.dataType">
+                [(ngModel)]="draft.dataType"
+                (ngModelChange)="onDataTypeChange()">
                 <option *ngFor="let t of dataTypes" [ngValue]="t.id">{{ t.name }} ({{ t.id }})</option>
               </select>
               <img
@@ -455,7 +456,8 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <!-- Min & Max Length (visible only if Data Type is "Numeric") -->
+        <div *ngIf="isNumericType" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-2">
             <label class="ov-label" for="cf-min-length">
               Min Length
@@ -483,18 +485,73 @@
           </div>
         </div>
 
-        <!-- Probable Values (for options-based controls) -->
-        <div class="flex min-w-0 flex-col gap-2">
+        <!-- Options / Probable Values (visible only if Data Type is "Select") -->
+        <div *ngIf="isSelectType" class="flex min-w-0 flex-col gap-2">
           <label class="ov-label" for="cf-probable-values">
             Options / Probable Values
-            <span class="text-[11px] text-textmuted font-normal">(Comma-separated for dropdown / radio / checkbox)</span>
+            <span class="text-[11px] text-textmuted font-normal">(Comma-separated for dropdown options)</span>
           </label>
           <input
             id="cf-probable-values"
             type="text"
             class="ov-input"
-            placeholder="e.g. Option 1, Option 2, Option 3"
+            placeholder="e.g. Standard, Premium, Luxury"
             [(ngModel)]="draft.probableValues" />
+        </div>
+
+        <!-- Lookup Type & Lookup Data (visible only if Data Type is "SelectPicker") -->
+        <div *ngIf="isSelectPickerType" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="cf-lookup-type">
+              Lookup Type <span class="text-danger">*</span>
+            </label>
+            <div class="relative">
+              <select
+                id="cf-lookup-type"
+                class="ov-input cursor-pointer appearance-none pr-8"
+                [(ngModel)]="draft.dependencyType"
+                (ngModelChange)="onLookupTypeChange($event)">
+                <option [ngValue]="0" disabled>Select Lookup Type</option>
+                <option *ngFor="let lt of lookupTypes" [ngValue]="lt.id">
+                  {{ lt.lookup_name }}
+                </option>
+              </select>
+              <img
+                src="./assets/images/settings/chevron-down.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+            <span *ngIf="isLoadingLookupTypes" class="text-xs text-textmuted">Loading lookup types...</span>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label class="ov-label" for="cf-lookup-data">
+              Lookup Data <span class="text-danger">*</span>
+            </label>
+            <div class="relative">
+              <select
+                id="cf-lookup-data"
+                class="ov-input cursor-pointer appearance-none pr-8"
+                [(ngModel)]="draft.dependencyId"
+                [disabled]="!draft.dependencyType || isLoadingLookupData">
+                <option [ngValue]="0" disabled>
+                  {{ !draft.dependencyType ? 'Select Lookup Type first' : (isLoadingLookupData ? 'Loading options...' : 'Select Lookup Data') }}
+                </option>
+                <option *ngFor="let item of lookupDataList" [ngValue]="item.id">
+                  {{ item.name }}
+                </option>
+              </select>
+              <img
+                src="./assets/images/settings/chevron-down.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+            <span *ngIf="isLoadingLookupData" class="text-xs text-textmuted">Loading lookup data...</span>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-defaultborder">

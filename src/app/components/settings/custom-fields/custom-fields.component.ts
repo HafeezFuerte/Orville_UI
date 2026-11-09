@@ -70,6 +70,11 @@ export class CustomFieldsComponent implements OnInit {
   readonly modules = CUSTOM_FIELD_MODULES;
   dataTypes: CustomFieldDataTypeOption[] = [...DEFAULT_DATA_TYPES];
 
+  lookupTypes: Array<{ id: number; lookup_name: string }> = [];
+  lookupDataList: Array<{ id: number; name: string; code?: string }> = [];
+  isLoadingLookupTypes = false;
+  isLoadingLookupData = false;
+
   columns: CustomFieldColumnDef[] = [
     { key: 'fieldName', label: 'Field Name', visible: true },
     { key: 'fieldLabel', label: 'Field Label', visible: true },
@@ -86,6 +91,7 @@ export class CustomFieldsComponent implements OnInit {
   constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   ngOnInit(): void {
+    this.fetchLookupTypes();
    // this.loadCachedFields();
     this.fetchCustomFields();
   }
@@ -149,26 +155,33 @@ export class CustomFieldsComponent implements OnInit {
               records[0].control_type ||
               records[0].feature
             ) {
-              this.rows = records.map((r: any, idx: number) => ({
-                id: Number(r.id) || idx + 1,
-                fieldName: r.column_name || r.field_name || r.alias_name || '',
-                fieldLabel: r.alias_name || r.field_label || r.name || '',
-                dataType: r.control_type || 'TX',
-                module: r.feature || r.module || 'Property',
-                sortOrder: Number(r.sort_order) || 0,
-                isMandatory: !!r.is_mandatory,
-                isReadonly: !!r.is_readonly,
-                isVisible: r.is_visible !== false,
-                minLength: Number(r.min_length) || 0,
-                maxLength: Number(r.max_length) || 0,
-                probableValues: r.probable_values || '',
-                defaultValue: r.defaultvalue || '',
-                visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
-                visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
-                useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
-                dependencyId: Number(r.dependency_id) || 0,
-                dependencyType: Number(r.dependency_type) || 0,
-              }));
+              this.rows = records.map((r: any, idx: number) => {
+                let defVal = (r.defaultvalue || r.defaultValue || '').trim();
+                const colName = (r.column_name || r.field_name || r.alias_name || '').trim();
+                if (defVal.toLowerCase() === colName.toLowerCase()) {
+                  defVal = '';
+                }
+                return {
+                  id: Number(r.id) || idx + 1,
+                  fieldName: colName,
+                  fieldLabel: r.alias_name || r.field_label || r.name || '',
+                  dataType: r.control_type || 'TX',
+                  module: r.feature || r.module || 'Property',
+                  sortOrder: Number(r.sort_order) || 0,
+                  isMandatory: !!r.is_mandatory,
+                  isReadonly: !!r.is_readonly,
+                  isVisible: r.is_visible !== false,
+                  minLength: Number(r.min_length) || 0,
+                  maxLength: Number(r.max_length) || 0,
+                  probableValues: r.probable_values || '',
+                  defaultValue: defVal,
+                  visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
+                  visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
+                  useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
+                  dependencyId: Number(r.dependency_id) || 0,
+                  dependencyType: Number(r.dependency_type) || 0,
+                };
+              });
               localStorage.setItem(CustomFieldsComponent.STORAGE_KEY, JSON.stringify(this.rows));
               return;
             }
@@ -296,6 +309,116 @@ export class CustomFieldsComponent implements OnInit {
     return this.editingId == null ? 'New Custom Field' : 'Edit Custom Field';
   }
 
+  get isNumericType(): boolean {
+    const t = (this.draft.dataType || '').trim().toLowerCase();
+    return t === 'nm' || t === 'numeric' || t === 'integer' || t.startsWith('numeric');
+  }
+
+  get isSelectType(): boolean {
+    const t = (this.draft.dataType || '').trim().toLowerCase();
+    return t === 'dl' || t === 'select' || t === 'single select' || t.startsWith('select (dl)');
+  }
+
+  get isSelectPickerType(): boolean {
+    const t = (this.draft.dataType || '').trim().toLowerCase();
+    return t === 'dp' || t === 'selectpicker' || t === 'select picker' || t.startsWith('selectpicker');
+  }
+
+  onDataTypeChange(): void {
+    if (!this.isNumericType) {
+      this.draft.minLength = 0;
+      this.draft.maxLength = 0;
+    }
+    if (!this.isSelectType) {
+      this.draft.probableValues = '';
+    }
+    if (this.isSelectPickerType) {
+      this.fetchLookupTypes();
+      if (this.draft.dependencyType) {
+        this.fetchLookupData(this.draft.dependencyType, this.draft.dependencyId);
+      }
+    } else {
+      this.draft.dependencyType = 0;
+      this.draft.dependencyId = 0;
+      this.lookupDataList = [];
+    }
+  }
+
+  fetchLookupTypes(): void {
+    if (this.lookupTypes.length > 0) return;
+    this.isLoadingLookupTypes = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 1,
+      filterId: 0,
+      filterText: '',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoadingLookupTypes = false;
+        if (res?.statusCode === '200' && res?.objResult?.table) {
+          this.lookupTypes = res.objResult.table.map((item: any) => ({
+            id: Number(item.id),
+            lookup_name: item.lookup_name || item.name || '',
+          }));
+        }
+      },
+      error: (err) => {
+        this.isLoadingLookupTypes = false;
+        console.error('Failed to load lookup types:', err);
+      },
+    });
+  }
+
+  onLookupTypeChange(lookupTypeId: any): void {
+    const id = Number(lookupTypeId) || 0;
+    this.draft.dependencyType = id;
+    this.draft.dependencyId = 0;
+    this.lookupDataList = [];
+    if (id > 0) {
+      this.fetchLookupData(id);
+    }
+  }
+
+  fetchLookupData(lookupTypeId: number, preserveId?: number): void {
+    this.isLoadingLookupData = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: lookupTypeId,
+      filterText: '',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      clientId: user?.clientId || '74BB6922',
+      companyId: Number(user?.companyId) || 1,
+    };
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
+      next: (res) => {
+        this.isLoadingLookupData = false;
+        if (res?.statusCode === '200' && res?.objResult?.table) {
+          this.lookupDataList = res.objResult.table.map((item: any) => ({
+            id: Number(item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0),
+            name: item.name || item.lookup_name || item.country_name || item.state_name || item.city_name || item.code || '',
+            code: item.code || '',
+          }));
+          if (preserveId) {
+            this.draft.dependencyId = preserveId;
+          }
+        }
+      },
+      error: (err) => {
+        this.isLoadingLookupData = false;
+        console.error('Failed to load lookup data:', err);
+      },
+    });
+  }
+
   get canSubmit(): boolean {
     return !!(
       (this.draft.fieldName && this.draft.fieldName.trim().length > 0) ||
@@ -419,12 +542,16 @@ export class CustomFieldsComponent implements OnInit {
   openCreate(): void {
     this.editingId = null;
     this.fieldNameManuallyEdited = false;
+    const defaultType = this.dataTypes.some((t) => t.id === 'TX')
+      ? 'TX'
+      : (this.dataTypes[0]?.id || 'TX');
     this.draft = {
       ...EMPTY_CUSTOM_FIELD,
       module: this.filterModule || 'Property',
-      dataType: this.dataTypes.length > 0 ? this.dataTypes[0].id : 'TX',
+      dataType: defaultType,
       sortOrder: this.rows.length + 1,
     };
+    this.lookupDataList = [];
     this.modalOpen = true;
     setTimeout(() => {
       const el = document.querySelector('.cf-modal-body');
@@ -435,9 +562,17 @@ export class CustomFieldsComponent implements OnInit {
   openEdit(row: any): void {
     this.editingId = row.id;
     this.fieldNameManuallyEdited = true;
+    const depType = Number(row.dependencyType ?? row.dependency_type) || 0;
+    const depId = Number(row.dependencyId ?? row.dependency_id) || 0;
+    let defVal = (row.defaultValue || row.defaultvalue || '').trim();
+    const colName = (row.fieldName || row.column_name || row.field_name || '').trim();
+    const fieldLbl = (row.fieldLabel || row.alias_name || row.field_label || '').trim();
+    if (defVal.toLowerCase() === colName.toLowerCase() || defVal === fieldLbl) {
+      defVal = '';
+    }
     this.draft = {
-      fieldName: row.fieldName || row.column_name || row.field_name || '',
-      fieldLabel: row.fieldLabel || row.alias_name || row.field_label || '',
+      fieldName: colName,
+      fieldLabel: fieldLbl,
       dataType: row.dataType || row.control_type || 'TX',
       module: row.module || row.feature || 'Property',
       sortOrder: row.sortOrder ?? row.sort_order ?? 0,
@@ -447,13 +582,18 @@ export class CustomFieldsComponent implements OnInit {
       minLength: row.minLength ?? row.min_length ?? 0,
       maxLength: row.maxLength ?? row.max_length ?? 0,
       probableValues: row.probableValues || row.probable_values || '',
-      defaultValue: row.defaultValue || row.defaultvalue || '',
+      defaultValue: defVal,
       visibleToTenant: !!(row.visibleToTenant ?? row.is_visible_to_tenant),
       visibleToLandlord: !!(row.visibleToLandlord ?? row.is_visible_to_landlord),
       useForVerification: !!(row.useForVerification ?? row.is_used_for_verification),
-      dependencyId: row.dependencyId ?? row.dependency_id ?? 0,
-      dependencyType: row.dependencyType ?? row.dependency_type ?? 0,
+      dependencyId: depId,
+      dependencyType: depType,
     };
+    this.lookupDataList = [];
+    this.fetchLookupTypes();
+    if (this.isSelectPickerType && depType > 0) {
+      this.fetchLookupData(depType, depId);
+    }
     this.modalOpen = true;
     setTimeout(() => {
       const el = document.querySelector('.cf-modal-body');
@@ -500,18 +640,18 @@ export class CustomFieldsComponent implements OnInit {
       languageid: 1,
       id: Number(this.editingId) || 0,
       sort_order: Number(this.draft.sortOrder) || 0,
-      dependency_id: Number(this.draft.dependencyId) || 0,
-      dependency_type: Number(this.draft.dependencyType) || 0,
+      dependency_id: this.isSelectPickerType ? (Number(this.draft.dependencyId) || 0) : 0,
+      dependency_type: this.isSelectPickerType ? (Number(this.draft.dependencyType) || 0) : 0,
       feature: this.draft.module,
       alias_name: (this.draft.fieldLabel || '').trim(),
       control_type: this.draft.dataType || 'TX',
       is_mandatory: !!this.draft.isMandatory,
       is_readonly: !!this.draft.isReadonly,
       is_visible: !!this.draft.isVisible,
-      min_length: Number(this.draft.minLength) || 0,
-      max_length: Number(this.draft.maxLength) || 0,
-      probable_values: this.draft.probableValues || '',
-      defaultvalue: this.draft.defaultValue?.trim() || this.draft.fieldName?.trim() || '',
+      min_length: this.isNumericType ? (Number(this.draft.minLength) || 0) : 0,
+      max_length: this.isNumericType ? (Number(this.draft.maxLength) || 0) : 0,
+      probable_values: this.isSelectType ? (this.draft.probableValues || '') : '',
+      defaultvalue: (this.draft.defaultValue ?? '').trim(),
       is_visible_to_tenant: !!this.draft.visibleToTenant,
       is_visible_to_landlord: !!this.draft.visibleToLandlord,
       use_for_verification: !!this.draft.useForVerification,
@@ -525,26 +665,33 @@ export class CustomFieldsComponent implements OnInit {
           this.toastr.success('Custom field saved successfully', 'Success');
           const savedRecords = res?.objResult?.table || res?.objResult?.table0 || (Array.isArray(res?.objResult) ? res.objResult : []);
           if (Array.isArray(savedRecords) && savedRecords.length > 0) {
-            const mappedRows = savedRecords.map((r: any, idx: number) => ({
-              id: Number(r.id) || idx + 1,
-              fieldName: r.column_name || r.field_name || r.alias_name || '',
-              fieldLabel: r.alias_name || r.field_label || r.name || '',
-              dataType: r.control_type || 'TX',
-              module: r.feature || r.module || 'Property',
-              sortOrder: Number(r.sort_order) || 0,
-              isMandatory: !!r.is_mandatory,
-              isReadonly: !!r.is_readonly,
-              isVisible: r.is_visible !== false,
-              minLength: Number(r.min_length) || 0,
-              maxLength: Number(r.max_length) || 0,
-              probableValues: r.probable_values || '',
-              defaultValue: r.defaultvalue || '',
-              visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
-              visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
-              useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
-              dependencyId: Number(r.dependency_id) || 0,
-              dependencyType: Number(r.dependency_type) || 0,
-            }));
+            const mappedRows = savedRecords.map((r: any, idx: number) => {
+              let defVal = (r.defaultvalue || r.defaultValue || '').trim();
+              const colName = (r.column_name || r.field_name || r.alias_name || '').trim();
+              if (defVal.toLowerCase() === colName.toLowerCase()) {
+                defVal = '';
+              }
+              return {
+                id: Number(r.id) || idx + 1,
+                fieldName: colName,
+                fieldLabel: r.alias_name || r.field_label || r.name || '',
+                dataType: r.control_type || 'TX',
+                module: r.feature || r.module || 'Property',
+                sortOrder: Number(r.sort_order) || 0,
+                isMandatory: !!r.is_mandatory,
+                isReadonly: !!r.is_readonly,
+                isVisible: r.is_visible !== false,
+                minLength: Number(r.min_length) || 0,
+                maxLength: Number(r.max_length) || 0,
+                probableValues: r.probable_values || '',
+                defaultValue: defVal,
+                visibleToTenant: !!(r.is_visible_to_tenant ?? r.visibleToTenant),
+                visibleToLandlord: !!(r.is_visible_to_landlord ?? r.visibleToLandlord),
+                useForVerification: !!(r.is_used_for_verification ?? r.use_for_verification ?? r.useForVerification),
+                dependencyId: Number(r.dependency_id) || 0,
+                dependencyType: Number(r.dependency_type) || 0,
+              };
+            });
             mappedRows.forEach((newR: any) => {
               const idx = this.rows.findIndex((existing) => existing.id === newR.id);
               if (idx >= 0) {

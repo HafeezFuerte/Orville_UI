@@ -81,10 +81,17 @@ accounts: any = [];
           const fields = res.objResult.table || res.objResult.table0 || [];
           if (Array.isArray(fields)) {
             this.extraFields = fields.filter((f: any) => f.is_visible !== false);
+            this.extraFields.forEach((f: any) => {
+              const depType = Number(f.dependency_type || f.dependencyType || f.dependency_id || f.dependencyId) || 0;
+              if (f.control_type === 'DP' && depType > 0) {
+                this.loadLookupOptionsForField(depType);
+              }
+            });
             if (!this.propertyCode) {
               this.extraFields.forEach((f: any) => {
-                if (f.defaultvalue && !this.extraFieldValues[f.column_name]) {
-                  this.extraFieldValues[f.column_name] = f.defaultvalue;
+                const def = (f.defaultvalue ?? '').trim();
+                if (def && def.toLowerCase() !== (f.column_name || '').trim().toLowerCase() && !this.extraFieldValues[f.column_name]) {
+                  this.extraFieldValues[f.column_name] = def;
                 }
               });
             } else {
@@ -108,8 +115,11 @@ accounts: any = [];
             this.extraFields.forEach((f: any) => {
               if (data[f.column_name] !== undefined && data[f.column_name] !== null && data[f.column_name] !== '') {
                 this.extraFieldValues[f.column_name] = data[f.column_name];
-              } else if (f.defaultvalue && !this.extraFieldValues[f.column_name]) {
-                this.extraFieldValues[f.column_name] = f.defaultvalue;
+              } else {
+                const def = (f.defaultvalue ?? '').trim();
+                if (def && def.toLowerCase() !== (f.column_name || '').trim().toLowerCase() && !this.extraFieldValues[f.column_name]) {
+                  this.extraFieldValues[f.column_name] = def;
+                }
               }
             });
 
@@ -125,6 +135,35 @@ accounts: any = [];
         }
       },
       error: (err) => console.error('Error loading extra fields data:', err)
+    });
+  }
+
+  lookupOptionsMap: { [key: number]: any[] } = {};
+
+  getLookupOptions(typeId: any): any[] {
+    const tid = Number(typeId) || 0;
+    return this.lookupOptionsMap[tid] || [];
+  }
+
+  loadLookupOptionsForField(typeId: any): void {
+    const tid = Number(typeId) || 0;
+    if (!tid || this.lookupOptionsMap[tid]) return;
+    this.portfolioService.getMasterByType({
+      typeId: 2,
+      filterId: tid,
+      filterText: '',
+      filterText1: '',
+    }).subscribe({
+      next: (res: any) => {
+        if (res?.statusCode === '200' && res.objResult?.table) {
+          this.lookupOptionsMap[tid] = res.objResult.table.map((item: any) => ({
+            id: item.id ?? item.country_id ?? item.state_id ?? item.city_id ?? 0,
+            name: item.name || item.lookup_name || item.code || '',
+            code: item.code || '',
+          }));
+        }
+      },
+      error: (err: any) => console.error('Failed to load lookup options for field:', err),
     });
   }
 
