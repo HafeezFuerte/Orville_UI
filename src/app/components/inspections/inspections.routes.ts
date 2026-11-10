@@ -10,7 +10,11 @@ export const inspectionsRoutes: Routes = [
     loadComponent: () => import('./add-inspection/add-inspection.component').then(m => m.AddInspectionComponent)
   },
   {
-    path: 'inspection-details',
+    path: 'edit-inspection/:code',
+    loadComponent: () => import('./add-inspection/add-inspection.component').then(m => m.AddInspectionComponent)
+  },
+  {
+    path: 'inspection-details/:code',
     loadComponent: () => import('./inspection-details/inspection-details.component').then(m => m.InspectionDetailsComponent)
   },
   {

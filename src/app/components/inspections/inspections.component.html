@@ -75,72 +75,67 @@
 
   <!-- Table rendering -->
   <div class="px-5 pb-5 pt-0">
-    <app-shared-table [columns]="visibleColumns" [data]="filteredData" [loading]="isLoading" [hasActions]="false" [showPaginator]="true">
+    <app-shared-table
+      [columns]="visibleColumns"
+      [data]="inspectionsData"
+      [hasActions]="false"
+      [totalRecords]="totalRecords"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
 
           <ng-container *ngSwitchCase="'id'">
-            <a routerLink="/inspections/inspection-details" class="ov-link font-semibold">{{ row.id }}</a>
-          </ng-container>
-
-          <!-- Status badges — Figma Inspection-list 3274:122333 -->
-          <ng-container *ngSwitchCase="'status'">
-            <span
-              class="ov-status"
-              [class.ov-status--soft]="row.status === 'Completed'"
-              [class.ov-status--warning]="row.status === 'Pending'"
-              [class.ov-status--blocked]="row.status === 'Closed'"
-              [class.ov-status--outline]="row.status === 'Open'"
-              [class.ov-status--active]="row.status === 'Active'">
-              {{ (row.status === 'Completed' ? 'web.inspections.list.statusCompleted' : (row.status === 'Pending' ? 'web.inspections.list.statusPending' : (row.status === 'Closed' ? 'web.inspections.list.statusClosed' : (row.status === 'Open' ? 'web.inspections.list.statusOpen' : 'web.inspections.list.statusActive')))) | translate }}
-            </span>
-          </ng-container>
-
-          <!-- Type badge — soft chip -->
-          <ng-container *ngSwitchCase="'type'">
-            <span class="ov-status ov-status--soft">{{ row.type }}</span>
+            <a [routerLink]="['/inspections/inspection-details', row.code]" class="ov-link font-semibold">{{ row.code }}</a>
           </ng-container>
 
           <ng-container *ngSwitchCase="'property'">
-            <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.property }}</a>
+            <div class="flex flex-col gap-0.5">
+              <a class="ov-link font-semibold" [routerLink]="['/properties', row.property_code]">{{ row.property }}</a>
+              <span class="text-[12px] text-textmuted" *ngIf="row.address_1">{{ row.address_1 }}</span>
+            </div>
           </ng-container>
 
           <ng-container *ngSwitchCase="'unit'">
-            <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.unit }}</a>
+            <a class="ov-link font-semibold" [routerLink]="['/units', row.unit_code]">{{ row.unit }}</a>
           </ng-container>
 
-          <!-- Scheduled: Yes = primary, No = soft -->
-          <ng-container *ngSwitchCase="'scheduled'">
-            <span
-              class="ov-status"
-              [class.ov-status--active]="row.scheduled === 'Yes'"
-              [class.ov-status--soft]="row.scheduled !== 'Yes'">
-              {{ (row.scheduled === 'Yes' ? 'web.inspections.list.yes' : 'web.inspections.list.no') | translate }}
-            </span>
+          <ng-container *ngSwitchCase="'priority'">
+            <span class="ov-status" [ngClass]="priorityClass(row.priority)">{{ row.priority || '-' }}</span>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'userId'">
-            <a href="javascript:void(0)" class="ov-link font-medium">{{ row.userId }}</a>
+          <ng-container *ngSwitchCase="'status'">
+            <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'status') }}</span>
+          </ng-container>
+           <ng-container *ngSwitchCase="'inspection_type'">
+            <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'inspection_type') }}</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'inspection_scope'">
+            <span class="ov-status ov-status--soft">{{ row.inspection_scope}}</span>
           </ng-container>
 
-          <!-- Action column menu trigger popup -->
+          <ng-container *ngSwitchCase="'inspector'">
+            <span>{{ row.inspector || '-' }}</span>
+          </ng-container>
+
           <ng-container *ngSwitchCase="'action'">
-            <div class="relative inline-block">
-              <span (click)="toggleActionMenu(row, $event)" class="text-textmuted cursor-pointer font-bold px-2 py-1 hover:text-defaulttextcolor">
-                •••
-              </span>
-              <!-- Action Menu popup overlay -->
-              <div *ngIf="activeActionRow === row"
-                class="absolute end-0 z-30 mt-1 flex min-w-[120px] flex-col gap-1 rounded-lg border border-defaultborder bg-white p-1.5 shadow-lg dark:bg-bodybg">
-                <a routerLink="/inspections/inspection-details" class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
-                  {{ 'web.inspections.list.view' | translate }}
-                </a>
-                <a [routerLink]="['/inspections/add-inspection']" [queryParams]="{ id: row.id }" class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
-                  {{ 'web.inspections.list.edit' | translate }}
-                </a>
-                <button type="button" class="flex w-full text-start items-center gap-2 px-3 py-1.5 text-xs text-danger hover:bg-danger/10 rounded">
-                  {{ 'web.inspections.list.archive' | translate }}
-                </button>
+            <div class="relative inline-flex" (click)="$event.stopPropagation()">
+              <button type="button" class="ov-icon-btn ov-icon-btn--bare"
+                (click)="toggleRowAction(row.code, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
+              </button>
+              <div *ngIf="openActionCode === row.code"
+                class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="navigateToDetail(row.code); openActionCode = null">{{ 'web.common.view' | translate }}</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
+                  (click)="handleEditAction(row); openActionCode = null">{{ 'web.common.edit' | translate }}</button>
+                <button type="button"
+                  class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                  (click)="deleteWorkorder(row.code)">{{ 'web.common.delete' | translate }}</button>
               </div>
             </div>
           </ng-container>
@@ -151,3 +146,5 @@
   </div>
 
 </div>
+<app-delete-confirmation *ngIf="deleteModal" (cancelled)="closeModal()" (confirmed)="deleterecord()">
+</app-delete-confirmation>

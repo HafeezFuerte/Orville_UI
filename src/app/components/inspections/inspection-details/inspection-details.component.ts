@@ -1,11 +1,12 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule,ActivatedRoute,Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-modal.component';
-
+import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 @Component({
   selector: 'app-inspection-details',
   standalone: true,
@@ -14,11 +15,17 @@ import { ReusableModalComponent } from '../../portfolio/reusable-modal/reusable-
   styleUrl: './inspection-details.component.scss'
 })
 export class InspectionDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router); 
   private translate = inject(TranslateService);
-
+  private commonservice = inject(CommonService);
+  private commontab_service=inject(Common_TabsService)
+  currentUser = this.commonservice.getCurrentUser();
   isLoading = false;
   showModal = false;
   imageIndex = 0;
+  workOrderId:string='';
+  inpectionDetails:any={};
 
   imagesList = [
     'assets/images/common/img-placeholder.png',
@@ -39,20 +46,64 @@ export class InspectionDetailsComponent implements OnInit {
     { key: 'cost', label: 'Cost', labelKey: 'web.inspections.details.colCost', visible: true, useTemplate: true }
   ];
 
-  inspectionItemsData = [
-    { item: '31658', cleanliness: 'Clean', condition: 'Good', notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', images: ['img1', 'img2', 'img3'], qty: null, cost: null },
-    { item: '31658', cleanliness: 'Clean', condition: 'Good', notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', images: ['img1', 'img2'], qty: null, cost: null },
-    { item: '31658', cleanliness: 'Clean', condition: 'Good', notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', images: ['img1'], qty: null, cost: null },
-    { item: '31658', cleanliness: 'Clean', condition: 'Good', notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', images: ['img1'], qty: null, cost: null }
-  ];
+  inspectionItemsData :any[]=[];
 
   ngOnInit() {
     this.updateColumnLabels();
     this.translate.onLangChange.subscribe(() => {
       this.updateColumnLabels();
     });
+    this.route.params.subscribe(params => {
+      this.workOrderId = params['code'];
+      if (this.workOrderId) {
+        this.getWorkOrderDetails();
+      }
+    });
   }
+  getWorkOrderDetails() {
+    const currentUser = this.commonservice.getCurrentUser();
+    const payload = {
+      typeId: 100, 
+      filterId: 0,
+      filterText: this.workOrderId,
+      filterText1: "",
+      userId: currentUser?.userId || 1,
+      clientId: currentUser?.clientId || "74BB6922",
+      companyId: currentUser?.companyId || 1
+    };
 
+    this.commontab_service.getMasterByType(payload).subscribe({
+      next: (res: any) => {
+        if (res && res.objResult) {
+          const details = res.objResult.inspection_dtls || res.objResult.table || res.objResult;
+          if (Array.isArray(details) && details.length > 0) {
+            const data = details[0];
+            this.inpectionDetails = {
+              id:  data.code,
+              type: data.inspection_type_text || '-',
+              inspection_scope: data.inspection_scope || '-', 
+              status: data.status || '-',
+              inspection_date_time:this.commonservice.formatDateForInput(data.inspection_date_time),
+              details: data.details || '-', 
+              property: data.property || '-',
+              unit: data.unit || '-',
+              createdDate: this.commonservice.formatDateForInput(data.created_date)|| '-',
+              lastUpdated: this.commonservice.formatDateForInput(data.modified_date)|| '-',
+              lease: data.lease || '-',
+              inspector:data.inspector,
+              phone: data.phone || '-', 
+            };
+            
+            } 
+ 
+           
+          } 
+      },
+      error: (err) => {
+        console.error("Error loading work order details:", err);
+      }
+    });
+  }
   private updateColumnLabels() {
     this.inspectionItemsColumns.forEach(col => {
       if (col.labelKey) {
@@ -74,7 +125,7 @@ export class InspectionDetailsComponent implements OnInit {
   }
 
   onAction(_action: string): void {
-    this.showActionMenu = false;
+    this.router.navigate(['/inspections/edit-inspection', this.workOrderId]);
   }
 
   get visibleColumns() {

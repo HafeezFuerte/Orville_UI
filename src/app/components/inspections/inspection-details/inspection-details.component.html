@@ -26,7 +26,7 @@
           </span>
           <span>{{ 'web.inspections.details.editWorkOrder' | translate }}</span>
         </button>
-        <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('invoice')">
+        <!-- <button type="button" role="menuitem" class="ov-action-menu__item" (click)="onAction('invoice')">
           <span class="ov-action-menu__icon-box">
             <img class="ov-action-menu__icon" src="assets/images/action-menu/file-invoice.svg" alt="" width="14" height="14">
           </span>
@@ -55,7 +55,7 @@
             <img class="ov-action-menu__icon" src="assets/images/action-menu/clock.svg" alt="" width="14" height="14">
           </span>
           <span>{{ 'web.inspections.details.viewActivity' | translate }}</span>
-        </button>
+        </button> -->
       </div>
       <div class="ov-action-menu__footer">
         <button type="button" role="menuitem" class="ov-action-menu__item ov-action-menu__item--danger"
@@ -76,10 +76,10 @@
       <div class="insp-side__hero">
         <div class="insp-side__title-row">
           <div class="insp-side__titles">
-            <h4 class="insp-side__title">Move out</h4>
+            <h4 class="insp-side__title">{{inpectionDetails.type}}</h4>
             <p class="insp-side__sub">{{ 'web.inspections.details.inspectionNum' | translate }}31658</p>
           </div>
-          <span class="insp-side__status">Completed</span>
+          <span class="insp-side__status">{{inpectionDetails.status}}</span>
         </div>
         <button type="button" class="insp-side__cta">{{ 'web.inspections.details.viewActivity' | translate }}</button>
       </div>
@@ -91,15 +91,15 @@
       <section class="insp-block">
         <h6>{{ 'web.inspections.details.inspectionDetails' | translate }}</h6>
         <div class="insp-rows">
-          <p><span>{{ 'web.inspections.details.lblId' | translate }}</span> <b>31658</b></p>
-          <p><span>{{ 'web.inspections.details.lblType' | translate }}</span> <b>Move out</b></p>
-          <p><span>{{ 'web.inspections.details.lblScope' | translate }}</span> <b>Unit</b></p>
+          <p><span>{{ 'web.inspections.details.lblId' | translate }}</span> <b>{{inpectionDetails.id}}</b></p>
+          <p><span>{{ 'web.inspections.details.lblType' | translate }}</span> <b>{{inpectionDetails.type}}</b></p>
+          <p><span>{{ 'web.inspections.details.lblScope' | translate }}</span> <b>{{inpectionDetails.inspection_scope}}</b></p>
           <p class="is-center">
             <span>{{ 'web.inspections.details.lblScheduled' | translate }}</span>
-            <span class="insp-pill">Open</span>
+            <span class="insp-pill">{{inpectionDetails.status}}</span>
           </p>
-          <p><span>{{ 'web.inspections.details.lblDateTime' | translate }}</span> <b>10-07-2026</b></p>
-          <p><span>{{ 'web.inspections.details.lblNote' | translate }}</span> <b>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</b></p>
+          <p><span>{{ 'web.inspections.details.lblDateTime' | translate }}</span> <b>{{inpectionDetails.inspection_date_time}}</b></p>
+          <p><span>{{ 'web.inspections.details.lblNote' | translate }}</span> <b>{{inpectionDetails.details}}</b></p>
         </div>
       </section>
 
@@ -108,11 +108,15 @@
         <div class="insp-rows insp-rows--loose">
           <p>
             <span>{{ 'web.inspections.details.lblProperty' | translate }}</span>
-            <a href="javascript:void(0)" class="ov-link">Dubai Marina, Tower A, Dubai</a>
+            <a href="javascript:void(0)" class="ov-link">{{inpectionDetails.property}}</a>
           </p>
           <p>
             <span>{{ 'web.inspections.details.lblUnit' | translate }}</span>
-            <a href="javascript:void(0)" class="ov-link">Apartment 402-PR-4</a>
+            <a href="javascript:void(0)" class="ov-link">{{inpectionDetails.unit}}</a>
+          </p>
+          <p>
+            <span>{{ 'web.inspections.add.lease' | translate }}</span>
+            <a href="javascript:void(0)" class="ov-link">{{inpectionDetails.lease}}</a>
           </p>
         </div>
       </section>
@@ -122,9 +126,9 @@
         <div class="insp-rows insp-rows--loose">
           <p>
             <span>{{ 'web.inspections.details.lblInspector' | translate }}</span>
-            <a href="javascript:void(0)" class="ov-link">Salman Mukadam Inspector</a>
+            <a href="javascript:void(0)" class="ov-link">{{inpectionDetails.inspector}}</a>
           </p>
-          <p><span>{{ 'web.inspections.details.lblPhone' | translate }}</span> <b>+971564832562</b></p>
+          <p><span>{{ 'web.inspections.details.lblPhone' | translate }}</span> <b>{{inpectionDetails.phone}}</b></p>
         </div>
       </section>
 
@@ -253,13 +257,13 @@
     <div class="box bg-white border border-defaultborder rounded-2xl p-5 shadow-none">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold text-textmuted">{{ 'web.inspections.details.signedBy' | translate }} (Fahim Ahmed)</label>
+          <label class="text-xs font-semibold text-textmuted">{{ 'web.inspections.details.signedBy' | translate }} ({{inpectionDetails.inspector}})</label>
           <div class="border border-dashed border-defaultborder rounded-xl h-[120px] bg-light/20 flex items-center justify-center text-xs text-textmuted">
             {{ 'web.inspections.details.tenantSignature' | translate }}
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold text-textmuted">{{ 'web.inspections.details.lblInspector' | translate }} (Hasibur Rashid Mah)</label>
+          <label class="text-xs font-semibold text-textmuted">{{ 'web.inspections.details.lblInspector' | translate }} ({{currentUser?.userName}})</label>
           <div class="border border-dashed border-defaultborder rounded-xl h-[120px] bg-light/20 flex items-center justify-center text-xs text-textmuted">
             {{ 'web.inspections.details.inspectorSignature' | translate }}
           </div>
