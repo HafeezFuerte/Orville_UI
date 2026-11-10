@@ -12,10 +12,11 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
+  imports: [CommonModule, OvExtraFieldsViewComponent, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
   templateUrl: './work-order-detail.component.html',
   styleUrl: './work-order-detail.component.scss'
 })

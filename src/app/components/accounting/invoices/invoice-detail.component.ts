@@ -31,12 +31,13 @@ import {
 import { INVOICE_ROWS } from './invoices.data';
 import { FinancialsComponent } from '../../child-tables/financials/financials.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
+import { OvExtraFieldsViewComponent } from '../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 type TableKey = 'overview' | 'cheques' | 'txns' | 'penalties';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule,FileUploadComponent,NgSelectModule,NotesComponent,TranslateModule,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
+  imports: [CommonModule,FileUploadComponent,NgSelectModule,NotesComponent,TranslateModule,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent, OvExtraFieldsViewComponent],
   templateUrl: './invoice-detail.component.html',
   styleUrl: './invoice-detail.component.scss'
 })

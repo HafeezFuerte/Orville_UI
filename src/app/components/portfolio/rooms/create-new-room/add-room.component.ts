@@ -10,6 +10,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../services/portfolio.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../../services/common.service';
+import { ViewChild } from '@angular/core';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 @Component({
   selector: 'app-add-room',
   standalone: true,
@@ -20,13 +22,15 @@ import { CommonService } from '../../../../services/common.service';
     RouterModule,
     TranslateModule,
     FileUploadComponent,
-    NgSelectModule
+    NgSelectModule,
+    OvExtraFieldsComponent
   ],
   templateUrl: './add-room.component.html',
   styleUrl: './add-room.component.scss'
 })
 export class AddRoomComponent implements OnInit {
   public roomForm!: FormGroup;
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   public isLoading = false;
   public showScrollToTop = false;
 
@@ -69,6 +73,7 @@ export class AddRoomComponent implements OnInit {
 
   public isEditMode = false;
   public roomId: any = null;
+  public roomCode: string = '';
 
   constructor(
     public translate: TranslateService,
@@ -97,6 +102,7 @@ export class AddRoomComponent implements OnInit {
       if (id) {
         this.isEditMode = true;
         this.roomId = id;
+        this.roomCode = id;
         this.loadRoomDetails(id);
       }
     });
@@ -138,6 +144,7 @@ export class AddRoomComponent implements OnInit {
       this.loadUnits(3, propertyCode);
     }
 
+    this.roomCode = detail.room_code || detail.code || this.roomId || '';
     this.roomForm.patchValue({
       unitCode: detail.unit_code || detail.unitCode || detail.unit_id || '',
       category: detail.category ? Number(detail.category) : 1,
@@ -473,6 +480,10 @@ export class AddRoomComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.statusCode === "200") {
+          const savedRoomCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.room_code || this.roomCode || this.roomId || formValue.roomCode || '';
+          if (this.extraFieldsComp?.hasFields() && savedRoomCode) {
+            this.extraFieldsComp.save(savedRoomCode).subscribe();
+          }
           this.toastr.success(this.translate.instant('web.rooms.msgRoomCreatedSuccess'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/rooms']);
         } else {

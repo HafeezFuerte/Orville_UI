@@ -118,4 +118,57 @@ export class CommonService {
       languageid: 1
     };
   }
+
+  getExtraFields(feature: string): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const user = this.getCurrentUser();
+    const normalizedFeature = (feature || '').toLowerCase() === 'workorder' ? 'Work Orders' : feature;
+    const payload = {
+      typeId: -8,
+      filterId: 0,
+      filterText: normalizedFeature,
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      companyId: Number(user?.companyId) || 1,
+      clientId: user?.clientId || '74BB6922'
+    };
+    return this.http.post(url, payload, { headers: this.updateHeaders() });
+  }
+
+  getExtraFieldsData(entity: string, entityCode: string): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const user = this.getCurrentUser();
+    const normalizedEntity = (entity || '').toLowerCase() === 'workorder' ? 'Work Orders' : entity;
+    const payload = {
+      typeId: 9,
+      filterId: 0,
+      filterText: normalizedEntity,
+      filterText1: entityCode,
+      userId: Number(user?.userId) || 1,
+      companyId: Number(user?.companyId) || 1,
+      clientId: user?.clientId || '74BB6922'
+    };
+    return this.http.post(url, payload, { headers: this.updateHeaders() });
+  }
+
+  saveExtraFieldData(payload: any): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/save_extra_field_data';
+    return this.http.post(url, payload, { headers: this.updateHeaders() });
+  }
+
+  getLookupOptions(typeId: number): Observable<any> {
+    const url = environment.apiurl + 'api/Masters/_getMasters';
+    const user = this.getCurrentUser();
+    const payload = {
+      typeId: 2,
+      filterId: typeId,
+      filterText: '',
+      filterText1: '',
+      userId: Number(user?.userId) || 1,
+      companyId: Number(user?.companyId) || 1,
+      clientId: user?.clientId || '74BB6922'
+    };
+    return this.http.post(url, payload, { headers: this.updateHeaders() });
+  }
+
 }

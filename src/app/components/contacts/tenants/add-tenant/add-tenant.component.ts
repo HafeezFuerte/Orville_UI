@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { PropertiesService } from '../../../portfolio/services/properties.servic
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 
 @Component({
   selector: 'app-add-tenant',
@@ -17,6 +18,7 @@ import { ToastrService } from 'ngx-toastr';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    OvExtraFieldsComponent,
     TranslateModule,
     NgSelectModule,
     RouterModule,
@@ -36,6 +38,7 @@ export class AddTenantComponent implements OnInit {
 
   isEditMode = false;
   tenantId: any = null;
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   tenantDbId: number = 0; // stores the real numeric DB id for updates
 
   branches = ['Main Branch', 'Branch A'];
@@ -650,6 +653,10 @@ export class AddTenantComponent implements OnInit {
             return;
           }
 
+          const savedTenantCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.tenant_code || this.tenantId || '';
+          if (this.extraFieldsComp?.hasFields() && savedTenantCode) {
+            this.extraFieldsComp.save(savedTenantCode).subscribe();
+          }
           this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgTenantUpdated' : 'web.contacts.msgTenantSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/tenants']);
         } else {

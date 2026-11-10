@@ -122,13 +122,14 @@ export const CUSTOM_FIELD_MODULES: string[] = [
   'Property',
   'Units',
   'Rooms',
-  'Leases',
-  'Contacts',
   'Tenants',
   'Landlords',
   'Vendors',
-  'Technicians',
+  'Leases',
   'Work Orders',
+  'Tickets',
+  'Invoices',
+  'Expenses',
 ];
 
 /** 17 rows — page 1 matches the Custom Fields screenshot when sorted by field name. */

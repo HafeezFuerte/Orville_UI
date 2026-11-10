@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule,FormControl, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -9,6 +9,7 @@ import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
 import { AccountingService } from '../accounting.service';
+import { OvExtraFieldsComponent } from '../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 import { 
   InvoiceCheque,
   InvoiceLineItem
@@ -17,11 +18,12 @@ import {
 @Component({
   selector: 'app-add-expense',
   standalone: true,
-  imports: [CommonModule,TranslateModule, ReactiveFormsModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective],
+  imports: [CommonModule,TranslateModule, ReactiveFormsModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, OvExtraFieldsComponent],
   templateUrl: './add-expense.component.html',
   styleUrl: './add-expense.component.scss'
 })
 export class AddExpenseComponent {
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   customers: any = [];
   selectedProperty: any = {};
   invoice_no: string = '';
@@ -442,6 +444,10 @@ validateForm(
       this.accountingService.save_expense(formData).subscribe({
         next: (res: any) => {
           if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
+            const savedExpenseNo = res.objResult?.table?.[0]?.invoice_no || res.objResult?.table?.[0]?.code || res.objResult?.code || this.invoice_no || '';
+            if (this.extraFieldsComp?.hasFields() && savedExpenseNo) {
+              this.extraFieldsComp.save(savedExpenseNo).subscribe();
+            }
             this.toastr.success(this.translate.instant('web.accounting.expenses.successfullySaved'));
             this.router.navigate(['/accounting/expenses']);
 

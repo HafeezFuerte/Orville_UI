@@ -22,10 +22,11 @@ import { ParkingsComponent } from '../../../child-tables/parkings/parkings.compo
 import {BroadcastsTableComponent}from '../../../child-tables/broadcasts/broadcasts.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Common_TabsService } from '../../services/common_tabs.service';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, BroadcastsTableComponent,ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent],
+  imports: [CommonModule, RouterModule, NgSelectModule, BroadcastsTableComponent,ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent, OvExtraFieldsViewComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })

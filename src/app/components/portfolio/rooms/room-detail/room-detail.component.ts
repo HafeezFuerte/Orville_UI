@@ -14,6 +14,7 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { ParkingsComponent } from '../../../child-tables/parkings/parkings.component';
 import { InventoryItemComponent } from '../../../child-tables/inventoryitem/inventoryitem.component';
 import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-layout.component';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
 export interface Room {
   id: number;
@@ -78,7 +79,7 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, NotesComponent, InventoryItemComponent, ParkingsComponent, AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent],
+  imports: [CommonModule, NotesComponent, InventoryItemComponent, ParkingsComponent, AttachmentsComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent, OvExtraFieldsViewComponent],
   templateUrl: './room-detail.component.html',
   styleUrl: './room-detail.component.scss'
 })

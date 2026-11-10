@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
@@ -24,7 +25,7 @@ import { AccountingService } from '../../accounting.service';
 @Component({
   selector: 'app-expense-detail',
   standalone: true,
-  imports: [CommonModule,NgSelectModule,FileUploadComponent,TranslateModule,NotesComponent,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent],
+  imports: [CommonModule,NgSelectModule,FileUploadComponent,TranslateModule,NotesComponent,AttachmentsComponent, FormsModule,SharedTableComponent, RouterModule, FinancialsComponent, OvExtraFieldsViewComponent],
   templateUrl: './expense-detail.component.html',
   styleUrl: './expense-detail.component.scss'
 })

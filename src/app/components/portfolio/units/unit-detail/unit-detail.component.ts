@@ -74,11 +74,12 @@ export interface Unit {
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { DetailPageLayoutComponent } from '../../detail-page-layout/detail-page-layout.component';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 
 @Component({
   selector: 'app-unit-detail',
   standalone: true,
-  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent,InventoryItemComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent],
+  imports: [CommonModule,NotesComponent,ParkingsComponent,AttachmentsComponent,InventoryItemComponent, RouterModule, NgSelectModule, FormsModule, TranslateModule, OvPaginatorComponent, ReusableModalComponent, FilterDrawerComponent, DetailPageLayoutComponent, OvExtraFieldsViewComponent],
   templateUrl: './unit-detail.component.html',
   styleUrl: './unit-detail.component.scss'
 })

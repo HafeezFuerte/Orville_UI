@@ -13,11 +13,12 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
 
 import { ToastrService } from 'ngx-toastr';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 
 @Component({
   selector: 'app-landlord-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent, OvExtraFieldsViewComponent],
   templateUrl: './landlord-detail.component.html',
   styleUrl: './landlord-detail.component.scss'
 })

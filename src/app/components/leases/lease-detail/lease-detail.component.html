@@ -333,40 +333,12 @@
         </div>
 
         <!-- Custom Fields -->
-        <div class="ld-panel">
-          <div class="ld-panel__head">
-            <h6 class="ld-panel__title">{{ 'web.leases.lblCustomFields' | translate }}</h6>
-          </div>
-          <div class="ld-panel__rule"></div>
-          <div class="ld-panel__body ld-panel__body--stack">
-            <div class="ld-cf" *ngFor="let c of customFields">
-              <span class="ld-cf__label">{{ c.field_name }}:</span>
-              <span class="ld-cf__value" [class.ld-cf__value--empty]="!c.field_value">{{ c.field_value || ('web.leases.lblNoValueSet' | translate) }}</span>
-            </div>
-            <ng-container *ngIf="customFields.length==0">
-              <div class="ld-cf">
-                <span class="ld-cf__label">{{ 'web.leases.lblNoOfPerson' | translate }}:</span>
-                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
-              </div>
-              <div class="ld-cf">
-                <span class="ld-cf__label">{{ 'web.leases.lblMoveInDate' | translate }}:</span>
-                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
-              </div>
-              <div class="ld-cf">
-                <span class="ld-cf__label">{{ 'web.leases.lblCreatedBy' | translate }}:</span>
-                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
-              </div>
-              <div class="ld-cf">
-                <span class="ld-cf__label">{{ 'web.contacts.lblCreatedAt' | translate }}:</span>
-                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
-              </div>
-              <div class="ld-cf">
-                <span class="ld-cf__label">{{ 'web.leases.lblPayingDate' | translate }}:</span>
-                <span class="ld-cf__value ld-cf__value--empty">{{ 'web.leases.lblNoValueSet' | translate }}</span>
-              </div>
-            </ng-container>
-          </div>
-        </div>
+        <app-ov-extra-fields-view
+          [feature]="'Leases'"
+          [entityCode]="leaseId || ''"
+          [cardTitle]="'web.leases.lblCustomFields'"
+          [styleVariant]="'ld-panel'">
+        </app-ov-extra-fields-view>
 
       </div>
     </ng-template>

@@ -13,6 +13,7 @@ import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 type DetailTab = 'overview' | 'messages' | 'notes';
 
 interface TicketNoteRow {
@@ -30,7 +31,7 @@ interface TicketNoteRow {
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, OvExtraFieldsViewComponent, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './ticket-detail.component.html',
   styleUrl: './ticket-detail.component.scss'
 })

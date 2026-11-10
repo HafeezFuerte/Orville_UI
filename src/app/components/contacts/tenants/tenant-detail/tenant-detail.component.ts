@@ -10,13 +10,14 @@ import { CommonService } from '../../../../services/common.service';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { EmailSubscriptionsDrawerComponent } from '../../../../shared/components/email-subscriptions-drawer/email-subscriptions-drawer.component';
+import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, AttachmentsComponent, NotesComponent, EmailSubscriptionsDrawerComponent, OvExtraFieldsViewComponent],
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })

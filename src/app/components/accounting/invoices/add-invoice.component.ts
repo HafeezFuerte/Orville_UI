@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule,FormControl, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -9,6 +9,7 @@ import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
 import { AccountingService } from '../accounting.service';
+import { OvExtraFieldsComponent } from '../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 import {
   BANKS,
   CHEQUE_IN_HAND,
@@ -24,11 +25,12 @@ import {
 @Component({
   selector: 'app-add-invoice',
   standalone: true,
-  imports: [CommonModule,TranslateModule, ReactiveFormsModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective],
+  imports: [CommonModule,TranslateModule, ReactiveFormsModule, FormsModule, RouterModule, NgSelectModule, FlowbiteDatepickerDirective, OvExtraFieldsComponent],
   templateUrl: './add-invoice.component.html',
   styleUrl: './add-invoice.component.scss'
 })
 export class AddInvoiceComponent {
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   customers: any = [];
   selectedTenant: any = {};
   invoice_no: string = '';
@@ -431,6 +433,10 @@ validateForm(
       this.accountingService.save_invoice(formData).subscribe({
         next: (res: any) => {
           if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
+            const savedInvoiceNo = res.objResult?.table?.[0]?.invoice_no || res.objResult?.table?.[0]?.code || res.objResult?.code || this.invoice_no || '';
+            if (this.extraFieldsComp?.hasFields() && savedInvoiceNo) {
+              this.extraFieldsComp.save(savedInvoiceNo).subscribe();
+            }
             this.toastr.success(this.translate.instant('web.accounting.invoices.successfullySaved'));
             this.router.navigate(['/accounting/invoices']);
 

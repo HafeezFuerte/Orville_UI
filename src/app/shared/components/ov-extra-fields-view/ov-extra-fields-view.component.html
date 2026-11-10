@@ -1,0 +1,141 @@
+<!-- Variant 1: Card layout (Used in Property, Units, Rooms, Work Orders, Expenses) -->
+<ng-container *ngIf="styleVariant === 'card'">
+  <div class="ov-card overflow-hidden py-5" *ngIf="displayFields.length > 0">
+    <div class="flex items-center justify-between px-5">
+      <h5 class="ov-card-title m-0">{{ cardTitle | translate }}</h5>
+    </div>
+    <div class="border-t border-defaultborder mt-[18px]"></div>
+    <div class="flex flex-col gap-4 px-5 pt-4">
+      <div *ngFor="let item of displayFields" class="flex flex-col gap-1">
+        <div class="text-[14px] font-semibold text-defaulttextcolor">{{ item.label }}</div>
+        
+        <!-- Image Preview -->
+        <ng-container *ngIf="item.controlType === 'IM' && !item.isEmpty; else fuOrTextCard">
+          <img [src]="item.value" alt="Image preview" class="h-16 w-16 object-cover rounded border border-defaultborder mt-1" />
+        </ng-container>
+
+        <ng-template #fuOrTextCard>
+          <ng-container *ngIf="item.controlType === 'FU' && !item.isEmpty; else plainTextCard">
+            <span class="inline-flex items-center gap-1 text-[13px] text-primary font-medium mt-0.5">
+              <span>&#128206;</span> {{ item.value.startsWith('data:') ? 'Attached Document' : item.value }}
+            </span>
+          </ng-container>
+        </ng-template>
+
+        <ng-template #plainTextCard>
+          <div class="text-[14px] mt-0.5" [ngClass]="item.isEmpty ? 'text-textmuted' : 'text-defaulttextcolor'">
+            {{ item.isEmpty ? ('web.Unit.lblNoValueSet' | translate) : item.value }}
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Variant 2: Panel layout (Used in Tenants, Landlords, Vendors, Support Technicians) -->
+<ng-container *ngIf="styleVariant === 'panel'">
+  <div class="ov-detail-panel" *ngIf="displayFields.length > 0">
+    <div class="ov-detail-panel__head">
+      <h6 class="ov-detail-panel__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="flex flex-col gap-3 px-5 py-3">
+      <div *ngFor="let item of displayFields" class="flex flex-col gap-1">
+        <span class="text-[13px] font-semibold text-defaulttextcolor">{{ item.label }}:</span>
+        <ng-container *ngIf="item.controlType === 'IM' && !item.isEmpty">
+          <img [src]="item.value" alt="Image" class="h-14 w-14 object-cover rounded border border-defaultborder mt-1" />
+        </ng-container>
+        <ng-container *ngIf="item.controlType === 'FU' && !item.isEmpty">
+          <span class="inline-flex items-center gap-1 text-[12px] text-primary font-medium">
+            <span>&#128206;</span> {{ item.value.startsWith('data:') ? 'Attached Document' : item.value }}
+          </span>
+        </ng-container>
+        <span *ngIf="item.controlType !== 'IM' && item.controlType !== 'FU'" class="text-[13px]" [ngClass]="item.isEmpty ? 'text-textmuted' : 'text-defaulttextcolor'">
+          {{ item.isEmpty ? ('web.contacts.lblNoValueSet' | translate) : item.value }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="ov-detail-panel" *ngIf="displayFields.length === 0">
+    <div class="ov-detail-panel__head">
+      <h6 class="ov-detail-panel__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="ov-detail-panel__empty">{{ 'web.contacts.lblNoCustomFields' | translate }}</div>
+  </div>
+</ng-container>
+
+<!-- Variant 3: Lease Panel layout (Used in Leases) -->
+<ng-container *ngIf="styleVariant === 'ld-panel'">
+  <div class="ld-panel" *ngIf="displayFields.length > 0">
+    <div class="ld-panel__head">
+      <h6 class="ld-panel__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="ld-panel__rule"></div>
+    <div class="ld-panel__body ld-panel__body--stack">
+      <div class="ld-cf" *ngFor="let item of displayFields">
+        <span class="ld-cf__label">{{ item.label }}:</span>
+        <ng-container *ngIf="item.controlType === 'IM' && !item.isEmpty; else fuOrTextLd">
+          <img [src]="item.value" alt="Image" class="h-12 w-12 object-cover rounded border border-defaultborder" />
+        </ng-container>
+        <ng-template #fuOrTextLd>
+          <span class="ld-cf__value" [class.ld-cf__value--empty]="item.isEmpty">
+            {{ item.isEmpty ? ('web.leases.lblNoValueSet' | translate) : (item.controlType === 'FU' ? '&#128206; Attached Document' : item.value) }}
+          </span>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="ld-panel" *ngIf="displayFields.length === 0">
+    <div class="ld-panel__head">
+      <h6 class="ld-panel__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="ld-panel__rule"></div>
+    <div class="ld-panel__body ld-panel__body--stack">
+      <div class="p-3 text-xs text-textmuted">
+        {{ 'web.leases.lblNoCustomFields' | translate }}
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Variant 4: Ticket card layout (Used in Tickets) -->
+<ng-container *ngIf="styleVariant === 'ticket'">
+  <div class="td-info-card" *ngIf="displayFields.length > 0">
+    <div class="td-info-card__head">
+      <h6 class="td-info-card__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="td-info-card__body">
+      <div *ngFor="let item of displayFields" class="flex flex-col gap-1 mb-2 last:mb-0">
+        <span class="text-xs font-semibold text-defaulttextcolor">{{ item.label }}:</span>
+        <ng-container *ngIf="item.controlType === 'IM' && !item.isEmpty">
+          <img [src]="item.value" alt="Image" class="h-14 w-14 object-cover rounded border border-defaultborder" />
+        </ng-container>
+        <span *ngIf="item.controlType !== 'IM'" class="text-xs" [ngClass]="item.isEmpty ? 'text-textmuted' : 'text-defaulttextcolor'">
+          {{ item.isEmpty ? ('web.common.lblNoValueSet' | translate) : (item.controlType === 'FU' ? '&#128206; Attached Document' : item.value) }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="td-info-card" *ngIf="displayFields.length === 0">
+    <div class="td-info-card__head">
+      <h6 class="td-info-card__title">{{ cardTitle | translate }}</h6>
+    </div>
+    <div class="td-info-card__body">
+      <p class="td-empty-field">{{ 'web.common.lblNoValueSet' | translate }}</p>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Variant 5: Invoice block layout (Used in Invoices) -->
+<ng-container *ngIf="styleVariant === 'invoice'">
+  <section class="invd-block" *ngIf="displayFields.length > 0">
+    <h6>{{ cardTitle | translate }}</h6>
+    <div class="invd-block__body">
+      <div class="invd-custom" *ngFor="let item of displayFields">
+        <span class="invd-custom__label">{{ item.label }}:</span>
+        <span class="invd-custom__value" [class.text-textmuted]="item.isEmpty">
+          {{ item.isEmpty ? ('web.accounting.invoices.noValueSet' | translate) : (item.controlType === 'FU' ? '&#128206; Attached Document' : item.value) }}
+        </span>
+      </div>
+    </div>
+  </section>
+</ng-container>

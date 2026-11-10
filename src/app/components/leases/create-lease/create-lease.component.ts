@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule,formatDate  } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
@@ -10,6 +10,7 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import {LeasesService} from '../leases.service';
+import { OvExtraFieldsComponent } from '../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 interface Occupant {
   name: string;
   phone: string;
@@ -19,11 +20,12 @@ interface Occupant {
 @Component({
   selector: 'app-create-lease',
   standalone: true,
-  imports: [CommonModule,FileUploadComponent, FormsModule, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule,FileUploadComponent, FormsModule, RouterModule, NgSelectModule, TranslateModule, OvExtraFieldsComponent],
   templateUrl: './create-lease.component.html',
   styleUrl: './create-lease.component.scss'
 })
 export class CreateLeaseComponent implements OnInit {
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastr = inject(ToastrService);
@@ -692,6 +694,10 @@ export class CreateLeaseComponent implements OnInit {
         next: (res) => {
           this.isLoading = false;
           if (res["statusCode"] == "200") {
+            const savedLeaseCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.lease_code || this.leaseId || '';
+            if (this.extraFieldsComp?.hasFields() && savedLeaseCode) {
+              this.extraFieldsComp.save(savedLeaseCode).subscribe();
+            }
             this.toastr.success(this.translate.instant('web.leases.msgLeaseRegistered'));
             this.router.navigate(['/leases']); 
           }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 
 @Component({
   selector: 'app-add-vendor',
@@ -17,6 +18,7 @@ import { CommonService } from '../../../../services/common.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    OvExtraFieldsComponent,
     TranslateModule,
     NgSelectModule,
     RouterModule,
@@ -36,6 +38,7 @@ export class AddVendorComponent implements OnInit {
 
   isEditMode = false;
   vendorId: any = null;
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   vendorDbId: number = 0; // stores the real numeric DB id for updates
 
   branches = ['Main Branch', 'Branch A'];
@@ -573,6 +576,10 @@ export class AddVendorComponent implements OnInit {
     this.propertiesService.saveVendor(formData).subscribe({
       next: (res: any) => {
         if (res.statusCode === "200" || res.status === 200 || res.message === 'Success') {
+          const savedVendorCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.vendor_code || this.vendorId || '';
+          if (this.extraFieldsComp?.hasFields() && savedVendorCode) {
+            this.extraFieldsComp.save(savedVendorCode).subscribe();
+          }
           this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgVendorUpdated' : 'web.contacts.msgVendorSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/vendors']);
         } else {

@@ -1,5 +1,5 @@
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule,ActivatedRoute } from '@angular/router';
@@ -11,14 +11,16 @@ import {FacilityService} from '../../facility.service'
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable } from 'rxjs'; 
 import { FlowbiteDatepickerDirective } from '../../../../shared/directives/flowbite-datepicker.directive';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 @Component({
   selector: 'app-create-ticket',
   standalone: true,
-  imports: [CommonModule, FormsModule,FlowbiteDatepickerDirective, RouterModule, NgSelectModule, TranslateModule],
+  imports: [CommonModule, FormsModule,FlowbiteDatepickerDirective, RouterModule, NgSelectModule, TranslateModule, OvExtraFieldsComponent],
   templateUrl: './create-ticket.component.html',
   styleUrl: './create-ticket.component.scss'
 })
 export class CreateTicketComponent {
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   private router = inject(Router);
   private route = inject(ActivatedRoute); 
   private facilityService = inject(FacilityService);
@@ -243,7 +245,10 @@ export class CreateTicketComponent {
     this.facilityService.saveTicket(payload).subscribe({
       next: (res: any) => {
         if (res && (res.statusCode == 200 || res.statusCode == "200" || res.isSuccess)) {
-          const workOrderCode = res.objResult.table[0]?.code || "";
+          const workOrderCode = res.objResult?.table?.[0]?.code || res.objResult?.code || this.editId || "";
+          if (this.extraFieldsComp?.hasFields() && workOrderCode) {
+            this.extraFieldsComp.save(workOrderCode).subscribe();
+          }
 
           // Prepare file upload tasks
           const uploadTasks: Observable<any>[] = [];

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 
 @Component({
   selector: 'app-add-landlord',
@@ -17,6 +18,7 @@ import { CommonService } from '../../../../services/common.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    OvExtraFieldsComponent,
     TranslateModule,
     NgSelectModule,
     RouterModule,
@@ -36,6 +38,7 @@ export class AddLandlordComponent implements OnInit {
 
   isEditMode = false;
   landlordId: any = null;
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   landlordDbId: number = 0; // stores the real numeric DB id for updates
 
   branches = ['Main Branch', 'Branch A'];
@@ -697,6 +700,10 @@ export class AddLandlordComponent implements OnInit {
     this.propertiesService.saveLandlord(formData).subscribe({
       next: (res: any) => {
         if (res.statusCode === "200" || res.status === 200 || res.message === 'Success') {
+          const savedLandlordCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.landlord_code || this.landlordId || '';
+          if (this.extraFieldsComp?.hasFields() && savedLandlordCode) {
+            this.extraFieldsComp.save(savedLandlordCode).subscribe();
+          }
           this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgLandlordUpdated' : 'web.contacts.msgLandlordSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/landlords']);
         } else {

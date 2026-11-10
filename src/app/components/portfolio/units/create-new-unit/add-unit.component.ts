@@ -10,6 +10,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { PortfolioService } from '../../services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
 import { AuthPayload } from '../../../common/store/login-auth-params/auth.models';
+import { ViewChild } from '@angular/core';
+import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
 @Component({
   selector: 'app-add-unit',
   standalone: true,
@@ -20,13 +22,15 @@ import { AuthPayload } from '../../../common/store/login-auth-params/auth.models
     RouterModule,
     TranslateModule,
     FileUploadComponent,
-    NgSelectModule
+    NgSelectModule,
+    OvExtraFieldsComponent
   ],
   templateUrl: './add-unit.component.html',
   styleUrl: './add-unit.component.scss'
 })
 export class AddUnitComponent implements OnInit {
   public unitForm!: FormGroup;
+  @ViewChild('extraFieldsComp') extraFieldsComp?: OvExtraFieldsComponent;
   public isLoading = false;
   public showScrollToTop = false;
   currentUser: AuthPayload | null = null;
@@ -94,6 +98,7 @@ export class AddUnitComponent implements OnInit {
 
   public isEditMode = false;
   public unitId: any = null;
+  public unitCode: string = '';
 
   readonly commercialUnitTypes: any[] = [
     { id: 101, name: 'Office' },
@@ -189,6 +194,7 @@ export class AddUnitComponent implements OnInit {
       if (id) {
         this.isEditMode = true;
         this.unitId = id;
+        this.unitCode = id;
         this.loadUnitDetails(id);
       }
     });
@@ -252,6 +258,7 @@ export class AddUnitComponent implements OnInit {
     }
 
     this.existingUnitImage = detail.unit_image || detail.image_path || detail.imageUrl || '';
+    this.unitCode = detail.unit_code || detail.code || this.unitId || '';
 
     this.unitForm.patchValue({
       category: detail.category ? Number(detail.category) : '',
@@ -730,6 +737,10 @@ export class AddUnitComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res && res.statusCode === "200") {
+          const savedUnitCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.unit_code || this.unitCode || this.unitId || form.unitCode || '';
+          if (this.extraFieldsComp?.hasFields() && savedUnitCode) {
+            this.extraFieldsComp.save(savedUnitCode).subscribe();
+          }
           this.toastr.success(this.translate.instant('web.Unit.msgUnitCreatedSuccess'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/units']);
         } else {

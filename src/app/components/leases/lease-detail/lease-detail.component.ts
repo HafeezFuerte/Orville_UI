@@ -16,10 +16,11 @@ import { UnitsTableComponent } from '../../child-tables/units/units-table.compon
 import { WorkordersTableComponent } from '../../child-tables/workorders/workorders.component';
 import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
 import { FinancialsComponent } from '../../child-tables/financials/financials.component';
+import { OvExtraFieldsViewComponent } from '../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FinancialsComponent],
+  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FinancialsComponent, OvExtraFieldsViewComponent],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })

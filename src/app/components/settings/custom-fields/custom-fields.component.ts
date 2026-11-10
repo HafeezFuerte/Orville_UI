@@ -57,7 +57,7 @@ export class CustomFieldsComponent implements OnInit {
   isLoading = false;
   isSaving = false;
   selectedScreen: string | null = null;
-  screens = ['Leases', 'Workorder', 'Invoices', 'Quotations', 'Expenses', 'Property'];
+  screens = ['Property', 'Units', 'Rooms', 'Tenants', 'Landlords', 'Vendors', 'Leases', 'Work Orders', 'Tickets', 'Invoices', 'Expenses'];
   fieldNameManuallyEdited = false;
   sortKey: SortKey = 'fieldName';
   sortDir: SortDir = 'asc';
@@ -76,7 +76,7 @@ export class CustomFieldsComponent implements OnInit {
   isLoadingLookupData = false;
 
   columns: CustomFieldColumnDef[] = [
-    { key: 'fieldName', label: 'Field Name', visible: true },
+    { key: 'fieldName', label: 'Field Name', visible: false },
     { key: 'fieldLabel', label: 'Field Label', visible: true },
     { key: 'dataType', label: 'Data Type', visible: true },
     { key: 'module', label: 'Module', visible: true },
@@ -97,9 +97,13 @@ export class CustomFieldsComponent implements OnInit {
   }
   onscreenChange(ev: any) {
     const selected = (typeof ev === 'object' && ev !== null) ? (ev.name || ev.value || ev) : ev;
-    this.selectedScreen = selected || this.selectedScreen;
-    this.rows=[];
- this.fetchCustomFields();
+    this.selectedScreen = selected || null;
+    this.rows = [];
+    if (!this.selectedScreen) {
+      this.isLoading = false;
+      return;
+    }
+    this.fetchCustomFields();
   }
   private loadCachedFields(): void {
     try {
@@ -116,6 +120,11 @@ export class CustomFieldsComponent implements OnInit {
   }
 
   fetchCustomFields(): void {
+    if (!this.selectedScreen) {
+      this.rows = [];
+      this.isLoading = false;
+      return;
+    }
     this.isLoading = true;
     const user = this.commonService.getCurrentUser();
     const payload = {
@@ -186,33 +195,33 @@ export class CustomFieldsComponent implements OnInit {
               return;
             }
           }
+          // Backend returned statusCode 200 with 0 custom fields for this screen
+          this.rows = [];
+          localStorage.removeItem(CustomFieldsComponent.STORAGE_KEY);
+          return;
         }
-        // If backend returned empty or -200, check cache
-        const cached = localStorage.getItem(CustomFieldsComponent.STORAGE_KEY);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              this.rows = parsed;
-              return;
-            }
-          } catch (e) {}
-        }
-        this.rows = DEFAULT_CUSTOM_FIELDS.map((r) => ({ ...r }));
+        // Non-200 response
+        this.rows = [];
+        localStorage.removeItem(CustomFieldsComponent.STORAGE_KEY);
       },
       error: (err) => {
-        this.isLoading = false; 
+        this.isLoading = false;
+        this.rows = [];
       },
     });
   }
 
   get filteredRows(): CustomFieldRow[] {
+    if (!this.selectedScreen) {
+      return [];
+    }
     const q = this.searchQuery.trim().toLowerCase();
+    const activeScreen = this.selectedScreen.trim().toLowerCase();
     let list = this.rows.filter((row) => {
-      if (this.filterModule && row.module !== this.filterModule) {
+      if (row.module && row.module.trim().toLowerCase() !== activeScreen) {
         return false;
       }
-      if (this.filterDataType && row.dataType !== this.filterDataType) {
+if (this.filterDataType && row.dataType !== this.filterDataType) {
         return false;
       }
       if (!q) {
@@ -299,6 +308,9 @@ export class CustomFieldsComponent implements OnInit {
   }
 
   get emptyMessage(): string {
+    if (!this.selectedScreen) {
+      return 'Please select a screen to view custom fields.';
+    }
     if (this.rows.length === 0) {
       return 'No custom fields yet.';
     }
@@ -547,7 +559,7 @@ export class CustomFieldsComponent implements OnInit {
       : (this.dataTypes[0]?.id || 'TX');
     this.draft = {
       ...EMPTY_CUSTOM_FIELD,
-      module: this.filterModule || 'Property',
+      module: this.selectedScreen || this.filterModule || 'Property',
       dataType: defaultType,
       sortOrder: this.rows.length + 1,
     };
@@ -613,8 +625,8 @@ export class CustomFieldsComponent implements OnInit {
     const fieldLabel = (this.draft.fieldLabel || '').trim();
     let fieldName = (this.draft.fieldName || '').trim();
 
-    if (!fieldLabel && !fieldName) {
-      this.toastr.warning('Please enter a Field Label and Field Name.', 'Validation Warning');
+    if (!fieldLabel) {
+      this.toastr.warning('Please enter a Field Label.', 'Validation Warning');
       return;
     }
 
