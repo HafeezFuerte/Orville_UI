@@ -149,42 +149,52 @@ export class AttachmentsComponent {
       return;
     }
     const values = this.selectedTab.form.value;
-    const request = {
-    ...this.commonService.commonPayload,
-    code: values.code,
-    entity_id: this.selectedTab?.entity_id,
-    entity: this.selectedTab?.entity,
-    document_type:values.documentType, 
-    document_no:values.documentNumber,
-      issue_date:values.issueDate,
-      expiry_date:values.expiryDate,
-      issuing_authority:values.issuingAuthority,
-      share_with_tenants:values.shareWithTenant,
-      share_with_landlords:values.shareWithLandlord
+    const files = this.selectedTab.form.get('propertyAttachment')?.value;
+    if((files==null || files==undefined) && values.code==''){
+      this.toastr.error("Invalid file selection","Error");
+      return;
     }
-    const formData = new FormData();
-  
-  // JSON goes as ONE field
-  formData.append('reqObject', JSON.stringify(request)); 
-  const file = this.selectedTab.form.get('propertyAttachment')?.value;
-  if((file==null || file==undefined) && values.code==''){
-    this.toastr.error("Invalid file selection","Error");
-  }
-  if (file) {
-    formData.append('file_path', file);
-  }
-    this.common_TabsService.saveAttachment(formData)
-      .subscribe(res => { 
-        if (res["statusCode"] == "200") { 
-          this.selectedTab.form.reset();
-          this.closeModal();
-          this.data = res.objResult.table || []; 
-          this.totalRecords = this.data.length;
+    files.forEach((file:any,index:any) => {
+      const request = {
+        ...this.commonService.commonPayload,
+        code: values.code,
+        entity_id: this.selectedTab?.entity_id,
+        entity: this.selectedTab?.entity,
+        document_type:values.documentType, 
+        document_no:values.documentNumber,
+          issue_date:values.issueDate,
+          expiry_date:values.expiryDate,
+          issuing_authority:values.issuingAuthority,
+          share_with_tenants:values.shareWithTenant,
+          share_with_landlords:values.shareWithLandlord
         }
-        else{
-          this.toastr.error(res['message'],"Error");
-        }
-      });
+        const formData = new FormData();
+      
+      // JSON goes as ONE field
+      formData.append('reqObject', JSON.stringify(request)); 
+      
+      
+      if (file) {
+        formData.append('file_path', file);
+      }
+        this.common_TabsService.saveAttachment(formData)
+          .subscribe(res => { 
+            if (res["statusCode"] == "200") { 
+              if((index+1)==files.length){
+              this.selectedTab.form.reset();
+              this.closeModal();  
+              }
+              this.toastr.show(`Uploaded file : ${index+1} of ${files.length}`,"Success");
+              
+              this.data = res.objResult.table || []; 
+              this.totalRecords = this.data.length;
+            }
+            else{
+              this.toastr.error(res['message'],"Error");
+            }
+          });
+    });
+    
   }
 
  
@@ -261,7 +271,7 @@ export class AttachmentsComponent {
     this.showModal = this.deleteModal = false;
     this.selectedNote = {};
   }
-  deleteAttachment() {
+  deleteAttachment() { 
     this.loadMasterDataByType(this.selectedNote.id, this.selectedTab.entity, this.selectedTab.entity_id);
   }
   loadMasterDataByType(
@@ -270,21 +280,23 @@ export class AttachmentsComponent {
     filterText1: string = '',
   ) {
     this.common_TabsService.getMasterByType({
-      typeId: 34,
+      typeId: 35,
       filterId,
       filterText: filtertext,
       filterText1: filterText1
     }).subscribe({
       next: res => {
+        this.data=[];
+        this.selectedNote = {};
         this.loading = false;
+        this.closeModal();
         if (res['statusCode'] != "200") {
           this.loading = false;
           return;
         }
-        this.toastr.success("Successfully marked as inactive", "Success");
-        this.closeModal();
+        this.toastr.success("Successfully marked as inactive", "Success"); 
         this.data = res.objResult.table;
-        this.selectedNote = {};
+        
       },
       error: console.error
     });

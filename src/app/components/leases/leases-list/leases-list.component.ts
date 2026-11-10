@@ -69,11 +69,11 @@ export class LeasesListComponent implements OnInit {
   ];
 
   metrics = {
-    revenue: 'AED 4.3 M',
-    totalLeases: 24183,
-    activeLeases: 18420,
-    draftLeases: 3240,
-    expiringLeases: 420
+    revenue: '',
+    totalLeases: 0,
+    activeLeases: 0,
+    draftLeases: 0,
+    expiringLeases: 0
   };
   tabs:any[]=[];
   allLeases: any[]=[];

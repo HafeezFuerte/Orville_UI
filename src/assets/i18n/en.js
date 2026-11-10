@@ -611,6 +611,8 @@ export const locale = {
         "lblCommonArea": "Common Area",
         "lblViewActivity": "View Activity",
         "lblEditProperty": "Edit Property",
+        "lblPublishProperty": "Publish Property",
+        "lblUnPublishProperty": "UnPublish Property",
         "lblPropertyBasics": "Basics",
         "lblCoreIdentityReferenceInformation": "Core Identity/Reference Information",
         "lblPropertyName": "Property Name",

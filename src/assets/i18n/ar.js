@@ -611,6 +611,8 @@ export const locale = {
         "lblPropertyValue": "قيمة العقار",
         "lblViewActivity": "عرض النشاط",
         "lblEditProperty": "تعديل العقار",
+        "lblPublishProperty": "Publish Property",
+        "lblUnPublishProperty": "UnPublish Property",
         "lblViewMoreDetails": "عرض المزيد من التفاصيل",
         "lblAddUnit": "إضافة وحدة",
         "lblAddAttachment": "إضافة مرفق",

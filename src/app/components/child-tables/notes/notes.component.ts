@@ -260,14 +260,15 @@ export class NotesComponent {
     }).subscribe({
       next: res => {
         this.loading = false;
+        this.data=[];
+        this.selectedNote = {};
+        this.closeModal();
         if (res['statusCode'] != "200") {
           this.loading = false;
           return;
         }
-        this.toastr.success("Successfully marked as inactive", "Success");
-        this.closeModal();
-        this.data = res.objResult.table;
-        this.selectedNote = {};
+        this.toastr.success("Successfully marked as inactive", "Success"); 
+        this.data = res.objResult.table; 
         this.totalRecords=this.data.length;
       },
       error: console.error

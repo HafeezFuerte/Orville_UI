@@ -33,7 +33,7 @@ export class AttachmentPopupComponent {
   onFilesSelected(files: File[]) {
     if (files.length > 0) {
       this.form.patchValue({
-        propertyAttachment: files[0]
+        propertyAttachment: files
       });
     } else {
       this.form.patchValue({
