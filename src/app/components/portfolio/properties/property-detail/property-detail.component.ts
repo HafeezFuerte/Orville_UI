@@ -22,11 +22,12 @@ import { ParkingsComponent } from '../../../child-tables/parkings/parkings.compo
 import {BroadcastsTableComponent}from '../../../child-tables/broadcasts/broadcasts.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Common_TabsService } from '../../services/common_tabs.service';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgSelectModule, BroadcastsTableComponent,ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent, OvExtraFieldsViewComponent],
+  imports: [CommonModule, RouterModule,DeleteConfirmationComponent, NgSelectModule, BroadcastsTableComponent,ReactiveFormsModule, ParkingsComponent, CommonAreaComponent, NotesComponent, AttachmentsComponent, UnitsTableComponent, FormsModule, CommonModule, DetailPageLayoutComponent, TranslateModule, CommonAreaPopupComponent, AttachmentPopupComponent, OvExtraFieldsViewComponent],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
@@ -58,7 +59,8 @@ export class PropertyDetailComponent implements OnInit {
   @ViewChild(DetailPageLayoutComponent)
   detailLayout!: DetailPageLayoutComponent;
   // columns
-
+  edit_code:string='';
+  deleteModal:boolean=false;
   tenantColumns: any[] = [
     { key: 'lease_code', label: 'web.common.lblID', is_editCol: true },
     { key: 'tenant ', label: 'web.common.lblName' },
@@ -385,7 +387,17 @@ export class PropertyDetailComponent implements OnInit {
 
   }
   handleEditNotification(selectedObject: any) {
-
+  if(selectedObject.action_name=="delete"){
+    this.deleteModal=!this.deleteModal;  
+    this.edit_code=selectedObject.code;
+  }
+  }
+  deleterecord(){
+    this.deleteModal=false;
+    this.loadLookup(71,8, '', this.edit_code,'');
+  }
+  closeModal(){
+    this.deleteModal=false;
   }
   loadLookup(typeId: number,filterId: number, targetProperty: string, filterText: string, filterText1: string) {
     this.commontabservice.getMasterByType({
@@ -396,10 +408,25 @@ export class PropertyDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200) {   
+          if(typeId==71){ 
+            if(res.objResult.table[0].error_code=="-300"){
+              this.toastr.error(res.objResult.table[0].msg);
+              return;
+            }
+            else{
+              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
+              this.edit_code=''; 
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          
+        }else{
           this.toastr.success(res.message);
           setTimeout(() => {
             window.location.reload()
           }, 3000);
+        }
         }
       },
       error: (err:any) => {

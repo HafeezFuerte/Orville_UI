@@ -180,7 +180,12 @@ export class UnitsTableComponent {
   }
   edit_action(row:any,action:any){ 
     row.action_name=action;
-    this.notify_edit_action.emit(row);
+    if(action=="edit")
+      window.location.href='/units/'+ row.code;
+    else if(action=="delete"){
+      this.notify_edit_action.emit(row);
+    }
+   // this.notify_edit_action.emit(row);
   }
 
   linkClick(row:any,col:any){ 

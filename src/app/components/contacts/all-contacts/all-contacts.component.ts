@@ -10,7 +10,7 @@ import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
-
+import { CommonService } from '../../../services/common.service';
 export interface Contact {
   id: number;
   name: string;
@@ -50,7 +50,7 @@ export class AllContactsComponent implements OnInit, OnDestroy {
   pageNo = 1;
   pageSize = 10;
   totalRecords = 0;
-
+  currentUser = this.commonservice.getCurrentUser();
   contacts: any[] = [];
   paginatedContacts: any[] = [];
 
@@ -73,7 +73,7 @@ export class AllContactsComponent implements OnInit, OnDestroy {
     private store: Store,
     private portfolioService: PortfolioService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,private commonservice:CommonService
   ) {}
 
   ngOnDestroy(): void {
@@ -162,8 +162,14 @@ export class AllContactsComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: res => {
         if (res['statusCode'] == 200) {
-          this.contacts = res.objResult.table || [];
-          this.paginatedContacts = this.contacts;
+          let temp_contacts = res.objResult.table || [];
+          if(this.currentUser?.roleCode =="T" || this.currentUser?.roleCode =="L" ||
+          this.currentUser?.roleCode =="V"){
+            let filterRole=this.currentUser?.roleCode=="T" ? "Tenants" : this.currentUser?.roleCode=="L" ? "Landlords":
+            this.currentUser?.roleCode =="V" ? "Vendors": "";
+            temp_contacts=temp_contacts.filter((a:any)=>a.contact_type==filterRole && a.user_code==this.currentUser?.userCode)
+          }
+          this.paginatedContacts =this.contacts= temp_contacts;
           this.updatePagination();
           callback?.();
         }

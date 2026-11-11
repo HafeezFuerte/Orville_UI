@@ -324,7 +324,7 @@ export class TenantDetailComponent implements OnInit {
   // --- TAB 2: LEASES ---
   leaseColumns = [
     { key: 'lease_code', label: 'web.contacts.lblID', visible: true, useTemplate: true },
-    { key: 'active_lease', label: 'web.contacts.lblLeaseName', visible: true },
+    { key: 'active_lease', label: 'web.contacts.lblLeaseName', visible: true, useTemplate: true  },
     { key: 'tenant', label: 'web.contacts.lblTenant', visible: true },
     { key: 'email_address', label: 'web.contacts.lblEmail', visible: true },
     { key: 'phone_number', label: 'web.contacts.lblPhoneNumber', visible: true },

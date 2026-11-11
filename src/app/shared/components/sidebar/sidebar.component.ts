@@ -202,7 +202,7 @@ export class SidebarComponent {
         }
 
         this.menuItems = this.ensureVisitorsMenu(this.menuItems);
-        this.menuItems = this.ensurePropertyListingsMenu(this.menuItems);
+       // this.menuItems = this.ensurePropertyListingsMenu(this.menuItems);
         this.menuItems = this.ensureMoreMenuDefaults(this.menuItems);
 
         // Figma settings menu (always — independent of API Settings modules)
