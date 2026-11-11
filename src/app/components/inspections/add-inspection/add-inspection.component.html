@@ -6,19 +6,34 @@
         <img src="assets/images/common/arrow-narrow-left.svg" alt="" width="24" height="24" />
       </a>
       <div>
-        <h3 class="ov-page-title">{{ 'web.inspections.add.newInspection' | translate }}</h3>
+        <h3 class="ov-page-title flex items-center gap-2">
+          <span>{{ (isEdit ? 'web.common.edit' : 'web.inspections.add.newInspection') | translate }} {{ isEdit ? ('web.inspections.add.breadcrumbInspection' | translate) : '' }}</span>
+          <span *ngIf="isEdit && editCode" class="ov-status ov-status--soft text-xs font-normal">{{ editCode }}</span>
+        </h3>
         <p class="ov-page-sub">
-          {{ 'web.inspections.add.breadcrumbInspection' | translate }} / <span class="ov-page-sub__current">{{ 'web.inspections.add.newInspection' | translate }}</span>
+          {{ 'web.inspections.add.breadcrumbInspection' | translate }} /
+          <span class="ov-page-sub__current">{{ (isEdit ? 'web.common.edit' : 'web.inspections.add.newInspection') | translate }}</span>
         </p>
       </div>
     </div>
     <div class="ov-add-header__actions flex gap-2">
       <button type="button" routerLink="/inspections/list" class="ov-btn ov-btn-ghost">{{ 'web.inspections.add.cancel' | translate }}</button>
-      <button type="submit" class="ov-btn ov-btn-primary">{{ 'web.inspections.add.createInspection' | translate }}</button>
+      <button type="submit" class="ov-btn ov-btn-primary" [disabled]="isSubmitting || isLoadingDetails">
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+        {{ (isEdit ? 'web.common.update' : 'web.inspections.add.createInspection') | translate }}
+      </button>
     </div>
   </div>
 
-  <div class="ov-add-body flex flex-col lg:flex-row gap-5">
+  <!-- Loading State Indicator for Edit Mode Details -->
+  <div *ngIf="isLoadingDetails" class="p-8 text-center bg-white rounded-2xl border border-defaultborder mb-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="text-sm text-textmuted mt-2">Loading inspection details...</p>
+  </div>
+
+  <div class="ov-add-body flex flex-col lg:flex-row gap-5" *ngIf="!isLoadingDetails">
     
     <!-- Left Form Cards -->
     <div class="flex-1 flex flex-col gap-5">
@@ -31,7 +46,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
           <div class="flex flex-col gap-2">
             <label class="ov-label text-xs font-semibold text-defaulttextcolor">{{ 'web.inspections.add.inspectionType' | translate }} <span class="text-danger">*</span></label>
-            <ng-select formControlName="inspectionType" [items]="inspectionTypes" [placeholder]="'web.inspections.add.phSelectType' | translate" class="ov-select w-full" appendTo="body"></ng-select>
+            <ng-select
+              formControlName="inspectionType"
+              [items]="inspectionTypes"
+              bindLabel="name"
+              bindValue="id"
+              [placeholder]="'web.inspections.add.phSelectType' | translate"
+              class="ov-select w-full"
+              appendTo="body">
+            </ng-select>
           </div>
           <div class="flex flex-col gap-2">
             <label class="ov-label text-xs font-semibold text-defaulttextcolor">{{ 'web.inspections.add.inspectionDateTime' | translate }} <span class="text-danger">*</span></label>
@@ -128,33 +151,68 @@
           </div>
         </div>
 
-        <div class="border-t border-defaultborder my-4"></div>
+        <!-- Unit Information Sub Section (Visible for 'unit' or 'both') -->
+        <ng-container *ngIf="inspectionForm.value.scope !== 'asset'">
+          <div class="border-t border-defaultborder my-4"></div>
+          <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">{{ 'web.inspections.add.unitInformation' | translate }}</h6>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.property' | translate }}</label>
+              <ng-select
+                formControlName="property"
+                [items]="properties"
+                bindLabel="name"
+                bindValue="code"
+                (change)="onPropertyChange($event)"
+                [placeholder]="'web.inspections.add.phSelectProperty' | translate"
+                class="ov-select w-full"
+                appendTo="body">
+              </ng-select>
+            </div>
+            <div class="flex flex-col">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.unit' | translate }}</label>
+              <ng-select
+                formControlName="unit"
+                [items]="units"
+                bindLabel="name"
+                bindValue="code"
+                [placeholder]="'web.inspections.add.phSelectUnit' | translate"
+                class="ov-select w-full"
+                appendTo="body">
+              </ng-select>
+            </div>
+            <div class="flex flex-col md:col-span-2">
+              <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.lease' | translate }}</label>
+              <ng-select
+                formControlName="lease"
+                [items]="leases"
+                bindLabel="name"
+                bindValue="code"
+                [placeholder]="'web.inspections.add.phSelectLease' | translate"
+                class="ov-select w-full"
+                appendTo="body">
+              </ng-select>
+            </div>
+          </div>
+        </ng-container>
 
-        <!-- Unit Information Sub Section -->
-        <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">{{ 'web.inspections.add.unitInformation' | translate }}</h6>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Asset Information Sub Section (Visible for 'asset' or 'both') -->
+        <ng-container *ngIf="inspectionForm.value.scope !== 'unit'">
+          <div class="border-t border-defaultborder my-4"></div>
+          <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">{{ 'web.inspections.add.assetInformation' | translate }}</h6>
           <div class="flex flex-col">
-            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.property' | translate }}</label>
-            <ng-select formControlName="property" [items]="properties" [placeholder]="'web.inspections.add.phSelectProperty' | translate" class="ov-select w-full" appendTo="body"></ng-select>
+            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.asset' | translate }}</label>
+            <ng-select
+              formControlName="asset"
+              [items]="assets"
+              bindLabel="name"
+              bindValue="code"
+              [placeholder]="'web.inspections.add.phSelectAsset' | translate"
+              class="ov-select w-full"
+              appendTo="body">
+            </ng-select>
           </div>
-          <div class="flex flex-col">
-            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.unit' | translate }}</label>
-            <ng-select formControlName="unit" [items]="units" [placeholder]="'web.inspections.add.phSelectUnit' | translate" class="ov-select w-full" appendTo="body"></ng-select>
-          </div>
-          <div class="flex flex-col md:col-span-2">
-            <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.lease' | translate }}</label>
-            <ng-select formControlName="lease" [items]="leases" [placeholder]="'web.inspections.add.phSelectLease' | translate" class="ov-select w-full" appendTo="body"></ng-select>
-          </div>
-        </div>
-
-        <div class="border-t border-defaultborder my-4"></div>
-
-        <!-- Asset Information Sub Section -->
-        <h6 class="text-[13px] font-semibold text-defaulttextcolor mb-3">{{ 'web.inspections.add.assetInformation' | translate }}</h6>
-        <div class="flex flex-col">
-          <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.asset' | translate }}</label>
-          <ng-select formControlName="asset" [items]="assets" [placeholder]="'web.inspections.add.phSelectAsset' | translate" class="ov-select w-full" appendTo="body"></ng-select>
-        </div>
+        </ng-container>
       </div>
 
       <!-- Additional Notes Card -->
@@ -168,10 +226,13 @@
         </div>
       </div>
 
-      <!-- Action buttons moved here under the left cards column -->
+      <!-- Action buttons under the left cards column -->
       <div class="flex items-center gap-3 pt-2 mt-2 pb-6">
         <button type="button" routerLink="/inspections/list" class="ov-btn ov-btn-ghost">{{ 'web.inspections.add.cancel' | translate }}</button>
-        <button type="submit" class="ov-btn ov-btn-primary">{{ 'web.inspections.add.createInspection' | translate }}</button>
+        <button type="submit" class="ov-btn ov-btn-primary" [disabled]="isSubmitting || isLoadingDetails">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          {{ (isEdit ? 'web.common.update' : 'web.inspections.add.createInspection') | translate }}
+        </button>
       </div>
 
     </div>
@@ -185,7 +246,15 @@
         <p class="text-[11px] text-textmuted mt-1 leading-tight">{{ 'web.inspections.add.inspectorDesc' | translate }}</p>
         <div class="flex flex-col mt-4">
           <label class="ov-label text-xs font-semibold mb-1 text-defaulttextcolor">{{ 'web.inspections.add.inspector' | translate }} <span class="text-danger">*</span></label>
-          <ng-select formControlName="inspector" [items]="inspectors" [placeholder]="'web.inspections.add.phSelectInspector' | translate" class="ov-select w-full" appendTo="body"></ng-select>
+          <ng-select
+            formControlName="inspector"
+            [items]="inspectors"
+            bindLabel="name"
+            bindValue="code"
+            [placeholder]="'web.inspections.add.phSelectInspector' | translate"
+            class="ov-select w-full"
+            appendTo="body">
+          </ng-select>
         </div>
       </div>
 
@@ -207,6 +276,11 @@
           .ov-kv__value {
             font-weight: 600;
             color: #1a222c;
+            text-align: end;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         </style>
 
@@ -221,11 +295,11 @@
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.inspections.add.dateTime' | translate }}</span>
-            <span class="ov-kv__value">{{ inspectionForm.value.inspectionDateTime || '30-06-2026' }}</span>
+            <span class="ov-kv__value">{{ formatSummaryDate(inspectionForm.value.inspectionDateTime) }}</span>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.inspections.add.inspector' | translate }}</span>
-            <span class="ov-kv__value">{{ inspectionForm.value.inspector || '-' }}</span>
+            <span class="ov-kv__value">{{ summaryInspector }}</span>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.inspections.add.property' | translate }}</span>

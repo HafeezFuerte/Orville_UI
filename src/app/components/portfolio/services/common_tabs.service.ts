@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CommonService } from '../../../services/common.service';
 export interface LookupPayload {
@@ -81,6 +81,21 @@ saveNotes(payload: any): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Masters/save_notes',
     payload
+  );
+}
+saveInspection(payload: any): Observable<any> {
+  return this.http.post(
+    environment.apiurl + 'api/Application/save_update_inspections',
+    payload,
+    { headers: this.commonService.updateHeaders() }
+  ).pipe(
+    catchError(() =>
+      this.http.post(
+        environment.apiurl + 'api/Application/save_update_inspection',
+        payload,
+        { headers: this.commonService.updateHeaders() }
+      )
+    )
   );
 }
 //get master api calls
