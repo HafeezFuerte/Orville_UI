@@ -445,10 +445,29 @@ export const content: Routes = [
       },
       {
         path: 'email-templates',
-        loadComponent: () =>
-          import('../../components/settings/email-templates/email-templates.component').then(
-            (m) => m.EmailTemplatesComponent
-          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../../components/settings/email-templates/email-templates.component').then(
+                (m) => m.EmailTemplatesComponent
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('../../components/settings/email-templates/email-template-add.component').then(
+                (m) => m.EmailTemplateAddComponent
+              ),
+          },
+          {
+            path: 'edit/:code',
+            loadComponent: () =>
+              import('../../components/settings/email-templates/email-template-add.component').then(
+                (m) => m.EmailTemplateAddComponent
+              ),
+          },
+        ],
       },
       {
         path: 'notification-settings',

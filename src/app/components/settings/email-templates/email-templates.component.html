@@ -1,12 +1,18 @@
 <div class="flex w-full flex-col gap-4 py-4 font-hanken">
-  <div class="flex w-full min-w-0 flex-col gap-1.5">
-    <div class="flex flex-wrap items-center gap-2.5">
-      <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">{{ 'web.settings.emailTemplates.title' | translate }}</h1>
-      <span class="et-badge">{{ totalCount }} total</span>
+  <div class="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-col gap-1.5">
+      <div class="flex flex-wrap items-center gap-2.5">
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor">{{ 'web.settings.emailTemplates.title' | translate }}</h1>
+        <span class="et-badge">{{ totalCount }} total</span>
+      </div>
+      <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+        Manage and customize email templates for your communications.
+      </p>
     </div>
-    <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
-      Manage and customize email templates for your communications.
-    </p>
+    <button type="button" class="ov-btn ov-btn-primary flex items-center gap-2" (click)="navigateToAdd()">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      <span>Add Template</span>
+    </button>
   </div>
 
   <div class="ov-seg ov-seg--tabs w-full overflow-x-auto" role="tablist" aria-label="Filter by target">
@@ -118,12 +124,6 @@
           </button>
         </div>
         <div
-          *ngIf="isColumnVisible('description')"
-          class="et-table__cell text-xs font-semibold text-textmuted"
-          role="columnheader">
-          Description
-        </div>
-        <div
           *ngIf="isColumnVisible('target')"
           class="et-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
@@ -155,12 +155,9 @@
           role="row"
           [style.grid-template-columns]="tableGridTemplate">
           <div *ngIf="isColumnVisible('name')" class="et-table__cell" role="cell">
-            <button type="button" class="et-name-link" (click)="openPreview(row)">
+            <button type="button" class="et-name-link" (click)="editTemplate(row)">
               {{ row.name }}
             </button>
-          </div>
-          <div *ngIf="isColumnVisible('description')" class="et-table__cell" role="cell">
-            <span class="text-sm text-textmuted">{{ descriptionDisplay(row.description) }}</span>
           </div>
           <div *ngIf="isColumnVisible('target')" class="et-table__cell" role="cell">
             <span class="et-target">{{ row.target }}</span>
@@ -179,7 +176,7 @@
                 <span class="et-ellipsis" aria-hidden="true">⋯</span>
               </button>
               <div *ngIf="openMenuId === row.id" class="et-row-menu" (click)="$event.stopPropagation()">
-                <button type="button" class="et-row-menu__item" (click)="openPreview(row)">
+                <button type="button" class="et-row-menu__item" (click)="editTemplate(row)">
                   Edit
                 </button>
               </div>
@@ -202,63 +199,4 @@
     [pageSizeOptions]="[10, 25, 50]"
     (pageChange)="onPageChange($event)">
   </app-ov-paginator>
-</div>
-
-<div
-  *ngIf="previewOpen && previewRow"
-  class="ov-modal-backdrop"
-  (click)="closePreview()"
-  role="presentation">
-  <div
-    class="flex w-full max-w-[520px] flex-col items-end gap-2.5"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="et-preview-title"
-    (click)="$event.stopPropagation()">
-    <button type="button" class="ov-modal-close" aria-label="Close" (click)="closePreview()">
-      <img
-        src="./assets/images/common/close-plus.svg"
-        alt=""
-        width="20"
-        height="20"
-        class="ov-ico-x" />
-    </button>
-
-    <div
-      class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-bodybg">
-      <div class="flex flex-col gap-[18px] px-5 pt-5">
-        <h2 id="et-preview-title" class="m-0 text-base font-semibold text-defaulttextcolor">
-          {{ previewRow.name }}
-        </h2>
-        <div class="h-px w-full bg-defaultborder"></div>
-      </div>
-      <div class="flex flex-col gap-3 p-5">
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-sm text-textmuted">Target</span>
-          <span class="et-target">{{ previewRow.target }}</span>
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-defaulttextcolor" for="et-desc">Description</label>
-          <textarea
-            id="et-desc"
-            rows="3"
-            class="ov-input"
-            [(ngModel)]="editingDescription"
-            placeholder="Enter template description or notes..."></textarea>
-        </div>
-      </div>
-      <div
-        class="flex flex-wrap items-center justify-end gap-2.5 border-t border-defaultborder px-5 py-4">
-        <button type="button" class="ov-btn ov-btn-ghost" (click)="closePreview()">Cancel</button>
-        <button
-          type="button"
-          class="ov-btn ov-btn-primary flex items-center justify-center gap-1.5"
-          [disabled]="isSaving"
-          (click)="saveTemplate()">
-          <div *ngIf="isSaving" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-          <span>{{ isSaving ? ('web.settings.propertyTypes.lblSaving' | translate) : 'Save' }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
 </div>

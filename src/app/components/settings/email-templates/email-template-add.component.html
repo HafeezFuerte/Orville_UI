@@ -1,0 +1,247 @@
+<div class="flex flex-col gap-4 py-4 font-hanken">
+  <!-- Page Header -->
+  <div class="flex w-full flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-defaultborder bg-white dark:bg-bodybg cursor-pointer hover:bg-light"
+        aria-label="Back to Email Templates"
+        (click)="cancel()">
+        <img
+          src="./assets/images/common/arrow-narrow-left.svg"
+          alt=""
+          width="18"
+          height="18" />
+      </button>
+      <div class="min-w-0">
+        <h1 class="m-0 text-2xl font-bold leading-normal text-defaulttextcolor flex items-center gap-2">
+          <span>{{ isEdit ? 'Edit Email Template' : 'New Email Template' }}</span>
+          <span *ngIf="isEdit && code" class="ov-status ov-status--soft text-xs font-normal">{{ code }}</span>
+        </h1>
+        <p class="m-0 mt-1 text-[13px] font-normal leading-normal text-textmuted">
+          Create and customize automated notifications for your properties and contacts.
+        </p>
+      </div>
+    </div>
+    <div class="flex shrink-0 items-center gap-2.5">
+      <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
+      <button type="button" class="ov-btn ov-btn-primary flex items-center gap-1.5" [disabled]="isSaving" (click)="save()">
+        <span *ngIf="isSaving" class="spinner-border spinner-border-sm" role="status"></span>
+        <span>{{ isSaving ? 'Saving...' : (isEdit ? 'Update Template' : 'Save Template') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State for Edit Details -->
+  <div *ngIf="isLoading" class="p-8 text-center bg-white rounded-2xl border border-defaultborder mb-2">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="text-sm text-textmuted mt-2">Loading template details...</p>
+  </div>
+
+  <!-- Editor & Form Body -->
+  <div class="flex w-full flex-col items-start gap-4 lg:flex-row" *ngIf="!isLoading">
+    
+    <!-- Left Column: Template Information & Rich Text Editor -->
+    <section class="flex min-w-0 flex-1 flex-col gap-5 overflow-hidden rounded-xl border border-defaultborder bg-white p-6 dark:bg-bodybg">
+      <div class="flex flex-col gap-1 border-b border-defaultborder pb-3">
+        <h2 class="m-0 text-base font-semibold leading-normal text-defaulttextcolor">
+          Template Details
+        </h2>
+        <p class="m-0 text-[13px] font-normal leading-normal text-textmuted">
+          Configure template metadata, recipients, trigger event, and rich-text body.
+        </p>
+      </div>
+
+      <!-- Template Name -->
+      <div class="flex w-full flex-col gap-2">
+        <label class="text-xs font-semibold text-defaulttextcolor" for="et-name">
+          Template Name <span class="text-danger">*</span>
+        </label>
+        <input
+          id="et-name"
+          type="text"
+          class="ov-input"
+          placeholder="e.g. Lease Confirmation"
+          [(ngModel)]="template_name" />
+      </div>
+
+      <!-- Feature & Trigger Action Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Feature / Module Dropdown (typeId: 24) -->
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-feature">
+            Feature / Module <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <select
+              id="et-feature"
+              class="ov-input cursor-pointer appearance-none pr-8"
+              [ngModel]="feature"
+              (ngModelChange)="onFeatureChange($event)">
+              <option *ngFor="let f of features" [value]="f.feature">{{ f.name }}</option>
+            </select>
+            <img
+              src="./assets/images/settings/chevron-down.svg"
+              alt=""
+              width="12"
+              height="12"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+          </div>
+          <span *ngIf="loadingFeatures" class="text-[11px] text-textmuted">Loading features...</span>
+        </div>
+
+        <!-- Trigger Event / Action Dropdown (from typeId: 2, filterId: 58 -> 'Add' [id: 369]) -->
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-action-trigger">
+            Trigger Event / Action <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <select
+              id="et-action-trigger"
+              class="ov-input cursor-pointer appearance-none pr-8"
+              [(ngModel)]="template_type">
+              <option *ngFor="let trig of actionTriggers" [ngValue]="trig.id">
+                {{ trig.name }}
+              </option>
+            </select>
+            <img
+              src="./assets/images/settings/chevron-down.svg"
+              alt=""
+              width="12"
+              height="12"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+          </div>
+          <span *ngIf="loadingTriggers" class="text-[11px] text-textmuted">Loading triggers...</span>
+        </div>
+      </div>
+
+      <!-- Format Type & Subject Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-format-type">
+            Format Type
+          </label>
+          <div class="relative">
+            <select
+              id="et-format-type"
+              class="ov-input cursor-pointer appearance-none pr-8"
+              [(ngModel)]="format_type">
+              <option [ngValue]="2">HTML (Rich Text)</option>
+              <option [ngValue]="1">Plain Text</option>
+            </select>
+            <img
+              src="./assets/images/settings/chevron-down.svg"
+              alt=""
+              width="12"
+              height="12"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" />
+          </div>
+        </div>
+
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-subject">
+            Email Subject <span class="text-danger">*</span>
+          </label>
+          <input
+            id="et-subject"
+            type="text"
+            class="ov-input"
+            placeholder="e.g. Your booking has been confirmed"
+            [(ngModel)]="subject" />
+        </div>
+      </div>
+
+      <!-- To Address & BCC Address Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-to">
+            To Address
+          </label>
+          <input
+            id="et-to"
+            type="text"
+            class="ov-input"
+            placeholder="e.g. {{ '{' + '{tenant_email}' + '}' }} or user@example.com"
+            [(ngModel)]="to_address" />
+        </div>
+
+        <div class="flex w-full flex-col gap-2">
+          <label class="text-xs font-semibold text-defaulttextcolor" for="et-bcc">
+            BCC Address
+          </label>
+          <input
+            id="et-bcc"
+            type="text"
+            class="ov-input"
+            placeholder="e.g. notifications@orvillerealestate.com"
+            [(ngModel)]="bcc_address" />
+        </div>
+      </div>
+
+      <!-- Rich Text Body Editor (ngx-editor) -->
+      <div class="flex w-full flex-col gap-2 pt-2">
+        <label class="text-xs font-semibold text-defaulttextcolor">
+          Template Body (Rich Text) <span class="text-danger">*</span>
+        </label>
+        <div
+          class="dt-editor overflow-hidden rounded-lg border border-defaultborder"
+          (dragover)="onEditorDragOver($event)"
+          (drop)="onEditorDrop($event)">
+          <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+          <ngx-editor
+            [editor]="editor"
+            [(ngModel)]="format"
+            [placeholder]="'Type your template content here or click merge tags on the right...'">
+          </ngx-editor>
+        </div>
+      </div>
+
+      <!-- Bottom Form Actions -->
+      <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-defaultborder">
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="button" class="ov-btn ov-btn-primary flex items-center gap-1.5" [disabled]="isSaving" (click)="save()">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm" role="status"></span>
+          <span>{{ isSaving ? 'Saving...' : (isEdit ? 'Update Template' : 'Save Template') }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Column: Merge Tags / Autofill Sidebar -->
+    <aside class="flex w-full shrink-0 flex-col gap-4 overflow-hidden rounded-xl border border-defaultborder bg-white px-4 py-5 dark:bg-bodybg lg:w-[360px]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base text-primary" aria-hidden="true">⚡</span>
+          <h3 class="m-0 text-sm font-semibold leading-normal text-defaulttextcolor">
+            Autofill Merge Tags
+          </h3>
+        </div>
+        <span *ngIf="loadingAutofill" class="spinner-border spinner-border-sm text-primary" role="status"></span>
+      </div>
+
+      <div class="rounded-lg border border-defaultborder bg-bodybg p-3 text-xs font-normal leading-normal text-textmuted">
+        Click or drag any merge tag below into the template body. Tags dynamically update based on the selected <strong>{{ formatFeatureName(feature) }}</strong> module.
+      </div>
+
+      <div class="flex w-full flex-col gap-2 max-h-[520px] overflow-y-auto pr-1">
+        <button
+          type="button"
+          *ngFor="let el of autofillElements"
+          draggable="true"
+          (dragstart)="onAutofillDragStart($event, el.tag)"
+          class="flex w-full cursor-pointer items-center justify-between rounded-lg border-0 bg-[#f4f5f8] px-3 py-2 text-left hover:bg-light/80 dark:bg-white/10 transition-colors"
+          (click)="insertAutofill(el.tag)"
+          [title]="'Click to insert ' + el.tag">
+          <span class="text-xs font-medium text-defaulttextcolor">{{ el.name }}</span>
+          <span class="text-[11px] font-mono text-primary bg-white px-1.5 py-0.5 rounded border border-defaultborder dark:bg-bodybg dark:text-white">{{ el.tag }}</span>
+        </button>
+
+        <div *ngIf="autofillElements.length === 0 && !loadingAutofill" class="p-4 text-center text-xs text-textmuted">
+          No merge tags found for this module.
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>

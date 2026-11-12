@@ -98,6 +98,29 @@ saveInspection(payload: any): Observable<any> {
     )
   );
 }
+saveEmailSmsTemplate(payload: any): Observable<any> {
+  return this.http.post(
+    environment.apiurl + 'api/Masters/save_email_sms_templates',
+    payload,
+    { headers: this.commonService.updateHeaders() }
+  ).pipe(
+    catchError(() =>
+      this.http.post(
+        environment.apiurl + 'api/Masters/Save_Email_SMS_Template',
+        payload,
+        { headers: this.commonService.updateHeaders() }
+      ).pipe(
+        catchError(() =>
+          this.http.post(
+            environment.apiurl + 'api/Masters/save_email_sms_template',
+            payload,
+            { headers: this.commonService.updateHeaders() }
+          )
+        )
+      )
+    )
+  );
+}
 //get master api calls
 private createPayload(options:any) {
   this.currentUser = this.commonService.getCurrentUser();

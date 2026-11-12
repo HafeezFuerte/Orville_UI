@@ -9,6 +9,7 @@ import { PortfolioService } from '../../../components/portfolio/services/portfol
 import { CommonService } from '../../../services/common.service';
 
 export interface ManualPropertyRow {
+  code?: string;
   propertyName: string;
   propertyType: number | null;
   totalUnits: number | null;
@@ -78,6 +79,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
   unitTypesList: any[] = [];
   roomTypesList: any[] = [];
   unitsByProperty: { [propertyCode: string]: any[] } = {};
+  existingDbRecords: any[] = [];
 
   // File Upload State
   selectedFile: File | null = null;
@@ -102,6 +104,11 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
   progressPercent = 0;
   currentProcessingName = '';
   errorLog: { row: number; name: string; message: string }[] = [];
+  duplicateCount = 0;
+  duplicateSkippedCount = 0;
+  duplicateDbCount = 0;
+  duplicateFileCount = 0;
+  duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[] = [];
 
   ngOnInit(): void {
     this.initRows();
@@ -175,6 +182,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
 
   createEmptyPropertyRow(): ManualPropertyRow {
     return {
+      code: '',
       propertyName: '',
       propertyType: this.propertyTypes.length > 0 ? this.propertyTypes[0].id : null,
       totalUnits: null,
@@ -279,34 +287,77 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         });
     }
 
-    // If unit or room, load properties list
-    if (this.entityType === 'unit' || this.entityType === 'room') {
-      this.portfolioService
-        .getMasterByType({ typeId: 11, filterId: 0, filterText: '', filterText1: '' })
-        .subscribe({
-          next: (res: any) => {
-            if (res?.statusCode === '200' && res?.objResult?.table) {
-              this.propertiesList = res.objResult.table;
-              if (this.propertiesList.length > 0) {
-                const firstPropCode = this.propertiesList[0].code || this.propertiesList[0].id;
-                if (this.entityType === 'unit') {
-                  this.manualUnitRows.forEach((r) => {
-                    if (!r.propertyId) r.propertyId = firstPropCode;
-                  });
-                }
-                if (this.entityType === 'room') {
-                  this.manualRoomRows.forEach((r) => {
-                    if (!r.propertyId) r.propertyId = firstPropCode;
-                  });
-                  this.getUnitsForProperty(firstPropCode);
-                }
+    // Load properties list for duplicate checking in properties and dropdowns in units/rooms
+    this.portfolioService
+      .getMasterByType({ typeId: 11, filterId: 0, filterText: '', filterText1: '' })
+      .subscribe({
+        next: (res: any) => {
+          if (res?.statusCode === '200' && res?.objResult?.table) {
+            this.propertiesList = res.objResult.table;
+            if (this.propertiesList.length > 0) {
+              const firstPropCode = this.propertiesList[0].code || this.propertiesList[0].id;
+              if (this.entityType === 'unit') {
+                this.manualUnitRows.forEach((r) => {
+                  if (!r.propertyId) r.propertyId = firstPropCode;
+                });
+              }
+              if (this.entityType === 'room') {
+                this.manualRoomRows.forEach((r) => {
+                  if (!r.propertyId) r.propertyId = firstPropCode;
+                });
+                this.getUnitsForProperty(firstPropCode);
               }
             }
+            this.updateCounters();
+          }
+        },
+      });
+
+    // Also fetch full properties list for comprehensive duplicate code coverage
+    if (this.entityType === 'property') {
+      const user = this.commonService.getCurrentUser();
+      this.propertiesService
+        .getProperties({
+          userid: user?.userId || 1,
+          company_id: user?.companyId || 1,
+          clientId: user?.clientId || '',
+          source: 'web',
+          languageid: 1,
+          page_no: 1,
+          seqno: 0,
+          search_keyword: '',
+          pagecount: 5000,
+          filter_by: '',
+          filter_list: '[]',
+          featureid: 'Property'
+        })
+        .subscribe({
+          next: (res: any) => {
+            if (res?.statusCode === '200' && Array.isArray(res.objResult?.property)) {
+              const list = res.objResult.property;
+              const currentList = [...this.propertiesList];
+              for (const p of list) {
+                const code = p.code || p.property_code;
+                const name = p.name || p.property_name;
+                if (
+                  !currentList.some(
+                    (ex) =>
+                      (code && (ex.code === code || ex.property_code === code)) ||
+                      (name && ex.name?.toLowerCase() === name?.toLowerCase())
+                  )
+                ) {
+                  currentList.push(p);
+                }
+              }
+              this.propertiesList = currentList;
+              this.updateCounters();
+            }
           },
+          error: () => {}
         });
     }
 
-    // If unit, load unit types (typeId: 2, filterId: 3)
+    // If unit, load unit types and existing DB units for duplicate detection
     if (this.entityType === 'unit') {
       this.portfolioService
         .getMasterByType({ typeId: 2, filterId: 3, filterText: '', filterText1: '' })
@@ -317,9 +368,35 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
             }
           },
         });
+
+      const user = this.commonService.getCurrentUser();
+      this.propertiesService
+        .getUnits({
+          userid: user?.userId || 1,
+          company_id: user?.companyId || 1,
+          clientId: user?.clientId || '',
+          source: 'web',
+          languageid: 1,
+          page_no: 1,
+          seqno: 0,
+          search_keyword: '',
+          pagecount: 5000,
+          filter_by: '',
+          filter_list: '[]',
+          featureid: 'Units'
+        })
+        .subscribe({
+          next: (res: any) => {
+            if (res?.statusCode === '200' && Array.isArray(res.objResult?.units)) {
+              this.existingDbRecords = res.objResult.units;
+              this.updateCounters();
+            }
+          },
+          error: () => {}
+        });
     }
 
-    // If room, load room types (typeId: 2, filterId: 15)
+    // If room, load room types and existing DB rooms for duplicate detection
     if (this.entityType === 'room') {
       this.portfolioService
         .getMasterByType({ typeId: 2, filterId: 15, filterText: '', filterText1: '' })
@@ -329,6 +406,70 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
               this.roomTypesList = res.objResult.table;
             }
           },
+        });
+
+      const user = this.commonService.getCurrentUser();
+      this.propertiesService
+        .getUnits({
+          userid: user?.userId || 1,
+          company_id: user?.companyId || 1,
+          clientId: user?.clientId || '',
+          source: 'web',
+          languageid: 1,
+          page_no: 1,
+          seqno: 0,
+          search_keyword: '',
+          pagecount: 5000,
+          filter_by: '',
+          filter_list: '[]',
+          featureid: 'Rooms'
+        })
+        .subscribe({
+          next: (res: any) => {
+            if (res?.statusCode === '200' && Array.isArray(res.objResult?.units)) {
+              this.existingDbRecords = res.objResult.units;
+              this.updateCounters();
+            }
+          },
+          error: () => {}
+        });
+    }
+
+    // Contact entities (tenants, landlords, vendors, technicians)
+    if (this.isContactEntity) {
+      const featMap: Record<string, string> = {
+        tenant: 'Tenants',
+        landlord: 'Landlords',
+        vendor: 'Vendors',
+        technician: 'Technicians'
+      };
+      const feat = featMap[this.entityType] || 'Tenants';
+      const user = this.commonService.getCurrentUser();
+
+      this.propertiesService
+        .getTenants({
+          userid: user?.userId || 1,
+          company_id: user?.companyId || 1,
+          clientId: user?.clientId || '',
+          source: 'web',
+          languageid: 1,
+          page_no: 1,
+          seqno: 0,
+          search_keyword: '',
+          pagecount: 5000,
+          filter_by: '',
+          filter_list: '[]',
+          featureid: feat
+        })
+        .subscribe({
+          next: (res: any) => {
+            const list = res?.objResult?.tenants || res?.objResult?.table || res?.objResult?.data;
+            if (res?.statusCode === '200' && Array.isArray(list)) {
+              this.existingDbRecords = list;
+              this.updateCounters();
+            }
+          },
+          error: () => {}
         });
     }
   }
@@ -386,37 +527,297 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     this.updateCounters();
   }
 
+  getExistingDbIdentifiers(): {
+    codes: Set<string>;
+    names: Set<string>;
+    emails: Set<string>;
+    mobiles: Set<string>;
+    unitKeys: Set<string>;
+    roomKeys: Set<string>;
+  } {
+    const codes = new Set<string>();
+    const names = new Set<string>();
+    const emails = new Set<string>();
+    const mobiles = new Set<string>();
+    const unitKeys = new Set<string>();
+    const roomKeys = new Set<string>();
+
+    if (this.entityType === 'property') {
+      if (Array.isArray(this.propertiesList)) {
+        for (const p of this.propertiesList) {
+          const c = (p.code || p.property_code || '').toString().trim().toUpperCase();
+          if (c) codes.add(c);
+          const n = (p.name || p.property_name || p.property || '').toString().trim().toUpperCase();
+          if (n) names.add(n);
+        }
+      }
+    } else if (this.entityType === 'unit') {
+      if (Array.isArray(this.existingDbRecords)) {
+        for (const u of this.existingDbRecords) {
+          const pId = (u.property_id || u.propertyId || u.property_code || '').toString().trim().toUpperCase();
+          const uNo = (u.unit_no || u.unitNo || u.name || u.unit_name || '').toString().trim().toUpperCase();
+          const c = (u.code || u.unit_code || '').toString().trim().toUpperCase();
+          if (c) codes.add(c);
+          if (uNo) names.add(uNo);
+          if (uNo) unitKeys.add(`${pId}:${uNo}`);
+        }
+      }
+    } else if (this.entityType === 'room') {
+      if (Array.isArray(this.existingDbRecords)) {
+        for (const r of this.existingDbRecords) {
+          const uId = (r.unit_id || r.unitId || r.unit_code || '').toString().trim().toUpperCase();
+          const rNo = (r.room_no || r.roomNo || r.name || r.room_name || '').toString().trim().toUpperCase();
+          const c = (r.code || r.room_code || '').toString().trim().toUpperCase();
+          if (c) codes.add(c);
+          if (rNo) names.add(rNo);
+          if (rNo) roomKeys.add(`${uId}:${rNo}`);
+        }
+      }
+    } else if (this.isContactEntity) {
+      if (Array.isArray(this.existingDbRecords)) {
+        for (const c of this.existingDbRecords) {
+          const em = (c.email || c.email_address || '').toString().trim().toUpperCase();
+          if (em) emails.add(em);
+          const mob = (c.mobile || c.mobile_no || c.phone || '').toString().trim().replace(/[^0-9]/g, '');
+          if (mob) mobiles.add(mob);
+          const cd = (c.code || c.contact_code || '').toString().trim().toUpperCase();
+          if (cd) codes.add(cd);
+          const fn = (c.name || `${c.first_name || ''} ${c.last_name || ''}`).toString().trim().toUpperCase();
+          if (fn) names.add(fn);
+        }
+      }
+    }
+
+    return { codes, names, emails, mobiles, unitKeys, roomKeys };
+  }
+
+  analyzeDuplicates(rawRows: any[]): {
+    uniqueRows: any[];
+    duplicateCount: number;
+    duplicateSkippedCount: number;
+    duplicateDbCount: number;
+    duplicateFileCount: number;
+    duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[];
+  } {
+    const { codes: dbCodes, names: dbNames, emails: dbEmails, mobiles: dbMobiles, unitKeys, roomKeys } = this.getExistingDbIdentifiers();
+    const seenBatchKeys = new Map<string, { firstIndex: number; count: number; row: any }>();
+    const duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[] = [];
+    const uniqueRows: any[] = [];
+
+    let duplicateDbCount = 0;
+    let duplicateFileCount = 0;
+
+    const getRowKey = (r: any): string => {
+      if (this.entityType === 'property') {
+        const c = (r.code || '').toString().trim().toUpperCase();
+        if (c) return `CODE:${c}`;
+        return `NAME:${(r.name || '').toString().trim().toUpperCase()}`;
+      } else if (this.entityType === 'unit') {
+        const pId = String(r.propertyId || '');
+        const uNo = (r.unitNo || r.name || '').toString().trim().toUpperCase();
+        return `UNIT:${pId}:${uNo}`;
+      } else if (this.entityType === 'room') {
+        const pId = String(r.propertyId || '');
+        const uId = String(r.unitId || '');
+        const rNo = (r.roomNo || r.name || '').toString().trim().toUpperCase();
+        return `ROOM:${pId}:${uId}:${rNo}`;
+      } else {
+        const email = (r.email || '').toString().trim().toUpperCase();
+        const mobile = (r.mobile || '').toString().trim().toUpperCase();
+        if (email) return `EMAIL:${email}`;
+        if (mobile) return `MOBILE:${mobile}`;
+        return `CONTACT:${(r.name || '').toString().trim().toUpperCase()}`;
+      }
+    };
+
+    for (let i = 0; i < rawRows.length; i++) {
+      const r = rawRows[i];
+      const rowNum = i + 1;
+      const key = getRowKey(r);
+      const codeVal = (r.code || '').toString().trim();
+      const nameVal = (r.name || '').toString().trim();
+
+      // Check DB duplication vs Update mode:
+      // If code is provided and exists in DB -> API performs an UPDATE (do not block)
+      // If code is NOT provided and name already exists in DB -> Block as accidental duplicate
+      let isDbDup = false;
+      let dbReason = '';
+
+      if (this.entityType === 'property') {
+        const normCode = codeVal.toUpperCase();
+        const normName = nameVal.toUpperCase();
+        if (normCode && dbCodes.has(normCode)) {
+          // Existing property code provided -> Update mode (send to API)
+          r.isUpdate = true;
+        } else if (!normCode && normName && dbNames.has(normName)) {
+          isDbDup = true;
+          dbReason = `Property with name '${nameVal}' already exists in database. To update it, please include the Property Code.`;
+        }
+      } else if (this.entityType === 'unit') {
+        const normCode = codeVal.toUpperCase();
+        const normUnitNo = (r.unitNo || nameVal).toString().trim().toUpperCase();
+        const pKey = String(r.propertyId || '').trim().toUpperCase();
+        if (normCode && dbCodes.has(normCode)) {
+          r.isUpdate = true;
+        } else if (!normCode && normUnitNo && unitKeys.has(`${pKey}:${normUnitNo}`)) {
+          isDbDup = true;
+          dbReason = `Unit '${normUnitNo}' already exists under this property. To update it, please include the Unit Code.`;
+        }
+      } else if (this.entityType === 'room') {
+        const normCode = codeVal.toUpperCase();
+        const normRoomNo = (r.roomNo || nameVal).toString().trim().toUpperCase();
+        const uKey = String(r.unitId || '').trim().toUpperCase();
+        if (normCode && dbCodes.has(normCode)) {
+          r.isUpdate = true;
+        } else if (!normCode && normRoomNo && roomKeys.has(`${uKey}:${normRoomNo}`)) {
+          isDbDup = true;
+          dbReason = `Room '${normRoomNo}' already exists under this unit. To update it, please include the Room Code.`;
+        }
+      } else if (this.isContactEntity) {
+        const normCode = codeVal.toUpperCase();
+        const normEmail = (r.email || '').toString().trim().toUpperCase();
+        const normMobile = (r.mobile || '').toString().trim().replace(/[^0-9]/g, '');
+        if (normCode && dbCodes.has(normCode)) {
+          r.isUpdate = true;
+        } else if (!normCode && normEmail && dbEmails.has(normEmail)) {
+          isDbDup = true;
+          dbReason = `${this.entityTitle} with email '${r.email}' already exists. To update it, please include the Code.`;
+        } else if (!normCode && normMobile && dbMobiles.has(normMobile)) {
+          isDbDup = true;
+          dbReason = `${this.entityTitle} with mobile '${r.mobile}' already exists. To update it, please include the Code.`;
+        }
+      }
+
+      if (isDbDup) {
+        duplicateDbCount++;
+        duplicateLogs.push({
+          row: rowNum,
+          name: nameVal,
+          code: codeVal,
+          reason: dbReason,
+          type: 'db'
+        });
+        r.isDuplicate = true;
+        r.duplicateReason = dbReason;
+        continue;
+      }
+
+      // Check intra-batch duplicate (e.g. 4 identical rows in the file)
+      if (seenBatchKeys.has(key)) {
+        const prev = seenBatchKeys.get(key)!;
+        prev.count++;
+        duplicateFileCount++;
+        const actionLabel = r.isUpdate ? 'update' : 'import';
+        const reason = `Duplicate row in file (matches row #${prev.firstIndex} with ${codeVal ? "code: '" + codeVal + "'" : "name: '" + nameVal + "'"}). Only first row will be ${actionLabel}d.`;
+        duplicateLogs.push({
+          row: rowNum,
+          name: nameVal,
+          code: codeVal,
+          reason,
+          type: 'batch'
+        });
+        r.isDuplicate = true;
+        r.duplicateReason = reason;
+      } else {
+        seenBatchKeys.set(key, { firstIndex: rowNum, count: 1, row: r });
+        r.isDuplicate = false;
+        r.duplicateReason = '';
+        uniqueRows.push(r);
+      }
+    }
+
+    // Total duplicate identified count
+    let groupedBatchDups = 0;
+    seenBatchKeys.forEach((val) => {
+      if (val.count > 1) {
+        groupedBatchDups += val.count;
+      }
+    });
+
+    const totalDuplicatesIdentified = duplicateDbCount + (groupedBatchDups > 0 ? groupedBatchDups : duplicateFileCount);
+    const duplicateSkippedCount = duplicateDbCount + duplicateFileCount;
+
+    return {
+      uniqueRows,
+      duplicateCount: totalDuplicatesIdentified,
+      duplicateSkippedCount,
+      duplicateDbCount,
+      duplicateFileCount,
+      duplicateLogs
+    };
+  }
+
   updateCounters(): void {
+    let rawList: any[] = [];
+
     if (this.activeTab === 'manual') {
       if (this.entityType === 'property') {
         const valid = this.manualPropertyRows.filter(
           (r) => r.propertyName && r.propertyName.trim().length > 0
         );
-        this.propertiesToBeImported = valid.length;
-        this.totalToImport = valid.length;
+        rawList = valid.map((r) => ({
+          code: (r.code || '').trim(),
+          name: r.propertyName.trim(),
+          propertyType: r.propertyType || this.propertyTypes[0]?.id || 1,
+          totalUnits: Number(r.totalUnits) || 0,
+          address1: r.address1 || '',
+          community: r.community || '',
+          prefix: '',
+          reference: '',
+          landNo: '',
+          floors: 0,
+          parkingSpaces: 0,
+        }));
       } else if (this.entityType === 'unit') {
         const valid = this.manualUnitRows.filter(
           (r) => r.unitName && r.unitName.trim().length > 0
         );
-        this.propertiesToBeImported = valid.length;
-        this.totalToImport = valid.length;
+        rawList = valid.map((r) => ({
+          name: r.unitName.trim(),
+          unitNo: r.unitNo || r.unitName.trim(),
+          propertyId: r.propertyId || this.propertiesList[0]?.id || 0,
+          unitType: r.unitType || this.unitTypesList[0]?.id || 1,
+          floor: Number(r.floor) || 0,
+          marketRent: Number(r.marketRent) || 0,
+        }));
       } else if (this.entityType === 'room') {
         const valid = this.manualRoomRows.filter(
           (r) => r.roomName && r.roomName.trim().length > 0
         );
-        this.propertiesToBeImported = valid.length;
-        this.totalToImport = valid.length;
+        rawList = valid.map((r) => ({
+          name: r.roomName.trim(),
+          roomNo: r.roomNo || r.roomName.trim(),
+          propertyId: r.propertyId || this.propertiesList[0]?.id || 0,
+          unitId: r.unitId || this.unitsList[0]?.id || 0,
+          roomType: r.roomType || this.roomTypesList[0]?.id || 1,
+          marketRent: Number(r.marketRent) || 0,
+        }));
       } else if (this.isContactEntity) {
         const valid = this.manualContactRows.filter(
           (r) => (r.firstName && r.firstName.trim().length > 0) || (r.lastName && r.lastName.trim().length > 0)
         );
-        this.propertiesToBeImported = valid.length;
-        this.totalToImport = valid.length;
+        rawList = valid.map((r) => ({
+          name: `${r.firstName} ${r.lastName}`.trim() || r.companyName || 'Contact',
+          firstName: r.firstName?.trim() || '',
+          lastName: r.lastName?.trim() || '',
+          email: r.email?.trim() || '',
+          mobile: r.mobile?.trim() || '',
+          companyName: r.companyName?.trim() || '',
+        }));
       }
     } else {
-      this.propertiesToBeImported = this.parsedFileRows.length;
-      this.totalToImport = this.parsedFileRows.length;
+      rawList = [...this.parsedFileRows];
     }
+
+    const dupResult = this.analyzeDuplicates(rawList);
+    this.duplicateCount = dupResult.duplicateCount;
+    this.duplicateSkippedCount = dupResult.duplicateSkippedCount;
+    this.duplicateDbCount = dupResult.duplicateDbCount;
+    this.duplicateFileCount = dupResult.duplicateFileCount;
+    this.duplicateLogs = dupResult.duplicateLogs;
+
+    this.propertiesToBeImported = dupResult.uniqueRows.length;
+    this.totalToImport = dupResult.uniqueRows.length;
   }
 
   // --- File Upload & Parsing ---
@@ -488,14 +889,22 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
             'Warning'
           );
         } else {
-          this.filePreviewHeaders = Object.keys(rawJson[0]).slice(0, 6);
-          this.filePreviewRows = rawJson.slice(0, 5);
-          this.toastr.success(
-            `Loaded ${this.parsedFileRows.length} valid ${this.entityPluralTitle.toLowerCase()} from file.`,
-            'File Parsed'
-          );
+          this.filePreviewHeaders = Object.keys(rawJson[0]).slice(0, 8);
+          this.filePreviewRows = rawJson.slice(0, 10);
+          this.updateCounters();
+
+          if (this.duplicateCount > 0) {
+            this.toastr.info(
+              `Loaded ${this.parsedFileRows.length} records. Identified ${this.duplicateCount} duplicate(s) (${this.propertiesToBeImported} unique to import).`,
+              'Duplicates Identified'
+            );
+          } else {
+            this.toastr.success(
+              `Loaded ${this.parsedFileRows.length} valid ${this.entityPluralTitle.toLowerCase()} from file.`,
+              'File Parsed'
+            );
+          }
         }
-        this.updateCounters();
       } catch (err) {
         console.error('Error parsing sheet:', err);
         this.toastr.error('Failed to parse file. Please verify file format.', 'Error');
@@ -517,6 +926,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     };
 
     if (this.entityType === 'property') {
+      const code = getVal('Property Code', 'PropertyCode', 'Code', 'code', 'property_code', 'Property_Code');
       const name = getVal('Property Name', 'PropertyName', 'Name', 'property_name', 'Property');
       const typeRaw = getVal('Property Type', 'PropertyType', 'Type', 'property_type');
       let typeId = 0;
@@ -532,6 +942,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
       }
 
       return {
+        code: String(code || '').trim(),
         name: String(name).trim(),
         propertyType: typeId,
         totalUnits: Number(getVal('Total Units', 'TotalUnits', 'Units', 'total_units')) || 0,
@@ -544,9 +955,11 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         parkingSpaces: Number(getVal('Parking Spaces', 'Parkings', 'parkingSpaces')) || 0,
       };
     } else if (this.entityType === 'unit') {
+      const code = getVal('Unit Code', 'UnitCode', 'Code', 'code', 'unit_code');
       const name = getVal('Unit Name', 'UnitName', 'Name', 'unit_name');
       const unitNo = getVal('Unit No', 'Unit Number', 'UnitNo', 'unit_no') || name;
       return {
+        code: String(code || '').trim(),
         name: String(name).trim(),
         unitNo: String(unitNo).trim(),
         propertyId: Number(getVal('Property ID', 'PropertyId', 'Property')) || (this.propertiesList[0]?.id || 0),
@@ -555,9 +968,11 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         marketRent: Number(getVal('Market Rent', 'MarketRent', 'Rent')) || 0,
       };
     } else if (this.entityType === 'room') {
+      const code = getVal('Room Code', 'RoomCode', 'Code', 'code', 'room_code');
       const name = getVal('Room Name', 'RoomName', 'Name', 'room_name');
       const roomNo = getVal('Room No', 'Room Number', 'RoomNo', 'room_no') || name;
       return {
+        code: String(code || '').trim(),
         name: String(name).trim(),
         roomNo: String(roomNo).trim(),
         propertyId: Number(getVal('Property ID', 'PropertyId', 'Property')) || (this.propertiesList[0]?.id || 0),
@@ -566,12 +981,14 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         marketRent: Number(getVal('Market Rent', 'MarketRent', 'Rent')) || 0,
       };
     } else {
+      const code = getVal('Code', 'Tenant Code', 'Landlord Code', 'Vendor Code', 'Technician Code', 'code');
       const firstName = getVal('First Name', 'FirstName', 'First_Name', 'first_name');
       const lastName = getVal('Last Name', 'LastName', 'Last_Name', 'last_name');
       const email = getVal('Email', 'Email Address', 'email', 'email_address');
       const mobile = getVal('Mobile', 'Phone', 'mobile_no', 'mobile', 'Phone Number', 'phone');
       const company = getVal('Company Name', 'Company', 'company_name');
       return {
+        code: String(code || '').trim(),
         name: `${firstName} ${lastName}`.trim() || String(company).trim(),
         firstName: String(firstName).trim(),
         lastName: String(lastName).trim(),
@@ -588,6 +1005,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
 
     if (this.entityType === 'property') {
       headers = [
+        'Property Code',
         'Property Name',
         'Property Type',
         'Total Units',
@@ -598,6 +1016,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Makani No',
       ];
       sampleRow = {
+        'Property Code': 'PR-101',
         'Property Name': 'Marina Horizon Tower',
         'Property Type': this.propertyTypes[0]?.name || 'Residential',
         'Total Units': 45,
@@ -608,8 +1027,9 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Makani No': '12345 67890',
       };
     } else if (this.entityType === 'unit') {
-      headers = ['Unit Name', 'Unit No', 'Property ID', 'Unit Type', 'Floor', 'Market Rent'];
+      headers = ['Unit Code', 'Unit Name', 'Unit No', 'Property ID', 'Unit Type', 'Floor', 'Market Rent'];
       sampleRow = {
+        'Unit Code': 'U-101',
         'Unit Name': 'Flat 101',
         'Unit No': '101',
         'Property ID': this.propertiesList[0]?.id || 1,
@@ -618,8 +1038,9 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Market Rent': 65000,
       };
     } else if (this.entityType === 'room') {
-      headers = ['Room Name', 'Room No', 'Property ID', 'Unit ID', 'Room Type', 'Market Rent'];
+      headers = ['Room Code', 'Room Name', 'Room No', 'Property ID', 'Unit ID', 'Room Type', 'Market Rent'];
       sampleRow = {
+        'Room Code': 'R-101',
         'Room Name': 'Master Bedroom',
         'Room No': 'MB-01',
         'Property ID': this.propertiesList[0]?.id || 1,
@@ -628,8 +1049,9 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Market Rent': 2500,
       };
     } else if (this.entityType === 'tenant') {
-      headers = ['First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
+      headers = ['Tenant Code', 'First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
       sampleRow = {
+        'Tenant Code': 'TEN-001',
         'First Name': 'Ahmed',
         'Last Name': 'Ali',
         Email: 'ahmed.ali@example.com',
@@ -637,8 +1059,9 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Company Name': 'Al Futtaim LLC',
       };
     } else if (this.entityType === 'landlord') {
-      headers = ['First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
+      headers = ['Landlord Code', 'First Name', 'Last Name', 'Email', 'Mobile', 'Company Name'];
       sampleRow = {
+        'Landlord Code': 'LL-001',
         'First Name': 'Mohammed',
         'Last Name': 'Al Maktoum',
         Email: 'mohammed.m@example.com',
@@ -646,16 +1069,18 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         'Company Name': 'Emaar Properties',
       };
     } else if (this.entityType === 'technician') {
-      headers = ['First Name', 'Last Name', 'Email', 'Mobile'];
+      headers = ['Technician Code', 'First Name', 'Last Name', 'Email', 'Mobile'];
       sampleRow = {
+        'Technician Code': 'TECH-001',
         'First Name': 'Suresh',
         'Last Name': 'Kumar',
         Email: 'suresh.k@example.com',
         Mobile: '+971505551234',
       };
     } else if (this.entityType === 'vendor') {
-      headers = ['Company Name', 'First Name', 'Last Name', 'Email', 'Mobile'];
+      headers = ['Vendor Code', 'Company Name', 'First Name', 'Last Name', 'Email', 'Mobile'];
       sampleRow = {
+        'Vendor Code': 'VEN-001',
         'Company Name': 'Rapid AC Maintenance',
         'First Name': 'Tariq',
         'Last Name': 'Mansoor',
@@ -672,7 +1097,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
 
   // --- Start Import Process ---
   async startImport(): Promise<void> {
-    const rowsToProcess: any[] = [];
+    const rawList: any[] = [];
 
     if (this.activeTab === 'manual') {
       if (this.entityType === 'property') {
@@ -684,7 +1109,8 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
           return;
         }
         for (const r of valid) {
-          rowsToProcess.push({
+          rawList.push({
+            code: (r.code || '').trim(),
             name: r.propertyName.trim(),
             propertyType: r.propertyType || this.propertyTypes[0]?.id || 1,
             totalUnits: Number(r.totalUnits) || 0,
@@ -706,7 +1132,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
           return;
         }
         for (const r of valid) {
-          rowsToProcess.push({
+          rawList.push({
             name: r.unitName.trim(),
             unitNo: r.unitNo || r.unitName.trim(),
             propertyId: r.propertyId || this.propertiesList[0]?.id || 0,
@@ -724,7 +1150,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
           return;
         }
         for (const r of valid) {
-          rowsToProcess.push({
+          rawList.push({
             name: r.roomName.trim(),
             roomNo: r.roomNo || r.roomName.trim(),
             propertyId: r.propertyId || this.propertiesList[0]?.id || 0,
@@ -742,7 +1168,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
           return;
         }
         for (const r of valid) {
-          rowsToProcess.push({
+          rawList.push({
             name: `${r.firstName} ${r.lastName}`.trim() || r.companyName || 'Contact',
             firstName: r.firstName?.trim() || '',
             lastName: r.lastName?.trim() || '',
@@ -757,7 +1183,29 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         this.toastr.warning('Please select a file with valid records to import.', 'No File Data');
         return;
       }
-      rowsToProcess.push(...this.parsedFileRows);
+      rawList.push(...this.parsedFileRows);
+    }
+
+    // Run duplicate identification and filter unique records
+    const dupResult = this.analyzeDuplicates(rawList);
+    this.duplicateCount = dupResult.duplicateCount;
+    this.duplicateSkippedCount = dupResult.duplicateSkippedCount;
+    this.duplicateDbCount = dupResult.duplicateDbCount;
+    this.duplicateFileCount = dupResult.duplicateFileCount;
+    this.duplicateLogs = dupResult.duplicateLogs;
+
+    const rowsToProcess = dupResult.uniqueRows;
+
+    if (rowsToProcess.length === 0) {
+      if (this.duplicateCount > 0) {
+        this.toastr.warning(
+          `All ${this.duplicateCount} record(s) are duplicates (already exist in system or duplicated in file). No records to import.`,
+          'Duplicates Detected'
+        );
+      } else {
+        this.toastr.warning('No valid records to import.', 'Validation');
+      }
+      return;
     }
 
     this.totalToImport = rowsToProcess.length;
@@ -773,7 +1221,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     for (let i = 0; i < rowsToProcess.length; i++) {
       const item = rowsToProcess[i];
       const rowNum = i + 1;
-      this.currentProcessingName = item.name;
+      this.currentProcessingName = item.code ? `${item.name} (${item.code})` : item.name;
 
       try {
         if (this.entityType === 'property') {
@@ -809,8 +1257,9 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     this.currentStep = 'completed';
 
     if (this.propertiesImported > 0) {
+      const dupInfo = this.duplicateCount > 0 ? ` (${this.duplicateCount} duplicates identified, ${this.duplicateSkippedCount} skipped)` : '';
       this.toastr.success(
-        `Import completed: ${this.propertiesImported} of ${this.totalToImport} ${this.entityPluralTitle.toLowerCase()} imported successfully!`,
+        `Import completed: ${this.propertiesImported} of ${this.totalToImport} ${this.entityPluralTitle.toLowerCase()} imported successfully!${dupInfo}`,
         'Import Complete'
       );
     } else {
@@ -830,7 +1279,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       const request = {
         userid: Number(user?.userId) || 1,
-        code: '',
+        code: row.code || '',
         source: 'web',
         company_id: Number(user?.companyId) || 1,
         tenantId: '',
@@ -868,6 +1317,10 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
       this.propertiesService.addProperty(formData).subscribe({
         next: (res: any) => {
           if (res?.statusCode === '200' || res?.status === 200 || !res?.isError) {
+            const newCode = row.code || res?.objResult?.code || '';
+            if (newCode || row.name) {
+              this.propertiesList.push({ code: newCode, name: row.name });
+            }
             resolve(res);
           } else {
             reject(new Error(res?.message || 'Failed to save property'));
@@ -887,6 +1340,8 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         source: 'web',
         clientId: user?.clientId || '',
         unit_id: 0,
+        code: row.code || '',
+        unit_code: row.code || '',
         property_id: Number(row.propertyId) || 0,
         property_code: propCode,
         unit_name: row.name,
@@ -924,6 +1379,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         source: 'web',
         clientId: user?.clientId || '',
         room_id: 0,
+        code: row.code || '',
         property_id: Number(row.propertyId) || 0,
         unit_id: Number(row.unitId) || 0,
         property_code: propCode,
@@ -932,7 +1388,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         room_status: 1,
         room_name: row.name,
         room_no: row.roomNo || row.name,
-        room_code: row.roomNo || row.name,
+        room_code: row.code || row.roomNo || row.name,
         room_type: Number(row.roomType) || 1,
         market_rent: Number(row.marketRent) || 0,
         desc: '',
@@ -963,7 +1419,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         source: 'web',
         languageid: 1,
         email_address: row.email || '',
-        code: '',
+        code: row.code || '',
         id: 0,
         username: '',
         profileImage_path: '',
@@ -1027,7 +1483,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         source: 'web',
         languageid: 1,
         email_address: row.email || '',
-        code: '',
+        code: row.code || '',
         id: 0,
         username: '',
         profileImage_path: '',
@@ -1105,7 +1561,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         email_id: row.email || '',
         emailid: row.email || '',
         emailId: row.email || '',
-        code: '',
+        code: row.code || '',
         id: 0,
         username: '',
         profileImage_path: '',
@@ -1150,7 +1606,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
         source: 'web',
         languageid: 1,
         email_address: row.email || '',
-        code: '',
+        code: row.code || '',
         id: 0,
         username: '',
         profileImage_path: '',

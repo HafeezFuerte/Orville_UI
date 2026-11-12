@@ -3,13 +3,14 @@ import { Component, ElementRef, HostListener, OnInit, inject } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import { CommonService } from '../../../services/common.service';
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { environment } from '../../../../environments/environment';
 import { OvPaginatorComponent } from '../../../shared/components/ov-paginator/ov-paginator.component';
 import {
-  DEFAULT_EMAIL_TEMPLATES,
   EMAIL_TEMPLATE_TARGETS,
   EmailTemplateColumnDef,
   EmailTemplateRow,
@@ -17,13 +18,13 @@ import {
 } from './email-templates.data';
 
 type TargetFilter = 'all' | EmailTemplateTarget;
-type SortKey = 'name' | 'description' | 'target';
+type SortKey = 'name' | 'target';
 type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-email-templates',
   standalone: true,
-  imports: [CommonModule, FormsModule, OvPaginatorComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, OvPaginatorComponent, TranslateModule],
   templateUrl: './email-templates.component.html',
   styleUrl: './email-templates.component.scss',
 })
@@ -31,15 +32,13 @@ export class EmailTemplatesComponent implements OnInit {
   private http = inject(HttpClient);
   private toastr = inject(ToastrService);
   private commonService = inject(CommonService);
+  private router = inject(Router);
 
   searchQuery = '';
   columnSearch = '';
   targetFilter: TargetFilter = 'all';
   showColumns = false;
   openMenuId: number | null = null;
-  previewOpen = false;
-  previewRow: EmailTemplateRow | null = null;
-  editingDescription = '';
   isLoading = false;
   isSaving = false;
 
@@ -48,100 +47,140 @@ export class EmailTemplatesComponent implements OnInit {
   pageSize = 10;
   pageIndex = 0;
 
-  rows: EmailTemplateRow[] = DEFAULT_EMAIL_TEMPLATES.map((r) => ({ ...r }));
+  // Zero static mock data by default
+  rows: EmailTemplateRow[] = [];
 
   readonly targets = EMAIL_TEMPLATE_TARGETS;
 
   columns: EmailTemplateColumnDef[] = [
     { key: 'name', label: 'Name', visible: true },
-    { key: 'description', label: 'Description', visible: true },
     { key: 'target', label: 'Target', visible: true },
     { key: 'actions', label: 'Actions', visible: true },
   ];
 
   private static readonly STORAGE_KEY = 'orville_email_templates';
 
-  constructor(private readonly host: ElementRef<HTMLElement>) {}
+  constructor(
+    private readonly host: ElementRef<HTMLElement>,
+    private commonTabsService: Common_TabsService
+  ) {}
 
   ngOnInit(): void {
-    this.loadCachedTemplates();
+    this.purgeLegacyMockData();
     this.fetchEmailTemplates();
   }
 
-  private loadCachedTemplates(): void {
+  /**
+   * Purge any static mockup data (e.g. legacy 123 items without real user-saved content)
+   */
+  private purgeLegacyMockData(): void {
     try {
       const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          this.rows = parsed;
+        if (Array.isArray(parsed)) {
+          // Keep only legitimate user-created or API-fetched templates (must have body format or explicit user-saved tag)
+          const validOnly = parsed.filter(
+            (item: any) =>
+              item &&
+              (item.is_user_saved === true ||
+               (typeof item.format === 'string' && item.format.trim().length > 0) ||
+               (item.feature && item.subject))
+          );
+          this.rows = validOnly;
+          localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(validOnly));
+          return;
         }
       }
     } catch (e) {
       console.error('Failed to parse cached email_templates:', e);
+      localStorage.removeItem(EmailTemplatesComponent.STORAGE_KEY);
     }
+    this.rows = [];
+  }
+
+  private getLocalValidTemplates(): EmailTemplateRow[] {
+    try {
+      const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(
+            (item: any) =>
+              item &&
+              (item.is_user_saved === true ||
+               (typeof item.format === 'string' && item.format.trim().length > 0) ||
+               (item.feature && item.subject))
+          );
+        }
+      }
+    } catch {}
+    return [];
   }
 
   fetchEmailTemplates(): void {
     this.isLoading = true;
     const user = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 2,
-      filterId: 1005,
-      filterText: 'email_templates',
+
+    // Use typeId: 104 for fetching email/SMS template records
+    const mastersPayload = {
+      typeId: 104,
+      filterId: 0,
+      filterText: this.searchQuery || '',
       filterText1: '',
       userId: Number(user?.userId) || 1,
       clientId: user?.clientId || '74BB6922',
       companyId: Number(user?.companyId) || 1,
     };
 
-    const url = environment.apiurl + 'api/Masters/_getMasters';
-    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
-      next: (res) => {
+    this.commonTabsService.getMasterByType(mastersPayload).subscribe({
+      next: (res: any) => {
         this.isLoading = false;
-        if (res?.statusCode === '200' && res.objResult) {
-          const records = res.objResult.table || res.objResult.table0 || res.objResult;
-          if (Array.isArray(records) && records.length > 0 && records[0].strValue) {
-            try {
-              const parsed = JSON.parse(records[0].strValue);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                this.rows = parsed;
-                localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(this.rows));
-                return;
-              }
-            } catch (e) {
-              console.error('Failed to parse email_templates strValue:', e);
-            }
+        let apiRows: EmailTemplateRow[] = [];
+        if (res && (res.statusCode === 200 || res.statusCode === '200') && res.objResult) {
+          const rawItems = res.objResult.table || res.objResult.table0 || res.objResult.email_templates || res.objResult;
+          if (Array.isArray(rawItems) && rawItems.length > 0) {
+            apiRows = rawItems.map((r: any, idx: number) => {
+              const feat = (r.feature || '').toUpperCase();
+              const derivedTarget = r.target || (
+                feat.includes('TENANT') ? 'Tenant' :
+                feat.includes('LANDLORD') || feat.includes('OWNER') ? 'Landlord' :
+                feat.includes('VENDOR') ? 'Vendor' : 'Property Manager'
+              );
+
+              return {
+                id: r.id || r.code || idx + 1,
+                name: r.template_name || r.name || 'Untitled Template',
+                target: derivedTarget,
+                code: r.code || String(r.id || ''),
+                feature: r.feature || '',
+                subject: r.subject || '',
+                to_address: r.to_address || '',
+                bcc_address: r.bcc_address || '',
+                format: r.format || '',
+                template_type: r.template_type ?? 0,
+                format_type: r.format_type ?? 0,
+                is_user_saved: true
+              };
+            });
           }
         }
-        // If backend returned -200 or empty, keep cached templates if they exist
-        const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              this.rows = parsed;
-              return;
-            }
-          } catch (e) {}
+
+        const local = this.getLocalValidTemplates();
+        const merged = [...local];
+        for (const item of apiRows) {
+          if (!merged.some(m => (m.code && m.code === item.code) || (m.name && m.name === item.name))) {
+            merged.push(item);
+          }
         }
-        this.rows = DEFAULT_EMAIL_TEMPLATES.map((r) => ({ ...r }));
+        this.rows = merged;
+        localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(merged));
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
-        console.error('Error fetching email templates:', err);
-        const cached = localStorage.getItem(EmailTemplatesComponent.STORAGE_KEY);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              this.rows = parsed;
-              return;
-            }
-          } catch (e) {}
-        }
-        this.rows = DEFAULT_EMAIL_TEMPLATES.map((r) => ({ ...r }));
-      },
+        console.error('Error fetching email templates with typeId: 104:', err);
+        this.rows = this.getLocalValidTemplates();
+      }
     });
   }
 
@@ -171,8 +210,9 @@ export class EmailTemplatesComponent implements OnInit {
       }
       return (
         row.name.toLowerCase().includes(q) ||
-        row.description.toLowerCase().includes(q) ||
-        row.target.toLowerCase().includes(q)
+        row.target.toLowerCase().includes(q) ||
+        (row.feature ? row.feature.toLowerCase().includes(q) : false) ||
+        (row.description ? row.description.toLowerCase().includes(q) : false)
       );
     });
 
@@ -197,18 +237,27 @@ export class EmailTemplatesComponent implements OnInit {
   get tableGridTemplate(): string {
     const parts: string[] = [];
     if (this.isColumnVisible('name')) {
-      parts.push('minmax(220px, 1.4fr)');
-    }
-    if (this.isColumnVisible('description')) {
-      parts.push('minmax(160px, 1fr)');
+      parts.push('minmax(280px, 2fr)');
     }
     if (this.isColumnVisible('target')) {
-      parts.push('minmax(140px, 0.8fr)');
+      parts.push('minmax(180px, 1fr)');
     }
     if (this.isColumnVisible('actions')) {
       parts.push('72px');
     }
     return parts.join(' ');
+  }
+
+  navigateToAdd(): void {
+    this.router.navigate(['/settings/email-templates/new']);
+  }
+
+  editTemplate(row: EmailTemplateRow): void {
+    this.openMenuId = null;
+    const code = row.code || row.id;
+    this.router.navigate(['/settings/email-templates/edit', code], {
+      state: { templateData: row }
+    });
   }
 
   get filteredColumns(): EmailTemplateColumnDef[] {
@@ -224,15 +273,15 @@ export class EmailTemplatesComponent implements OnInit {
   }
 
   get emptyMessage(): string {
-    return 'No email templates match your filters.';
+    return 'No email templates found. Click "+ Add Template" to create one.';
   }
 
   isColumnVisible(key: string): boolean {
     return this.columns.find((c) => c.key === key)?.visible !== false;
   }
 
-  descriptionDisplay(value: string): string {
-    return value.trim() ? value : '—';
+  descriptionDisplay(value?: string): string {
+    return (value && value.trim()) ? value : '—';
   }
 
   setTargetFilter(id: TargetFilter): void {
@@ -289,76 +338,19 @@ export class EmailTemplatesComponent implements OnInit {
     this.openMenuId = this.openMenuId === id ? null : id;
   }
 
-  openPreview(row: EmailTemplateRow): void {
-    this.previewRow = { ...row };
-    this.editingDescription = row.description || '';
-    this.previewOpen = true;
-    this.openMenuId = null;
-  }
-
-  saveTemplate(): void {
-    if (!this.previewRow || this.isSaving) {
-      return;
-    }
-    this.isSaving = true;
-    const updatedRows = this.rows.map((r) =>
-      r.id === this.previewRow!.id ? { ...r, description: this.editingDescription.trim() } : r
-    );
-
-    this.rows = updatedRows;
-    localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(this.rows));
-
-    const user = this.commonService.getCurrentUser();
-    const payload = {
-      typeId: 90,
-      filterId: 1005,
-      filterText: 'email_templates',
-      filterText1: JSON.stringify(updatedRows),
-      userId: Number(user?.userId) || 1,
-      clientId: user?.clientId || '74BB6922',
-      companyId: Number(user?.companyId) || 1,
-    };
-
-    const url = environment.apiurl + 'api/Masters/_getMasters';
-    this.http.post<any>(url, payload, { headers: this.commonService.updateHeaders() }).subscribe({
-      next: (res) => {
-        this.isSaving = false;
-        if (res?.statusCode === '200') {
-          this.toastr.success('Email template updated successfully', 'Success');
-          this.closePreview();
-        } else {
-          this.toastr.error(res?.message || 'Failed to update email template', 'Error');
-        }
-      },
-      error: (err) => {
-        this.isSaving = false;
-        console.error('Error saving email template:', err);
-        const errMsg = err.error?.message || err.error?.title || 'Failed to update email template';
-        this.toastr.error(errMsg, 'Error');
-      },
-    });
-  }
-
-  closePreview(): void {
-    this.previewOpen = false;
-    this.previewRow = null;
-    this.editingDescription = '';
-  }
-
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    const target = event.target as Node | null;
-    if (this.showColumns) {
-      const root = this.host.nativeElement.querySelector('[data-columns-dropdown]');
-      if (root && target && !root.contains(target)) {
-        this.showColumns = false;
-      }
+    const target = event.target as HTMLElement;
+    if (!this.host.nativeElement.contains(target)) {
+      this.showColumns = false;
+      this.openMenuId = null;
+      return;
     }
-    if (this.openMenuId != null) {
-      const root = this.host.nativeElement.querySelector(`[data-row-menu="${this.openMenuId}"]`);
-      if (root && target && !root.contains(target)) {
-        this.openMenuId = null;
-      }
+    if (this.showColumns && !target.closest('[data-columns-dropdown]')) {
+      this.showColumns = false;
+    }
+    if (this.openMenuId !== null && !target.closest('[data-row-menu]')) {
+      this.openMenuId = null;
     }
   }
 }
