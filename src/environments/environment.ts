@@ -9,6 +9,7 @@ export const environment = {
          //apiurl: "https://localhost:7093/",
           // apiurl: "http://development.orvillerealestate.com/",
         apiurl: "https://appapi.orvillerealestate.com/",
+        //apiurl:"http://stageapi.orvillerealestate.com/",
 
   firebase: {
     authDomain: "************************",

@@ -335,27 +335,27 @@
               <li
                 *ngFor="let item of notifications"
                 class="ov-notify-item"
-                [class.ov-notify-item--unread]="item.unread"
-                [id]="item.id">
+                [class.ov-notify-item--unread]="item.is_read"
+                [id]="item.code">
                 <span class="ov-notify-item__icon" [attr.data-tone]="item.tone" aria-hidden="true">
                   <i [class]="item.icon"></i>
                 </span>
                 <div class="ov-notify-item__body">
                   <a href="javascript:void(0);" class="ov-notify-item__title">
-                    {{ item.title }}
-                    <span *ngIf="item.titleAccent" class="ov-notify-item__accent" [attr.data-tone]="item.tone">
+                    {{ item.description }}
+                    <!-- <span *ngIf="item.titleAccent" class="ov-notify-item__accent" [attr.data-tone]="item.tone">
                       {{ item.titleAccent }}
-                    </span>
+                    </span> -->
                   </a>
-                  <p class="ov-notify-item__text header-notification-text">{{ item.body }}</p>
+                  <p class="ov-notify-item__text header-notification-text">{{ item.message }}</p>
                 </div>
                 <div class="ov-notify-item__meta">
-                  <span class="ov-notify-item__time">{{ item.time }}</span>
+                  <span class="ov-notify-item__time">{{ item.format_time }}</span>
                   <button
                     type="button"
                     class="ov-notify-item__close"
                     aria-label="Dismiss notification"
-                    (click)="removeNotify(item.id)">
+                    (click)="removeNotify(item.code)">
                     <i class="ti ti-x"></i>
                   </button>
                 </div>

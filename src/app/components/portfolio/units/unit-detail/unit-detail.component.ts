@@ -69,6 +69,9 @@ export interface Unit {
   marketingDescription?: string;
   unitDetailsText?: string;
   amenities?: any[];
+  no_of_washrooms?: number;
+  number_of_balconies?: string;
+  total_area_sq_feet?: string;
 }
 
 import { ReusableModalComponent } from '../../reusable-modal/reusable-modal.component';
@@ -257,6 +260,9 @@ export class UnitDetailComponent implements OnInit {
               alertMessage: detail.alert_message || '-',
               marketingTitle: detail.marketing_title || '-',
               marketingDescription: detail.marketing_description || '-',
+              total_area_sq_feet :detail.total_area_sq_feet || '',
+              no_of_washrooms:detail.no_of_washrooms || 0,
+              number_of_balconies:detail.number_of_balconies,
               unitDetailsText: detail.desc || detail.unit_details || detail.description || '-',
               amenities: detail.amenities || []
             };

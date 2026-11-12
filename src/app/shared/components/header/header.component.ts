@@ -39,69 +39,70 @@ export class HeaderComponent {
 
   cartItemCount: number = 5;
   public isCollapsed = true;
+  notificationCount:number=0;
+  notifications :any[]=[];
+  // notifications: Array<{
+  //   id: string;
+  //   title: string;
+  //   titleAccent?: string;
+  //   body: string;
+  //   icon: string;
+  //   tone: 'primary' | 'info' | 'pink' | 'warning' | 'success';
+  //   time: string;
+  //   unread: boolean;
+  // }> = [
+  //   {
+  //     id: 'not1',
+  //     title: 'Your Order Has Been Shipped',
+  //     body: 'Order No: 123456 Has Shipped To Your Delivery Address',
+  //     icon: 'ti ti-gift',
+  //     tone: 'primary',
+  //     time: '2m',
+  //     unread: true,
+  //   },
+  //   {
+  //     id: 'not2',
+  //     title: 'Discount Available',
+  //     body: 'Discount Available On Selected Products',
+  //     icon: 'ti ti-discount-2',
+  //     tone: 'info',
+  //     time: '18m',
+  //     unread: true,
+  //   },
+  //   {
+  //     id: 'not3',
+  //     title: 'Account Has Been Verified',
+  //     body: 'Your Account Has Been Verified Sucessfully',
+  //     icon: 'ti ti-user-check',
+  //     tone: 'pink',
+  //     time: '1h',
+  //     unread: true,
+  //   },
+  //   {
+  //     id: 'not4',
+  //     title: 'Order Placed',
+  //     titleAccent: 'ID: #1116773',
+  //     body: 'Order Placed Successfully',
+  //     icon: 'ti ti-circle-check',
+  //     tone: 'warning',
+  //     time: '3h',
+  //     unread: true,
+  //   },
+  //   {
+  //     id: 'not5',
+  //     title: 'Order Delayed',
+  //     titleAccent: 'ID: 7731116',
+  //     body: 'Order Delayed Unfortunately',
+  //     icon: 'ti ti-clock',
+  //     tone: 'success',
+  //     time: 'Yesterday',
+  //     unread: true,
+  //   },
+  // ];
 
-  notifications: Array<{
-    id: string;
-    title: string;
-    titleAccent?: string;
-    body: string;
-    icon: string;
-    tone: 'primary' | 'info' | 'pink' | 'warning' | 'success';
-    time: string;
-    unread: boolean;
-  }> = [
-    {
-      id: 'not1',
-      title: 'Your Order Has Been Shipped',
-      body: 'Order No: 123456 Has Shipped To Your Delivery Address',
-      icon: 'ti ti-gift',
-      tone: 'primary',
-      time: '2m',
-      unread: true,
-    },
-    {
-      id: 'not2',
-      title: 'Discount Available',
-      body: 'Discount Available On Selected Products',
-      icon: 'ti ti-discount-2',
-      tone: 'info',
-      time: '18m',
-      unread: true,
-    },
-    {
-      id: 'not3',
-      title: 'Account Has Been Verified',
-      body: 'Your Account Has Been Verified Sucessfully',
-      icon: 'ti ti-user-check',
-      tone: 'pink',
-      time: '1h',
-      unread: true,
-    },
-    {
-      id: 'not4',
-      title: 'Order Placed',
-      titleAccent: 'ID: #1116773',
-      body: 'Order Placed Successfully',
-      icon: 'ti ti-circle-check',
-      tone: 'warning',
-      time: '3h',
-      unread: true,
-    },
-    {
-      id: 'not5',
-      title: 'Order Delayed',
-      titleAccent: 'ID: 7731116',
-      body: 'Order Delayed Unfortunately',
-      icon: 'ti ti-clock',
-      tone: 'success',
-      time: 'Yesterday',
-      unread: true,
-    },
-  ];
-
-  get notificationCount(): number {
-    return this.notifications.filter((n) => n.unread).length;
-  }
+  // get notificationCount(): number {
+  //   return this.notifications.filter((n) => n.is_read).length;
+  // }
 
   get isNotifyEmpty(): boolean {
     return this.notifications.length === 0;
@@ -137,7 +138,13 @@ export class HeaderComponent {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult && res.objResult.table) {  
-          this.buildings=res.objResult.table; 
+          if(typeId==11)
+            this.buildings=res.objResult.table; 
+          else if (typeId==105){
+            this.notifications=res.objResult.table;
+            this.notificationCount= this.notifications.filter((n) => !n.is_read).length
+          }
+         
         }
         
       },
@@ -269,6 +276,7 @@ export class HeaderComponent {
     const htmlElement = this.elementRef.nativeElement.ownerDocument.documentElement;
     this.renderer.setAttribute(htmlElement, 'dir', savedLang === 'AR' ? 'rtl' : 'ltr');
     this.loadLookup(11,0,'','');
+    this.loadLookup(105,0,'','');
     this.navServices.items.subscribe((menuItems) => {
       this.items = menuItems;
     });
@@ -355,11 +363,11 @@ export class HeaderComponent {
     }
   }
   removeNotify(id: string): void {
-    this.notifications = this.notifications.filter((item) => item.id !== id);
+    this.notifications = this.notifications.filter((item) => item.code !== id);
   }
 
   markAllNotificationsRead(): void {
-    this.notifications = this.notifications.map((item) => ({ ...item, unread: false }));
+    this.notifications = this.notifications.map((item) => ({ ...item, is_read: false }));
   }
   handleCardClick(event: MouseEvent) {
     // Prevent the click event from propagating to the container
