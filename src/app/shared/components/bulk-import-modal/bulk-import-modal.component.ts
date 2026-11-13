@@ -104,11 +104,11 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
   progressPercent = 0;
   currentProcessingName = '';
   errorLog: { row: number; name: string; message: string }[] = [];
+  toInsertCount = 0;
+  toUpdateCount = 0;
   duplicateCount = 0;
   duplicateSkippedCount = 0;
-  duplicateDbCount = 0;
-  duplicateFileCount = 0;
-  duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[] = [];
+  duplicateLogs: any[] = [];
 
   ngOnInit(): void {
     this.initRows();
@@ -527,224 +527,24 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     this.updateCounters();
   }
 
-  getExistingDbIdentifiers(): {
-    codes: Set<string>;
-    names: Set<string>;
-    emails: Set<string>;
-    mobiles: Set<string>;
-    unitKeys: Set<string>;
-    roomKeys: Set<string>;
-  } {
-    const codes = new Set<string>();
-    const names = new Set<string>();
-    const emails = new Set<string>();
-    const mobiles = new Set<string>();
-    const unitKeys = new Set<string>();
-    const roomKeys = new Set<string>();
-
-    if (this.entityType === 'property') {
-      if (Array.isArray(this.propertiesList)) {
-        for (const p of this.propertiesList) {
-          const c = (p.code || p.property_code || '').toString().trim().toUpperCase();
-          if (c) codes.add(c);
-          const n = (p.name || p.property_name || p.property || '').toString().trim().toUpperCase();
-          if (n) names.add(n);
-        }
-      }
-    } else if (this.entityType === 'unit') {
-      if (Array.isArray(this.existingDbRecords)) {
-        for (const u of this.existingDbRecords) {
-          const pId = (u.property_id || u.propertyId || u.property_code || '').toString().trim().toUpperCase();
-          const uNo = (u.unit_no || u.unitNo || u.name || u.unit_name || '').toString().trim().toUpperCase();
-          const c = (u.code || u.unit_code || '').toString().trim().toUpperCase();
-          if (c) codes.add(c);
-          if (uNo) names.add(uNo);
-          if (uNo) unitKeys.add(`${pId}:${uNo}`);
-        }
-      }
-    } else if (this.entityType === 'room') {
-      if (Array.isArray(this.existingDbRecords)) {
-        for (const r of this.existingDbRecords) {
-          const uId = (r.unit_id || r.unitId || r.unit_code || '').toString().trim().toUpperCase();
-          const rNo = (r.room_no || r.roomNo || r.name || r.room_name || '').toString().trim().toUpperCase();
-          const c = (r.code || r.room_code || '').toString().trim().toUpperCase();
-          if (c) codes.add(c);
-          if (rNo) names.add(rNo);
-          if (rNo) roomKeys.add(`${uId}:${rNo}`);
-        }
-      }
-    } else if (this.isContactEntity) {
-      if (Array.isArray(this.existingDbRecords)) {
-        for (const c of this.existingDbRecords) {
-          const em = (c.email || c.email_address || '').toString().trim().toUpperCase();
-          if (em) emails.add(em);
-          const mob = (c.mobile || c.mobile_no || c.phone || '').toString().trim().replace(/[^0-9]/g, '');
-          if (mob) mobiles.add(mob);
-          const cd = (c.code || c.contact_code || '').toString().trim().toUpperCase();
-          if (cd) codes.add(cd);
-          const fn = (c.name || `${c.first_name || ''} ${c.last_name || ''}`).toString().trim().toUpperCase();
-          if (fn) names.add(fn);
-        }
-      }
-    }
-
-    return { codes, names, emails, mobiles, unitKeys, roomKeys };
-  }
-
-  analyzeDuplicates(rawRows: any[]): {
-    uniqueRows: any[];
-    duplicateCount: number;
-    duplicateSkippedCount: number;
-    duplicateDbCount: number;
-    duplicateFileCount: number;
-    duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[];
-  } {
-    const { codes: dbCodes, names: dbNames, emails: dbEmails, mobiles: dbMobiles, unitKeys, roomKeys } = this.getExistingDbIdentifiers();
-    const seenBatchKeys = new Map<string, { firstIndex: number; count: number; row: any }>();
-    const duplicateLogs: { row: number; name: string; code: string; reason: string; type: 'db' | 'batch' }[] = [];
-    const uniqueRows: any[] = [];
-
-    let duplicateDbCount = 0;
-    let duplicateFileCount = 0;
-
-    const getRowKey = (r: any): string => {
-      if (this.entityType === 'property') {
-        const c = (r.code || '').toString().trim().toUpperCase();
-        if (c) return `CODE:${c}`;
-        return `NAME:${(r.name || '').toString().trim().toUpperCase()}`;
-      } else if (this.entityType === 'unit') {
-        const pId = String(r.propertyId || '');
-        const uNo = (r.unitNo || r.name || '').toString().trim().toUpperCase();
-        return `UNIT:${pId}:${uNo}`;
-      } else if (this.entityType === 'room') {
-        const pId = String(r.propertyId || '');
-        const uId = String(r.unitId || '');
-        const rNo = (r.roomNo || r.name || '').toString().trim().toUpperCase();
-        return `ROOM:${pId}:${uId}:${rNo}`;
-      } else {
-        const email = (r.email || '').toString().trim().toUpperCase();
-        const mobile = (r.mobile || '').toString().trim().toUpperCase();
-        if (email) return `EMAIL:${email}`;
-        if (mobile) return `MOBILE:${mobile}`;
-        return `CONTACT:${(r.name || '').toString().trim().toUpperCase()}`;
-      }
-    };
-
-    for (let i = 0; i < rawRows.length; i++) {
-      const r = rawRows[i];
-      const rowNum = i + 1;
-      const key = getRowKey(r);
+  classifyRows(rawRows: any[]): { rowsToProcess: any[]; insertCount: number; updateCount: number } {
+    let insertCount = 0;
+    let updateCount = 0;
+    const rowsToProcess = (rawRows || []).map((r) => {
       const codeVal = (r.code || '').toString().trim();
-      const nameVal = (r.name || '').toString().trim();
-
-      // Check DB duplication vs Update mode:
-      // If code is provided and exists in DB -> API performs an UPDATE (do not block)
-      // If code is NOT provided and name already exists in DB -> Block as accidental duplicate
-      let isDbDup = false;
-      let dbReason = '';
-
-      if (this.entityType === 'property') {
-        const normCode = codeVal.toUpperCase();
-        const normName = nameVal.toUpperCase();
-        if (normCode && dbCodes.has(normCode)) {
-          // Existing property code provided -> Update mode (send to API)
-          r.isUpdate = true;
-        } else if (!normCode && normName && dbNames.has(normName)) {
-          isDbDup = true;
-          dbReason = `Property with name '${nameVal}' already exists in database. To update it, please include the Property Code.`;
-        }
-      } else if (this.entityType === 'unit') {
-        const normCode = codeVal.toUpperCase();
-        const normUnitNo = (r.unitNo || nameVal).toString().trim().toUpperCase();
-        const pKey = String(r.propertyId || '').trim().toUpperCase();
-        if (normCode && dbCodes.has(normCode)) {
-          r.isUpdate = true;
-        } else if (!normCode && normUnitNo && unitKeys.has(`${pKey}:${normUnitNo}`)) {
-          isDbDup = true;
-          dbReason = `Unit '${normUnitNo}' already exists under this property. To update it, please include the Unit Code.`;
-        }
-      } else if (this.entityType === 'room') {
-        const normCode = codeVal.toUpperCase();
-        const normRoomNo = (r.roomNo || nameVal).toString().trim().toUpperCase();
-        const uKey = String(r.unitId || '').trim().toUpperCase();
-        if (normCode && dbCodes.has(normCode)) {
-          r.isUpdate = true;
-        } else if (!normCode && normRoomNo && roomKeys.has(`${uKey}:${normRoomNo}`)) {
-          isDbDup = true;
-          dbReason = `Room '${normRoomNo}' already exists under this unit. To update it, please include the Room Code.`;
-        }
-      } else if (this.isContactEntity) {
-        const normCode = codeVal.toUpperCase();
-        const normEmail = (r.email || '').toString().trim().toUpperCase();
-        const normMobile = (r.mobile || '').toString().trim().replace(/[^0-9]/g, '');
-        if (normCode && dbCodes.has(normCode)) {
-          r.isUpdate = true;
-        } else if (!normCode && normEmail && dbEmails.has(normEmail)) {
-          isDbDup = true;
-          dbReason = `${this.entityTitle} with email '${r.email}' already exists. To update it, please include the Code.`;
-        } else if (!normCode && normMobile && dbMobiles.has(normMobile)) {
-          isDbDup = true;
-          dbReason = `${this.entityTitle} with mobile '${r.mobile}' already exists. To update it, please include the Code.`;
-        }
-      }
-
-      if (isDbDup) {
-        duplicateDbCount++;
-        duplicateLogs.push({
-          row: rowNum,
-          name: nameVal,
-          code: codeVal,
-          reason: dbReason,
-          type: 'db'
-        });
-        r.isDuplicate = true;
-        r.duplicateReason = dbReason;
-        continue;
-      }
-
-      // Check intra-batch duplicate (e.g. 4 identical rows in the file)
-      if (seenBatchKeys.has(key)) {
-        const prev = seenBatchKeys.get(key)!;
-        prev.count++;
-        duplicateFileCount++;
-        const actionLabel = r.isUpdate ? 'update' : 'import';
-        const reason = `Duplicate row in file (matches row #${prev.firstIndex} with ${codeVal ? "code: '" + codeVal + "'" : "name: '" + nameVal + "'"}). Only first row will be ${actionLabel}d.`;
-        duplicateLogs.push({
-          row: rowNum,
-          name: nameVal,
-          code: codeVal,
-          reason,
-          type: 'batch'
-        });
-        r.isDuplicate = true;
-        r.duplicateReason = reason;
+      if (codeVal) {
+        r.isUpdate = true;
+        r.code = codeVal;
+        updateCount++;
       } else {
-        seenBatchKeys.set(key, { firstIndex: rowNum, count: 1, row: r });
-        r.isDuplicate = false;
-        r.duplicateReason = '';
-        uniqueRows.push(r);
+        r.isUpdate = false;
+        r.code = '';
+        insertCount++;
       }
-    }
-
-    // Total duplicate identified count
-    let groupedBatchDups = 0;
-    seenBatchKeys.forEach((val) => {
-      if (val.count > 1) {
-        groupedBatchDups += val.count;
-      }
+      return r;
     });
 
-    const totalDuplicatesIdentified = duplicateDbCount + (groupedBatchDups > 0 ? groupedBatchDups : duplicateFileCount);
-    const duplicateSkippedCount = duplicateDbCount + duplicateFileCount;
-
-    return {
-      uniqueRows,
-      duplicateCount: totalDuplicatesIdentified,
-      duplicateSkippedCount,
-      duplicateDbCount,
-      duplicateFileCount,
-      duplicateLogs
-    };
+    return { rowsToProcess, insertCount, updateCount };
   }
 
   updateCounters(): void {
@@ -809,15 +609,14 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
       rawList = [...this.parsedFileRows];
     }
 
-    const dupResult = this.analyzeDuplicates(rawList);
-    this.duplicateCount = dupResult.duplicateCount;
-    this.duplicateSkippedCount = dupResult.duplicateSkippedCount;
-    this.duplicateDbCount = dupResult.duplicateDbCount;
-    this.duplicateFileCount = dupResult.duplicateFileCount;
-    this.duplicateLogs = dupResult.duplicateLogs;
-
-    this.propertiesToBeImported = dupResult.uniqueRows.length;
-    this.totalToImport = dupResult.uniqueRows.length;
+    const { rowsToProcess, insertCount, updateCount } = this.classifyRows(rawList);
+    this.toInsertCount = insertCount;
+    this.toUpdateCount = updateCount;
+    this.propertiesToBeImported = rowsToProcess.length;
+    this.totalToImport = rowsToProcess.length;
+    this.duplicateCount = 0;
+    this.duplicateSkippedCount = 0;
+    this.duplicateLogs = [];
   }
 
   // --- File Upload & Parsing ---
@@ -893,17 +692,10 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
           this.filePreviewRows = rawJson.slice(0, 10);
           this.updateCounters();
 
-          if (this.duplicateCount > 0) {
-            this.toastr.info(
-              `Loaded ${this.parsedFileRows.length} records. Identified ${this.duplicateCount} duplicate(s) (${this.propertiesToBeImported} unique to import).`,
-              'Duplicates Identified'
-            );
-          } else {
-            this.toastr.success(
-              `Loaded ${this.parsedFileRows.length} valid ${this.entityPluralTitle.toLowerCase()} from file.`,
-              'File Parsed'
-            );
-          }
+          const infoMsg = this.toUpdateCount > 0
+            ? `Loaded ${this.parsedFileRows.length} records (${this.toInsertCount} new, ${this.toUpdateCount} to update).`
+            : `Loaded ${this.parsedFileRows.length} valid ${this.entityPluralTitle.toLowerCase()} from file.`;
+          this.toastr.success(infoMsg, 'File Parsed');
         }
       } catch (err) {
         console.error('Error parsing sheet:', err);
@@ -1186,25 +978,16 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
       rawList.push(...this.parsedFileRows);
     }
 
-    // Run duplicate identification and filter unique records
-    const dupResult = this.analyzeDuplicates(rawList);
-    this.duplicateCount = dupResult.duplicateCount;
-    this.duplicateSkippedCount = dupResult.duplicateSkippedCount;
-    this.duplicateDbCount = dupResult.duplicateDbCount;
-    this.duplicateFileCount = dupResult.duplicateFileCount;
-    this.duplicateLogs = dupResult.duplicateLogs;
-
-    const rowsToProcess = dupResult.uniqueRows;
+    // Classify all records for insert vs update without skipping or blocking
+    const { rowsToProcess, insertCount, updateCount } = this.classifyRows(rawList);
+    this.toInsertCount = insertCount;
+    this.toUpdateCount = updateCount;
+    this.duplicateCount = 0;
+    this.duplicateSkippedCount = 0;
+    this.duplicateLogs = [];
 
     if (rowsToProcess.length === 0) {
-      if (this.duplicateCount > 0) {
-        this.toastr.warning(
-          `All ${this.duplicateCount} record(s) are duplicates (already exist in system or duplicated in file). No records to import.`,
-          'Duplicates Detected'
-        );
-      } else {
-        this.toastr.warning('No valid records to import.', 'Validation');
-      }
+      this.toastr.warning('No valid records to import.', 'Validation');
       return;
     }
 
@@ -1221,7 +1004,7 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     for (let i = 0; i < rowsToProcess.length; i++) {
       const item = rowsToProcess[i];
       const rowNum = i + 1;
-      this.currentProcessingName = item.code ? `${item.name} (${item.code})` : item.name;
+      this.currentProcessingName = item.code ? `${item.name} (Update: ${item.code})` : `${item.name} (New Insert)`;
 
       try {
         if (this.entityType === 'property') {
@@ -1257,9 +1040,11 @@ export class BulkImportModalComponent implements OnInit, OnChanges {
     this.currentStep = 'completed';
 
     if (this.propertiesImported > 0) {
-      const dupInfo = this.duplicateCount > 0 ? ` (${this.duplicateCount} duplicates identified, ${this.duplicateSkippedCount} skipped)` : '';
+      const modeBreakdown = this.toUpdateCount > 0
+        ? ` (${this.toInsertCount} new inserted, ${this.toUpdateCount} updated)`
+        : '';
       this.toastr.success(
-        `Import completed: ${this.propertiesImported} of ${this.totalToImport} ${this.entityPluralTitle.toLowerCase()} imported successfully!${dupInfo}`,
+        `Import completed: ${this.propertiesImported} of ${this.totalToImport} ${this.entityPluralTitle.toLowerCase()} processed successfully!${modeBreakdown}`,
         'Import Complete'
       );
     } else {

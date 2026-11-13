@@ -18,7 +18,7 @@ import {
 } from './email-templates.data';
 
 type TargetFilter = 'all' | EmailTemplateTarget;
-type SortKey = 'name' | 'target';
+type SortKey = 'name' | 'target' | 'feature';
 type SortDir = 'asc' | 'desc';
 
 @Component({
@@ -37,6 +37,7 @@ export class EmailTemplatesComponent implements OnInit {
   searchQuery = '';
   columnSearch = '';
   targetFilter: TargetFilter = 'all';
+  featureFilter = 'all';
   showColumns = false;
   openMenuId: number | null = null;
   isLoading = false;
@@ -54,6 +55,7 @@ export class EmailTemplatesComponent implements OnInit {
 
   columns: EmailTemplateColumnDef[] = [
     { key: 'name', label: 'Name', visible: true },
+    { key: 'feature', label: 'Module', visible: true },
     { key: 'target', label: 'Target', visible: true },
     { key: 'actions', label: 'Actions', visible: true },
   ];
@@ -188,6 +190,52 @@ export class EmailTemplatesComponent implements OnInit {
     return this.rows.length;
   }
 
+  setFeatureFilter(id: string): void {
+    this.featureFilter = id;
+    this.pageIndex = 0;
+  }
+
+  formatFeatureName(raw: string): string {
+    if (!raw) return 'General';
+    const clean = raw.trim();
+    const upper = clean.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (upper === 'PROPERTY' || upper === 'PROPERTIES') return 'Property';
+    if (upper === 'UNIT' || upper === 'UNITS') return 'Units';
+    if (upper === 'ROOM' || upper === 'ROOMS') return 'Rooms';
+    if (upper === 'LEASE' || upper === 'LEASES') return 'Leases';
+    if (upper === 'WORKORDER' || upper === 'WORKORDERS' || upper === 'WORK_ORDERS') return 'Work Orders';
+    if (upper === 'INVOICE' || upper === 'INVOICES' || upper === 'EXPENSE' || upper === 'EXPENSES') return 'Invoices';
+    if (upper === 'REMINDER' || upper === 'REMINDERS') return 'Reminders';
+    if (upper === 'TENANT' || upper === 'TENANTS') return 'Tenants';
+    if (upper === 'LANDLORD' || upper === 'LANDLORDS' || upper === 'OWNER') return 'Landlords';
+    if (upper === 'VENDOR' || upper === 'VENDORS') return 'Vendors';
+    if (upper === 'TECHNICIAN' || upper === 'TECHNICIANS') return 'Technicians';
+    if (upper === 'BOOKING' || upper === 'BOOKINGS') return 'Bookings';
+    if (upper === 'QUOTATION' || upper === 'QUOTATIONS') return 'Quotations';
+    if (upper === 'INVENTORY') return 'Inventory';
+    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  }
+
+  get featureTabs(): { id: string; label: string; count: number }[] {
+    const map = new Map<string, number>();
+    for (const r of this.rows) {
+      const feat = this.formatFeatureName(r.feature || 'General');
+      map.set(feat, (map.get(feat) || 0) + 1);
+    }
+
+    const tabs: { id: string; label: string; count: number }[] = [
+      { id: 'all', label: 'All', count: this.rows.length }
+    ];
+
+    Array.from(map.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .forEach(([feat, count]) => {
+        tabs.push({ id: feat, label: feat, count });
+      });
+
+    return tabs;
+  }
+
   get targetTabs(): { id: TargetFilter; label: string; count?: number }[] {
     return [
       { id: 'all', label: 'All' },
@@ -202,6 +250,12 @@ export class EmailTemplatesComponent implements OnInit {
   get filteredRows(): EmailTemplateRow[] {
     const q = this.searchQuery.trim().toLowerCase();
     let list = this.rows.filter((row) => {
+      if (this.featureFilter !== 'all') {
+        const feat = this.formatFeatureName(row.feature || 'General');
+        if (feat !== this.featureFilter) {
+          return false;
+        }
+      }
       if (this.targetFilter !== 'all' && row.target !== this.targetFilter) {
         return false;
       }
@@ -237,10 +291,13 @@ export class EmailTemplatesComponent implements OnInit {
   get tableGridTemplate(): string {
     const parts: string[] = [];
     if (this.isColumnVisible('name')) {
-      parts.push('minmax(280px, 2fr)');
+      parts.push('minmax(240px, 2fr)');
+    }
+    if (this.isColumnVisible('feature')) {
+      parts.push('minmax(140px, 1fr)');
     }
     if (this.isColumnVisible('target')) {
-      parts.push('minmax(180px, 1fr)');
+      parts.push('minmax(160px, 1fr)');
     }
     if (this.isColumnVisible('actions')) {
       parts.push('72px');

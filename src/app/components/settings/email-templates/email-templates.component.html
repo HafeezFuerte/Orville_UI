@@ -15,17 +15,16 @@
     </button>
   </div>
 
-  <div class="ov-seg ov-seg--tabs w-full overflow-x-auto" role="tablist" aria-label="Filter by target">
+  <div class="ov-seg ov-seg--tabs w-full overflow-x-auto" role="tablist" aria-label="Filter by module feature">
     <button
       type="button"
       class="ov-seg__btn"
-      *ngFor="let tab of targetTabs"
+      *ngFor="let tab of featureTabs"
       role="tab"
-      [attr.aria-selected]="targetFilter === tab.id"
-      [class.is-active]="targetFilter === tab.id"
-      (click)="setTargetFilter(tab.id)">
-      <ng-container *ngIf="tab.id === 'all'; else counted">{{ tab.label }}</ng-container>
-      <ng-template #counted>{{ tab.label }} ({{ tab.count }})</ng-template>
+      [attr.aria-selected]="featureFilter === tab.id"
+      [class.is-active]="featureFilter === tab.id"
+      (click)="setFeatureFilter(tab.id)">
+      {{ tab.label }} ({{ tab.count }})
     </button>
   </div>
 
@@ -124,6 +123,18 @@
           </button>
         </div>
         <div
+          *ngIf="isColumnVisible('feature')"
+          class="et-table__cell text-xs font-semibold text-textmuted"
+          role="columnheader">
+          <button type="button" class="et-sort" (click)="toggleSort('feature')">
+            Module
+            <span class="et-sort__icons" aria-hidden="true">
+              <span [class.is-active]="sortKey === 'feature' && sortDir === 'asc'">▲</span>
+              <span [class.is-active]="sortKey === 'feature' && sortDir === 'desc'">▼</span>
+            </span>
+          </button>
+        </div>
+        <div
           *ngIf="isColumnVisible('target')"
           class="et-table__cell text-xs font-semibold text-textmuted"
           role="columnheader">
@@ -158,6 +169,11 @@
             <button type="button" class="et-name-link" (click)="editTemplate(row)">
               {{ row.name }}
             </button>
+          </div>
+          <div *ngIf="isColumnVisible('feature')" class="et-table__cell" role="cell">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-200">
+              {{ formatFeatureName(row.feature || '') }}
+            </span>
           </div>
           <div *ngIf="isColumnVisible('target')" class="et-table__cell" role="cell">
             <span class="et-target">{{ row.target }}</span>
