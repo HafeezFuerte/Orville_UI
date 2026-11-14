@@ -33,11 +33,11 @@
             </span>
             <span *ngIf="toUpdateCount > 0" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-300 border border-blue-200">
               <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-              {{ toUpdateCount }} to Update
+              {{ toUpdateCount }} {{ 'web.bulkImport.lblToUpdate' | translate }}
             </span>
             <span *ngIf="toInsertCount > 0" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-300 border border-emerald-200">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              {{ toInsertCount }} New Insert
+              {{ toInsertCount }} {{ 'web.bulkImport.lblNewInsert' | translate }}
             </span>
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-success dark:bg-success/10">
               <span class="w-2 h-2 rounded-full bg-success"></span>
@@ -415,13 +415,13 @@
                 </span>
                 <div class="flex items-center gap-2 text-xs">
                   <span class="text-success font-semibold">
-                    ✔ {{ propertiesToBeImported }} to process
+                    ✔ {{ propertiesToBeImported }} {{ 'web.bulkImport.lblToProcess' | translate }}
                   </span>
                   <span *ngIf="toUpdateCount > 0" class="text-blue-600 font-semibold">
-                    • {{ toUpdateCount }} updates
+                    • {{ toUpdateCount }} {{ 'web.bulkImport.lblUpdates' | translate }}
                   </span>
                   <span *ngIf="toInsertCount > 0" class="text-emerald-600 font-semibold">
-                    • {{ toInsertCount }} new inserts
+                    • {{ toInsertCount }} {{ 'web.bulkImport.lblNewInserts' | translate }}
                   </span>
                 </div>
               </div>
@@ -520,11 +520,12 @@
 
         <div class="flex items-center gap-2.5">
           <button
+            *ngIf="currentStep !== 'completed'"
             type="button"
             class="ov-btn ov-btn-ghost text-xs"
             [disabled]="currentStep === 'importing'"
             (click)="closeModal()">
-            {{ currentStep === 'completed' ? ('web.common.lblDone' | translate) : ('web.common.btnCancel' | translate) }}
+            {{ 'web.common.btnCancel' | translate }}
           </button>
 
           <button
