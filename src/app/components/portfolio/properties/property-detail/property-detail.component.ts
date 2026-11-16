@@ -409,16 +409,23 @@ export class PropertyDetailComponent implements OnInit {
       next: (res: any) => {
         if (res.statusCode == 200) {   
           if(typeId==71){ 
-            if(res.objResult.table[0].error_code=="-300"){
+            if(res.objResult?.table?.[0]?.error_code=="-300"){
               this.toastr.error(res.objResult.table[0].msg);
               return;
             }
             else{
-              this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
+              const serverMsg = res.objResult?.table?.[0]?.msg || res?.message;
+              if (filterId === 17) {
+                this.toastr.success(serverMsg || 'Property published successfully');
+              } else if (filterId === 18) {
+                this.toastr.success(serverMsg || 'Property unpublished successfully');
+              } else {
+                this.toastr.success(this.translate.instant('web.common.msgMarkedInactiveSuccess'));
+              }
               this.edit_code=''; 
               setTimeout(() => {
                 window.location.reload();
-              }, 2000);
+              }, 1500);
             }
           
         }else{

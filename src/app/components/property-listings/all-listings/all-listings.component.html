@@ -7,10 +7,6 @@
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-2 shrink-0">
-      <button type="button" class="ov-btn ov-btn-toolbar" (click)="isDrawerOpen = true">
-        <img src="assets/images/work-orders/filter.svg" alt="" width="18" height="18" />
-        {{ 'web.propertyListings.allListings.filter' | translate }}{{ activeFilterCount ? ' (' + activeFilterCount + ')' : '' }}
-      </button>
       <button type="button" class="ov-btn ov-btn-primary" (click)="viewPublicWebsite()">
         {{ 'web.propertyListings.allListings.viewPublicWebsite' | translate }}
       </button>
@@ -114,17 +110,29 @@
                 (click)="openListing(card.id)">
                 {{ 'web.propertyListings.allListings.menuViewDetails' | translate }}
               </button>
-              <button type="button" role="menuitem" class="pl-card__menu-item">
+              <button
+                type="button"
+                role="menuitem"
+                class="pl-card__menu-item"
+                (click)="editListing(card.id)">
                 {{ 'web.propertyListings.allListings.menuEditListing' | translate }}
               </button>
-              <button type="button" role="menuitem" class="pl-card__menu-item pl-card__menu-item--danger">
-                {{ 'web.propertyListings.allListings.menuUnpublish' | translate }}
+              <button
+                type="button"
+                role="menuitem"
+                class="pl-card__menu-item"
+                [class.pl-card__menu-item--danger]="card.publishStatus === 'Published'"
+                (click)="togglePublish(card, $event)">
+                {{ (card.publishStatus === 'Published' ? 'web.propertyListings.allListings.menuUnpublish' : 'web.property.lblPublishProperty') | translate }}
               </button>
             </div>
           </div>
         </div>
 
-        <span class="pl-card__type-pill">{{ card.unitType }}</span>
+        <span class="pl-card__type-pill" *ngIf="card.totalUnits && card.totalUnits > 0 && card.unitType">
+          <img [src]="getUnitTypeIcon(card.unitType)" alt="" width="14" height="14" class="inline-block me-1" />
+          {{ card.unitType }}
+        </span>
       </div>
 
       <div class="pl-card__body">
@@ -133,6 +141,30 @@
           <span [class]="offerClass(card.offer)">{{ card.offer }}</span>
         </div>
         <h4 class="pl-card__title" [title]="card.title">{{ card.title }}</h4>
+
+        <div class="pl-card__stats">
+          <div class="pl-card__stat-col">
+            <span class="pl-card__stat-val">{{ card.totalUnits || 0 }}</span>
+            <span class="pl-card__stat-lbl">{{ 'web.property.lblUnits' | translate }}</span>
+          </div>
+          <div class="pl-card__stat-col">
+            <span class="pl-card__stat-val text-success">{{ card.occupiedUnits || 0 }}</span>
+            <span class="pl-card__stat-lbl">{{ 'web.property.lblOccupied' | translate }}</span>
+          </div>
+          <div class="pl-card__stat-col">
+            <span class="pl-card__stat-val text-info">{{ card.vacantUnits || 0 }}</span>
+            <span class="pl-card__stat-lbl">{{ 'web.property.lblVacant' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="pl-card__unit-types mt-2 pt-2 border-t border-dashed border-defaultborder flex flex-wrap items-center gap-1.5" *ngIf="card.totalUnits && card.totalUnits > 0 && card.unitTypes && card.unitTypes.length > 0">
+          <span class="inline-flex items-center gap-1 text-[11px] font-medium text-defaulttextcolor/80 bg-[#f8f9fa] dark:bg-black/20 rounded px-2 py-0.5 border border-defaultborder" *ngFor="let ut of card.unitTypes">
+            <img [src]="ut.icon" alt="" width="12" height="12" />
+            <span>{{ ut.name }}</span>
+            <span class="font-bold text-primary">({{ ut.count }})</span>
+          </span>
+        </div>
+
         <div class="pl-card__footer">
           <span class="pl-card__price">{{ card.price }}</span>
           <span class="pl-card__ref">{{ card.ref }}</span>
@@ -143,12 +175,18 @@
 
   <ng-template #emptyState>
     <div class="pl-empty">
-      <img src="assets/images/work-orders/search.svg" alt="" width="24" height="24" />
-      <h4 class="pl-empty__title">{{ 'web.propertyListings.allListings.noResultsTitle' | translate }}</h4>
-      <p class="pl-empty__text">{{ 'web.propertyListings.allListings.noResultsDesc' | translate }}</p>
-      <button type="button" class="ov-btn ov-btn-ghost" (click)="clearFilters(); clearSearch(); setOfferTab('All')">
-        {{ 'web.propertyListings.allListings.resetFilters' | translate }}
-      </button>
+      <div *ngIf="isLoading" class="flex flex-col items-center justify-center gap-3 py-6">
+        <div class="ti-spinner text-primary" role="status"></div>
+        <span class="text-sm text-textmuted">{{ 'web.common.lblLoading' | translate }}</span>
+      </div>
+      <ng-container *ngIf="!isLoading">
+        <img src="assets/images/work-orders/search.svg" alt="" width="24" height="24" />
+        <h4 class="pl-empty__title">{{ 'web.propertyListings.allListings.noResultsTitle' | translate }}</h4>
+        <p class="pl-empty__text">{{ 'web.propertyListings.allListings.noResultsDesc' | translate }}</p>
+        <button type="button" class="ov-btn ov-btn-ghost" (click)="clearSearch(); setOfferTab('All')">
+          {{ 'web.propertyListings.allListings.resetFilters' | translate }}
+        </button>
+      </ng-container>
     </div>
   </ng-template>
 
@@ -214,33 +252,3 @@
     </div>
   </div>
 </div>
-
-<app-filter-drawer [(isOpen)]="isDrawerOpen" (apply)="applyFilters()" (clear)="clearFilters()">
-  <div class="flex flex-col gap-4">
-    <div>
-      <label class="ov-label">{{ 'web.propertyListings.allListings.filterOfferType' | translate }}</label>
-      <select class="ov-input" [(ngModel)]="filterOffer">
-        <option value="">{{ 'web.propertyListings.allListings.filterAllOffers' | translate }}</option>
-        <option value="For Rent">{{ 'web.propertyListings.allListings.tabForRent' | translate }}</option>
-        <option value="For Sale">{{ 'web.propertyListings.allListings.tabForSale' | translate }}</option>
-      </select>
-    </div>
-    <div>
-      <label class="ov-label">{{ 'web.propertyListings.allListings.filterStatus' | translate }}</label>
-      <select class="ov-input" [(ngModel)]="filterStatus">
-        <option value="">{{ 'web.propertyListings.allListings.filterAllStatuses' | translate }}</option>
-        <option value="Published">{{ 'web.propertyListings.allListings.statusPublished' | translate }}</option>
-        <option value="Draft">{{ 'web.propertyListings.allListings.statusDraft' | translate }}</option>
-        <option value="Unpublished">{{ 'web.propertyListings.allListings.statusUnpublished' | translate }}</option>
-      </select>
-    </div>
-    <div>
-      <label class="ov-label">{{ 'web.propertyListings.allListings.filterOccupancy' | translate }}</label>
-      <select class="ov-input" [(ngModel)]="filterOccupancy">
-        <option value="">{{ 'web.propertyListings.allListings.filterAllOccupancies' | translate }}</option>
-        <option value="Vacant">{{ 'web.propertyListings.allListings.occupancyVacant' | translate }}</option>
-        <option value="Occupied">{{ 'web.propertyListings.allListings.occupancyOccupied' | translate }}</option>
-      </select>
-    </div>
-  </div>
-</app-filter-drawer>

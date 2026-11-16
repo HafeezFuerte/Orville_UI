@@ -102,6 +102,12 @@ export class PropertiesListComponent implements OnInit {
   // Metrics
   metrics:any = {}
 
+  // Dynamic Unit Types Grouped by Property
+  propertyUnitTypesMap: { [key: string]: { name: string; count: number; countDisplay: string; icon: string }[] } = {};
+  allUnitsList: any[] = [];
+  isLoadingUnitTypes: boolean = false;
+  isActionMenuUpward: boolean = false;
+
   constructor(
     public translate: TranslateService,
     private propertiesService: PropertiesService,
@@ -213,6 +219,7 @@ private loadMetrics(
          
         this.paginatedProperties = this.properties;
         this.applyLocalFilters();
+        this.loadUnitsForProperties();
         }
       },
       error: err => {
@@ -419,21 +426,95 @@ private loadMetrics(
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;
+    this.isActionMenuUpward = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.openActionCode = null;
+    this.isActionMenuUpward = false;
   }
 
   toggleRowAction(code: string | number, event: Event): void {
     event.stopPropagation();
-    this.openActionCode = this.openActionCode === code ? null : code;
+    if (this.openActionCode === code) {
+      this.openActionCode = null;
+      this.isActionMenuUpward = false;
+      return;
+    }
+    this.openActionCode = code;
+
+    const btn = (event.currentTarget || event.target) as HTMLElement | null;
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const menuHeight = 175; // Approximate action menu height (View, Edit, Publish/Unpublish, Delete)
+
+      // Space below button relative to browser viewport
+      const spaceBelowWindow = window.innerHeight - rect.bottom;
+
+      // Space below button relative to scrollable table container (.table-vertical-scroll / .table-responsive)
+      let spaceBelowContainer = Infinity;
+      let spaceAboveContainer = Infinity;
+      const scrollParent = btn.closest('.table-responsive, .table-vertical-scroll, .box') as HTMLElement | null;
+      if (scrollParent) {
+        const parentRect = scrollParent.getBoundingClientRect();
+        spaceBelowContainer = parentRect.bottom - rect.bottom;
+        spaceAboveContainer = rect.top - parentRect.top;
+      }
+
+      const spaceBelow = Math.min(spaceBelowWindow, spaceBelowContainer);
+      // If there's not enough space below (< menuHeight) and there is room above, open above the 3 dots
+      this.isActionMenuUpward = spaceBelow < menuHeight && (spaceAboveContainer > 80 || rect.top > menuHeight);
+    } else {
+      this.isActionMenuUpward = false;
+    }
   }
 
   viewProperty(code: string | number): void {
     this.openActionCode = null;
+    this.isActionMenuUpward = false;
     window.location.href = '/properties/' + code;
   }
 
   editProperty(code: string | number): void {
     this.openActionCode = null;
+    this.isActionMenuUpward = false;
     window.location.href = '/edit-property/' + code;
+  }
+
+  togglePublishProperty(row: any): void {
+    this.openActionCode = null;
+    this.isActionMenuUpward = false;
+    const isCurrentlyPublished = !!row.is_published;
+    const flg = isCurrentlyPublished ? 18 : 17;
+
+    this.commontabservice.getMasterByType({
+      typeId: 71,
+      filterId: flg,
+      filterText: row.code,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res?.statusCode == 200 || res?.statusCode === '200') {
+          if (res.objResult?.table?.[0]?.error_code == '-300') {
+            this.toastr.error(res.objResult.table[0].msg);
+            return;
+          }
+          const serverMsg = res.objResult?.table?.[0]?.msg || res?.message;
+          if (flg === 17) {
+            this.toastr.success(serverMsg || 'Property published successfully');
+          } else {
+            this.toastr.success(serverMsg || 'Property unpublished successfully');
+          }
+          row.is_published = isCurrentlyPublished ? 0 : 1;
+        } else {
+          this.toastr.error(res?.message || 'Failed to update publish status');
+        }
+      },
+      error: () => {
+        this.toastr.error('Failed to update publish status');
+      }
+    });
   }
 
   isCommercialType(row: any): boolean {
@@ -501,5 +582,242 @@ private loadMetrics(
   onImportCompleted(): void {
     this.loadProperties();
     this.loadMetrics(4, 0, '', '', '');
+  }
+
+  loadUnitsForProperties(): void {
+    const user = this.commonservice.getCurrentUser();
+    const payload = {
+      userid: user?.userId || 1,
+      company_id: user?.companyId || 1,
+      clientId: user?.clientId || '',
+      source: 'web',
+      languageid: 1,
+      page_no: 0,
+      seqno: 0,
+      search_keyword: '',
+      pagecount: 5000,
+      filter_by: '',
+      filter_list: '[]',
+      featureid: 'Units'
+    };
+
+    this.isLoadingUnitTypes = true;
+    this.propertiesService.getUnits(payload).subscribe({
+      next: (res: any) => {
+        this.isLoadingUnitTypes = false;
+        if (res && res.statusCode === '200' && res.objResult && Array.isArray(res.objResult.units)) {
+          this.allUnitsList = res.objResult.units;
+          this.processUnitsData(this.allUnitsList);
+        } else {
+          this.fetchUnitsPerPropertyFallback();
+        }
+      },
+      error: (err: any) => {
+        this.isLoadingUnitTypes = false;
+        console.error('Error fetching units for properties:', err);
+        this.fetchUnitsPerPropertyFallback();
+      }
+    });
+  }
+
+  processUnitsData(units: any[]): void {
+    const newMap: { [key: string]: { name: string; count: number; countDisplay: string; icon: string }[] } = {};
+
+    this.properties.forEach(property => {
+      const propCode = String(property.code || '').trim().toLowerCase();
+      const propId = property.id ? String(property.id).trim() : '';
+      const propName = String(property.name || '').trim().toLowerCase();
+
+      // Find units matching this property
+      const propUnits = units.filter((u: any) => {
+        const uCode = String(u.property_code || u.propertyCode || '').trim().toLowerCase();
+        const uId = u.property_id || u.propertyId ? String(u.property_id || u.propertyId).trim() : '';
+        const uName = String(u.property_Name || u.property_name || u.property || '').trim().toLowerCase();
+
+        return (
+          (propCode && uCode && propCode === uCode) ||
+          (propId && uId && propId === uId) ||
+          (propName && uName && propName === uName)
+        );
+      });
+
+      const typeCounts: { [typeName: string]: number } = {};
+      propUnits.forEach((u: any) => {
+        const typeName = this.resolveUnitTypeName(u);
+        if (typeName) {
+          typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
+        }
+      });
+
+      const list = Object.keys(typeCounts).map(name => {
+        const count = typeCounts[name];
+        return {
+          name,
+          count,
+          countDisplay: count < 10 ? '0' + count : String(count),
+          icon: this.getUnitTypeIcon(name)
+        };
+      });
+
+      list.sort((a, b) => this.compareUnitTypes(a.name, b.name));
+
+      if (property.code) newMap[String(property.code)] = list;
+      if (property.id) newMap[String(property.id)] = list;
+      if (propName) newMap[propName] = list;
+    });
+
+    this.propertyUnitTypesMap = { ...this.propertyUnitTypesMap, ...newMap };
+
+    // Targeted fallback for any property with total_units > 0 that found 0 matching units
+    this.properties.forEach(p => {
+      const codeKey = String(p.code || '');
+      const idKey = String(p.id || '');
+      const nameKey = String(p.name || '').trim().toLowerCase();
+      const hasUnits = (this.propertyUnitTypesMap[codeKey]?.length || 0) > 0 ||
+                       (this.propertyUnitTypesMap[idKey]?.length || 0) > 0 ||
+                       (this.propertyUnitTypesMap[nameKey]?.length || 0) > 0;
+      if (!hasUnits && (Number(p.total_units) > 0 || p.code)) {
+        this.fetchUnitsForSingleProperty(p);
+      }
+    });
+  }
+
+  fetchUnitsForSingleProperty(property: any): void {
+    if (!property?.code) return;
+    const propKey = String(property.code);
+    this.portfolioService.getMasterByType({
+      typeId: 13,
+      filterId: 0,
+      filterText: property.code,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res?.statusCode === '200' && res?.objResult?.units_info) {
+          const unitsInfo = res.objResult.units_info;
+          const typeCounts: { [typeName: string]: number } = {};
+          unitsInfo.forEach((u: any) => {
+            const typeName = this.resolveUnitTypeName(u);
+            if (typeName) {
+              typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
+            }
+          });
+          const list = Object.keys(typeCounts).map(name => ({
+            name,
+            count: typeCounts[name],
+            countDisplay: typeCounts[name] < 10 ? '0' + typeCounts[name] : String(typeCounts[name]),
+            icon: this.getUnitTypeIcon(name)
+          }));
+          list.sort((a, b) => this.compareUnitTypes(a.name, b.name));
+          this.propertyUnitTypesMap[propKey] = list;
+          if (property.id) this.propertyUnitTypesMap[String(property.id)] = list;
+          if (property.name) this.propertyUnitTypesMap[String(property.name).trim().toLowerCase()] = list;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  private fetchUnitsPerPropertyFallback(): void {
+    if (!this.properties || this.properties.length === 0) return;
+    this.properties.forEach(property => {
+      if (property?.code && (!this.propertyUnitTypesMap[String(property.code)] || this.propertyUnitTypesMap[String(property.code)].length === 0)) {
+        this.fetchUnitsForSingleProperty(property);
+      }
+    });
+  }
+
+  getUnitTypesForProperty(property: any): { name: string; count: number; countDisplay: string; icon: string }[] {
+    if (!property) return [];
+    const codeKey = String(property.code || '').trim();
+    if (codeKey && this.propertyUnitTypesMap[codeKey]) {
+      return this.propertyUnitTypesMap[codeKey];
+    }
+    const idKey = String(property.id || '').trim();
+    if (idKey && this.propertyUnitTypesMap[idKey]) {
+      return this.propertyUnitTypesMap[idKey];
+    }
+    const nameKey = String(property.name || '').trim().toLowerCase();
+    if (nameKey && this.propertyUnitTypesMap[nameKey]) {
+      return this.propertyUnitTypesMap[nameKey];
+    }
+    return [];
+  }
+
+  private resolveUnitTypeName(unit: any): string {
+    const lang = localStorage.getItem('selectedLang') || 'EN';
+    
+    // 1. Check unit_type_name
+    const typeName = lang === 'AR' && unit.unit_type_name_ar ? unit.unit_type_name_ar : (unit.unit_type_name || '');
+    if (typeName && typeof typeName === 'string' && typeName.trim() && isNaN(Number(typeName))) {
+      return typeName.trim();
+    }
+
+    // 2. Check unit_beds_name
+    const bedsName = lang === 'AR' && unit.unit_beds_name_ar ? unit.unit_beds_name_ar : (unit.unit_beds_name || '');
+    if (bedsName && typeof bedsName === 'string' && bedsName.trim() && isNaN(Number(bedsName))) {
+      return bedsName.trim();
+    }
+
+    // 3. Check beds numeric/string
+    if (unit.beds !== undefined && unit.beds !== null && unit.beds !== '' && unit.beds !== 'N/A') {
+      const bedsStr = String(unit.beds).trim();
+      if (bedsStr.toLowerCase().includes('bed') || bedsStr.toLowerCase().includes('studio')) {
+        return bedsStr;
+      }
+      if (!isNaN(Number(bedsStr))) {
+        const num = Number(bedsStr);
+        return num === 0 ? 'Studio' : (num === 1 ? '1 bedroom' : `${num} bedroom`);
+      }
+      return bedsStr;
+    }
+
+    // 4. Check unit_type if string
+    if (unit.unit_type && typeof unit.unit_type === 'string' && isNaN(Number(unit.unit_type))) {
+      return unit.unit_type.trim();
+    }
+
+    // 5. Check category_name
+    if (unit.category_name && typeof unit.category_name === 'string') {
+      return unit.category_name.trim();
+    }
+
+    return 'Unit';
+  }
+
+  private getUnitTypeIcon(typeName: string): string {
+    const lower = (typeName || '').toLowerCase();
+    if (
+      lower.includes('villa') ||
+      lower.includes('commercial') ||
+      lower.includes('office') ||
+      lower.includes('retail') ||
+      lower.includes('shop') ||
+      lower.includes('warehouse') ||
+      lower.includes('building') ||
+      lower.includes('mall')
+    ) {
+      return 'assets/images/property-grid/building.svg';
+    }
+    return 'assets/images/property-grid/bed.svg';
+  }
+
+  private compareUnitTypes(a: string, b: string): number {
+    const getRank = (str: string): number => {
+      const s = (str || '').toLowerCase();
+      if (s.includes('studio')) return 0;
+      const match = s.match(/(\d+)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+      return 100;
+    };
+
+    const rankA = getRank(a);
+    const rankB = getRank(b);
+
+    if (rankA !== rankB) {
+      return rankA - rankB;
+    }
+    return a.localeCompare(b);
   }
 }

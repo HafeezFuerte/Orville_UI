@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
-import { PROJECT_LISTING_ROWS, ProjectListingRow } from '../property-listings.data';
+import { PropertiesService } from '../../portfolio/services/properties.service';
+import { CommonService } from '../../../services/common.service';
+import { ProjectListingRow } from '../property-listings.data';
 
 @Component({
   selector: 'app-project-listings',
@@ -13,11 +15,15 @@ import { PROJECT_LISTING_ROWS, ProjectListingRow } from '../property-listings.da
 })
 export class ProjectListingsComponent implements OnInit {
   private translate = inject(TranslateService);
+  private propertiesService = inject(PropertiesService);
+  private commonService = inject(CommonService);
 
   searchQuery = '';
   pageIndex = 0;
   pageSize = 10;
-  allRows = PROJECT_LISTING_ROWS;
+  totalRecordsCount = 0;
+  allRows: ProjectListingRow[] = [];
+  isLoading = false;
 
   tableColumns = [
     { key: 'id', label: 'ID', labelKey: 'web.propertyListings.projectListings.colId', visible: true },
@@ -33,6 +39,66 @@ export class ProjectListingsComponent implements OnInit {
     this.updateColumnLabels();
     this.translate.onLangChange.subscribe(() => {
       this.updateColumnLabels();
+    });
+    this.loadProjectListings();
+  }
+
+  loadProjectListings(): void {
+    this.isLoading = true;
+    const user = this.commonService.getCurrentUser();
+    const payload = {
+      userid: user?.userId || 1,
+      company_id: user?.companyId || 1,
+      clientId: user?.clientId || '',
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageIndex,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: 50,
+      filter_by: 'is_published',
+      filter_list: JSON.stringify([{ key: 'is_published', value: '1' }]),
+      featureid: 'Property'
+    };
+
+    this.propertiesService.getProperties(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res?.statusCode === '200' && Array.isArray(res?.objResult?.property)) {
+          const rawProperties = res.objResult.property;
+          const hasExplicitFlag = rawProperties.some((p: any) =>
+            p.is_published !== undefined || p.isPublished !== undefined || p.is_publish !== undefined || p.publish_status !== undefined
+          );
+          let displayProperties = rawProperties;
+          if (hasExplicitFlag) {
+            const onlyPublished = rawProperties.filter((p: any) =>
+              p.is_published == 1 || p.is_published === '1' || p.is_published === true ||
+              p.isPublished == 1 || p.isPublished === '1' || p.isPublished === true ||
+              p.is_publish == 1 || p.is_publish === '1' || p.is_publish === true ||
+              String(p.publish_status || '').toLowerCase() === 'published'
+            );
+            displayProperties = onlyPublished.length > 0 ? onlyPublished : rawProperties;
+          }
+          this.allRows = displayProperties.map((p: any) => ({
+            id: String(p.code || p.id || ''),
+            name: p.name || 'Project',
+            developer: p.landlord_name || p.developer || 'Orville Real Estate',
+            location: p.address_1 || p.city || 'Dubai',
+            units: Number(p.total_units) || 0,
+            available: Math.max(0, (Number(p.total_units) || 0) - (Number(p.occupied_units) || 0)),
+            status: 'Active' as const
+          }));
+          this.totalRecordsCount = this.allRows.length;
+        } else {
+          this.allRows = [];
+          this.totalRecordsCount = 0;
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.allRows = [];
+        this.totalRecordsCount = 0;
+      }
     });
   }
 
@@ -70,6 +136,7 @@ export class ProjectListingsComponent implements OnInit {
 
   onSearch(): void {
     this.pageIndex = 0;
+    this.loadProjectListings();
   }
 
   onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {

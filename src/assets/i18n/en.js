@@ -730,6 +730,7 @@ export const locale = {
         "lblSearchPropertyPlaceholder": "Filter items by property name",
         "lblVacant": "Vacant",
         "lblUnitsTypes": "Unit Types",
+        "lblNoUnits": "No units assigned",
         "lblAdded": "Added",
         "lblLoadMore": "Load More",
         "lblShow": "Show",

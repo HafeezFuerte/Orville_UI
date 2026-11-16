@@ -180,18 +180,28 @@
         </ng-container>
 
         <ng-container *ngIf="col.key === 'action'">
-          <div class="relative inline-flex" (click)="$event.stopPropagation()">
+          <div class="relative inline-flex" [class.z-30]="openActionCode === row.code" (click)="$event.stopPropagation()">
             <button type="button" class="ov-icon-btn ov-icon-btn--bare"
               (click)="toggleRowAction(row.code, $event)">
               <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
             </button>
-            <div *ngIf="openActionCode === row.code" class="absolute end-0 z-20 mt-1 min-w-[132px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg">
+            <div *ngIf="openActionCode === row.code"
+              class="ov-table-action-menu absolute end-0 z-30 min-w-[140px] rounded-lg border border-defaultborder bg-white py-1 shadow-lg dark:bg-bodybg"
+              [class.ov-table-action-menu--up]="isActionMenuUpward"
+              [class.ov-table-action-menu--down]="!isActionMenuUpward"
+              [ngClass]="isActionMenuUpward ? 'bottom-full mb-1 !top-auto' : 'top-full mt-1 !bottom-auto'">
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                 (click)="viewProperty(row.code)">{{ 'web.common.lblView' | translate }}</button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                 (click)="editProperty(row.code)">{{ 'web.common.lblEdit' | translate }}</button>
+              <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] hover:bg-light"
+                [class.text-amber-600]="row.is_published"
+                [class.text-primary]="!row.is_published"
+                (click)="togglePublishProperty(row)">
+                {{ (row.is_published ? 'web.property.lblUnPublishProperty' : 'web.property.lblPublishProperty') | translate }}
+              </button>
               <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
+                (click)="handleChildNotification({ action_name: 'delete', code: row.code }); openActionCode = null; isActionMenuUpward = false">{{ 'web.common.lblDelete' | translate }}</button>
             </div>
           </div>
         </ng-container>
@@ -265,43 +275,24 @@
           </div>
         </div>
 
-        <div class="ov-prop-card__types">
+        <div class="ov-prop-card__types" *ngIf="(property.total_units || 0) > 0">
           <div class="ov-prop-card__types-head">
             <span>{{ 'web.property.lblUnitsTypes' | translate }}</span>
             <a [routerLink]="['/properties', property.code]" class="ov-link">{{ 'web.property.lblManageUnits' | translate }}</a>
           </div>
-          <div class="ov-prop-card__types-grid">
-            <div class="ov-prop-card__type-pill">
+          <div class="ov-prop-card__types-grid" *ngIf="getUnitTypesForProperty(property).length > 0; else noUnitTypes">
+            <div class="ov-prop-card__type-pill" *ngFor="let ut of getUnitTypesForProperty(property)">
               <span class="ov-prop-card__type-label">
-                <img src="assets/images/property-grid/bed.svg" alt="" width="16" height="16"> Studio
+                <img [src]="ut.icon" alt="" width="16" height="16"> {{ ut.name }}
               </span>
-              <span class="ov-prop-card__type-count">10</span>
-            </div>
-            <div class="ov-prop-card__type-pill">
-              <span class="ov-prop-card__type-label">
-                <img src="assets/images/property-grid/bed.svg" alt="" width="16" height="16"> 1 bedroom
-              </span>
-              <span class="ov-prop-card__type-count">10</span>
-            </div>
-            <div class="ov-prop-card__type-pill">
-              <span class="ov-prop-card__type-label">
-                <img src="assets/images/property-grid/bed.svg" alt="" width="16" height="16"> 2 bedroom
-              </span>
-              <span class="ov-prop-card__type-count">10</span>
-            </div>
-            <div class="ov-prop-card__type-pill">
-              <span class="ov-prop-card__type-label">
-                <img src="assets/images/property-grid/bed.svg" alt="" width="16" height="16"> 3 bedroom
-              </span>
-              <span class="ov-prop-card__type-count">10</span>
-            </div>
-            <div class="ov-prop-card__type-pill">
-              <span class="ov-prop-card__type-label">
-                <img src="assets/images/property-grid/building.svg" alt="" width="16" height="16"> Villa
-              </span>
-              <span class="ov-prop-card__type-count">05</span>
+              <span class="ov-prop-card__type-count">{{ ut.countDisplay }}</span>
             </div>
           </div>
+          <ng-template #noUnitTypes>
+            <div class="ov-prop-card__no-types">
+              {{ 'web.property.lblNoUnits' | translate }}
+            </div>
+          </ng-template>
         </div>
       </div>
 

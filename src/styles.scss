@@ -143,6 +143,30 @@ textarea,
   background-color: rgb(var(--body-bg)) !important;
 }
 
+/* Table row action menu dropup / positioning (prevents action dropdown being clipped at bottom of table/viewport) */
+.ov-table-action-menu {
+  top: 100%;
+  bottom: auto;
+  margin-top: 4px;
+  margin-bottom: 0;
+  transition: opacity 0.15s ease-in-out;
+
+  &.ov-table-action-menu--up {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+/* Fallback: when an action menu is in the last 2 rows of a table with at least 3 rows, default to opening upwards */
+.ov-table tbody tr:nth-last-child(-n+2):not(:first-child):not(:nth-child(2)) .ov-table-action-menu:not(.ov-table-action-menu--down) {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
 // 🔘 Expandable Buttons (Icon -> Text on Hover)
 .ti-btn-expand {
     width: 32px;

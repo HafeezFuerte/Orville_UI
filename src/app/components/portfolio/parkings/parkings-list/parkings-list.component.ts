@@ -99,6 +99,7 @@ export class ParkingsListComponent implements OnInit {
   ];
 
   openActionCode: string | number | null = null;
+  isActionMenuUpward: boolean = false;
 
   get visibleColumns() {
     return this.tableColumns.filter(col => col.visible !== false);
@@ -438,15 +439,49 @@ export class ParkingsListComponent implements OnInit {
   @HostListener('document:click')
   onDocumentClick(): void {
     this.openActionCode = null;
+    this.isActionMenuUpward = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.openActionCode = null;
+    this.isActionMenuUpward = false;
   }
 
   toggleRowAction(code: string | number, event: Event): void {
     event.stopPropagation();
-    this.openActionCode = this.openActionCode === code ? null : code;
+    if (this.openActionCode === code) {
+      this.openActionCode = null;
+      this.isActionMenuUpward = false;
+      return;
+    }
+    this.openActionCode = code;
+
+    const btn = (event.currentTarget || event.target) as HTMLElement | null;
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const menuHeight = 140;
+
+      const spaceBelowWindow = window.innerHeight - rect.bottom;
+      let spaceBelowContainer = Infinity;
+      let spaceAboveContainer = Infinity;
+      const scrollParent = btn.closest('.table-responsive, .table-vertical-scroll, .box') as HTMLElement | null;
+      if (scrollParent) {
+        const parentRect = scrollParent.getBoundingClientRect();
+        spaceBelowContainer = parentRect.bottom - rect.bottom;
+        spaceAboveContainer = rect.top - parentRect.top;
+      }
+
+      const spaceBelow = Math.min(spaceBelowWindow, spaceBelowContainer);
+      this.isActionMenuUpward = spaceBelow < menuHeight && (spaceAboveContainer > 80 || rect.top > menuHeight);
+    } else {
+      this.isActionMenuUpward = false;
+    }
   }
 
   viewParking(row: any): void {
     this.openActionCode = null;
+    this.isActionMenuUpward = false;
     this.editParking(row);
   }
 

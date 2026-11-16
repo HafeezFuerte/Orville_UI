@@ -7,11 +7,15 @@ export interface PropertyListingCard {
   ref: string;
   title: string;
   unitType: string;
+  unitTypes?: { name: string; count: number; countDisplay: string; icon: string }[];
   price: string;
   occupancy: ListingOccupancy;
   publishStatus: ListingPublishStatus;
   offer: ListingOffer;
   imageUrl?: string | null;
+  totalUnits?: number;
+  occupiedUnits?: number;
+  vacantUnits?: number;
 }
 
 export type PropertyInquiryType = 'For Rent' | 'For Sale' | 'General' | 'Viewing';

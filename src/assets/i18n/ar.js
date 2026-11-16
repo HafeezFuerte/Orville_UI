@@ -592,6 +592,7 @@ export const locale = {
         "lblSearchPropertyPlaceholder": "تصفية العناصر حسب اسم العقار",
         "lblVacant": "شاغر",
         "lblUnitsTypes": "أنواع الوحدات",
+        "lblNoUnits": "لا توجد وحدات مخصصة",
         "lblAdded": "أضيف في",
         "lblLoadMore": "تحميل المزيد",
         "lblShow": "عرض",
