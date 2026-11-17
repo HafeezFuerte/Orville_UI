@@ -192,7 +192,7 @@ export class ReminderAddComponent implements OnInit {
   save(): void {
     const errors: string[] = [];
     if (!this.form.title.trim()) errors.push(this.translate.instant('web.reminders.valTitleReq'));
-    if (!this.form.assignees.length) errors.push(this.translate.instant('web.reminders.valAssigneeReq'));
+    if (this.form.assignees !=null && !this.form.assignees.length) errors.push(this.translate.instant('web.reminders.valAssigneeReq'));
     if (!this.form.date.trim()) errors.push(this.translate.instant('web.reminders.valDateReq'));
 
     if (errors.length > 0) {
