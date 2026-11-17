@@ -75,24 +75,25 @@
 
   <!-- Grid Table rendering -->
   <div class="px-5 pb-5 pt-0">
-    <app-shared-table [columns]="visibleColumns" [data]="filteredData" [loading]="isLoading" [hasActions]="false" [showPaginator]="true">
+    <app-shared-table [columns]="visibleColumns" [data]="templatesData"
+     [loading]="isLoading" [hasActions]="false" [showPaginator]="true">
       <ng-template #colTemplate let-row="row" let-col="col">
         <ng-container [ngSwitch]="col.key">
 
-          <ng-container *ngSwitchCase="'id'">
-            <a routerLink="/inspections/template-details" class="ov-link font-semibold">{{ row.id }}</a>
+          <ng-container *ngSwitchCase="'code'">
+            <a [routerLink]="['/inspections/template-details', row.code]"  class="ov-link font-semibold">{{ row.code }}</a>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'templateName'">
-            <span class="text-defaulttextcolor font-semibold text-[13px]">{{ row.templateName }}</span>
+          <ng-container *ngSwitchCase="'template_name'">
+            <span class="text-defaulttextcolor font-semibold text-[13px]">{{ row.template_name }}</span>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'createdBy'">
+          <ng-container *ngSwitchCase="'created_by'">
             <span
               class="ov-status"
-              [class.ov-status--active]="row.createdBy === 'Admin'"
-              [class.ov-status--soft]="row.createdBy !== 'Admin'">
-              {{ row.createdBy }}
+              [class.ov-status--active]="row.created_by === 'Admin'"
+              [class.ov-status--soft]="row.created_by !== 'Admin'">
+              {{ row.created_by }}
             </span>
           </ng-container>
 
@@ -105,15 +106,15 @@
               <!-- Action dropdown list panel -->
               <div *ngIf="activeActionRow === row"
                 class="absolute end-0 z-30 mt-1 flex min-w-[120px] flex-col gap-1 rounded-lg border border-defaultborder bg-white p-1.5 shadow-lg dark:bg-bodybg">
-                <a routerLink="/inspections/template-details" class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
+                <a [routerLink]="['/inspections/template-details', row.code]"  class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
                   {{ 'web.inspections.templates.view' | translate }}
                 </a>
-                <a [routerLink]="['/inspections/create-template']" [queryParams]="{ id: row.id }" class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
+                <a [routerLink]="['/inspections/edit-template', row.code]" class="flex items-center gap-2 px-3 py-1.5 text-xs text-textmuted hover:bg-light/50 hover:text-defaulttextcolor rounded">
                   {{ 'web.inspections.templates.edit' | translate }}
                 </a>
-                <button type="button" class="flex w-full text-start items-center gap-2 px-3 py-1.5 text-xs text-danger hover:bg-danger/10 rounded">
+                <!-- <button type="button" class="flex w-full text-start items-center gap-2 px-3 py-1.5 text-xs text-danger hover:bg-danger/10 rounded">
                   {{ 'web.inspections.templates.archive' | translate }}
-                </button>
+                </button> -->
               </div>
             </div>
           </ng-container>

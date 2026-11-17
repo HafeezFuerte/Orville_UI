@@ -22,6 +22,9 @@ export class FacilityService {
    save_update_quotation(payload: any): Observable<any> { 
     return this.http.post(environment.apiurl+'api/Accounting/save_update_quotation', payload, { headers: this.commonservice.updateHeaders() });
    }
+   save_update_purchase_order(payload: any): Observable<any> { 
+      return this.http.post(environment.apiurl+'api/Accounting/save_update_purchase_order', payload, { headers: this.commonservice.updateHeaders() });
+     }
    saveWorkOrder(payload: any): Observable<any> { 
     return this.http.post(environment.apiurl+'api/Application/save_update_workorder', payload, { headers: this.commonservice.updateHeaders() });
    }

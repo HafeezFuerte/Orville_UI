@@ -98,6 +98,21 @@ saveInspection(payload: any): Observable<any> {
     )
   );
 }
+saveInspectionTemplate(payload: any): Observable<any> {
+  return this.http.post(
+    environment.apiurl + 'api/Masters/save_inspection_template',
+    payload,
+    { headers: this.commonService.updateHeaders() }
+  ).pipe(
+    catchError(() =>
+      this.http.post(
+        environment.apiurl + 'api/Masters/save_inspection_template',
+        payload,
+        { headers: this.commonService.updateHeaders() }
+      )
+    )
+  );
+}
 saveEmailSmsTemplate(payload: any): Observable<any> {
   return this.http.post(
     environment.apiurl + 'api/Masters/save_email_sms_templates',

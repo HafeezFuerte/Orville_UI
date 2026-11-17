@@ -28,16 +28,34 @@
       <div class="ov-card__body">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label class="ov-label">Property</label>
-            <ng-select [items]="options.properties" [(ngModel)]="selectedProperty"
-              placeholder="Search Property" class="ov-select w-full" appendTo="body">
-            </ng-select>
+            <label class="ov-label">{{ 'web.Unit.lblTitle' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.title" [placeholder]="'web.Unit.lblTitle' | translate" />
           </div>
           <div>
-            <label class="ov-label">Unit</label>
-            <ng-select [items]="options.units" [(ngModel)]="selectedUnit"
-              placeholder="Search Unit" class="ov-select w-full" appendTo="body">
-            </ng-select>
+            <label class="ov-label">Property<span class="text-danger">*</span></label>  
+            <ng-select #propSelect [items]="properties" bindLabel="name" bindValue="code"
+            [(ngModel)]="PurchaseOrderDetail.selectedProperty" (change)="onPropertyChange()" [placeholder]="'web.facility.workOrders.phSelectProperty' | translate"
+            class="ov-select w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-defaultborder">
+                <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
+                  (input)="propSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
+
+          </div>
+          <div>
+            <label class="ov-label">Unit<span class="text-danger">*</span></label>
+            <ng-select #unitSelect [items]="units" bindLabel="name" bindValue="code"
+            [(ngModel)]="PurchaseOrderDetail.selectedUnit"    [placeholder]="'web.facility.workOrders.phSelectUnit' | translate" class="ov-select w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-defaultborder">
+                <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
+                  (input)="unitSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select> 
           </div>
         </div>
       </div>
@@ -51,27 +69,36 @@
       <div class="ov-card__body flex flex-col gap-4">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label class="ov-label">Vendor <span class="text-danger">*</span></label>
-            <ng-select [items]="options.vendors" [(ngModel)]="selectedVendor"
-              placeholder="Select Vendor" class="ov-select w-full" appendTo="body">
-            </ng-select>
+            <label class="ov-label">Vendor <span class="text-danger">*</span></label> 
+
+            <ng-select #vendorSelect [items]="vendors" bindLabel="name" bindValue="code"
+            [(ngModel)]="PurchaseOrderDetail.selectedVendor" [placeholder]="'web.facility.workOrders.phSelectProperty' | translate"
+            class="ov-select w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-defaultborder">
+                <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
+                  (input)="vendorSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
+
           </div>
           <div>
             <label class="ov-label">PO Number <span class="text-danger">*</span></label>
-            <input type="text" class="ov-input" [(ngModel)]="poNumber" placeholder="Enter PO number" />
+            <input type="text" class="ov-input" disabled [(ngModel)]="PurchaseOrderDetail.poNumber" placeholder="Enter PO number" />
           </div>
           <div>
-            <label class="ov-label">PO Date</label>
+            <label class="ov-label">PO Date<span class="text-danger">*</span></label>
             <div class="po-date">
               <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="po-date__icon" />
-              <input type="text" class="ov-input po-date__input" [(ngModel)]="poDate" placeholder="Select PO date" />
+              <input type="text" appFlowbiteDatepicker class="ov-input po-date__input" [(ngModel)]="PurchaseOrderDetail.poDate" placeholder="Select PO date" />
             </div>
           </div>
           <div>
             <label class="ov-label">Due Date</label>
             <div class="po-date">
               <img src="assets/images/work-orders/calendar-week.svg" alt="" width="14" height="14" class="po-date__icon" />
-              <input type="text" class="ov-input po-date__input" [(ngModel)]="dueDate" placeholder="Select due date" />
+              <input type="text" appFlowbiteDatepicker class="ov-input po-date__input" [(ngModel)]="PurchaseOrderDetail.dueDate" placeholder="Select due date" />
             </div>
           </div>
         </div>
@@ -87,32 +114,55 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="ov-label">Shipping Name</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingName" placeholder="Enter shipping name" />
+            <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.name" placeholder="Enter shipping name" />
           </div>
           <div>
             <label class="ov-label">Shipping Phone</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingPhone" placeholder="Enter shipping phone" />
+            <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.phone" placeholder="Enter shipping phone" />
           </div>
           <div>
             <label class="ov-label">Shipping Company Name</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingCompanyName" placeholder="Enter company name" />
+            <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.company" placeholder="Enter company name" />
+          </div>  
+           <div>
+            <label class="ov-label">Shipping Country</label>
+            <ng-select #countrySelect [items]="countries" bindLabel="name" bindValue="code"
+            [(ngModel)]="PurchaseOrderDetail.shipping.country" (change)="oncountryChange()" [placeholder]="'web.contacts.lblSelectCountry' | translate"
+            class="ov-select w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-defaultborder">
+                <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
+                  (input)="countrySelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select>
           </div>
           <div>
             <label class="ov-label">Shipping State</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingState" placeholder="Enter state" />
+            <ng-select #StateSelect [items]="states" bindLabel="state_name" bindValue="id"
+            [(ngModel)]="PurchaseOrderDetail.shipping.state"   placeholder="Select State"
+            class="ov-select w-full">
+            <ng-template ng-header-tmp>
+              <div class="p-1.5 border-b border-defaultborder">
+                <input type="text" class="ov-input !h-8 !min-h-8 !py-1 !text-[12px]" [placeholder]="'web.common.lblSearch' | translate"
+                  (input)="StateSelect.filter($any($event.target).value)" (click)="$event.stopPropagation()">
+              </div>
+            </ng-template>
+          </ng-select> 
           </div>
-          <div>
-            <label class="ov-label">Shipping City</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingCity" placeholder="Enter city" />
-          </div>
+       
           <div>
             <label class="ov-label">Shipping Zipcode</label>
-            <input type="text" class="ov-input" [(ngModel)]="shippingZipcode" placeholder="Enter zipcode" />
+            <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.zipcode" placeholder="Enter zipcode" />
           </div>
         </div>
         <div>
           <label class="ov-label">Shipping Address</label>
-          <input type="text" class="ov-input" [(ngModel)]="shippingAddress" placeholder="Enter shipping address" />
+          <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.address" placeholder="Enter shipping address" />
+        </div>
+        <div>
+          <label class="ov-label">Delivery Instructions</label>
+          <input type="text" class="ov-input" [(ngModel)]="PurchaseOrderDetail.shipping.delivery_instructions" placeholder="Enter shipping address" />
         </div>
       </div>
     </div>
@@ -127,10 +177,10 @@
         </button>
       </div>
       <div class="ov-card__body">
-        <div class="po-empty-lines" *ngIf="!lineItems.length">
+        <div class="po-empty-lines" *ngIf="!filteredLineItems.length">
           No line items added yet. Click Add Line Item to get started.
         </div>
-        <div class="po-lines-table" *ngIf="lineItems.length">
+        <div class="po-lines-table" *ngIf="filteredLineItems.length">
           <div class="po-lines-table__row po-lines-table__row--head">
             <span>Item Code</span>
             <span>Inventory Item</span>
@@ -139,13 +189,13 @@
             <span>Total</span>
             <span></span>
           </div>
-          <div class="po-lines-table__row" *ngFor="let item of lineItems">
-            <span class="font-semibold">{{ item.itemCode }}</span>
-            <span>{{ item.inventoryItem }}</span>
-            <span>{{ item.quantity }}</span>
-            <span>{{ formatMoney(item.price) }}</span>
-            <span>{{ formatMoney(item.total) }}</span>
-            <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLineItem(item.id)" aria-label="Remove">
+          <div class="po-lines-table__row" *ngFor="let item of filteredLineItems">
+            <span class="font-semibold">{{ item.item_code }}</span>
+            <span>{{ item.inventory_item }}</span>
+            <span>{{ item.qty }}</span>
+            <span>{{ formatMoney(item?.amt) }}</span>
+            <span>{{ formatMoney(item?.total_amt) }}</span>
+            <button type="button" class="ov-icon-btn ov-icon-btn--bare" (click)="removeLineItem(item)" aria-label="Remove">
               <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
             </button>
           </div>
@@ -161,7 +211,7 @@
       <div class="ov-card__body">
         <label class="ov-label">Details</label>
         <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
-          [(ngModel)]="details" placeholder="Write details here..."></textarea>
+          [(ngModel)]="PurchaseOrderDetail.details" placeholder="Write details here..."></textarea>
       </div>
     </div>
 
@@ -173,7 +223,7 @@
       <div class="ov-card__body">
         <label class="ov-label">Note</label>
         <textarea class="ov-input !h-auto min-h-[100px]" rows="4"
-          [(ngModel)]="note" placeholder="Add any extra notes here..."></textarea>
+          [(ngModel)]="PurchaseOrderDetail.note" placeholder="Add any extra notes here..."></textarea>
       </div>
     </div>
   </div>
@@ -202,12 +252,12 @@
       <div class="qt-item-modal__fields">
         <div class="qt-item-modal__field">
           <label class="qt-item-modal__label">Item Code</label>
-          <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.itemCode" [placeholder]="'web.common.lblEnter' | translate" />
+          <input type="text" class="qt-item-modal__input" [(ngModel)]="modal.item_code" [placeholder]="'web.common.lblEnter' | translate" />
         </div>
 
         <div class="qt-item-modal__field">
           <label class="qt-item-modal__label">Inventory Item</label>
-          <ng-select [items]="options.inventoryItems" [(ngModel)]="modal.inventoryItem"
+          <ng-select [items]="inventoryItems" [(ngModel)]="modal.inventory_code" bindLabel="name" bindValue="code"
             [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>
@@ -221,14 +271,14 @@
         <div class="qt-item-modal__row">
           <div class="qt-item-modal__field">
             <label class="qt-item-modal__label">Quantity <span class="text-danger">*</span></label>
-            <input type="number" class="qt-item-modal__input" [(ngModel)]="modal.quantity"
+            <input type="number" class="qt-item-modal__input" [(ngModel)]="modal.qty"
               min="1" step="1" [placeholder]="'web.common.lblEnter' | translate" />
           </div>
           <div class="qt-item-modal__field">
             <label class="qt-item-modal__label">Price (Cents)</label>
             <div class="qt-item-modal__money">
               <span class="qt-item-modal__money-prefix bg-white dark:bg-bodybg">AED</span>
-              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.price"
+              <input type="number" class="qt-item-modal__money-input" [(ngModel)]="modal.amt"
                 min="0" step="0.01" placeholder="0.00" />
             </div>
           </div>
@@ -236,7 +286,7 @@
 
         <div class="qt-item-modal__field">
           <label class="qt-item-modal__label">Tax Profile</label>
-          <ng-select [items]="options.taxProfiles" [(ngModel)]="modal.taxProfile"
+          <ng-select [items]="taxProfiles" [(ngModel)]="modal.tax_profile" bindLabel="name" bindValue="code"
             [placeholder]="'web.common.lblSelect' | translate" class="ov-select w-full" appendTo="body">
           </ng-select>
         </div>

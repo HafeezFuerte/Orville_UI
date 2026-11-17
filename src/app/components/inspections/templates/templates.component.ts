@@ -6,7 +6,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SharedTableComponent } from '../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/filter-drawer.component';
-
+import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-templates',
   standalone: true,
@@ -16,10 +18,17 @@ import { FilterDrawerComponent } from '../../../shared/components/filter-drawer/
 })
 export class TemplatesComponent implements OnInit {
   private translate = inject(TranslateService);
-
+  private commontabservice = inject(Common_TabsService);
+  private commonservice = inject(CommonService);
+  private toastr = inject(ToastrService);
   isLoading = false;
   activeFilter: 'All' | 'Admin' | 'User' = 'All';
   searchQuery = '';
+  // Pagination
+  pageNo = 0;
+  pageSize = 10;
+  totalPages = 0;
+  totalRecords = 0; 
   isDrawerOpen = false;
   isColumnDropdownOpen = false;
 
@@ -28,7 +37,7 @@ export class TemplatesComponent implements OnInit {
     { id: 'Admin', labelKey: 'web.inspections.templates.tabAdminTemplate' },
     { id: 'User', labelKey: 'web.inspections.templates.tabUserTemplate' }
   ];
-
+  currentUser = this.commonservice.getCurrentUser(); 
   // Filter properties
   filterCreatedBy: any = null;
   filterTemplateName = '';
@@ -43,24 +52,15 @@ export class TemplatesComponent implements OnInit {
   createdByOptions = ['Admin', 'User'];
 
   // Table row data
-  templatesData = [
-    { id: '31658', templateName: 'Move Out Inspection', createdBy: 'Admin', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Move In Inspection', createdBy: 'Admin', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Annual Property Inspection', createdBy: 'User', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Preventive Maintenance', createdBy: 'Admin', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Common Area Audit', createdBy: 'User', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Villa Handover', createdBy: 'Admin', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Move In Inspection', createdBy: 'User', createdAt: '10-01-2026, 09:14 PM' },
-    { id: '31658', templateName: 'Move Out Inspection', createdBy: 'Admin', createdAt: '10-01-2026, 09:14 PM' }
-  ];
+  templatesData : any=[];
 
   filteredData = [...this.templatesData];
 
   columns = [
-    { key: 'id', label: 'ID', labelKey: 'web.inspections.templates.colId', visible: true, useTemplate: true },
-    { key: 'templateName', label: 'Template Name', labelKey: 'web.inspections.templates.colTemplateName', visible: true, useTemplate: true },
-    { key: 'createdBy', label: 'Created By', labelKey: 'web.inspections.templates.colCreatedBy', visible: true, useTemplate: true },
-    { key: 'createdAt', label: 'Created At', labelKey: 'web.inspections.templates.colCreatedAt', visible: true },
+    { key: 'code', label: 'ID', labelKey: 'web.inspections.templates.colId', visible: true, useTemplate: true },
+    { key: 'template_name', label: 'Template Name', labelKey: 'web.inspections.templates.colTemplateName', visible: true, useTemplate: true },
+    { key: 'created_by', label: 'Created By', labelKey: 'web.inspections.templates.colCreatedBy', visible: true, useTemplate: true },
+    { key: 'created_date', label: 'Created At', labelKey: 'web.inspections.templates.colCreatedAt', visible: true },
     { key: 'action', label: 'Action', labelKey: 'web.inspections.templates.colAction', visible: true, useTemplate: true }
   ];
 
@@ -72,6 +72,7 @@ export class TemplatesComponent implements OnInit {
       this.updateColumnLabels();
     });
     this.applyFilters();
+    this.loadTemplates();
   }
 
   private updateColumnLabels() {
@@ -106,6 +107,43 @@ export class TemplatesComponent implements OnInit {
   filterByCreatedBy(tab: 'All' | 'Admin' | 'User') {
     this.activeFilter = tab;
     this.applyFilters();
+  }
+  loadTemplates(): void {
+
+    
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0, 
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by:   "",
+      filter_list:"",
+      featureid: "INSPECTION_TEMPLATES"
+    };
+
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => {
+        if (response && response.statusCode === "200" && response.objResult) { 
+          const nextBatch = response.objResult.inspection_templates || [];
+          this.templatesData = nextBatch; 
+          if(response.objResult.rows_info)
+          {
+            this.totalRecords=response.objResult.rows_info[0].totalrecords; 
+            this.totalPages=response.objResult.rows_info[0].noofpages;
+          }
+        }
+        else
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
   }
 
   applyFilters() {
@@ -156,6 +194,73 @@ export class TemplatesComponent implements OnInit {
       this.activeActionRow = row;
     }
   }
+
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get pagerItems(): (number | string)[] {
+    const total = this.totalPages || 1;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
+  get startRecord(): number {
+    if (this.totalRecords === 0) return 0;
+    return (this.displayPage - 1) * this.pageSize + 1;
+  }
+
+  get endRecord(): number {
+    const end = this.displayPage * this.pageSize;
+    return end > this.totalRecords ? this.totalRecords : end;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadTemplates();
+  }
+
+  previousPage(): void {
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadTemplates();
+    }
+  }
+
+  nextPage(): void {
+    if (this.displayPage < this.totalPages) {
+      this.pageNo++;
+      this.loadTemplates();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo = page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadTemplates();
+    }
+  }
+  onSharedTablePageChange(event: { pageIndex: number; pageSize: number }): void {
+   
+    if(event.pageIndex>this.pageNo){
+      this.pageNo = this.pageNo + 1;
+      }
+      else{
+        this.pageNo = this.pageNo - 1;
+      }
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.pageSize = event.pageSize; 
+    this.loadTemplates();
+  } 
 
   closeActionMenu() {
     this.activeActionRow = null;

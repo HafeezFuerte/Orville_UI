@@ -9,43 +9,52 @@ import {
   PURCHASE_ORDER_ROWS,
   PurchaseOrderRow
 } from '../purchase-orders.data';
-
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, OvPaginatorComponent,SharedTableComponent, ColumnMenuComponent, TranslateModule],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.scss'
 })
 export class PurchaseOrderListComponent {
   private router = inject(Router);
-
+  private commonservice = inject(CommonService);
+  private commontabservice = inject(Common_TabsService);
+  private toastr=inject(ToastrService)
+  currentUser = this.commonservice.getCurrentUser(); 
   searchQuery = '';
   showColumnDropdown = false;
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = PURCHASE_ORDER_ROWS;
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows :any=[];
   openRowActionId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
 
   tableColumns = [
-    { key: 'id', label: 'ID', visible: true, useTemplate: true, width: '80px' },
-    { key: 'poNumber', label: 'PO Number', visible: true, width: '110px' },
-    { key: 'title', label: 'Title', visible: true, useTemplate: true, width: '200px' },
-    { key: 'status', label: 'Status', visible: true, useTemplate: true, width: '100px' },
-    { key: 'category', label: 'Category', visible: true, width: '110px' },
-    { key: 'totalAmount', label: 'Total Amount', visible: true, useTemplate: true, width: '130px' },
-    { key: 'poDate', label: 'PO Date', visible: true, width: '110px' },
-    { key: 'dueDate', label: 'Due Date', visible: true, width: '110px' },
+    { key: 'code', label: 'ID', visible: true, useTemplate: true, width: '80px' },
+    { key: 'po_no', label: 'PO Number', visible: true, width: '110px',useTemplate: true },
+    { key: 'title', label: 'Title', visible: true,  width: '200px' },
+    { key: 'status', label: 'Status', visible: true, useTemplate: true, width: '100px' }, 
+    { key: 'total_amount', label: 'Total Amount (' + this.currentUser?.currencyCode + ' )', visible: true, useTemplate: true, width: '130px' },
+    { key: 'po_date', label: 'PO Date', visible: true, width: '110px' },
+    { key: 'due_date', label: 'Due Date', visible: true, width: '110px' },
     { key: 'vendor', label: 'Vendor', visible: true, useTemplate: true, width: '160px' },
-    { key: 'property', label: 'Property', visible: true, width: '160px' },
-    { key: 'unit', label: 'Unit', visible: true, width: '140px' },
-    { key: 'workOrder', label: 'Work Order', visible: true, width: '110px' },
-    { key: 'invoice', label: 'Invoice', visible: true, width: '90px' },
-    { key: 'addedBy', label: 'Added By', visible: true, width: '120px' },
+    { key: 'property', label: 'Property', visible: true, width: '160px' ,useTemplate: true,},
+    { key: 'unit_code', label: 'Unit', visible: true, width: '140px',useTemplate: true, }, 
+    { key: 'created_by', label: 'Added By', visible: true, width: '120px' },
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
   ];
 
+  ngOnInit() { 
+    this.loadpurchaseorders();   
+  }
   get visibleColumns() {
     return this.tableColumns.filter((c) => c.visible !== false);
   }
@@ -66,54 +75,138 @@ export class PurchaseOrderListComponent {
     }
     return rows;
   }
+  loadpurchaseorders() {
+    const filterList: any[] = [];
+    
+     
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by:  '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "PURCHASE_ORDER"
+    };
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => { 
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.purchase_order || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
   }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
-  }
-
+   
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
-  get paginatedRows(): PurchaseOrderRow[] {
-    const start = this.pageIndex * this.pageSize;
+  get paginatedRows(): any[] {
+    const start = this.pageNo * this.pageSize;
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
-  onSearch(): void {
-    this.pageIndex = 0;
+  
+
+  applyLocalSearch(): void {
+    if (!this.allRows || this.allRows.length === 0) return;
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      this.allRows = this.allRows.filter((r: any) =>
+        (r.title && String(r.title).toLowerCase().includes(q)) ||
+        (r.code && String(r.code).toLowerCase().includes(q)) ||
+        (r.quotation_no && String(r.quotation_no).toLowerCase().includes(q)) ||
+        (r.selected_vendors && String(r.selected_vendors).toLowerCase().includes(q))
+      );
+    }
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  onSearch(): void {
+    this.pageNo = 0;
+    this.loadpurchaseorders();
+  }
+
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadpurchaseorders();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadpurchaseorders();
+  }
+  onPaginatorChange(event: any): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadpurchaseorders();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex -= 1;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadpurchaseorders();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex += 1;
+      this.pageNo++;
+      this.loadpurchaseorders();
     }
   }
 
+  goToPage(page: number): void {
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadpurchaseorders();
+    }
+ 
+  }
+     
+
   goPage(page: number): void {
-    this.pageIndex = Math.max(0, Math.min(page - 1, this.totalPages - 1));
+    this.pageNo = Math.max(0, Math.min(page - 1, this.totalPages - 1));
   }
 
   toggleColumn(key: string): void {

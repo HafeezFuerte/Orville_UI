@@ -388,10 +388,16 @@ export class LeaseDetailComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         if (res.statusCode == 200 && res.objResult) {
+          if(res.objResult.table[0].hasOwnProperty("-100") && 
+          res.objResult.table[0]["-100"]!=null && res.objResult.table[0]["-100"]!=""){
+            this.toastr.error(res.objResult.table[0]["-100"]);
+          }
+          else{
           this.toastr.success(this.translate.instant('web.leases.msgSendToApproval'));
           setTimeout(() => {
              window.location.reload();
           }, 2000);
+        }
         }
         else
           this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));

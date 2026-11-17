@@ -11,7 +11,7 @@
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <button type="button" routerLink="/inspections/create-template" [queryParams]="{ id: '31658' }" class="ov-btn ov-btn-primary">
+    <button type="button" [routerLink]="['/inspections/edit-template', editCode]"  class="ov-btn ov-btn-primary">
       {{ 'web.inspections.templateDetails.editTemplate' | translate }}
     </button>
   </div>
@@ -21,8 +21,8 @@
   <aside class="ov-detail-layout__left">
     <div class="tpl-side">
       <div class="tpl-side__hero">
-        <h4 class="tpl-side__title">Move Out Inspection</h4>
-        <p class="tpl-side__sub">{{ 'web.inspections.templateDetails.templateNum' | translate }}31658</p>
+        <h4 class="tpl-side__title">{{inspectionDetails.template_name}}</h4>
+        <p class="tpl-side__sub">{{ 'web.inspections.templateDetails.templateNum' | translate }} {{editCode}}</p>
       </div>
 
       <div class="tpl-side__rule" aria-hidden="true"></div>
@@ -32,14 +32,14 @@
       <section class="tpl-block">
         <h6>{{ 'web.inspections.templateDetails.templateDetails' | translate }}</h6>
         <div class="tpl-rows">
-          <p><span>{{ 'web.inspections.templateDetails.lblId' | translate }}</span> <b>31658</b></p>
-          <p><span>{{ 'web.inspections.templateDetails.lblTemplateName' | translate }}</span> <b>Move Out Inspection</b></p>
-          <p><span>{{ 'web.inspections.templateDetails.lblCreatedAt' | translate }}</span> <b>15-07-2026</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblId' | translate }}</span> <b>{{editCode}}</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblTemplateName' | translate }}</span> <b>{{inspectionDetails.template_name}}</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblCreatedAt' | translate }}</span> <b>{{inspectionDetails.created_date}}</b></p>
           <p>
             <span>{{ 'web.inspections.templateDetails.lblCreatedBy' | translate }}</span>
             <span class="tpl-pill">Admin</span>
           </p>
-          <p><span>{{ 'web.inspections.templateDetails.lblUpdateDate' | translate }}</span> <b>15-07-2026</b></p>
+          <p><span>{{ 'web.inspections.templateDetails.lblUpdateDate' | translate }}</span> <b>{{inspectionDetails.modified_date}}</b></p>
         </div>
       </section>
     </div>
@@ -76,8 +76,8 @@
                 <img src="assets/images/settings/grip-vertical.svg" alt="" width="14" height="14" />
               </span>
               <div>
-                <h6 class="tpl-area__name">{{ area.name }}</h6>
-                <p class="tpl-area__label">{{ area.label }}</p>
+                <h6 class="tpl-area__name">{{ area.areaName }}</h6>
+                <p class="tpl-area__label">{{ area.areaName }}</p>
               </div>
             </div>
             <div class="tpl-area__right">
@@ -96,9 +96,9 @@
             <div *ngFor="let sec of area.sections" class="tpl-section">
               <div class="tpl-section__left">
                 <span class="tpl-section__dot" aria-hidden="true"></span>
-                <p class="tpl-section__name">{{ sec.name }}</p>
+                <p class="tpl-section__name">{{ sec.sectionName }}</p>
               </div>
-              <p class="tpl-section__order">{{ sec.orderLabel }}</p>
+              <p class="tpl-section__order">{{ sec.order }}</p>
             </div>
           </div>
         </div>

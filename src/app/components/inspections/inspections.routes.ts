@@ -22,11 +22,15 @@ export const inspectionsRoutes: Routes = [
     loadComponent: () => import('./templates/templates.component').then(m => m.TemplatesComponent)
   },
   {
+    path: 'edit-template/:code',
+    loadComponent: () => import('./templates/create-template/create-template.component').then(m => m.CreateTemplateComponent)
+  },
+  {
     path: 'create-template',
     loadComponent: () => import('./templates/create-template/create-template.component').then(m => m.CreateTemplateComponent)
   },
   {
-    path: 'template-details',
+    path: 'template-details/:code',
     loadComponent: () => import('./templates/template-details/template-details.component').then(m => m.TemplateDetailsComponent)
   }
 ];

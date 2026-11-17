@@ -148,8 +148,8 @@ export const facilityRoutingModule: Routes = [
     redirectTo: 'purchase-orders',
   },
   {
-    path: 'purchase-order/:id',
-    redirectTo: 'purchase-orders/:id',
+    path: 'purchase-order/:code',
+    redirectTo: 'purchase-orders/:code',
   },
   {
     path: 'purchase-orders',
@@ -169,7 +169,14 @@ export const facilityRoutingModule: Routes = [
           ),
       },
       {
-        path: ':id',
+        path: 'edit/:code',
+        loadComponent: () =>
+        import('./purchase-orders/create-purchase-order/create-purchase-order.component').then(
+          (m) => m.CreatePurchaseOrderComponent
+        ),
+      },
+      {
+        path: ':code',
         loadComponent: () =>
           import('./purchase-orders/purchase-order-detail/purchase-order-detail.component').then(
             (m) => m.PurchaseOrderDetailComponent
