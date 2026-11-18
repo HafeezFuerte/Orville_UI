@@ -491,6 +491,13 @@ export const content: Routes = [
           ),
       },
       {
+        path: 'cms',
+        loadComponent: () =>
+          import('../../components/settings/cms/cms-settings.component').then(
+            (m) => m.CmsSettingsComponent
+          ),
+      },
+      {
         path: 'broadcast-configuration',
         loadComponent: () =>
           import('../../components/settings/broadcast-configuration/broadcast-configuration.component').then(

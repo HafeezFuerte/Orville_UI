@@ -32,8 +32,28 @@ export const admin: Routes = [
   path: 'crm',
   loadComponent: () =>
     import('./crm/crm.component').then((m) => m.CrmComponent),
+},
+{
+  path: 't_dashboard',
+  loadComponent: () =>
+    import('./t-dashboard/t-dashboard.component').then((m) => m.TDashboardComponent),
+},
+{
+  path: 'tenant-dashboard',
+  loadComponent: () =>
+    import('./t-dashboard/t-dashboard.component').then((m) => m.TDashboardComponent),
 }
 ]},
+{
+  path: 't_dashboard',
+  loadComponent: () =>
+    import('./t-dashboard/t-dashboard.component').then((m) => m.TDashboardComponent),
+},
+{
+  path: 'tenant-dashboard',
+  loadComponent: () =>
+    import('./t-dashboard/t-dashboard.component').then((m) => m.TDashboardComponent),
+},
 { path: 'insights', component: MyInsightsComponent },
 { path: 'reports', component: ReportsComponent },
 { path: 'documents', component: DocumentCenterComponent },

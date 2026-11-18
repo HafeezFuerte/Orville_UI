@@ -1,0 +1,309 @@
+<div class="t-dashboard-container">
+  <!-- Top Header Row -->
+  <header class="t-header">
+    <div class="t-header__left">
+      <h1 class="t-header__title">Good morning, {{ tenant.name }}</h1>
+      <p class="t-header__subtitle">
+        {{ tenant.unit }} · {{ tenant.building }} · {{ tenant.area }}
+      </p>
+    </div>
+
+    <div class="t-header__right">
+      <!-- Unit Switcher Dropdown -->
+      <div class="t-unit-dropdown" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="t-unit-btn"
+          (click)="toggleUnitDropdown()"
+          [attr.aria-expanded]="isUnitDropdownOpen">
+          <svg class="t-unit-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span class="t-unit-text">{{ selectedUnit }}</span>
+          <svg class="t-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <ul *ngIf="isUnitDropdownOpen" class="t-unit-menu" role="menu">
+          <li *ngFor="let u of availableUnits" (click)="selectUnit(u)" [class.is-active]="u === selectedUnit">
+            {{ u }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <button type="button" class="t-btn t-btn--outline" routerLink="/facility/tickets">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Maintenance request</span>
+      </button>
+
+      <button type="button" class="t-btn t-btn--dark" routerLink="/accounting/payments">
+        <span>Payments</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Row: Next Payment + My Lease -->
+  <section class="t-hero-grid">
+    <!-- Next Payment Hero Card (Dark Navy) -->
+    <article class="t-card t-card--next-payment">
+      <div class="t-next-pay__header">
+        <span class="t-next-pay__label">NEXT PAYMENT</span>
+        <span class="t-badge t-badge--warning-solid">
+          <span class="t-badge__dot"></span>
+          {{ nextPayment.dueDaysLabel }}
+        </span>
+      </div>
+
+      <div class="t-next-pay__amount-row">
+        <span class="t-next-pay__currency">{{ nextPayment.currency }}</span>
+        <span class="t-next-pay__amount">{{ nextPayment.amount }}</span>
+      </div>
+
+      <div class="t-next-pay__meta-grid">
+        <div class="t-next-pay__meta-item">
+          <span class="t-next-pay__meta-label">Due date</span>
+          <span class="t-next-pay__meta-value">{{ nextPayment.dueDate }}</span>
+        </div>
+        <div class="t-next-pay__meta-item">
+          <span class="t-next-pay__meta-label">Instalment</span>
+          <span class="t-next-pay__meta-value">{{ nextPayment.instalment }}</span>
+        </div>
+        <div class="t-next-pay__meta-item">
+          <span class="t-next-pay__meta-label">Method</span>
+          <span class="t-next-pay__meta-value">{{ nextPayment.method }}</span>
+        </div>
+      </div>
+
+      <div class="t-next-pay__actions">
+        <button type="button" class="t-btn t-btn--gold">
+          <span>Pay now securely</span>
+        </button>
+        <a class="t-link t-link--light" routerLink="/accounting/payments">
+          View invoice <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- My Lease Card -->
+    <article class="t-card t-card--lease">
+      <div class="t-card__header">
+        <h2 class="t-card__title">My Lease</h2>
+        <a class="t-link t-link--gold" routerLink="/leases">View lease</a>
+      </div>
+
+      <div class="t-lease__summary-row">
+        <span class="t-lease__code">{{ lease.leaseCode }}</span>
+        <span class="t-badge t-badge--success">
+          <span class="t-badge__dot"></span>
+          {{ lease.status }}
+        </span>
+        <span class="t-lease__spec">
+          {{ lease.type }} · {{ lease.bedrooms }} · {{ lease.size }}
+        </span>
+      </div>
+
+      <div class="t-lease__info-grid">
+        <div class="t-lease__info-item">
+          <span class="t-lease__info-label">Lease term</span>
+          <span class="t-lease__info-value">{{ lease.termStart }} – {{ lease.termEnd }}</span>
+        </div>
+        <div class="t-lease__info-item">
+          <span class="t-lease__info-label">Annual rent</span>
+          <span class="t-lease__info-value">{{ lease.annualRent }}</span>
+        </div>
+        <div class="t-lease__info-item">
+          <span class="t-lease__info-label">Security deposit</span>
+          <span class="t-lease__info-value">{{ lease.securityDeposit }}</span>
+        </div>
+      </div>
+
+      <div class="t-lease__progress-section">
+        <div class="t-lease__progress-label-row">
+          <span class="t-lease__progress-title">Lease progress</span>
+          <span class="t-lease__progress-count">Day {{ lease.currentDay }} of {{ lease.totalDays }}</span>
+        </div>
+        <div class="t-lease__progress-track">
+          <div class="t-lease__progress-bar" [style.width.%]="leaseProgressPercentage"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 4 KPI Metrics Row -->
+  <section class="t-kpi-grid">
+    <article *ngFor="let kpi of kpis" class="t-card t-kpi-card">
+      <div class="t-kpi-card__top">
+        <span class="t-kpi-card__title">{{ kpi.title }}</span>
+        <div class="t-kpi-card__icon-wrap">
+          <!-- Paid Icon -->
+          <svg *ngIf="kpi.iconType === 'paid'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+
+          <!-- Outstanding Icon -->
+          <svg *ngIf="kpi.iconType === 'outstanding'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+
+          <!-- Requests Icon -->
+          <svg *ngIf="kpi.iconType === 'requests'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+
+          <!-- Bookings Icon -->
+          <svg *ngIf="kpi.iconType === 'bookings'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+      </div>
+
+      <div class="t-kpi-card__value">{{ kpi.value }}</div>
+      <div class="t-kpi-card__subtext">{{ kpi.subtext }}</div>
+    </article>
+  </section>
+
+  <!-- Middle Split Section: Maintenance Requests + Announcements -->
+  <section class="t-split-grid">
+    <!-- Maintenance Requests Table Card -->
+    <article class="t-card t-split-card t-split-card--left">
+      <div class="t-card__header">
+        <div>
+          <h2 class="t-card__title">Maintenance requests</h2>
+          <p class="t-card__sub">Track the status of your service requests</p>
+        </div>
+        <a class="t-link t-link--gold" routerLink="/facility/tickets">View all</a>
+      </div>
+
+      <div class="t-table-responsive">
+        <table class="t-table">
+          <thead>
+            <tr>
+              <th>Request</th>
+              <th>Category</th>
+              <th>Technician</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let req of maintenanceRequests">
+              <td class="t-table__primary">{{ req.request }}</td>
+              <td class="t-table__muted">{{ req.category }}</td>
+              <td class="t-table__muted">{{ req.technician }}</td>
+              <td>
+                <span class="t-badge" [ngClass]="getMaintenanceStatusClass(req.status)">
+                  <span class="t-badge__dot"></span>
+                  {{ req.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <!-- Announcements Card -->
+    <article class="t-card t-split-card t-split-card--right">
+      <div class="t-card__header">
+        <div>
+          <h2 class="t-card__title">Announcements</h2>
+        </div>
+        <a class="t-link t-link--gold" routerLink="/broadcasts">See all</a>
+      </div>
+
+      <ul class="t-announcements-list">
+        <li *ngFor="let item of announcements" class="t-announcement-item">
+          <div class="t-announcement-icon-wrap">
+            <!-- Building / Maintenance Icon -->
+            <svg *ngIf="item.iconType === 'maintenance'" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+
+            <!-- Timing / Gym Icon -->
+            <svg *ngIf="item.iconType === 'timing'" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+
+            <!-- Safety / Fire Drill Icon -->
+            <svg *ngIf="item.iconType === 'safety'" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+
+          <div class="t-announcement-content">
+            <h4 class="t-announcement-title">{{ item.title }}</h4>
+            <p class="t-announcement-desc">{{ item.description }}</p>
+          </div>
+
+          <div class="t-announcement-badge">
+            <span class="t-badge" [ngClass]="getAnnouncementBadgeClass(item.badge)">
+              {{ item.badge }}
+            </span>
+          </div>
+        </li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- Bottom Section: Payment Schedule Table Card -->
+  <section class="t-card t-payment-schedule-card">
+    <div class="t-card__header">
+      <div>
+        <h2 class="t-card__title">Payment schedule</h2>
+        <p class="t-card__sub">Cheques and instalments for your current lease</p>
+      </div>
+      <a class="t-link t-link--gold t-link--download" href="javascript:void(0)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Download statement</span>
+      </a>
+    </div>
+
+    <div class="t-table-responsive">
+      <table class="t-table">
+        <thead>
+          <tr>
+            <th>Instalment</th>
+            <th>Due date</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paymentSchedule">
+            <td class="t-table__primary">{{ item.instalment }}</td>
+            <td class="t-table__muted">{{ item.dueDate }}</td>
+            <td class="t-table__primary font-semibold">{{ item.amount }}</td>
+            <td class="t-table__muted">{{ item.method }}</td>
+            <td>
+              <span class="t-badge" [ngClass]="getPaymentStatusClass(item.status)">
+                <span class="t-badge__dot"></span>
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

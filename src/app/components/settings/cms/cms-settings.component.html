@@ -1,0 +1,225 @@
+<div class="cms-page font-hanken">
+  <!-- Page Header -->
+  <header class="cms-header">
+    <div class="cms-header__left">
+      <h1 class="cms-title">CMS & Web Settings</h1>
+      <p class="cms-sub">
+        Manage public website content (Privacy Policy, Terms, About Us) and company contact configurations.
+      </p>
+    </div>
+  </header>
+
+  <!-- Top Tab Navigation -->
+  <div class="ov-seg ov-seg--tabs w-full overflow-x-auto" role="tablist" aria-label="CMS Navigation">
+    <button
+      type="button"
+      class="ov-seg__btn"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'pages'"
+      [class.is-active]="activeTab === 'pages'"
+      (click)="setTab('pages')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+      </svg>
+      <span>CMS Pages (Content)</span>
+    </button>
+
+    <button
+      type="button"
+      class="ov-seg__btn"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'settings'"
+      [class.is-active]="activeTab === 'settings'"
+      (click)="setTab('settings')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Web & Contact Settings</span>
+    </button>
+  </div>
+
+  <!-- =========================================================================
+       TAB 1: CMS Pages (Rich Text Editor)
+       ========================================================================= -->
+  <div *ngIf="activeTab === 'pages'" class="cms-tab-content">
+    <!-- Page Selector & Controls Bar -->
+    <div class="cms-controls-bar">
+      <!-- Horizontal Page Switcher Chips -->
+      <div class="cms-chips-scroll">
+        <button
+          *ngFor="let page of pageDefinitions"
+          type="button"
+          class="cms-chip"
+          [class.is-selected]="selectedPageType === page.type"
+          (click)="onSelectPage(page.type)">
+          {{ page.displayName }}
+        </button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="cms-lang-group">
+        <span class="cms-lang-label">Language:</span>
+        <button
+          type="button"
+          class="cms-lang-btn"
+          [class.is-active]="selectedLanguage === 'en'"
+          (click)="onLanguageChange('en')">
+          English
+        </button>
+        <button
+          type="button"
+          class="cms-lang-btn"
+          [class.is-active]="selectedLanguage === 'ar'"
+          (click)="onLanguageChange('ar')">
+          العربية
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Editor Card -->
+    <section class="cms-editor-card">
+      <div class="cms-editor-card__head">
+        <div class="cms-editor-card__meta">
+          <h2 class="cms-editor-card__title">{{ getSelectedPageDisplayName() }}</h2>
+          <div class="cms-editor-card__badges">
+            <span class="cms-code-badge">Code: {{ currentCode }}</span>
+            <span class="cms-lang-badge">{{ selectedLanguage === 'en' ? 'EN' : 'AR' }}</span>
+          </div>
+        </div>
+
+        <div class="cms-editor-card__actions">
+          <button
+            type="button"
+            class="cms-btn cms-btn--secondary"
+            (click)="togglePreview()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>{{ isPreviewMode ? 'Edit Mode' : 'Preview' }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="cms-btn cms-btn--gold"
+            [disabled]="isSavingCms"
+            (click)="saveCms()">
+            <span *ngIf="isSavingCms" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            <span>{{ isSavingCms ? 'Saving...' : 'Save Changes' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isCmsLoading" class="cms-loading-wrap">
+        <div class="spinner-border text-warning" role="status">
+          <span class="visually-hidden">Loading content...</span>
+        </div>
+        <p>Loading CMS content from server...</p>
+      </div>
+
+      <!-- Editor Mode -->
+      <div *ngIf="!isCmsLoading && !isPreviewMode" class="cms-editor-wrapper">
+        <div class="NgxEditor__Wrapper">
+          <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+          <ngx-editor
+            [editor]="editor"
+            [(ngModel)]="currentContent"
+            [disabled]="false"
+            placeholder="Type or format your CMS page content here...">
+          </ngx-editor>
+        </div>
+      </div>
+
+      <!-- Preview Mode -->
+      <div *ngIf="!isCmsLoading && isPreviewMode" class="cms-preview-wrapper">
+        <div class="cms-preview-header">
+          <span class="cms-preview-pill">Live Preview</span>
+          <p class="cms-preview-note">This is how your formatted HTML will be rendered on the website.</p>
+        </div>
+        <div class="cms-preview-content" [innerHTML]="currentContent"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================================
+       TAB 2: Web & Contact Settings
+       ========================================================================= -->
+  <div *ngIf="activeTab === 'settings'" class="cms-tab-content">
+    <div class="cms-settings-head-bar">
+      <div>
+        <h2 class="cms-settings-title">Global Website Parameters</h2>
+        <p class="cms-settings-sub">
+          These values are served dynamically via <code>/api/Web/get_settings_by_type</code> across public portals.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="cms-btn cms-btn--gold"
+        [disabled]="isSavingSettings"
+        (click)="saveAllSettings()">
+        <span *ngIf="isSavingSettings" class="spinner-border spinner-border-sm me-1" role="status"></span>
+        <span>{{ isSavingSettings ? 'Saving All...' : 'Save All Settings' }}</span>
+      </button>
+    </div>
+
+    <!-- Groups Grid -->
+    <div class="cms-groups-list">
+      <section *ngFor="let group of fieldGroups" class="cms-group-card">
+        <div class="cms-group-card__head">
+          <h3 class="cms-group-card__title">{{ group.groupName }}</h3>
+          <p class="cms-group-card__sub">{{ group.description }}</p>
+        </div>
+
+        <div class="cms-group-card__body">
+          <div *ngFor="let field of group.items" class="cms-field-row">
+            <div class="cms-field-info">
+              <label [for]="'field-' + field.key" class="cms-field-label">
+                {{ field.label }}
+              </label>
+              <p *ngIf="field.helpText" class="cms-field-help">{{ field.helpText }}</p>
+            </div>
+
+            <div class="cms-field-control">
+              <!-- Textarea for Address -->
+              <textarea
+                *ngIf="field.type === 'textarea'"
+                [id]="'field-' + field.key"
+                class="cms-input cms-textarea"
+                rows="3"
+                [placeholder]="field.placeholder"
+                [(ngModel)]="settingsMap[field.key]">
+              </textarea>
+
+              <!-- Standard Inputs -->
+              <input
+                *ngIf="field.type !== 'textarea'"
+                [type]="field.type"
+                [id]="'field-' + field.key"
+                class="cms-input"
+                [placeholder]="field.placeholder"
+                [(ngModel)]="settingsMap[field.key]" />
+
+              <button
+                type="button"
+                class="cms-save-field-btn"
+                [disabled]="savingKey === field.key"
+                (click)="saveSingleSetting(field.key)"
+                [title]="'Save ' + field.label">
+                <span *ngIf="savingKey === field.key" class="spinner-border spinner-border-sm" role="status"></span>
+                <svg *ngIf="savingKey !== field.key" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

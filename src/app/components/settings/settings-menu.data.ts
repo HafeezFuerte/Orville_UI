@@ -89,6 +89,9 @@ export function buildFigmaSettingsMenuItems(): Menu[] {
   section('Mobile App Configuration');
   link('Mobile App Configuration', '/settings/mobile-app-configuration', 'users');
 
+  section('Website CMS');
+  link('CMS', '/settings/cms', 'layout-grid');
+
   section('App Integrations');
   link('Payment Gateways', '/settings/payment-gateways', 'wallet');
 
