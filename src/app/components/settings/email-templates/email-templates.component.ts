@@ -166,17 +166,17 @@ export class EmailTemplatesComponent implements OnInit {
               };
             });
           }
-        }
+        } 
 
-        const local = this.getLocalValidTemplates();
-        const merged = [...local];
-        for (const item of apiRows) {
-          if (!merged.some(m => (m.code && m.code === item.code) || (m.name && m.name === item.name))) {
-            merged.push(item);
-          }
-        }
-        this.rows = merged;
-        localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(merged));
+        // const local = this.getLocalValidTemplates();
+        // const merged = [...local];
+        // for (const item of apiRows) {
+        //   if (!merged.some(m => (m.code && m.code === item.code) || (m.name && m.name === item.name))) {
+        //     merged.push(item);
+        //   }
+        // }
+        this.rows = apiRows;
+        //localStorage.setItem(EmailTemplatesComponent.STORAGE_KEY, JSON.stringify(merged));
       },
       error: (err: any) => {
         this.isLoading = false;
@@ -311,6 +311,7 @@ export class EmailTemplatesComponent implements OnInit {
 
   editTemplate(row: EmailTemplateRow): void {
     this.openMenuId = null;
+    debugger;
     const code = row.code || row.id;
     this.router.navigate(['/settings/email-templates/edit', code], {
       state: { templateData: row }

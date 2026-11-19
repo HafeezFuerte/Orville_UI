@@ -325,12 +325,14 @@ export class CreatePurchaseOrderComponent {
         code:'',
         item_code: this.modal.item_code.trim() || '—',
         inventory_code: this.modal.inventory_code || '—',
-        inventory_item: this.inventoryItems.filter((item:any)=>item.code==this.modal.inventory_code)[0].name|| '—',
+        inventory_item:this.modal.inventory_code!=null && this.modal.inventory_code!="" ?
+         this.inventoryItems.filter((item:any)=>item.code==this.modal.inventory_code)[0].name : '—',
         description: this.modal.description.trim() || '-',
         qty: this.modal.qty,
         amt: Number(this.modal.amt) || 0, 
         tax_profile: this.modal.tax_profile || '0',
-        tax_profile_name:this.taxProfiles.filter((item:any)=>item.code==this.modal.tax_profile)[0].name  || '-',
+        tax_profile_name:this.modal.tax_profile!=null && this.modal.tax_profile!="" ?
+         this.taxProfiles.filter((item:any)=>item.code==this.modal.tax_profile)[0].name : '-',
         total_amt: this.modalTotal,
         baction:'new'
       }

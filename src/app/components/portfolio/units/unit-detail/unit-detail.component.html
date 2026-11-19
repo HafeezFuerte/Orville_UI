@@ -1081,7 +1081,7 @@
             <h4 class="ov-card-title m-0">{{ 'web.Unit.lblUnitInspection' | translate }}</h4>
             <p class="ov-card-sub m-0 mt-1">{{ 'web.Unit.lblInspectionsDesc' | translate }}</p>
           </div>
-          <button type="button" class="ov-btn ov-btn-primary" [attr.data-tooltip]="'web.Unit.lblAddInspection' | translate">
+          <button type="button" class="ov-btn ov-btn-primary" [routerLink]="['/inspections/add-inspection']" [attr.data-tooltip]="'web.Unit.lblAddInspection' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
             {{ 'web.Unit.lblAddInspection' | translate }}
           </button>
@@ -1094,15 +1094,14 @@
             <thead class="ov-table__head">
               <tr class="border-b border-defaultborder">
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblInspectionID' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblCompanyID' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblName' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.inspections.add.dateTime' | translate }}</th>
+                
                 <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblStatus' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblFileType' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblUnit' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblScheduled' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblDateTime' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblUserID' | translate }}</th>
-                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.Unit.lblEnvironment' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.inspections.list.colType' | translate }}</th>
+                
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.inspections.list.colProperty' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.inspections.add.inspector' | translate }}</th>
+                <th scope="col" class="text-start text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.inspections.list.colCreated' | translate }}</th> 
                 <th scope="col" class="text-center text-xs font-bold text-gray-700 py-3 px-4">{{ 'web.contacts.lblAction' | translate }}</th>
               </tr>
             </thead>
@@ -1113,22 +1112,19 @@
                 </td>
               </tr>
               <tr *ngFor="let ins of inspections" class="border-b border-defaultborder task-list hover:bg-gray-50/40 transition-colors">
-                <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.inspectionId}}</td>
-                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.companyId}}</td>
-                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.name}}</td>
+                <td class="py-3 px-4 font-bold text-primary text-xs">{{ins.code}}</td>
+                <td class="py-3 px-4 font-semibold text-gray-800 text-xs">{{ins.inspection_date_time | date:'MM-dd-yyyy'}}</td> 
                 <td class="py-3 px-4 text-xs">
-                  <span class="badge bg-warning text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.status}}</span>
+                  <span class="badge bg-warning text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.inspection_status_name}}</span>
                 </td>
                 <td class="py-3 px-4 text-xs">
-                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{ins.type}}</span>
+                  <span class="badge bg-light text-gray-800 px-2 py-0.5 rounded text-[10px] border border-gray-200">{{ins.inspection_type_name}}</span>
                 </td>
-                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.unit}}</td>
+                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.property}}</td>
                 <td class="py-3 px-4 text-xs">
-                  <span class="badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.scheduled}}</span>
+                  <span class="badge bg-primary text-white px-2 py-0.5 rounded text-[10px] font-bold">{{ins.inspector_id}}</span>
                 </td>
-                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.dateTime}}</td>
-                <td class="py-3 px-4 font-medium text-primary text-xs">{{ins.userId}}</td>
-                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.environment}}</td>
+                <td class="py-3 px-4 font-medium text-gray-600 text-xs">{{ins.created_date | date:'MM-dd-yyyy'}}</td> 
                 <td class="py-3 px-4 text-center text-xs">
                   <div class="flex items-center justify-center gap-1.5">
                     <button type="button" class="ti-btn !py-1 !px-2 !text-[0.65rem] border bg-white text-gray-700 hover:bg-gray-50 shadow-sm" [title]="'web.Unit.lblView' | translate">

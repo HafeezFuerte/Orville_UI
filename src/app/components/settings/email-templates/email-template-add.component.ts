@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Common_TabsService } from '../../portfolio/services/common_tabs.service';
 import { CommonService } from '../../../services/common.service';
-
+import { NgSelectModule } from '@ng-select/ng-select';
 export interface FeatureOption {
   feature: string;
   name: string;
@@ -29,7 +29,7 @@ export interface AutofillItem {
 @Component({
   selector: 'app-email-template-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgxEditorModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule,NgSelectModule, NgxEditorModule, TranslateModule],
   templateUrl: './email-template-add.component.html',
   styleUrl: './email-template-add.component.scss'
 })
@@ -53,7 +53,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
   // Form Fields mapped to POST /api/Masters/save_email_sms_templates
   template_name: string = '';
   feature: string = 'PROPERTY';
-  template_type: number = 369; // Action/Trigger ID from typeId: 2, filterId: 58 (e.g. 369 = 'Add')
+  template_type: string = "369"; // Action/Trigger ID from typeId: 2, filterId: 58 (e.g. 369 = 'Add')
   format_type: number = 2;   // 2 = HTML (Rich Text), 1 = Plain Text
   to_address: string = '';
   bcc_address: string = '';
@@ -387,18 +387,18 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
             name: item.name || item.code || 'Add',
             code: item.code || ''
           }));
-          if (!this.template_type && this.actionTriggers.length > 0) {
-            this.template_type = this.actionTriggers[0].id;
-          }
+          // if (!this.template_type && this.actionTriggers.length > 0) {
+          //   this.template_type = this.actionTriggers[0].id;
+          // }
         } else {
           this.actionTriggers = [
-            { id: 369, name: 'Add', code: 'Add' },
-            { id: 370, name: 'Edit', code: 'Edit' },
-            { id: 371, name: 'Status Change', code: 'Status Change' },
-            { id: 372, name: 'Delete / Cancel', code: 'Delete' }
+            { id: 1, name: 'Add', code: 'Add' },
+            { id: 2, name: 'Edit', code: 'Edit' },
+            { id: 4, name: 'Status Change', code: 'Status Change' },
+            { id: 3, name: 'Delete / Cancel', code: 'Delete' }
           ];
           if (!this.template_type) {
-            this.template_type = 369;
+            this.template_type = "1";
           }
         }
       },
@@ -406,12 +406,12 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
         this.loadingTriggers = false;
         console.error('Error fetching action triggers (typeId: 2, filterId: 58):', err);
         this.actionTriggers = [
-          { id: 369, name: 'Add', code: 'Add' },
-          { id: 370, name: 'Edit', code: 'Edit' },
-          { id: 371, name: 'Status Change', code: 'Status Change' }
+          { id: 1, name: 'Add', code: 'Add' },
+          { id: 2, name: 'Edit', code: 'Edit' },
+          { id: 4, name: 'Status Change', code: 'Status Change' }
         ];
         if (!this.template_type) {
-          this.template_type = 369;
+          this.template_type = "1";
         }
       }
     });
@@ -422,7 +422,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
     return feat.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  onFeatureChange(newFeature: string): void {
+  onFeatureChange(newFeature: string): void { 
     this.feature = newFeature;
     this.loadAutofillElements(newFeature);
   }
@@ -434,9 +434,9 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
     this.loadingAutofill = true;
 
     const payload = {
-      typeId: 2,
-      filterId: filterId,
-      filterText: '',
+      typeId: 115,
+      filterId: 0,
+      filterText: selectedFeature,
       filterText1: '',
       userId: 1,
       clientId: '74BB6922',
@@ -446,13 +446,14 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
     this.commonTabsService.getMasterByType(payload).subscribe({
       next: (res: any) => {
         this.loadingAutofill = false;
-        if (res && (res.statusCode === 200 || res.statusCode === '200') && Array.isArray(res.objResult?.table)) {
-          this.autofillElements = res.objResult.table.map((item: any) => {
-            const rawName = item.name || item.lookup_name || item.description || item.code || '';
-            const rawTag = item.code || item.field_tag || rawName;
-            const cleanTag = rawTag.startsWith('{{') ? rawTag : `{{${rawTag}}}`;
+        if (res && (res.statusCode === 200 || res.statusCode === '200') && Array.isArray(res.objResult?.table)) { 
+          let jsonObject=JSON.parse(res.objResult.table[0]['jsoN_F52E2B61-18A1-11d1-B105-00805F49916B']); 
+          this.autofillElements = jsonObject.map((item: any) => {
+            const rawName = item.label ||  '';
+            const rawTag = item.key || item.code || rawName;
+            const cleanTag = rawTag.startsWith('%') ? rawTag : `%${rawTag}%`;
             return {
-              id: item.id,
+              id: item.key,
               name: rawName,
               tag: cleanTag
             };
@@ -470,24 +471,12 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
 
   // Load existing record for Edit mode
   loadTemplateRecord(): void {
-    const stateData = history.state?.templateData;
-    if (stateData) {
-      this.populateFields(stateData);
-      return;
-    }
-
-    // Try reading cached templates
-    const cached = localStorage.getItem('orville_email_templates');
-    if (cached) {
-      try {
-        const list = JSON.parse(cached);
-        const found = list.find((t: any) => String(t.code) === this.code || String(t.id) === String(this.templateId || this.code));
-        if (found) {
-          this.populateFields(found);
-          return;
-        }
-      } catch {}
-    }
+    // const stateData = history.state?.templateData;
+    // if (stateData) {
+    //   this.populateFields(stateData);
+    //   return;
+    // }
+ 
 
     // Explicit user instruction: fetch template details using typeId: 104
     this.isLoading = true;
@@ -523,7 +512,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
   private populateFields(data: any): void {
     this.template_name = data.name || data.template_name || '';
     this.feature = data.feature || 'PROPERTY';
-    this.template_type = Number(data.template_type) || 369;
+    this.template_type = String(data.template_type) || "1";
     this.format_type = Number(data.format_type) || 2;
     this.to_address = data.to_address || '';
     this.bcc_address = data.bcc_address || '';
@@ -533,9 +522,9 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
     this.loadAutofillElements(this.feature);
   }
 
-  insertAutofill(tag: string): void {
+  insertAutofill(tag: string): void { 
     if (!tag) return;
-    const cleanTag = tag.startsWith('{{') ? tag : `{{${tag}}}`;
+    const cleanTag = tag.startsWith('%') ? tag : `%${tag}%`;
     if (this.editor) {
       this.editor.commands.focus().insertText(cleanTag).exec();
     } else {
@@ -546,7 +535,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
   }
 
   onAutofillDragStart(event: DragEvent, tag: string): void {
-    const cleanTag = tag.startsWith('{{') ? tag : `{{${tag}}}`;
+    const cleanTag = tag.startsWith('%') ? tag : `%${tag}%`;
     event.dataTransfer?.setData('text/plain', cleanTag);
   }
 
@@ -572,7 +561,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.subject || !this.subject.trim()) {
+    if ((!this.subject || !this.subject.trim()) && this.format_type==2) {
       this.toastr.warning('Please enter an email subject line', 'Validation');
       return;
     }
@@ -613,7 +602,7 @@ export class EmailTemplateAddComponent implements OnInit, OnDestroy {
           );
 
           // Update local cache for immediate reflection in the list
-          this.updateLocalCache(payload);
+          //this.updateLocalCache(payload);
           this.router.navigate(['/settings/email-templates']);
         } else {
           const msg = res?.message || 'Failed to save email template';
