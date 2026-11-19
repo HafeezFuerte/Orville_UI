@@ -5,6 +5,9 @@ import { RouterModule } from '@angular/router';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { Schema, MarkSpec } from 'prosemirror-model';
+import { marks, nodes } from 'ngx-editor/schema';
 import { CmsService } from './cms.service';
 import {
   CmsItem,
@@ -13,6 +16,58 @@ import {
   SETTINGS_FIELD_GROUPS,
   WebSettingGroup,
 } from './cms.data';
+
+/**
+ * Custom MarkSpec for Font Size.
+ * Parses style="font-size: ..." and renders <span style="font-size: ...;">
+ */
+const fontSizeMark: MarkSpec = {
+  attrs: {
+    fontSize: { default: null },
+  },
+  parseDOM: [
+    {
+      style: 'font-size',
+      getAttrs: (value: any) => ({ fontSize: value }),
+    },
+  ],
+  toDOM(mark: any) {
+    const { fontSize } = mark.attrs;
+    return ['span', { style: `font-size:${fontSize};` }, 0];
+  },
+};
+
+/**
+ * Custom MarkSpec for Font Family.
+ * Parses style="font-family: ..." and renders <span style="font-family: ...;">
+ */
+const fontFamilyMark: MarkSpec = {
+  attrs: {
+    fontFamily: { default: null },
+  },
+  parseDOM: [
+    {
+      style: 'font-family',
+      getAttrs: (value: any) => ({ fontFamily: value }),
+    },
+  ],
+  toDOM(mark: any) {
+    const { fontFamily } = mark.attrs;
+    return ['span', { style: `font-family:${fontFamily};` }, 0];
+  },
+};
+
+/**
+ * Extended ProseMirror Schema containing font_size and font_family marks.
+ */
+export const customEditorSchema = new Schema({
+  nodes,
+  marks: {
+    ...marks,
+    font_size: fontSizeMark,
+    font_family: fontFamilyMark,
+  },
+});
 
 @Component({
   selector: 'app-cms-settings',
@@ -24,6 +79,7 @@ import {
 export class CmsSettingsComponent implements OnInit, OnDestroy {
   private cmsService = inject(CmsService);
   private toastr = inject(ToastrService);
+  private editorSub: Subscription | null = null;
 
   // Active top-level tab: 'pages' (CMS Content) or 'settings' (Web Settings)
   public activeTab: 'pages' | 'settings' = 'pages';
@@ -38,6 +94,35 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   public isCmsLoading = false;
   public isSavingCms = false;
   public isPreviewMode = false;
+
+  // Font Options
+  public fontFamilies = [
+    { label: 'Hanken Grotesk', value: "'Hanken Grotesk', sans-serif" },
+    { label: 'Inter', value: 'Inter, sans-serif' },
+    { label: 'Arial', value: 'Arial, sans-serif' },
+    { label: 'Helvetica', value: 'Helvetica, sans-serif' },
+    { label: 'Georgia', value: 'Georgia, serif' },
+    { label: 'Times New Roman', value: "'Times New Roman', serif" },
+    { label: 'Courier New', value: "'Courier New', monospace" },
+    { label: 'Tahoma', value: 'Tahoma, sans-serif' },
+    { label: 'Verdana', value: 'Verdana, sans-serif' },
+  ];
+
+  public fontSizes = [
+    { label: '12px', value: '12px' },
+    { label: '14px', value: '14px' },
+    { label: '16px (Normal)', value: '16px' },
+    { label: '18px', value: '18px' },
+    { label: '20px', value: '20px' },
+    { label: '24px', value: '24px' },
+    { label: '28px', value: '28px' },
+    { label: '32px', value: '32px' },
+    { label: '36px', value: '36px' },
+    { label: '48px', value: '48px' },
+  ];
+
+  public selectedFontFamily = '';
+  public selectedFontSize = '';
 
   // NgxEditor instance
   public editor!: Editor;
@@ -60,13 +145,106 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   public savingKey: string | null = null;
 
   ngOnInit(): void {
-    this.editor = new Editor();
+    this.editor = new Editor({
+      schema: customEditorSchema,
+    });
+
+    // Listen to editor selection changes to reflect font size & font family in toolbar dropdowns
+    this.editorSub = this.editor.update.subscribe((view) => {
+      if (!view) return;
+      const state = view.state;
+      const { from, to, empty } = state.selection;
+
+      if (empty) {
+        const marks = state.storedMarks || state.selection.$from.marks();
+        const sizeMark = marks.find((m: any) => m.type.name === 'font_size');
+        this.selectedFontSize = sizeMark?.attrs?.['fontSize'] || '';
+
+        const familyMark = marks.find((m: any) => m.type.name === 'font_family');
+        this.selectedFontFamily = familyMark?.attrs?.['fontFamily'] || '';
+      } else {
+        const sizeMarkType = state.schema.marks['font_size'];
+        const familyMarkType = state.schema.marks['font_family'];
+
+        if (sizeMarkType && state.doc.rangeHasMark(from, to, sizeMarkType)) {
+          const mark = state.selection.$from.marks().find((m: any) => m.type.name === 'font_size');
+          this.selectedFontSize = mark?.attrs?.['fontSize'] || '';
+        } else {
+          this.selectedFontSize = '';
+        }
+
+        if (familyMarkType && state.doc.rangeHasMark(from, to, familyMarkType)) {
+          const mark = state.selection.$from.marks().find((m: any) => m.type.name === 'font_family');
+          this.selectedFontFamily = mark?.attrs?.['fontFamily'] || '';
+        } else {
+          this.selectedFontFamily = '';
+        }
+      }
+    });
+
     this.loadCmsPages();
     this.loadSettings();
   }
 
   ngOnDestroy(): void {
+    this.editorSub?.unsubscribe();
     this.editor?.destroy();
+  }
+
+  // =========================================================================
+  // Font Styling Actions
+  // =========================================================================
+
+  public applyFontSize(size: string): void {
+    if (!this.editor || !this.editor.view) return;
+    const { state, dispatch } = this.editor.view;
+    const markType = state.schema.marks['font_size'];
+    if (!markType) return;
+
+    const { from, to, empty } = state.selection;
+    const tr: any = state.tr;
+
+    if (empty) {
+      const currentMarks = state.storedMarks || state.selection.$from.marks();
+      const filtered = currentMarks.filter((m: any) => m.type !== markType);
+      if (size) {
+        filtered.push((markType as any).create({ fontSize: size }));
+      }
+      dispatch(tr.setStoredMarks(filtered));
+    } else {
+      tr.removeMark(from, to, markType);
+      if (size) {
+        tr.addMark(from, to, (markType as any).create({ fontSize: size }));
+      }
+      dispatch(tr);
+    }
+    this.editor.view.focus();
+  }
+
+  public applyFontFamily(family: string): void {
+    if (!this.editor || !this.editor.view) return;
+    const { state, dispatch } = this.editor.view;
+    const markType = state.schema.marks['font_family'];
+    if (!markType) return;
+
+    const { from, to, empty } = state.selection;
+    const tr: any = state.tr;
+
+    if (empty) {
+      const currentMarks = state.storedMarks || state.selection.$from.marks();
+      const filtered = currentMarks.filter((m: any) => m.type !== markType);
+      if (family) {
+        filtered.push((markType as any).create({ fontFamily: family }));
+      }
+      dispatch(tr.setStoredMarks(filtered));
+    } else {
+      tr.removeMark(from, to, markType);
+      if (family) {
+        tr.addMark(from, to, (markType as any).create({ fontFamily: family }));
+      }
+      dispatch(tr);
+    }
+    this.editor.view.focus();
   }
 
   // =========================================================================

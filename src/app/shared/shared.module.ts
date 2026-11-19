@@ -19,6 +19,7 @@ import { NgxColorsModule } from 'ngx-colors';
 import { TranslateModule } from "@ngx-translate/core";
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CreateOverlayComponent } from './components/create-overlay/create-overlay.component';
+import { HasPermissionDirective } from './directives/has-permission.directive';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { CreateOverlayComponent } from './components/create-overlay/create-overl
         ReactiveFormsModule,
         ColorPickerModule,
         NgSelectModule,
-        CreateOverlayComponent
+        CreateOverlayComponent,
+        HasPermissionDirective
         // NgxColorsModule
     ],
     exports: [
@@ -60,7 +62,8 @@ import { CreateOverlayComponent } from './components/create-overlay/create-overl
         LandingSwitcherComponent,
         LandingLayoutComponent,
         TranslateModule,
-        NgSelectModule
+        NgSelectModule,
+        HasPermissionDirective
     ],
     providers: [ColorPickerService],
 })

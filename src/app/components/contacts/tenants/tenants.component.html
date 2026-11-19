@@ -10,12 +10,13 @@
       <i class="ri-upload-2-line text-[18px]"></i>
       {{ 'web.property.lblImport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost"
+    <button *appHasPermission="'ExportTenant'" type="button" class="ov-btn ov-btn-ghost"
+      (click)="exportTenants()"
       [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
       {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" routerLink="/contacts/tenants/add-tenant"
+    <button *appHasPermission="'AddTenant'" type="button" class="ov-btn ov-btn-primary" routerLink="/contacts/tenants/add-tenant"
       [attr.data-tooltip]="'web.contacts.lblAddTenant' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
       {{ 'web.contacts.lblAddTenant' | translate }}
@@ -146,11 +147,11 @@
               <a class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor no-underline hover:bg-light"
                 [routerLink]="['/contacts/tenants', row.code]"
                 (click)="openActionCode = null">{{ 'web.common.view' | translate }}</a>
-              <button type="button"
+              <button *appHasPermission="'EditTenant'" type="button"
                 class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                 (click)="editTenant(row.code)">{{ 'web.common.edit' | translate }}</button>
-                    <button type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
-                    (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
+              <button *appHasPermission="'DeleteTenant'" type="button" class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
+                (click)="handleEditAction({ action_name: 'delete', code: row.code }); openActionCode = null">{{ 'web.common.lblDelete' | translate }}</button>
             </div>
           </div>
         </ng-container>

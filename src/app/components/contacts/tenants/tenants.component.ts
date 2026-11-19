@@ -28,10 +28,14 @@ export interface Tenant {
   image_path: string;
 }
 
+import { ScreenId } from '../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
+
 @Component({
   selector: 'app-tenants',
   standalone: true,
-  imports: [CommonModule, FilterDrawerComponent, DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule, BulkImportModalComponent],
+  imports: [CommonModule, FilterDrawerComponent, DeleteConfirmationComponent, FormsModule, SharedTableComponent, RouterModule, NgSelectModule, TranslateModule, BulkImportModalComponent, HasPermissionDirective],
   templateUrl: './tenants.component.html',
   styleUrl: './tenants.component.scss'
 })
@@ -41,6 +45,7 @@ export class TenantsComponent implements OnInit, OnDestroy {
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
   private translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   searchQuery: string = '';
   showColumnDropdown: boolean = false;
   openActionCode: string | number | null = null;
@@ -136,7 +141,34 @@ export class TenantsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUser = this.commonService.getCurrentUser();
+    this.pagePermissionService.loadPagePermissions(ScreenId.Tenants).subscribe();
     this.loadTenants();
+  }
+
+  exportTenants(): void {
+    if (!this.tenants || this.tenants.length === 0) {
+      this.toastr.info('No tenant data to export');
+      return;
+    }
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Company', 'Gender', 'Status'];
+    const rows = this.tenants.map(t => [
+      t.id || t.code || '',
+      `"${(t.name || '').replace(/"/g, '""')}"`,
+      `"${(t.email || '').replace(/"/g, '""')}"`,
+      `"${(t.phoneNumber || '').replace(/"/g, '""')}"`,
+      `"${(t.company || '').replace(/"/g, '""')}"`,
+      t.gender || '',
+      t.status || ''
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `tenants_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success('Tenants exported successfully');
   }
 
   loadTenants() {

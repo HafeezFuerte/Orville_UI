@@ -125,7 +125,45 @@
       <!-- Editor Mode -->
       <div *ngIf="!isCmsLoading && !isPreviewMode" class="cms-editor-wrapper">
         <div class="NgxEditor__Wrapper">
-          <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+          <ngx-editor-menu
+            [editor]="editor"
+            [toolbar]="toolbar"
+            [customMenuRef]="customToolbarMenu">
+          </ngx-editor-menu>
+
+          <!-- Custom Toolbar Extension: Font Family & Font Size -->
+          <ng-template #customToolbarMenu>
+            <div class="cms-menu-separator"></div>
+
+            <!-- Font Family -->
+            <div class="cms-toolbar-control">
+              <select
+                class="cms-toolbar-select"
+                [(ngModel)]="selectedFontFamily"
+                (change)="applyFontFamily(selectedFontFamily)"
+                title="Font Family">
+                <option value="">Font Family</option>
+                <option *ngFor="let font of fontFamilies" [value]="font.value">
+                  {{ font.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Font Size -->
+            <div class="cms-toolbar-control">
+              <select
+                class="cms-toolbar-select cms-toolbar-select--size"
+                [(ngModel)]="selectedFontSize"
+                (change)="applyFontSize(selectedFontSize)"
+                title="Font Size">
+                <option value="">Font Size</option>
+                <option *ngFor="let size of fontSizes" [value]="size.value">
+                  {{ size.label }}
+                </option>
+              </select>
+            </div>
+          </ng-template>
+
           <ngx-editor
             [editor]="editor"
             [(ngModel)]="currentContent"
@@ -153,9 +191,6 @@
     <div class="cms-settings-head-bar">
       <div>
         <h2 class="cms-settings-title">Global Website Parameters</h2>
-        <p class="cms-settings-sub">
-          These values are served dynamically via <code>/api/Web/get_settings_by_type</code> across public portals.
-        </p>
       </div>
 
       <button

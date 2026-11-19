@@ -16,6 +16,8 @@ import { DeleteConfirmationComponent } from '../../../../shared/components/delet
 import { Common_TabsService } from '../../services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import { BulkImportModalComponent } from '../../../../shared/components/bulk-import-modal/bulk-import-modal.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
 
 @Component({
   selector: 'app-properties-list',
@@ -114,7 +116,8 @@ export class PropertiesListComponent implements OnInit {
     private portfolioService: PortfolioService,
     private commonservice:CommonService,
     private commontabservice:Common_TabsService,
-    private toastr:ToastrService
+    private toastr:ToastrService,
+    public pagePermissionService: PagePermissionService
   ) {}
 
   getArabicLookupName(row: any, key: string): string {
@@ -122,10 +125,35 @@ export class PropertiesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+    this.pagePermissionService.loadPagePermissions(ScreenId.Properties).subscribe();
     this.loadMetrics(4,0, '', '','');
     this.applyLocalFilters();
     this.loadProperties(); 
+  }
+
+  exportProperties(): void {
+    if (!this.properties || this.properties.length === 0) {
+      this.toastr.info('No property data to export');
+      return;
+    }
+    const headers = ['Code', 'Name', 'Type', 'Internal Status', 'Total Units', 'Occupancy Rate'];
+    const rows = this.properties.map(p => [
+      p.code || '',
+      `"${(p.name || '').replace(/"/g, '""')}"`,
+      `"${(p.type_name || '').replace(/"/g, '""')}"`,
+      `"${(p['internal Status'] || p.internal_status || '').replace(/"/g, '""')}"`,
+      p.total_units || 0,
+      `"${p.occupancy_rate || 0}%"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `properties_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastr.success('Properties exported successfully');
   }
 
   /*loadMetrics() {

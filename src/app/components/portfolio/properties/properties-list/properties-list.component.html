@@ -5,11 +5,13 @@
     <p class="sr-only">{{ 'web.property.lblPropertyDesc' | translate }}</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.contacts.lblExport' | translate">
+    <button *appHasPermission="'ExportProperties'" type="button" class="ov-btn ov-btn-ghost"
+      (click)="exportProperties()"
+      [attr.data-tooltip]="'web.contacts.lblExport' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
       {{ 'web.contacts.lblExport' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-ghost" (click)="openImportModal()" [attr.data-tooltip]="'web.property.lblImport' | translate">
+    <button *appHasPermission="'ImportProperties'" type="button" class="ov-btn ov-btn-ghost" (click)="openImportModal()" [attr.data-tooltip]="'web.property.lblImport' | translate">
       <i class="ri-upload-2-line text-[18px]"></i>
       {{ 'web.property.lblImport' | translate }}
     </button>
@@ -17,7 +19,7 @@
       <i class="ti ti-speakerphone text-[18px]" aria-hidden="true"></i>
       {{ 'web.property.lblSendBroadcast' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" routerLink="/add-property"
+    <button *appHasPermission="'AddProperty'" type="button" class="ov-btn ov-btn-primary" routerLink="/add-property"
       [attr.data-tooltip]="'web.property.lblNewProperty' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
       {{ 'web.property.lblAddProperty' | translate }}
