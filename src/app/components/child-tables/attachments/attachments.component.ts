@@ -150,7 +150,7 @@ export class AttachmentsComponent {
     }
     const values = this.selectedTab.form.value;
     const files = this.selectedTab.form.get('propertyAttachment')?.value;
-    if((files==null || files==undefined) && values.code==''){
+    if((files==null || files==undefined) && (values.code=='' || values.code==null)){
       this.toastr.error("Invalid file selection","Error");
       return;
     }

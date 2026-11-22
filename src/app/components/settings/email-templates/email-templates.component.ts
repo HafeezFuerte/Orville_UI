@@ -143,17 +143,17 @@ export class EmailTemplatesComponent implements OnInit {
           const rawItems = res.objResult.table || res.objResult.table0 || res.objResult.email_templates || res.objResult;
           if (Array.isArray(rawItems) && rawItems.length > 0) {
             apiRows = rawItems.map((r: any, idx: number) => {
-              const feat = (r.feature || '').toUpperCase();
-              const derivedTarget = r.target || (
-                feat.includes('TENANT') ? 'Tenant' :
-                feat.includes('LANDLORD') || feat.includes('OWNER') ? 'Landlord' :
-                feat.includes('VENDOR') ? 'Vendor' : 'Property Manager'
-              );
+              // const feat = (r.feature || '').toUpperCase();
+              // const derivedTarget = r.target || (
+              //   feat.includes('TENANT') ? 'Tenant' :
+              //   feat.includes('LANDLORD') || feat.includes('OWNER') ? 'Landlord' :
+              //   feat.includes('VENDOR') ? 'Vendor' : 'Property Manager'
+              // );
 
               return {
                 id: r.id || r.code || idx + 1,
                 name: r.template_name || r.name || 'Untitled Template',
-                target: derivedTarget,
+                target: r.feature.toUpperCase(),
                 code: r.code || String(r.id || ''),
                 feature: r.feature || '',
                 subject: r.subject || '',

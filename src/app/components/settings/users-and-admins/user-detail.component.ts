@@ -66,7 +66,7 @@ export class UserDetailComponent implements OnInit {
   assigned_reports:any=[];
   reports: any=[];
   logins: any=[];
-
+  user_additional_info:any={}
   unitColumns = [
     { key: 'select', label: '', visible: true, useTemplate: true, width: '48px' },
     { key: 'name', label: 'Unit', visible: true, useTemplate: true },
@@ -126,6 +126,9 @@ export class UserDetailComponent implements OnInit {
           }
           if(res.objResult.login_info){
             this.logins=res.objResult.login_info || [];
+          } 
+          if(res.objResult.additional_info){
+            this.user_additional_info=res.objResult.additional_info[0] || {};
           }
          
         }

@@ -8,6 +8,7 @@ import { CommonService } from '../../../services/common.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
 import {SettingsService} from '../settings.service'
+import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
 import {
   MOCK_SETTINGS_USERS,
   USER_NOTIFICATION_OPTIONS,
@@ -17,8 +18,9 @@ import {
 @Component({
   selector: 'app-user-add',
   standalone: true,
-  imports: [CommonModule,TranslateModule, FormsModule,NgSelectModule],
+  imports: [CommonModule,TranslateModule,NgxEditorModule, FormsModule,NgSelectModule],
   templateUrl: './user-add.component.html',
+  styleUrl: './user-add.component.scss'
 })
 export class UserAddComponent implements OnInit {
   userKind: UserKind = 'user';
@@ -26,6 +28,14 @@ export class UserAddComponent implements OnInit {
   selectedPhotoFile: File | null = null;
   currentUser = this.commonservice.getCurrentUser();
   photoPreview: string | null = null; 
+  editor!: Editor;
+  toolbar: Toolbar = [
+    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    ['align_left', 'align_center', 'align_right', 'align_justify'],
+    ['bullet_list', 'ordered_list'],
+    ['link', 'image', 'blockquote', 'code']
+  ];
   email = '';
   username = '';
   password = '';
@@ -40,6 +50,21 @@ export class UserAddComponent implements OnInit {
   genders = ['Male', 'Female', 'Other'];
   spokenLanguages = '';
   displayAllTenants = false;
+  user_additional_info:any={
+    whats_app_no:'',
+    brn:'',
+    experience:0,
+    expertise:'',
+    service_areas:'',
+    badges:'',
+    bio:'',
+    designation:'',
+    tags:'',
+    banner:'',
+    buffer0:'',
+    buffer1:'',
+    buffer2:'',
+  }
 
   readonly notificationOptions = USER_NOTIFICATION_OPTIONS;
   selectedNotifications = new Set<string>();
@@ -73,6 +98,7 @@ countryOptions :any=[];
   ) {}
 
   ngOnInit(): void {
+    this.editor = new Editor();
     // const type = (this.route.snapshot.queryParamMap.get('type') || 'user') as UserKind;
     // this.userKind = ['user', 'admin', 'technician'].includes(type) ? type : 'user';
 
@@ -85,6 +111,9 @@ countryOptions :any=[];
     this.loadLookup(2,55,'groupOptions','');
     this.loadLookup(2,1000,'countryOptions','');
   }
+  ngOnDestroy(): void {
+    this.editor?.destroy();
+  }
   getUserDetails(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
     this.commontabservice.getMasterByType({
       typeId: Typeid,
@@ -92,7 +121,7 @@ countryOptions :any=[];
       filterText: filterText,
       filterText1: ''
     }).subscribe({
-      next: (res: any) => {
+      next: (res: any) => { 
         if (res.statusCode == 200 && res.objResult && res.objResult.users) {  
           var temp=res.objResult.users[0] || {}; 
           if(temp){
@@ -110,14 +139,28 @@ countryOptions :any=[];
             this.group=temp.department_id;
             this.timeZone=temp.time_zone;
             this.displayAllTenants=temp.display_all_tenants
-            let actions=temp.technician_actions.split(',');
+            let actions=temp.technician_actions!=null ? temp.technician_actions.split(',') : '';
+            if(actions){
             actions.forEach((element:any) => {
               this.selectedNotifications.add(element); 
             });
-            this.selectedNotifications = new Set(this.selectedNotifications);
           }
-         
-         
+            this.selectedNotifications = new Set(this.selectedNotifications);
+          } 
+         if(res.objResult.additional_info){
+          this.user_additional_info.whats_app_no =res.objResult.additional_info[0].whats_app_no;
+          this.user_additional_info.brn = res.objResult.additional_info[0].brn;
+          this.user_additional_info.experience = res.objResult.additional_info[0].experience;
+          this.user_additional_info.expertise = res.objResult.additional_info[0].expertise;
+          this.user_additional_info.service_areas =res.objResult.additional_info[0].service_areas;
+          this.user_additional_info.badges=res.objResult.additional_info[0].badges;
+          this.user_additional_info.bio= res.objResult.additional_info[0].bio;
+          this.user_additional_info.designation =res.objResult.additional_info[0].designation;
+          this.user_additional_info.tags =res.objResult.additional_info[0].tags; 
+          this.user_additional_info.buffer0 =res.objResult.additional_info[0].buffer0;
+          this.user_additional_info.buffer1 =res.objResult.additional_info[0].buffer1;
+          this.user_additional_info.buffer2=res.objResult.additional_info[0].buffer2;
+         }
         }
         else
         this.toastr.error("No record[s] found");
@@ -379,7 +422,7 @@ countryOptions :any=[];
       this.toastr.warning('Please fill in all required fields (First Name, Last Name, Email).', 'Missing Info');
       return;
     }
-  
+   
     const requestJson = {
       userid: this.currentUser?.userId || 1,
       company_id:this.currentUser?.companyId || 1,
@@ -397,13 +440,14 @@ countryOptions :any=[];
       mobile_no: this.phone || '', 
       country_id: Number(this.country) || 0,
       role_id:this.role, // default 
-      role_code:  this.roleOptions.filter((item:any)=>item.id==this.role)[0]?.role_code || 'C', // default
+      role_code:  this.roleOptions.filter((item:any)=>item.id==this.role)[0]?.code || 'C', // default
       department: Number(this.group) || 0,
-      display_all_tenants: this.displayAllTenants,
+      display_all_tenants: this.displayAllTenants || 0,
       technician_actions: Array.from(this.selectedNotifications) ? Array.from(this.selectedNotifications).join(',') 
       : (this.selectedNotifications || ''),
       spoken_languages: this.spokenLanguages,
-      time_zone:this.timeZone
+      time_zone:this.timeZone,
+      clsUser_Additional_Info:this.user_additional_info
     };
 
     const formData = new FormData();
