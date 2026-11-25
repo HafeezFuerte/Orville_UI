@@ -40,6 +40,19 @@
       </svg>
       <span>Web & Contact Settings</span>
     </button>
+
+    <button
+      type="button"
+      class="ov-seg__btn"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'news'"
+      [class.is-active]="activeTab === 'news'"
+      (click)="setTab('news')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+        <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+      </svg>
+      <span>News</span>
+    </button>
   </div>
 
   <!-- =========================================================================
@@ -255,6 +268,505 @@
           </div>
         </div>
       </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       TAB 3: Website News & Media Articles
+       ========================================================================= -->
+  <div *ngIf="activeTab === 'news'" class="cms-tab-content">
+    <!-- News Header & Controls -->
+    <div class="cms-settings-head-bar mb-4">
+      <div>
+        <h2 class="cms-settings-title">Website News & Articles</h2>
+        <p class="cms-sub text-[13px] text-textmuted mt-1">
+          Manage press releases, company news, and market insights displayed on the public website.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="cms-btn cms-btn--secondary"
+          [disabled]="isNewsLoading"
+          (click)="loadWebsiteNews()"
+          title="Reload News">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" [class.animate-spin]="isNewsLoading">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>Refresh</span>
+        </button>
+
+        <button
+          type="button"
+          class="cms-btn cms-btn--gold"
+          (click)="openAddNewsModal()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Add News Article</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="news-toolbar mb-5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white dark:bg-bodybg border border-defaultborder rounded-xl p-3 shadow-xs">
+      <!-- Search Input -->
+      <div class="relative flex-1 max-w-none md:max-w-md">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="absolute start-3 top-1/2 -translate-y-1/2 text-textmuted pointer-events-none">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          class="cms-input !ps-9 !py-2 !text-[13px] w-full"
+          placeholder="Search by title, author, or keyword..."
+          [(ngModel)]="newsSearchQuery"
+          (ngModelChange)="onNewsSearch()" />
+        <button
+          *ngIf="newsSearchQuery"
+          type="button"
+          class="absolute end-3 top-1/2 -translate-y-1/2 text-textmuted hover:text-defaulttextcolor text-sm"
+          (click)="newsSearchQuery = ''; onNewsSearch()">
+          ✕
+        </button>
+      </div>
+
+      <!-- Segment Filters: Status & Language -->
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Status Segment -->
+        <div class="ov-seg ov-seg--solid">
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsStatusFilter === 'all'"
+            (click)="setNewsStatusFilter('all')">
+            All Status
+          </button>
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsStatusFilter === 'published'"
+            (click)="setNewsStatusFilter('published')">
+            Published
+          </button>
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsStatusFilter === 'draft'"
+            (click)="setNewsStatusFilter('draft')">
+            Draft
+          </button>
+        </div>
+
+        <!-- Language Segment -->
+        <div class="ov-seg ov-seg--solid">
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsLanguageFilter === 'all'"
+            (click)="setNewsLanguageFilter('all')">
+            All
+          </button>
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsLanguageFilter === 'en'"
+            (click)="setNewsLanguageFilter('en')">
+            EN
+          </button>
+          <button
+            type="button"
+            class="ov-seg__btn text-[12px] !py-1.5 !px-3"
+            [class.is-active]="newsLanguageFilter === 'ar'"
+            (click)="setNewsLanguageFilter('ar')">
+            العربية
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="isNewsLoading" class="news-loading-wrap text-center py-12">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading news...</span>
+      </div>
+      <p class="text-textmuted text-[14px] mt-3">Loading news articles...</p>
+    </div>
+
+    <!-- News Cards Grid (Property card style) -->
+    <div *ngIf="!isNewsLoading && filteredNewsList.length > 0" class="ov-news-grid">
+      <article
+        *ngFor="let item of filteredNewsList"
+        class="ov-news-card"
+        (click)="openEditNewsModal(item)">
+        <!-- Card Media / Thumbnail -->
+        <div class="ov-news-card__media">
+          <img
+            *ngIf="item.thumbnail_img || item.news_image; else noNewsImg"
+            [src]="item.thumbnail_img || item.news_image"
+            [alt]="item.title"
+            class="ov-news-card__img" />
+          <ng-template #noNewsImg>
+            <div class="ov-news-card__placeholder">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" class="text-textmuted">
+                <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+              </svg>
+              <span class="text-[12px] text-textmuted mt-1">No Image Provided</span>
+            </div>
+          </ng-template>
+
+          <!-- Media Top Overlay Pills -->
+          <div class="ov-news-card__badges">
+            <span
+              class="ov-news-badge"
+              [class.ov-news-badge--published]="isArticleVisible(item)"
+              [class.ov-news-badge--draft]="!isArticleVisible(item)">
+              <span class="ov-news-badge__dot"></span>
+              {{ isArticleVisible(item) ? 'Published' : 'Draft / Hidden' }}
+            </span>
+
+            <span class="ov-news-lang-pill">
+              {{ (item.language || 'en') | uppercase }}
+            </span>
+          </div>
+
+          <!-- Quick Action Toggle (Eye icon) -->
+          <button
+            type="button"
+            class="ov-news-card__toggle-btn"
+            [title]="isArticleVisible(item) ? 'Hide from website' : 'Publish to website'"
+            (click)="toggleNewsVisibility(item, $event)">
+            <svg *ngIf="isArticleVisible(item)" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg *ngIf="!isArticleVisible(item)" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Card Body -->
+        <div class="ov-news-card__body">
+          <!-- Author & Date Meta -->
+          <div class="ov-news-card__meta">
+            <span class="ov-news-card__author" [title]="item.author || 'Orville Newsroom'">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>{{ item.author || 'Orville Newsroom' }}</span>
+            </span>
+
+            <span class="ov-news-card__date" [title]="'Start Date: ' + (item.start_date || '')">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ formatNewsDate(item.start_date) }}</span>
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="ov-news-card__title" [title]="item.title">
+            {{ item.title }}
+          </h3>
+
+          <!-- Short Description -->
+          <p class="ov-news-card__desc" [title]="item.short_desc">
+            {{ item.short_desc || 'No short description provided.' }}
+          </p>
+
+          <!-- Footer Metadata & Action -->
+          <div class="ov-news-card__footer">
+            <div class="ov-news-card__code">
+              <span class="text-[11px] text-textmuted">Code:</span>
+              <span class="font-mono text-[11px] font-semibold text-defaulttextcolor bg-light dark:bg-black/20 px-1.5 py-0.5 rounded">
+                {{ item.code }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="ov-news-card__edit-btn"
+              (click)="openEditNewsModal(item); $event.stopPropagation()">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>Edit</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isNewsLoading && filteredNewsList.length === 0" class="news-empty-state text-center py-16 bg-white dark:bg-bodybg border border-defaultborder rounded-xl">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-light dark:bg-black/20 mb-3 text-textmuted">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+        </svg>
+      </div>
+      <h4 class="text-[16px] font-semibold text-defaulttextcolor">No news articles found</h4>
+      <p class="text-textmuted text-[13px] mt-1 max-w-sm mx-auto">
+        {{ newsSearchQuery ? 'No articles matched your search query. Try clearing filters.' : 'Get started by creating your first website press release or news update.' }}
+      </p>
+      <div class="mt-4">
+        <button
+          *ngIf="newsSearchQuery"
+          type="button"
+          class="cms-btn cms-btn--secondary me-2"
+          (click)="newsSearchQuery = ''; applyNewsFilters()">
+          Clear Search
+        </button>
+        <button
+          type="button"
+          class="cms-btn cms-btn--gold"
+          (click)="openAddNewsModal()">
+          + Add First Article
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       ADD / EDIT NEWS MODAL DIALOG
+       ========================================================================= -->
+  <div *ngIf="isNewsModalOpen" class="ov-modal-backdrop" (click)="closeNewsModal()">
+    <div class="ov-modal-dialog" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="ov-modal-header">
+        <div>
+          <h3 class="ov-modal-title">
+            {{ editingNewsItem ? 'Edit News Article' : 'Add New Article' }}
+          </h3>
+          <span *ngIf="editingNewsItem?.code" class="text-[12px] text-textmuted">
+            Code: <strong class="font-mono text-defaulttextcolor">{{ editingNewsItem?.code }}</strong>
+          </span>
+        </div>
+        <button
+          type="button"
+          class="ov-modal-close"
+          (click)="closeNewsModal()"
+          aria-label="Close modal">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="ov-modal-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <!-- Article Title (Full Width) -->
+          <div class="md:col-span-2">
+            <label class="cms-field-label required">Article Title</label>
+            <input
+              type="text"
+              class="cms-input"
+              placeholder="e.g. Orville Real Estate Secures AED 200M Deal for 100 Luxury Apartments"
+              [(ngModel)]="newsTitle"
+              (ngModelChange)="onTitleChange()" />
+          </div>
+
+          <!-- Author -->
+          <div>
+            <label class="cms-field-label">Author / Source</label>
+            <input
+              type="text"
+              class="cms-input"
+              placeholder="e.g. Dubai Latest Deals or Orville Newsroom"
+              [(ngModel)]="newsAuthor" />
+          </div>
+
+          <!-- Language -->
+          <div>
+            <label class="cms-field-label">Language</label>
+            <select class="cms-input" [(ngModel)]="newsLanguage">
+              <option value="en">English (en)</option>
+              <option value="ar">العربية (ar)</option>
+            </select>
+          </div>
+
+          <!-- Start Date -->
+          <div>
+            <label class="cms-field-label">Start Date</label>
+            <input
+              type="date"
+              class="cms-input"
+              [(ngModel)]="newsStartDate" />
+          </div>
+
+          <!-- End Date -->
+          <div>
+            <label class="cms-field-label">End Date</label>
+            <input
+              type="date"
+              class="cms-input"
+              [(ngModel)]="newsEndDate" />
+          </div>
+
+          <!-- Slug URL (Full Width) -->
+          <div class="md:col-span-2">
+            <label class="cms-field-label flex items-center justify-between">
+              <span>Slug URL</span>
+              <button
+                type="button"
+                class="text-[11px] text-primary hover:underline"
+                (click)="generateSlug()">
+                Auto-generate from title
+              </button>
+            </label>
+            <input
+              type="text"
+              class="cms-input font-mono text-[13px]"
+              placeholder="e.g. orville-secures-aed-200m-deal"
+              [(ngModel)]="newsSlugUrl" />
+          </div>
+
+          <!-- Visibility Toggles -->
+          <div class="md:col-span-2 flex flex-wrap items-center gap-6 p-3 bg-light dark:bg-black/20 rounded-lg">
+            <label class="flex items-center gap-2 cursor-pointer select-none text-[13px] text-defaulttextcolor font-medium">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 text-primary rounded border-defaultborder"
+                [(ngModel)]="newsIsVisible" />
+              <span>Visible on website (Publish)</span>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer select-none text-[13px] text-defaulttextcolor font-medium">
+              <input
+                type="checkbox"
+                class="form-checkbox h-4 w-4 text-primary rounded border-defaultborder"
+                [(ngModel)]="newsHideOnEndDate" />
+              <span>Automatically hide after End Date</span>
+            </label>
+          </div>
+
+          <!-- Thumbnail Image Upload -->
+          <div>
+            <label class="cms-field-label">Thumbnail Image (Card Preview)</label>
+            <div class="news-upload-zone">
+              <div *ngIf="newsThumbnailPreview" class="relative group mb-2">
+                <img
+                  [src]="newsThumbnailPreview"
+                  alt="Thumbnail Preview"
+                  class="h-28 w-full object-cover rounded-md border border-defaultborder" />
+                <button
+                  type="button"
+                  class="absolute top-1 end-1 bg-danger text-white rounded-full p-1 shadow-sm opacity-90 hover:opacity-100"
+                  (click)="removeThumbnail()"
+                  title="Remove image">
+                  ✕
+                </button>
+              </div>
+
+              <input
+                type="file"
+                id="thumbnail-upload"
+                class="hidden"
+                accept="image/*"
+                (change)="onThumbnailSelected($event)" />
+              <label
+                for="thumbnail-upload"
+                class="news-upload-btn cursor-pointer">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>{{ newsThumbnailPreview ? 'Change Thumbnail' : 'Upload Thumbnail Image' }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Main News Image Upload -->
+          <div>
+            <label class="cms-field-label">Main News Image (Article Header)</label>
+            <div class="news-upload-zone">
+              <div *ngIf="newsImgPreview" class="relative group mb-2">
+                <img
+                  [src]="newsImgPreview"
+                  alt="News Image Preview"
+                  class="h-28 w-full object-cover rounded-md border border-defaultborder" />
+                <button
+                  type="button"
+                  class="absolute top-1 end-1 bg-danger text-white rounded-full p-1 shadow-sm opacity-90 hover:opacity-100"
+                  (click)="removeNewsImg()"
+                  title="Remove image">
+                  ✕
+                </button>
+              </div>
+
+              <input
+                type="file"
+                id="news-img-upload"
+                class="hidden"
+                accept="image/*"
+                (change)="onNewsImgSelected($event)" />
+              <label
+                for="news-img-upload"
+                class="news-upload-btn cursor-pointer">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>{{ newsImgPreview ? 'Change Main Image' : 'Upload Main News Image' }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Short Description (Full Width) -->
+          <div class="md:col-span-2">
+            <label class="cms-field-label">Short Description / Summary (for card preview)</label>
+            <textarea
+              class="cms-textarea !h-20"
+              rows="3"
+              placeholder="Provide a 2-3 sentence teaser summarizing the announcement..."
+              [(ngModel)]="newsShortDesc">
+            </textarea>
+          </div>
+
+          <!-- Full Article Content (Full Width) -->
+          <div class="md:col-span-2">
+            <label class="cms-field-label">Full Article Content (Long Description)</label>
+            <div class="cms-editor-container">
+              <ngx-editor-menu [editor]="newsEditor" [toolbar]="toolbar"></ngx-editor-menu>
+              <ngx-editor
+                [editor]="newsEditor"
+                [(ngModel)]="newsLongDesc"
+                [disabled]="false"
+                placeholder="Write the full press release or article content here...">
+              </ngx-editor>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="ov-modal-footer">
+        <button
+          type="button"
+          class="cms-btn cms-btn--secondary"
+          [disabled]="isSavingNews"
+          (click)="closeNewsModal()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="cms-btn cms-btn--gold"
+          [disabled]="isSavingNews || !newsTitle.trim()"
+          (click)="saveNewsArticle()">
+          <span *ngIf="isSavingNews" class="spinner-border spinner-border-sm me-1.5" role="status"></span>
+          <span>{{ isSavingNews ? 'Saving...' : (editingNewsItem ? 'Update Article' : 'Save News Article') }}</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

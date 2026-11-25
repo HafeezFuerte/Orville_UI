@@ -11,6 +11,7 @@ import { marks, nodes } from 'ngx-editor/schema';
 import { CmsService } from './cms.service';
 import {
   CmsItem,
+  NewsItem,
   CMS_PAGE_DEFINITIONS,
   DEFAULT_CMS_ITEMS,
   SETTINGS_FIELD_GROUPS,
@@ -81,8 +82,36 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   private toastr = inject(ToastrService);
   private editorSub: Subscription | null = null;
 
-  // Active top-level tab: 'pages' (CMS Content) or 'settings' (Web Settings)
-  public activeTab: 'pages' | 'settings' = 'pages';
+  // Active top-level tab: 'pages' (CMS Content), 'settings' (Web Settings), or 'news' (Website News)
+  public activeTab: 'pages' | 'settings' | 'news' = 'pages';
+
+  // News & Media Tab State
+  public newsList: NewsItem[] = [];
+  public filteredNewsList: NewsItem[] = [];
+  public isNewsLoading = false;
+  public isSavingNews = false;
+  public isNewsModalOpen = false;
+  public editingNewsItem: NewsItem | null = null;
+  public newsSearchQuery = '';
+  public newsLanguageFilter = 'all';
+  public newsStatusFilter = 'all';
+
+  // News Form Fields
+  public newsTitle = '';
+  public newsAuthor = '';
+  public newsLanguage = 'en';
+  public newsStartDate = '';
+  public newsEndDate = '';
+  public newsShortDesc = '';
+  public newsLongDesc = '';
+  public newsSlugUrl = '';
+  public newsIsVisible = true;
+  public newsHideOnEndDate = true;
+  public newsThumbnailFile: File | null = null;
+  public newsImgFile: File | null = null;
+  public newsThumbnailPreview: string | null = null;
+  public newsImgPreview: string | null = null;
+  public newsEditor!: Editor;
 
   // CMS Pages Tab State
   public pageDefinitions = CMS_PAGE_DEFINITIONS;
@@ -149,6 +178,10 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
       schema: customEditorSchema,
     });
 
+    this.newsEditor = new Editor({
+      schema: customEditorSchema,
+    });
+
     // Listen to editor selection changes to reflect font size & font family in toolbar dropdowns
     this.editorSub = this.editor.update.subscribe((view) => {
       if (!view) return;
@@ -189,6 +222,7 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.editorSub?.unsubscribe();
     this.editor?.destroy();
+    this.newsEditor?.destroy();
   }
 
   // =========================================================================
@@ -251,8 +285,11 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   // CMS Content Management Methods
   // =========================================================================
 
-  public setTab(tab: 'pages' | 'settings'): void {
+  public setTab(tab: 'pages' | 'settings' | 'news'): void {
     this.activeTab = tab;
+    if (tab === 'news' && this.newsList.length === 0) {
+      this.loadWebsiteNews();
+    }
   }
 
   public loadCmsPages(): void {
@@ -341,19 +378,23 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   }
 
   public saveCms(): void {
-    if (!this.currentCode) {
+    const def = this.pageDefinitions.find((d) => d.type === this.selectedPageType);
+    const validCode = (this.currentCode || def?.defaultCode || '').trim().toUpperCase();
+
+    if (!validCode) {
       this.toastr.error('Page code is required to save CMS content.');
       return;
     }
 
+    this.currentCode = validCode;
     this.isSavingCms = true;
     this.cmsService
-      .saveWebCms(this.currentCode, this.currentContent, this.selectedLanguage)
+      .saveWebCms(validCode, this.currentContent, this.selectedLanguage, this.selectedPageType)
       .subscribe({
         next: (res: any) => {
           this.isSavingCms = false;
           if (
-            res?.statusCode === '200' ||
+            String(res?.statusCode) === '200' ||
             res?.message === 'LBL_SUCCESS' ||
             res?.message === 'success'
           ) {
@@ -363,6 +404,7 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
             if (target) {
               target.str_content = this.currentContent;
               target.language = this.selectedLanguage;
+              target.code = validCode;
             }
           } else {
             this.toastr.warning(res?.message || 'Server returned unexpected status');
@@ -464,5 +506,289 @@ export class CmsSettingsComponent implements OnInit, OnDestroy {
   public getSelectedPageDisplayName(): string {
     const found = this.pageDefinitions.find((p) => p.type === this.selectedPageType);
     return found?.displayName || 'Page';
+  }
+
+  // =========================================================================
+  // News & Media Articles Management Methods
+  // =========================================================================
+
+  public loadWebsiteNews(): void {
+    this.isNewsLoading = true;
+    this.cmsService.getWebsiteNews('', '').subscribe({
+      next: (res: any) => {
+        this.isNewsLoading = false;
+        const list = res?.objResult?.news || [];
+        this.newsList = Array.isArray(list) ? list : [];
+        this.applyNewsFilters();
+      },
+      error: (err: any) => {
+        this.isNewsLoading = false;
+        console.error('Failed to load website news:', err);
+        this.toastr.error('Failed to load news articles.');
+      },
+    });
+  }
+
+  public onNewsSearch(): void {
+    this.applyNewsFilters();
+  }
+
+  public setNewsLanguageFilter(lang: string): void {
+    this.newsLanguageFilter = lang;
+    this.applyNewsFilters();
+  }
+
+  public setNewsStatusFilter(status: string): void {
+    this.newsStatusFilter = status;
+    this.applyNewsFilters();
+  }
+
+  public applyNewsFilters(): void {
+    let list = [...this.newsList];
+
+    // Search query filter (title, author, short_desc, code)
+    if (this.newsSearchQuery.trim()) {
+      const q = this.newsSearchQuery.trim().toLowerCase();
+      list = list.filter(
+        (n) =>
+          (n.title && n.title.toLowerCase().includes(q)) ||
+          (n.author && n.author.toLowerCase().includes(q)) ||
+          (n.short_desc && n.short_desc.toLowerCase().includes(q)) ||
+          (n.code && n.code.toLowerCase().includes(q))
+      );
+    }
+
+    // Language filter
+    if (this.newsLanguageFilter !== 'all') {
+      list = list.filter(
+        (n) => (n.language || 'en').toLowerCase() === this.newsLanguageFilter.toLowerCase()
+      );
+    }
+
+    // Status filter
+    if (this.newsStatusFilter === 'published') {
+      list = list.filter(
+        (n) => n.is_visible === true || n.is_visible === 1 || String(n.is_visible) === '1'
+      );
+    } else if (this.newsStatusFilter === 'draft') {
+      list = list.filter(
+        (n) => !n.is_visible || n.is_visible === 0 || String(n.is_visible) === '0'
+      );
+    }
+
+    this.filteredNewsList = list;
+  }
+
+  public openAddNewsModal(): void {
+    this.editingNewsItem = null;
+    this.newsTitle = '';
+    this.newsAuthor = 'Orville Newsroom';
+    this.newsLanguage = 'en';
+
+    const today = new Date();
+    const nextYear = new Date();
+    nextYear.setFullYear(today.getFullYear() + 1);
+
+    this.newsStartDate = today.toISOString().split('T')[0];
+    this.newsEndDate = nextYear.toISOString().split('T')[0];
+    this.newsShortDesc = '';
+    this.newsLongDesc = '';
+    this.newsSlugUrl = '';
+    this.newsIsVisible = true;
+    this.newsHideOnEndDate = true;
+    this.newsThumbnailFile = null;
+    this.newsImgFile = null;
+    this.newsThumbnailPreview = null;
+    this.newsImgPreview = null;
+
+    this.isNewsModalOpen = true;
+  }
+
+  public openEditNewsModal(item: NewsItem): void {
+    this.editingNewsItem = item;
+    this.newsTitle = item.title || '';
+    this.newsAuthor = item.author || '';
+    this.newsLanguage = item.language || 'en';
+    this.newsStartDate = item.start_date ? item.start_date.substring(0, 10) : '';
+    this.newsEndDate = item.end_date ? item.end_date.substring(0, 10) : '';
+    this.newsShortDesc = item.short_desc || '';
+    this.newsLongDesc = item.long_desc || item.description || '';
+    this.newsSlugUrl = item.slug_url || '';
+    this.newsIsVisible =
+      item.is_visible === true || item.is_visible === 1 || String(item.is_visible) === '1';
+    this.newsHideOnEndDate =
+      item.hide_on_end_date === true ||
+      item.hide_on_end_date === 1 ||
+      String(item.hide_on_end_date) === '1';
+    this.newsThumbnailFile = null;
+    this.newsImgFile = null;
+    this.newsThumbnailPreview = item.thumbnail_img || null;
+    this.newsImgPreview = item.news_image || null;
+
+    this.isNewsModalOpen = true;
+  }
+
+  public closeNewsModal(): void {
+    this.isNewsModalOpen = false;
+    this.editingNewsItem = null;
+  }
+
+  public onTitleChange(): void {
+    if (!this.editingNewsItem && !this.newsSlugUrl) {
+      this.generateSlug();
+    }
+  }
+
+  public generateSlug(): string {
+    const slug = (this.newsTitle || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    this.newsSlugUrl = slug;
+    return slug;
+  }
+
+  public onThumbnailSelected(event: any): void {
+    const file = event?.target?.files?.[0];
+    if (file) {
+      this.newsThumbnailFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.newsThumbnailPreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  public onNewsImgSelected(event: any): void {
+    const file = event?.target?.files?.[0];
+    if (file) {
+      this.newsImgFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.newsImgPreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  public removeThumbnail(): void {
+    this.newsThumbnailFile = null;
+    this.newsThumbnailPreview = null;
+  }
+
+  public removeNewsImg(): void {
+    this.newsImgFile = null;
+    this.newsImgPreview = null;
+  }
+
+  public saveNewsArticle(): void {
+    if (!this.newsTitle.trim()) {
+      this.toastr.error('Article title is required.');
+      return;
+    }
+
+    this.isSavingNews = true;
+    const reqObj = {
+      code: this.editingNewsItem?.code || '',
+      title: this.newsTitle.trim(),
+      author: this.newsAuthor.trim(),
+      short_desc: this.newsShortDesc.trim(),
+      long_desc: this.newsLongDesc || this.newsShortDesc.trim(),
+      slug_url: this.newsSlugUrl.trim() || this.generateSlug(),
+      hide_on_end_date: this.newsHideOnEndDate ? 1 : 0,
+      is_visible: this.newsIsVisible ? 1 : 0,
+      end_date: this.newsEndDate || new Date().toISOString().split('T')[0],
+      start_date: this.newsStartDate || new Date().toISOString().split('T')[0],
+      language: this.newsLanguage || 'en',
+    };
+
+    this.cmsService
+      .saveWebsiteNews(reqObj, this.newsThumbnailFile, this.newsImgFile)
+      .subscribe({
+        next: (res: any) => {
+          this.isSavingNews = false;
+          if (
+            String(res?.statusCode) === '200' ||
+            res?.message === 'success' ||
+            res?.message === 'LBL_SUCCESS'
+          ) {
+            this.toastr.success('News article saved successfully!');
+            this.closeNewsModal();
+            this.loadWebsiteNews();
+          } else {
+            this.toastr.warning(res?.message || 'Server returned an error while saving news');
+          }
+        },
+        error: (err: any) => {
+          this.isSavingNews = false;
+          console.error('Error saving news article:', err);
+          this.toastr.error('Failed to save news article.');
+        },
+      });
+  }
+
+  public toggleNewsVisibility(item: NewsItem, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const currentVis =
+      item.is_visible === true || item.is_visible === 1 || String(item.is_visible) === '1';
+    const newVis = !currentVis;
+
+    const reqObj = {
+      code: item.code,
+      title: item.title,
+      author: item.author || '',
+      short_desc: item.short_desc || '',
+      long_desc: item.description || item.long_desc || item.short_desc || '',
+      slug_url: item.slug_url || '',
+      hide_on_end_date: item.hide_on_end_date ? 1 : 0,
+      is_visible: newVis ? 1 : 0,
+      end_date: item.end_date ? item.end_date.substring(0, 10) : '',
+      start_date: item.start_date ? item.start_date.substring(0, 10) : '',
+      language: item.language || 'en',
+    };
+
+    this.cmsService.saveWebsiteNews(reqObj).subscribe({
+      next: (res: any) => {
+        if (
+          String(res?.statusCode) === '200' ||
+          res?.message === 'success' ||
+          res?.message === 'LBL_SUCCESS'
+        ) {
+          item.is_visible = newVis;
+          this.applyNewsFilters();
+          this.toastr.success(newVis ? 'Article published!' : 'Article moved to draft.');
+        } else {
+          this.toastr.warning(res?.message || 'Failed to update visibility');
+        }
+      },
+      error: () => {
+        this.toastr.error('Failed to update article visibility');
+      },
+    });
+  }
+
+  public formatNewsDate(isoDate?: string): string {
+    if (!isoDate) return 'N/A';
+    try {
+      const d = new Date(isoDate);
+      if (isNaN(d.getTime())) return isoDate.substring(0, 10);
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    } catch {
+      return isoDate.substring(0, 10);
+    }
+  }
+
+  public isArticleVisible(item: NewsItem): boolean {
+    return item.is_visible === true || item.is_visible === 1 || String(item.is_visible) === '1';
   }
 }

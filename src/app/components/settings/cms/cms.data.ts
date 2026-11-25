@@ -74,6 +74,42 @@ export const DEFAULT_CMS_ITEMS: CmsItem[] = [
   },
 ];
 
+export interface NewsItem {
+  code: string;
+  title: string;
+  short_desc: string;
+  description?: string;
+  long_desc?: string;
+  slug_url?: string;
+  author?: string;
+  start_date?: string;
+  end_date?: string;
+  is_visible: boolean | number;
+  hide_on_end_date?: boolean | number;
+  thumbnail_img?: string | null;
+  news_image?: string | null;
+  created_date?: string;
+  modified_date?: string;
+  language?: string;
+  languageid?: number;
+}
+
+export interface NewsFormData {
+  code: string;
+  title: string;
+  author: string;
+  short_desc: string;
+  long_desc: string;
+  slug_url: string;
+  start_date: string;
+  end_date: string;
+  is_visible: boolean;
+  hide_on_end_date: boolean;
+  language: string;
+  thumbnail_img_preview?: string | null;
+  news_image_preview?: string | null;
+}
+
 export const SETTINGS_FIELD_GROUPS: WebSettingGroup[] = [
   {
     groupName: 'Contact & Support',
