@@ -1763,6 +1763,8 @@ export const locale = {
         "lblRent": "الإيجار",
         "lblTotalPayments": "إجمالي المدفوعات",
         "lblMoneyHeldBy": "المال المحتفظ به من قبل",
+        "lblDiscountType": "Discount Type",
+        "lblDiscount": "Discount",
         "lblPaymentVia": "اختر الدفع عبر",
         "lblAnnualRent": "الإيجار السنوي",
         "lblMonthlyRent": "الإيجار الشهري",

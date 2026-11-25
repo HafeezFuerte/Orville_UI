@@ -152,7 +152,7 @@ export class TenantDetailComponent implements OnInit {
           if (result.users) this.userData = this.mapUserData(result.users);
            if (result.invoice_dtls) this.invoice_data = result.invoice_dtls[0] || {};
           
-          console.log('Tenant Details Loaded:', this.tenantData);
+         
           this.initializeTabs();
         }
       },

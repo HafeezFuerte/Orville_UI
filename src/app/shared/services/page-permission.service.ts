@@ -119,7 +119,7 @@ export class PagePermissionService {
 
     return this.http.post<any>(url, payload, { headers }).pipe(
       map(res => {
-        const row = res?.table?.[0] || res?.data?.[0];
+        const row = res?.objResult.table?.[0] || res?.data?.[0];
         const rawActions: any = row?.actions;
         let actionList: ActionPermission[] = [];
 

@@ -10,7 +10,7 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
 import { OvExtraFieldsComponent } from '../../../../shared/components/ov-extra-fields/ov-extra-fields.component';
-
+import { forkJoin, Observable } from 'rxjs'; 
 @Component({
   selector: 'app-add-tenant',
   standalone: true,
@@ -51,7 +51,7 @@ export class AddTenantComponent implements OnInit {
   cities: any[] = [];
   states: any[] = [];
   daysOfMonth = Array.from({length: 31}, (_, i) => i + 1);
-  docTypes = ['Passport', 'Trade License', 'Visa', 'Emirates ID'];
+  docTypes :any=[];// = ['Passport', 'Trade License', 'Visa', 'Emirates ID'];
 
   selectedNationality: any = null;
   existingTenants: any[] = [];
@@ -351,7 +351,7 @@ export class AddTenantComponent implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
-
+    this.loadLookup(9, 'docTypes', '', ''); 
     const currentUser = this.commonService.getCurrentUser();
     this.propertiesService.getTenants({
       userid: currentUser?.userId,
@@ -464,7 +464,7 @@ export class AddTenantComponent implements OnInit {
       filterText1: ''
     }).subscribe({
       next: (res: any) => {
-        console.log("Tenant Details API Response:", res);
+        //console.log("Tenant Details API Response:", res);
         let tenant: any = null;
         if (res.statusCode == 200 && res.objResult) {
           if (res.objResult.table && res.objResult.table[0]) {
@@ -490,7 +490,7 @@ export class AddTenantComponent implements OnInit {
             last_name: tenant.last_name || (tenant.tenant ? (tenant.tenant.trim().split(/\s+/).length === 2 ? tenant.tenant.trim().split(/\s+/)[1] : tenant.tenant.trim().split(/\s+/).slice(2).join(' ')) : '') || '',
             mobile_no: tenant.mobile_no || tenant.phone_number || '',
             gender: tenant.gender || null,
-            dob: tenant.dob || '',
+            dob: this.commonService.formatDateForInput(tenant.dob) || '',
             status: tenant.status || (tenant.is_active ? 'Active' : 'Inactive'),
             address1: tenant.address1 || '',
             address2: tenant.address2 || '',
@@ -535,7 +535,15 @@ export class AddTenantComponent implements OnInit {
       }
     });
   }
-
+ getNameOnLease(flg:any){
+  if(flg==1)
+    this.tenantData.name_on_lease= this.tenantData.first_name + ' ' + this.tenantData.last_name;
+  else if (flg==2) 
+  this.tenantData.email_on_lease= this.tenantData.email_address;
+  else if (flg==3) 
+  this.tenantData.phone_on_lease= this.tenantData.mobile_no;
+ }
+  
   getFormattedDate(dateVal: any): string {
     if (!dateVal) {
       return '1900-01-01T00:00:00';
@@ -585,7 +593,7 @@ export class AddTenantComponent implements OnInit {
       email_address: this.tenantData.email_address,
       code: this.isEditMode ? this.tenantId : (this.tenantData.code || ''),
       id: this.isEditMode ? this.tenantDbId : 0,
-      username: this.tenantData.username || '',
+      username: this.tenantData.email_address || '',
       profileImage_path: '',
       honorific: this.tenantData.honorific || '',
       tenant: this.tenantData.first_name + ' ' + this.tenantData.last_name,
@@ -594,7 +602,7 @@ export class AddTenantComponent implements OnInit {
       middle_name: this.tenantData.middle_name || '',
       mobile_no: this.tenantData.mobile_no || '',
       gender: this.tenantData.gender || '',
-      dob: this.getFormattedDate(this.tenantData.dob),
+      dob: this.commonService.parseInputDate(this.tenantData.dob),
       status: this.tenantData.status || 'Active',
       address1: this.tenantData.address1 || '',
       address2: this.tenantData.address2 || '',
@@ -653,12 +661,36 @@ export class AddTenantComponent implements OnInit {
             return;
           }
 
+          
+
           const savedTenantCode = res.objResult?.code || res.objResult?.table?.[0]?.code || res.objResult?.table?.[0]?.tenant_code || this.tenantId || '';
           if (this.extraFieldsComp?.hasFields() && savedTenantCode) {
             this.extraFieldsComp.save(savedTenantCode).subscribe();
           }
+          // save documents
+          const uploadTasks: Observable<any>[] = [];
+
+          if(this.uploadedDocuments.length>0){
+            this.tenantId=savedTenantCode
+            this.uploadedDocuments.forEach(doc => {
+              uploadTasks.push(this.uploadFile(doc)); 
+            });
+          }
+          if (uploadTasks.length > 0) {
+            forkJoin(uploadTasks).subscribe({
+              next: () => {
+                this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgTenantUpdated' : 'web.contacts.msgTenantSaved'), this.translate.instant('web.common.lblSuccess'));
+                this.router.navigate(['/contacts/tenants']);
+              },
+              error: (err) => { 
+                this.toastr.warning(this.translate.instant('web.contacts.errFailedToSaveTenant')); 
+              }
+            });
+          }
+          else{
           this.toastr.success(this.translate.instant(this.isEditMode ? 'web.contacts.msgTenantUpdated' : 'web.contacts.msgTenantSaved'), this.translate.instant('web.common.lblSuccess'));
           this.router.navigate(['/contacts/tenants']);
+          }
         } else {
           this.toastr.error(res.message || this.translate.instant('web.contacts.errFailedToSaveTenant'), this.translate.instant('web.common.lblError'));
         }
@@ -670,6 +702,7 @@ export class AddTenantComponent implements OnInit {
     });
   }
 
+ 
   toggleDocModal(state: boolean): void {
     this.isAddDocModalOpen = state;
     if (!state) {
@@ -719,6 +752,28 @@ export class AddTenantComponent implements OnInit {
       fileSize: '',
       fileExt: ''
     };
+  }
+
+  uploadFile(document:any) {
+   
+    const request = {
+      ...this.commonService.commonPayload(),
+      code: '',
+      entity_id: this.tenantId,
+      entity: 'Tenants',
+      document_type: document.document_type,
+      document_no: document.document_no,
+      issue_date:this.commonService.parseInputDate(document.issue_date) || '',
+      expiry_date:this.commonService.parseInputDate(document.expiry_date) || '',
+      issuing_authority:document.issuing_authority,
+      share_with_tenants: document.share_with_tenant  || false,
+      share_with_landlords: document.share_with_landlord || false,
+      status:33, 
+    };
+    const formData = new FormData();
+    formData.append('reqObject', JSON.stringify(request));
+    formData.append('file_path', document.file);
+    return this.portfolioService.saveAttachment(formData);
   }
 
   saveDocument(): void {

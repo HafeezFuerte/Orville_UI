@@ -65,7 +65,10 @@ export class CreateLeaseComponent implements OnInit {
   paymentMethod: any=null; 
   annualRent: number = 0;
   monthlyRent: number = 0;
-  
+  discountValue: number = 0;
+  discountType: string = '';
+  discountTypes: any= ['Standard', 'Percentage'];
+
   additionalbloc:any= {  no_of_persons: 0,  user_id: '',created_by: '',  move_in_date: '',  created_date: '',  paying_date: ''}
 
   // Dropdowns lists

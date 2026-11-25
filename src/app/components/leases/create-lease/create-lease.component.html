@@ -232,6 +232,16 @@
                 <input type="number" [(ngModel)]="monthlyRent" class="ov-input" placeholder="0.00" />
               </div>
             </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblDiscountType' | translate }}</label>
+              <ng-select [(ngModel)]="discountType"   [items]="discountTypes"
+                [placeholder]="'web.leases.lblDiscountType' | translate" class="ov-select w-full" appendTo="body"></ng-select>
+            </div> 
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblDiscount' | translate }}</label>
+              <input type="number" [(ngModel)]="discountValue" (change)="calculateMonthlyRent()" class="ov-input" />
+            </div>
+         
           </div>
           <ng-container *ngIf="paymentMethod== 169" [ngTemplateOutlet]="chequeDetails" [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }"></ng-container>
           <div class="lease-generate-row">

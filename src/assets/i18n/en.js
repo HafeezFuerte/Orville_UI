@@ -1762,6 +1762,8 @@ export const locale = {
         "lblRent": "Rent",
         "lblTotalPayments": "Total Payments",
         "lblMoneyHeldBy": "Money Held By",
+        "lblDiscountType": "Discount Type",
+        "lblDiscount": "Discount",
         "lblPaymentVia": "Select Payment Via",
         "lblAnnualRent": "Annual Rent",
         "lblMonthlyRent": "Monthly Rent",

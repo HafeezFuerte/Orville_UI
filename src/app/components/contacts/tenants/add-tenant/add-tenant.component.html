@@ -46,17 +46,17 @@
             </div>
           </div>
 
-          <div class="ov-fields ov-fields--2">
+          <div class="ov-fields ov-fields--1">
             <div>
               <label class="ov-label">{{ 'web.contacts.lblEmail' | translate }} <span class="text-danger">*</span></label>
-              <input type="email" class="ov-input" [(ngModel)]="tenantData.email_address"
+              <input type="email" (input)="getNameOnLease(2)" class="ov-input" [(ngModel)]="tenantData.email_address"
                 [placeholder]="'web.contacts.lblEnteruser' | translate">
             </div>
-            <div>
+            <!-- <div>
               <label class="ov-label">{{ 'web.contacts.lblUsername' | translate }}</label>
               <input type="text" class="ov-input" [(ngModel)]="tenantData.username"
                 [placeholder]="'web.contacts.lblEnteremail' | translate">
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -80,11 +80,11 @@
             </div>
             <div>
               <label class="ov-label">{{ 'web.contacts.lblFirstName' | translate }} <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="tenantData.first_name" [placeholder]="'web.common.lblEnter' | translate">
+              <input type="text" class="ov-input"  (input)="getNameOnLease(1)" [(ngModel)]="tenantData.first_name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
               <label class="ov-label">{{ 'web.contacts.lblLastName' | translate }} <span class="text-danger">*</span></label>
-              <input type="text" class="ov-input" [(ngModel)]="tenantData.last_name" [placeholder]="'web.common.lblEnter' | translate">
+              <input type="text" class="ov-input" (input)="getNameOnLease(1)" [(ngModel)]="tenantData.last_name" [placeholder]="'web.common.lblEnter' | translate">
             </div>
             <div>
               <label class="ov-label">{{ 'web.contacts.lblMiddleName' | translate }}</label>
@@ -97,7 +97,7 @@
                   <img [src]="'https://flagcdn.com/w20/' + getFlagCode(selectedCountryObj?.name) + '.png'" class="w-4 h-3" alt="">
                   <span>{{ getDialCode(selectedCountryObj?.name) }}</span>
                 </span>
-                <input type="text" class="ov-input" [(ngModel)]="tenantData.mobile_no" [placeholder]="'web.common.lblEnter' | translate">
+                <input type="text" class="ov-input" (input)="getNameOnLease(3)" [(ngModel)]="tenantData.mobile_no" [placeholder]="'web.common.lblEnter' | translate">
               </div>
             </div>
             <div>
@@ -488,7 +488,7 @@
       <div class="ov-modal__body ov-modal__body--doc">
         <div>
           <label class="ov-label">{{ 'web.contacts.lblDocumentType' | translate }} <span class="text-danger">*</span></label>
-          <ng-select [items]="docTypes" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelectDocumentType' | translate"
+          <ng-select [items]="docTypes" bindValue="id" bindLabel="name" appendTo="body" [searchable]="true" [placeholder]="'web.contacts.lblSelectDocumentType' | translate"
             class="ov-select w-full" [(ngModel)]="docForm.document_type"></ng-select>
           <span class="ov-modal__hint">{{ 'web.contacts.lblDocumentTypeHint' | translate }}</span>
         </div>
