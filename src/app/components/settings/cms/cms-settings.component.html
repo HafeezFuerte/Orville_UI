@@ -539,99 +539,120 @@
   <!-- =========================================================================
        ADD / EDIT NEWS MODAL DIALOG
        ========================================================================= -->
-  <div *ngIf="isNewsModalOpen" class="ov-modal-backdrop" (click)="closeNewsModal()">
-    <div class="ov-modal-dialog" (click)="$event.stopPropagation()">
-      <!-- Modal Header -->
-      <div class="ov-modal-header">
-        <div>
-          <h3 class="ov-modal-title">
-            {{ editingNewsItem ? 'Edit News Article' : 'Add New Article' }}
-          </h3>
-          <span *ngIf="editingNewsItem?.code" class="text-[12px] text-textmuted">
-            Code: <strong class="font-mono text-defaulttextcolor">{{ editingNewsItem?.code }}</strong>
-          </span>
+  <div *ngIf="isNewsModalOpen" class="ov-news-modal-backdrop" (click)="closeNewsModal()" role="presentation">
+    <div
+      class="flex w-full max-w-[840px] flex-col items-end gap-2 p-3 sm:p-4 my-auto"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()">
+
+      <!-- Modal Close Icon Button -->
+      <button type="button" class="ov-modal-close" aria-label="Close" (click)="closeNewsModal()">
+        <img src="./assets/images/common/close-plus.svg" alt="" width="18" height="18" class="ov-ico-x" />
+      </button>
+
+      <!-- Modal Card Container (Solid White / Dark Theme) -->
+      <div class="w-full overflow-hidden rounded-2xl border border-defaultborder bg-white shadow-2xl dark:bg-bodybg flex flex-col max-h-[86vh]">
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between border-b border-defaultborder px-6 py-4 bg-white dark:bg-bodybg shrink-0">
+          <div>
+            <h3 class="m-0 text-lg font-bold text-defaulttextcolor">
+              {{ editingNewsItem ? 'Edit News Article' : 'Add New Article' }}
+            </h3>
+            <span *ngIf="editingNewsItem?.code" class="text-xs text-textmuted mt-0.5 inline-block">
+              Article Code: <strong class="font-mono text-defaulttextcolor">{{ editingNewsItem?.code }}</strong>
+            </span>
+          </div>
         </div>
-        <button
-          type="button"
-          class="ov-modal-close"
-          (click)="closeNewsModal()"
-          aria-label="Close modal">
-          ✕
-        </button>
-      </div>
 
-      <!-- Modal Body (Scrollable) -->
-      <div class="ov-modal-body">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <!-- Article Title (Full Width) -->
-          <div class="md:col-span-2">
-            <label class="cms-field-label required">Article Title</label>
-            <input
-              type="text"
-              class="cms-input"
-              placeholder="e.g. Orville Real Estate Secures AED 200M Deal for 100 Luxury Apartments"
-              [(ngModel)]="newsTitle"
-              (ngModelChange)="onTitleChange()" />
+        <!-- Modal Body (Scrollable) -->
+        <div class="p-6 overflow-y-auto flex-1 bg-white dark:bg-bodybg space-y-5">
+
+          <!-- Title & Author Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Article Title (Full Width) -->
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Article Title <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="ov-input"
+                placeholder="e.g. Orville Real Estate Secures AED 200M Deal for 100 Luxury Apartments"
+                [(ngModel)]="newsTitle"
+                (ngModelChange)="onTitleChange()" />
+            </div>
+
+            <!-- Author / Source -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Author / Source
+              </label>
+              <input
+                type="text"
+                class="ov-input"
+                placeholder="e.g. Dubai Latest Deals or Orville Newsroom"
+                [(ngModel)]="newsAuthor" />
+            </div>
+
+            <!-- Language -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Language
+              </label>
+              <select class="ov-input cursor-pointer" [(ngModel)]="newsLanguage">
+                <option value="en">English (en)</option>
+                <option value="ar">العربية (ar)</option>
+              </select>
+            </div>
+
+            <!-- Start Date -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Start Date
+              </label>
+              <input
+                type="date"
+                class="ov-input"
+                [(ngModel)]="newsStartDate" />
+            </div>
+
+            <!-- End Date -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                End Date
+              </label>
+              <input
+                type="date"
+                class="ov-input"
+                [(ngModel)]="newsEndDate" />
+            </div>
+
+            <!-- Slug URL (Full Width) -->
+            <div class="md:col-span-2">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-xs font-semibold text-defaulttextcolor">
+                  Slug URL
+                </label>
+                <button
+                  type="button"
+                  class="text-xs text-primary hover:underline font-medium"
+                  (click)="generateSlug()">
+                  Auto-generate from title
+                </button>
+              </div>
+              <input
+                type="text"
+                class="ov-input font-mono !text-xs"
+                placeholder="e.g. orville-secures-aed-200m-deal"
+                [(ngModel)]="newsSlugUrl" />
+            </div>
           </div>
 
-          <!-- Author -->
-          <div>
-            <label class="cms-field-label">Author / Source</label>
-            <input
-              type="text"
-              class="cms-input"
-              placeholder="e.g. Dubai Latest Deals or Orville Newsroom"
-              [(ngModel)]="newsAuthor" />
-          </div>
-
-          <!-- Language -->
-          <div>
-            <label class="cms-field-label">Language</label>
-            <select class="cms-input" [(ngModel)]="newsLanguage">
-              <option value="en">English (en)</option>
-              <option value="ar">العربية (ar)</option>
-            </select>
-          </div>
-
-          <!-- Start Date -->
-          <div>
-            <label class="cms-field-label">Start Date</label>
-            <input
-              type="date"
-              class="cms-input"
-              [(ngModel)]="newsStartDate" />
-          </div>
-
-          <!-- End Date -->
-          <div>
-            <label class="cms-field-label">End Date</label>
-            <input
-              type="date"
-              class="cms-input"
-              [(ngModel)]="newsEndDate" />
-          </div>
-
-          <!-- Slug URL (Full Width) -->
-          <div class="md:col-span-2">
-            <label class="cms-field-label flex items-center justify-between">
-              <span>Slug URL</span>
-              <button
-                type="button"
-                class="text-[11px] text-primary hover:underline"
-                (click)="generateSlug()">
-                Auto-generate from title
-              </button>
-            </label>
-            <input
-              type="text"
-              class="cms-input font-mono text-[13px]"
-              placeholder="e.g. orville-secures-aed-200m-deal"
-              [(ngModel)]="newsSlugUrl" />
-          </div>
-
-          <!-- Visibility Toggles -->
-          <div class="md:col-span-2 flex flex-wrap items-center gap-6 p-3 bg-light dark:bg-black/20 rounded-lg">
-            <label class="flex items-center gap-2 cursor-pointer select-none text-[13px] text-defaulttextcolor font-medium">
+          <!-- Visibility Toggles Box -->
+          <div class="flex flex-wrap items-center gap-6 p-4 bg-gray-50 dark:bg-black/20 border border-defaultborder rounded-xl">
+            <label class="flex items-center gap-2.5 cursor-pointer select-none text-xs font-semibold text-defaulttextcolor">
               <input
                 type="checkbox"
                 class="form-checkbox h-4 w-4 text-primary rounded border-defaultborder"
@@ -639,7 +660,7 @@
               <span>Visible on website (Publish)</span>
             </label>
 
-            <label class="flex items-center gap-2 cursor-pointer select-none text-[13px] text-defaulttextcolor font-medium">
+            <label class="flex items-center gap-2.5 cursor-pointer select-none text-xs font-semibold text-defaulttextcolor">
               <input
                 type="checkbox"
                 class="form-checkbox h-4 w-4 text-primary rounded border-defaultborder"
@@ -648,95 +669,112 @@
             </label>
           </div>
 
-          <!-- Thumbnail Image Upload -->
-          <div>
-            <label class="cms-field-label">Thumbnail Image (Card Preview)</label>
-            <div class="news-upload-zone">
-              <div *ngIf="newsThumbnailPreview" class="relative group mb-2">
-                <img
-                  [src]="newsThumbnailPreview"
-                  alt="Thumbnail Preview"
-                  class="h-28 w-full object-cover rounded-md border border-defaultborder" />
-                <button
-                  type="button"
-                  class="absolute top-1 end-1 bg-danger text-white rounded-full p-1 shadow-sm opacity-90 hover:opacity-100"
-                  (click)="removeThumbnail()"
-                  title="Remove image">
-                  ✕
-                </button>
-              </div>
-
-              <input
-                type="file"
-                id="thumbnail-upload"
-                class="hidden"
-                accept="image/*"
-                (change)="onThumbnailSelected($event)" />
-              <label
-                for="thumbnail-upload"
-                class="news-upload-btn cursor-pointer">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                <span>{{ newsThumbnailPreview ? 'Change Thumbnail' : 'Upload Thumbnail Image' }}</span>
+          <!-- Image Uploads Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Thumbnail Image -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Thumbnail Image <span class="text-textmuted font-normal">(Card preview)</span>
               </label>
+              <div class="p-3 border border-dashed border-defaultborder rounded-xl bg-gray-50 dark:bg-black/10 flex flex-col items-center justify-center">
+                <div *ngIf="newsThumbnailPreview" class="relative w-full mb-2.5 group">
+                  <img
+                    [src]="newsThumbnailPreview"
+                    alt="Thumbnail Preview"
+                    class="h-32 w-full object-cover rounded-lg border border-defaultborder" />
+                  <button
+                    type="button"
+                    class="absolute top-2 end-2 bg-danger text-white rounded-full p-1.5 shadow-md hover:bg-danger/90 transition-all"
+                    (click)="removeThumbnail()"
+                    title="Remove thumbnail">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <input
+                  type="file"
+                  id="thumbnail-upload"
+                  class="hidden"
+                  accept="image/*"
+                  (change)="onThumbnailSelected($event)" />
+                <label
+                  for="thumbnail-upload"
+                  class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-defaulttextcolor bg-white dark:bg-bodybg border border-defaultborder hover:border-primary hover:text-primary rounded-lg cursor-pointer shadow-xs transition-all">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>{{ newsThumbnailPreview ? 'Change Thumbnail Image' : 'Upload Thumbnail Image' }}</span>
+                </label>
+              </div>
             </div>
-          </div>
 
-          <!-- Main News Image Upload -->
-          <div>
-            <label class="cms-field-label">Main News Image (Article Header)</label>
-            <div class="news-upload-zone">
-              <div *ngIf="newsImgPreview" class="relative group mb-2">
-                <img
-                  [src]="newsImgPreview"
-                  alt="News Image Preview"
-                  class="h-28 w-full object-cover rounded-md border border-defaultborder" />
-                <button
-                  type="button"
-                  class="absolute top-1 end-1 bg-danger text-white rounded-full p-1 shadow-sm opacity-90 hover:opacity-100"
-                  (click)="removeNewsImg()"
-                  title="Remove image">
-                  ✕
-                </button>
-              </div>
-
-              <input
-                type="file"
-                id="news-img-upload"
-                class="hidden"
-                accept="image/*"
-                (change)="onNewsImgSelected($event)" />
-              <label
-                for="news-img-upload"
-                class="news-upload-btn cursor-pointer">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                <span>{{ newsImgPreview ? 'Change Main Image' : 'Upload Main News Image' }}</span>
+            <!-- Main News Header Image -->
+            <div>
+              <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+                Main News Image <span class="text-textmuted font-normal">(Article header)</span>
               </label>
+              <div class="p-3 border border-dashed border-defaultborder rounded-xl bg-gray-50 dark:bg-black/10 flex flex-col items-center justify-center">
+                <div *ngIf="newsImgPreview" class="relative w-full mb-2.5 group">
+                  <img
+                    [src]="newsImgPreview"
+                    alt="News Header Preview"
+                    class="h-32 w-full object-cover rounded-lg border border-defaultborder" />
+                  <button
+                    type="button"
+                    class="absolute top-2 end-2 bg-danger text-white rounded-full p-1.5 shadow-md hover:bg-danger/90 transition-all"
+                    (click)="removeNewsImg()"
+                    title="Remove image">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <input
+                  type="file"
+                  id="news-img-upload"
+                  class="hidden"
+                  accept="image/*"
+                  (change)="onNewsImgSelected($event)" />
+                <label
+                  for="news-img-upload"
+                  class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-defaulttextcolor bg-white dark:bg-bodybg border border-defaultborder hover:border-primary hover:text-primary rounded-lg cursor-pointer shadow-xs transition-all">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>{{ newsImgPreview ? 'Change Main News Image' : 'Upload Main News Image' }}</span>
+                </label>
+              </div>
             </div>
           </div>
 
           <!-- Short Description (Full Width) -->
-          <div class="md:col-span-2">
-            <label class="cms-field-label">Short Description / Summary (for card preview)</label>
+          <div>
+            <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+              Short Description / Summary <span class="text-textmuted font-normal">(displayed on card preview)</span>
+            </label>
             <textarea
-              class="cms-textarea !h-20"
+              class="ov-input w-full !h-24 resize-y leading-relaxed"
               rows="3"
               placeholder="Provide a 2-3 sentence teaser summarizing the announcement..."
               [(ngModel)]="newsShortDesc">
             </textarea>
           </div>
 
-          <!-- Full Article Content (Full Width) -->
-          <div class="md:col-span-2">
-            <label class="cms-field-label">Full Article Content (Long Description)</label>
-            <div class="cms-editor-container">
+          <!-- Full Article Content (Rich Editor) -->
+          <div>
+            <label class="block text-xs font-semibold text-defaulttextcolor mb-1.5">
+              Full Article Content <span class="text-textmuted font-normal">(Long Description)</span>
+            </label>
+            <div class="cms-editor-container rounded-xl overflow-hidden border border-defaultborder bg-white dark:bg-bodybg">
               <ngx-editor-menu [editor]="newsEditor" [toolbar]="toolbar"></ngx-editor-menu>
               <ngx-editor
                 [editor]="newsEditor"
@@ -747,25 +785,25 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Modal Footer -->
-      <div class="ov-modal-footer">
-        <button
-          type="button"
-          class="cms-btn cms-btn--secondary"
-          [disabled]="isSavingNews"
-          (click)="closeNewsModal()">
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="cms-btn cms-btn--gold"
-          [disabled]="isSavingNews || !newsTitle.trim()"
-          (click)="saveNewsArticle()">
-          <span *ngIf="isSavingNews" class="spinner-border spinner-border-sm me-1.5" role="status"></span>
-          <span>{{ isSavingNews ? 'Saving...' : (editingNewsItem ? 'Update Article' : 'Save News Article') }}</span>
-        </button>
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 border-t border-defaultborder px-6 py-4 bg-gray-50 dark:bg-black/10 shrink-0">
+          <button
+            type="button"
+            class="px-5 py-2.5 text-xs font-semibold text-defaulttextcolor bg-white dark:bg-bodybg border border-defaultborder hover:bg-gray-100 dark:hover:bg-black/20 rounded-lg transition-all"
+            [disabled]="isSavingNews"
+            (click)="closeNewsModal()">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="px-6 py-2.5 text-xs font-semibold text-white bg-[#BD9759] hover:bg-[#a88448] disabled:opacity-60 rounded-lg shadow-sm transition-all flex items-center gap-2"
+            [disabled]="isSavingNews || !newsTitle.trim()"
+            (click)="saveNewsArticle()">
+            <span *ngIf="isSavingNews" class="spinner-border spinner-border-sm" role="status"></span>
+            <span>{{ isSavingNews ? 'Saving...' : (editingNewsItem ? 'Update Article' : 'Save News Article') }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
