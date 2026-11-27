@@ -2,9 +2,9 @@
   <!-- Top Header Row -->
   <header class="t-header">
     <div class="t-header__left">
-      <h1 class="t-header__title">Good morning, {{ tenant.name }}</h1>
+      <h1 class="t-header__title">Good morning, {{ tenant.tenant }}</h1>
       <p class="t-header__subtitle">
-        {{ tenant.unit }} · {{ tenant.building }} · {{ tenant.area }}
+        {{ active_lease.unit }} · {{ active_lease.property_name }} · {{ active_lease.address_1 }}
       </p>
     </div>
 
@@ -20,15 +20,15 @@
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          <span class="t-unit-text">{{ selectedUnit }}</span>
+          <span class="t-unit-text">{{ selectedLease }}</span>
           <svg class="t-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
 
         <ul *ngIf="isUnitDropdownOpen" class="t-unit-menu" role="menu">
-          <li *ngFor="let u of availableUnits" (click)="selectUnit(u)" [class.is-active]="u === selectedUnit">
-            {{ u }}
+          <li *ngFor="let u of lease_list" (click)="selectUnit(u)" [class.is-active]="u.active_lease == selectedLease">
+            {{ u.active_lease }}  
           </li>
         </ul>
       </div>
@@ -56,27 +56,27 @@
         <span class="t-next-pay__label">NEXT PAYMENT</span>
         <span class="t-badge t-badge--warning-solid">
           <span class="t-badge__dot"></span>
-          {{ nextPayment.dueDaysLabel }}
+          Due in {{ active_rcp_dtls?.due_days }} day[s]
         </span>
       </div>
 
       <div class="t-next-pay__amount-row">
-        <span class="t-next-pay__currency">{{ nextPayment.currency }}</span>
-        <span class="t-next-pay__amount">{{ nextPayment.amount }}</span>
+        <span class="t-next-pay__currency">{{ currentUser?.currencyCode }}</span>
+        <span class="t-next-pay__amount">{{ active_rcp_dtls?.format_amt }}</span>
       </div>
 
       <div class="t-next-pay__meta-grid">
         <div class="t-next-pay__meta-item">
           <span class="t-next-pay__meta-label">Due date</span>
-          <span class="t-next-pay__meta-value">{{ nextPayment.dueDate }}</span>
+          <span class="t-next-pay__meta-value">{{ active_rcp_dtls?.due_date| date:'MM-dd-yyyy' }}</span>
         </div>
         <div class="t-next-pay__meta-item">
-          <span class="t-next-pay__meta-label">Instalment</span>
-          <span class="t-next-pay__meta-value">{{ nextPayment.instalment }}</span>
+          <span class="t-next-pay__meta-label">Installment</span>
+          <span class="t-next-pay__meta-value">Q{{ paid_rcp_dtls[0]?.total_installments+1 }} ·{{ paid_rcp_dtls[0]?.total_installments+1 }} of {{ total_receipts }}</span>
         </div>
         <div class="t-next-pay__meta-item">
           <span class="t-next-pay__meta-label">Method</span>
-          <span class="t-next-pay__meta-value">{{ nextPayment.method }}</span>
+          <span class="t-next-pay__meta-value">{{ active_rcp_dtls?.payment_type }}</span>
         </div>
       </div>
 
@@ -98,35 +98,35 @@
       </div>
 
       <div class="t-lease__summary-row">
-        <span class="t-lease__code">{{ lease.leaseCode }}</span>
+        <span class="t-lease__code">{{ active_lease.active_lease }}</span>
         <span class="t-badge t-badge--success">
           <span class="t-badge__dot"></span>
-          {{ lease.status }}
+          {{ active_lease.lease_status }}
         </span>
         <span class="t-lease__spec">
-          {{ lease.type }} · {{ lease.bedrooms }} · {{ lease.size }}
+          {{ active_lease.lease_category }} · {{ active_lease.beds }} · {{ active_lease.total_area_sq_feet }}
         </span>
       </div>
 
       <div class="t-lease__info-grid">
         <div class="t-lease__info-item">
           <span class="t-lease__info-label">Lease term</span>
-          <span class="t-lease__info-value">{{ lease.termStart }} – {{ lease.termEnd }}</span>
+          <span class="t-lease__info-value">{{ active_lease.start_date | date:'MM-dd-yyyy' }} – {{ active_lease.end_date | date:'MM-dd-yyyy' }}</span>
         </div>
         <div class="t-lease__info-item">
           <span class="t-lease__info-label">Annual rent</span>
-          <span class="t-lease__info-value">{{ lease.annualRent }}</span>
+          <span class="t-lease__info-value">{{currentUser?.currencyCode + ' '}}{{ active_lease.annual_rent }}</span>
         </div>
         <div class="t-lease__info-item">
           <span class="t-lease__info-label">Security deposit</span>
-          <span class="t-lease__info-value">{{ lease.securityDeposit }}</span>
+          <span class="t-lease__info-value">{{currentUser?.currencyCode + ' '}}{{ active_lease.security_income_amt }}</span>
         </div>
       </div>
 
       <div class="t-lease__progress-section">
         <div class="t-lease__progress-label-row">
           <span class="t-lease__progress-title">Lease progress</span>
-          <span class="t-lease__progress-count">Day {{ lease.currentDay }} of {{ lease.totalDays }}</span>
+          <span class="t-lease__progress-count">Day {{ active_lease.currentDay }} of {{ active_lease.totalDays }}</span>
         </div>
         <div class="t-lease__progress-track">
           <div class="t-lease__progress-bar" [style.width.%]="leaseProgressPercentage"></div>
@@ -184,14 +184,16 @@
           <h2 class="t-card__title">Maintenance requests</h2>
           <p class="t-card__sub">Track the status of your service requests</p>
         </div>
-        <a class="t-link t-link--gold" routerLink="/facility/tickets">View all</a>
+        <a class="t-link t-link--gold" routerLink="/facility/workorders">View all</a>
       </div>
 
       <div class="t-table-responsive">
         <table class="t-table">
           <thead>
             <tr>
+              <th>Code</th>
               <th>Request</th>
+              <th>Submitted On</th>
               <th>Category</th>
               <th>Technician</th>
               <th>Status</th>
@@ -199,13 +201,15 @@
           </thead>
           <tbody>
             <tr *ngFor="let req of maintenanceRequests">
-              <td class="t-table__primary">{{ req.request }}</td>
-              <td class="t-table__muted">{{ req.category }}</td>
-              <td class="t-table__muted">{{ req.technician }}</td>
+              <td class="t-table__primary">{{ req.code }}</td>
+              <td class="t-table__primary">{{ req.title }}</td>
+              <td class="t-table__muted">{{ req.created_date  | date:'MM-dd-yyyy'  }}</td>
+              <td class="t-table__muted">{{ req.maintenance_name }}</td>
+              <td class="t-table__muted">{{ req.technician_name }}</td>
               <td>
-                <span class="t-badge" [ngClass]="getMaintenanceStatusClass(req.status)">
+                <span class="t-badge" [ngClass]="getMaintenanceStatusClass(req.status_nm)">
                   <span class="t-badge__dot"></span>
-                  {{ req.status }}
+                  {{ req.status_nm }}
                 </span>
               </td>
             </tr>
@@ -290,15 +294,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of paymentSchedule">
-            <td class="t-table__primary">{{ item.instalment }}</td>
-            <td class="t-table__muted">{{ item.dueDate }}</td>
-            <td class="t-table__primary font-semibold">{{ item.amount }}</td>
-            <td class="t-table__muted">{{ item.method }}</td>
+          <tr *ngFor="let item of receipt_dtls; let i = index">
+            <td class="t-table__primary">Q{{ i+1 }}</td>
+            <td class="t-table__muted">{{ item.due_date | date:'MM-dd-yyyy'}}</td>
+            <td class="t-table__primary font-semibold">{{ item.format_amt }}</td>
+            <td class="t-table__muted">{{ item.payment_type_name }}</td>
             <td>
-              <span class="t-badge" [ngClass]="getPaymentStatusClass(item.status)">
+              <span class="t-badge" [ngClass]="getPaymentStatusClass(item.cheque_status)">
                 <span class="t-badge__dot"></span>
-                {{ item.status }}
+                {{ item.cheque_status }}
               </span>
             </td>
           </tr>

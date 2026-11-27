@@ -321,6 +321,7 @@ export class InvoiceDetailComponent implements OnInit {
           this.isLoading = false;
           if (res["statusCode"] == "200") {
             this.toastr.success(this.translate.instant('web.accounting.invoices.successfullyReceivedPayment'));
+            this.showReceivePayment=false;
             setTimeout(() => {
               window.location.reload()
             }, 3000);

@@ -273,7 +273,7 @@
           </div>
           <ng-container *ngIf="paymentMethod== 169" [ngTemplateOutlet]="chequeDetails" [ngTemplateOutletContext]="{ $implicit: addpaymentbloc }"></ng-container>
           <div class="lease-generate-row">
-            <button type="button" (click)="generatePayments()" class="ov-btn ov-btn-primary">
+            <button *ngIf="leaseInfo.status === 176 || leaseId==''" type="button" (click)="generatePayments()" class="ov-btn ov-btn-primary">
               {{ 'web.leases.lblGeneratePayment' | translate }}
             </button>
           </div>
@@ -282,7 +282,7 @@
 
       <!-- Payment Schedule -->
       <div class="ov-card">
-        <div class="ov-card__head">
+        <div class="ov-card__head" *ngIf="leaseInfo.status === 176 || leaseId==''">
           <div class="lease-sched-head__row">
             <h6 class="ov-card-title m-0">{{ 'web.leases.lblPaymentSchedule' | translate }}</h6>
             <div class="lease-sched-links">
@@ -404,12 +404,12 @@
                   <td>{{ wo.PaymentType }}</td>
                   <td><a>{{ wo.attachmentName }}</a></td>
                   <td>
-                    <button type="button" (click)="edit_action(wo,'edit')" class="ov-icon-btn ov-icon-btn--primary" [attr.data-tooltip]="'web.common.edit' | translate">
+                    <button *ngIf="leaseInfo.status === 176 || leaseId==''" type="button" (click)="edit_action(wo,'edit')" class="ov-icon-btn ov-icon-btn--primary" [attr.data-tooltip]="'web.common.edit' | translate">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
                   </td>
                   <td>
-                    <button type="button" (click)="edit_action(wo,'delete')" class="ov-icon-btn ov-icon-btn--danger" [attr.data-tooltip]="'web.common.delete' | translate">
+                    <button *ngIf="leaseInfo.status === 176 || leaseId==''" type="button" (click)="edit_action(wo,'delete')" class="ov-icon-btn ov-icon-btn--danger" [attr.data-tooltip]="'web.common.delete' | translate">
                       <img src="assets/images/work-order-detail/trash-red.svg" alt="" width="14" height="14" />
                     </button>
                   </td>

@@ -351,6 +351,7 @@ export class CreateLeaseComponent implements OnInit {
         "Memo":this.addpaymentbloc.Memo,
         "InvoiceNo":this.addpaymentbloc.InvoiceNo,
         "isEdit":0,
+        "isSecurityDeposit":this.addpaymentbloc.isSecurityDeposit,
         "row_no":this.paymentSchedules.length+1});
       }
         if(this.attachedFile)
@@ -427,6 +428,7 @@ export class CreateLeaseComponent implements OnInit {
         "Memo":'',
         "InvoiceNo":'',
         "isEdited":0,
+        "isSecurityDeposit":this.addpaymentbloc.isSecurityDeposit,
         "row_no":(index+1)});
         dueDate=this.addMonthsToDate((this.totalPayments),dueDate); 
       }
