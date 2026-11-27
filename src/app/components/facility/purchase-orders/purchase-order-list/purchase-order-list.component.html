@@ -6,7 +6,7 @@
       <p class="ov-page-sub">Manage and view all Purchase Order</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
+      <button *appHasPermission="['AddPurchaseOrder', 'AddPO', 'CreatePurchaseOrder', 'add', 'create']" type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
         {{ 'web.facility.purchaseOrders.addItem' | translate }}
       </button>
@@ -96,7 +96,7 @@
     data-po-action
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
-    <button type="button" role="menuitem" class="po-row-menu__item" (click)="navigateToCreate()">Edit</button>
+    <button *appHasPermission="['EditPurchaseOrder', 'EditPO', 'edit']" type="button" role="menuitem" class="po-row-menu__item" (click)="navigateToCreate()">Edit</button>
     <a role="menuitem" class="po-row-menu__item"
       [routerLink]="['/facility/purchase-orders', openRowActionId!]"
       (click)="closeRowAction()">View</a>

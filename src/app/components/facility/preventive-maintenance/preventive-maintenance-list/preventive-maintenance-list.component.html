@@ -6,7 +6,7 @@
       <p class="ov-page-sub">{{ 'web.facility.preventiveMaintenance.subtitle' | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
+      <button *appHasPermission="['AddPM', 'AddPreventiveMaintenance', 'AddWorkOrder', 'CreateWorkOrder', 'add', 'create']" type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
         {{ 'web.facility.preventiveMaintenance.addPM' | translate }}
       </button>
@@ -89,7 +89,7 @@
     data-pm-action
     [ngStyle]="rowMenuStyle"
     (click)="$event.stopPropagation()">
-    <button type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToEdit(openRowActionId)">{{ 'web.facility.preventiveMaintenance.edit' | translate }}</button>
+    <button *appHasPermission="['EditPM', 'EditPreventiveMaintenance', 'EditWorkOrder', 'edit']" type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToEdit(openRowActionId)">{{ 'web.facility.preventiveMaintenance.edit' | translate }}</button>
     <button type="button" role="menuitem" class="pm-row-menu__item" (click)="navigateToDetail(openRowActionId)">{{ 'web.facility.preventiveMaintenance.view' | translate }}</button>
   </div>
 </div>

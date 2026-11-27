@@ -188,9 +188,17 @@ for (const def of SCREEN_DEFINITIONS) {
     const hyphenated = withSlash.replace(/_/g, '-');
     const underscored = withSlash.replace(/-/g, '_');
     URL_TO_SCREEN_ID[hyphenated] = def.screenId;
+    URL_TO_SCREEN_ID[hyphenated.replace(/^\/+/, '')] = def.screenId;
     URL_TO_SCREEN_ID[underscored] = def.screenId;
+    URL_TO_SCREEN_ID[underscored.replace(/^\/+/, '')] = def.screenId;
   }
 }
+
+// Angular route aliases that differ from Menu_Screen_id_Orville.xlsx URLs
+URL_TO_SCREEN_ID['/preventive-maintenance'] = ScreenId.PreventiveMaintenance;
+URL_TO_SCREEN_ID['preventive-maintenance'] = ScreenId.PreventiveMaintenance;
+URL_TO_SCREEN_ID['/purchase-orders'] = ScreenId.PurchaseOrders;
+URL_TO_SCREEN_ID['purchase-orders'] = ScreenId.PurchaseOrders;
 
 /**
  * Resolves a screen ID from a URL, path, or menu name.

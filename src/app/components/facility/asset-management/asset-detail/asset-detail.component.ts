@@ -37,11 +37,14 @@ export interface Attachment {
 }
 
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'app-asset-detail',
   standalone: true,
-  imports: [CommonModule, SharedTableComponent,WorkordersTableComponent, AttachmentsComponent, TranslateModule],
+  imports: [CommonModule, SharedTableComponent,WorkordersTableComponent, AttachmentsComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './asset-detail.component.html',
   styleUrl: './asset-detail.component.scss'
 })
@@ -50,6 +53,7 @@ export class AssetDetailComponent implements OnInit {
   private router = inject(Router);
   private propertiesService = inject(PropertiesService);
   private commonService = inject(CommonService);
+  public pagePermissionService = inject(PagePermissionService);
 
   assetId: string = '';
   activeTab: string = 'Overview';
@@ -151,6 +155,7 @@ export class AssetDetailComponent implements OnInit {
   ]; 
  
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Assets).subscribe();
     this.initializeTabs();
     this.assetId = this.route.snapshot.paramMap.get('code') || '';
     if (this.assetId) {

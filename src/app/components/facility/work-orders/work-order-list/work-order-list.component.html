@@ -5,11 +5,11 @@
     <p class="sr-only">Facility / Work Orders</p>
   </div>
   <div class="flex flex-wrap gap-2 items-center mt-2 md:mt-0">
-    <button type="button" class="ov-btn ov-btn-ghost" [attr.data-tooltip]="'web.facility.workOrders.export' | translate">
+    <button *appHasPermission="['ExportWorkOrder', 'ExportWorkOrders', 'export']" type="button" class="ov-btn ov-btn-ghost" (click)="exportWorkOrders()" [attr.data-tooltip]="'web.facility.workOrders.export' | translate">
       <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="wo-icon" />
       {{ 'web.facility.workOrders.export' | translate }}
     </button>
-    <button type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" [attr.data-tooltip]="'web.facility.workOrders.addWorkOrder' | translate">
+    <button *appHasPermission="['AddWorkOrder', 'AddWorkOrders', 'CreateWorkOrder', 'add', 'create']" type="button" class="ov-btn ov-btn-primary" (click)="navigateToCreate()" [attr.data-tooltip]="'web.facility.workOrders.addWorkOrder' | translate">
       <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="wo-icon" />
       {{ 'web.facility.workOrders.addWorkOrder' | translate }}
     </button>
@@ -170,10 +170,10 @@
                 <button type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                   (click)="navigateToDetail(row.code); openActionCode = null">{{ 'web.common.view' | translate }}</button>
-                <button type="button"
+                <button *appHasPermission="['EditWorkOrder', 'EditWorkOrders', 'edit']" type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-defaulttextcolor hover:bg-light"
                   (click)="handleEditAction(row); openActionCode = null">{{ 'web.common.edit' | translate }}</button>
-                <button type="button"
+                <button *appHasPermission="['DeleteWorkOrder', 'DeleteWorkOrders', 'delete']" type="button"
                   class="block w-full border-0 bg-transparent px-3 py-2 text-start text-[14px] text-danger hover:bg-light"
                   (click)="deleteWorkorder(row.code)">{{ 'web.common.delete' | translate }}</button>
               </div>
@@ -292,7 +292,7 @@
 
         <div class="flex items-center justify-between pt-2 border-t border-defaultborder mt-1">
           <span class="ov-status ov-status--soft">{{ getArabicLookupName(row, 'status_nm') }}</span>
-          <button type="button" (click)="handleEditAction(row)" class="ov-icon-btn ov-icon-btn--bare"
+          <button *appHasPermission="['EditWorkOrder', 'EditWorkOrders', 'edit']" type="button" (click)="handleEditAction(row)" class="ov-icon-btn ov-icon-btn--bare"
             [attr.data-tooltip]="'web.common.edit' | translate">
             <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
           </button>

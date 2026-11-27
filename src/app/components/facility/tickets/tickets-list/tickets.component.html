@@ -5,11 +5,11 @@
       <p class="ov-page-sub">{{ 'web.facility.tickets.subtitle' | translate }}</p>
     </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      <button type="button" class="ov-btn ov-btn-ghost">
+      <button *appHasPermission="['ExportTicket', 'ExportTickets', 'export']" type="button" class="ov-btn ov-btn-ghost" (click)="exportTickets()">
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" class="tk-icon" />
         {{ 'web.facility.tickets.export' | translate }}
       </button>
-      <button type="button" class="ov-btn ov-btn-primary" routerLink="/facility/tickets/create">
+      <button *appHasPermission="['AddTicket', 'AddTickets', 'CreateTicket', 'add', 'create']" type="button" class="ov-btn ov-btn-primary" routerLink="/facility/tickets/create">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" class="tk-icon" />
         {{ 'web.facility.tickets.addTicket' | translate }}
       </button>
@@ -233,7 +233,7 @@
     (click)="$event.stopPropagation()">
     <button type="button" role="menuitem" class="tk-row-menu__item"
       (click)="navigateToDetail(openRowActionId!)">{{ 'web.common.view' | translate }}</button>
-    <button type="button" role="menuitem" class="tk-row-menu__item"
+    <button *appHasPermission="['EditTicket', 'EditTickets', 'edit']" type="button" role="menuitem" class="tk-row-menu__item"
       (click)="navigateToEdit(openRowActionId!)">{{ 'web.common.edit' | translate }}</button>
   </div>
 

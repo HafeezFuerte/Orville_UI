@@ -12,13 +12,16 @@ import {
 } from '../inventory.data';
 import { PortfolioService } from '../../../portfolio/services/portfolio.service';
 import { CommonService } from '../../../../services/common.service';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 type DetailTab = 'details' | 'lines' | 'attachments' | 'notes';
 
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './inventory-detail.component.html',
   styleUrl: './inventory-detail.component.scss'
 })
@@ -27,6 +30,7 @@ export class InventoryDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
+  public pagePermissionService = inject(PagePermissionService);
 
   activeTab: DetailTab = 'details';
   showLineModal = false;
@@ -81,6 +85,7 @@ export class InventoryDetailComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Inventory).subscribe();
     this.route.paramMap.subscribe((params) => {
       const code = params.get('id') || '';
       if (code) {

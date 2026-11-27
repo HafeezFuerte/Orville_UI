@@ -10,6 +10,9 @@ import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 export interface WorkOrder {
   id?: string;
   code?: string;
@@ -41,7 +44,7 @@ export interface WorkOrder {
 @Component({
   selector: 'app-work-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,DeleteConfirmationComponent, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent],
+  imports: [CommonModule, FormsModule,DeleteConfirmationComponent, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, HasPermissionDirective],
   templateUrl: './work-order-list.component.html',
   styleUrl: './work-order-list.component.scss'
 })
@@ -52,6 +55,7 @@ export class WorkOrderListComponent implements OnInit {
   private commontabService = inject(Common_TabsService);
   private toastr = inject(ToastrService);
   public translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   currentUser = this.commonService.getCurrentUser();
   searchQuery: string = '';
   viewMode: 'list' | 'grid' | 'board' = 'list';
@@ -292,9 +296,35 @@ export class WorkOrderListComponent implements OnInit {
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];
   } 
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.WorkOrders).subscribe();
     this.loadData();
     this.loadMetrics();
     this.loadLookup(2,29, 'tabs', 'lookup_name');
+  }
+
+  exportWorkOrders(): void {
+    const rowsSource = this.workOrderData || [];
+    if (!rowsSource.length) {
+      this.toastr.info('No work order data to export');
+      return;
+    }
+    const headers = ['ID', 'Title', 'Property', 'Unit', 'Priority', 'Status', 'Vendor'];
+    const rows = rowsSource.map((r: any) => [
+      r.code || r.id || '',
+      `"${String(r.title || '').replace(/"/g, '""')}"`,
+      `"${String(r.property || '').replace(/"/g, '""')}"`,
+      `"${String(r.unit || '').replace(/"/g, '""')}"`,
+      `"${String(r.priority || '').replace(/"/g, '""')}"`,
+      `"${String(r.status_nm || r.status || '').replace(/"/g, '""')}"`,
+      `"${String(r.vendor_name || r.vendor || '').replace(/"/g, '""')}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e: any[]) => e.join(','))].join('\n');
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `work_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
   loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
     this.portfolioService.getMasterByType({

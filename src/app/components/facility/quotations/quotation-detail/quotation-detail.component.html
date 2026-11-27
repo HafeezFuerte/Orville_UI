@@ -12,7 +12,7 @@
       </p>
     </div>
   </div>
-  <div class="qd-action relative" (click)="$event.stopPropagation()">
+  <div class="qd-action relative" (click)="$event.stopPropagation()" *appHasPermission="['EditQuotation', 'EditQuotations', 'edit']">
     <button type="button" class="qd-action__btn"
       [class.is-open]="showActionMenu"
       (click)="showActionMenu = !showActionMenu">
@@ -70,10 +70,10 @@
             <textarea rows="3" [placeholder]="'web.common.lblEnter' | translate" [(ngModel)]="updatednotes" class="ov-input wo-textarea"></textarea>
           </div>
           <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-            <button type="button" (click)="updatequotationStatus(311)" class="ov-btn ov-status--success !h-9 !text-[13px]" aria-label="Send">
+            <button *ngIf="pagePermissionService.hasPermissionIfDefined(['ApproveQuotation', 'approve'])" type="button" (click)="updatequotationStatus(311)" class="ov-btn ov-status--success !h-9 !text-[13px]" aria-label="Send">
              {{ 'web.common.lblApprove' | translate }}
             </button>
-            <button type="button" (click)="updatequotationStatus(312)" class="ov-btn ov-status--warning !h-9 !text-[13px]" aria-label="Send">
+            <button *ngIf="pagePermissionService.hasPermissionIfDefined(['RejectQuotation', 'DeclineQuotation', 'reject', 'decline'])" type="button" (click)="updatequotationStatus(312)" class="ov-btn ov-status--warning !h-9 !text-[13px]" aria-label="Send">
               {{ 'web.common.lblReject' | translate }}
              </button>
           </div>
@@ -158,7 +158,7 @@
       <div *ngIf="activeTab === 'lineItems'" class="p-5">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h5 class="ov-card-title m-0 !text-[18px]">{{ 'web.facility.quotations.lineItems' | translate }}</h5>
-          <button type="button" class="ov-btn ov-btn-primary !h-10" (click)="openAddLineItem()">
+          <button *appHasPermission="['EditQuotation', 'AddQuotation', 'edit', 'add']" type="button" class="ov-btn ov-btn-primary !h-10" (click)="openAddLineItem()">
             <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
             {{ 'web.facility.quotations.addItem' | translate }}
           </button>
@@ -184,11 +184,11 @@
                   <span *ngSwitchCase="'category_text'" class="text-textmuted">{{ row.category_text }}</span>
                   <span *ngSwitchCase="'tax_profile_text'" class="text-textmuted">{{ row.tax_profile_text }}</span>
                   <div *ngIf="col.key === 'action'" class="flex items-center gap-2">
-                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.edit' | translate"
+                    <button *appHasPermission="['EditQuotation', 'EditQuotations', 'edit']" type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.edit' | translate"
                       (click)="openEditLineItem(row)">
                       <img src="assets/images/action-menu/pencil.svg" alt="" width="14" height="14" />
                     </button>
-                    <button type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.remove' | translate"
+                    <button *appHasPermission="['EditQuotation', 'DeleteQuotation', 'edit', 'delete']" type="button" class="ov-icon-btn ov-icon-btn--bare" [attr.aria-label]="'web.facility.quotations.remove' | translate"
                       (click)="removeLineItem(row.id)">
                       <img src="assets/images/action-menu/trash.svg" alt="" width="14" height="14" />
                     </button>

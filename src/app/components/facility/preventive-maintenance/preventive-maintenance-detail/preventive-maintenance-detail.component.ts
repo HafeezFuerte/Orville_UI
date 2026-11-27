@@ -14,6 +14,9 @@ import { Common_TabsService } from '../../../portfolio/services/common_tabs.serv
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 type DetailTab = 'overview' | 'messages' | 'notes';
 
@@ -32,7 +35,7 @@ interface TicketNoteRow {
 @Component({
   selector: 'app-preventive-maintenance-detail',
   standalone: true,
-  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './preventive-maintenance-detail.component.html',
   styleUrl: './preventive-maintenance-detail.component.scss'
 })
@@ -43,6 +46,7 @@ export class PreventiveMaintenanceDetailComponent implements OnInit, OnDestroy {
   private commonTabsService = inject(Common_TabsService);
   private toastr = inject(ToastrService);
   private translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   private destroy$ = new Subject<void>();
 
   currentUser = this.commonService.getCurrentUser(); 
@@ -104,6 +108,7 @@ export class PreventiveMaintenanceDetailComponent implements OnInit, OnDestroy {
 activities:any=[];
   noteRows:any=[];
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.PreventiveMaintenance).subscribe();
     this.initializeTabs(); 
     this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.initializeTabs();

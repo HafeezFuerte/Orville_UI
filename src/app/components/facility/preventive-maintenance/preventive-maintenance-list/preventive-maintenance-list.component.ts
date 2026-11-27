@@ -16,11 +16,14 @@ import { Common_TabsService } from '../../../portfolio/services/common_tabs.serv
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService, TranslateModule } from '@ngx-translate/core'; 
 import { Subject, takeUntil } from 'rxjs';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'app-preventive-maintenance-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, OvPaginatorComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, OvPaginatorComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './preventive-maintenance-list.component.html',
   styleUrl: './preventive-maintenance-list.component.scss'
 })
@@ -58,9 +61,10 @@ export class PreventiveMaintenanceListComponent implements OnInit, OnDestroy {
     { key: 'action', label: 'Action', labelKey: 'web.facility.preventiveMaintenance.colAction', visible: true, useTemplate: true, width: '70px' }
   ];
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
-    private commonservice: CommonService,public translate: TranslateService) {}
+    private commonservice: CommonService,public translate: TranslateService, public pagePermissionService: PagePermissionService) {}
 
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.PreventiveMaintenance).subscribe();
     this.updateTableColumnLabels();
     this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.updateTableColumnLabels();

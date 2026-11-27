@@ -13,10 +13,13 @@ import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, OvPaginatorComponent,SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, OvPaginatorComponent,SharedTableComponent, ColumnMenuComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.scss'
 })
@@ -25,6 +28,7 @@ export class PurchaseOrderListComponent {
   private commonservice = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
   private toastr=inject(ToastrService)
+  public pagePermissionService = inject(PagePermissionService);
   currentUser = this.commonservice.getCurrentUser(); 
   searchQuery = '';
   showColumnDropdown = false;
@@ -52,7 +56,8 @@ export class PurchaseOrderListComponent {
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
   ];
 
-  ngOnInit() { 
+  ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.PurchaseOrders).subscribe();
     this.loadpurchaseorders();   
   }
   get visibleColumns() {

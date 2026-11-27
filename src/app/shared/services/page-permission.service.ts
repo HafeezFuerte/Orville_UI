@@ -119,7 +119,7 @@ export class PagePermissionService {
 
     return this.http.post<any>(url, payload, { headers }).pipe(
       map(res => {
-        const row = res?.objResult.table?.[0] || res?.data?.[0];
+        const row = res?.objResult?.table?.[0] || res?.data?.[0];
         const rawActions: any = row?.actions;
         let actionList: ActionPermission[] = [];
 
@@ -190,35 +190,69 @@ export class PagePermissionService {
       return false;
     }
 
-    const keysToCheck = Array.isArray(actionKey) ? actionKey : [actionKey];
-    return keysToCheck.some(key => this.checkSinglePermission(key, targetPermissions));
+    const keysToCheck = (Array.isArray(actionKey) ? actionKey : [actionKey]).filter(Boolean);
+    if (keysToCheck.length === 0) return true;
+
+    // Pass 1: Exact / lowercase key matches take precedence over loose keyword fallbacks
+    let foundExactKey = false;
+    for (const key of keysToCheck) {
+      if (targetPermissions[key] !== undefined) {
+        foundExactKey = true;
+        if (targetPermissions[key]) return true;
+      } else {
+        const lowerKey = key.toLowerCase();
+        if (targetPermissions[lowerKey] !== undefined) {
+          foundExactKey = true;
+          if (targetPermissions[lowerKey]) return true;
+        }
+      }
+    }
+    if (foundExactKey) {
+      return false;
+    }
+
+    // Pass 2: Semantic keyword match (e.g. 'export' matches 'ExportLease')
+    return keysToCheck.some(key => this.checkSemanticPermission(key, targetPermissions));
   }
 
-  private checkSinglePermission(key: string, permissions: Record<string, boolean>): boolean {
+  /**
+   * Checks permission ONLY if at least one matching action key exists in the loaded screen's
+   * TypeId 111 actions. If no matching key is configured for this screen, returns `true`
+   * so secondary workflow buttons (e.g. Print, Approve/Decline) are not hidden unintentionally.
+   */
+  hasPermissionIfDefined(actionKey: string | string[], screenId?: number): boolean {
+    if (!actionKey) return true;
+
+    const targetPermissions = screenId && this.cache.has(screenId)
+      ? this.cache.get(screenId)!.permissions
+      : this.currentStateSubject.value.permissions;
+
+    if (!targetPermissions || Object.keys(targetPermissions).length === 0) {
+      return true;
+    }
+
+    const keysToCheck = (Array.isArray(actionKey) ? actionKey : [actionKey]).filter(Boolean);
+    const allPermKeys = Object.keys(targetPermissions);
+    const hasConfiguredKey = keysToCheck.some(key => {
+      const lk = key.toLowerCase();
+      return targetPermissions[key] !== undefined ||
+        targetPermissions[lk] !== undefined ||
+        allPermKeys.some(pk => pk.toLowerCase().includes(lk));
+    });
+
+    return hasConfiguredKey ? this.hasPermission(keysToCheck, screenId) : true;
+  }
+
+  private checkSemanticPermission(key: string, permissions: Record<string, boolean>): boolean {
     if (!key) return true;
-
-    // 1. Exact key match
-    if (permissions[key] !== undefined) {
-      return permissions[key];
-    }
-
-    // 2. Lowercase key match
     const lowerKey = key.toLowerCase();
-    if (permissions[lowerKey] !== undefined) {
-      return permissions[lowerKey];
-    }
 
-    // 3. Semantic keyword match (e.g. 'export' matches 'ExportTenant' or 'ExportProperties')
     const matchingKey = Object.keys(permissions).find(k => {
       const lk = k.toLowerCase();
       return lk === lowerKey || lk.includes(lowerKey);
     });
 
-    if (matchingKey !== undefined) {
-      return permissions[matchingKey];
-    }
-
-    return false;
+    return matchingKey !== undefined ? permissions[matchingKey] : false;
   }
 
   /**

@@ -13,10 +13,13 @@ import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
-  imports: [CommonModule, OvExtraFieldsViewComponent,RouterModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
+  imports: [CommonModule, OvExtraFieldsViewComponent,RouterModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './work-order-detail.component.html',
   styleUrl: './work-order-detail.component.scss'
 })
@@ -28,6 +31,7 @@ export class WorkOrderDetailComponent implements OnInit {
   private commonTabsService = inject(Common_TabsService);
   private toastr = inject(ToastrService);
   public translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
 
   workOrderId: string = '';
   activeTab: string = 'Overview';
@@ -385,6 +389,7 @@ export class WorkOrderDetailComponent implements OnInit {
   newMessage: string = '';
 
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.WorkOrders).subscribe();
     this.initializeTabs();
     this.loadlookup(2,29,'statusOptions','','');
     this.route.params.subscribe(params => {
