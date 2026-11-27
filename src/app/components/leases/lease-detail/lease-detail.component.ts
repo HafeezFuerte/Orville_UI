@@ -17,10 +17,13 @@ import { WorkordersTableComponent } from '../../child-tables/workorders/workorde
 import { BroadcastsTableComponent } from '../../child-tables/broadcasts/broadcasts.component';
 import { FinancialsComponent } from '../../child-tables/financials/financials.component';
 import { OvExtraFieldsViewComponent } from '../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
+import { ScreenId } from '../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 @Component({
   selector: 'app-lease-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FinancialsComponent, OvExtraFieldsViewComponent],
+  imports: [CommonModule, FormsModule, RouterModule, WorkordersTableComponent, BroadcastsTableComponent, TranslateModule, UnitsTableComponent, DetailPageLayoutComponent, SharedTableComponent, NotesComponent, AttachmentsComponent, FinancialsComponent, OvExtraFieldsViewComponent, HasPermissionDirective],
   templateUrl: './lease-detail.component.html',
   styleUrl: './lease-detail.component.scss'
 })
@@ -31,6 +34,7 @@ export class LeaseDetailComponent implements OnInit {
   private commonService = inject(CommonService);
   private commontabservice = inject(Common_TabsService);
   private translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   leaseId: string = '';
   approveComments: string = '';
   Form!: FormGroup;
@@ -151,8 +155,23 @@ export class LeaseDetailComponent implements OnInit {
       { label: 'web.contacts.lblArchive', actionKey: 'archive', icon: 'ri-delete-bin-line', asset: 'assets/images/action-menu/archive.svg', danger: true }
 
     ];
+  get visibleActionOptions() {
+    return this.actionOptions.filter((o: any) => {
+      if (o.actionKey === 'edit') {
+        return this.pagePermissionService.hasPermission(['EditLease', 'EditLeases', 'edit']);
+      }
+      if (o.actionKey === 'archive') {
+        return this.pagePermissionService.hasPermission(['DeleteLease', 'DeleteLeases', 'ArchiveLease', 'delete', 'archive']);
+      }
+      if (o.actionKey === 'approval') {
+        return this.pagePermissionService.hasPermissionIfDefined(['RequestApproval', 'ApproveLease', 'approval']);
+      }
+      return true;
+    });
+  }
+
   get hasDangerAction(): boolean {
-    return this.actionOptions.some((o: any) => o.danger);
+    return this.visibleActionOptions.some((o: any) => o.danger);
   }
   // Sub-grid columns
   invoiceColumns = [
@@ -723,7 +742,7 @@ export class LeaseDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.pagePermissionService.loadPagePermissions(ScreenId.LeasesManagement).subscribe();
     this.route.paramMap.subscribe(params => {
       this.leaseId = params.get('id') ?? '';
     });

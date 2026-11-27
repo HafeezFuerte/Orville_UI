@@ -20,10 +20,13 @@ import { Subscription } from 'rxjs';
 type DetailTab = 'lineItems' | 'notes' | 'attachments';
 import { NotesComponent } from '../../../child-tables/notes/notes.component';
 import { AttachmentsComponent } from '../../../child-tables/attachments/attachments.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 @Component({
   selector: 'app-quotation-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NotesComponent, AttachmentsComponent, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, NotesComponent, AttachmentsComponent, RouterModule, NgSelectModule, SharedTableComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './quotation-detail.component.html',
   styleUrl: './quotation-detail.component.scss'
 })
@@ -36,6 +39,7 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
   private router =inject(ActivatedRoute);
   private route =inject(Router);
   public translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   activeTab: DetailTab = 'lineItems';
   selectedTab:any={};
   showActionMenu = false;
@@ -74,6 +78,7 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
     baction:''
   };
   ngOnInit(): void {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Quotations).subscribe();
     this.updateLineColumns();
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.updateLineColumns();

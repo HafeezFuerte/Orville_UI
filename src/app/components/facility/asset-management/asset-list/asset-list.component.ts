@@ -9,6 +9,9 @@ import { PortfolioService } from '../../../portfolio/services/portfolio.service'
 import { CommonService } from '../../../../services/common.service';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ToastrService } from 'ngx-toastr';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 export interface Asset {
   id: string;
   assetName: string;
@@ -24,7 +27,7 @@ export interface Asset {
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent, HasPermissionDirective],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss'
 })
@@ -33,6 +36,7 @@ export class AssetListComponent implements OnInit {
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
   private toastr=inject(ToastrService);
+  public pagePermissionService = inject(PagePermissionService);
 
   searchQuery: string = '';
   branches = ['Main Branch', 'Branch A'];
@@ -116,6 +120,7 @@ export class AssetListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Assets).subscribe();
     this.loadCategories();
     this.loadData();
   }

@@ -14,6 +14,9 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateModule, TranslateService } from '@ngx-translate/core'; 
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 import { Subscription } from 'rxjs';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 type StatusTab = 'All' | QuotationStatus;
 
 @Component({
@@ -27,7 +30,8 @@ type StatusTab = 'All' | QuotationStatus;
     FilterDrawerComponent,
     ColumnMenuComponent,
     OvPaginatorComponent,
-    TranslateModule
+    TranslateModule,
+    HasPermissionDirective
   ],
   templateUrl: './quotations-list.component.html',
   styleUrl: './quotations-list.component.scss'
@@ -69,15 +73,44 @@ export class QuotationsListComponent implements OnInit, OnDestroy {
     { key: 'action', label: 'Action', labelKey: 'web.facility.quotations.colAction', visible: true, useTemplate: true, width: '70px' }
   ];
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
-    private commonservice: CommonService,public translate: TranslateService) {}
+    private commonservice: CommonService,public translate: TranslateService, public pagePermissionService: PagePermissionService) {}
 
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Quotations).subscribe();
     this.updateTableColumnLabels();
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.updateTableColumnLabels();
     });
     this.loadQuotations();  
     this.loadLookup(78,41, 'statusTabs', '');
+  }
+
+  exportQuotations(): void {
+    const rowsSource = this.allRows || [];
+    if (!rowsSource.length) {
+      this.toastr.info('No quotation data to export');
+      return;
+    }
+    const headers = ['ID', 'Work Order ID', 'Title', 'Quotation Number', 'Vendor', 'Category', 'Status', 'Amount', 'Date', 'Validity'];
+    const rows = rowsSource.map((r: any) => [
+      r.code || '',
+      r.workorder_id || '',
+      `"${String(r.title || '').replace(/"/g, '""')}"`,
+      r.quotation_no || '',
+      `"${String(r.selected_vendors || '').replace(/"/g, '""')}"`,
+      `"${String(r.category_name || '').replace(/"/g, '""')}"`,
+      `"${String(r.status_nm || r.status || '').replace(/"/g, '""')}"`,
+      r.total_amt ?? '',
+      r.created_date || '',
+      r.estimation_date || ''
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e: any[]) => e.join(','))].join('\n');
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `quotations_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   ngOnDestroy(): void {

@@ -15,7 +15,10 @@ import {
 import { CommonService } from '../../../../services/common.service';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core'; 
+import { TranslateService } from '@ngx-translate/core';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 type StatusTab = 'All' | TicketStatus;
 type ViewMode = 'list' | 'board';
@@ -28,7 +31,7 @@ type ViewMode = 'list' | 'board';
     RouterModule,
     SharedTableComponent,
     FilterDrawerComponent,
-    ColumnMenuComponent, TranslateModule],
+    ColumnMenuComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.scss'
 })
@@ -139,12 +142,38 @@ export class FacilityTicketsComponent {
   ];
 
   constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
-    private commonservice: CommonService,public translate: TranslateService) {}
+    private commonservice: CommonService,public translate: TranslateService, public pagePermissionService: PagePermissionService) {}
 
   ngOnInit() {
-    
+    this.pagePermissionService.loadPagePermissions(ScreenId.Tickets).subscribe();
     this.loadTickets();  
     this.loadLookup(82,41, 'statusTabs', '');
+  }
+
+  exportTickets(): void {
+    const rowsSource = this.allRows || [];
+    if (!rowsSource.length) {
+      this.toastr.info('No ticket data to export');
+      return;
+    }
+    const headers = ['ID', 'Title', 'Type', 'Property', 'Unit', 'Priority', 'Status', 'Created Date'];
+    const rows = rowsSource.map((r: any) => [
+      r.code || r.id || '',
+      `"${String(r.title || '').replace(/"/g, '""')}"`,
+      `"${String(r.type_name || r.type || '').replace(/"/g, '""')}"`,
+      `"${String(r.property || '').replace(/"/g, '""')}"`,
+      `"${String(r.unit || '').replace(/"/g, '""')}"`,
+      `"${String(r.priority || '').replace(/"/g, '""')}"`,
+      `"${String(r.status_nm || r.status || '').replace(/"/g, '""')}"`,
+      r.created_date || ''
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e: any[]) => e.join(','))].join('\n');
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `tickets_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
   getInitials(name: string): string {
     if (!name) return '';

@@ -10,6 +10,9 @@ import { Common_TabsService } from '../../portfolio/services/common_tabs.service
 import { AuthPayload } from '../../common/store/login-auth-params/auth.models';
 import { CommonService } from '../../../services/common.service';
 import { ToastrService } from 'ngx-toastr';
+import { ScreenId } from '../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 
 export interface Lease {
   id: string;
@@ -27,7 +30,7 @@ export interface Lease {
 @Component({
   selector: 'app-leases-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgSelectModule, TranslateModule, SharedTableComponent, FilterDrawerComponent, HasPermissionDirective],
   templateUrl: './leases-list.component.html',
   styleUrl: './leases-list.component.scss'
 })
@@ -37,6 +40,7 @@ export class LeasesListComponent implements OnInit {
  private commonService =inject(CommonService);
  private toastr=inject(ToastrService);
  private translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   searchQuery: string = '';
   isLoading: boolean = false;
   activeStatusFilter: string = 'All';
@@ -82,10 +86,36 @@ export class LeasesListComponent implements OnInit {
   paginatedLeases: Lease[] = [];
 
   ngOnInit() {
-    
+    this.pagePermissionService.loadPagePermissions(ScreenId.LeasesManagement).subscribe();
     this.loadLeases();
     this.loadMetrics();
     this.loadLookup(24, 'tabs', 'lookup_name');
+  }
+
+  exportLeases(): void {
+    const rowsSource = this.paginatedLeases?.length ? this.paginatedLeases : this.allLeases;
+    if (!rowsSource || rowsSource.length === 0) {
+      this.toastr.info('No lease data to export');
+      return;
+    }
+    const headers = ['ID', 'Lease Name', 'Tenant', 'Unit', 'Property', 'Status', 'Rent', 'Start Date'];
+    const rows = rowsSource.map((r: any) => [
+      r.lease_code || r.id || '',
+      `"${String(r.active_lease || r.leaseName || '').replace(/"/g, '""')}"`,
+      `"${String(r.tenant || '').replace(/"/g, '""')}"`,
+      `"${String(r.unit_code || r.unit || '').replace(/"/g, '""')}"`,
+      `"${String(r.property || '').replace(/"/g, '""')}"`,
+      `"${String(r.status_nm || r.status || '').replace(/"/g, '""')}"`,
+      r.rent_amount ?? r.rent ?? '',
+      r.start_date || r.startDate || ''
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e: any[]) => e.join(','))].join('\n');
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `leases_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
   getArabicLookupName(row:any,key:string){
     return row[(localStorage.getItem("selectedLang")=="EN" ? key : key+'_ar')];

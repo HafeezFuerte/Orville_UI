@@ -12,7 +12,7 @@
       </p>
     </div>
   </div>
-  <div class="po-action relative" (click)="$event.stopPropagation()">
+  <div class="po-action relative" (click)="$event.stopPropagation()" *appHasPermission="['EditPurchaseOrder', 'EditPO', 'edit']">
     <button type="button" class="po-action__btn"
       [class.is-open]="showActionMenu"
       (click)="showActionMenu = !showActionMenu">
@@ -208,7 +208,7 @@
 
 <div *ngIf="openRowActionId && rowMenuStyle" class="po-row-menu bg-white dark:bg-bodybg"
   [ngStyle]="rowMenuStyle" data-po-line-action role="menu">
-  <button type="button" role="menuitem" class="po-row-menu__item" (click)="goEdit(); closeRowAction()">Edit</button>
-  <button type="button" role="menuitem" class="po-row-menu__item po-row-menu__item--danger"
+  <button *appHasPermission="['EditPurchaseOrder', 'EditPO', 'edit']" type="button" role="menuitem" class="po-row-menu__item" (click)="goEdit(); closeRowAction()">Edit</button>
+  <button *appHasPermission="['DeletePurchaseOrder', 'DeletePO', 'delete']" type="button" role="menuitem" class="po-row-menu__item po-row-menu__item--danger"
     (click)="closeRowAction()">Delete</button>
 </div>

@@ -11,11 +11,14 @@ import { Common_TabsService } from '../../../portfolio/services/common_tabs.serv
 import { CommonService } from '../../../../services/common.service';
 
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, FilterDrawerComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, FilterDrawerComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.scss'
 })
@@ -24,6 +27,7 @@ export class InventoryListComponent implements OnInit {
   private commontabservice = inject(Common_TabsService);
   private portfolioService = inject(PortfolioService);
   private commonService = inject(CommonService);
+  public pagePermissionService = inject(PagePermissionService);
 
   searchQuery = '';
   isDrawerOpen = false;
@@ -58,6 +62,7 @@ export class InventoryListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Inventory).subscribe();
     this.loadProperties();
     this.loadInventory();
   }

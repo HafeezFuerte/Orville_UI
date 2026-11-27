@@ -14,11 +14,14 @@ import {
   PurchaseOrderDetailLine,
   PurchaseOrderStatus
 } from '../purchase-orders.data';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'app-purchase-order-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, SharedTableComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './purchase-order-detail.component.html',
   styleUrl: './purchase-order-detail.component.scss'
 })
@@ -28,6 +31,7 @@ export class PurchaseOrderDetailComponent {
   private commontabservice=inject(Common_TabsService);
   private commonservice=inject(CommonService);
   private toastr=inject(ToastrService); 
+  public pagePermissionService = inject(PagePermissionService);
   currentUser = this.commonservice.getCurrentUser();
   editId:any='';
   showActionMenu = false;
@@ -79,7 +83,7 @@ export class PurchaseOrderDetailComponent {
     { key: 'action', label: 'Action', visible: true, useTemplate: true, width: '70px' }
   ];
   ngOnInit(): void {
-     
+    this.pagePermissionService.loadPagePermissions(ScreenId.PurchaseOrders).subscribe();
     this.editId='';
     this.router.paramMap.subscribe((params) => {
       this.editId=params.get('code'); 

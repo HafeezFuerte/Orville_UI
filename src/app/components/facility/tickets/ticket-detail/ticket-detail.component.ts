@@ -14,6 +14,9 @@ import { environment } from '../../../../../environments/environment';
 import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
 import { ToastrService } from 'ngx-toastr';
 import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-extra-fields-view/ov-extra-fields-view.component';
+import { ScreenId } from '../../../../shared/config/screen-ids.config';
+import { PagePermissionService } from '../../../../shared/services/page-permission.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 type DetailTab = 'overview' | 'messages' | 'notes';
 
 interface TicketNoteRow {
@@ -31,7 +34,7 @@ interface TicketNoteRow {
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [CommonModule, OvExtraFieldsViewComponent, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule],
+  imports: [CommonModule, OvExtraFieldsViewComponent, NotesComponent,FormsModule, RouterModule, SharedTableComponent, ColumnMenuComponent, TranslateModule, HasPermissionDirective],
   templateUrl: './ticket-detail.component.html',
   styleUrl: './ticket-detail.component.scss'
 })
@@ -42,6 +45,7 @@ export class TicketDetailComponent {
   private commonTabsService = inject(Common_TabsService);
   private toastr=inject(ToastrService);
   public translate = inject(TranslateService);
+  public pagePermissionService = inject(PagePermissionService);
   currentUser = this.commonService.getCurrentUser(); 
   activeTab: DetailTab = 'overview';
   showActionMenu = false;
@@ -133,6 +137,7 @@ export class TicketDetailComponent {
 activities:any=[];
   noteRows:any=[];
   ngOnInit() {
+    this.pagePermissionService.loadPagePermissions(ScreenId.Tickets).subscribe();
     this.initializeTabs();
     this.loadlookup(2,51,'statusOptions','','');
     this.route.params.subscribe(params => {
