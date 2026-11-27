@@ -40,6 +40,8 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
   selectedTab:any={};
   showActionMenu = false;
   showLineItemModal = false;
+  updatednotes:any='';
+
   notes:any=[];
   attachments:any=[];
   notesForm: any = {};
@@ -111,10 +113,11 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
             this.quotation.title=temp.title;
             this.quotation.number=temp.quotation_no;
             this.quotation.notes=temp.description;
-            this.quotation.workOrderId=temp.workorder_id;
+            this.quotation.workOrderId=temp.workorder;
+            this.quotation.id=temp.quotation_no;
             this.quotation.date=this.commonservice.formatDateForInput(temp.estimation_date);
             this.quotation.validity=this.commonservice.formatDateForInput(temp.estimation_date);
-            this.quotation.amount=this.currentUser?.currencyCode + ' ' + temp.total_amt; 
+            this.quotation.amount=this.currentUser?.currencyCode + ' ' + (temp.total_amt || 0); 
             this.quotation.category=temp.category_name;
             this.quotation.vendor=temp.selectedvendors;
             this.quotation.status=temp.status_nm;
@@ -122,6 +125,8 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
             this.quotation.property=temp.property;
             this.quotation.unit=temp.unitname;
             this.quotation.created=this.commonservice.formatDateForInput(temp.created_date); 
+            this.quotation.modified=this.commonservice.formatDateForInput(temp.modifed_date);
+            this.quotation.statusid= temp.status
           }
           if(res.objResult.table2){
             res.objResult.table2.forEach((element:any) => {
@@ -220,6 +225,44 @@ export class QuotationDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadlookup(typeId: number, filterId: number, targetProperty: string, filterText: string, filterText1: string) {
+    this.commontabservice.getMasterByType({
+      typeId: typeId,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: filterText1
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {
+          if(typeId==116){
+            this.toastr.success(this.translate.instant('web.facility.workOrders.msgStatusUpdatedSuccess'));
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          }
+          else
+            (this as any)[targetProperty] = res.objResult.table || [];
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
+  
+  updatequotationStatus(status:any){
+    if(status==null){
+      this.toastr.error(this.translate.instant('web.facility.workOrders.invalidStatusId'));
+      return;
+     }
+    if(this.updatednotes==null || this.updatednotes==""){
+     this.toastr.error(this.translate.instant('web.facility.workOrders.invalidComments'));
+     return;
+    }
+    else{
+      this.loadlookup(116,status,'',this.editId,this.updatednotes);
+    }
+  }
   openAddLineItem(): void {
     this.editingItem = null;
     this.modal = {

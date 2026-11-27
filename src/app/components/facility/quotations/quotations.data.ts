@@ -128,7 +128,9 @@ export const QUOTATION_DETAIL = {
   unit: 'Apartment 402-PR-4',
   contact: 'James T. Hirai',
   notes: 'Quotation includes parts warranty of 12 months and labor warranty of 90 days.',
-  created: '12-01-2026'
+  created: '12-01-2026',
+  modified: '12-01-2026',
+  statusid:0
 };
 
 export const QUOTATION_FORM_OPTIONS = {

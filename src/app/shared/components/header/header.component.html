@@ -8,7 +8,7 @@
         <button type="button" class="orville-m-burger" aria-label="Open menu" (click)="toggleSidebar()">
           <span></span><span></span><span></span>
         </button>
-        <a routerLink="/dashboard/crm" class="orville-m-logo" aria-label="Orville Real Estate">
+        <a (click)="redirect2home()"  class="orville-m-logo" aria-label="Orville Real Estate">
           <img src="./assets/images/nav/logo-emblem.svg" alt="" class="orville-m-logo__emblem" width="30" height="30">
           <span class="orville-m-logo__wordmark">
             <img src="./assets/images/nav/logo-orville.svg" alt="ORVILLE" width="63" height="12">
@@ -19,7 +19,7 @@
         <!-- Start::header-element -->
         <div class="header-element">
           <div class="horizontal-logo">
-            <a routerLink="/dashboard/crm" class="header-logo orville-sidebar-logo">
+            <a (click)="redirect2home()" class="header-logo orville-sidebar-logo">
               <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="desktop-logo orville-logo-emblem" width="32" height="32">
               <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="toggle-logo orville-logo-emblem" width="32" height="32">
               <img src="./assets/images/nav/logo-emblem.svg" alt="Orville" class="desktop-dark orville-logo-emblem" width="32" height="32">
@@ -53,7 +53,7 @@
       <div class="header-content-right">
 
         <!-- Global Branch & Building Dropdowns -->
-        <div class="header-element hidden sm:flex items-center gap-5 py-[0.75rem]">
+        <div class="header-element hidden sm:flex items-center gap-5 py-[0.75rem]" *ngIf="currentUser?.roleCode=='A'">
           <ng-select #globalBranchSelect [items]="branches" [(ngModel)]="selectedBranch" placeholder="Select Branch" class="orville-header-select" [clearable]="false">
             <ng-template ng-header-tmp>
               <input type="text" placeholder="Search" (input)="$any(globalBranchSelect).filter($any($event.target).value)" (click)="$event.stopPropagation()">

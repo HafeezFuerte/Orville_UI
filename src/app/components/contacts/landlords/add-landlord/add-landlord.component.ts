@@ -385,6 +385,7 @@ export class AddLandlordComponent implements OnInit {
 
   landlordData = {
     email_address: '',
+    alt_email_address:'',
     username: '',
     honorific: null as string | null,
     first_name: '',
@@ -537,6 +538,7 @@ export class AddLandlordComponent implements OnInit {
         if (landlord) {
           this.landlordData = {
             email_address: landlord.email_address || '',
+            alt_email_address:landlord.alt_email_address || '',
             username: landlord.username || '',
             honorific: landlord.honorific || null,
             first_name: landlord.first_name || (landlord.landlord ? landlord.landlord.trim().split(/\s+/)[0] : '') || '',
@@ -557,7 +559,7 @@ export class AddLandlordComponent implements OnInit {
             trade_license: landlord.trade_license || ''
           };
           this.landlordDbId = Number(landlord.id) || 0;
-          this.displayAsCompany = landlord.display_as_company || false;
+          this.displayAsCompany = landlord.display_on_company || false;
           this.autoSignLeases = landlord.is_auto_sign_leases || false;
           this.photoPreviewUrl = landlord.profileImage_path || null;
           this.signaturePreviewUrl = landlord.signature_path || null;
@@ -582,6 +584,13 @@ export class AddLandlordComponent implements OnInit {
 
   saveLandlord() {
     // Validate required fields
+    if(this.displayAsCompany){
+      if (!this.landlordData.company_name || !this.landlordData.email_address) {
+        this.toastr.warning("Invalid Email,Company Name", this.translate.instant('web.contacts.lblMissingInfo'));
+        return;
+      }
+    }
+    else{
     if (!this.landlordData.first_name || !this.landlordData.first_name.trim()) {
       this.toastr.error(this.translate.instant('web.contacts.errFirstNameRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
@@ -607,7 +616,7 @@ export class AddLandlordComponent implements OnInit {
       this.toastr.error(this.translate.instant('web.contacts.errCountryRequired'), this.translate.instant('web.common.lblValidationError'));
       return;
     }
-
+  }
     const email = this.landlordData.email_address;
     const mobile = this.landlordData.mobile_no;
     
@@ -626,6 +635,10 @@ export class AddLandlordComponent implements OnInit {
     }
 
     const currentUser = this.commonService.getCurrentUser();
+    if(this.displayAsCompany){
+      this.landlordData.first_name = this.landlordData.company_name;
+      this.landlordData.last_name = "Company";
+    }
     const requestJson = {
       userid: currentUser?.userId,
       company_id: currentUser?.companyId,
@@ -633,9 +646,10 @@ export class AddLandlordComponent implements OnInit {
       source: 'web',
       languageid: 1,
       email_address: this.landlordData.email_address,
+      alt_email_address: this.landlordData.alt_email_address,
       code: this.isEditMode ? this.landlordId : '',
       id: this.isEditMode ? this.landlordDbId : 0,
-      username: this.landlordData.username || '',
+      username: this.landlordData.email_address || '',
       profileImage_path: '',
       honorific: this.landlordData.honorific || '',
       landlord: this.landlordData.first_name + ' ' + this.landlordData.last_name,

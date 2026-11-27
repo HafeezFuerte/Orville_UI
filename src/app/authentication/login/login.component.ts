@@ -92,7 +92,10 @@ export class LoginComponent {
               this.commonService.setCurrentUser(authUser);  
           }   
           this.isLoading = false;
-          this.router.navigate(['/insights']); 
+          if(res.objResult.roleCode=="T")
+             this.router.navigate(['/t_dashboard']); 
+         else
+            this.router.navigate(['/insights']); 
         }
         else {
           let errorMsg = res["message"] || 'Invalid username or password';

@@ -211,6 +211,16 @@ export class HeaderComponent {
 
     }
   }
+  redirect2home(){
+    if(this.currentUser?.roleCode=="T")
+    this.router.navigate(["/t_dashboard"]);
+  else  if(this.currentUser?.roleCode=="V")
+  this.router.navigate(["/v_dashboard"]);
+  else  if(this.currentUser?.roleCode=="L")
+  this.router.navigate(["/L_dashboard"]);
+  else
+    this.router.navigate(["/dashboard/crm"]);
+  }
   toggleSidebar() {
     let html = this.elementRef.nativeElement.ownerDocument.documentElement;
     // const windowObject: any = window;
@@ -275,6 +285,7 @@ export class HeaderComponent {
     const savedLang = localStorage.getItem('selectedLang') || 'EN';
     const htmlElement = this.elementRef.nativeElement.ownerDocument.documentElement;
     this.renderer.setAttribute(htmlElement, 'dir', savedLang === 'AR' ? 'rtl' : 'ltr');
+    if(this.currentUser?.roleCode=="A"  )
     this.loadLookup(11,0,'','');
     this.loadLookup(105,0,'','');
     this.navServices.items.subscribe((menuItems) => {

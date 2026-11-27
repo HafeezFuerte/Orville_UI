@@ -2,10 +2,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule,Router } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { FilterDrawerComponent } from '../../../../shared/components/filter-drawer/filter-drawer.component';
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
+import { CommonService } from '../../../../services/common.service';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core'; 
 import {
   REQUEST_ROWS,
   RequestPriority,
@@ -29,19 +33,8 @@ type StatusTab = 'All' | RequestStatus;
 })
 export class FacilityRequestsComponent {
   searchQuery = '';
-  statusFilter: StatusTab = 'All';
-  statusTabs: StatusTab[] = [
-    'All',
-    'Open',
-    'New',
-    'Pending',
-    'Approved',
-    'Resolved',
-    'Closed',
-    'On Hold',
-    'Rejected',
-    'Re-opened'
-  ];
+  statusFilter: StatusTab = 'All'; 
+  statusTabs:any=[];
   isDrawerOpen = false;
   showColumnDropdown = false;
   filterTitle = '';
@@ -59,27 +52,33 @@ export class FacilityRequestsComponent {
     'Re-opened'
   ];
   priorityOptions: RequestPriority[] = ['Low', 'Medium', 'High'];
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = REQUEST_ROWS;
+  allRows:any[]=[];
+  currentUser = this.commonservice.getCurrentUser();  
   openRowActionId: string | null = null;
   rowMenuStyle: Record<string, string> | null = null;
 
-  readonly metrics = {
-    total: '1,272',
-    totalSub: 'web.facility.requests.metricAcrossAllBuildings',
-    open: '284',
-    openSub: 'web.facility.requests.metricRequireTeamAction',
-    awaiting: '96',
-    awaitingSub: 'web.facility.requests.metricPendingManagerReview',
-    due: '42',
-    dueSub: 'web.facility.requests.metricNeedFollowUpToday'
-  };
-
+  // readonly metrics = {
+  //   total: '1,272',
+  //   totalSub: 'web.facility.requests.metricAcrossAllBuildings',
+  //   open: '284',
+  //   openSub: 'web.facility.requests.metricRequireTeamAction',
+  //   awaiting: '96',
+  //   awaitingSub: 'web.facility.requests.metricPendingManagerReview',
+  //   due: '42',
+  //   dueSub: 'web.facility.requests.metricNeedFollowUpToday'
+  // };
+  pageIndex = 0; 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  metrics :any= [];
+   
   tableColumns = [
     {
-      key: 'id',
-      label: 'web.facility.requests.lblID',
+      key: 'code',
+      label: 'web.common.lblID',
       visible: true,
       useTemplate: true,
       width: '90px',
@@ -88,15 +87,15 @@ export class FacilityRequestsComponent {
     },
     {
       key: 'title',
-      label: 'web.facility.requests.lblTitle',
+      label: 'web.facility.tickets.lblTitle',
       visible: true,
       useTemplate: true,
       width: '220px',
       headerClass: 'text-start sticky left-[90px] z-[2] bg-white dark:bg-bodybg',
       cellClass: 'sticky left-[90px] z-[1] bg-white dark:bg-bodybg'
     },
-    { key: 'property', label: 'web.facility.tickets.colProperty', visible: true, width: '180px' },
-    { key: 'unit', label: 'web.facility.tickets.colUnit', visible: true, width: '140px' },
+    { key: 'property', label: 'web.facility.tickets.colProperty', visible: true, width: '180px',useTemplate: true },
+    { key: 'unitcode', label: 'web.facility.tickets.colUnit', visible: true, width: '140px',useTemplate: true },
     {
       key: 'priority',
       label: 'web.facility.tickets.colPriority',
@@ -107,30 +106,30 @@ export class FacilityRequestsComponent {
       cellClass: 'text-center'
     },
     {
-      key: 'status',
+      key: 'status_nm',
       label: 'web.facility.tickets.colStatus',
-      visible: true,
-      useTemplate: true,
-      width: '120px',
-      headerClass: 'text-center',
-      cellClass: 'text-center'
-    },
-    { key: 'department', label: 'web.facility.requests.lblDepartment', visible: true, width: '160px' },
-    {
-      key: 'source',
-      label: 'web.facility.requests.lblSource',
       visible: true,
       useTemplate: true,
       width: '130px',
       headerClass: 'text-center',
       cellClass: 'text-center'
     },
-    { key: 'contact', label: 'web.facility.requests.lblContact', visible: true, useTemplate: true, width: '180px' },
-    { key: 'created', label: 'web.facility.requests.lblCreated', visible: true, width: '110px' },
-    { key: 'details', label: 'web.facility.requests.lblDetails', visible: true, useTemplate: true, width: '240px' },
+    { key: 'department_nm', label: 'web.facility.tickets.lblDepartment', visible: true, width: '160px' },
+    {
+      key: 'source_nm',
+      label: 'web.facility.tickets.lblSource',
+      visible: true,
+      useTemplate: true,
+      width: '140px',
+      headerClass: 'text-center',
+      cellClass: 'text-center'
+    },
+    { key: 'contact', label: 'web.facility.tickets.lblContact', visible: true, useTemplate: true, width: '180px' },
+    { key: 'created_date', label: 'web.facility.tickets.lblCreated', visible: true, width: '110px' },
+    { key: 'description', label: 'web.facility.tickets.details', visible: true, useTemplate: true, width: '240px' },
     {
       key: 'action',
-      label: 'web.common.lblAction',
+      label: 'web.facility.tickets.action',
       visible: true,
       useTemplate: true,
       width: '72px',
@@ -139,10 +138,94 @@ export class FacilityRequestsComponent {
     }
   ];
 
+  constructor(private router:Router ,private toastr: ToastrService, private commontabservice: Common_TabsService,
+    private commonservice: CommonService,public translate: TranslateService) {}
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
   }
+  ngOnInit() {
+    
+    this.loadTickets();  
+    this.loadLookup(82,41, 'statusTabs', '');
+  }
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    return parts[0].charAt(0) + (parts.length > 1 ? parts[1].charAt(0) : '');
+  }
+  loadTickets() {
+    const filterList: any[] = [];
+    if (this.statusFilter && this.statusFilter !== "All") {
+      filterList.push({ 'key': 'P.status', 'value': this.statusFilter });
+    } 
+     
+    const payload = {
+      userid: this.currentUser?.userId,
+      company_id: this.currentUser?.companyId,
+      clientId: this.currentUser?.clientId,
+      source: "web",
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || "",
+      pagecount: this.pageSize,
+      filter_by: this.statusFilter !== 'All' ? 'status' : '',
+      filter_list: JSON.stringify(filterList),
+      featureid: "TICKETS"
+    };
 
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (response: any) => {  
+        if (response && response.statusCode === "200" && response.objResult) { 
+          this.allRows = response.objResult.tickets || []; 
+          if (response.objResult.rows_info) {
+            this.totalRecords = response.objResult.rows_info[0].totalrecords; 
+            this.totalPages = response.objResult.rows_info[0].noofpages;
+          }
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading leases:', err);
+        this.allRows = []; 
+        this.totalRecords = 0;
+        this.totalPages = 0;
+      }
+    });
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) { 
+          if(Typeid==71){
+            this.toastr.success(this.translate.instant('web.facility.tickets.msgMarkedInactiveSuccess')); 
+            this.loadTickets();
+        }else{
+          this.statusTabs.push({"id":"All","name":"All"}); 
+          this.statusTabs.push(...res.objResult.status);  
+          if(res.objResult.ticketdashboard){
+            this.metrics=res.objResult.ticketdashboard;
+           
+        }
+        }
+        }
+        else
+        this.toastr.error(this.translate.instant('web.common.lblNoRecordsFound'));
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
+    });
+  }
   get filteredRows(): RequestRow[] {
     const q = this.searchQuery.trim().toLowerCase();
     return this.allRows.filter((row) => {
@@ -155,7 +238,7 @@ export class FacilityRequestsComponent {
       if (this.filterPriority && row.priority !== this.filterPriority) {
         return false;
       }
-      if (this.filterTitle && !row.title.toLowerCase().includes(this.filterTitle.toLowerCase())) {
+      if (this.filterTitle && !row.title.toLowerCase().includes(this.filterTitle.trim().toLowerCase())) {
         return false;
       }
       if (!q) {
@@ -170,36 +253,15 @@ export class FacilityRequestsComponent {
         row.status,
         row.department,
         row.source,
-        row.contactName
-      ].some((value) => String(value).toLowerCase().includes(q));
+        row.contactName,
+        row.details,
+        row.category
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(q);
     });
   }
-
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
-
-  get displayPage(): number {
-    return this.pageIndex + 1;
-  }
-
-  get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
-  }
-
-  get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
-  }
-
-  get paginatedRows(): RequestRow[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
-  }
-
   get pagerItems(): (number | string)[] {
     const total = this.totalPages;
     const current = this.displayPage;
@@ -219,64 +281,104 @@ export class FacilityRequestsComponent {
     items.push(total);
     return items;
   }
+  applyFilters(): void {
+    this.pageNo = 0;
+    this.isDrawerOpen = false;
+  }
+  clearFilters(): void {
+    this.filterTitle = '';
+    this.filterStatus = null; 
+    this.pageNo = 0;
+  }
+  get displayPage(): number {
+    return this.pageNo + 1;
+  }
+
+  get startRecord(): number {
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
+  }
+
+  get endRecord(): number {
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
+  }
+
+  get paginatedRows(): any[] {
+    const start = this.pageNo * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
+  }
 
   setStatusFilter(tab: StatusTab): void {
     this.statusFilter = tab;
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadTickets();
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadTickets();
   }
 
-  applyFilters(): void {
-    this.pageIndex = 0;
-    this.isDrawerOpen = false;
-  }
-
-  clearFilters(): void {
-    this.filterTitle = '';
-    this.filterStatus = null;
-    this.filterPriority = null;
-    this.pageIndex = 0;
-  }
-
-  toggleColumnDropdown(event: MouseEvent): void {
-    event.stopPropagation();
-    this.showColumnDropdown = !this.showColumnDropdown;
-  }
-
-  toggleColumn(key: string): void {
-    const col = this.tableColumns.find((c) => c.key === key);
-    if (col) {
-      col.visible = !col.visible;
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
     }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadTickets();
   }
-
-  toggleAllColumns(checked: boolean): void {
-    this.tableColumns.forEach((col) => (col.visible = checked));
+  handleChildNotification(ev:any){ 
   }
-
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadTickets();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex -= 1;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadTickets();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex += 1;
+      this.pageNo++;
+      this.loadTickets();
     }
   }
 
   goToPage(page: number): void {
-    this.pageIndex = Math.max(0, Math.min(this.totalPages - 1, page - 1));
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadTickets();
+    }
+ 
   }
 
+  toggleAllColumns(visible: boolean): void {
+    this.tableColumns.forEach((col) => {
+      if (col.key !== 'action') {
+        col.visible = visible;
+      }
+    });
+  }
+  toggleColumn(key: string): void {
+    const col = this.tableColumns.find((c) => c.key === key);
+    if (col && key !== 'action') {
+      col.visible = !col.visible;
+    }
+  }
+  toggleColumnDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
   toggleRowAction(id: string, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
@@ -355,6 +457,15 @@ export class FacilityRequestsComponent {
     if (!target?.closest('[data-requests-columns]')) {
       this.showColumnDropdown = false;
     }
+  }
+  navigateToDetail(id: string): void {
+    this.closeRowAction();
+    this.router.navigate(['/facility/tickets', id]);
+  }
+
+  navigateToEdit(id:string): void {
+    this.closeRowAction();
+    this.router.navigate(['/facility/tickets/create',id]);
   }
 
   @HostListener('window:scroll')

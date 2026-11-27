@@ -127,7 +127,16 @@ export class SidebarComponent {
     document.querySelector('#responsive-overlay')?.classList.remove('active');
   }
 
- 
+  redirect2home(){
+    if(this.currentUser?.roleCode=="T")
+    this.router.navigate(["/t_dashboard"]);
+  else  if(this.currentUser?.roleCode=="V")
+  this.router.navigate(["/v_dashboard"]);
+  else  if(this.currentUser?.roleCode=="L")
+  this.router.navigate(["/L_dashboard"]);
+  else
+    this.router.navigate(["/dashboard/crm"]);
+  }
   ngOnInit(): void { 
    
     this.store.select(selectCurrentUser).subscribe(data => {

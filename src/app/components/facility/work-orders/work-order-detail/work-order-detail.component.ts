@@ -2,7 +2,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router,RouterModule } from '@angular/router';
 import { SharedTableComponent } from '../../../../shared/components/shared-table/shared-table.component';
 import { PropertiesService } from '../../../portfolio/services/properties.service';
 import { CommonService } from '../../../../services/common.service';
@@ -16,7 +16,7 @@ import { OvExtraFieldsViewComponent } from '../../../../shared/components/ov-ext
 @Component({
   selector: 'app-work-order-detail',
   standalone: true,
-  imports: [CommonModule, OvExtraFieldsViewComponent, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
+  imports: [CommonModule, OvExtraFieldsViewComponent,RouterModule, FormsModule, SharedTableComponent, AttachmentsComponent, NotesComponent, TranslateModule],
   templateUrl: './work-order-detail.component.html',
   styleUrl: './work-order-detail.component.scss'
 })
@@ -214,20 +214,18 @@ export class WorkOrderDetailComponent implements OnInit {
   quotations: any[] = [];
 
   quotationColumns = [
-    { key: 'id', label: 'web.common.lblID', visible: true, useTemplate: true },
-    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true },
-    { key: 'vendorName', label: 'web.contacts.lblVendor', visible: true },
-    { key: 'quotationTitle', label: 'web.facility.quotations.colTitle', visible: true },
-    { key: 'quotationNumber', label: 'web.facility.quotations.colQuoteNo', visible: true },
-    { key: 'totalPrice', label: 'web.facility.quotations.colAmount', visible: true },
-    { key: 'EstdPrice', label: 'web.facility.quotations.colEstdPrice', visible: true },
-    { key: 'deliveryDate', label: 'web.facility.quotations.colDeliveryDate', visible: true },
-    { key: 'quotationCategoryName', label: 'web.facility.quotations.colCategory', visible: true },
-    { key: 'LandlordStatus', label: 'web.facility.quotations.colLandlordStatus', visible: true },
-    { key: 'TenantStatus', label: 'web.facility.quotations.colTenantStatus', visible: true },
-    { key: 'Username', label: 'web.facility.quotations.colUsername', visible: true },
-    { key: 'CreatedAt', label: 'web.contacts.lblCreatedAt', visible: true },
-    { key: 'UpdatedAt', label: 'web.contacts.lblUpdatedAt', visible: true },
+    { key: 'code', label: 'web.common.lblID', visible: true, useTemplate: true },
+    { key: 'status_nm', label: 'web.common.lblStatus', visible: true, useTemplate: true },
+    { key: 'selected_vendors', label: 'web.contacts.lblVendor', visible: true },
+    { key: 'title', label: 'web.facility.quotations.colTitle', visible: true },
+    { key: 'quotation_no', label: 'web.facility.quotations.colQuoteNo', visible: true },
+    { key: 'total_amt', label: 'web.facility.quotations.colAmount', visible: true }, 
+    { key: 'category_name', label: 'web.facility.quotations.colCategory', visible: true },
+    { key: 'landlord_status', label: 'web.facility.quotations.colLandlordStatus', visible: true },
+    { key: 'tenant_status', label: 'web.facility.quotations.colTenantStatus', visible: true },
+    { key: 'createdby', label: 'web.facility.quotations.colUsername', visible: true },
+    { key: 'created_date', label: 'web.contacts.lblCreatedAt', visible: true },
+    { key: 'modified_date', label: 'web.contacts.lblUpdatedAt', visible: true },
     { key: 'action', label: 'web.common.lblAction', visible: true, useTemplate: true }
   ];
 
@@ -475,8 +473,8 @@ export class WorkOrderDetailComponent implements OnInit {
               vendorTechnician: data.vendorTechnician || data.vendor_technician || 'Not Assigned',
               landlord: data.landlord || '-'
             };
-            this.notes= res.objResult.table1 || [];
-            this.attachments= res.objResult.table2 || []; 
+            this.notes= res.objResult.notes || [];
+            this.attachments= res.objResult.documents || []; 
             if(this.attachments.length>0){
 
             this.beforeImages = this.attachments.filter(d => d.document_type == 30 || d.document_type_name === 'Before Image');
@@ -518,18 +516,8 @@ export class WorkOrderDetailComponent implements OnInit {
             }
 
             // Map Quotations if returned by API
-            const quotationList = res.objResult.quotations || res.objResult.quotation || res.objResult.table2 || res.objResult.table3 || res.objResult.table4;
-            if (Array.isArray(quotationList) && quotationList.length > 0) {
-              this.quotations = quotationList.map((q: any) => ({
-                id: q.id || q.code || '-',
-                status: q.status || '-',
-                vendorName: q.vendorName || q.vendor_name || '-',
-                quotationTitle: q.quotationTitle || q.title || '-',
-                quotationNumber: q.quotationNumber || q.quote_no || '-',
-                totalPrice: q.totalPrice || q.total_price || '-',
-                deliveryDate: q.deliveryDate || q.delivery_date || '-'
-              }));
-            }
+            this.quotations  = res.objResult.quotations;
+            
 
             this.initializeTabs();  
            

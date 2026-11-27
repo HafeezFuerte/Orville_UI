@@ -81,7 +81,7 @@
           <ng-container [ngSwitch]="col.key">
             <a *ngSwitchCase="'code'" class="ov-link font-semibold" href="javascript:void(0)"
               (click)="navigateToDetail(row.code)">{{ row.code }}</a>
-            <a *ngSwitchCase="'workorder_id'" class="ov-link" href="javascript:void(0)">{{ row.workorder_id }}</a>
+            <a *ngSwitchCase="'workorder_id'" class="ov-link"  [routerLink]="['/facility/work-orders/edit', row.workorder_id]">{{ row.workorder_id }}</a>
             <a *ngSwitchCase="'title'" class="ov-link" href="javascript:void(0)"
               (click)="navigateToDetail(row.code)">{{ row.title }}</a>
             <div *ngSwitchCase="'selected_vendors'" class="flex items-center gap-2">
@@ -90,7 +90,7 @@
               </span>
               <span class="text-defaulttextcolor">{{ row.selected_vendors }}</span>
             </div>
-            <span *ngSwitchCase="'status_nm'" class="qt-chip" [ngClass]="statusClass(row.status)">
+            <span *ngSwitchCase="'status_nm'" class="qt-chip" [ngClass]="statusClass(row.status_nm)">
               {{ row.status_nm }}
             </span>
             <div *ngSwitchCase="'action'" class="qt-action" data-qt-action (click)="$event.stopPropagation()">

@@ -51,8 +51,9 @@ export class CreateLeaseComponent implements OnInit {
   selectedUnit: any = null;
   selectedRoom: any = null;
   selectedAgent: any = null;
-
+  selectedThirdParty: any = null;
   isShortTerm: boolean = false;
+  isBroker: boolean = false;
   selectedLeaseType: any=null;
   selectedLeaseCategory: any=null; 
   startDate: string = '';
@@ -65,10 +66,16 @@ export class CreateLeaseComponent implements OnInit {
   paymentMethod: any=null; 
   annualRent: number = 0;
   monthlyRent: number = 0;
+  RentLabel: string = this.translate.instant("web.leases.lblMonthlyRent");
   discountValue: number = 0;
   discountType: string = '';
+  gracePeriodType: string = '';
+  gracePeriodValue: number = 0;
   discountTypes: any= ['Standard', 'Percentage'];
-
+  gracePeriods: any= ['Days', 'Months'];
+  paymentfrequency: number = 12;
+  paymentfrequencyTypes: any= [{"id":12,"name":'Monthly'},{"id":4,"name":'Quarterly'},
+  {"id":6,"name":'Half-Yearly'},{"id":1,"name":'Annually'}];
   additionalbloc:any= {  no_of_persons: 0,  user_id: '',created_by: '',  move_in_date: '',  created_date: '',  paying_date: ''}
 
   // Dropdowns lists
@@ -77,6 +84,9 @@ export class CreateLeaseComponent implements OnInit {
 
   agentsList:any[]=[] ;
   allagentsList :any[]=[] ;
+  
+  thirdpartyList:any[]=[] ; 
+
   paymentSchedules :any[]=[] ;
   propertiesList :any[]=[] ;
   allpropertiesList :any[]=[] ;
@@ -147,6 +157,10 @@ export class CreateLeaseComponent implements OnInit {
               this.selectedTenantObj=this.selectedTenant=this.returnSelectedObject(this.tenantsList,'tenant_code','code') ||this.leaseInfo?.tenant_code;
               this.selectedTenant=this.leaseInfo?.tenant_code; 
               this.selectedAgent= this.leaseInfo?.assigned_collector; 
+              this.selectedThirdParty= this.leaseInfo?.agent_code; 
+              this.paymentfrequency= this.leaseInfo?.frequency_type;
+              if(this.selectedThirdParty)
+              this.isBroker=true;
 
               this.startDate=formatDate(this.leaseInfo?.start_date, 'yyyy-MM-dd', 'en-US');
               this.endDate=formatDate(this.leaseInfo?.end_date, 'yyyy-MM-dd', 'en-US');
@@ -154,6 +168,10 @@ export class CreateLeaseComponent implements OnInit {
               this.selectedLeaseCategory=this.returnSelectedObject(this.leaseCategories,'lease_category','id') || this.leaseInfo?.lease_category;
               this.months=this.leaseInfo?.total_months;
               this.rentAmount=this.leaseInfo?.rent_amount;
+              this.gracePeriodType=this.leaseInfo?.graceperiod_type;
+              this.gracePeriodValue=this.leaseInfo?.graceperiod_value;
+              this.discountType=this.leaseInfo?.discount_type;
+              this.discountValue=this.leaseInfo?.discount_value;
               this.totalPayments=this.leaseInfo?.total_payments;
               this.moneyHeldBy= this.leaseInfo?.money_held_by;
               this.paymentMethod= this.leaseInfo?.payment_type;
@@ -374,12 +392,15 @@ export class CreateLeaseComponent implements OnInit {
       this.toastr.error(this.translate.instant('web.leases.errEnterAtleastOneCheque'));
     }
     else{
-      this.monthlyRent= Number((this.rentAmount / this.totalPayments).toFixed(2));
+
+      let frequency=this.paymentfrequency;
+
+      this.monthlyRent= Number((this._v23() / (this.totalPayments)).toFixed(2));
       this.paymentSchedules=[];
       let dueDate=this.startDate; 
-      for (let index = 0; index < this.totalPayments; index++) {
+      for (let index = 0; index < (this.totalPayments ); index++) {
         this.paymentSchedules.push({
-        "Amount":Number((this.rentAmount / this.totalPayments).toFixed(2)),
+        "Amount":Number((this._v23() / (this.totalPayments)).toFixed(2)),
         "AdvAmt":0,  
         "cheque_no":this.addpaymentbloc.cheque_no!=null && index==0 ? 
           this.addpaymentbloc.cheque_no : 
@@ -407,7 +428,7 @@ export class CreateLeaseComponent implements OnInit {
         "InvoiceNo":'',
         "isEdited":0,
         "row_no":(index+1)});
-        dueDate=this.addMonthsToDate(this.totalPayments,dueDate); 
+        dueDate=this.addMonthsToDate((this.totalPayments),dueDate); 
       }
     }
   }
@@ -448,17 +469,39 @@ export class CreateLeaseComponent implements OnInit {
     if(this.selectedPropertyObj && this.selectedUnitObj)
       this.loadLookup(38,0, 'roomsList', this.selectedPropertyObj.code,this.selectedUnitObj.code); 
   }
-
+  calculatePaymentFrequency(){ 
+    this.totalPayments=this.paymentfrequency;
+    this.RentLabel=this.paymentfrequencyTypes.filter((item:any)=>item.id==this.paymentfrequency)[0]?.name + " Rent" || "Monthy Rent";
+    this.calculateMonthlyRent();
+    this.paymentSchedules=[];
+  }
+  calculateDiscount(){
+    if(this.discountType && this.rentAmount>0){ 
+      this.calculateMonthlyRent();
+      this.paymentSchedules=[];
+    }
+  }
+  _v23(){
+    let calValue = this.rentAmount;
+    if (this.discountType == "Standard")
+      calValue = this.rentAmount - this.discountValue;
+    if (this.discountType == "Percentage") {
+      const calper = (this.rentAmount * this.discountValue) / 100;
+      calValue = this.rentAmount - calper;
+    }
+    return calValue;
+  }
   calculateRentDetails() {
-    this.annualRent = this.rentAmount;
+    this.annualRent = this._v23();
     if(this.months>0){
-    this.monthlyRent = Number((this.rentAmount / this.months).toFixed(2));
+    this.monthlyRent = Number((this._v23() / this.months).toFixed(2));
     this.totalPayments=this.months;
     }
+    this.calculatePaymentFrequency();
   }
   calculateMonthlyRent() { 
     if(this.totalPayments>0){
-    this.monthlyRent = Number((this.rentAmount / this.totalPayments).toFixed(2)); 
+    this.monthlyRent = Number((this._v23() / this.totalPayments).toFixed(2)); 
     }
   }
   calculatemonths(){
@@ -543,6 +586,7 @@ export class CreateLeaseComponent implements OnInit {
             this.taxProfilesList=this.allagentsList=res.objResult.table8 || []; 
             this.heldByList=this.allagentsList=res.objResult.table9 || [];
             this.bankList=this.allagentsList=res.objResult.table10 || [];
+            this.thirdpartyList=this.allagentsList=res.objResult.table11 || [];
             const tenantCode = this.route.snapshot.queryParams['tenantCode'];
             if (tenantCode) {
               const found = this.tenantsList.find(t => t.code === tenantCode || t.id === tenantCode || t.tenant_code === tenantCode);
@@ -649,7 +693,11 @@ export class CreateLeaseComponent implements OnInit {
       clsRentInfo.payment_type=this.paymentMethod || 0;
       clsRentInfo.annual_rent=this.annualRent || 0;
       clsRentInfo.monthly_rent=this.monthlyRent || 0;
- 
+      clsRentInfo.frequencytype = this.paymentfrequency || 12;
+      clsRentInfo.discount_type = this.discountType || 'Standard';
+      clsRentInfo.graceperiod_type = this.gracePeriodType || '';
+      clsRentInfo.graceperiod_value = this.gracePeriodValue || 0;
+      clsRentInfo.discount_value = this.discountValue || 0;
       const additionalInfo = {
         ...this.additionalbloc,
         move_in_date: this.additionalbloc.move_in_date || '1900-01-01',
@@ -676,6 +724,7 @@ export class CreateLeaseComponent implements OnInit {
         unit_code: getCode(this.selectedUnit) || getCode(this.selectedUnitObj),
         room_code: getCode(this.selectedRoom),
         rent_collector: getCode(this.selectedAgent),
+        agent_code: getCode(this.selectedThirdParty), 
         clsLeaseInfo: clsLeaseInfo,
         clsRentInfo: clsRentInfo, 
         clsAddtionalInfo: additionalInfo,  
@@ -685,7 +734,7 @@ export class CreateLeaseComponent implements OnInit {
    
       }; 
 
-      console.log('Sending Save Lease Request:', request);
+      //console.log('Sending Save Lease Request:', request);
       const formData = new FormData(); 
     // JSON goes as ONE field
     formData.append('reqObject', JSON.stringify(request));
@@ -702,7 +751,13 @@ export class CreateLeaseComponent implements OnInit {
               this.extraFieldsComp.save(savedLeaseCode).subscribe();
             }
             this.toastr.success(this.translate.instant('web.leases.msgLeaseRegistered'));
-            this.router.navigate(['/leases']); 
+            if(this.leaseId!='' && this.leaseId!=null)
+              this.router.navigate(['/leases']); 
+            else{
+              setTimeout(() => {
+                this.router.navigate(['/leases/edit-lease', savedLeaseCode]);
+              }, 2000);
+            }
           }
           else{
             this.toastr.error(res['message']);

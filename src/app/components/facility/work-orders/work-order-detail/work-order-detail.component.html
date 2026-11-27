@@ -423,7 +423,7 @@
       <div class="p-5" *ngIf="activeTab === 'Quotations'">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h5 class="ov-card-title m-0">{{ 'web.facility.quotations.title' | translate }}</h5>
-          <button type="button" class="ov-btn ov-btn-primary !h-9" [attr.data-tooltip]="'web.facility.quotations.requestQuotation' | translate">
+          <button type="button" [routerLink]="['/facility/quotations/request']" class="ov-btn ov-btn-primary !h-9" [attr.data-tooltip]="'web.facility.quotations.requestQuotation' | translate">
             <img src="assets/images/work-orders/plus.svg" alt="" width="16" height="16" class="wo-ico wo-ico--on-primary" />
             {{ 'web.facility.quotations.requestQuotation' | translate }}
           </button>
@@ -439,15 +439,15 @@
             [totalRecords]="quotations.length" [pageSize]="10">
             <ng-template #colTemplate let-row="row" let-col="col">
               <ng-container [ngSwitch]="col.key">
-                <ng-container *ngSwitchCase="'id'">
-                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.id }}</a>
+                <ng-container *ngSwitchCase="'code'">
+                  <a href="javascript:void(0)" class="ov-link font-semibold">{{ row.code }}</a>
                 </ng-container>
-                <ng-container *ngSwitchCase="'status'">
+                <ng-container *ngSwitchCase="'status_nm'">
                   <span class="wo-badge" [ngClass]="{
-                    'wo-badge--soft': row.status === 'Pending',
-                    'wo-badge--dark': row.status === 'Approved',
-                    'wo-badge--danger': row.status === 'Rejected'
-                  }">{{ row.status }}</span>
+                    'wo-badge--soft': row.status_nm === 'Pending',
+                    'wo-badge--dark': row.status_nm === 'Approved',
+                    'wo-badge--danger': row.status_nm === 'Rejected'
+                  }">{{ row.status_nm }}</span>
                 </ng-container>
                 <ng-container *ngSwitchCase="'action'">
                   <a href="javascript:void(0)" class="ov-link text-[12px] font-semibold">{{ 'web.facility.workOrders.viewActivity' | translate }}</a>

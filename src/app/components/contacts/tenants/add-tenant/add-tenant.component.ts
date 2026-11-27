@@ -286,6 +286,7 @@ export class AddTenantComponent implements OnInit {
 
   tenantData = {
     email_address: '',
+    alt_email_address: '',
     code: '',
     username: '',
     honorific: null as string | null,
@@ -482,6 +483,7 @@ export class AddTenantComponent implements OnInit {
         if (tenant) {
           this.tenantData = {
             email_address: tenant.email_address || '',
+            alt_email_address: tenant.alt_email_address || '',
             code: tenant.code || '',
             username: tenant.username || '',
             honorific: tenant.honorific || null,
@@ -514,7 +516,7 @@ export class AddTenantComponent implements OnInit {
           };
           this.tenantDbId = Number(tenant.id) || 0;
           this.autoSchedule = tenant.is_auto_schedule || false;
-          this.displayAsCompany = tenant.display_as_company || false;
+          this.displayAsCompany = tenant.display_on_company || false;
           this.autoSignLeases = tenant.is_auto_sign_leases || false;
           this.disableListing = tenant.disabled_property_listing || false;
         }
@@ -560,7 +562,14 @@ export class AddTenantComponent implements OnInit {
   }
 
   saveTenant() {
-    if (!this.tenantData.first_name || !this.tenantData.last_name || !this.tenantData.email_address
+    
+    if(this.displayAsCompany){
+      if (!this.tenantData.company_name || !this.tenantData.email_address) {
+        this.toastr.warning("Invalid Email,Company Name", this.translate.instant('web.contacts.lblMissingInfo'));
+        return;
+      }
+    }
+    else if (!this.tenantData.first_name || !this.tenantData.last_name || !this.tenantData.email_address
       || !this.tenantData.mobile_no) {
       this.toastr.warning(this.translate.instant('web.common.msgFillRequiredFields'), this.translate.instant('web.contacts.lblMissingInfo'));
       return;
@@ -584,6 +593,10 @@ export class AddTenantComponent implements OnInit {
     }
 
     const currentUser = this.commonService.getCurrentUser();
+    if(this.displayAsCompany){
+      this.tenantData.first_name = this.tenantData.company_name;
+      this.tenantData.last_name = "Company";
+    }
     const requestJson = {
       userid: currentUser?.userId,
       company_id: currentUser?.companyId,
@@ -591,6 +604,7 @@ export class AddTenantComponent implements OnInit {
       source: 'web',
       languageid: 1,
       email_address: this.tenantData.email_address,
+      alt_email_address: this.tenantData.alt_email_address,
       code: this.isEditMode ? this.tenantId : (this.tenantData.code || ''),
       id: this.isEditMode ? this.tenantDbId : 0,
       username: this.tenantData.email_address || '',

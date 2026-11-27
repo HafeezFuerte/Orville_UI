@@ -117,7 +117,7 @@
           <h6 class="ov-card-title">{{ 'web.leases.lblAgentAssignment' | translate }}</h6>
         </div>
         <div class="ov-card__body">
-          <div class="ov-fields ov-fields--1">
+          <div class="ov-fields ov-fields--2">
             <div>
               <label class="ov-label">{{ 'web.leases.lblAssignedLeaseAgent' | translate }}</label>
               <ng-select #agentSelect [(ngModel)]="selectedAgent"
@@ -134,6 +134,20 @@
                 <ng-template ng-label-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
                 <ng-template ng-option-tmp let-item="item">{{ item.code }} - {{ item.name }}</ng-template>
               </ng-select>
+            </div>
+
+            <div class="lease-details-short-term">
+              <label class="lease-check">
+                <input type="checkbox" [(ngModel)]="isBroker" id="isBroker" />
+                <span>{{ 'web.leases.lblBroker' | translate }}</span>
+              </label>
+            </div>
+            <div *ngIf="isBroker">
+              <label class="ov-label">{{ 'web.leases.lblBrokerThirdParty' | translate }}</label>
+              <ng-select [(ngModel)]="selectedThirdParty"    bindValue="code"
+                bindLabel="name" [items]="thirdpartyList"
+                [placeholder]="'web.common.lblSelect' | translate"
+                class="ov-select w-full" appendTo="body"></ng-select>
             </div>
           </div>
         </div>
@@ -205,9 +219,15 @@
               </div>
             </div>
             <div>
+              <label class="ov-label">{{ 'web.leases.lblPaymentFrequency' | translate }}</label>
+              <ng-select [(ngModel)]="paymentfrequency" (change)="calculatePaymentFrequency()" bindValue="id" bindLabel="name"  [items]="paymentfrequencyTypes"
+                [placeholder]="'web.leases.lblPaymentFrequency' | translate" class="ov-select w-full" appendTo="body"></ng-select>
+            </div> 
+            <div>
               <label class="ov-label">{{ 'web.leases.lblTotalPayments' | translate }}</label>
               <input type="number" [(ngModel)]="totalPayments" (change)="calculateMonthlyRent()" class="ov-input" />
             </div>
+          
             <div>
               <label class="ov-label">{{ 'web.leases.lblMoneyHeldBy' | translate }}</label>
               <ng-select [(ngModel)]="moneyHeldBy" bindValue="id" bindLabel="name" [items]="moneyHeldOptions"
@@ -226,10 +246,18 @@
               </div>
             </div>
             <div>
-              <label class="ov-label">{{ 'web.leases.lblMonthlyRent' | translate }}</label>
+              <label class="ov-label">{{ RentLabel }}</label>
               <div class="ov-input-addon">
                 <span class="ov-input-addon__prefix">{{ currentUser?.currencyCode }}</span>
                 <input type="number" [(ngModel)]="monthlyRent" class="ov-input" placeholder="0.00" />
+              </div>
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.leases.lblGracePeriod' | translate }}</label>
+              <div class="ov-input-addon"> 
+                <input type="number" [(ngModel)]="gracePeriodValue" class="ov-input" placeholder="0.00" />
+                <ng-select [(ngModel)]="gracePeriodType"   [items]="gracePeriods"
+                [placeholder]="'web.leases.lblDiscountType' | translate" class="ov-select w-full" appendTo="body"></ng-select>
               </div>
             </div>
             <div>
@@ -239,7 +267,7 @@
             </div> 
             <div>
               <label class="ov-label">{{ 'web.leases.lblDiscount' | translate }}</label>
-              <input type="number" [(ngModel)]="discountValue" (change)="calculateMonthlyRent()" class="ov-input" />
+              <input type="number" [(ngModel)]="discountValue" (change)="calculateDiscount()" class="ov-input" />
             </div>
          
           </div>

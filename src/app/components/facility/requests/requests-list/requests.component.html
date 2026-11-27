@@ -9,7 +9,7 @@
         <img src="assets/images/work-orders/download.svg" alt="" width="18" height="18" />
         {{ 'web.facility.requests.export' | translate }}
       </button>
-      <button type="button" class="ov-btn ov-btn-primary">
+      <button type="button" routerLink="/facility/tickets/create"  class="ov-btn ov-btn-primary">
         <img src="assets/images/work-orders/plus.svg" alt="" width="18" height="18" />
         {{ 'web.facility.requests.createRequest' | translate }}
       </button>
@@ -17,26 +17,11 @@
   </div>
 
   <div class="ov-kpi-row mb-5">
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.common.lblAll' | translate }}</span>
-      <div class="ov-kpi__val">{{ metrics.total }}</div>
-      <div class="ov-kpi__sub">{{ metrics.totalSub | translate }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.facility.workOrders.kpiOpen' | translate }}</span>
-      <div class="ov-kpi__val">{{ metrics.open }}</div>
-      <div class="ov-kpi__sub">{{ metrics.openSub | translate }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.common.lblPending' | translate }}</span>
-      <div class="ov-kpi__val">{{ metrics.awaiting }}</div>
-      <div class="ov-kpi__sub">{{ metrics.awaitingSub | translate }}</div>
-    </div>
-    <div class="ov-kpi">
-      <span class="ov-kpi__badge">{{ 'web.leases.lblDueDate' | translate }}</span>
-      <div class="ov-kpi__val">{{ metrics.due }}</div>
-      <div class="ov-kpi__sub">{{ metrics.dueSub | translate }}</div>
-    </div>
+    <div class="ov-kpi" *ngFor="let item of metrics">
+      <span class="ov-kpi__badge">{{item.label}}</span>
+      <div class="ov-kpi__val">{{ item.value }}</div>
+      <div class="ov-kpi__sub">{{ item.sub }}</div>
+    </div> 
   </div>
 
   <div class="box mb-5 overflow-visible rounded-2xl border border-defaultborder bg-white shadow-none dark:bg-bodybg">
@@ -45,13 +30,16 @@
       <div class="overflow-x-auto" role="tablist" aria-label="Request status">
         <div class="ov-seg ov-seg--solid !w-max max-w-none">
           <button
-            type="button"
-            *ngFor="let tab of statusTabs"
-            class="ov-seg__btn"
-            [class.is-active]="statusFilter === tab"
-            (click)="setStatusFilter(tab)">
-            {{ tab === 'All' ? ('web.common.all' | translate) : tab }}
-          </button>
+          type="button"
+         *ngFor="let tab of statusTabs"
+         class="ov-seg__btn"
+         [class.is-active]="statusFilter === tab.id"
+         [class.text-gray-500]="statusFilter !== tab.id"
+         [class.border-transparent]="statusFilter !== tab.id" 
+         (click)="setStatusFilter(tab.id)">
+             {{ tab.id === 'All' ? ('web.common.all' | translate) : tab.name }} <span *ngIf="tab.id!='All'">({{tab.cnt || '0' }})</span>
+       </button> 
+  
         </div>
       </div>
     </div>
@@ -85,44 +73,39 @@
     </div>
 
     <div class="overflow-x-auto px-5 pb-0 pt-5">
-      <app-shared-table
-        [columns]="visibleColumns"
-        [data]="paginatedRows"
-        [loading]="false"
-        [hasActions]="false"
-        [showPaginator]="false"
-        [totalRecords]="totalRecords"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex">
+      <app-shared-table [columns]="visibleColumns" [data]="allRows" [loading]="false"
+      [totalRecords]="totalRecords" [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [pageIndex]="pageNo"
+      (pageChange)="onSharedTablePageChange($event)"   [hasActions]="false" [showPaginator]="false">
         <ng-template #colTemplate let-row="row" let-col="col">
           <ng-container [ngSwitch]="col.key">
-            <a *ngSwitchCase="'id'" class="ov-link" href="javascript:void(0)">{{ row.id }}</a>
-            <a *ngSwitchCase="'title'" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
-            <span *ngSwitchCase="'priority'" class="req-chip" [ngClass]="priorityClass(row.priority)">
+            <a *ngSwitchCase="'code'" class="ov-link" href="javascript:void(0)"
+              (click)="navigateToDetail(row.code)">{{ row.code }}</a>
+            <a *ngSwitchCase="'title'"  (click)="navigateToDetail(row.code)" class="ov-link" href="javascript:void(0)">{{ row.title }}</a>
+            <span *ngSwitchCase="'priority'" class="tk-chip" [ngClass]="priorityClass(row.priority)">
               {{ row.priority }}
             </span>
-            <span *ngSwitchCase="'status'" class="req-chip" [ngClass]="statusClass(row.status)">
-              {{ row.status }}
+            <span *ngSwitchCase="'status_nm'" class="tk-chip" [ngClass]="statusClass(row.status_nm)">
+              {{ row.status_nm }}
             </span>
-            <span *ngSwitchCase="'source'" class="req-chip req-chip--soft">
-              {{ row.source }}
+            <span *ngSwitchCase="'source_nm'" class="tk-chip tk-chip--soft">
+              {{ row.source_nm }}
             </span>
             <div *ngSwitchCase="'contact'" class="flex items-center gap-2">
               <span class="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
-                {{ row.contactInitials }}
+                {{ getInitials(row.contact) }}
               </span>
-              <span class="text-defaulttextcolor">{{ row.contactName }}</span>
+              <span class="text-defaulttextcolor">{{ row.contact }}</span>
             </div>
-            <div *ngSwitchCase="'details'" class="requests-details" [attr.title]="row.details">
+            <div *ngSwitchCase="'details'" class="tk-details" [attr.title]="row.details">
               {{ row.details }}
             </div>
-            <div *ngSwitchCase="'action'" class="requests-action" data-requests-action
+            <div *ngSwitchCase="'action'" class="tk-action" data-tickets-action
               (click)="$event.stopPropagation()">
               <button type="button" class="ov-icon-btn ov-icon-btn--bare" aria-label="Row actions"
-                [attr.aria-expanded]="openRowActionId === row.id"
+                [attr.aria-expanded]="openRowActionId === row.code"
                 (mousedown)="$event.stopPropagation()"
-                (click)="toggleRowAction(row.id, $event)">
-                <img src="assets/images/work-orders/more-horizontal.svg" alt="" width="20" height="20" class="ov-action-ico" />
+                (click)="toggleRowAction(row.code, $event)">
+                <img src="assets/images/common/dots-vertical.svg" alt="" width="20" height="20" class="ov-action-ico" />
               </button>
             </div>
             <span *ngSwitchDefault>{{ row[col.key] }}</span>
@@ -135,12 +118,8 @@
       <div class="ov-page__meta">
         <span class="ov-page__label">{{ 'web.common.show' | translate }}</span>
         <div class="ov-page__size">
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-            <option [ngValue]="100">100</option>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
           </select>
           <img src="assets/images/common/chevron-down.svg" alt="" width="14" height="14" />
         </div>

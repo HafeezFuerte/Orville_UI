@@ -63,7 +63,7 @@ export class QuotationsListComponent implements OnInit, OnDestroy {
     { key: 'selected_vendors', label: 'Vendor', labelKey: 'web.facility.quotations.colVendor', visible: true, useTemplate: true, width: '200px' },
     { key: 'category_name', label: 'Quotation Category Name', labelKey: 'web.facility.quotations.colQuotationCategoryName', visible: true, width: '180px' },
     { key: 'status_nm', label: 'Quotation Status', labelKey: 'web.facility.quotations.colQuotationStatus', visible: true, useTemplate: true, width: '140px' },
-    { key: 'total_amt', label: 'Quotation Amount', labelKey: 'web.facility.quotations.colQuotationAmount', visible: true, width: '140px' },
+    { key: 'total_amt', label:  'Quotation Amount' + " ( " + this.currentUser?.currencyCode + " )", labelKey: 'web.facility.quotations.colQuotationAmount', visible: true, width: '140px' },
     { key: 'created_date', label: 'Quotation Date', labelKey: 'web.facility.quotations.colQuotationDate', visible: true, width: '130px' },
     { key: 'estimation_date', label: 'Quotation Validity', labelKey: 'web.facility.quotations.colQuotationValidity', visible: true, width: '140px' },
     { key: 'action', label: 'Action', labelKey: 'web.facility.quotations.colAction', visible: true, useTemplate: true, width: '70px' }
