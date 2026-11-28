@@ -34,7 +34,7 @@
       </div>
 
       <!-- Quick Action Buttons -->
-      <button type="button" class="t-btn t-btn--outline" routerLink="/facility/tickets">
+      <button type="button" class="t-btn t-btn--outline" routerLink="/facility/work-orders">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -184,7 +184,7 @@
           <h2 class="t-card__title">Maintenance requests</h2>
           <p class="t-card__sub">Track the status of your service requests</p>
         </div>
-        <a class="t-link t-link--gold" routerLink="/facility/workorders">View all</a>
+        <a class="t-link t-link--gold" routerLink="/facility/work-orders">View all</a>
       </div>
 
       <div class="t-table-responsive">
@@ -201,7 +201,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let req of maintenanceRequests">
-              <td class="t-table__primary">{{ req.code }}</td>
+              <td class="t-table__primary"><a href="facility/work-orders/{{req.code}}">{{ req.code }}</a></td>
               <td class="t-table__primary">{{ req.title }}</td>
               <td class="t-table__muted">{{ req.created_date  | date:'MM-dd-yyyy'  }}</td>
               <td class="t-table__muted">{{ req.maintenance_name }}</td>
@@ -288,7 +288,7 @@
           <tr>
             <th>Instalment</th>
             <th>Due date</th>
-            <th>Amount</th>
+            <th>Amount {{' ( ' + currentUser?.currencyCode + ' )'}}</th>
             <th>Method</th>
             <th>Status</th>
           </tr>

@@ -118,6 +118,7 @@ export class TDashboardComponent {
 
   public selectUnit(unit: any): void {
     this.selectedLease = unit.active_lease;
+    this.active_lease=this.lease_list.filter((item:any)=>item.active_lease==unit.active_lease)[0] ||{};
     this.isUnitDropdownOpen = false;
   }
 

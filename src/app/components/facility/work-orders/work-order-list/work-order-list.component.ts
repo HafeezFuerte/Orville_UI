@@ -83,11 +83,11 @@ export class WorkOrderListComponent implements OnInit {
   ];
   openKanbanStatusCode: string | null = null;
   metrics = {
-    total: 2955,
-    new: 605,
-    open: 2319,
-    resolved: 31,
-    inprogress: 31
+    total: 0,
+    new: 0,
+    open: 0,
+    resolved: 0,
+    inprogress: 0
   };
   pageNo = 0;
   pageSize = 10;
@@ -115,7 +115,7 @@ export class WorkOrderListComponent implements OnInit {
 
   loadMetrics() {
     const payload = {
-      typeId: 39,
+      typeId: this.currentUser?.roleCode=="T" ? 118 : 39,
       filterId: 0,
       filterText: "",
       filterText1: "",

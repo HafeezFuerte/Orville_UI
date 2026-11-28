@@ -83,7 +83,10 @@ export class CreateWorkOrderComponent implements OnInit {
   attachfiles:any=[];
 
   ngOnInit() {
-    this.loadmasters(39, 1, '', ''); 
+    if(this.currentUser?.roleCode=="T")
+      this.loadmasters(118, 1, '', '');
+    else
+      this.loadmasters(39, 1, '', ''); 
     this.route.paramMap.subscribe((params) => {
       this.editId=params.get('code'); 
       if(this.editId)
