@@ -53,20 +53,18 @@ export class SpaceDetailComponent implements OnInit {
     return this.actionOptions.some((o: any) => o.danger);
   }
 
-  reservations: SpaceReservation[] = [...SPACE_RESERVATIONS];
+  reservations:any=[];// SpaceReservation[] = [...SPACE_RESERVATIONS];
   reservationSearch = '';
   reservationPageIndex = 0;
   reservationPageSize = 10;
 
   reservationColumns = [
-    { key: 'id', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true, width: '90px' },
+    { key: 'code', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true, width: '90px' },
     { key: 'reserver', label: 'web.bookings.reservations.reserver', visible: true },
-    { key: 'bookingDate', label: 'web.bookings.reservations.colBookingDate', visible: true, width: '130px' },
-    { key: 'time', label: 'web.bookings.reservations.colTime', visible: true, width: '130px' },
-    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true, width: '110px' },
-    { key: 'approval', label: 'web.bookings.spaces.colApproval', visible: true, useTemplate: true, width: '120px' },
-    { key: 'email', label: 'web.bookings.reservations.colEmail', visible: true },
-    { key: 'lease', label: 'web.bookings.reservations.colLease', visible: true, useTemplate: true, width: '100px' },
+    { key: 'reservation_date', label: 'web.bookings.reservations.colBookingDate', visible: true, width: '130px' },
+    { key: 'slot', label: 'web.bookings.reservations.colTime', visible: true, width: '130px' },
+    { key: 'status', label: 'web.common.lblStatus', visible: true, useTemplate: true, width: '110px' }, 
+    { key: 'email_address', label: 'web.bookings.reservations.colEmail', visible: true }, 
     { key: 'actions', label: 'web.bookings.reservations.colAction', visible: true, useTemplate: true, width: '70px' },
   ];
 
@@ -100,12 +98,12 @@ export class SpaceDetailComponent implements OnInit {
     return this.attachmentColumns.filter((col) => col.visible !== false);
   }
 
-  get filteredReservations(): SpaceReservation[] {
+  get filteredReservations(): any[] {
     const q = this.reservationSearch.trim().toLowerCase();
     if (!q) {
       return this.reservations;
     }
-    return this.reservations.filter((row) =>
+    return this.reservations.filter((row:any) =>
       [row.id, row.reserver, row.email, row.bookingDate, row.approval, row.lease].some((v) =>
         String(v).toLowerCase().includes(q)
       )
@@ -216,7 +214,7 @@ export class SpaceDetailComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           if (res && res.statusCode === '200' && res.objResult) {
-            const rawDetail = res.objResult.space?.[0] || res.objResult.table?.[0];
+            const rawDetail = res.objResult.spaces?.[0] || res.objResult.table?.[0];
             const rawDocs = res.objResult.documents || res.objResult.table2 || [];
             const rawReservations =
               res.objResult.reservations || res.objResult.table3 || res.objResult.bookings || [];
@@ -297,14 +295,13 @@ export class SpaceDetailComponent implements OnInit {
 
             if (rawReservations.length) {
               this.reservations = rawReservations.map((item: any) => ({
-                id: String(item.code || item.id || ''),
+                code: String(item.code || item.id || ''),
                 reserver: item.reserver || item.name || item.title || '',
-                bookingDate: item.booking_date || item.bookingDate || item.date || '',
-                time: item.time || item.slot || '',
-                status: item.status || '',
-                approval: item.approval || item.approval_status || '',
-                email: item.email || '',
-                lease: item.lease || item.lease_id || '',
+                reservation_date: item.reservation_date || item.bookingDate || item.date || '',
+                slot: item.slot || item.slot || '',
+                duration: item.duration || '',
+                status: item.status || '', 
+                email_address: item.email_address || '' 
               }));
               this.reservationCount = this.reservations.length;
             } else {
@@ -361,21 +358,19 @@ export class SpaceDetailComponent implements OnInit {
     this.showRowMenuId = this.showRowMenuId === id ? null : id;
   }
 
-  viewReservation(row: SpaceReservation): void {
+  viewReservation(row: any): void {
     this.showRowMenuId = null;
-    void this.router.navigate(['/bookings/reservations', row.id]);
+    void this.router.navigate(['/bookings/reservations', row.code]);
   }
 
-  editReservation(row: SpaceReservation): void {
+  editReservation(row: any): void {
     this.showRowMenuId = null;
-    void this.router.navigate(['/bookings/reservations/new'], {
-      queryParams: { id: row.id },
-    });
+    void this.router.navigate(['/bookings/reservations/edit',row.code]);
   }
 
-  deleteReservation(row: SpaceReservation): void {
+  deleteReservation(row: any): void {
     this.showRowMenuId = null;
-    this.reservations = this.reservations.filter((item) => item.id !== row.id);
+    this.reservations = this.reservations.filter((item:any) => item.code !== row.code);
     this.reservationCount = this.reservations.length;
     this.toastr.success('Reservation removed (presentation only).', 'Space Details');
   }

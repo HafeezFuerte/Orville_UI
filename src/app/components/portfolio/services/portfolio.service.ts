@@ -77,6 +77,12 @@ saveSpace(payload: FormData): Observable<any> {
     payload
   );
 }
+saveReservation(payload: FormData): Observable<any> {
+  return this.postAPI(
+    environment.apiurl + 'api/Application/save_update_reservations',
+    payload
+  );
+}
 saveVendorContract(payload: FormData): Observable<any> {
   return this.postAPI(
     environment.apiurl + 'api/Application/save_update_vendor_contract',

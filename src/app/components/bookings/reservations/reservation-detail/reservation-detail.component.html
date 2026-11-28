@@ -48,8 +48,8 @@
 
         <div class="ov-detail-side__hero">
           <div>
-            <h4 class="ov-detail-side__title">{{ detail.name }}</h4>
-            <p class="ov-detail-side__email">{{ 'web.bookings.reservations.title' | translate }} #{{ detail.id.slice(-3) }}</p>
+            <h4 class="ov-detail-side__title">{{ detail.reservation_name }}</h4>
+            <p class="ov-detail-side__email">{{ 'web.bookings.reservations.title' | translate }} #{{ detail.code }}</p>
             <span class="inline-flex mt-2 h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
               [ngClass]="detail.status === 'Confirmed' ? 'bg-success/10 text-success' : detail.status === 'Pending' ? 'bg-warning/10 text-warning' : 'bg-danger/10 text-danger'">
               {{ detail.status }}
@@ -87,27 +87,23 @@
           <div class="ov-detail-panel__body">
             <div class="ov-kv">
               <span class="ov-kv__label">{{ 'web.bookings.reservations.colId' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.id }}</span>
+              <span class="ov-kv__value">{{ detail.code }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">{{ 'web.bookings.reservations.colName' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.name }}</span>
+              <span class="ov-kv__value">{{ detail.reservation_name }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">{{ 'web.bookings.reservations.colReserve' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.reserve }}</span>
+              <span class="ov-kv__value">{{ detail.reserver }}</span>
             </div>
             <div class="ov-kv">
               <span class="ov-kv__label">{{ 'web.bookings.reservations.spaceName' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.space }}</span>
-            </div>
-            <div class="ov-kv">
-              <span class="ov-kv__label">{{ 'web.bookings.reservations.colLease' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.lease }}</span>
-            </div>
+              <span class="ov-kv__value">{{ detail.space_name }}</span>
+            </div> 
             <div class="ov-kv">
               <span class="ov-kv__label">{{ 'web.bookings.reservations.colPhone' | translate }}:</span>
-              <span class="ov-kv__value">{{ detail.phone }}</span>
+              <span class="ov-kv__value">{{ detail.phone_no }}</span>
             </div>
 
             <div class="my-1 flex justify-center">
@@ -127,23 +123,23 @@
             <ng-container *ngIf="showMore">
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.bookings.reservations.colEmail' | translate }}:</span>
-                <span class="ov-kv__value ov-link">{{ detail.email }}</span>
+                <span class="ov-kv__value ov-link">{{ detail.email_address }}</span>
               </div>
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.bookings.reservations.colBookingDate' | translate }}:</span>
-                <span class="ov-kv__value">{{ detail.bookingDate }}</span>
+                <span class="ov-kv__value">{{ detail.reservation_date | date:'MM/dd/yyy' }}</span>
               </div>
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.bookings.reservations.colTime' | translate }}:</span>
-                <span class="ov-kv__value">{{ detail.time }}</span>
+                <span class="ov-kv__value">{{ detail.slot }}</span>
               </div>
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.bookings.reservations.slotDuration' | translate }}:</span>
-                <span class="ov-kv__value">{{ detail.slotDuration }}</span>
+                <span class="ov-kv__value">{{ detail.duration }}</span>
               </div>
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.bookings.reservations.created' | translate }}:</span>
-                <span class="ov-kv__value">{{ detail.createdAt }}</span>
+                <span class="ov-kv__value">{{ detail.created_date | date:'MM/dd/yyy'}}</span>
               </div>
               <div class="ov-kv">
                 <span class="ov-kv__label">{{ 'web.common.lblStatus' | translate }}:</span>
@@ -166,25 +162,25 @@
       </div>
       <div class="box ov-card !mb-0 overflow-hidden">
         <div class="border-b border-defaultborder px-5 py-4">
-          <p class="m-0 text-base font-bold text-defaulttextcolor">{{ detail.space }}</p>
+          <p class="m-0 text-base font-bold text-defaulttextcolor">{{ detail.space_name }}</p>
           <p class="mb-0 mt-1 text-sm text-textmuted">{{ detail.property }} · {{ detail.unit }}</p>
         </div>
         <div class="flex flex-col gap-3 px-5 py-4">
           <div class="ov-kv">
-            <span class="ov-kv__label">{{ 'web.bookings.reservations.selectDate' | translate }}:</span>
-            <span class="ov-kv__value">{{ detail.bookingDate }}</span>
+            <span class="ov-kv__label">{{ 'web.bookings.spaces.startDate' | translate }}:</span>
+            <span class="ov-kv__value">{{ detail.start_date | date:'MM/dd/yyy'}}</span>
           </div>
           <div class="ov-kv">
-            <span class="ov-kv__label">{{ 'web.bookings.reservations.colTime' | translate }}:</span>
-            <span class="ov-kv__value">{{ detail.time }}</span>
+            <span class="ov-kv__label">{{ 'web.bookings.spaces.endDate' | translate }}:</span>
+            <span class="ov-kv__value">{{ detail.end_date | date:'MM/dd/yyy'}}</span>
           </div>
           <div class="ov-kv">
             <span class="ov-kv__label">{{ 'web.bookings.reservations.duration' | translate }}:</span>
-            <span class="ov-kv__value">{{ detail.slotDuration }}</span>
+            <span class="ov-kv__value">{{ detail.slot_duration }}</span>
           </div>
           <div class="ov-kv items-start">
             <span class="ov-kv__label">{{ 'web.bookings.reservations.notes' | translate }}:</span>
-            <span class="ov-kv__value">{{ detail.notes }}</span>
+            <span class="ov-kv__value">{{ detail.space_notes }}</span>
           </div>
         </div>
       </div>

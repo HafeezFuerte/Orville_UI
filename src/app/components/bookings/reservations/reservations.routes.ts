@@ -10,7 +10,11 @@ export const reservationsRoutes: Routes = [
     loadComponent: () => import('./create-new-reservation/reservation-add.component').then((m) => m.ReservationAddComponent)
   },
   {
-    path: ':id',
+    path: 'edit/:code',
+    loadComponent: () => import('./create-new-reservation/reservation-add.component').then((m) => m.ReservationAddComponent)
+  },
+  {
+    path: ':code',
     loadComponent: () => import('./reservation-detail/reservation-detail.component').then((m) => m.ReservationDetailComponent)
   }
 ];

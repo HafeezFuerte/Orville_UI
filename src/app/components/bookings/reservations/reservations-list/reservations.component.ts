@@ -8,7 +8,10 @@ import { FilterDrawerComponent } from '../../../../shared/components/filter-draw
 import { ColumnMenuComponent } from '../../../../shared/components/column-menu/column-menu.component';
 import { RESERVATION_ROWS, ReservationRow, ReservationStatus } from '../reservations.data';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
+import { OvPaginatorComponent } from '../../../../shared/components/ov-paginator/ov-paginator.component';
 @Component({
   selector: 'app-reservations',
   standalone: true,
@@ -20,7 +23,8 @@ import { TranslateModule } from '@ngx-translate/core';
     SharedTableComponent,
     FilterDrawerComponent,
     ColumnMenuComponent,
-    TranslateModule
+    TranslateModule,
+    OvPaginatorComponent
   ],
   templateUrl: './reservations.component.html'
 })
@@ -31,33 +35,80 @@ export class ReservationsComponent {
   filterName = '';
   filterStatus: ReservationStatus | null = null;
   statusOptions: ReservationStatus[] = ['Confirmed', 'Pending', 'Cancelled'];
-  pageIndex = 0;
-  pageSize = 10;
-  allRows = RESERVATION_ROWS;
+ 
+  pageNo = 0;
+  pageSize = 10; 
+  totalPages = 0;
+  totalRecords = 0;
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  allRows :any=[];
 
   tableColumns = [
-    { key: 'id', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true },
-    { key: 'name', label: 'web.bookings.reservations.colName', visible: true, useTemplate: true },
-    { key: 'reserve', label: 'web.bookings.reservations.colReserve', visible: true },
-    { key: 'space', label: 'web.bookings.reservations.colSpace', visible: true, useTemplate: true },
-    { key: 'lease', label: 'web.bookings.reservations.colLease', visible: true },
-    { key: 'time', label: 'web.bookings.reservations.colTime', visible: true },
-    { key: 'bookingDate', label: 'web.bookings.reservations.colBookingDate', visible: true },
-    { key: 'phone', label: 'web.bookings.reservations.colPhone', visible: true },
-    { key: 'email', label: 'web.bookings.reservations.colEmail', visible: true },
-    { key: 'createdAt', label: 'web.bookings.reservations.colCreatedAt', visible: true },
+    { key: 'code', label: 'web.bookings.reservations.colId', visible: true, useTemplate: true },
+    { key: 'reservation_name', label: 'web.bookings.reservations.colName', visible: true, useTemplate: true },
+    { key: 'reserver', label: 'web.bookings.reservations.colReserve', visible: true },
+    { key: 'status', label: 'Status', visible: true},
+    { key: 'space_name', label: 'web.bookings.reservations.colSpace', visible: true, useTemplate: true }, 
+    { key: 'slot', label: 'web.bookings.reservations.colTime', visible: true },
+    { key: 'reservation_date', label: 'web.bookings.reservations.colBookingDate', visible: true },
+    { key: 'phone_no', label: 'web.bookings.reservations.colPhone', visible: true },
+    { key: 'email_address', label: 'web.bookings.reservations.colEmail', visible: true },
+    { key: 'created_date', label: 'web.bookings.reservations.colCreatedAt', visible: true },
     { key: 'action', label: 'web.bookings.reservations.colAction', visible: true, useTemplate: true }
   ];
+    currentUser = this.commonService.getCurrentUser();
+  constructor(private router: Router,private commontabservice:Common_TabsService,private commonService:CommonService,
+    private toastr:ToastrService) {}
+    ngOnInit() { 
+      this.loadReservations();   
+    }
+  loadReservations(): void {  
+    const payload = {
+      userid: this.currentUser?.userId || 1,
+      company_id: this.currentUser?.companyId || 1,
+      clientId: this.currentUser?.clientId || "74BB6922", 
+      source: 'web',
+      languageid: 1,
+      page_no: this.pageNo,
+      seqno: 0,
+      search_keyword: this.searchQuery || '',
+      pagecount: this.pageSize,
+      featureid: "RESERVATIONS", 
+      search_columns: "P.reservation_name",
+      filter_by: ""
+    };
 
-  constructor(private router: Router) {}
+    this.commontabservice.getCommonGrid(payload).subscribe({
+      next: (res: any) => { 
+        if (res && res.statusCode === "200" && res.objResult) {
+          const rawItems = res.objResult.reservations || res.objResult.table || [];
+          this.allRows =   rawItems;
+          if (res.objResult.rows_info) {
+            this.totalRecords = res.objResult.rows_info[0].totalrecords; 
+            this.totalPages = res.objResult.rows_info[0].noofpages;
+          }
+           
+        } else {
+          this.allRows = []; 
+          this.totalRecords = 0;
+          this.totalPages = 0;
+          this.toastr.error("No record[s] found");
+        }
+      },
+      error: (err: any) => {  
+        this.allRows = [];
+         
+      }
+    });
+  }
 
   get visibleColumns() {
     return this.tableColumns.filter((col) => col.visible !== false);
   }
 
-  get filteredRows(): ReservationRow[] {
+  get filteredRows(): any[] {
     const q = this.searchQuery.trim().toLowerCase();
-    return this.allRows.filter((row) => {
+    return this.allRows.filter((row:any) => {
       if (this.filterName && !row.name.toLowerCase().includes(this.filterName.toLowerCase())) {
         return false;
       }
@@ -73,31 +124,26 @@ export class ReservationsComponent {
     });
   }
 
-  get totalRecords(): number {
-    return this.filteredRows.length;
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalRecords / this.pageSize) || 1);
-  }
-
-  get paginatedRows(): ReservationRow[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredRows.slice(start, start + this.pageSize);
-  }
+  
 
   get displayPage(): number {
-    return this.pageIndex + 1;
+    return this.pageNo + 1;
   }
 
   get startRecord(): number {
-    return this.totalRecords ? this.pageIndex * this.pageSize + 1 : 0;
+    return this.totalRecords ? this.pageNo * this.pageSize + 1 : 0;
   }
 
   get endRecord(): number {
-    return Math.min((this.pageIndex + 1) * this.pageSize, this.totalRecords);
+    return Math.min((this.pageNo + 1) * this.pageSize, this.totalRecords);
   }
 
+  get paginatedRows(): any[] {
+    const start = this.pageNo * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
+  }
+
+  
   get pagerItems(): (number | string)[] {
     const total = this.totalPages;
     if (total <= 7) {
@@ -111,22 +157,25 @@ export class ReservationsComponent {
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadReservations();
   }
 
   applyLocalSearch(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadReservations();
   }
 
   applyFilters(): void {
-    this.pageIndex = 0;
+    this.pageNo = 0;
+    this.loadReservations();
   }
 
   clearFilters(): void {
     this.searchQuery = '';
     this.filterName = '';
     this.filterStatus = null;
-    this.pageIndex = 0;
+    this.pageNo = 0;
   }
 
   toggleColumnDropdown(event: Event): void {
@@ -145,28 +194,60 @@ export class ReservationsComponent {
     this.tableColumns.forEach((col) => (col.visible = checked));
   }
 
-  onPageSizeChange(): void {
-    this.pageIndex = 0;
+  onSharedTablePageChange(event: any): void {
+    
+    if(event.pageIndex>this.pageNo){
+    this.pageNo = this.pageNo + 1;
+    }
+    else{
+      this.pageNo = this.pageNo - 1;
+    }
+    if(this.pageNo<0)
+    this.pageNo=0;
+    this.pageSize = event.pageSize; 
+    this.loadReservations();
+  }
+  handleChildNotification(ev:any){ 
+  }
+  onPageSizeChange(event:any): void {
+    this.pageNo = 0; 
+    this.loadReservations();
+  }
+  onPaginatorChange(event: any): void {
+    this.pageNo = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadReservations();
   }
 
   previousPage(): void {
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
+    if (this.pageNo > 0) {
+      this.pageNo--;
+      this.loadReservations();
     }
   }
 
   nextPage(): void {
     if (this.displayPage < this.totalPages) {
-      this.pageIndex++;
+      this.pageNo++;
+      this.loadReservations();
     }
   }
 
   goToPage(page: number): void {
-    const target = page - 1;
-    if (target >= 0 && target < this.totalPages) {
-      this.pageIndex = target;
+    if (page !== this.pageNo-1) {
+      this.pageNo =  page-1;
+      if(this.pageNo<0)
+      this.pageNo=0;
+      this.loadReservations();
     }
+ 
   }
+     
+
+  goPage(page: number): void {
+    this.pageNo = Math.max(0, Math.min(page - 1, this.totalPages - 1));
+  }
+
 
   @HostListener('document:click')
   onDocumentClick(): void {

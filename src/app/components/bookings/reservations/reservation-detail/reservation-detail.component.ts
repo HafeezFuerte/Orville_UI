@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { getReservationDetail, ReservationRow } from '../reservations.data';
 import { TranslateModule } from '@ngx-translate/core';
+import { Common_TabsService } from '../../../portfolio/services/common_tabs.service';
+import { CommonService } from '../../../../services/common.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -12,7 +15,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrls: ['./reservation-detail.component.scss'],
 })
 export class ReservationDetailComponent implements OnInit {
-  detail: ReservationRow = getReservationDetail('31658');
+  detail: any=[];
   showMore = true;
   showActionMenu = false;
   actionOptions = [
@@ -22,12 +25,39 @@ export class ReservationDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private commontabservice: Common_TabsService,
+    private toastr: ToastrService,
+    private commonservice: CommonService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      this.detail = getReservationDetail(params.get('id'));
+    this.route.paramMap.subscribe((params:any) => { 
+      this.loadLookup(70,8,'',params.get('code'))
+    });
+  }
+  loadLookup(Typeid:number,filterId: number, targetProperty: string, filterText: string) {
+    this.commontabservice.getMasterByType({
+      typeId: Typeid,
+      filterId: filterId,
+      filterText: filterText,
+      filterText1: ''
+    }).subscribe({
+      next: (res: any) => {
+        if (res.statusCode == 200 && res.objResult && res.objResult) {  
+          if(Typeid==74){
+            this.toastr.success("Successfully marked as inactive");  
+        }
+        else if(Typeid==70){
+           this.detail=res.objResult.table[0];
+        }
+      
+        }
+        
+      },
+      error: (err) => {
+        console.error(`Error fetching lookup ${filterId}:`, err);
+      }
     });
   }
 
@@ -37,7 +67,7 @@ export class ReservationDetailComponent implements OnInit {
 
   goToEdit(): void {
     this.showActionMenu = false;
-    void this.router.navigate(['/bookings/reservations/new']);
+    void this.router.navigate(['/bookings/reservations/edit',this.detail.code]);
   }
 
   onAction(label: string): void {

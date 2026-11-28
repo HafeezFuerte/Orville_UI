@@ -20,9 +20,9 @@ export class CmsService {
    */
   private getBaseUrl(): string {
     const raw = environment.apiurl || 'http://development.orvillerealestate.com/';
-    if (raw.includes('stageapi') || raw.includes('appapi')) {
-      return 'http://development.orvillerealestate.com/';
-    }
+    // if (raw.includes('stageapi') || raw.includes('appapi')) {
+    //   return 'http://development.orvillerealestate.com/';
+    // }
     return raw.endsWith('/') ? raw : `${raw}/`;
   }
 

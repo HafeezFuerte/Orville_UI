@@ -256,8 +256,8 @@
                 [pageIndex]="reservationPageIndex">
                 <ng-template #colTemplate let-row="row" let-col="col">
                   <ng-container [ngSwitch]="col.key">
-                    <a *ngSwitchCase="'id'" class="ov-link font-semibold" href="javascript:void(0)" (click)="viewReservation(row)">
-                      {{ row.id }}
+                    <a *ngSwitchCase="'code'" class="ov-link font-semibold" href="javascript:void(0)" (click)="viewReservation(row)">
+                      {{ row.code }}
                     </a>
 
                     <ng-container *ngSwitchCase="'status'">
@@ -265,34 +265,20 @@
                       <span *ngIf="!row.status" class="sd-empty-cell">-</span>
                     </ng-container>
 
-                    <ng-container *ngSwitchCase="'approval'">
-                      <span
-                        *ngIf="row.approval"
-                        class="sd-approval"
-                        [attr.data-approval]="row.approval">
-                        {{ row.approval }}
-                      </span>
-                      <span *ngIf="!row.approval" class="sd-empty-cell">-</span>
-                    </ng-container>
-
-                    <ng-container *ngSwitchCase="'lease'">
-                      <span *ngIf="row.lease">{{ row.lease }}</span>
-                      <span *ngIf="!row.lease" class="sd-empty-cell">-</span>
-                    </ng-container>
-
+               
                     <ng-container *ngSwitchCase="'actions'">
                       <div
                         class="sd-row-actions relative"
-                        [class.is-open]="showRowMenuId === row.id"
+                        [class.is-open]="showRowMenuId === row.code"
                         (click)="$event.stopPropagation()">
                         <button
                           type="button"
                           class="sd-more"
-                          (click)="toggleRowMenu(row.id, $event)"
+                          (click)="toggleRowMenu(row.code, $event)"
                           [attr.aria-label]="'web.common.lblAction' | translate">
                           <i class="ti ti-dots"></i>
                         </button>
-                        <div *ngIf="showRowMenuId === row.id" class="sd-row-menu">
+                        <div *ngIf="showRowMenuId === row.code" class="sd-row-menu">
                           <button type="button" class="sd-row-menu__item" (click)="viewReservation(row)">
                             <i class="ti ti-eye" aria-hidden="true"></i>
                             {{ 'web.common.lblView' | translate }}

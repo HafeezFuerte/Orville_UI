@@ -28,6 +28,8 @@
             [(ngModel)]="form.space"
             name="space"
             [items]="spaces"
+            bindValue="code"
+            bindLabel="name"
             class="ov-select ng-select-sm w-full"
             appendTo="body"
             (ngModelChange)="onSpaceChange()">
@@ -35,15 +37,15 @@
         </div>
         <div class="ra-space-banner" *ngIf="form.space">
           <div class="ra-space-banner__text">
-            <p class="ra-space-banner__name">{{ form.space }}</p>
+            <p class="ra-space-banner__name">{{ activeSpaceMeta.name }}</p>
             <p class="ra-space-banner__loc">
               <i class="ti ti-map-pin" aria-hidden="true"></i>
-              {{ activeSpaceMeta.location }}
+              {{ activeSpaceMeta.space_location }}
             </p>
           </div>
           <div class="ra-space-banner__pills">
-            <span class="ra-pill"><i class="ti ti-clock" aria-hidden="true"></i>{{ displayDuration }}</span>
-            <span class="ra-pill ra-pill--strong"><i class="ti ti-cash" aria-hidden="true"></i>{{ activeSpaceMeta.price }}</span>
+            <span class="ra-pill"><i class="ti ti-clock" aria-hidden="true"></i>{{ activeSpaceMeta.slot_duration }}</span>
+            <span class="ra-pill ra-pill--strong"><i class="ti ti-cash" aria-hidden="true"></i>{{ activeSpaceMeta.slot_price }}</span>
           </div>
         </div>
       </div>
@@ -187,11 +189,17 @@
         <div class="ov-card__body !pt-0 ra-col__body">
           <div class="ov-fields">
             <div>
-              <label class="ov-label">{{ 'web.bookings.reservations.colReserve' | translate }}</label>
+              <label class="ov-label">Reservation Name <span class="text-danger">*</span></label>
+              <input type="text" class="ov-input" name="text" [(ngModel)]="form.reservation_name" />
+            </div>
+            <div>
+              <label class="ov-label">{{ 'web.bookings.reservations.colReserve' | translate }} <span class="text-danger">*</span></label>
               <ng-select
                 [(ngModel)]="form.reserve"
                 name="reserve"
                 [items]="reservers"
+                bindValue="code"
+                bindLabel="name"
                 [clearable]="true"
                 [placeholder]="'web.bookings.reservations.phSelect' | translate"
                 class="ov-select ng-select-sm w-full"
@@ -206,7 +214,7 @@
               <label class="ov-label">{{ 'web.bookings.reservations.colPhone' | translate }}</label>
               <input type="text" class="ov-input" name="phone" [(ngModel)]="form.phone" [placeholder]="'web.bookings.reservations.phEnterPhone' | translate" />
             </div>
-            <div>
+            <!-- <div>
               <label class="ov-label">{{ 'web.bookings.reservations.colLease' | translate }}</label>
               <ng-select
                 [(ngModel)]="form.lease"
@@ -217,7 +225,7 @@
                 class="ov-select ng-select-sm w-full"
                 appendTo="body">
               </ng-select>
-            </div>
+            </div> -->
             <div>
               <label class="ov-label">{{ 'web.common.lblStatus' | translate }}</label>
               <ng-select
@@ -268,7 +276,7 @@
           </div>
           <div class="ra-summary__row">
             <span class="ra-summary__label">{{ 'web.bookings.reservations.price' | translate }}</span>
-            <span class="ra-summary__value ra-summary__value--price">{{ activeSpaceMeta.price }}</span>
+            <span class="ra-summary__value ra-summary__value--price">{{ activeSpaceMeta.slot_price }}</span>
           </div>
           <div class="ra-summary__row">
             <span class="ra-summary__label">{{ 'web.common.lblStatus' | translate }}</span>
@@ -276,7 +284,7 @@
           </div>
           <div class="ra-summary__row" *ngIf="form.reserve">
             <span class="ra-summary__label">{{ 'web.bookings.reservations.reserver' | translate }}</span>
-            <span class="ra-summary__value">{{ form.reserve }}</span>
+            <span class="ra-summary__value">{{ getReserveName }}</span>
           </div>
           <div class="ra-summary__row" *ngIf="form.email">
             <span class="ra-summary__label">{{ 'web.bookings.reservations.colEmail' | translate }}</span>
